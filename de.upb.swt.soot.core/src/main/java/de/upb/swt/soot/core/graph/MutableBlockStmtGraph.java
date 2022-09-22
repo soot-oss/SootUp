@@ -113,7 +113,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
         });
 
-    duplicateCatchAllTrapRemover(stmts, traps, trapstmtToIdx);
+    duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
 
     traps.sort(getTrapComparator(trapstmtToIdx));
     /* debug print:
@@ -122,7 +122,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
-    Map<ClassType, List<Trap>> overlappingTraps = new HashMap<>();
+    Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
 
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
@@ -136,7 +136,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           if (stmt == trap.getEndStmt()) {
             final ClassType exceptionType = trap.getExceptionType();
             final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
-            final List<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
+            final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
             if (overridenTrapHandlers != null) {
               if (overridenTrapHandlers.size() > 0) {
                 // check if theres an overlapping trap that has a less specific TrapRange which is
@@ -153,8 +153,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               }
 
               if (overridenTrapHandlers.size() > 0) {
-                currentTrapMap.put(
-                    exceptionType, overridenTrapHandlers.remove(overridenTrapHandlers.size() - 1));
+                currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
               }
             }
 
@@ -168,53 +167,23 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             if (existingTrapForException == null) {
               currentTrapMap.put(trap.getExceptionType(), trap);
             } else {
-              final List<Trap> overridenTraps =
-                  overlappingTraps.computeIfAbsent(trap.getExceptionType(), k -> new ArrayList<>());
+              final PriorityQueue<Trap> overridenTraps =
+                  overlappingTraps.computeIfAbsent(
+                      trap.getExceptionType(),
+                      k ->
+                          new PriorityQueue<Trap>(
+                              (trapA, trapB) -> {
+                                final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
+                                final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
+                                return idxB - idxA;
+                              }));
 
-              int index =
-                  Collections.binarySearch(
-                      overridenTraps,
-                      trap,
-                      (trapA, trapB) -> {
-                        final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
-                        final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
-                        return idxB - idxA;
-                      });
-              if (index < 0) {
-                index = ~index;
-              }
-              overridenTraps.add(index, existingTrapForException);
+              overridenTraps.add(existingTrapForException);
+              overridenTraps.add(trap);
 
-              // TODO: performance: dont insert new trap into overridenTraps and decide before i.e.
-              // circumvent the datastructure housekeeping overhead
-              // decide which element gets applied/overridden i.e. has to wait for its apllication
-              // add it sorted (descending by endStmt index) into overriddenTraps!
-              /*
-              if(trapstmtToIdx.get(trap.getEndStmt()) < trapstmtToIdx.get(overridenTraps.get(overridenTraps.size() - 1).getEndStmt())){
-                // existing beginStmtIdx must be smaller due to sorted traps ds and insertionorder into overlappingTraps
-                currentTrapMap.put(trap.getExceptionType(), trap);
-                overridenTraps.add(existingTrapForException);
-              }else */
-              {
-                index =
-                    Collections.binarySearch(
-                        overridenTraps,
-                        trap,
-                        (trapA, trapB) -> {
-                          final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
-                          final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
-                          return idxB - idxA;
-                        });
-                if (index < 0) {
-                  index = ~index;
-                }
-                overridenTraps.add(overridenTraps.size() - index, trap);
-
-                // remove and use last element (to avoid copying of the complete ArrayList) which is
-                // the trap with the next ending traprange
-                Trap trapToApply = overridenTraps.remove(overridenTraps.size() - 1);
-                currentTrapMap.put(trap.getExceptionType(), trapToApply);
-              }
+              // remove element which is the trap with the next ending traprange
+              Trap trapToApply = overridenTraps.poll();
+              currentTrapMap.put(trap.getExceptionType(), trapToApply);
             }
             trapsChanged = true;
           }
@@ -260,7 +229,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   private static void duplicateCatchAllTrapRemover(
-      @Nonnull List<Stmt> stmts, @Nonnull List<Trap> traps, Map<Stmt, Integer> trapstmtToIdx) {
+      @Nonnull List<Trap> traps, Map<Stmt, Integer> trapstmtToIdx) {
     /*
      * handle duplicate catchall traps here - aka integrated "DuplicateCatchAllTrapRemover" Transformer/Interceptor
      *
@@ -275,14 +244,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
      *
      * <p>try { // block } catch { // handler 1 } finally { // handler 2 }
      *
+     * or (e.g. with java.lang.Exception):
+     *
+     * <p> try{        try { // block } catch { // handler 1 }      }catch { // handler 2 }
+     *
+     *
      * <p>In this case, the first trap covers the block and jumps to handler 1. The second trap also
      * covers the block and jumps to handler 2. The third trap covers handler 1 and jumps to handler 2.
      * If we treat "any" as java.lang. Throwable, the second handler is clearly unnecessary. Worse, it
      * violates Soot's invariant that there may only be one handler per combination of covered code
      * region and jump target.
      *
-     * or sth like: with java.lang.Exception
-     * <p> try{        try { // block } catch { // handler 1 }      }catch { // handler 2 }
      *
      * <p>This interceptor detects and removes such unnecessary traps.
      *
@@ -295,9 +267,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // region
       for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
         Trap trap1 = traps.get(i);
-        // FIXME(#430): [ms] adapt to work with java module, too
-        // [ms]: maybe its applicable to more exceptions?
+        // [ms]: maybe it needs more generalization to be applicable with more exception types?
         final String fullyQualifiedName1 = trap1.getExceptionType().getFullyQualifiedName();
+        // FIXME(#430): [ms] adapt to work with java module, too
         if (fullyQualifiedName1.equals("java.lang.Throwable")
             || fullyQualifiedName1.equals("java.lang.Exception")) {
           for (int j = 0; j < trapsSize; j++) {
@@ -316,7 +288,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 final int trap3EndIdx =
                     trapstmtToIdx.get(trap3.getEndStmt()); // endstmt is exclusive!
 
-                // FIXME(#430): [ms] adapt to work with java module, too
                 if (trap3 != trap1
                     && trap3 != trap2
                     && trap3
