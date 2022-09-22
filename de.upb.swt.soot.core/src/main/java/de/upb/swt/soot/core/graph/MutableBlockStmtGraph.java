@@ -116,8 +116,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     duplicateCatchAllTrapRemover(stmts, traps, trapstmtToIdx);
 
     traps.sort(getTrapComparator(trapstmtToIdx));
-    // debug print: traps.stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->
-    // System.out.println(
+    // debug print:
+    // traps.stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->  System.out.println(
     // t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " +
     // trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt() )  ));
 
@@ -171,36 +171,39 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               currentTrapMap.put(trap.getExceptionType(), trap);
             } else {
               final List<Trap> overridenTraps =
-                  overlappingTraps.computeIfAbsent(
-                      trap.getExceptionType(),
-                      k -> {
-                        final ArrayList<Trap> traplist = new ArrayList<>();
-                        traplist.add(existingTrapForException);
-                        return traplist;
-                      });
+                  overlappingTraps.computeIfAbsent(trap.getExceptionType(), k -> new ArrayList<>());
+              overridenTraps.add(existingTrapForException);
 
               // TODO: performance: dont insert new trap into overridenTraps and decide before i.e.
               // circumvent the datastructure housekeeping overhead
               // decide which element gets applied/overridden i.e. has to wait for its apllication
               // add it sorted (descending by endStmt index) into overriddenTraps!
-              int index =
-                  Collections.binarySearch(
-                      overridenTraps,
-                      trap,
-                      (trapA, trapB) -> {
-                        final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
-                        final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
-                        return idxB - idxA;
-                      });
-              if (index < 0) {
-                index = ~index;
-              }
-              overridenTraps.add(overridenTraps.size() - index, trap);
+              /*
+              if(trapstmtToIdx.get(trap.getEndStmt()) < trapstmtToIdx.get(overridenTraps.get(overridenTraps.size() - 1).getEndStmt())){
+                // existing beginStmtIdx must be smaller due to sorted traps ds and insertionorder into overlappingTraps
+                currentTrapMap.put(trap.getExceptionType(), trap);
+                overridenTraps.add(existingTrapForException);
+              }else */
+              {
+                int index =
+                    Collections.binarySearch(
+                        overridenTraps,
+                        trap,
+                        (trapA, trapB) -> {
+                          final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
+                          final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
+                          return idxB - idxA;
+                        });
+                if (index < 0) {
+                  index = ~index;
+                }
+                overridenTraps.add(overridenTraps.size() - index, trap);
 
-              // remove and use last element (to avoid copying of the complete ArrayList) which is
-              // the trap with the next ending traprange
-              Trap trapToApply = overridenTraps.remove(overridenTraps.size() - 1);
-              currentTrapMap.put(trap.getExceptionType(), trapToApply);
+                // remove and use last element (to avoid copying of the complete ArrayList) which is
+                // the trap with the next ending traprange
+                Trap trapToApply = overridenTraps.remove(overridenTraps.size() - 1);
+                currentTrapMap.put(trap.getExceptionType(), trapToApply);
+              }
             }
             trapsChanged = true;
           }
@@ -212,12 +215,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           currentTrapMap.forEach(
               (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
 
-          // debugprint
-          // System.out.println("-- "+ i +" --");
-          // currentTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t ->
-          // System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + "
-          // " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +
-          // trapstmtToIdx.get(t.getHandlerStmt())));
+          /* debugprint
+           System.out.println("-- "+ i +" --");
+           currentTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
+          */
         }
       }
       addNode(stmt, exceptionToHandlerMap);
@@ -269,9 +270,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
      * violates Soot's invariant that there may only be one handler per combination of covered code
      * region and jump target.
      *
+     * or sth like: with java.lang.Exception
+     * <p> try{        try { // block } catch { // handler 1 }      }catch { // handler 2 }
+     *
      * <p>This interceptor detects and removes such unnecessary traps.
      *
      * @author Steven Arzt
+     * @auhor Markus Schmidt
      */
 
     if (traps.size() > 2) {
@@ -280,13 +285,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       for (int i = 0, trapsSize = traps.size(); i < trapsSize; i++) {
         Trap trap1 = traps.get(i);
         // FIXME(#430): [ms] adapt to work with java module, too
-        if (trap1.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
+        // [ms]: maybe its applicable to more exceptions?
+        final String fullyQualifiedName1 = trap1.getExceptionType().getFullyQualifiedName();
+        if (fullyQualifiedName1.equals("java.lang.Throwable")
+            || fullyQualifiedName1.equals("java.lang.Exception")) {
           for (int j = 0; j < trapsSize; j++) {
             Trap trap2 = traps.get(j);
+            final String fullyQualifiedName2 = trap2.getExceptionType().getFullyQualifiedName();
             if (trap1 != trap2
                 && trap1.getBeginStmt() == trap2.getBeginStmt()
                 && trap1.getEndStmt() == trap2.getEndStmt()
-                && trap2.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable")) {
+                && fullyQualifiedName2.equals(fullyQualifiedName1)) {
               // Both traps (t1, t2) span the same code and catch java.lang.Throwable.
               // Check if one trap jumps to a target that then jumps to the target of the other trap
               for (int k = 0; k < trapsSize; k++) {
@@ -302,7 +311,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                     && trap3
                         .getExceptionType()
                         .getFullyQualifiedName()
-                        .equals("java.lang.Throwable")) {
+                        .equals(fullyQualifiedName2)) {
                   int trap1HandlerIdx = trapstmtToIdx.get(trap1.getHandlerStmt());
                   if (trap3StartIdx <= trap1HandlerIdx
                       && trap1HandlerIdx < trap3EndIdx

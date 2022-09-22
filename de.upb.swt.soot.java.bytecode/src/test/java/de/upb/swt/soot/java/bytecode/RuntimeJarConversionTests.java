@@ -49,4 +49,11 @@ public class RuntimeJarConversionTests {
     execute(
         "<java.security.UnresolvedPermission: java.security.Permission resolve(java.security.Permission,java.security.cert.Certificate[])>");
   }
+
+  @Test
+  public void testTrapsicwStubFactoryFactoryStaticImpl() {
+    // same exception range and type but different handler..
+    execute(
+        "<com.sun.corba.se.impl.presentation.rmi.StubFactoryFactoryStaticImpl: javax.rmi.CORBA.Tie getTie(java.lang.Class)>");
+  }
 }
