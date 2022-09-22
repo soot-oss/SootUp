@@ -2050,7 +2050,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
-  void replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+  void replaceStmt(@Nonnull Stmt oldStmt, Stmt newStmt) {
     AbstractInsnNode key = null;
 
     // TODO: [ms] bit expensive and called a lot? -> find better solution!
@@ -2061,8 +2061,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     if (key == null) {
-      throw new IllegalStateException(
-          "Could not replace value in insn map because oldStmt " + oldStmt + " it is absent");
+      // throw new IllegalStateException("Could not replace value in insn map because oldStmt " +
+      // oldStmt + " it is absent");
+      return;
+    }
+
+    if (newStmt == null) {
+      insnToStmt.remove(key);
+      return;
     }
 
     insnToStmt.put(key, newStmt);
@@ -2090,13 +2096,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                     stmt instanceof StmtContainer
                         ? ((StmtContainer) stmt).getStmts().stream()
                         : Stream.of(stmt))
-            .filter(stmt -> stmt != null && stmt.getUses().contains(expr));
+            .filter(stmt -> stmt.getUses().contains(expr));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
             .filter(stmt -> stmt.getKey().getUses().contains(expr))
-            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()))
-            .filter(Objects::nonNull);
+            .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);
   }
