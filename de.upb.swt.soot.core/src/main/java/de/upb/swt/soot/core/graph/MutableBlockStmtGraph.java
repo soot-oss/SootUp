@@ -125,12 +125,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
     Map<ClassType, List<Trap>> overlappingTraps = new HashMap<>();
+
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
 
-      // possibly bad performance.. O(n * m)... sort trap data once: use some kind of -> O(1)*n with
-      // 2*m
-      // additional memory
+      // TODO: performance: change containsValue to a "int nextTrapIncidentIdx" condition and
+      // calculate next value them from the sorted traps ds
       boolean trapsChanged = false;
       if (trapstmtToIdx.containsValue(i)) {
         for (Trap trap : traps) {
@@ -146,10 +146,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 // not logical as a compiler output... but possible.
                 if (!isRemoved) {
                   final boolean overlappingTrapRemoved = overridenTrapHandlers.remove(trap);
-                  if (false && !overlappingTrapRemoved) {
-                    throw new IllegalStateException(
-                        "There is a Trap that should end here which was not applied before nor was not active due to a more specific traprange for that exeption! \n "
-                            + trap);
+                  if (!overlappingTrapRemoved) {
+                    // throw new IllegalStateException(   "There is a Trap that should end here
+                    // which was not applied before nor was not active due to a more specific
+                    // traprange for that exeption! \n "+ trap);
                   }
                 }
               }
@@ -190,7 +190,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                       (trapA, trapB) -> {
                         final Integer idxA = trapstmtToIdx.get(trapB.getEndStmt());
                         final Integer idxB = trapstmtToIdx.get(trapA.getEndStmt());
-                        return idxA - idxB;
+                        return idxB - idxA;
                       });
               if (index < 0) {
                 index = ~index;
