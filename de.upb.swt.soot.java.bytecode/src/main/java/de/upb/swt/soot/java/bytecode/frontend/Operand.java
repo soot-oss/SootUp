@@ -82,14 +82,20 @@ class Operand {
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
-    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
 
-    for (Expr expr : usedByExpr) {
+    for (Expr exprUsage : usedByExpr) {
       methodSource
-          .getStmtsThatUse(expr)
+          .getStmtsThatUse(exprUsage)
+          .map(methodSource::getLatestVersionOfStmt)
           .filter(stmt -> !usedByStmts.contains(stmt))
           .forEach(usedByStmts::add);
     }
+
+    if (value == stackOrValue()) return;
+
+    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
+
+    List<Stmt> stmtsToDelete = new ArrayList<>();
 
     for (int i = 0; i < usedByStmts.size(); i++) {
       Stmt oldUsage = usedByStmts.get(i);
@@ -98,13 +104,14 @@ class Operand {
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
       oldUsage.accept(replaceStmtVisitor);
-      Stmt stmtWithNewUsage = replaceStmtVisitor.getResult();
+      Stmt newUsage = replaceStmtVisitor.getResult();
 
-      if (stmtWithNewUsage != null && oldUsage != stmtWithNewUsage) {
-        methodSource.replaceStmt(oldUsage, stmtWithNewUsage);
-        usedByStmts.set(i, stmtWithNewUsage);
+      if (oldUsage != newUsage) {
+        methodSource.replaceStmt(oldUsage, newUsage);
+        usedByStmts.set(i, newUsage);
       }
     }
+    usedByStmts.removeAll(stmtsToDelete);
   }
 
   /** @return either the stack local allocated for this operand, or its value. */

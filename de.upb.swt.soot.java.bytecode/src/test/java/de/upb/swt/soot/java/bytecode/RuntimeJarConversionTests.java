@@ -45,7 +45,6 @@ public class RuntimeJarConversionTests {
 
   @Test
   public void testTrapsicwUnresolvedPermission() {
-    // FIXME: Issue #485
     execute(
         "<java.security.UnresolvedPermission: java.security.Permission resolve(java.security.Permission,java.security.cert.Certificate[])>");
   }
