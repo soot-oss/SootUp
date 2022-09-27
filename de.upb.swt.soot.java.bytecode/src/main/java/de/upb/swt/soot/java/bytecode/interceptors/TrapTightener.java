@@ -71,53 +71,49 @@ public class TrapTightener implements BodyInterceptor {
       Stmt firstUntrappedStmt = trap.getEndStmt();
       int idx = stmtsInPrintOrder.indexOf(firstUntrappedStmt);
       Stmt trapEnd = stmtsInPrintOrder.get(idx - 1);
+
       // initialize a new trap-scope
       Stmt newTrapBegin = null;
       Stmt newTrapEnd = null;
       // set begin of new trap-scope
       for (int i = stmtsInPrintOrder.indexOf(trapBegin); i < stmtsInPrintOrder.size(); i++) {
-        Stmt s = stmtsInPrintOrder.get(i);
-        if (mightThrow(graph, s, trap)) {
-          newTrapBegin = s;
-          break;
-        }
-        // If trap is a catch-all block and the current stmt has an active monitor, we need to keep
-        // the block
-        if (isCatchAll && monitoredStmts.contains(s)) {
-          newTrapBegin = s;
+        Stmt stmt = stmtsInPrintOrder.get(i);
+        if (mightThrow(graph, stmt, trap) || (isCatchAll && monitoredStmts.contains(stmt))) {
+          // if it might throw or if trap is a catch-all block and the current stmt has an active
+          // monitor, we need to keep the block
+          newTrapBegin = stmt;
           break;
         }
       }
+
+      Trap newTrap = null;
       // set end of new trap-scope
       // if new trap begin is null, then trap should be empty trap, so don't need to set trap end
       if (newTrapBegin != null) {
         for (int i = stmtsInPrintOrder.indexOf(trapEnd); i >= 0; i--) {
-          Stmt s = stmtsInPrintOrder.get(i);
-          if (mightThrow(graph, s, trap)) {
-            newTrapEnd = s;
-            break;
-          }
-          // If trap is a catch-all block and the current stmt has an active monitor, we need to
-          // keep the block
-          if (isCatchAll && monitoredStmts.contains(s)) {
-            newTrapEnd = s;
+          Stmt stmt = stmtsInPrintOrder.get(i);
+          if (mightThrow(graph, stmt, trap) || isCatchAll && monitoredStmts.contains(stmt)) {
+            // if it might throw or If trap is a catch-all block and the current stmt has an active
+            // monitor, we need to keep the block
+            newTrapEnd = stmt;
             break;
           }
         }
-      }
-      Trap newTrap = null;
-      if (newTrapBegin != null && (newTrapBegin != trapBegin || newTrapEnd != trapEnd)) {
-        if (newTrapEnd != trapEnd) {
-          int id = stmtsInPrintOrder.indexOf(newTrapEnd);
-          firstUntrappedStmt = stmtsInPrintOrder.get(id + 1);
+
+        final boolean trapEndChanged = newTrapEnd != trapEnd;
+        if (newTrapBegin != trapBegin || trapEndChanged) {
+          if (trapEndChanged) {
+            int id = stmtsInPrintOrder.indexOf(newTrapEnd);
+            firstUntrappedStmt = stmtsInPrintOrder.get(id + 1);
+          }
+          newTrap =
+              new Trap(
+                  trap.getExceptionType(), newTrapBegin, firstUntrappedStmt, trap.getHandlerStmt());
+          newTraps.add(newTrap);
         }
-        newTrap =
-            new Trap(
-                trap.getExceptionType(), newTrapBegin, firstUntrappedStmt, trap.getHandlerStmt());
       }
-      if (newTrap != null) {
-        newTraps.add(newTrap);
-      } else if (newTrapBegin != null) {
+
+      if (newTrap == null) {
         newTraps.add(trap);
       }
     }

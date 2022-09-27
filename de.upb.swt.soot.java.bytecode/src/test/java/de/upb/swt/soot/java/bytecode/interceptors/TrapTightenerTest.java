@@ -172,9 +172,8 @@ public class TrapTightenerTest {
     builder.setLocals(locals);
 
     // set graph
+    graph.addBlock(Arrays.asList(stmt1, stmt7, stmt10), Collections.singletonMap(exception, stmt6));
     graph.putEdge(startingStmt, stmt1);
-    graph.putEdge(stmt1, stmt7);
-    graph.putEdge(stmt7, stmt10);
     graph.putEdge(stmt10, stmt5);
     graph.putEdge(stmt6, stmt11);
     graph.putEdge(stmt11, stmt9);
@@ -182,14 +181,6 @@ public class TrapTightenerTest {
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
-
-    // build position
-    builder.setPosition(NoPositionInformation.getInstance());
-
-    // build trap
-    List<Trap> traps = new ArrayList<>();
-    traps.add(trap2);
-    builder.setTraps(traps);
 
     return builder.build();
   }
