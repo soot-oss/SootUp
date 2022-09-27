@@ -106,16 +106,26 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
+    PriorityQueue<Trap> trapStart =
+        new PriorityQueue<>(Comparator.comparingInt(t -> trapstmtToIdx.get(t.getBeginStmt())));
+    PriorityQueue<Trap> trapEnd =
+        new PriorityQueue<>(Comparator.comparingInt(t -> trapstmtToIdx.get(t.getEndStmt())));
+
     traps.forEach(
         trap -> {
-          trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
-          trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
+          final int beginIdx = stmts.indexOf(trap.getBeginStmt());
+          trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
+          trapStart.add(trap);
+
+          final int endIdx = stmts.indexOf(trap.getEndStmt());
+          trapstmtToIdx.put(trap.getEndStmt(), endIdx);
+          trapEnd.add(trap);
           trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
         });
 
     duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
 
-    traps.sort(getTrapComparator(trapstmtToIdx));
+    // traps.sort(getTrapComparator(trapstmtToIdx));
     /* debug print:
          traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
     */
@@ -130,77 +140,73 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // TODO: performance: change containsValue to a "int nextTrapIncidentIdx" condition and
       // calculate next value them from the sorted traps ds
       boolean trapsChanged = false;
-      if (trapstmtToIdx.containsValue(i)) {
-        for (Trap trap : traps) {
-          // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
-          if (stmt == trap.getEndStmt()) {
-            final ClassType exceptionType = trap.getExceptionType();
-            final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
-            final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
-            if (overridenTrapHandlers != null) {
-              if (!isRemoved && overridenTrapHandlers.size() > 0) {
-                // check if theres an overlapping trap that has a less specific TrapRange which is
-                // ending before it gets the active exception information again
-                // not logical as a compiler output... but possible.
-                overridenTrapHandlers.remove(trap);
-              }
+      Trap peek;
+      while ((peek = trapEnd.peek()) != null && peek.getEndStmt() == stmt) {
+        Trap trap = trapEnd.poll();
+        // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
+        final ClassType exceptionType = trap.getExceptionType();
+        final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
+        final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
+        if (overridenTrapHandlers != null) {
+          if (!isRemoved && overridenTrapHandlers.size() > 0) {
+            // check if theres an overlapping trap that has a less specific TrapRange which is
+            // ending before it gets the active exception information again
+            // not logical as a compiler output... but possible.
+            overridenTrapHandlers.remove(trap);
+          }
 
-              if (overridenTrapHandlers.size() > 0) {
-                currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
-              }
-            }
-
-            trapsChanged = true;
+          if (overridenTrapHandlers.size() > 0) {
+            currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
           }
         }
 
-        for (Trap trap : traps) {
-          if (stmt == trap.getBeginStmt()) {
-            final Trap existingTrapForException = currentTrapMap.get(trap.getExceptionType());
-            if (existingTrapForException == null) {
-              currentTrapMap.put(trap.getExceptionType(), trap);
-            } else {
-              final PriorityQueue<Trap> overridenTraps =
-                  overlappingTraps.computeIfAbsent(
-                      trap.getExceptionType(),
-                      k ->
-                          new PriorityQueue<Trap>(
-                              (trapA, trapB) -> {
-                                final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
-                                final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
-                                final int compA = idxA - idxB;
-                                if (compA != 0) {
-                                  return compA;
-                                } else {
-                                  final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
-                                  final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
-                                  return startIdxB - startIdxA;
-                                }
-                              }));
-
-              overridenTraps.add(existingTrapForException);
-              overridenTraps.add(trap);
-
-              // remove element which is the trap with the next ending traprange
-              Trap trapToApply = overridenTraps.poll();
-              currentTrapMap.put(trap.getExceptionType(), trapToApply);
-            }
-            trapsChanged = true;
-          }
-        }
-
-        // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
-        if (trapsChanged) {
-          exceptionToHandlerMap.clear();
-          currentTrapMap.forEach(
-              (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
-
-          /* debugprint
-           System.out.println("-- "+ i +" --");
-           currentTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
-          */
-        }
+        trapsChanged = true;
       }
+
+      while ((peek = trapStart.peek()) != null && peek.getBeginStmt() == stmt) {
+        Trap trap = trapStart.poll();
+        final Trap existingTrapForException = currentTrapMap.get(trap.getExceptionType());
+        if (existingTrapForException == null) {
+          currentTrapMap.put(trap.getExceptionType(), trap);
+        } else {
+          final PriorityQueue<Trap> overridenTraps =
+              overlappingTraps.computeIfAbsent(
+                  trap.getExceptionType(),
+                  k ->
+                      new PriorityQueue<Trap>(
+                          (trapA, trapB) -> {
+                            if (trapA.getEndStmt() == trapB.getEndStmt()) {
+                              final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
+                              final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
+                              return startIdxB - startIdxA;
+                            } else {
+                              final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
+                              final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
+                              return idxA - idxB;
+                            }
+                          }));
+
+          overridenTraps.add(existingTrapForException);
+          overridenTraps.add(trap);
+
+          // remove element which is the trap with the next ending traprange
+          Trap trapToApply = overridenTraps.poll();
+          currentTrapMap.put(trap.getExceptionType(), trapToApply);
+        }
+        trapsChanged = true;
+      }
+      // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
+      if (trapsChanged) {
+        exceptionToHandlerMap.clear();
+        currentTrapMap.forEach(
+            (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
+
+        /* debugprint
+         System.out.println("-- "+ i +" --");
+         currentTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
+        */
+      }
+
       addNode(stmt, exceptionToHandlerMap);
 
       if (stmt.fallsThrough()) {
