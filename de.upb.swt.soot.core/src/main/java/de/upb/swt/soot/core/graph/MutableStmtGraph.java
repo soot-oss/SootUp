@@ -53,7 +53,10 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
     addBlock(stmts, Collections.emptyMap());
   }
 
-  /** Modification of nodes (without manipulating any flows) */
+  /**
+   * Modification of nodes (without manipulating any flows; possible assigned exceptional flows stay
+   * the same as well)
+   */
   public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
 
   public abstract void insertBefore(

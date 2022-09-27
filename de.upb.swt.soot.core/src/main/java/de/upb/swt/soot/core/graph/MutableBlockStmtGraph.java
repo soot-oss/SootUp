@@ -482,18 +482,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       isExceptionalFlowDifferent = true;
     }
-    final MutableBasicBlock seperatedBlock;
+    final MutableBasicBlock separatedBlock;
     if (isExceptionalFlowDifferent) {
-      seperatedBlock = excludeStmtFromBlock(stmt, block);
+      separatedBlock = excludeStmtFromBlock(stmt, block);
 
       // apply exceptional flow info to seperated block
       exceptions.forEach(
           (type, trapHandler) -> {
             MutableBasicBlock trapHandlerBlock = getOrCreateBlock(trapHandler);
-            seperatedBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
-            trapHandlerBlock.addPredecessorBlock(seperatedBlock);
+            separatedBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+            trapHandlerBlock.addPredecessorBlock(separatedBlock);
           });
-      tryMergeIntoSurroundingBlocks(seperatedBlock);
+      tryMergeIntoSurroundingBlocks(separatedBlock);
     }
   }
 
@@ -522,6 +522,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         // to be seperated
         excludedFromOrigBlock = new MutableBasicBlock();
         addNodeToBlock(excludedFromOrigBlock, splitStmt);
+        // add blocks exceptional flows
+        block
+            .getExceptionalSuccessors()
+            .forEach(
+                (type, trapHandlerBlock) -> {
+                  excludedFromOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+                  trapHandlerBlock.addPredecessorBlock(excludedFromOrigBlock);
+                });
         blocks.add(excludedFromOrigBlock);
       }
 
@@ -542,7 +550,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                 });
         block.clearSuccessorBlocks();
 
-        // link lthird/leftover block with previous stmts from the seperated block
+        // link third/leftover block with previous stmts from the separated block
         linkBlocks(excludedFromOrigBlock, restOfOrigBlock);
         block.clearSuccessorBlocks();
 
@@ -774,7 +782,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       excludedBlock.replaceStmt(oldStmt, newStmt);
       stmtToBlock.remove(oldStmt);
       stmtToBlock.put(newStmt, excludedBlock);
-      System.out.println("d");
     } else {
       stmtToBlock.remove(oldStmt);
       blockOfOldStmt.replaceStmt(oldStmt, newStmt);
