@@ -22,7 +22,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  */
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -250,51 +249,39 @@ public class LocalPacker implements BodyInterceptor {
     return localToLocals;
   }
 
-  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
-  private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
-    builder.replaceStmt(oldStmt, newStmt);
-    adaptTraps(builder, oldStmt, newStmt);
-  }
-  /**
-   * Fit the modified stmt in Traps
-   *
-   * @param builder a bodybuilder, use it to modify Trap
-   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
-   * @param newStmt a modified stmt to replace the oldStmt.
-   */
-  private void adaptTraps(
-      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = trap.withBeginStmt(newStmt);
-        iterator.set(newTrap);
-      } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = trap.withEndStmt(newStmt);
-        iterator.set(newTrap);
-      }
-    }
-    builder.setTraps(traps);
-  }
-
-  private class TypeColorPair {
-    public Type type;
-    public int color;
+  private static class TypeColorPair {
+    private Type type;
+    private int color;
 
     public TypeColorPair(Type type, int color) {
+      this.setType(type);
+      this.setColor(color);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public void setType(Type type) {
       this.type = type;
+    }
+
+    public int getColor() {
+      return color;
+    }
+
+    public void setColor(int color) {
       this.color = color;
     }
 
     public int hashCode() {
-      return type.hashCode() + 1013 * color;
+      return getType().hashCode() + 1013 * getColor();
     }
 
     public boolean equals(Object other) {
       if (other instanceof TypeColorPair) {
-        return ((TypeColorPair) other).type.equals(this.type)
-            && ((TypeColorPair) other).color == this.color;
+        return ((TypeColorPair) other).getType().equals(this.getType())
+            && ((TypeColorPair) other).getColor() == this.getColor();
       } else {
         return false;
       }
