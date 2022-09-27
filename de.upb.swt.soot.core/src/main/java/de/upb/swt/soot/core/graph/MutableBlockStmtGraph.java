@@ -134,15 +134,15 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
     Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
 
+    Trap nextStartingTrap = trapStart.poll();
+    Trap nextEndingTrap = trapEnd.poll();
     for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
 
-      // TODO: performance: change containsValue to a "int nextTrapIncidentIdx" condition and
-      // calculate next value them from the sorted traps ds
       boolean trapsChanged = false;
-      Trap peek;
-      while ((peek = trapEnd.peek()) != null && peek.getEndStmt() == stmt) {
-        Trap trap = trapEnd.poll();
+      while (nextEndingTrap != null && nextEndingTrap.getEndStmt() == stmt) {
+        Trap trap = nextEndingTrap;
+        nextEndingTrap = trapEnd.poll();
         // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
         final ClassType exceptionType = trap.getExceptionType();
         final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
@@ -163,8 +163,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         trapsChanged = true;
       }
 
-      while ((peek = trapStart.peek()) != null && peek.getBeginStmt() == stmt) {
-        Trap trap = trapStart.poll();
+      while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == stmt) {
+        Trap trap = nextStartingTrap;
+        nextStartingTrap = trapStart.poll();
         final Trap existingTrapForException = currentTrapMap.get(trap.getExceptionType());
         if (existingTrapForException == null) {
           currentTrapMap.put(trap.getExceptionType(), trap);
