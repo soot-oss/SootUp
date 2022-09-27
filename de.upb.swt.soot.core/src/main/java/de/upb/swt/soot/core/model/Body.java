@@ -495,12 +495,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    @Deprecated
-    @Nonnull
-    public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
-      throw new UnsupportedOperationException("deprecated!");
-    }
-
     /** replace the oldStmt with newStmt in stmtGraph and branches */
     @Nonnull
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
