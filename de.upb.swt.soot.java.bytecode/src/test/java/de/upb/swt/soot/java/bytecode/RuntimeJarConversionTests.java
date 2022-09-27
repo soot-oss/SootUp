@@ -64,8 +64,13 @@ public class RuntimeJarConversionTests {
   }
 
   @Test
-  public void testReplaceStmtm() {
+  public void testBoundMethodHandle$FactoryGenerateConcreteBMHClass() {
     execute(
         "<java.lang.invoke.BoundMethodHandle$Factory: java.lang.Class generateConcreteBMHClass(java.lang.String)>");
+  }
+
+  @Test
+  public void testFileDescriptorCloseAll() {
+    execute("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
   }
 }

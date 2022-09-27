@@ -107,23 +107,25 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
     PriorityQueue<Trap> trapStart =
-        new PriorityQueue<>(Comparator.comparingInt(t -> trapstmtToIdx.get(t.getBeginStmt())));
+        new PriorityQueue<>(
+            Comparator.comparingInt((Trap t) -> trapstmtToIdx.get(t.getBeginStmt())));
     PriorityQueue<Trap> trapEnd =
-        new PriorityQueue<>(Comparator.comparingInt(t -> trapstmtToIdx.get(t.getEndStmt())));
+        new PriorityQueue<>(Comparator.comparingInt((Trap t) -> trapstmtToIdx.get(t.getEndStmt())));
 
     traps.forEach(
         trap -> {
-          final int beginIdx = stmts.indexOf(trap.getBeginStmt());
-          trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
-          trapStart.add(trap);
-
-          final int endIdx = stmts.indexOf(trap.getEndStmt());
-          trapstmtToIdx.put(trap.getEndStmt(), endIdx);
-          trapEnd.add(trap);
+          trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
+          trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
           trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
         });
 
     duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
+
+    traps.forEach(
+        trap -> {
+          trapStart.add(trap);
+          trapEnd.add(trap);
+        });
 
     // traps.sort(getTrapComparator(trapstmtToIdx));
     /* debug print:
@@ -192,7 +194,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
           // remove element which is the trap with the next ending traprange
           Trap trapToApply = overridenTraps.poll();
-          currentTrapMap.put(trap.getExceptionType(), trapToApply);
+          currentTrapMap.put(trapToApply.getExceptionType(), trapToApply);
         }
         trapsChanged = true;
       }
