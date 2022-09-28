@@ -496,6 +496,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final MutableBasicBlock separatedBlock;
     if (isExceptionalFlowDifferent) {
       separatedBlock = excludeStmtFromBlock(stmt, block);
+      separatedBlock.clearExceptionalSuccessorBlocks();
 
       // apply exceptional flow info to seperated block
       exceptions.forEach(
@@ -578,7 +579,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       } else {
         // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
-        // copy origin successors to second block as its the last part of the  block
+        // copy origin successors to second block as its now the last part of the origin block
         block
             .getSuccessors()
             .forEach(

@@ -17,11 +17,14 @@ import org.junit.experimental.categories.Category;
 public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
-  public void test() {
+  public void tryCatch() {
     SootMethod sootMethod = loadMethod(getMethodSignature("tryCatch"));
     assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatch());
+  }
 
-    sootMethod = loadMethod(getMethodSignature("tryCatchFinally"));
+  @Test
+  public void tryCatchFinally() {
+    SootMethod sootMethod = loadMethod(getMethodSignature("tryCatchFinally"));
     assertJimpleStmts(sootMethod, expectedBodyStmtsTryCatchFinally());
   }
 
