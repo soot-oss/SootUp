@@ -157,8 +157,7 @@ public class LocalPacker implements BodyInterceptor {
     // local with less interferences
     Map<Local, Set<Local>> localInterferenceMap = buildLocalInterferenceMap(builder);
     List<Local> sortedLocals = new ArrayList<>(builder.getLocals());
-    Collections.sort(
-        sortedLocals,
+    sortedLocals.sort(
         (o1, o2) -> {
           int num1 = localInterferenceMap.containsKey(o1) ? localInterferenceMap.get(o1).size() : 0;
           int num2 = localInterferenceMap.containsKey(o2) ? localInterferenceMap.get(o2).size() : 0;

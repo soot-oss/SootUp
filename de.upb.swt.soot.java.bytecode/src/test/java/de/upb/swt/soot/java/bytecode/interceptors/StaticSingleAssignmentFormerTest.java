@@ -2,10 +2,10 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.graph.MutableBlockStmtGraph;
-import de.upb.swt.soot.core.graph.MutableStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
+import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -15,8 +15,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,25 +48,25 @@ public class StaticSingleAssignmentFormerTest {
   Local stack4 = JavaJimple.newLocal("stack4", refType);
 
   Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt stmt4 =
+  Stmt assign1tol1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+  Stmt assign1tol2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
+  Stmt assign0tol3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
+  Stmt ifStmt =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l3, IntConstant.getInstance(100)), noStmtPositionInfo);
-  Stmt stmt5 =
+  Stmt ifStmt2 =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l2, IntConstant.getInstance(20)), noStmtPositionInfo);
-  Stmt stmt6 = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
-  Stmt stmt7 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  Stmt stmt8 =
+  Stmt returnStmt = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
+  Stmt assignl1tol2 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
+  Stmt assignl3plus1tol3 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(1)), noStmtPositionInfo);
-  Stmt stmt9 = JavaJimple.newAssignStmt(l2, l3, noStmtPositionInfo);
-  Stmt stmt10 =
+  Stmt assignl3tol2 = JavaJimple.newAssignStmt(l2, l3, noStmtPositionInfo);
+  Stmt assignl3plus2tol3 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(2)), noStmtPositionInfo);
-  Stmt stmt11 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   Stmt handlerStmt = JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
   Stmt l2eq0 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
@@ -209,30 +208,35 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createBody() {
-    Body.BodyBuilder builder = Body.builder();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
     builder.setLocals(locals);
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, stmt6);
-    builder.addFlow(stmt5, stmt7);
-    builder.addFlow(stmt5, stmt9);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt9, stmt10);
-    builder.addFlow(stmt8, stmt11);
-    builder.addFlow(stmt10, stmt11);
-    builder.addFlow(stmt11, stmt4);
+    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
+    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
+    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
 
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.initializeWith(
+        Arrays.asList(
+            startingStmt,
+            assign1tol1,
+            assign1tol2,
+            assign0tol3,
+            ifStmt,
+            ifStmt2,
+            assignl1tol2,
+            assignl3plus1tol3,
+            gotoStmt,
+            assignl3tol2,
+            assignl3plus2tol3,
+            returnStmt),
+        branchingMap,
+        Collections.emptyList());
 
     return builder;
   }
@@ -267,36 +271,40 @@ public class StaticSingleAssignmentFormerTest {
    * </pre>
    */
   private Body.BodyBuilder createTrapBody() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     Body.BodyBuilder builder = Body.builder(graph);
     builder.setMethodSignature(methodSignature);
 
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack4);
     builder.setLocals(locals);
+    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
+    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
+    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
 
-    // set graph
-    builder.addFlow(startingStmt, stmt1);
-    graph.addNode(stmt7, Collections.singletonMap(exception, handlerStmt));
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, stmt5);
-    builder.addFlow(stmt4, stmt6);
-    builder.addFlow(stmt5, stmt7);
-    builder.addFlow(stmt5, stmt9);
-    builder.addFlow(stmt7, stmt8);
-    builder.addFlow(stmt9, stmt10);
-    builder.addFlow(stmt8, stmt11);
-    builder.addFlow(stmt10, stmt11);
-    builder.addFlow(stmt11, stmt4);
+    graph.initializeWith(
+        Arrays.asList(
+            startingStmt,
+            assign1tol1,
+            assign1tol2,
+            assign0tol3,
+            ifStmt,
+            ifStmt2,
+            assignl1tol2,
+            assignl3plus1tol3,
+            gotoStmt,
+            assignl3tol2,
+            assignl3plus2tol3,
+            returnStmt),
+        branchingMap,
+        Collections.emptyList());
 
+    // add exception
+    graph.addNode(assignl1tol2, Collections.singletonMap(exception, handlerStmt));
     builder.addFlow(handlerStmt, l2eq0);
     builder.addFlow(l2eq0, goTo);
-    builder.addFlow(goTo, stmt8);
-
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    builder.addFlow(goTo, assignl3plus1tol3);
 
     return builder;
   }

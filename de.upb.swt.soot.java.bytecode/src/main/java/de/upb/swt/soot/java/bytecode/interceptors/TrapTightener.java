@@ -52,7 +52,8 @@ public class TrapTightener implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense.
+    // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
+    // #486
     if (true) {
       return;
     }

@@ -223,10 +223,21 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         int expectedBranchEntries =
             stmt.getExpectedSuccessorCount() - (stmt.fallsThrough() ? 1 : 0);
         if (targets == null || targets.size() != expectedBranchEntries) {
+          int targetCount;
+          if (targets == null) {
+            targetCount = 0;
+          } else {
+            targetCount = targets.size();
+          }
+
           throw new IllegalArgumentException(
               "The corresponding branchingMap entry for the BranchingStmt ('"
                   + stmt
-                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors.");
+                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
+                  + expectedBranchEntries
+                  + " but has "
+                  + targetCount
+                  + ".");
         }
 
         for (Stmt target : targets) {

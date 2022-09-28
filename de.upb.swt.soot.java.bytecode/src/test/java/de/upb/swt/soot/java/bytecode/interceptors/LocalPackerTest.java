@@ -13,6 +13,7 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.GraphVizExporter;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -207,6 +208,8 @@ public class LocalPackerTest {
   @Test
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
+
+    System.out.println(GraphVizExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);

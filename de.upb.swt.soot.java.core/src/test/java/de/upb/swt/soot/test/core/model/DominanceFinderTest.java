@@ -22,7 +22,7 @@ import org.junit.experimental.categories.Category;
 /** @author Zun Wang */
 @Category(Java8Test.class)
 @Ignore("ms: FIX IT")
-public class DominanceTest {
+public class DominanceFinderTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
