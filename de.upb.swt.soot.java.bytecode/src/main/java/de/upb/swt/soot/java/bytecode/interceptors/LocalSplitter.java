@@ -25,6 +25,8 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Body.BodyBuilder;
@@ -230,12 +232,8 @@ public class LocalSplitter implements BodyInterceptor {
             // 2.step:
             Set<Stmt> stmtsWithDests = new HashSet<>();
             for (Stmt handlerStmt : handlerStmts) {
-              List<Stmt> exceptionalPreds = graph.exceptionalPredecessors(handlerStmt);
-              for (Stmt exceptionalPred : exceptionalPreds) {
-
-                // FIXME: here changed sth from getDestTraps
+              for (Stmt exceptionalPred : graph.predecessors(handlerStmt)) {
                 Map<ClassType, Stmt> dests = graph.exceptionalSuccessors(exceptionalPred);
-
                 List<Stmt> destHandlerStmts = new ArrayList<>();
                 dests.forEach((key, dest) -> destHandlerStmts.add(dest));
                 if (destHandlerStmts.contains(handlerStmt)) {
@@ -396,10 +394,11 @@ public class LocalSplitter implements BodyInterceptor {
     queue.add(entryStmt);
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
-      final List<Stmt> predecessors = graph.predecessors(stmt);
-      if (predecessors.isEmpty()) {
+      if (stmt instanceof JIdentityStmt
+          && ((JIdentityStmt<?>) stmt).getRightOp() instanceof JCaughtExceptionRef) {
         handlerStmts.add(stmt);
       } else {
+        final List<Stmt> predecessors = graph.predecessors(stmt);
         queue.addAll(predecessors);
       }
     }

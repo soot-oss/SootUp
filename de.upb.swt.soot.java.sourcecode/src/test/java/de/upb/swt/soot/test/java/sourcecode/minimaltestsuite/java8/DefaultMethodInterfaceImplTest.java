@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
@@ -72,6 +73,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   /** TODO Update the source code once default methods in WALA are supported */
   @Ignore
+  @Test
   public void test() {
 
     assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());
