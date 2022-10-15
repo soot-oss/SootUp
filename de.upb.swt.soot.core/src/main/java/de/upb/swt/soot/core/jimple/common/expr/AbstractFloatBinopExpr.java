@@ -26,6 +26,7 @@ import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.TypeUtils;
 import de.upb.swt.soot.core.types.UnknownType;
 import javax.annotation.Nonnull;
 
@@ -43,7 +44,7 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Type op1t = op1.getType();
     Type op2t = op2.getType();
 
-    if (PrimitiveType.isIntLikeType(op1t) && PrimitiveType.isIntLikeType(op2t)) {
+    if (TypeUtils.isIntLikeType(op1t) && TypeUtils.isIntLikeType(op2t)) {
       return PrimitiveType.getInt();
     } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();

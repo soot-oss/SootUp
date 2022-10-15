@@ -56,14 +56,6 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
-  public static boolean isIntLikeType(Type t) {
-    return t == PrimitiveType.IntType.getInstance()
-        || t == PrimitiveType.ByteType.getInstance()
-        || t == PrimitiveType.ShortType.getInstance()
-        || t == PrimitiveType.CharType.getInstance()
-        || t == PrimitiveType.BooleanType.getInstance();
-  }
-
   @Nonnull
   public static ByteType getByte() {
     return ByteType.getInstance();

@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.TypeUtils;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
@@ -55,11 +56,11 @@ public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable
     Value op1 = getOp1();
     Value op2 = getOp2();
 
-    if (!PrimitiveType.isIntLikeType(op2.getType())) {
+    if (!TypeUtils.isIntLikeType(op2.getType())) {
       return UnknownType.getInstance();
     }
 
-    if (PrimitiveType.isIntLikeType(op1.getType())) {
+    if (TypeUtils.isIntLikeType(op1.getType())) {
       return PrimitiveType.getInt();
     }
     if (op1.getType().equals(PrimitiveType.getLong())) {
