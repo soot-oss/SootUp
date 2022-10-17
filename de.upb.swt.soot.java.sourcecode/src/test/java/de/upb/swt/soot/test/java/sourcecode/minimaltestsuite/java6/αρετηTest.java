@@ -17,7 +17,7 @@ public class αρετηTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "αρετηAsClassName", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "αρετηAsClassName", "void", Collections.emptyList());
   }
 
   /**

@@ -192,6 +192,7 @@ public class JimpleConverterUtil {
   @Nonnull
   public static JimpleParser createJimpleParser(CharStream charStream, Path path) {
     JimpleLexer lexer = new JimpleLexer(charStream);
+
     lexer.removeErrorListeners();
     lexer.addErrorListener(
         new BaseErrorListener() {

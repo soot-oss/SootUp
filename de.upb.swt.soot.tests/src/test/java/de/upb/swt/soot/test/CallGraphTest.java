@@ -7,11 +7,11 @@ import de.upb.swt.soot.callgraph.algorithm.AbstractCallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.algorithm.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -67,7 +67,7 @@ public class CallGraphTest {
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass<?> sc = view.getClass(mainClassSignature).get();
     Optional<SootMethod> m =
@@ -93,7 +93,7 @@ public class CallGraphTest {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
@@ -107,7 +107,7 @@ public class CallGraphTest {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "println", clazzType, "void", Collections.singletonList("java.lang.String"));
+            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }

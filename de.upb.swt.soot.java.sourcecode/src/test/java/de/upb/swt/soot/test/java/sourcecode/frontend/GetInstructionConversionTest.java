@@ -52,7 +52,7 @@ public class GetInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                "getA_X", declareClassSig, "int", Collections.emptyList()));
+                declareClassSig, "getA_X", "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

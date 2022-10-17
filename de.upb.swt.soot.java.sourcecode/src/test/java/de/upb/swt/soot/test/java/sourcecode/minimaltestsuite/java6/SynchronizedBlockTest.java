@@ -14,7 +14,7 @@ public class SynchronizedBlockTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "run", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "run", "void", Collections.emptyList());
   }
 
   /**  <pre>

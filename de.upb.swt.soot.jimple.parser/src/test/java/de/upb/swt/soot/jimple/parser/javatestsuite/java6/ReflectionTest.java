@@ -18,7 +18,7 @@ public class ReflectionTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "checkReflection", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "checkReflection", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

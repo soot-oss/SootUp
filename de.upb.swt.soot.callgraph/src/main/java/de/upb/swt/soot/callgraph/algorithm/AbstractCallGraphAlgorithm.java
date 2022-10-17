@@ -23,14 +23,14 @@ package de.upb.swt.soot.callgraph.algorithm;
  */
 
 import de.upb.swt.soot.callgraph.model.*;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.core.jimple.common.expr.*;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -244,8 +244,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 .equals(
                     JavaIdentifierFactory.getInstance()
                         .getMethodSignature(
-                            "main",
                             aClass.getType(),
+                            "main",
                             "void",
                             Collections.singletonList("java.lang.String[]")))) {
           mainMethods.add(method);

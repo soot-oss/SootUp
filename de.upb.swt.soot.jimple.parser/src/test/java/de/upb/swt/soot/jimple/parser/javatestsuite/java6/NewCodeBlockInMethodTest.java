@@ -17,7 +17,7 @@ public class NewCodeBlockInMethodTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "newCodeBlockInMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "newCodeBlockInMethod", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

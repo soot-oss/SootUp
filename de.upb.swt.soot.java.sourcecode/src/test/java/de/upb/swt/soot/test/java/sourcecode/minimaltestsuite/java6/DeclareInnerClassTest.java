@@ -24,12 +24,12 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodDisplayOuter", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "methodDisplayOuter", "void", Collections.emptyList());
   }
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "methodDisplayInner", innerClassType, "void", Collections.emptyList());
+        innerClassType, "methodDisplayInner", "void", Collections.emptyList());
   }
 
   @Test

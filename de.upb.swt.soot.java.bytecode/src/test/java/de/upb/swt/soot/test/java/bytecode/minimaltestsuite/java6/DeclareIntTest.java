@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class DeclareIntTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "declareIntMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "declareIntMethod", "void", Collections.emptyList());
   }
 
   /**

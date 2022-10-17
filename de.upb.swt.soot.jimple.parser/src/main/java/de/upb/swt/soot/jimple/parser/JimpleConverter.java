@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class JimpleConverter {
 
@@ -42,11 +43,12 @@ public class JimpleConverter {
       @Nonnull AnalysisInputLocation<?> inputlocation,
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    return run(
-        JimpleConverterUtil.createJimpleParser(charStream, sourcePath),
-        inputlocation,
-        sourcePath,
-        bodyInterceptors);
+
+    final JimpleParser jimpleParser =
+        JimpleConverterUtil.createJimpleParser(charStream, sourcePath);
+    jimpleParser.setErrorHandler(new BailErrorStrategy());
+
+    return run(jimpleParser, inputlocation, sourcePath, bodyInterceptors);
   }
 
   public OverridingClassSource run(
@@ -62,8 +64,13 @@ public class JimpleConverter {
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
 
-    ClassVisitor classVisitor = new ClassVisitor(sourcePath);
-    classVisitor.visit(parser.file());
+    ClassVisitor classVisitor;
+    try {
+      classVisitor = new ClassVisitor(sourcePath);
+      classVisitor.visit(parser.file());
+    } catch (ParseCancellationException ex) {
+      throw new ResolveException("Syntax Error", sourcePath, ex);
+    }
 
     return new OverridingClassSource(
         classVisitor.methods,
@@ -237,7 +244,7 @@ public class JimpleConverter {
         List<Type> params = util.getTypeList(method_subsignatureContext.type_list());
 
         MethodSignature methodSignature =
-            identifierFactory.getMethodSignature(Jimple.unescape(methodname), clazz, type, params);
+            identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
         builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =
@@ -252,8 +259,11 @@ public class JimpleConverter {
 
           // declare locals
           locals = new HashMap<>();
-          if (ctx.method_body().declaration() != null) {
-            for (JimpleParser.DeclarationContext it : ctx.method_body().declaration()) {
+          final JimpleParser.Method_body_contentsContext method_body_contentsContext =
+              ctx.method_body().method_body_contents();
+          if (method_body_contentsContext.declarations() != null) {
+            for (JimpleParser.DeclarationContext it :
+                method_body_contentsContext.declarations().declaration()) {
               final String typeStr = it.type().getText();
               Type localtype =
                   typeStr.equals("unknown") ? UnknownType.getInstance() : util.getType(typeStr);
@@ -288,14 +298,16 @@ public class JimpleConverter {
 
           // statements
           StmtVisitor stmtVisitor = new StmtVisitor(builder);
-          if (ctx.method_body().statement() != null) {
-            ctx.method_body().statement().forEach(stmtVisitor::visitStatement);
+          final JimpleParser.StatementsContext statements =
+              method_body_contentsContext.statements();
+          if (statements != null && statements.statement() != null) {
+            statements.statement().forEach(stmtVisitor::visitStatement);
           }
 
           // catch_clause
           List<Trap> traps = new ArrayList<>();
           final List<JimpleParser.Trap_clauseContext> trap_clauseContexts =
-              ctx.method_body().trap_clause();
+              method_body_contentsContext.trap_clauses().trap_clause();
           if (trap_clauseContexts != null) {
             for (JimpleParser.Trap_clauseContext it : trap_clauseContexts) {
               ClassType exceptionType = util.getClassType(it.exceptiontype.getText());
@@ -633,9 +645,9 @@ public class JimpleConverter {
             List<Type> bootstrapMethodRefParams = util.getTypeList(ctx.type_list());
             MethodSignature bootstrapMethodRef =
                 identifierFactory.getMethodSignature(
-                    ctx.unnamed_method_name.getText(),
                     identifierFactory.getClassType(
                         JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
+                    ctx.unnamed_method_name.getText(),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 

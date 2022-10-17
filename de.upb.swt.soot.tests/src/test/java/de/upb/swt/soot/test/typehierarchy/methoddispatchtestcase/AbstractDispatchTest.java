@@ -1,12 +1,12 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.methoddispatchtestcase;
+package de.upb.swt.soot.test.typehierarchy.methoddispatchtestcase;
 
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.MethodDispatchBase;
+import de.upb.swt.soot.test.typehierarchy.MethodDispatchBase;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
@@ -25,19 +25,19 @@ public class AbstractDispatchTest extends MethodDispatchBase {
 
     MethodSignature sootMethodA =
         identifierFactory.getMethodSignature(
-            "method", sootClassTypeA, "void", Collections.emptyList());
+            sootClassTypeA, "method", "void", Collections.emptyList());
     MethodSignature sootMethodB =
         identifierFactory.getMethodSignature(
-            "method", sootClassTypeB, "void", Collections.emptyList());
+            sootClassTypeB, "method", "void", Collections.emptyList());
     MethodSignature sootMethodC =
         identifierFactory.getMethodSignature(
-            "method", sootClassTypeC, "void", Collections.emptyList());
+            sootClassTypeC, "method", "void", Collections.emptyList());
 
     Set<MethodSignature> candidatesAbstract =
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                "method", sootClassTypeAbstract, "void", Collections.emptyList()));
+                sootClassTypeAbstract, "method", "void", Collections.emptyList()));
     assertTrue(candidatesAbstract.contains(sootMethodA));
     assertTrue(candidatesAbstract.contains(sootMethodB));
     assertTrue(candidatesAbstract.contains(sootMethodC));
@@ -46,7 +46,7 @@ public class AbstractDispatchTest extends MethodDispatchBase {
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                "method", sootClassTypeA, "void", Collections.emptyList()));
+                sootClassTypeA, "method", "void", Collections.emptyList()));
     assertTrue(candidatesSuper.contains(sootMethodB));
     assertTrue(candidatesSuper.contains(sootMethodC));
   }
