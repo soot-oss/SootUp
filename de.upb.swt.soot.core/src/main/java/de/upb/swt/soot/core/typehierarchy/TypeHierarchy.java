@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.typerhierachy;
+package de.upb.swt.soot.core.typehierarchy;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,7 +20,6 @@ package de.upb.swt.soot.core.typerhierachy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.List;

@@ -3,7 +3,7 @@ package de.upb.swt.soot.test.typehierarchy.viewtypehierarchytestcase;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.HashSet;
