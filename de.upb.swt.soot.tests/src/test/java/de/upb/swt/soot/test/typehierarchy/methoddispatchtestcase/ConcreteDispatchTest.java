@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.typehierarchy.methoddispatchtestcase;
 
+import static junit.framework.TestCase.*;
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
