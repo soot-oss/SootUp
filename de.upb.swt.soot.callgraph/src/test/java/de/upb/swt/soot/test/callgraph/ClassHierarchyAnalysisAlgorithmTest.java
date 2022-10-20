@@ -81,8 +81,8 @@ public class ClassHierarchyAnalysisAlgorithmTest
 
     MethodSignature methodE =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.E"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 

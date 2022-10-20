@@ -32,7 +32,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.SimpleAlias1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -76,7 +76,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Branching1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToInt =
         getLineNumberToLocalMap(targetMethod, "int", new ArrayList<>());
@@ -129,7 +129,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Parameter1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "test", mainClassSignature, "void", Collections.singletonList("benchmark.objects.A"));
+             mainClassSignature,"test", "void", Collections.singletonList("benchmark.objects.A"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     List<Local> params = new ArrayList<>();
     Map<Integer, Local> lineNumberToA =
@@ -178,7 +178,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Parameter2");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "test", mainClassSignature, "void", Collections.singletonList("benchmark.objects.A"));
+             mainClassSignature,"test", "void", Collections.singletonList("benchmark.objects.A"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     List<Local> params = new ArrayList<>();
     Map<Integer, Local> lineNumberToA =
@@ -231,7 +231,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Interprocedural1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -294,7 +294,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Interprocedural2");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -352,7 +352,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.ReturnValue1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -396,7 +396,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.ReturnValue2");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -447,7 +447,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.ReturnValue3");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToA =
         getLineNumberToLocalMap(targetMethod, "benchmark.objects.A", new ArrayList<>());
@@ -456,8 +456,8 @@ public class PointerBenchBasicTest extends SparkTestBase {
 
     MethodSignature idMethodSig =
         identifierFactory.getMethodSignature(
-            "id",
             mainClassSignature,
+            "id",
             "benchmark.objects.A",
             Collections.singletonList("benchmark.objects.A"));
     SootMethod idMethod = getTargetMethod(idMethodSig);
@@ -526,7 +526,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Loops1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "test", mainClassSignature, "void", Collections.emptyList());
+            mainClassSignature,"test", "void", Collections.emptyList());
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
     Map<Integer, Local> lineNumberToN =
         getLineNumberToLocalMap(targetMethod, "basic.Loops1$N", new ArrayList<>());
@@ -595,13 +595,13 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Loops2");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "test", mainClassSignature, "void", Collections.emptyList());
+             mainClassSignature,"test", "void", Collections.emptyList());
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
 
     JavaClassType NClassSignature = identifierFactory.getClassType("basic.Loops2$N");
     MethodSignature NMethodSig =
         identifierFactory.getMethodSignature(
-            "<init>", NClassSignature, "void", Collections.emptyList());
+            NClassSignature, "<init>", "void", Collections.emptyList());
     SootMethod NMethod = getTargetMethodFromClass(NMethodSig, NClassSignature);
 
     Map<Integer, Local> lineNumberToN =
@@ -682,7 +682,7 @@ public class PointerBenchBasicTest extends SparkTestBase {
     setUpPointerBench("basic.Recursion1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-            "test", mainClassSignature, "void", Collections.emptyList());
+             mainClassSignature,"test", "void", Collections.emptyList());
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
 
     Map<Integer, Local> lineNumberToN =

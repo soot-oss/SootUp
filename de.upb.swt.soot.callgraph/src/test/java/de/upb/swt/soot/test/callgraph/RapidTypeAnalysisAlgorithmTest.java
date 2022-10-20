@@ -42,8 +42,8 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature constructorE =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.E"),
+            "<init>",
             "void",
             Collections.emptyList());
 
@@ -77,8 +77,8 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature methodE =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.E"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 

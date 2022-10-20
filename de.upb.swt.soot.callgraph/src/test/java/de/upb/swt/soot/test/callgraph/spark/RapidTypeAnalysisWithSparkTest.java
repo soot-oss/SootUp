@@ -61,7 +61,7 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
+             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
     Optional<SootMethod> m = sc.getMethod(mainMethodSignature.getSubSignature());
@@ -84,57 +84,57 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.B"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.C"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorE =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.E"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.A"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.B"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.C"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.D"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodE =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.E"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
