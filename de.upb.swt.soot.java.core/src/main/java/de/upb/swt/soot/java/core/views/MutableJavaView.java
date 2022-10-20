@@ -55,7 +55,7 @@ public class MutableJavaView extends JavaView implements MutableView {
         Set<? extends JavaSootMethod> methods = clazz.getMethods();
         Set<SootMethod> filteredMethods = methods
                 .stream()
-                .filter(met -> met.getSignature().getSubSignature().equals(mss))
+                .filter(met -> !met.getSignature().getSubSignature().equals(mss))
                 .collect(Collectors.toSet());
         JavaSootClass newClazz = clazz.withMethods(filteredMethods);
 
@@ -71,6 +71,7 @@ public class MutableJavaView extends JavaView implements MutableView {
 
         Set<? extends JavaSootMethod> methods = clazz.getMethods();
         Set<SootMethod> newMethods = new HashSet<>(methods);
+        newMethods.add(method);
         JavaSootClass newClazz = clazz.withMethods(newMethods);
 
         this.replaceClass(clazz, newClazz);
