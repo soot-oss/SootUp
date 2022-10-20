@@ -23,6 +23,11 @@ package de.upb.swt.soot.callgraph;
  */
 
 import com.google.common.collect.Sets;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
