@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.typerhierachy;
+package de.upb.swt.soot.core.typehierarchy;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

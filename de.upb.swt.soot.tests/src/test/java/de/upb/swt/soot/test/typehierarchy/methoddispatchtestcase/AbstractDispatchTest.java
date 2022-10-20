@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
+import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.typehierarchy.MethodDispatchBase;
 import java.util.Collections;

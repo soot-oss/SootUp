@@ -6,7 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.typehierarchy.JavaTypeHierarchyTestBase;
 import java.util.Collections;
