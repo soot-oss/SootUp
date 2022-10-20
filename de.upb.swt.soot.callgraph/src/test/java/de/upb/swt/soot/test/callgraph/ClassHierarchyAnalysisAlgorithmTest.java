@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.callgraph;
 
+import static junit.framework.TestCase.*;
+
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
