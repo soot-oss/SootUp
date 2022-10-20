@@ -6,7 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.*;
 import org.junit.Test;

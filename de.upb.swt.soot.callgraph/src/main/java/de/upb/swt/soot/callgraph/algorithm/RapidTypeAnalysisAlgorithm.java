@@ -23,13 +23,14 @@ package de.upb.swt.soot.callgraph.algorithm;
  */
 
 import com.google.common.collect.Sets;
-import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.model.MutableCallGraph;
-import de.upb.swt.soot.core.jimple.common.expr.*;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
