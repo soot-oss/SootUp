@@ -28,8 +28,6 @@ import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
-import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -37,6 +35,8 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.MethodDispatchResolver;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.*;
@@ -72,7 +72,8 @@ public class RapidTypeAnalysisWithSpark extends AbstractCallGraphAlgorithm {
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     if (chaGraph.isEmpty()) {
-      ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+      ClassHierarchyAnalysisAlgorithm cha =
+          new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
       chaGraph = cha.initialize(entryPoints);
     }
     return constructCompleteCallGraph(view, entryPoints);

@@ -24,7 +24,6 @@ package de.upb.swt.soot.callgraph.algorithm;
 
 import com.google.common.collect.Sets;
 import de.upb.swt.soot.callgraph.model.CallGraph;
-import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;

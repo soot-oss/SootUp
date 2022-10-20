@@ -2,7 +2,6 @@ package de.upb.swt.soot.examples.callgraph;
 
 import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.algorithm.RapidTypeAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.MethodSignature;
