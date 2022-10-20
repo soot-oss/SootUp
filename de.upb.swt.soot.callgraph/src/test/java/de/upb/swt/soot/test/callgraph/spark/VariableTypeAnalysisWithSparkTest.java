@@ -63,7 +63,7 @@ public class VariableTypeAnalysisWithSparkTest
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
     Optional<SootMethod> m = sc.getMethod(mainMethodSignature.getSubSignature());

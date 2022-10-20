@@ -100,7 +100,7 @@ public class PointsToSetIntersectionTest extends SparkTestBase {
     setUpBasicTest("Test1");
     MethodSignature targetMethodSig =
         identifierFactory.getMethodSignature(
-             mainClassSignature,"go", "void", Collections.emptyList());
+            mainClassSignature, "go", "void", Collections.emptyList());
     SootMethod targetMethod = getTargetMethod(targetMethodSig);
 
     Map<Integer, Local> lineNumberToContainer =

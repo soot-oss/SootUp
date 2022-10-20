@@ -8,11 +8,11 @@ import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.RapidTypeAnalysisWithSpark;
 import de.upb.swt.soot.callgraph.spark.Spark;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
-import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
@@ -61,7 +61,7 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     SootClass sc = (SootClass) view.getClass(mainClassSignature).get();
     Optional<SootMethod> m = sc.getMethod(mainMethodSignature.getSubSignature());

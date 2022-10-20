@@ -62,7 +62,7 @@ public abstract class SparkTestBase {
     mainClassSignature = identifierFactory.getClassType(className);
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
-             mainClassSignature,"main", "void", Collections.singletonList("java.lang.String[]"));
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);

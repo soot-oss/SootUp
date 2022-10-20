@@ -5,8 +5,8 @@ import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
 import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
-import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;
@@ -31,7 +31,7 @@ public class PropagatorTest {
     List<String> parameters = new ArrayList<>();
     parameters.add("java.lang.String[]");
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("main", mainClassType, "void", parameters);
+        identifierFactory.getMethodSignature(mainClassType, "main", "void", parameters);
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     CallGraphAlgorithm algorithm = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
