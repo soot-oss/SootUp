@@ -25,7 +25,7 @@ package de.upb.swt.soot.callgraph.spark.solver;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;

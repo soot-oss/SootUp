@@ -35,7 +35,7 @@ import de.upb.swt.soot.callgraph.spark.solver.*;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.views.View;
 import java.util.HashSet;
 import java.util.Set;

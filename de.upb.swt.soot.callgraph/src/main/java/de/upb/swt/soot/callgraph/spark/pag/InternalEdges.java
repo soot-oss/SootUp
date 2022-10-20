@@ -24,7 +24,7 @@ package de.upb.swt.soot.callgraph.spark.pag;
 
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.*;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

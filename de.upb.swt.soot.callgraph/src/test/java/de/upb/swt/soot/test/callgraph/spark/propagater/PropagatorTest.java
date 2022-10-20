@@ -6,7 +6,7 @@ import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.callgraph.spark.builder.SparkOptions;
 import de.upb.swt.soot.callgraph.spark.pag.PointerAssignmentGraph;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.typerhierachy.ViewTypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.jimple.parser.JimpleAnalysisInputLocation;

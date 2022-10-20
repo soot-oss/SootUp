@@ -27,7 +27,7 @@ import de.upb.swt.soot.callgraph.spark.pag.nodes.AllocationNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.FieldReferenceNode;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.Node;
 import de.upb.swt.soot.callgraph.spark.pag.nodes.VariableNode;
-import de.upb.swt.soot.core.typerhierachy.TypeHierarchy;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.types.Type;
 import java.util.HashMap;
 import java.util.Map;
