@@ -1,4 +1,8 @@
 package de.upb.swt.soot.java.bytecode.interceptors.typeresolving;
+
+import de.upb.swt.soot.core.types.Type;
+import java.util.Collection;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,4 +24,9 @@ package de.upb.swt.soot.java.bytecode.interceptors.typeresolving;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-public interface IHierarchy {}
+public interface IHierarchy {
+
+  Collection<Type> getLeastCommonAncestor(Type a, Type b);
+
+  boolean isAncestor(Type ancestor, Type child);
+}
