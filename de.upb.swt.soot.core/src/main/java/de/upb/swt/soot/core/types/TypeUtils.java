@@ -21,9 +21,7 @@ package de.upb.swt.soot.core.types;
  * #L%
  */
 
-/**
- * @author Zun Wang
- * Some util-method for Type */
+/** @author Zun Wang Some util-methods for Type */
 public class TypeUtils {
   public static boolean isObjectLikeType(Type type) {
     return type.toString().equals("java.lang.Object")
