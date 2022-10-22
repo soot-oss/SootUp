@@ -38,6 +38,7 @@ public class BytecodeHierarchy implements IHierarchy {
   private ClassType object;
   private ClassType serializable;
   private ClassType cloneable;
+  private PrimitiveHierarchy primitiveHierarchy;
 
   public BytecodeHierarchy(View<? extends SootClass> view) {
     this.typeHierarchy = new ViewTypeHierarchy(view);
@@ -45,77 +46,58 @@ public class BytecodeHierarchy implements IHierarchy {
     object = factory.getClassType("java.lang.Object");
     serializable = factory.getClassType("java.io.Serializable");
     cloneable = factory.getClassType("java.lang.Cloneable");
+    primitiveHierarchy = new PrimitiveHierarchy();
   }
 
+  @Override
   public boolean isAncestor(Type ancestor, Type child) {
-
-    boolean isAncestor = PrimitiveHierarchy.isAncestor(ancestor, child);
-    if (!isAncestor && !(PrimitiveHierarchy.arePrimitives(ancestor, child))) {
+    boolean isAncestor = primitiveHierarchy.isAncestor(ancestor, child);
+    if (!isAncestor && !(primitiveHierarchy.arePrimitives(ancestor, child))) {
       if (ancestor.equals(child)) {
-        return true;
-        // if one of them is PrimitiveType, and another one is ReferenceType
+        isAncestor = true;
+      } else if (child instanceof BottomType) {
+        isAncestor = true;
+      } else if (ancestor instanceof BottomType) {
+        return false;
       } else if (ancestor instanceof PrimitiveType || child instanceof PrimitiveType) {
-        if (ancestor instanceof ClassType) {
-          String name = ((ClassType) ancestor).getFullyQualifiedName();
-          if (name.equals("java.lang.Object") || name.equals("java.io.Serializable")) {
-            return true;
-          }
-        }
-        PrimitiveType prim =
-            (PrimitiveType) ((ancestor instanceof PrimitiveType) ? ancestor : child);
-        ReferenceType ref =
-            (ReferenceType) ((ancestor instanceof PrimitiveType) ? child : ancestor);
-        isAncestor = isBoxOrUnbox(ref, prim);
-
+        return false;
+      } else if (child instanceof NullType) {
+        isAncestor = true;
       } else if (ancestor instanceof NullType) {
         return false;
-      } else if (ancestor instanceof BottomType) {
-        // todo: [zw] check later BottomType = NullType?
-        if (child instanceof NullType) {
-          isAncestor = true;
-        }
-      } else if (child instanceof NullType || child instanceof BottomType) {
-        isAncestor = true;
       } else if (child instanceof ClassType && ancestor instanceof ClassType) {
+
         isAncestor = canStoreType((ClassType) ancestor, (ClassType) child);
+
       } else if (child instanceof ArrayType && ancestor instanceof ClassType) {
-        String name = ((ClassType) ancestor).getFullyQualifiedName();
-        if (name.equals("java.lang.Object")
-            || name.equals("java.lang.Cloneable")
-            || name.equals("java.io.Serializable")) {
-          isAncestor = true;
-        }
+
+        isAncestor =
+            ancestor.equals(object) || ancestor.equals(serializable) || ancestor.equals(cloneable);
+
       } else if (child instanceof ArrayType && ancestor instanceof ArrayType) {
         ArrayType anArr = (ArrayType) ancestor;
         ArrayType chArr = (ArrayType) child;
+        Type anBase = anArr.getBaseType();
+        Type chBase = chArr.getBaseType();
         if (anArr.getDimension() == chArr.getDimension()) {
-          Type anBase = anArr.getBaseType();
-          Type chBase = chArr.getBaseType();
           if (anBase.equals(chBase)) {
             isAncestor = true;
           } else if (anBase instanceof ClassType && chBase instanceof ClassType) {
             isAncestor = canStoreType((ClassType) anBase, (ClassType) chBase);
           }
         } else if (anArr.getDimension() < chArr.getDimension()) {
-          if (anArr.getBaseType() instanceof ClassType) {
-            String name = ((ClassType) anArr.getBaseType()).getFullyQualifiedName();
-            if (name.equals("java.lang.Object")
-                || name.equals("java.lang.Cloneable")
-                || name.equals("java.io.Serializable")) {
-              isAncestor = true;
-            }
-          }
+          isAncestor =
+              anBase.equals(object) || anBase.equals(serializable) || anBase.equals(cloneable);
         }
       }
     }
     return isAncestor;
   }
 
+  @Override
   public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
     Collection<Type> ret = new HashSet<>();
-    if (PrimitiveHierarchy.arePrimitives(a, b)) {
-      return PrimitiveHierarchy.getLeastCommonAncestor(a, b);
-    } else if (a instanceof BottomType) {
+    if (a instanceof BottomType) {
       return Collections.singleton(b);
     } else if (b instanceof BottomType) {
       return Collections.singleton(a);
@@ -127,25 +109,26 @@ public class BytecodeHierarchy implements IHierarchy {
       return Collections.singleton(a);
     } else if (isAncestor(b, a)) {
       return Collections.singleton(b);
+    } else if (a instanceof PrimitiveType && b instanceof PrimitiveType) {
+      return primitiveHierarchy.getLeastCommonAncestor(a, b);
+    } else if (a instanceof PrimitiveType || b instanceof PrimitiveType) {
+      return Collections.emptySet();
     } else if (a instanceof ArrayType && b instanceof ArrayType) {
       Collection<Type> temp;
-      Type base_a = ((ArrayType) a).getBaseType();
-      Type base_b = ((ArrayType) b).getBaseType();
-      int dim_a = ((ArrayType) a).getDimension();
-      int dim_b = ((ArrayType) b).getDimension();
-      if (base_a instanceof PrimitiveType || base_b instanceof PrimitiveType) {
-        temp = Collections.emptySet();
-      } else if (dim_a != dim_b) {
+      Type et_a = ((ArrayType) a).getElementType();
+      Type et_b = ((ArrayType) b).getElementType();
+      if (et_a instanceof PrimitiveType || et_b instanceof PrimitiveType) {
         temp = Collections.emptySet();
       } else {
-        temp = getLeastCommonAncestor(base_a, base_b);
+        temp = getLeastCommonAncestor(et_a, et_b);
       }
       if (temp.isEmpty()) {
+        ret.add(object);
         ret.add(serializable);
         ret.add(cloneable);
       } else {
         for (Type type : temp) {
-          ret.add(factory.getArrayType(type, dim_a));
+          ret.add(TypeUtils.makeArrayType(type, 1));
         }
       }
     } else if (a instanceof ArrayType || b instanceof ArrayType) {
@@ -193,45 +176,8 @@ public class BytecodeHierarchy implements IHierarchy {
     return ret;
   }
 
-  private boolean isBoxOrUnbox(ReferenceType a, PrimitiveType b) {
-    boolean ret;
-    if (a instanceof ArrayType || a instanceof NullType) {
-      return false;
-    }
-    String name = ((ClassType) a).getFullyQualifiedName();
-    switch (name) {
-      case "java.lang.Boolean":
-        ret = b instanceof PrimitiveType.BooleanType;
-        break;
-      case "java.lang.Byte":
-        ret = b instanceof PrimitiveType.ByteType;
-        break;
-      case "java.lang.Short":
-        ret = b instanceof PrimitiveType.ShortType;
-        break;
-      case "java.lang.Character":
-        ret = b instanceof PrimitiveType.CharType;
-        break;
-      case "java.lang.Integer":
-        ret = b instanceof PrimitiveType.IntType;
-        break;
-      case "java.lang.Long":
-        ret = b instanceof PrimitiveType.LongType;
-        break;
-      case "java.lang.Float":
-        ret = b instanceof PrimitiveType.FloatType;
-        break;
-      case "java.lang.Double":
-        ret = b instanceof PrimitiveType.DoubleType;
-        break;
-      default:
-        ret = false;
-    }
-    return ret;
-  }
-
   private boolean canStoreType(ClassType ancestor, ClassType child) {
-    if (ancestor.getFullyQualifiedName().equals("java.lang.Object")) {
+    if (ancestor.equals(object)) {
       return true;
     } else {
       return typeHierarchy.subtypesOf(ancestor).contains(child);
