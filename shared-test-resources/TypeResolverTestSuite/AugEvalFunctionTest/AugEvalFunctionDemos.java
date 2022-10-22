@@ -1,12 +1,17 @@
+import java.util.*;
 
-public class ByteCodeTypeTest {
+public class AugEvalFunctionDemos {
 
     A field = new A();
     static int count = 0;
     static final String constant =" new A()";
 
-    /*test string constant*/
+    /*test constants*/
     public void constant(){
+        int i = 127;
+        i = 32111;
+        i = -129;
+        double d = 1.0;
         String s = "example";
     }
 
@@ -15,7 +20,6 @@ public class ByteCodeTypeTest {
         Class<?> a = A.class;
     }
 
-
     /*test condition expression*/
     public void condition(){
         int a = 1;
@@ -23,39 +27,29 @@ public class ByteCodeTypeTest {
         boolean c = a < b;
     }
 
-
-    /*test shift expression - shift expression*/
-    public void shiftL() {
+    /*test shift expression*/
+    public void shift() {
         int a = 1;
         long b = 1;
         long c = b << a;
+        int d = a << b;
     }
 
-    /*test shift expression - shift expression*/
-    public void shiftI() {
+    /*test logical expression*/
+    public void xor(){
         int a = 1;
-        long b = 1;
-        int c = a << b;
-    }
-
-    /*test int long binary expression - logical expression*/
-    public void xor1(){
-        boolean a = true;
-        boolean b = true;
-        boolean c =  a^b;
-    }
-
-    public void xor2(){
-        int a = 1;
-        long b = 2;
-        long c =  a^b;
+        int b = 1;
+        int c =  b^a;
+        long d = 1L;
+        long e =  b^d;
     }
 
     /*test int float binary expression*/
     public void add(){
         int a = 1;
-        long b = 1;
-        long c = a + b;
+        float b = 1;
+        float c = b + a;
+        a++;
     }
 
     /*test unitary expression - length*/
@@ -68,6 +62,16 @@ public class ByteCodeTypeTest {
     public boolean instanceOf(){
         A a = new A();
         return a instanceof A;
+    }
+
+    public void newArrayExpr(){
+        A[][] arr = new A[3][3];
+        A[] a = arr[1];
+    }
+
+    public void invokeExpr(){
+        A a = new A();
+        a.method();
     }
 
     public void caughtException1(){
@@ -86,18 +90,8 @@ public class ByteCodeTypeTest {
         }
     }
 
-    public void arrayRef(){
-        A[][] arr = new A[3][3];
-        A a = arr[1][1];
-    }
-
     public void fieldRef(){
         A newField = this.field;
         count ++ ;
-    }
-
-    public void invoke(){
-        A a = new A();
-        a.method();
     }
 }

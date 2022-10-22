@@ -37,12 +37,13 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.types.BottomType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 /** @author Zun Wang */
 public class AugEvalFunction {
-
   IdentifierFactory factory = JavaIdentifierFactory.getInstance();
   View view;
+  PrimitiveHierarchy primitiveHierarchy = new PrimitiveHierarchy();
 
   public AugEvalFunction(View view) {
     this.view = view;
@@ -52,14 +53,12 @@ public class AugEvalFunction {
    * This method is used to evaluate the type of the given value which the given stmt and body
    * belongs to.
    */
-  // todo[zw]: maybe delete the IntegerType, use PrimitiveType.isIntLikeType
-  public Type evaluate(Typing typing, Value value, Stmt stmt, Body body) {
+  public Type evaluate(@Nonnull Typing typing, Value value, Stmt stmt, Body body) {
     if (value instanceof Immediate) {
       if (value instanceof Local) {
         return typing.getType((Local) value);
         // if value instanceof Constant
-      } else if (value instanceof Constant) {
-        // todo[zw]: later check if necessary to divide them
+      } else {
         if (value instanceof IntConstant) {
           int val = ((IntConstant) value).getValue();
           if (val >= 0 && val < 2) {
@@ -94,72 +93,54 @@ public class AugEvalFunction {
         } else {
           throw new RuntimeException("Invaluable constant in AugEvalFunction: " + value);
         }
-      } else {
-        throw new RuntimeException("Invaluable constant in AugEvalFunction: " + value);
       }
     } else if (value instanceof Expr) {
       if (value instanceof AbstractBinopExpr) {
         Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, body);
         Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, body);
-
         if (value instanceof AbstractIntBinopExpr) {
-          return PrimitiveType.getInt();
-
+          if (value instanceof AbstractConditionExpr) {
+            return PrimitiveType.getBoolean();
+          } else {
+            return PrimitiveType.getByte();
+          }
         } else if (value instanceof AbstractIntLongBinopExpr) {
           if (value instanceof JShlExpr
               || value instanceof JShrExpr
               || value instanceof JUshrExpr) {
-            if (tl instanceof IntegerType && tr instanceof IntegerType) {
-              return PrimitiveType.getInt();
-            } else if (tl instanceof PrimitiveType.LongType && tr instanceof IntegerType) {
-              return PrimitiveType.getLong();
-            } else {
-              throw new RuntimeException("Invaluable expression in AugEvalFunction: " + value);
-            }
+            return (tl instanceof IntegerType) ? PrimitiveType.getInt() : tl;
           } else {
             if (tl instanceof IntegerType && tr instanceof IntegerType) {
-              return PrimitiveType.getInt();
-            } else if (tl instanceof PrimitiveType.LongType
-                && tr instanceof PrimitiveType.LongType) {
-              return PrimitiveType.getLong();
+              if (tl instanceof PrimitiveType.BooleanType) {
+                return (tr instanceof PrimitiveType.BooleanType) ? PrimitiveType.getBoolean() : tr;
+              } else if (tr instanceof PrimitiveType.BooleanType) {
+                return tl;
+              } else {
+                Collection<Type> set = primitiveHierarchy.getLeastCommonAncestor(tl, tr);
+                if (set.isEmpty()) {
+                  throw new RuntimeException(
+                      "Invaluable expression by using AugEvalFunction: " + value);
+                }
+                return set.iterator().next();
+              }
             } else {
-              throw new RuntimeException("Invaluable expression in AugEvalFunction: " + value);
+              return (tl instanceof PrimitiveType.LongType) ? PrimitiveType.getLong() : tr;
             }
           }
         } else if (value instanceof AbstractFloatBinopExpr) {
-          if (tl instanceof IntegerType && tr instanceof IntegerType) {
-            return PrimitiveType.getInt();
-          } else if (tl instanceof PrimitiveType.LongType && tr instanceof PrimitiveType.LongType) {
-            return PrimitiveType.getLong();
-          } else if (tl instanceof PrimitiveType.FloatType
-              && tr instanceof PrimitiveType.FloatType) {
-            return PrimitiveType.getFloat();
-          } else if (tl instanceof PrimitiveType.DoubleType
-              && tr instanceof PrimitiveType.DoubleType) {
-            return PrimitiveType.getDouble();
-          } else {
-            throw new RuntimeException("Invaluable expression in AugEvalFunction: " + value);
-          }
+          return (tl instanceof IntegerType) ? PrimitiveType.getInt() : tl;
         }
       } else if (value instanceof AbstractUnopExpr) {
         if (value instanceof JLengthExpr) {
           return PrimitiveType.getInt();
         } else {
           Type opt = evaluate(typing, ((AbstractUnopExpr) value).getOp(), stmt, body);
-          return (opt instanceof IntegerType) ? PrimitiveType.IntType.getInstance() : opt;
+          return (opt instanceof IntegerType) ? PrimitiveType.getInt() : opt;
         }
-      } else if (value instanceof AbstractInvokeExpr
-          || value instanceof JNewMultiArrayExpr
-          || value instanceof JNewArrayExpr
-          || value instanceof JCastExpr
-          || value instanceof JNewExpr
-          || value instanceof JInstanceOfExpr) {
-        return value.getType();
       } else {
-        throw new RuntimeException("Invaluable expression in AugEvalFunction: " + value);
+        return value.getType();
       }
     } else if (value instanceof Ref) {
-      // todo[zw]: one handle stmt to handle multiple types of traps
       if (value instanceof JCaughtExceptionRef) {
         Set<ClassType> exceptionTypes = getExceptionType(stmt, body);
         ClassType throwable = factory.getClassType("java.lang.Throwable");
@@ -188,7 +169,9 @@ public class AugEvalFunction {
       } else if (value instanceof JArrayRef) {
         Type type = typing.getType(((JArrayRef) value).getBase());
         if (type instanceof ArrayType) {
-          return ((ArrayType) type).getBaseType();
+          return ((ArrayType) type).getElementType();
+          // Because Object, Serializable and Cloneable are super types of any ArrayType, thus the
+          // base type of ArrayRef could be one of this three types
         } else if (type instanceof ClassType) {
           String name = ((ClassType) type).getFullyQualifiedName();
           Type retType;

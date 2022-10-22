@@ -1,6 +1,7 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors.typeresolving;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
@@ -22,14 +23,13 @@ import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.JavaSootMethod;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Zun Wang */
 @Category(Java8Test.class)
 public class AugEvalFunctionTest {
 
@@ -55,32 +55,64 @@ public class AugEvalFunctionTest {
             .addInputLocation(rtJar)
             .build();
     view = project.createOnDemandView();
-    classType = identifierFactory.getClassType("ByteCodeTypeTest");
+    classType = identifierFactory.getClassType("AugEvalFunctionDemos");
     clazz = view.getClass(classType).get();
     evalFunction = new AugEvalFunction(view);
   }
 
   @Test
   public void testImmediate() {
-    Type actual;
-    Type expected = identifierFactory.getClassType("java.lang.String");
+    Type actual, expected;
     Stmt stmt = null;
     Value value = null;
     setMethodBody("constant", "void");
     for (Stmt s : body.getStmts()) {
-      if (s.toString().equals("l1 = \"example\"")) {
-        value = s.getUses().get(0);
-        stmt = s;
+      String sn = s.toString();
+      switch (sn) {
+        case "l1 = 127":
+          value = s.getUses().get(0);
+          stmt = s;
+          expected = PrimitiveType.getInteger127();
+          actual = evalFunction.evaluate(typing, value, stmt, body);
+          Assert.assertEquals(expected, actual);
+          break;
+        case "l1 = 32111":
+          value = s.getUses().get(0);
+          stmt = s;
+          expected = PrimitiveType.getInteger32767();
+          actual = evalFunction.evaluate(typing, value, stmt, body);
+          Assert.assertEquals(expected, actual);
+          break;
+        case "l1 = -129":
+          value = s.getUses().get(0);
+          stmt = s;
+          expected = PrimitiveType.getShort();
+          actual = evalFunction.evaluate(typing, value, stmt, body);
+          Assert.assertEquals(expected, actual);
+          break;
+        case "l2 = 1.0":
+          value = s.getUses().get(0);
+          stmt = s;
+          expected = PrimitiveType.getDouble();
+          actual = evalFunction.evaluate(typing, value, stmt, body);
+          Assert.assertEquals(expected, actual);
+          break;
+        case "l4 = \"example\"":
+          value = s.getUses().get(0);
+          stmt = s;
+          expected = identifierFactory.getClassType("java.lang.String");
+          actual = evalFunction.evaluate(typing, value, stmt, body);
+          Assert.assertEquals(expected, actual);
+          break;
+        default:
       }
     }
-    actual = evalFunction.evaluate(typing, value, stmt, body);
-    Assert.assertEquals(expected, actual);
-
     setMethodBody("reflection", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
         value = s.getUses().get(0);
         stmt = s;
+        break;
       }
     }
     expected = identifierFactory.getClassType("java.lang.Class");
@@ -91,7 +123,7 @@ public class AugEvalFunctionTest {
   @Test
   public void testExpr() {
     Type actual;
-    Type expected = PrimitiveType.getInt();
+    Type expected = PrimitiveType.getBoolean();
     Stmt stmt = null;
     Value value = null;
     setMethodBody("condition", "void");
@@ -108,6 +140,122 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
+    // todo: [problem] body cannot be printed!!!
+    setMethodBody("shift", "void");
+    Map map = new HashMap();
+    map.put("l1", PrimitiveType.getByte());
+    map.put("l2", PrimitiveType.getLong());
+    Typing specTyping = createTyping(map);
+
+    for (Stmt s : body.getStmts()) {
+      if (s.toString().equals("l4 = l2 << l1")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractIntLongBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getLong();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+
+      if (s.toString().equals("l6 = l1 << $stack7")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractIntLongBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getInt();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+    }
+
+    setMethodBody("xor", "void");
+    map.clear();
+    map.put("l1", PrimitiveType.getBoolean());
+    map.put("l2", PrimitiveType.getBoolean());
+    map.put("l4", PrimitiveType.getLong());
+    specTyping = createTyping(map);
+    for (Stmt s : body.getStmts()) {
+      if (s.toString().equals("l3 = l2 ^ l1")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractIntLongBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getBoolean();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+
+      if (s.toString().equals("l6 = $stack8 ^ l4")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractIntLongBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getLong();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+    }
+
+    map.clear();
+    map.put("l1", PrimitiveType.getInteger1());
+    map.put("l2", PrimitiveType.getByte());
+    specTyping = createTyping(map);
+
+    for (Stmt s : body.getStmts()) {
+      if (s.toString().equals("l3 = l2 ^ l1")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractIntLongBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getByte();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+    }
+
+    setMethodBody("add", "void");
+    map.clear();
+    map.put("l1", PrimitiveType.getInteger1());
+    map.put("l2", PrimitiveType.getFloat());
+    specTyping = createTyping(map);
+
+    for (Stmt s : body.getStmts()) {
+      if (s.toString().equals("l3 = l2 + $stack4")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractFloatBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getFloat();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+
+      if (s.toString().equals("l1 = l1 + 1")) {
+        for (Value use : s.getUses()) {
+          if (use instanceof AbstractFloatBinopExpr) {
+            value = use;
+            stmt = s;
+          }
+        }
+        expected = PrimitiveType.getInt();
+        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        Assert.assertEquals(expected, actual);
+      }
+    }
+
     setMethodBody("length", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l2 = lengthof l1")) {
@@ -119,6 +267,7 @@ public class AugEvalFunctionTest {
         }
       }
     }
+    expected = PrimitiveType.getInt();
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
@@ -137,7 +286,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("arrayRef", "void");
+    setMethodBody("newArrayExpr", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
         for (Value use : s.getUses()) {
@@ -152,8 +301,9 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("invoke", "void");
+    setMethodBody("invokeExpr", "void");
     for (Stmt s : body.getStmts()) {
+      System.out.println(s);
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
         for (Value use : s.getUses()) {
           if (use instanceof AbstractInvokeExpr) {
@@ -246,5 +396,19 @@ public class AugEvalFunctionTest {
     Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
     body = method.getBody();
+  }
+
+  private Typing createTyping(Map<String, Type> map) {
+    Typing typing = new Typing(body.getLocals());
+    for (Local l : typing.getLocals()) {
+      // todo: [problem] body contains null local!!! (shift)
+      if (l == null) {
+        continue;
+      }
+      if (map.keySet().contains(l.getName())) {
+        typing.set(l, map.get(l.getName()));
+      }
+    }
+    return typing;
   }
 }
