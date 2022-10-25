@@ -58,7 +58,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
     Expr invokeExpr = stmt.getInvokeExpr();
-    exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
+    exprVisitor.init(oldUse, newUse);
     invokeExpr.accept(exprVisitor);
 
     if (exprVisitor.getResult() != invokeExpr) {
@@ -92,7 +92,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       if (oldUse == rValue) {
         setResult(stmt.withRValue(newUse));
       } else {
-        exprVisitor.init((Immediate) oldUse, (Immediate) newUse);
+        exprVisitor.init(oldUse, newUse);
         ((Expr) rValue).accept(exprVisitor);
         if (exprVisitor.getResult() != rValue) {
           setResult(stmt.withRValue(exprVisitor.getResult()));

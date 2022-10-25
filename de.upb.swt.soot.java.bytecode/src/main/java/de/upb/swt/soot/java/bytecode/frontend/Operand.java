@@ -25,7 +25,9 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.visitor.ReplaceUseStmtVisitor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -88,13 +90,6 @@ final class Operand {
           .filter(stmt -> !stmtUsages.contains(stmt))
           .forEach(stmtUsages::add);
     }
-    /*for(Stmt stmt : stmtUsages){
-      System.out.println(stmt);
-    }
-    System.out.println("----------------------");
-
-    System.out.println("oldUse: " + value);
-    System.out.println("newUse: " + stackOrValue());*/
 
     if (value == stackOrValue()) return;
 
@@ -104,45 +99,22 @@ final class Operand {
 
     for (int i = 0; i < stmtUsages.size(); i++) {
       Stmt oldUsage = stmtUsages.get(i);
-      // System.out.println("OldUsage: " + oldUsage);
 
       // resolve stmt in method source, it might not exist anymore!
-      Stmt oldUsageLatestVersion = methodSource.getLatestVersionOfStmt(oldUsage);
-      // System.out.println("OldUsageLatestVersion: " + oldUsage);
+      oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
-      if (oldUsageLatestVersion == null) {
-        stmtsToDelete.add(oldUsageLatestVersion);
+      if (oldUsage == null) {
+        stmtsToDelete.add(oldUsage);
       } else {
-        Stmt usage = null, newUsage = null;
-        Set<Value> usesLV = new HashSet<>(oldUsageLatestVersion.getUses());
-        Set<Value> uses = new HashSet<>(oldUsage.getUses());
-        if (usesLV.contains(value)) {
-          usage = oldUsageLatestVersion;
-        } else if (uses.contains(value)) {
-          usage = oldUsage;
-        } // else{
-        // System.out.println("CAN NOT UPDATE ANYMORE");
-        // throw new RuntimeException("The given stmt :" + oldUsageLatestVersion + " can not be
-        // replaced by " + value);
-        // }
-        if (usage != null) {
-          usage.accept(replaceStmtVisitor);
-          newUsage = replaceStmtVisitor.getResult();
-        } else {
-          newUsage = oldUsageLatestVersion;
-        }
+        oldUsage.accept(replaceStmtVisitor);
+        Stmt newUsage = replaceStmtVisitor.getResult();
 
-        // System.out.println("NewUsage: " + newUsage);
-
-        if (oldUsageLatestVersion != newUsage) {
-          methodSource.replaceStmt(oldUsageLatestVersion, newUsage);
+        if (oldUsage != newUsage) {
+          methodSource.replaceStmt(oldUsage, newUsage);
           stmtUsages.set(i, newUsage);
         }
-        // System.out.println(stmtUsages);
       }
-      // System.out.println();
     }
-    // System.out.println("**************************************************");
 
     stmtUsages.removeAll(stmtsToDelete);
   }
