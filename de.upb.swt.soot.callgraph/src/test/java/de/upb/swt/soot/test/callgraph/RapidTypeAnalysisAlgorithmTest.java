@@ -23,7 +23,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B, C and E We expect A.print(), B.print(), C.print() */
+    /**
+     * We expect constructors for B, C and E We expect A.print(), B.print(), C.print(), E.print()
+     * since B,C and E are instantiated and A is instantiated as super class of B and C
+     */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorB =
@@ -110,7 +113,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testRevisitMethod() {
-    /* We expect a call edge from RevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget and C.newTarget*/
+    /**
+     * We expect a call edge from RevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget
+     * and C.newTarget *
+     */
     CallGraph cg = loadCallGraph("Misc", "revisit.RevisitedMethod");
 
     MethodSignature alreadyVisitedMethod =
@@ -146,7 +152,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testRecursiveRevisitMethod() {
-    /* We expect a call edge from RecursiveRevisitedMethod.alreadyVisitedMethod to A.newTarget, B.newTarget and C.newTarget*/
+    /**
+     * We expect a call edge from RecursiveRevisitedMethod.alreadyVisitedMethod to A.newTarget,
+     * B.newTarget and C.newTarget *
+     */
     CallGraph cg = loadCallGraph("Misc", "revisitrecur.RecursiveRevisitedMethod");
 
     MethodSignature alreadyVisitedMethod =
