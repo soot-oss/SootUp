@@ -61,7 +61,6 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
   }
 
   @Nonnull
-  @Override
   public JimpleView createView(Scope s) {
     throw new NotImplementedException();
   }

@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
@@ -32,7 +31,6 @@ import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.core.views.MutableJavaView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

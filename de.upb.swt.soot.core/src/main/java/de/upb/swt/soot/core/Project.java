@@ -139,5 +139,4 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
       @Nonnull
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);
-
 }
