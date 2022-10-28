@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public class MutableJavaView extends JavaView implements MutableView {
-  private final List<ViewChangeListener> changeListener = new LinkedList<>();
+  private final List<ViewChangeListener> changeListeners = new LinkedList<>();
 
   public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
     super(project);
@@ -25,7 +25,7 @@ public class MutableJavaView extends JavaView implements MutableView {
       System.out.println("Class " + classType + " already exists in view.");
       return;
     }
-    this.cache.put(classType, clazz);
+    this.cache.putIfAbsent(classType, clazz);
     this.fireAddition(clazz);
   }
 
@@ -84,34 +84,34 @@ public class MutableJavaView extends JavaView implements MutableView {
 
   @Override
   public void addChangeListener(ViewChangeListener listener) {
-    changeListener.add(listener);
+    changeListeners.add(listener);
   }
 
   @Override
   public void removeChangeListener(ViewChangeListener listener) {
-    changeListener.remove(listener);
+    changeListeners.remove(listener);
   }
 
   private void fireAddition(JavaSootClass clazz) {
-    for (ViewChangeListener viewChangeListener : changeListener) {
+    for (ViewChangeListener viewChangeListener : changeListeners) {
       viewChangeListener.classAdded(clazz);
     }
   }
 
   private void fireAddition(JavaSootMethod method) {
-    for (ViewChangeListener viewChangeListener : changeListener) {
+    for (ViewChangeListener viewChangeListener : changeListeners) {
       viewChangeListener.methodAdded(method);
     }
   }
 
   private void fireRemoval(JavaSootClass clazz) {
-    for (ViewChangeListener viewChangeListener : changeListener) {
+    for (ViewChangeListener viewChangeListener : changeListeners) {
       viewChangeListener.classRemoved(clazz);
     }
   }
 
   private void fireRemoval(JavaSootMethod method) {
-    for (ViewChangeListener viewChangeListener : changeListener) {
+    for (ViewChangeListener viewChangeListener : changeListeners) {
       viewChangeListener.methodRemoved(method);
     }
   }

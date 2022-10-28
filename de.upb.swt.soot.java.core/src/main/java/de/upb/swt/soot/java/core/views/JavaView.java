@@ -51,7 +51,6 @@ import javax.annotation.Nonnull;
  */
 public class JavaView extends AbstractView<JavaSootClass> {
 
-  @Nonnull private final Project<JavaSootClass, ? extends JavaView> project;
   @Nonnull protected final Map<ClassType, JavaSootClass> cache = new HashMap<>();
 
   protected volatile boolean isFullyResolved = false;
@@ -79,7 +78,6 @@ public class JavaView extends AbstractView<JavaSootClass> {
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-    this.project = project;
   }
 
   @Nonnull

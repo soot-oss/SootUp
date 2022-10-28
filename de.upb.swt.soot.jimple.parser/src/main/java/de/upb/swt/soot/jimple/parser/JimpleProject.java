@@ -60,8 +60,4 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
     return new JimpleView(this, classLoadingOptionsSpecifier);
   }
 
-  @Nonnull
-  public JimpleView createView(Scope s) {
-    throw new NotImplementedException();
-  }
 }
