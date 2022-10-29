@@ -475,7 +475,7 @@ public class Body implements Copyable {
     public BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
-      setLocals(body.getLocals());
+      setLocals(new LinkedHashSet<>(body.getLocals()));
       setPosition(body.getPosition());
       bg = new BlockGraph(body.getStmtGraph());
       ecfg = bg.getStmtGraph();
@@ -564,6 +564,12 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder removeTrap(@Nonnull Trap trap) {
       ecfg.removeTrap(trap);
+      return this;
+    }
+
+    @Nonnull
+    public BodyBuilder insertStmt(@Nonnull Stmt stmt, Stmt successor) {
+      ecfg.insertNode(stmt, successor);
       return this;
     }
 
