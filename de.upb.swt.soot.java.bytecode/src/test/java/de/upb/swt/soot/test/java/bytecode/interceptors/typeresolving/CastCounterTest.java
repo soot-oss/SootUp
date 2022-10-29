@@ -1,9 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors.typeresolving;
 
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -115,8 +112,6 @@ public class CastCounterTest {
   @Test
   public void testInvokeStmtWithNewCasts() {
     setMethod("invokeStmt", voidType, Collections.emptyList());
-
-
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -127,51 +122,50 @@ public class CastCounterTest {
     Typing typing = createTyping(map);
     CastCounter counter = new CastCounter(body, function, hierarchy);
     body = counter.insertCastStmts(typing);
-    System.out.println(body);
     Assert.assertTrue(counter.getCastCount() == 3);
-    Assert.assertTrue(counter.getNewLocals().size() == 4);
-    Assert.assertEquals(body.toString(), "{\n" +
-            "    unknown l0, l1, l2, l3, $stack4, $stack5;\n" +
-            "    integer1 #l0;\n" +
-            "    long #l1;\n" +
-            "    int #l2;\n" +
-            "    Sub2 #l3;\n" +
-            "\n" +
-            "\n" +
-            "    l0 := @this: CastCounterDemos;\n" +
-            "\n" +
-            "    $stack4 = new Sub1;\n" +
-            "\n" +
-            "    specialinvoke $stack4.<Sub1: void <init>()>();\n" +
-            "\n" +
-            "    l1 = $stack4;\n" +
-            "\n" +
-            "    #l0 = 1;\n" +
-            "\n" +
-            "    #l1 = (long) #l0;\n" +
-            "\n" +
-            "    l2 = #l1;\n" +
-            "\n" +
-            "    $stack5 = new Sub2;\n" +
-            "\n" +
-            "    specialinvoke $stack5.<Sub2: void <init>()>();\n" +
-            "\n" +
-            "    l3 = $stack5;\n" +
-            "\n" +
-            "    #l2 = (int) l2;\n" +
-            "\n" +
-            "    #l3 = (Sub2) l3;\n" +
-            "\n" +
-            "    virtualinvoke l1.<Super1: void m(int,Sub2)>(#l2, #l3);\n" +
-            "\n" +
-            "    return;\n" +
-            "}\n");
+    Assert.assertEquals(
+        body.toString(),
+        "{\n"
+            + "    unknown l0, l1, l2, l3, $stack4, $stack5;\n"
+            + "    integer1 #l0;\n"
+            + "    long #l1;\n"
+            + "    int #l2;\n"
+            + "    Sub2 #l3;\n"
+            + "\n"
+            + "\n"
+            + "    l0 := @this: CastCounterDemos;\n"
+            + "\n"
+            + "    $stack4 = new Sub1;\n"
+            + "\n"
+            + "    specialinvoke $stack4.<Sub1: void <init>()>();\n"
+            + "\n"
+            + "    l1 = $stack4;\n"
+            + "\n"
+            + "    #l0 = 1;\n"
+            + "\n"
+            + "    #l1 = (long) #l0;\n"
+            + "\n"
+            + "    l2 = #l1;\n"
+            + "\n"
+            + "    $stack5 = new Sub2;\n"
+            + "\n"
+            + "    specialinvoke $stack5.<Sub2: void <init>()>();\n"
+            + "\n"
+            + "    l3 = $stack5;\n"
+            + "\n"
+            + "    #l2 = (int) l2;\n"
+            + "\n"
+            + "    #l3 = (Sub2) l3;\n"
+            + "\n"
+            + "    virtualinvoke l1.<Super1: void m(int,Sub2)>(#l2, #l3);\n"
+            + "\n"
+            + "    return;\n"
+            + "}\n");
   }
 
   @Test
   public void testAssignStmtWithNewCasts() {
     setMethod("assignStmt", voidType, Collections.emptyList());
-    System.out.println(body);
 
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
@@ -181,10 +175,32 @@ public class CastCounterTest {
     Typing typing = createTyping(map);
     CastCounter counter = new CastCounter(body, function, hierarchy);
     body = counter.insertCastStmts(typing);
-
-    //Assert.assertTrue(counter.getCastCount() == 5);
-    System.out.println(body);
-
+    Assert.assertTrue(counter.getCastCount() == 2);
+    Assert.assertEquals(
+        body.toString(),
+        "{\n"
+            + "    unknown l0, l1, l2, $stack3;\n"
+            + "    Super1[] #l0, #l1;\n"
+            + "\n"
+            + "\n"
+            + "    l0 := @this: CastCounterDemos;\n"
+            + "\n"
+            + "    l1 = newarray (Super1)[10];\n"
+            + "\n"
+            + "    $stack3 = new Sub1;\n"
+            + "\n"
+            + "    specialinvoke $stack3.<Sub1: void <init>()>();\n"
+            + "\n"
+            + "    #l0 = (Super1[]) l1;\n"
+            + "\n"
+            + "    #l0[0] = $stack3;\n"
+            + "\n"
+            + "    #l1 = (Super1[]) l1;\n"
+            + "\n"
+            + "    l2 = #l1[2];\n"
+            + "\n"
+            + "    return;\n"
+            + "}\n");
   }
 
   private void setMethod(String methodName, Type returnType, List<Type> paras) {

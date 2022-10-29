@@ -30,16 +30,14 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
   private final AugEvalFunction evalFunction;
   private final BytecodeHierarchy hierarchy;
   private Typing typing;
-  private final Body body;
+  private Body body;
   private final IdentifierFactory factory = JavaIdentifierFactory.getInstance();
   private int castCount = 0;
   private boolean countOnly;
-  private Map<Value, Value> changedArrayRef = new HashMap<>();
+  private Map<Stmt, Map<Value, Value>> changedValues = new HashMap<>();
   public LinkedHashSet<Local> newLocals = new LinkedHashSet<>();
-  public Map<Stmt, Deque<Stmt>> succ2CastStmts = new HashMap<>();
+  private int newLocalsCount = 0;
   public Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
-
-
 
   private static final Logger logger = LoggerFactory.getLogger(CastCounter.class);
 
@@ -59,7 +57,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
     return this.castCount;
   }
 
-  public int getCastCount(){
+  public int getCastCount() {
     return this.castCount;
   }
 
@@ -67,28 +65,17 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
     this.castCount = 0;
     this.countOnly = false;
     // TODO: modifiers later must be added
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    // builder = Body.builder(body, Collections.emptySet());
     this.typing = typing;
     List<Stmt> stmts = new ArrayList<>(body.getStmts());
-    for (Stmt stmt : stmts) {
-      stmt.accept(this);
+    int size = stmts.size();
+    for (int i = 0; i < size; i++) {
+      stmts.get(i).accept(this);
     }
-    for (Local local : newLocals) {
-      builder.addLocal(local);
-    }
-    for (Stmt stmt : succ2CastStmts.keySet()) {
-      Deque<Stmt> stack = new ArrayDeque<>(succ2CastStmts.get(stmt));
-      while(!stack.isEmpty()){
-        builder.insertStmt(stack.pop(), stmt);
-      }
-    }
-    for (Stmt stmt : stmt2NewStmt.keySet()) {
-      builder.replaceStmt(stmt, stmt2NewStmt.get(stmt));
-    }
-    return builder.build();
+    return this.body;
   }
 
-  public LinkedHashSet<Local> getNewLocals(){
+  public LinkedHashSet<Local> getNewLocals() {
     return this.newLocals;
   }
 
@@ -149,7 +136,6 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
       type_lhs = arrayType.getElementType();
       count(base, arrayType, stmt);
       count(lhs, type_lhs, stmt);
-      count(rhs, type_lhs, stmt);
     } else if (lhs instanceof JFieldRef) {
       if (lhs instanceof JInstanceFieldRef) {
         count(
@@ -187,7 +173,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
                 Value value = ((JAssignStmt) s).getRightOp();
                 if (value instanceof JNewArrayExpr) {
                   sel = selectType(sel, ((JNewArrayExpr) value).getBaseType(), s);
-                } else if(value instanceof JNewMultiArrayExpr){
+                } else if (value instanceof JNewMultiArrayExpr) {
                   sel = selectType(sel, ((JNewMultiArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof Local) {
                   worklist.add(new StmtLocalPair(s, (Local) value));
@@ -206,7 +192,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
       Type type_rhs = arrayType.getElementType();
       count(base, arrayType, stmt);
       count(rhs, type_rhs, stmt);
-      //count(rhs, type_lhs, stmt);
+      count(rhs, type_lhs, stmt);
     } else if (rhs instanceof JInstanceFieldRef) {
       count(
           ((JInstanceFieldRef) rhs).getBase(),
@@ -235,7 +221,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
       count(rhs, type_lhs, stmt);
     } else if (rhs instanceof JNegExpr) {
       count(((JNegExpr) rhs).getOp(), type_lhs, stmt);
-    } else if(rhs instanceof JNewExpr){
+    } else if (rhs instanceof JNewExpr) {
       count(rhs, type_lhs, stmt);
     } else if (rhs instanceof Constant) {
       if (!(rhs instanceof NullConstant)) {
@@ -276,70 +262,63 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
 
   /** This method is used to check weather a value in a stmt need a cast. */
   public void count(Value value, Type stdType, Stmt stmt) {
-    Type evaType = evalFunction.evaluate(typing, value, stmt, body);
-    if (hierarchy.isAncestor(stdType, evaType)) {
-      return;
-    }
-    this.castCount++;
-
-    if (!countOnly) {
-      //update the stmt to the newest version
-      Stmt updatedStmt = stmt;
-      if(stmt2NewStmt.keySet().contains(stmt)){
-        Stmt newestVersion = stmt2NewStmt.get(stmt);
-        if(newestVersion != null){
-          updatedStmt = newestVersion;
+    if (countOnly) {
+      Type evaType = evalFunction.evaluate(typing, value, stmt, body);
+      if (hierarchy.isAncestor(stdType, evaType)) {
+        return;
+      }
+      this.castCount++;
+    } else {
+      Stmt oriStmt = stmt;
+      Value oriValue = value;
+      Stmt updatedStmt = stmt2NewStmt.get(stmt);
+      if (updatedStmt != null) {
+        stmt = stmt2NewStmt.get(stmt);
+      }
+      Map<Value, Value> m = changedValues.get(oriStmt);
+      if (m != null) {
+        Value updatedValue = m.get(value);
+        if (updatedValue != null) {
+          value = updatedValue;
         }
       }
-      //try to specify the type of the object-like local
-      /*if(stmt.containsArrayRef() && stmt.getArrayRef().getBase()==value && stmt instanceof AbstractDefinitionStmt){
-        Value leftOp = ((AbstractDefinitionStmt) stmt).getLeftOp();
-        if(leftOp instanceof Local && stdType instanceof ArrayType){
-          Type baseType = typing.getType((Local) leftOp);
-          if(TypeUtils.isObjectLikeType(baseType)){
-            typing.set((Local) leftOp, ((ArrayType) stdType).getElementType());
-          }
-        }
-      }*/
-      Value focusValue = value;
+      Type evaType = evalFunction.evaluate(typing, value, stmt, body);
+      if (hierarchy.isAncestor(stdType, evaType)) {
+        return;
+      }
+      this.castCount++;
+      Body.BodyBuilder builder = new Body.BodyBuilder(body, Collections.emptySet());
+
       Local old_local;
       if (value instanceof Local) {
         old_local = (Local) value;
       } else {
-        if(value instanceof JArrayRef && changedArrayRef.containsKey(value)){
-          focusValue = changedArrayRef.get(value);
-        }
         old_local = generateTempLocal(evaType);
-        newLocals.add(old_local);
+        builder.addLocal(old_local);
         this.typing.set(old_local, evaType);
         // todo: later position info should be adjusted
         JAssignStmt newAssign = JavaJimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-        addNewStmtsInMap(stmt, newAssign);
+        builder.insertStmt(newAssign, stmt);
       }
       Local new_local = generateTempLocal(stdType);
-      newLocals.add(new_local);
+      builder.addLocal(new_local);
       this.typing.set(new_local, stdType);
+      addUpdatedValue(oriValue, new_local, oriStmt);
       // todo: later position info should be adjusted
       JAssignStmt newCast =
           JavaJimple.newAssignStmt(
               new_local, JavaJimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-      addNewStmtsInMap(stmt, newCast);
+      builder.insertStmt(newCast, stmt);
+
       Stmt newStmt;
       if (stmt.getUses().contains(value)) {
-        newStmt = BodyUtils.withNewUse(updatedStmt, focusValue, new_local);
-        if(stmt.containsArrayRef() && stmt instanceof JAssignStmt){
-          Value leftOp = ((JAssignStmt) stmt).getLeftOp();
-          Value rightOp = ((JAssignStmt) stmt).getRightOp();
-          if(leftOp instanceof JArrayRef && leftOp.getUses().contains(value)){
-            this.changedArrayRef.put(leftOp, ((JAssignStmt) newStmt).getLeftOp());
-          }else if(rightOp instanceof JArrayRef && rightOp.getUses().contains(value)){
-            this.changedArrayRef.put(rightOp, ((JAssignStmt) newStmt).getRightOp());
-          }
-        }
+        newStmt = BodyUtils.withNewUse(stmt, value, new_local);
       } else {
-        newStmt = BodyUtils.withNewDef(updatedStmt, new_local);
+        newStmt = BodyUtils.withNewDef(stmt, new_local);
       }
-      this.stmt2NewStmt.put(stmt, newStmt);
+      builder.replaceStmt(stmt, newStmt);
+      this.stmt2NewStmt.put(oriStmt, newStmt);
+      this.body = builder.build();
     }
   }
 
@@ -358,7 +337,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
     if (preType == null || preType.equals(newType)) {
       return newType;
     }
-    Type sel = null;
+    Type sel;
     if (TypeUtils.getValueBitSize(newType) > TypeUtils.getValueBitSize(preType)) {
       sel = newType;
     } else {
@@ -391,7 +370,7 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
   private void handleBinopExpr(AbstractBinopExpr expr, Type type, Stmt stmt) {
     Value op1 = expr.getOp1();
     Value op2 = expr.getOp2();
-    Type t1= evalFunction.evaluate(typing, op1, stmt, body);
+    Type t1 = evalFunction.evaluate(typing, op1, stmt, body);
     Type t2 = evalFunction.evaluate(typing, op2, stmt, body);
     if (expr instanceof AbstractConditionExpr
         || expr instanceof AbstractFloatBinopExpr
@@ -399,7 +378,8 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
         || expr instanceof JShrExpr
         || expr instanceof JUshrExpr) {
       if (expr instanceof JEqExpr || expr instanceof JNeExpr) {
-        if (!(t1 instanceof PrimitiveType.BooleanType && t2 instanceof PrimitiveType.BooleanType) && t1 instanceof IntegerType) {
+        if (!(t1 instanceof PrimitiveType.BooleanType && t2 instanceof PrimitiveType.BooleanType)
+            && t1 instanceof IntegerType) {
           count(op1, PrimitiveType.getInt(), stmt);
           count(op2, PrimitiveType.getInt(), stmt);
         }
@@ -415,20 +395,45 @@ public class CastCounter extends AbstractStmtVisitor<Stmt> {
     }
   }
 
-  private void addNewStmtsInMap(Stmt succ, Stmt newStmt) {
-    if (this.succ2CastStmts.containsKey(succ)) {
-      succ2CastStmts.get(succ).add(newStmt);
+  private void addUpdatedValue(Value oldValue, Value newValue, Stmt stmt) {
+    Map<Value, Value> map;
+    if (!this.changedValues.containsKey(stmt)) {
+      map = new HashMap<>();
+      this.changedValues.put(stmt, map);
     } else {
-      Deque<Stmt> stack = new ArrayDeque<>();
-      stack.push(newStmt);
-      succ2CastStmts.put(succ, stack);
+      map = this.changedValues.get(stmt);
+    }
+    map.put(oldValue, newValue);
+    if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
+      Value leftOp = ((JAssignStmt) stmt).getLeftOp();
+      Value rightOp = ((JAssignStmt) stmt).getRightOp();
+      if (leftOp instanceof JArrayRef) {
+        if (oldValue == leftOp) {
+          Local base = ((JArrayRef) oldValue).getBase();
+          Local nBase = ((JArrayRef) newValue).getBase();
+          map.put(base, nBase);
+        } else if (leftOp.getUses().contains(oldValue)) {
+          JArrayRef nArrRef = ((JArrayRef) leftOp).withBase((Local) newValue);
+          map.put(leftOp, nArrRef);
+        }
+      } else if (rightOp instanceof JArrayRef) {
+        if (oldValue == rightOp) {
+          Local base = ((JArrayRef) oldValue).getBase();
+          Local nBase = ((JArrayRef) newValue).getBase();
+          map.put(base, nBase);
+        } else if (rightOp.getUses().contains(oldValue)) {
+          JArrayRef nArrRef = ((JArrayRef) rightOp).withBase((Local) newValue);
+          map.put(rightOp, nArrRef);
+        }
+      }
     }
   }
 
   private String generateLocalTempName() {
     StringBuilder name = new StringBuilder();
     name.append("#l");
-    name.append(this.newLocals.size());
+    name.append(this.newLocalsCount);
+    newLocalsCount++;
     return name.toString();
   }
 
