@@ -36,29 +36,10 @@ import java.util.List;
 import java.util.Set;
 import org.junit.Test;
 
-public class TaintAnalysisTest extends IFDSTaintTestSetUp {
+public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   SootMethod getEntryPointMethod() {
     return entryMethod;
-  }
-
-  void checkResultsAtLastStatement(
-      JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis,
-      List<String> expectedResult) {
-    SootMethod m = getEntryPointMethod();
-    List<Stmt> stmts = m.getBody().getStmts();
-    Set<?> res = analysis.ifdsResultsAt(stmts.get(stmts.size() - 1));
-    int correctResultCounter = 0;
-    for (String expected : expectedResult) {
-      for (Local actual : (Set<Local>) res) {
-        if (expected.equals(actual.getName())) {
-          correctResultCounter++;
-        }
-      }
-    }
-    if (correctResultCounter != expectedResult.size()) {
-      fail("results are not complete or correct");
-    }
   }
 
   Set<String> getResultsAtLastStatement(

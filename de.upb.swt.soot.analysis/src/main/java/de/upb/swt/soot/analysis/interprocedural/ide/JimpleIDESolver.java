@@ -8,16 +8,15 @@ import heros.solver.IDESolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+public class JimpleIDESolver<D, V, I extends InterproceduralCFG<Stmt, SootMethod>>
+    extends IDESolver<Stmt, D, SootMethod, V, I> {
+  private static final Logger logger = LoggerFactory.getLogger(JimpleIDESolver.class);
 
-public class JimpleIDESolver<D, V, I extends InterproceduralCFG<Stmt, SootMethod>> extends IDESolver<Stmt, D, SootMethod, V, I> {
-    private static final Logger logger = LoggerFactory.getLogger(JimpleIDESolver.class);
+  public JimpleIDESolver(IDETabulationProblem<Stmt, D, SootMethod, V, I> problem) {
+    super(problem);
+  }
 
-    public JimpleIDESolver(IDETabulationProblem<Stmt, D, SootMethod, V, I> problem) {
-        super(problem);
-    }
-
-    public void solve() {
-        super.solve();
-    }
-
+  public void solve() {
+    super.solve();
+  }
 }
