@@ -18,7 +18,7 @@ public class CastingInNumTypesTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "displayNum", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "displayNum", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

@@ -19,17 +19,17 @@ import org.junit.Test;
 public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
+        getDeclaredClassSignature(), "calculate", "int", Arrays.asList("int", "int"));
   }
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignatureSingleParam() {
     return identifierFactory.getMethodSignature(
-        "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+        getDeclaredClassSignature(), "calculate", "int", Collections.singletonList("int"));
   }
 
   public MethodSignature getMethodSignatureInit() {
     return identifierFactory.getMethodSignature(
-        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "<init>", "void", Collections.emptyList());
   }
 
   @Test

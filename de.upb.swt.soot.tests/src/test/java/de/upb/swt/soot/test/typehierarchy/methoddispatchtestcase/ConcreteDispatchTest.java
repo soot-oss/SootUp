@@ -1,12 +1,12 @@
-package de.upb.swt.soot.test.callgraph.typehierarchy.methoddispatchtestcase;
+package de.upb.swt.soot.test.typehierarchy.methoddispatchtestcase;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.callgraph.typehierarchy.MethodDispatchBase;
+import de.upb.swt.soot.test.typehierarchy.MethodDispatchBase;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -21,13 +21,13 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
 
     MethodSignature sootMethod1 =
         identifierFactory.getMethodSignature(
-            "method", sootClassTypeA, "void", Collections.emptyList());
+            sootClassTypeA, "method", "void", Collections.emptyList());
     MethodSignature sootMethod2 =
         identifierFactory.getMethodSignature(
-            "method2", sootClassTypeA, "void", Collections.emptyList());
+            sootClassTypeA, "method2", "void", Collections.emptyList());
     MethodSignature sootMethod3 =
         identifierFactory.getMethodSignature(
-            "method2", sootClassTypeB, "void", Collections.emptyList());
+            sootClassTypeB, "method2", "void", Collections.emptyList());
 
     MethodSignature candidate1 =
         MethodDispatchResolver.resolveConcreteDispatch(customTestWatcher.getView(), sootMethod1);

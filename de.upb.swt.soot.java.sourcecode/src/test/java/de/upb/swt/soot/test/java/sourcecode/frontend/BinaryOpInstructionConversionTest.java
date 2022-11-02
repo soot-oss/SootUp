@@ -72,7 +72,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
+                declareClassSig, "addByte", "byte", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -166,7 +166,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
+                declareClassSig, "addDouble", "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -240,7 +240,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "mulDouble", declareClassSig, "double", Arrays.asList("double", "double")));
+                declareClassSig, "mulDouble", "double", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -304,7 +304,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "subChar", declareClassSig, "char", Arrays.asList("char", "char")));
+                declareClassSig, "subChar", "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -396,7 +396,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "mulShort", declareClassSig, "short", Arrays.asList("short", "short")));
+                declareClassSig, "mulShort", "short", Arrays.asList("short", "short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -488,7 +488,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "divInt", declareClassSig, "int", Arrays.asList("int", "int")));
+                declareClassSig, "divInt", "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -550,7 +550,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "modChar", declareClassSig, "char", Arrays.asList("char", "char")));
+                declareClassSig, "modChar", "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -643,7 +643,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "incShort", declareClassSig, "short", Collections.singletonList("short")));
+                declareClassSig, "incShort", "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -712,7 +712,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "decInt", declareClassSig, "int", Collections.singletonList("int")));
+                declareClassSig, "decInt", "int", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -774,7 +774,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "orLong", declareClassSig, "long", Arrays.asList("long", "long")));
+                declareClassSig, "orLong", "long", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -836,7 +836,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "xorInt", declareClassSig, "int", Arrays.asList("int", "int")));
+                declareClassSig, "xorInt", "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -898,7 +898,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "andChar", declareClassSig, "char", Arrays.asList("char", "char")));
+                declareClassSig, "andChar", "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -990,7 +990,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "lshiftByte", declareClassSig, "byte", Collections.singletonList("byte")));
+                declareClassSig, "lshiftByte", "byte", Collections.singletonList("byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1062,7 +1062,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "rshiftShort", declareClassSig, "short", Arrays.asList("short", "int")));
+                declareClassSig, "rshiftShort", "short", Arrays.asList("short", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1145,7 +1145,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "negLong", declareClassSig, "long", Collections.singletonList("long")));
+                declareClassSig, "negLong", "long", Collections.singletonList("long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1196,7 +1196,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "zeroFillRshiftInt", declareClassSig, "int", Arrays.asList("int", "int")));
+                declareClassSig, "zeroFillRshiftInt", "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1259,7 +1259,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "logicalAnd", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
+                declareClassSig, "logicalAnd", "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1352,7 +1352,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
+                declareClassSig, "logicalOr", "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Body body = method.getBody();
@@ -1445,7 +1445,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "not", declareClassSig, "boolean", Collections.singletonList("boolean")));
+                declareClassSig, "not", "boolean", Collections.singletonList("boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1498,7 +1498,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "equal", declareClassSig, "boolean", Arrays.asList("int", "int")));
+                declareClassSig, "equal", "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1564,7 +1564,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "notEqual", declareClassSig, "boolean", Arrays.asList("float", "float")));
+                declareClassSig, "notEqual", "boolean", Arrays.asList("float", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1630,7 +1630,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "greater", declareClassSig, "boolean", Arrays.asList("double", "double")));
+                declareClassSig, "greater", "boolean", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1696,7 +1696,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "smaller", declareClassSig, "boolean", Arrays.asList("long", "long")));
+                declareClassSig, "smaller", "boolean", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1762,7 +1762,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "greaterEqual", declareClassSig, "boolean", Arrays.asList("char", "char")));
+                declareClassSig, "greaterEqual", "boolean", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1848,7 +1848,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "smallerEqual", declareClassSig, "boolean", Arrays.asList("byte", "byte")));
+                declareClassSig, "smallerEqual", "boolean", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -1932,8 +1932,8 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "getString1",
                 declareClassSig,
+                "getString1",
                 "java.lang.String",
                 Arrays.asList("java.lang.String")));
     assertTrue(m.isPresent());
@@ -1966,8 +1966,8 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "getString2",
                 declareClassSig,
+                "getString2",
                 "java.lang.String",
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
@@ -2000,8 +2000,8 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "getString3",
                 declareClassSig,
+                "getString3",
                 "java.lang.String",
                 Arrays.asList("java.lang.String", "java.lang.String")));
     assertTrue(m.isPresent());
@@ -2035,7 +2035,7 @@ public class BinaryOpInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "getString4", declareClassSig, "java.lang.String", Collections.emptyList()));
+                declareClassSig, "getString4", "java.lang.String", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Body body = method.getBody();

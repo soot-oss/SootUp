@@ -15,7 +15,7 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "innerClassDiamond", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "innerClassDiamond", "void", Collections.emptyList());
   }
 
   @Ignore

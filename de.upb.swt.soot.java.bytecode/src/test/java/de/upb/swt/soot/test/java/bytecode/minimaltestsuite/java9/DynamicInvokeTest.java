@@ -15,7 +15,7 @@ public class DynamicInvokeTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "stringConcatenation", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "stringConcatenation", "void", Collections.emptyList());
   }
 
   @Test

@@ -21,6 +21,7 @@ package de.upb.swt.soot.java.bytecode.frontend;
  * #L%
  */
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
@@ -306,19 +307,21 @@ public final class AsmUtil {
           final Object annotationValue = e.values.get(++j);
 
           // repeatable annotations will have annotations (as a ArrayList) as value!
-          if (annotationValue instanceof ArrayList) {
-
+          if (annotationValue instanceof ArrayList
+              && !((ArrayList<?>) annotationValue).isEmpty()
+              && ((ArrayList<?>) annotationValue).get(0) instanceof AnnotationNode) {
             final ArrayList<AnnotationNode> annotationValueList =
                 (ArrayList<AnnotationNode>) annotationValue;
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
           } else {
-            if (annotationValue instanceof org.objectweb.asm.Type) {
-              org.objectweb.asm.Type typ = (org.objectweb.asm.Type) annotationValue;
+            if (annotationValue instanceof ArrayList) {
               paramMap.put(
-                  annotationName, JavaJimple.getInstance().newClassConstant(typ.toString()));
+                  annotationName,
+                  ((ArrayList<?>) annotationValue)
+                      .stream().map(AsmUtil::convertAnnotationValue).collect(Collectors.toList()));
             } else {
-              paramMap.put(annotationName, ConstantUtil.fromObject(annotationValue));
+              paramMap.put(annotationName, convertAnnotationValue(annotationValue));
             }
           }
         }
@@ -330,6 +333,28 @@ public final class AsmUtil {
     }
 
     return annotationUsages;
+  }
+
+  public static Object convertAnnotationValue(Object annotationValue) {
+    if (annotationValue instanceof String[]) {
+      // is an enum
+      // [0] is the type of the enum
+      // [1] is the value of the enum
+      // transform the enum type to a fully qualified name
+      String[] enumData = (String[]) annotationValue;
+      enumData[0] = AsmUtil.toQualifiedName(enumData[0]);
+      return ConstantUtil.fromObject(enumData);
+    } else {
+      if (annotationValue instanceof org.objectweb.asm.Type) {
+        // is a class constant
+        // transform asm Type to ClassConstant
+        ClassConstant classConstant =
+            JavaJimple.getInstance()
+                .newClassConstant(((org.objectweb.asm.Type) annotationValue).toString());
+        return ConstantUtil.fromObject(classConstant);
+      }
+    }
+    return ConstantUtil.fromObject(annotationValue);
   }
 
   @Nonnull

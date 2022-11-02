@@ -18,7 +18,7 @@ public class EmptyStatementTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "emptyStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "emptyStatement", "void", Collections.emptyList());
   }
 
   /**

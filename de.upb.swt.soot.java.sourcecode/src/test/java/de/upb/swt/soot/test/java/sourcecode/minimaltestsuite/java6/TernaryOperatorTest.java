@@ -15,7 +15,7 @@ public class TernaryOperatorTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "ternaryOperatorMethod", getDeclaredClassSignature(), "boolean", Collections.emptyList());
+        getDeclaredClassSignature(), "ternaryOperatorMethod", "boolean", Collections.emptyList());
   }
 
   /**

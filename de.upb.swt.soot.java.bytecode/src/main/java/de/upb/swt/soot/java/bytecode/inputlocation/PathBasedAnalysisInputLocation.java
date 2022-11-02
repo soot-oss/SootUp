@@ -75,8 +75,7 @@ import org.xml.sax.SAXException;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public abstract class PathBasedAnalysisInputLocation
-    implements AnalysisInputLocation<JavaSootClass> {
+public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
   protected Path path;
 
   /**
@@ -84,9 +83,43 @@ public abstract class PathBasedAnalysisInputLocation
    */
   private SourceType srcType = null;
 
-  private PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  /**
+   * Variable to store AnalysisInputLocation, which can be DirectoryBasedAnalysisInputLocation,
+   * WarArchiveAnalysisInputLocation, MultiReleaseJarAnalysisInputLocation,
+   * ArchiveBasedAnalysisInputLocation
+   */
+  PathBasedAnalysisInputLocation pathBasedAnalysisInputLocationObj;
+
+  public PathBasedAnalysisInputLocation getPathBasedAnalysisInputLocationObj() {
+    return pathBasedAnalysisInputLocationObj;
+  }
+
+  public PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this.path = path;
-    setSpecifiedAsBuiltInByUser(srcType);
+  }
+
+  public PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    if (Files.isDirectory(path)) {
+      pathBasedAnalysisInputLocationObj = new DirectoryBasedAnalysisInputLocation(path, srcType);
+    } else if (PathUtils.isArchive(path)) {
+
+      if (PathUtils.hasExtension(path, FileType.APK)) {
+        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
+      }
+
+      if (PathUtils.hasExtension(path, FileType.WAR)) {
+        pathBasedAnalysisInputLocationObj = new WarArchiveAnalysisInputLocation(path, srcType);
+      } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
+        pathBasedAnalysisInputLocationObj = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+      } else {
+        pathBasedAnalysisInputLocationObj = new ArchiveBasedAnalysisInputLocation(path, srcType);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "Path '"
+              + path.toAbsolutePath()
+              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
+    }
   }
 
   /**
@@ -98,46 +131,36 @@ public abstract class PathBasedAnalysisInputLocation
     this.srcType = srcType;
   }
 
+  /**
+   * Create or find a class source for a given type.
+   *
+   * @param type The type of the class to be found.
+   * @param view
+   * @return The source entry for that class.
+   */
+  @Nonnull
   @Override
-  public SourceType getSourceType() {
-    return srcType;
+  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+      @Nonnull ClassType type, @Nonnull View<?> view) {
+    return pathBasedAnalysisInputLocationObj.getClassSource(type, view);
   }
 
   /**
-   * Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
-   * differs between directories, archives (and possibly network path's in the future).
+   * Scan the input location and create ClassSources for every compilation / interpretation unit.
    *
-   * @param path The path to search in
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
-   *     Path}'s FileSystem
+   * @param view
+   * @return The source entries.
    */
-  public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path, SourceType srcType) {
+  @Nonnull
+  @Override
+  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+      @Nonnull View<?> view) {
+    return pathBasedAnalysisInputLocationObj.getClassSources(view);
+  }
 
-    if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path, srcType);
-    } else if (PathUtils.isArchive(path)) {
-
-      if (PathUtils.hasExtension(path, FileType.APK)) {
-        return new ApkAnalysisInputLocation(path, srcType);
-      }
-
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        return new WarArchiveAnalysisInputLocation(path, srcType);
-      }
-
-      // check if mainfest contains multi release flag
-      if (isMultiReleaseJar(path)) {
-        return new MultiReleaseJarAnalysisInputLocation(path, srcType);
-      }
-      return new ArchiveBasedAnalysisInputLocation(path, srcType);
-    } else {
-      throw new IllegalArgumentException(
-          "Path '"
-              + path.toAbsolutePath()
-              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
-    }
+  @Override
+  public SourceType getSourceType() {
+    return srcType;
   }
 
   private static boolean isMultiReleaseJar(Path path) {
@@ -213,7 +236,8 @@ public abstract class PathBasedAnalysisInputLocation
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path, srcType);
+      super(path);
+      super.setSpecifiedAsBuiltInByUser(srcType);
     }
 
     @Override
@@ -288,8 +312,7 @@ public abstract class PathBasedAnalysisInputLocation
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-      baseInputLocations.add(
-          PathBasedAnalysisInputLocation.createForClassContainer(archiveRoot, srcType));
+      baseInputLocations.add(new PathBasedAnalysisInputLocation(archiveRoot, srcType));
 
       String sep = archiveRoot.getFileSystem().getSeparator();
 
@@ -348,7 +371,7 @@ public abstract class PathBasedAnalysisInputLocation
           if (inputLocations.get(availableVersions[i]).size() == 0) {
             inputLocations
                 .get(availableVersions[i])
-                .add(PathBasedAnalysisInputLocation.createForClassContainer(versionRoot, srcType));
+                .add(new PathBasedAnalysisInputLocation(versionRoot, srcType));
           }
         }
       }
@@ -560,7 +583,8 @@ public abstract class PathBasedAnalysisInputLocation
                     }));
 
     private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path, srcType);
+      super(path);
+      super.setSpecifiedAsBuiltInByUser(srcType);
     }
 
     @Override
@@ -620,9 +644,7 @@ public abstract class PathBasedAnalysisInputLocation
       // https://download.oracle.com/otn-pub/jcp/servlet-2.4-fr-spec-oth-JSpec/servlet-2_4-fr-spec.pdf?AuthParam=1625059899_16c705c72f7db7f85a8a7926558701fe
       Path classDir = webInfPath.resolve("classes");
       if (Files.exists(classDir)) {
-        containedInputLocations.add(
-            new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                classDir, srcType));
+        containedInputLocations.add(new DirectoryBasedAnalysisInputLocation(classDir, srcType));
       }
 
       Path libDir = webInfPath.resolve("lib");
