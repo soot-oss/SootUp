@@ -22,11 +22,11 @@ package de.upb.swt.soot.core.util.printer;
  * #L%
  */
 
+import de.upb.swt.soot.core.graph.StmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -36,11 +36,11 @@ import javax.annotation.Nonnull;
 
 /** Interface for different methods of printing out a Stmt. */
 public abstract class StmtPrinter {
-  protected Body body = null;
+  protected StmtGraph<?> graph = null;
 
   @Nonnull
-  public Body getBody() {
-    return body;
+  public StmtGraph<?> getGraph() {
+    return graph;
   }
 
   public abstract void startStmt(Stmt u);

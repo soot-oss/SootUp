@@ -271,6 +271,12 @@ public class Printer {
     out.print(printer);
   }
 
+  public void printTo(StmtGraph<?> graph, PrintWriter out) {
+    LabeledStmtPrinter printer = determinePrinter();
+    printStmts(graph, printer);
+    out.print(printer);
+  }
+
   /**
    * Prints out the method corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
@@ -305,9 +311,13 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, LabeledStmtPrinter printer) {
-    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(body);
+    final StmtGraph<?> stmtGraph = body.getStmtGraph();
+    printStmts(stmtGraph, printer);
+  }
 
-    StmtGraph<?> stmtGraph = body.getStmtGraph();
+  private void printStmts(StmtGraph<?> stmtGraph, LabeledStmtPrinter printer) {
+    Iterable<Stmt> linearizedStmtGraph = printer.initializeSootMethod(stmtGraph);
+
     Stmt previousStmt;
 
     final Map<Stmt, String> labels = printer.getLabels();
@@ -350,7 +360,7 @@ public class Printer {
 
     // Print out exceptions
     {
-      Iterator<Trap> trapIt = body.getTraps().iterator();
+      Iterator<Trap> trapIt = stmtGraph.getTraps().iterator();
 
       if (trapIt.hasNext()) {
         printer.newline();

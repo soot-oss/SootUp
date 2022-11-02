@@ -176,7 +176,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal("{");
     stmtPrinter.newline();
 
-    final Iterable<Stmt> targets = stmtPrinter.getBody().getBranchTargetsOf(this);
+    final Iterable<Stmt> targets = stmtPrinter.getGraph().getBranchTargetsOf(this);
     Iterator<Stmt> targetIt = targets.iterator();
     for (IntConstant value : values) {
       stmtPrinter.handleIndent();

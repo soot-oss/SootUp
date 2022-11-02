@@ -570,7 +570,7 @@ public class LocalSplitterTest {
     builder.setMethodSignature(methodSignature);
 
     // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, l3);
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack3);
 
     builder.setLocals(locals);
 
@@ -592,6 +592,8 @@ public class LocalSplitterTest {
     graph.putEdge(stmt6, ret);
 
     graph.setStartingStmt(startingStmt);
+
+    System.out.println(graph);
 
     return builder;
   }

@@ -64,7 +64,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
     // [ms] bounds are validated in Body
-    stmtPrinter.stmtRef(getTargetStmts(stmtPrinter.getBody()).get(0), true);
+    stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 
   @Nonnull

@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -236,42 +235,6 @@ public class Body implements Copyable {
   }
 
   /**
-   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
-   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
-   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
-   * block.
-   *
-   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
-   *
-   * @return A collection of all the Stmts that are targets of a BranchingStmt
-   */
-  @Nonnull
-  public Collection<Stmt> getLabeledStmts() {
-    Set<Stmt> stmtList = new HashSet<>();
-    for (Stmt stmt : graph.nodes()) {
-      if (stmt instanceof BranchingStmt) {
-        if (stmt instanceof JIfStmt) {
-          // [ms] bounds are validated in Body
-          stmtList.add(((JIfStmt) stmt).getTargetStmts(this).get(0));
-        } else if (stmt instanceof JGotoStmt) {
-          // [ms] bounds are validated in Body if its a valid StmtGraph
-          stmtList.add(((JGotoStmt) stmt).getTargetStmts(this).get(0));
-        } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
-        }
-      }
-    }
-
-    for (Trap trap : getTraps()) {
-      stmtList.add(trap.getBeginStmt());
-      stmtList.add(trap.getEndStmt());
-      stmtList.add(trap.getHandlerStmt());
-    }
-
-    return stmtList;
-  }
-
-  /**
    * returns the control flow graph that represents this body into a linear List of statements.
    *
    * @return the statements in this Body
@@ -313,34 +276,11 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    final List<Stmt> successors = graph.successors(fromStmt);
-    if (fromStmt instanceof JIfStmt) {
-      // remove the first successor as if its a fallsthrough stmt and not a branch target
-      return Collections.singletonList(successors.get(1));
-    }
-    return successors;
+    return getStmtGraph().getBranchTargetsOf(fromStmt);
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    final List<Stmt> predecessors = graph.predecessors(targetStmt);
-    if (predecessors.size() > 1) {
-      // join node i.e. at least one is a branch
-      return true;
-    }
-
-    final Iterator<Stmt> iterator = predecessors.iterator();
-    if (iterator.hasNext()) {
-      Stmt pred = iterator.next();
-      if (pred.branches()) {
-        if (pred instanceof JIfStmt) {
-          // [ms] bounds are validated in Body
-          return ((JIfStmt) pred).getTargetStmts(this).get(0) == targetStmt;
-        }
-        return true;
-      }
-    }
-
-    return false;
+    return getStmtGraph().isStmtBranchTarget(targetStmt);
   }
 
   public void validateIdentityStatements() {

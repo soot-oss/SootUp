@@ -5,7 +5,11 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.GraphVizExporter;
+import de.upb.swt.soot.core.util.printer.Printer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -47,7 +51,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Nonnull
   public abstract Collection<Stmt> nodes();
 
-  public Collection<Stmt> getStmts() {
+  public List<Stmt> getStmts() {
     final ArrayList<Stmt> res = new ArrayList<>();
     Iterators.addAll(res, iterator());
     return res;
@@ -326,6 +330,37 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Nonnull
   public Iterator<Stmt> iterator() {
     return new BlockStmtGraphIterator();
+  }
+
+  public List<Stmt> getBranchTargetsOf(BranchingStmt fromStmt) {
+    final List<Stmt> successors = successors(fromStmt);
+    if (fromStmt instanceof JIfStmt) {
+      // remove the first successor as if its a fallsthrough stmt and not a branch target
+      return Collections.singletonList(successors.get(1));
+    }
+    return successors;
+  }
+
+  public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
+    final List<Stmt> predecessors = predecessors(targetStmt);
+    if (predecessors.size() > 1) {
+      // join node i.e. at least one is a branch
+      return true;
+    }
+
+    final Iterator<Stmt> iterator = predecessors.iterator();
+    if (iterator.hasNext()) {
+      Stmt pred = iterator.next();
+      if (pred.branches()) {
+        if (pred instanceof JIfStmt) {
+          // [ms] bounds are validated in Body
+          return getBranchTargetsOf((JIfStmt) pred).get(0) == targetStmt;
+        }
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /** Iterates the Stmts according to the jimple output order. */
@@ -607,5 +642,50 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
       return hasIteratorMoreElements;
     }
+  }
+
+  /**
+   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
+   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
+   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
+   * block.
+   *
+   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
+   *
+   * @return A collection of all the Stmts that are targets of a BranchingStmt
+   */
+  @Nonnull
+  public Collection<Stmt> getLabeledStmts() {
+    Set<Stmt> stmtList = new HashSet<>();
+    for (Stmt stmt : nodes()) {
+      if (stmt instanceof BranchingStmt) {
+        if (stmt instanceof JIfStmt) {
+          // [ms] bounds are validated in Body
+          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(0));
+        } else if (stmt instanceof JGotoStmt) {
+          // [ms] bounds are validated in Body if its a valid StmtGraph
+          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(0));
+        } else if (stmt instanceof JSwitchStmt) {
+          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
+        }
+      }
+    }
+
+    for (Trap trap : getTraps()) {
+      stmtList.add(trap.getBeginStmt());
+      stmtList.add(trap.getEndStmt());
+      stmtList.add(trap.getHandlerStmt());
+    }
+
+    return stmtList;
+  }
+
+  @Override
+  public String toString() {
+    StringWriter writer = new StringWriter();
+    try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
+      new Printer().printTo(this, writerOut);
+    }
+    return writer.toString();
   }
 }
