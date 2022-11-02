@@ -277,7 +277,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testApk() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(apk, null);
+        new PathBasedAnalysisInputLocation(apk, null);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
     testClassReceival(pathBasedNamespace, mainClass, 1);

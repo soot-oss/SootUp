@@ -103,14 +103,12 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       pathBasedAnalysisInputLocationObj = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
 
-      if (PathUtils.hasExtension(path, FileType.APK)) {
-        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
-      }
-
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         pathBasedAnalysisInputLocationObj = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
         pathBasedAnalysisInputLocationObj = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path, FileType.APK)) {
+        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
       } else {
         pathBasedAnalysisInputLocationObj = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
