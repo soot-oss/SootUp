@@ -79,8 +79,17 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B, C and E We expect A.print(), B.print(), C.print() */
+    /** We expect constructors for B, C and E We expect B.print(), C.print(), E.print(),
+     *  since B, C, and E are instantiated
+     * */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
+
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
@@ -92,6 +101,13 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.C"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorD =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.D"),
             "<init>",
             "void",
             Collections.emptyList());
@@ -142,18 +158,21 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
     assertTrue(cg.containsCall(mainMethodSignature, constructorE));
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorD));
+
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
     assertTrue(cg.containsCall(mainMethodSignature, methodE));
+
+    assertFalse(cg.containsMethod(methodA));
     assertFalse(cg.containsMethod(methodD));
 
-    assertEquals(7, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(6, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(constructorE).size());
-    assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
     assertEquals(1, cg.callsTo(methodE).size());
