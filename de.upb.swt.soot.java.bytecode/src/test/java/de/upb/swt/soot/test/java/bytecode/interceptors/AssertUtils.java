@@ -14,7 +14,7 @@ import java.util.Set;
 /** @author Zun Wang */
 public class AssertUtils {
 
-  // assert whether two bodys have the same locals
+  // assert whether two bodies have the same locals
   public static void assertLocalsEquiv(Body expected, Body actual) {
     Set<Local> expected_locals = expected.getLocals();
     Set<Local> actual_locals = actual.getLocals();

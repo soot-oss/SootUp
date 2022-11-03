@@ -73,8 +73,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     Value leftOp = stmt.getLeftOp();
     Value rValue = stmt.getRightOp();
 
-    if(leftOp instanceof Ref){
-      if(leftOp.getUses().contains(oldUse)){
+    if (leftOp instanceof Ref) {
+      if (leftOp.getUses().contains(oldUse)) {
         refVisitor.init(oldUse, newUse);
         ((Ref) leftOp).accept(refVisitor);
         if (refVisitor.getResult() != leftOp) {
