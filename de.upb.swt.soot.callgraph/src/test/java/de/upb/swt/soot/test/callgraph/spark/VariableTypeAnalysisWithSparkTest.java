@@ -81,8 +81,17 @@ public class VariableTypeAnalysisWithSparkTest
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B and C We expect A.print(), B.print(), C.print() */
+    /** We expect constructors for B, C, and E. We expect only B.print(),
+     *  since it is the only type assigned to the object used to call print.
+     * */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
+
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
@@ -94,6 +103,20 @@ public class VariableTypeAnalysisWithSparkTest
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.C"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorD =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.D"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.E"),
             "<init>",
             "void",
             Collections.emptyList());
@@ -126,26 +149,35 @@ public class VariableTypeAnalysisWithSparkTest
             "void",
             Collections.singletonList("java.lang.Object"));
 
+    MethodSignature methodE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.E"),
+            "print",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorD));
+
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
-    assertTrue(cg.containsCall(mainMethodSignature, methodC));
+    assertFalse(cg.containsMethod(methodA));
+    assertFalse(cg.containsMethod(methodC));
     assertFalse(cg.containsMethod(methodD));
+    assertFalse(cg.containsMethod(methodE));
 
-    assertEquals(7, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(4, cg.callsFrom(mainMethodSignature).size());
     // TODO: why does body assign New E() to a variable?
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
-    assertEquals(1, cg.callsTo(methodA).size());
-    assertEquals(1, cg.callsTo(methodB).size());
+    assertEquals(1, cg.callsTo(constructorE).size());
     assertEquals(1, cg.callsTo(methodC).size());
 
-    assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
-    assertEquals(0, cg.callsFrom(methodC).size());
   }
 
   @Ignore
