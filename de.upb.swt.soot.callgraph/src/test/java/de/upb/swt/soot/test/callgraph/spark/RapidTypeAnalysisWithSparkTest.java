@@ -25,7 +25,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kadiray Karakaya */
+/** @author Kadiray Karakaya, Jonas Klauke */
 @Category(Java8Test.class)
 public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeAnalysisWithSpark> {
 
@@ -79,9 +79,10 @@ public class RapidTypeAnalysisWithSparkTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B, C and E We expect B.print(), C.print(), E.print(),
-     *  since B, C, and E are instantiated
-     * */
+    /**
+     * We expect constructors for B, C and E We expect B.print(), C.print(), E.print(), since B, C,
+     * and E are instantiated
+     */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorA =

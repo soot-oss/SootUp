@@ -25,7 +25,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author Kadiray Karakaya */
+/** @author Kadiray Karakaya, Jonas Klauke */
 @Category(Java8Test.class)
 public class VariableTypeAnalysisWithSparkTest
     extends CallGraphTestBase<VariableTypeAnalysisWithSpark> {
@@ -81,9 +81,10 @@ public class VariableTypeAnalysisWithSparkTest
 
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B, C, and E. We expect only B.print(),
-     *  since it is the only type assigned to the object used to call print.
-     * */
+    /**
+     * We expect constructors for B, C, and E. We expect only B.print(), since it is the only type
+     * assigned to the object used to call print.
+     */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorA =
