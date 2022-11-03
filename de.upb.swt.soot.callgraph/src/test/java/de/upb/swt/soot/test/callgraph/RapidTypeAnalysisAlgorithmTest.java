@@ -21,10 +21,26 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
   }
 
+  /**
+   * Testing the call graph generation using RTA on a code example
+   *
+   * In this testcase, the call graph of Example1 in folder {@link callgraph.Misc} is created using RTA.
+   * The testcase expects a call from main to the constructors of B,C, and E
+   * The virtual call print is resolved to calls to B.print, C.print, and E.print, since the types were instantiated.
+   * Overall, 6 calls are expected in the main method.
+   * the constructor of B is called directly and indirectly by C, since B is the super class of C.
+   *
+   */
   @Test
   public void testMiscExample1() {
-    /** We expect constructors for B and C We expect A.print(), B.print(), C.print() */
     CallGraph cg = loadCallGraph("Misc", "example1.Example");
+
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
@@ -36,6 +52,20 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.C"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorD =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.D"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature constructorE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.E"),
             "<init>",
             "void",
             Collections.emptyList());
@@ -68,25 +98,38 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.singletonList("java.lang.Object"));
 
+    MethodSignature methodE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.E"),
+            "print",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorD));
+
+    assertFalse(cg.containsMethod(methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
     assertFalse(cg.containsMethod(methodD));
+    assertTrue(cg.containsCall(mainMethodSignature, methodE));
 
-    assertEquals(5, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(6, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
-    assertEquals(1, cg.callsTo(methodA).size());
+    assertEquals(1, cg.callsTo(constructorE).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
+    assertEquals(1, cg.callsTo(methodE).size());
 
-    assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
+    assertEquals(0, cg.callsFrom(methodE).size());
   }
 
   @Test
