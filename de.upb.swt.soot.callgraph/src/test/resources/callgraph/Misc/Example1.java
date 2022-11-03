@@ -29,5 +29,5 @@ class D extends A {
 }
 
 class E extends A {
-  public void print(Object o)
+  public void print(Object o) { }
 }
