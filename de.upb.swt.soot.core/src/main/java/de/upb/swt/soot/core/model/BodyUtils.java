@@ -163,6 +163,31 @@ public class BodyUtils {
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
   }
 
+  public static void replaceLocalInBuilder(
+      Body.BodyBuilder builder, Local oldLocal, Local newLocal) {
+    LinkedHashSet<Local> locals = new LinkedHashSet<>(builder.getLocals());
+    if (!locals.contains(oldLocal)) {
+      throw new RuntimeException(
+          "The given old local: " + oldLocal.toString() + " is not in the body!");
+    } else {
+      locals.remove(oldLocal);
+      locals.add(newLocal);
+      builder.setLocals(locals);
+      List<Stmt> stmts = new ArrayList<>(builder.getStmts());
+      for (Stmt stmt : stmts) {
+        Stmt newStmt = null;
+        if (stmt.getUses().contains(oldLocal)) {
+          newStmt = withNewUse(stmt, oldLocal, newLocal);
+        } else if (stmt.getDefs().contains(oldLocal)) {
+          newStmt = withNewDef(stmt, newLocal);
+        }
+        if (newStmt != null) {
+          replaceStmtInBuilder(builder, stmt, newStmt);
+        }
+      }
+    }
+  }
+
   /** Replace corresponding oldStmt with newStmt in BodyBuilder */
   public static void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
     builder.replaceStmt(oldStmt, newStmt);
