@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
+import com.googlecode.dex2jar.tools.Dex2jarCmd;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
@@ -101,10 +102,13 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
     if (Files.isDirectory(path)) {
       pathBasedAnalysisInputLocationObj = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
+
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         pathBasedAnalysisInputLocationObj = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
         pathBasedAnalysisInputLocationObj = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path, FileType.APK)) {
+        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
       } else {
         pathBasedAnalysisInputLocationObj = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
@@ -526,6 +530,25 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
     @Override
     public int hashCode() {
       return path.hashCode();
+    }
+  }
+
+  private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
+
+    private ApkAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+      super(path, srcType);
+      String jarPath = dex2jar(path);
+      this.path = Paths.get(jarPath);
+    }
+
+    private String dex2jar(Path path) {
+      String apkPath = path.toAbsolutePath().toString();
+      String outDir = "./tmp/";
+      int start = apkPath.lastIndexOf(File.separator);
+      int end = apkPath.lastIndexOf(".apk");
+      String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
+      new Dex2jarCmd().doMain("-f", apkPath, "-o", outputFile);
+      return outputFile;
     }
   }
 
