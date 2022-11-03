@@ -607,7 +607,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
         @Nonnull View<?> view) {
       // we don't use the filesystem cache here as it could close the filesystem after the timeout
       // while we are still iterating
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+      try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
             archiveRoot,
