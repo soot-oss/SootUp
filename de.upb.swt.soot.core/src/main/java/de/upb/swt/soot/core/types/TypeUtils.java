@@ -37,6 +37,12 @@ public class TypeUtils {
         || type == PrimitiveType.BooleanType.getInstance();
   }
 
+  public static boolean isIntermediateType(Type type) {
+    return type.equals(PrimitiveType.getInteger1())
+        || type.equals(PrimitiveType.getInteger127())
+        || type.equals(PrimitiveType.getInteger32767());
+  }
+
   public static boolean isObject(Type type) {
     return type.toString().equals("java.lang.Object");
   }
