@@ -1,0 +1,57 @@
+public class propagator.PropTest extends java.lang.Object
+{
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] $r0;
+        boolean $z0;
+        benchmark.objects.O $r1, $r2, $u0;
+        benchmark.objects.B $r3, $r4;
+
+
+        $r0 := @parameter0: java.lang.String[];
+
+        $z0 = 1;
+
+        $r1 = new benchmark.objects.O;
+
+        specialinvoke $r1.<benchmark.objects.O: void <init>()>();
+
+        $r2 = new benchmark.objects.O;
+
+        specialinvoke $r2.<benchmark.objects.O: void <init>()>();
+
+        $r3 = new benchmark.objects.B;
+
+        specialinvoke $r3.<benchmark.objects.B: void <init>()>();
+
+        $u0 = null;
+
+        if $z0 == 0 goto label1;
+
+        $u0 = $r1;
+
+        goto label2;
+
+      label1:
+        $u0 = $r2;
+
+      label2:
+        $u0.<benchmark.objects.O: benchmark.objects.B f> = $r3;
+
+        $r4 = $r1.<benchmark.objects.O: benchmark.objects.B f>;
+
+        return;
+    }
+
+    void <init>()
+    {
+        propagator.PropTest r0;
+
+
+        r0 := @this: propagator.PropTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

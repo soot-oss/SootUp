@@ -3,10 +3,10 @@ package de.upb.swt.soot.test;
 import static junit.framework.TestCase.*;
 
 import categories.SlowTest;
-import de.upb.swt.soot.callgraph.AbstractCallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.AbstractCallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;

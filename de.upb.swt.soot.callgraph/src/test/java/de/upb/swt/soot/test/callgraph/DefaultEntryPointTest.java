@@ -2,10 +2,10 @@ package de.upb.swt.soot.test.callgraph;
 
 import static junit.framework.TestCase.*;
 
-import de.upb.swt.soot.callgraph.CallGraph;
-import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
-import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.CallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.ClassHierarchyAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.algorithm.RapidTypeAnalysisAlgorithm;
+import de.upb.swt.soot.callgraph.model.CallGraph;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
