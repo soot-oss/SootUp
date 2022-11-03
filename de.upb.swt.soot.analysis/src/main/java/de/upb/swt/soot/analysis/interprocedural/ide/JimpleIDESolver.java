@@ -27,8 +27,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import heros.IDETabulationProblem;
 import heros.InterproceduralCFG;
 import heros.solver.IDESolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JimpleIDESolver<D, V, I extends InterproceduralCFG<Stmt, SootMethod>>
     extends IDESolver<Stmt, D, SootMethod, V, I> {

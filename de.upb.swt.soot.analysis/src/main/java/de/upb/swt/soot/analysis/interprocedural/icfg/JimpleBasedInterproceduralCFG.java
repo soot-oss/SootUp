@@ -56,7 +56,8 @@ import org.slf4j.LoggerFactory;
 @ThreadSafe
 public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
-  protected static final Logger logger = LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
+  protected static final Logger logger =
+      LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
   private MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls = false;
@@ -72,12 +73,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           ArrayList<SootMethod> res = new ArrayList<>();
           MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
           SootMethod sm = (SootMethod) view.getMethod(methodSignature).orElse(null);
-          if(sm != null){
+          if (sm != null) {
             if (includePhantomCallees || sm.hasBody()) {
               res.add(sm);
             } else {
-              logger.error("Method {} is referenced but has no body!",
-                      sm.getSignature(), new Exception());
+              logger.error(
+                  "Method {} is referenced but has no body!", sm.getSignature(), new Exception());
             }
           }
           res.trimToSize();
@@ -113,15 +114,16 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
          * @param methodSignature
          */
         private Stmt filterEdgeAndGetCallerStmt(MethodSignature methodSignature) {
-          Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = CGEdgeUtil.getCallEdges(view, cg);
+          Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
+              CGEdgeUtil.getCallEdges(view, cg);
           for (Pair<MethodSignature, CalleeMethodSignature> callEdge : callEdges) {
             CalleeMethodSignature callee = callEdge.getValue();
             if (callee.getMethodSignature().equals(methodSignature)) {
               CGEdgeUtil.CallGraphEdgeType edgeType = callee.getEdgeType();
               if (edgeType.isExplicit()
-                      || edgeType.isFake()
-                      || edgeType.isClinit()
-                      || (includeReflectiveCalls && edgeType.isReflection())) {
+                  || edgeType.isFake()
+                  || edgeType.isClinit()
+                  || (includeReflectiveCalls && edgeType.isReflection())) {
                 return callee.getSourceStmt();
               }
             }
@@ -133,8 +135,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected final LoadingCache<SootMethod, Collection<Stmt>> methodToCallers =
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderMethodToCallers);
-
-
 
   public JimpleBasedInterproceduralCFG(
       JavaView view,
