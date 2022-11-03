@@ -77,28 +77,26 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
             }
           });
 
-  public AbstractJimpleBasedICFG() {
+  protected AbstractJimpleBasedICFG() {
     this(true);
   }
 
   protected Map<Stmt, Body> createStmtToOwnerMap() {
-    return new LinkedHashMap<Stmt, Body>();
+    return new LinkedHashMap<>();
   }
 
-  public AbstractJimpleBasedICFG(boolean enableExceptions) {
+  protected AbstractJimpleBasedICFG(boolean enableExceptions) {
     this.enableExceptions = enableExceptions;
   }
 
   public Body getBodyOf(Stmt u) {
     assert stmtToOwner.containsKey(u) : "Statement " + u + " not in unit-to-owner mapping";
-    Body b = stmtToOwner.get(u);
-    return b;
+    return stmtToOwner.get(u);
   }
 
   @Override
   public SootMethod getMethodOf(Stmt u) {
     Body b = getBodyOf(u);
-    // TODO: view
     return b == null ? null : (SootMethod) view.getMethod(b.getMethodSignature()).orElse(null);
   }
 
@@ -122,7 +120,6 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   protected StmtGraph makeGraph(Body body) {
-    // TODO: why exceptionalStmtGraph shouldn't get body.getSmtGraph() as parameter?
     return enableExceptions
         ? new ExceptionalStmtGraph(new MutableExceptionalStmtGraph())
         : new ForwardingStmtGraph(body.getStmtGraph());
@@ -133,12 +130,12 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     for (Stmt u : m.getBody().getStmts()) {
       if (isCallStmt(u)) {
         if (res == null) {
-          res = new LinkedHashSet<Stmt>();
+          res = new LinkedHashSet<>();
         }
         res.add(u);
       }
     }
-    return res == null ? Collections.<Stmt>emptySet() : res;
+    return res == null ? Collections.emptySet() : res;
   }
 
   @Override
@@ -168,10 +165,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @Override
   public boolean isBranchTarget(Stmt u, Stmt succ) {
     assert getSuccsOf(u).contains(succ);
-    if (!u.branches()) {
-      return false;
-    }
-    return true;
+    return u.branches();
   }
 
   @Override
@@ -194,13 +188,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   @Override
-  public boolean isCallStmt(Stmt u) {
-    return ((Stmt) u).containsInvokeExpr();
+  public boolean isCallStmt(Stmt stmt) {
+    return stmt.containsInvokeExpr();
   }
 
   @Override
   public Set<Stmt> allNonCallStartNodes() {
-    Set<Stmt> res = new LinkedHashSet<Stmt>(stmtToOwner.keySet());
+    Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
     for (Iterator<Stmt> iter = res.iterator(); iter.hasNext(); ) {
       Stmt u = iter.next();
       if (isStartPoint(u) || isCallStmt(u)) {
@@ -212,7 +206,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public Set<Stmt> allNonCallEndNodes() {
-    Set<Stmt> res = new LinkedHashSet<Stmt>(stmtToOwner.keySet());
+    Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
     for (Iterator<Stmt> iter = res.iterator(); iter.hasNext(); ) {
       Stmt u = iter.next();
       if (isExitStmt(u) || isCallStmt(u)) {

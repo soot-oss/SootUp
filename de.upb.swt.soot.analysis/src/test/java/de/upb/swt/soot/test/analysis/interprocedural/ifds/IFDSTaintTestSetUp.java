@@ -22,7 +22,7 @@ package de.upb.swt.soot.test.analysis.interprocedural.ifds;
  * #L%
  */
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import de.upb.swt.soot.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import de.upb.swt.soot.analysis.interprocedural.ifds.JimpleIFDSSolver;
@@ -91,6 +91,6 @@ public class IFDSTaintTestSetUp {
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
     entryMethodSignature = entryMethod.getSignature();
-    assertTrue(entryMethod != null);
+    assertNotNull(entryMethod);
   }
 }

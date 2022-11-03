@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 @ThreadSafe
 public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
-  protected static final Logger logger = LoggerFactory.getLogger(IDESolver.class);
+  protected static final Logger logger = LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
   private MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls = false;
@@ -70,36 +70,18 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Override
         public Collection<SootMethod> load(Stmt stmt) throws Exception {
           ArrayList<SootMethod> res = new ArrayList<>();
-          // only retain callers that are explicit call sites or
-          // Thread.start()
-          // System.out.println(stmt.toString());
-          // TODO: May neet to resolve other calls of the same sig in TypeHierarchy
-          // ClassType declClassType = stmt.getInvokeExpr().getMethodSignature().getDeclClassType();
-          // TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-          // List<ClassType> superClasses = typeHierarchy.superClassesOf(declClassType);
-          // Set<ClassType> subClasses = typeHierarchy.subclassesOf(declClassType);
-
-          // Set<MethodSignature> callsFrom =
-          // cg.callsFrom(stmt.getInvokeExpr().getMethodSignature());
-          // for (MethodSignature methodSignature : callsFrom) {
           MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
           SootMethod sm = (SootMethod) view.getMethod(methodSignature).orElse(null);
-          if (sm != null && includePhantomCallees || sm.hasBody()) {
-            res.add(sm);
-          } else if (IDESolver.DEBUG) {
-            logger.error(
-                String.format(
-                    "Method %s is referenced but has no body!",
-                    sm.getSignature(), new Exception()));
+          if(sm != null){
+            if (includePhantomCallees || sm.hasBody()) {
+              res.add(sm);
+            } else {
+              logger.error("Method {} is referenced but has no body!",
+                      sm.getSignature(), new Exception());
+            }
           }
-          // }
-
-          if (res != null) {
-            res.trimToSize();
-            return res;
-          } else {
-            return Collections.emptySet();
-          }
+          res.trimToSize();
+          return res;
         }
       };
 
@@ -124,33 +106,35 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           res.trimToSize();
           return res;
         }
+
+        /**
+         * returns SootMethod if accepted, null otherwise
+         *
+         * @param methodSignature
+         */
+        private Stmt filterEdgeAndGetCallerStmt(MethodSignature methodSignature) {
+          Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = CGEdgeUtil.getCallEdges(view, cg);
+          for (Pair<MethodSignature, CalleeMethodSignature> callEdge : callEdges) {
+            CalleeMethodSignature callee = callEdge.getValue();
+            if (callee.getMethodSignature().equals(methodSignature)) {
+              CGEdgeUtil.CallGraphEdgeType edgeType = callee.getEdgeType();
+              if (edgeType.isExplicit()
+                      || edgeType.isFake()
+                      || edgeType.isClinit()
+                      || (includeReflectiveCalls && edgeType.isReflection())) {
+                return callee.getSourceStmt();
+              }
+            }
+          }
+          return null;
+        }
       };
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
   protected final LoadingCache<SootMethod, Collection<Stmt>> methodToCallers =
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderMethodToCallers);
 
-  /**
-   * returns SootMethod if accepted, null otherwise
-   *
-   * @param methodSignature
-   */
-  private Stmt filterEdgeAndGetCallerStmt(MethodSignature methodSignature) {
-    Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = CGEdgeUtil.getCallEdges(view, cg);
-    for (Pair<MethodSignature, CalleeMethodSignature> callEdge : callEdges) {
-      CalleeMethodSignature callee = callEdge.getValue();
-      if (callee.getMethodSignature().equals(methodSignature)) {
-        CGEdgeUtil.CallGraphEdgeType edgeType = callee.getEdgeType();
-        if (edgeType.isExplicit()
-            || edgeType.isFake()
-            || edgeType.isClinit()
-            || (includeReflectiveCalls && edgeType.isReflection())) {
-          return callee.getSourceStmt();
-        }
-      }
-    }
-    return null;
-  }
+
 
   public JimpleBasedInterproceduralCFG(
       JavaView view,
