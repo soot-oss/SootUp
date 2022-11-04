@@ -91,8 +91,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
-    collectInstantiatedClassesInMethod(method);
-
     SootMethod targetMethod =
         view.getClass(targetMethodSignature.getDeclClassType())
             .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
@@ -129,6 +127,33 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       return Stream.concat(result, implAndOverrides.stream());
     }
   }
+
+  /**
+   * Pre-processing of a method in the RTA call graph algorithm
+   *
+   * <p>Before processing the method, all instantiated types are collected inside the body
+   * of the sourceMethod.
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist
+   * @param cg the current cg
+   */
+  @Override
+  public void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    SootMethod method =
+        view.getClass(sourceMethod.getDeclClassType())
+            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
+            .orElse(null);
+    if (method==null) return;
+
+    collectInstantiatedClassesInMethod(method);
+  }
+
 
   /**
    * Post processing of a method in the RTA call graph algorithm
