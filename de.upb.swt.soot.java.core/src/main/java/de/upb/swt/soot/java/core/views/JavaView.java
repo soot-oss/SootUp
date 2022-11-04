@@ -51,7 +51,7 @@ import javax.annotation.Nonnull;
  */
 public class JavaView extends AbstractView<JavaSootClass> {
 
-  @Nonnull private final Map<ClassType, JavaSootClass> cache = new HashMap<>();
+  @Nonnull protected final Map<ClassType, JavaSootClass> cache = new HashMap<>();
 
   protected volatile boolean isFullyResolved = false;
 
@@ -60,7 +60,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
       classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
+  public JavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
     this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -72,7 +72,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     options.
    */
   public JavaView(
-      @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
+      @Nonnull Project<JavaSootClass, ? extends JavaView> project,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
