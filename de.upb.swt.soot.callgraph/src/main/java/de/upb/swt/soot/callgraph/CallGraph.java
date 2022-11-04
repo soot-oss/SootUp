@@ -46,4 +46,6 @@ public interface CallGraph {
 
   @Nonnull
   MutableCallGraph copy();
+
+  String toStringSorted();
 }

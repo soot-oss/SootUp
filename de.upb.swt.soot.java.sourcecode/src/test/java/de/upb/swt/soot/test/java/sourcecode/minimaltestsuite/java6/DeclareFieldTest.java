@@ -19,12 +19,12 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "display", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "display", "void", Collections.emptyList());
   }
 
   public MethodSignature getStaticMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "staticDisplay", "void", Collections.emptyList());
   }
 
   @org.junit.Test

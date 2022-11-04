@@ -44,8 +44,8 @@ public class InstanceofInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             typeFactory.getMethodSignature(
-                "instanceOf",
                 declareClassSig,
+                "instanceOf",
                 "boolean",
                 Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());

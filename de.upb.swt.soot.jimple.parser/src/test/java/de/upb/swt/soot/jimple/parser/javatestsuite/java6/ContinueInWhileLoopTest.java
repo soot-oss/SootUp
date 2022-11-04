@@ -17,7 +17,7 @@ public class ContinueInWhileLoopTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "continueInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "continueInWhileLoop", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

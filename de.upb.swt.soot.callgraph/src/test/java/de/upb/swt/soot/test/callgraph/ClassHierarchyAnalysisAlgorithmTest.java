@@ -5,8 +5,8 @@ import static junit.framework.TestCase.*;
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.ClassHierarchyAnalysisAlgorithm;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.*;
 import org.junit.Test;
@@ -36,43 +36,43 @@ public class ClassHierarchyAnalysisAlgorithmTest
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.B"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            "<init>",
             identifierFactory.getClassType("example1.C"),
+            "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.A"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.B"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.C"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
-            "print",
             identifierFactory.getClassType("example1.D"),
+            "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 

@@ -52,6 +52,7 @@ public abstract class AnalysisInputLocationTest {
   final Path jar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
+  final Path apk = Paths.get("../shared-test-resources/apk/SimpleApk.apk");
 
   private ClassProvider<JavaSootClass> classProvider;
 

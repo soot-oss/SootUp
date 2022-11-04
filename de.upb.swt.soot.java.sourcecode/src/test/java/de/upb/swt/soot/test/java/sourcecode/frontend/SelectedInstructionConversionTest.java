@@ -49,8 +49,8 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "makeAB",
                 declareClassSig,
+                "makeAB",
                 "alreadywalaunittests.InnerClassAA.AB",
                 Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -66,7 +66,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "method", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "method", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -104,7 +104,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "doAllThis", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "doAllThis", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -143,7 +143,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
+                declareClassSig, "main", "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -171,7 +171,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "<init>", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "<init>", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -202,7 +202,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "main", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "main", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -217,7 +217,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "bar", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "bar", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -246,7 +246,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
+                declareClassSig, "main", "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -261,8 +261,8 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "valueOf",
                 declareClassSig,
+                "valueOf",
                 "javaonepointfive.EnumSwitch$Palo",
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
@@ -278,8 +278,8 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "valueOf",
                 declareClassSig,
+                "valueOf",
                 "javaonepointfive.EnumSwitch$Palo",
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
@@ -295,7 +295,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "doSomeCrazyStuff", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "doSomeCrazyStuff", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -318,7 +318,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "getValueBase", declareClassSig, "int", Collections.emptyList()));
+                declareClassSig, "getValueBase", "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -332,7 +332,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
+                declareClassSig, "main", "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -355,7 +355,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "anonymousCoward", declareClassSig, "java.lang.Object", Collections.emptyList()));
+                declareClassSig, "anonymousCoward", "java.lang.Object", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -369,8 +369,8 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "supportLocalBusiness",
                 declareClassSig,
+                "supportLocalBusiness",
                 "java.lang.Object",
                 Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -395,8 +395,8 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "validNonDispatchedCall",
                 declareClassSig,
+                "validNonDispatchedCall",
                 "void",
                 Collections.singletonList("IntWrapper")));
     assertTrue(m.isPresent());
@@ -421,7 +421,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "incr", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "incr", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -434,7 +434,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
+                declareClassSig, "main", "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.
@@ -448,7 +448,7 @@ public class SelectedInstructionConversionTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "foo", declareClassSig, "void", Collections.emptyList()));
+                declareClassSig, "foo", "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.

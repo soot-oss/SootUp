@@ -14,7 +14,7 @@ import org.junit.Test;
 public class DeclareIntTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "declareIntMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "declareIntMethod", "void", Collections.emptyList());
   }
 
   /**

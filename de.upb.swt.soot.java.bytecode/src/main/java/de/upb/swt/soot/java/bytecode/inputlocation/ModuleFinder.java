@@ -207,8 +207,7 @@ public class ModuleFinder {
 
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
     // create the input location for this module dir
-    PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(dir, null);
+    PathBasedAnalysisInputLocation inputLocation = new PathBasedAnalysisInputLocation(dir, null);
 
     Path moduleInfoFile = dir.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
@@ -230,8 +229,7 @@ public class ModuleFinder {
    * @param jar the jar file
    */
   private void buildModuleForJar(@Nonnull Path jar) {
-    PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar, null);
+    PathBasedAnalysisInputLocation inputLocation = new PathBasedAnalysisInputLocation(jar, null);
     Path mi;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, (ClassLoader) null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 public class AssertStatementTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "assertStatement", getDeclaredClassSignature(), "void", Collections.emptyList());
+        getDeclaredClassSignature(), "assertStatement", "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {

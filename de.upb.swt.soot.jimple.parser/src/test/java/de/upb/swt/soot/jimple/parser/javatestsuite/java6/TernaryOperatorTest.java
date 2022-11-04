@@ -17,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class TernaryOperatorTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "ternaryOperatorMethod", getDeclaredClassSignature(), "boolean", Collections.emptyList());
+        getDeclaredClassSignature(), "ternaryOperatorMethod", "boolean", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts() {
