@@ -4,30 +4,34 @@ class Example {
 
   public static void main(String[] args) {
     A objB = new B();
-    A objC = new C();
+    B.staticDispatch(new C());
 
     new E();
 
-    objB.print(objC);
+    objB.virtualDispatch();
   }
 }
 
 class A extends Object {
-  public void print( Object o) { }
+  public void virtualDispatch() { }
+  public static void staticDispatch( Object o) { }
 }
 
 class B extends A {
-  public void print(Object o) { }
+  public void virtualDispatch() { }
+  public static void staticDispatch( Object o) { }
 }
 
-class C extends B {
-  public void print(Object o) { }
+class C extends D {
+  public static void staticDispatch( Object o) { }
 }
 
 class D extends A {
-  public void print(Object o) { }
+  public void virtualDispatch() { }
+  public static void staticDispatch( Object o) { }
 }
 
 class E extends A {
-  public void print(Object o) { }
+  public void virtualDispatch() { }
+  public static void staticDispatch( Object o) { }
 }
