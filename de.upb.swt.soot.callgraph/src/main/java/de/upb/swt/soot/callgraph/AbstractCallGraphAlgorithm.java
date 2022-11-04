@@ -4,7 +4,7 @@ package de.upb.swt.soot.callgraph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann, Ben Hermann, Markus Schmidt and others
+ * Copyright (C) 2019-2022 Christian Brüggemann, Ben Hermann, Markus Schmidt, Jonas Klauke and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -78,12 +78,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MutableCallGraph cg) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
-      //skip if already processed
+      // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
-      //process the method
+      // process the method
       if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
