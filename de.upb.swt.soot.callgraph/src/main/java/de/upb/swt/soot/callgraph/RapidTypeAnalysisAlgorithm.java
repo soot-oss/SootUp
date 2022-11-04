@@ -121,6 +121,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             }
           });
 
+      //the statically dispatched call is not instantiated
+      if (!instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
+        return implAndOverrides.stream();
+      }
+
       return Stream.concat(result, implAndOverrides.stream());
     }
   }
