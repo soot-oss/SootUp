@@ -55,7 +55,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull private final Set<ClassType> instantiatedClasses = new HashSet<>();
   @Nonnull private final HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
 
-  public RapidTypeAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
+  public RapidTypeAnalysisAlgorithm(
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
   }
 
@@ -119,7 +120,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             }
           });
 
-      //the statically dispatched call is not instantiated
+      // the statically dispatched call is not instantiated
       if (!instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
         return implAndOverrides.stream();
       }
@@ -131,8 +132,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   /**
    * Pre-processing of a method in the RTA call graph algorithm
    *
-   * <p>Before processing the method, all instantiated types are collected inside the body
-   * of the sourceMethod.
+   * <p>Before processing the method, all instantiated types are collected inside the body of the
+   * sourceMethod.
    *
    * @param view view
    * @param sourceMethod the processed method
@@ -149,11 +150,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
             .orElse(null);
-    if (method==null) return;
+    if (method == null) return;
 
     collectInstantiatedClassesInMethod(method);
   }
-
 
   /**
    * Post processing of a method in the RTA call graph algorithm
