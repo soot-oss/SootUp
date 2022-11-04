@@ -54,7 +54,20 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        //        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        .map(
+            sootClass -> {
+              SootMethod method = sootClass.getMethod(m.getSubSignature()).orElse(null);
+              if (method == null) {
+                // method is not implemented in the class
+                MethodSignature implementedSuperMethodSignature = resolveConcreteDispatch(view, m);
+                //return implemented method in a super class
+                return view.getMethod(implementedSuperMethodSignature)
+                    .orElseThrow(
+                        () -> new ResolveException("Could not find concrete method for " + m));
+              }
+              return method;
+            })
         .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
         .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
