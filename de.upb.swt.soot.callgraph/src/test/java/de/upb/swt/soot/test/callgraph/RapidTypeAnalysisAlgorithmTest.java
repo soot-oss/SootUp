@@ -198,7 +198,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "int",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetA));
+    assertFalse(cg.containsCall(alreadyVisitedMethod, newTargetA));
     assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
     assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
   }
