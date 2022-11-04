@@ -54,7 +54,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Nonnull private final Set<ClassType> instantiatedClasses = new HashSet<>();
   @Nonnull private final HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
-  @Nonnull private CallGraph chaGraph;
 
   public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
@@ -63,37 +62,17 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize() {
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
-    chaGraph = cha.initialize(entryPoints);
     return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    chaGraph = cha.initialize(entryPoints);
     return constructCompleteCallGraph(view, entryPoints);
   }
 
   private void collectInstantiatedClassesInMethod(SootMethod method) {
-    //    Set<ClassType> instantiated =
-    //        chaGraph.callsFrom(method.getSignature()).stream()
-    //            .filter(s -> s.getSubSignature().getName().equals("<init>"))
-    //            .map(SootClassMemberSignature::getDeclClassType)
-    //            .collect(Collectors.toSet());
-    //    instantiatedClasses.addAll(instantiated);
-
-    //    // add also found classes' super classes
-    //    instantiated.stream()
-    //        .map(s -> view.getClass(s))
-    //        .filter(Optional::isPresent)
-    //        .map(Optional::get)
-    //        .map(s -> s.getSuperclass())
-    //        .filter(s -> s.isPresent())
-    //        .map(s -> s.get())
-    //        .forEach(instantiatedClasses::add);
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
@@ -112,9 +91,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
-    if (!chaGraph.containsMethod(method.getSignature())) {
-      return result;
-    }
     collectInstantiatedClassesInMethod(method);
 
     SootMethod targetMethod =
