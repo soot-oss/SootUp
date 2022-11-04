@@ -27,19 +27,14 @@ import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JNewExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.signatures.SootClassMemberSignature;
 import de.upb.swt.soot.core.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,30 +78,31 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   private void collectInstantiatedClassesInMethod(SootMethod method) {
-//    Set<ClassType> instantiated =
-//        chaGraph.callsFrom(method.getSignature()).stream()
-//            .filter(s -> s.getSubSignature().getName().equals("<init>"))
-//            .map(SootClassMemberSignature::getDeclClassType)
-//            .collect(Collectors.toSet());
-//    instantiatedClasses.addAll(instantiated);
+    //    Set<ClassType> instantiated =
+    //        chaGraph.callsFrom(method.getSignature()).stream()
+    //            .filter(s -> s.getSubSignature().getName().equals("<init>"))
+    //            .map(SootClassMemberSignature::getDeclClassType)
+    //            .collect(Collectors.toSet());
+    //    instantiatedClasses.addAll(instantiated);
 
-//    // add also found classes' super classes
-//    instantiated.stream()
-//        .map(s -> view.getClass(s))
-//        .filter(Optional::isPresent)
-//        .map(Optional::get)
-//        .map(s -> s.getSuperclass())
-//        .filter(s -> s.isPresent())
-//        .map(s -> s.get())
-//        .forEach(instantiatedClasses::add);
-    Set<ClassType> instantiated =method.getBody().getStmts().stream()
-        .filter(stmt -> stmt instanceof JAssignStmt)
-        .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
-        .filter(value -> value instanceof JNewExpr)
-        .map(value -> ((JNewExpr) value).getType())
-        .filter(referenceType -> referenceType instanceof ClassType)
-        .map(referenceType -> (ClassType)referenceType)
-        .collect(Collectors.toSet());
+    //    // add also found classes' super classes
+    //    instantiated.stream()
+    //        .map(s -> view.getClass(s))
+    //        .filter(Optional::isPresent)
+    //        .map(Optional::get)
+    //        .map(s -> s.getSuperclass())
+    //        .filter(s -> s.isPresent())
+    //        .map(s -> s.get())
+    //        .forEach(instantiatedClasses::add);
+    Set<ClassType> instantiated =
+        method.getBody().getStmts().stream()
+            .filter(stmt -> stmt instanceof JAssignStmt)
+            .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
+            .filter(value -> value instanceof JNewExpr)
+            .map(value -> ((JNewExpr) value).getType())
+            .filter(referenceType -> referenceType instanceof ClassType)
+            .map(referenceType -> (ClassType) referenceType)
+            .collect(Collectors.toSet());
     instantiatedClasses.addAll(instantiated);
   }
 
