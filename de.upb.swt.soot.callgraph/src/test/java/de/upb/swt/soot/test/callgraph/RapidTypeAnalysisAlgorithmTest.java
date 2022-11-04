@@ -24,12 +24,11 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
   /**
    * Testing the call graph generation using RTA on a code example
    *
-   * In this testcase, the call graph of Example1 in folder {@link callgraph.Misc} is created using RTA.
-   * The testcase expects a call from main to the constructors of B,C, and E
-   * The virtual call print is resolved to calls to B.print, C.print, and E.print, since the types were instantiated.
-   * Overall, 6 calls are expected in the main method.
-   * the constructor of B is called directly and indirectly by C, since B is the super class of C.
-   *
+   * <p>In this testcase, the call graph of Example1 in folder {@link callgraph.Misc} is created
+   * using RTA. The testcase expects a call from main to the constructors of B,C, and E The virtual
+   * call print is resolved to calls to B.print, C.print, and E.print, since the types were
+   * instantiated. Overall, 6 calls are expected in the main method. the constructor of B is called
+   * directly and indirectly by C, since B is the super class of C.
    */
   @Test
   public void testMiscExample1() {
