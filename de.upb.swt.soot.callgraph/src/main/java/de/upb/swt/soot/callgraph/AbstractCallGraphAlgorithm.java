@@ -81,12 +81,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
+      //perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
       // process the method
       if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+      //get all call targets of invocations in the method body
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
+      //save calls in the call graphs
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(t)) cg.addMethod(t);
@@ -95,8 +98,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               workList.push(t);
             }
           });
+      //set method as processed
       processed.add(currentMethodSignature);
 
+      //perform post-processing if needed
       postProcessingMethod(view, currentMethodSignature, workList, cg);
     }
   }
@@ -122,10 +127,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /** finds the given method signature in class's superclasses */
   final <T extends Method> T findMethodInHierarchy(
       @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
-    Optional<? extends SootClass> optSc = view.getClass(sig.getDeclClassType());
+    Optional<? extends SootClass<?>> optSc = view.getClass(sig.getDeclClassType());
 
     if (optSc.isPresent()) {
-      SootClass sc = optSc.get();
+      SootClass<?> sc = optSc.get();
 
       List<ClassType> superClasses = typeHierarchy.superClassesOf(sc.getType());
       Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sc.getType());
