@@ -110,11 +110,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
       notInstantiatedCallTargets.forEach(
           ignoredMethodSignature -> {
-            List<Call> calls = ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
+            ClassType notInstantiatedClass = ignoredMethodSignature.getDeclClassType();
+            List<Call> calls = ignoredCalls.get(notInstantiatedClass);
             if (calls == null) {
               calls = new ArrayList<>();
               calls.add(new Call(method.getSignature(), ignoredMethodSignature));
-              ignoredCalls.put(ignoredMethodSignature.getDeclClassType(), calls);
+              ignoredCalls.put(notInstantiatedClass, calls);
             } else {
               calls.add(new Call(method.getSignature(), ignoredMethodSignature));
             }
