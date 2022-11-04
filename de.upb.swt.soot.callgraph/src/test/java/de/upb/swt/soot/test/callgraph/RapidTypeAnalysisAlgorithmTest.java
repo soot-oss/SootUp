@@ -69,66 +69,108 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.emptyList());
 
-    MethodSignature methodA =
+    MethodSignature virtualMethodA =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.A"),
-            "print",
+            "virtualDispatch",
             "void",
-            Collections.singletonList("java.lang.Object"));
+            Collections.emptyList());
 
-    MethodSignature methodB =
+    MethodSignature virtualMethodB =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.B"),
-            "print",
+            "virtualDispatch",
             "void",
-            Collections.singletonList("java.lang.Object"));
+            Collections.emptyList());
 
-    MethodSignature methodC =
+    MethodSignature virtualMethodC =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.C"),
-            "print",
+            "virtualDispatch",
             "void",
-            Collections.singletonList("java.lang.Object"));
+            Collections.emptyList());
 
-    MethodSignature methodD =
+    MethodSignature virtualMethodD =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.D"),
-            "print",
+            "virtualDispatch",
             "void",
-            Collections.singletonList("java.lang.Object"));
+            Collections.emptyList());
 
-    MethodSignature methodE =
+    MethodSignature virtualMethodE =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("example1.E"),
-            "print",
+            "virtualDispatch",
+            "void",
+            Collections.emptyList());
+
+    MethodSignature staticMethodA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.A"),
+            "staticDispatch",
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    assertTrue(cg.containsCall(mainMethodSignature, constructorB));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
+    MethodSignature staticMethodB =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.B"),
+            "staticDispatch",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
+    MethodSignature staticMethodC =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.C"),
+            "staticDispatch",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
+    MethodSignature staticMethodD =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.D"),
+            "staticDispatch",
+            "void",
+            Collections.singletonList("java.lang.Object"));
+
+    MethodSignature staticMethodE =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example1.E"),
+            "staticDispatch",
+            "void",
+            Collections.singletonList("java.lang.Object"));
 
     assertFalse(cg.containsCall(mainMethodSignature, constructorA));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorB));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
     assertFalse(cg.containsCall(mainMethodSignature, constructorD));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
 
-    assertFalse(cg.containsMethod(methodA));
-    assertTrue(cg.containsCall(mainMethodSignature, methodB));
-    assertTrue(cg.containsCall(mainMethodSignature, methodC));
-    assertFalse(cg.containsMethod(methodD));
-    assertTrue(cg.containsCall(mainMethodSignature, methodE));
+    assertFalse(cg.containsMethod(staticMethodA));
+    assertTrue(cg.containsCall(mainMethodSignature, staticMethodB));
+    assertFalse(cg.containsMethod(staticMethodC));
+    assertFalse(cg.containsMethod(staticMethodD));
+    assertFalse(cg.containsMethod(staticMethodE));
 
-    assertEquals(6, cg.callsFrom(mainMethodSignature).size());
+    assertFalse(cg.containsMethod(virtualMethodA));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodB));
+    assertFalse(cg.containsMethod(virtualMethodC));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE));
 
-    assertEquals(2, cg.callsTo(constructorB).size());
+    assertEquals(7, cg.callsFrom(mainMethodSignature).size());
+
+    assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(constructorE).size());
-    assertEquals(1, cg.callsTo(methodB).size());
-    assertEquals(1, cg.callsTo(methodC).size());
-    assertEquals(1, cg.callsTo(methodE).size());
+    assertEquals(1, cg.callsTo(staticMethodB).size());
+    assertEquals(1, cg.callsTo(virtualMethodB).size());
+    assertEquals(1, cg.callsTo(virtualMethodD).size());
+    assertEquals(1, cg.callsTo(virtualMethodE).size());
 
-    assertEquals(0, cg.callsFrom(methodB).size());
-    assertEquals(0, cg.callsFrom(methodC).size());
-    assertEquals(0, cg.callsFrom(methodE).size());
+    assertEquals(0, cg.callsFrom(staticMethodB).size());
+    assertEquals(0, cg.callsFrom(virtualMethodB).size());
+    assertEquals(0, cg.callsFrom(virtualMethodD).size());
+    assertEquals(0, cg.callsFrom(virtualMethodE).size());
   }
 
   @Test
