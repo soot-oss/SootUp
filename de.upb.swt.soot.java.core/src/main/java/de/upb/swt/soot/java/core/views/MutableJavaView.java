@@ -11,9 +11,12 @@ import de.upb.swt.soot.java.core.JavaSootMethod;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
+  private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
   public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
     super(project);
@@ -22,7 +25,7 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void addClass(JavaSootClass clazz) {
     ClassType classType = clazz.getClassSource().getClassType();
     if (this.cache.containsKey(classType)) {
-      System.out.println("Class " + classType + " already exists in view.");
+      logger.warn("Class " + classType + " already exists in view.");
       return;
     }
     this.cache.putIfAbsent(classType, clazz);
