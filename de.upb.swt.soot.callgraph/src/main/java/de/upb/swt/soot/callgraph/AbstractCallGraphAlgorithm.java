@@ -78,13 +78,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MutableCallGraph cg) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
+      //skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
-      if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+      preProcessingMethod(view, currentMethodSignature, workList, cg);
 
+      //process the method
+      if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
-
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(t)) cg.addMethod(t);
@@ -152,7 +154,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * This method enables optional post processing of a method in the call graph algorithm
+   * This method enables optional pre-processing of a method in the call graph algorithm
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that might be extended
+   * @param cg the current cg that might be extended
+   */
+  public void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // This is only implemented if it is needed in the call graph algorithm
+  }
+
+  /**
+   * This method enables optional post-processing of a method in the call graph algorithm
    *
    * @param view view
    * @param sourceMethod the processed method
@@ -164,7 +182,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
-    // is only implemented if it is needed in the call graph algorithm
+    // This is only implemented if it is needed in the call graph algorithm
   }
 
   @Nonnull
