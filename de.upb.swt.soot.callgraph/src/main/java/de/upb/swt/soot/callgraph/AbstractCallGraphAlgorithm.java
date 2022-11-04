@@ -81,15 +81,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
-      //perform pre-processing if needed
+      // perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
       // process the method
       if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
-      //get all call targets of invocations in the method body
+      // get all call targets of invocations in the method body
       Stream<MethodSignature> invocationTargets =
           resolveAllCallsFromSourceMethod(view, currentMethodSignature);
-      //save calls in the call graphs
+      // save calls in the call graphs
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(t)) cg.addMethod(t);
@@ -98,10 +98,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               workList.push(t);
             }
           });
-      //set method as processed
+      // set method as processed
       processed.add(currentMethodSignature);
 
-      //perform post-processing if needed
+      // perform post-processing if needed
       postProcessingMethod(view, currentMethodSignature, workList, cg);
     }
   }
