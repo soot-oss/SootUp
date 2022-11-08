@@ -1,0 +1,273 @@
+public class de.upb.sootup.instructions.stmt.IdentityStmt extends java.lang.Object
+{
+    int declProperty;
+    int initProperty;
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int initProperty> = 42;
+
+        return;
+    }
+
+    public void atThis()
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        int $i0, $i1, $i2, $i3;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int declProperty>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0);
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int initProperty>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i1);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $i2 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int declProperty>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i2);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i3 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int initProperty>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i3);
+
+        return;
+    }
+
+    public void atParameterPrimitive(int, boolean)
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        int i0;
+        boolean z0;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+        i0 := @parameter0: int;
+
+        z0 := @parameter1: boolean;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(boolean)>(z0);
+
+        return;
+    }
+
+    public void atParameterNonPrimitive(java.lang.Integer, java.lang.String, java.lang.Boolean, int[])
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        java.lang.Integer r1;
+        java.lang.String r2;
+        java.lang.Boolean r3;
+        int[] r4;
+        java.io.PrintStream $r5, $r6, $r7, $r8;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+        r1 := @parameter0: java.lang.Integer;
+
+        r2 := @parameter1: java.lang.String;
+
+        r3 := @parameter2: java.lang.Boolean;
+
+        r4 := @parameter3: int[];
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>(r1);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>(r2);
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.Object)>(r3);
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.Object)>(r4);
+
+        return;
+    }
+
+    public void atExceptionThrow() throws java.lang.Exception
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        java.lang.Exception $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+        $r1 = new java.lang.Exception;
+
+        specialinvoke $r1.<java.lang.Exception: void <init>(java.lang.String)>("Issue");
+
+        throw $r1;
+    }
+
+    public void atExceptionThrowAndCatch()
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        java.io.PrintStream $r1, $r2, $r3, $r5;
+        int $i0, $i1, i2;
+        java.lang.Exception $r4;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A1");
+
+        $i1 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int declProperty>;
+
+        $i0 = r0.<de.upb.sootup.instructions.stmt.IdentityStmt: int initProperty>;
+
+        i2 = $i1 * $i0;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i2);
+
+     label2:
+        goto label4;
+
+     label3:
+        $r4 := @caughtexception;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("B1");
+
+     label4:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("C1");
+
+        return;
+
+        catch java.lang.Exception from label1 to label2 with label3;
+    }
+
+    public void exceptionMultiple()
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        java.io.PrintStream $r1, $r3, $r5, $r8;
+        java.lang.IndexOutOfBoundsException $r2;
+        java.lang.Exception $r4;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A2");
+
+     label2:
+        goto label5;
+
+     label3:
+        $r2 := @caughtexception;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("B2");
+
+        goto label5;
+
+     label4:
+        $r4 := @caughtexception;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("C2");
+
+     label5:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>("D2");
+
+        return;
+
+        catch java.lang.IndexOutOfBoundsException from label1 to label2 with label3;
+        catch java.lang.Exception from label1 to label2 with label4;
+    }
+
+    public void exceptionFinally()
+    {
+        de.upb.sootup.instructions.stmt.IdentityStmt r0;
+        java.io.PrintStream $r3, $r4, $r5, $r7, $r8, $r10;
+        java.lang.Exception $r6;
+        java.lang.Throwable $r9;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IdentityStmt;
+
+     label1:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("A3");
+
+     label2:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("C3");
+
+        goto label6;
+
+     label3:
+        $r6 := @caughtexception;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>("B3");
+
+     label4:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>("C3");
+
+        goto label6;
+
+     label5:
+        $r9 := @caughtexception;
+
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(java.lang.String)>("C3");
+
+        throw $r9;
+
+     label6:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("D3");
+
+        return;
+
+        catch java.lang.Exception from label1 to label2 with label3;
+        catch java.lang.Throwable from label1 to label2 with label5;
+        catch java.lang.Throwable from label3 to label4 with label5;
+    }
+}

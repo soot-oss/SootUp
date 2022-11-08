@@ -1,0 +1,5 @@
+interface  de.upb.sootup.concrete.interfaces.I2 extends java.lang.Object
+{
+
+    public abstract void printI2();
+}

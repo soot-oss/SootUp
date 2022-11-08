@@ -1,4 +1,4 @@
-package de.upb.soot.basic.nonPrimitiveLocals;
+package de.upb.sootup.basic.nonPrimitiveLocals;
 
 public class NonPrimitiveLocals extends A {
   public void nonPrimitiveLocalsTarget() {

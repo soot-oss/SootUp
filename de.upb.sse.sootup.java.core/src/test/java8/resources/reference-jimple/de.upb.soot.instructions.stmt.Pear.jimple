@@ -1,0 +1,28 @@
+class de.upb.sootup.instructions.stmt.Pear extends java.lang.Object implements de.upb.sootup.instructions.stmt.IThing
+{
+
+    void <init>()
+    {
+        de.upb.sootup.instructions.stmt.Pear r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.Pear;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void printId()
+    {
+        de.upb.sootup.instructions.stmt.Pear r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.Pear;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Id");
+
+        return;
+    }
+}

@@ -1,0 +1,42 @@
+class de.upb.sootup.basic.abstractClasses.B extends de.upb.sootup.basic.abstractClasses.A
+{
+
+    void <init>()
+    {
+        de.upb.sootup.basic.abstractClasses.B r0;
+
+        r0 := @this: de.upb.sootup.basic.abstractClasses.B;
+
+        specialinvoke r0.<de.upb.sootup.basic.abstractClasses.A: void <init>()>();
+
+        return;
+    }
+
+    public void print()
+    {
+        de.upb.sootup.basic.abstractClasses.B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.abstractClasses.B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Something");
+
+        return;
+    }
+
+    public void methodB()
+    {
+        de.upb.sootup.basic.abstractClasses.B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.abstractClasses.B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("method of Class B");
+
+        return;
+    }
+}

@@ -26,7 +26,7 @@ mvn -Dskiptests install
 
 Since the project is not available as a maven artefact, you first need to built it from source. See [Building from Source](#building-from-source)
 
-Below we only show how you can add the ```soot.core``` module to your project. Depending on your needs you can import other modules too. See [Modules](../#modular-architecture) to learn more about the modules.
+Below we only show how you can add the ```sootup.core``` module to your project. Depending on your needs you can import other modules too. See [Modules](../#modular-architecture) to learn more about the modules.
 
 1. Maven:
 
@@ -34,9 +34,9 @@ Below we only show how you can add the ```soot.core``` module to your project. D
  
 ```
 <dependency>
-  <groupId>de.upb.swt</groupId>
-  <artifactId>soot.core</artifactId>
-  <version>4.0.0-SNAPSHOT</version>
+  <groupId>de.upb.sse</groupId>
+  <artifactId>sootup.core</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -45,5 +45,5 @@ Below we only show how you can add the ```soot.core``` module to your project. D
 Add the following dependency in the ```build.gradle``` file of your project.
 
 ```
-compile "de.upb.swt:soot.core:4.0.0-SNAPSHOT"
+compile "de.upb.sse:sootup.core:1.0.0-SNAPSHOT"
 ```

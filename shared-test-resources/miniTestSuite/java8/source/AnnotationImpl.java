@@ -1,4 +1,4 @@
-public class AnnotationImpl implements @AnnotationData.FutureSootAnnotation Runnable {
+public class AnnotationImpl implements @AnnotationData.SootUpAnnotation Runnable {
 
     public void run(){}
 }

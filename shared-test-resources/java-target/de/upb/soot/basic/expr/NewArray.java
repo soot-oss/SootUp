@@ -1,4 +1,4 @@
-package de.upb.soot.basic.expr;
+package de.upb.sootup.basic.expr;
 
 public class NewArray {
 

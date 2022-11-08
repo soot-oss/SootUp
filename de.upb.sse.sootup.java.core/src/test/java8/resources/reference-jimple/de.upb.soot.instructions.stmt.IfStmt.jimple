@@ -1,0 +1,126 @@
+public class de.upb.sootup.instructions.stmt.IfStmt extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.stmt.IfStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IfStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void ifcondition(int)
+    {
+        de.upb.sootup.instructions.stmt.IfStmt r0;
+        int i0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IfStmt;
+
+        i0 := @parameter0: int;
+
+        if i0 >= 42 goto label1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+     label1:
+        return;
+    }
+
+    public void ifelsecondition(int)
+    {
+        de.upb.sootup.instructions.stmt.IfStmt r0;
+        int i0;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IfStmt;
+
+        i0 := @parameter0: int;
+
+        if i0 >= 42 goto label1;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        goto label2;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("B");
+
+     label2:
+        return;
+    }
+
+    public void ifelseifcondition(int)
+    {
+        de.upb.sootup.instructions.stmt.IfStmt r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IfStmt;
+
+        i0 := @parameter0: int;
+
+        if i0 >= 42 goto label1;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        goto label3;
+
+     label1:
+        if i0 <= 42 goto label2;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("B");
+
+        goto label3;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("C");
+
+     label3:
+        return;
+    }
+
+    public void ternary(int, int)
+    {
+        de.upb.sootup.instructions.stmt.IfStmt r0;
+        int i0, i1, $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.IfStmt;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 >= 5 goto label1;
+
+        $i3 = i0;
+
+        goto label2;
+
+     label1:
+        $i3 = i1;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i3);
+
+        return;
+    }
+}

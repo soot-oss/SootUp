@@ -1,6 +1,6 @@
 # Getting Started
 
-This page walks you through the core data structures, as well as shows how to get started with FutureSoot.
+This page walks you through the core data structures, as well as shows how to get started with Futuresootup.
 
 ## Core Data Structures
 Before you get started with the FutureSoot library, it helps to learn about the following core data structures: 
@@ -199,7 +199,7 @@ You can view all the code used until this point below:
 
 ## FutureSoot vs Soot
 
-Below we show a comparison of the code so far with the same functionality in Soot.
+Below we show a comparison of the code so far with the same functionality in sootup.
 
 === "FutureSoot"
 

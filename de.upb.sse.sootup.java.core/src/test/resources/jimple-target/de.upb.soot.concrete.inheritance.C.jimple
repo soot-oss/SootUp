@@ -1,0 +1,67 @@
+public class de.upb.sootup.concrete.inheritance.C extends de.upb.sootup.concrete.inheritance.B
+{
+    public int a;
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.inheritance.C r0;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.C;
+
+        specialinvoke r0.<de.upb.sootup.concrete.inheritance.B: void <init>()>();
+
+        r0.<de.upb.sootup.concrete.inheritance.C: int a> = 4;
+
+        return;
+    }
+
+    public void methodA()
+    {
+        de.upb.sootup.concrete.inheritance.C r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.C;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodAinC");
+
+        return;
+    }
+
+    public void methodC()
+    {
+        de.upb.sootup.concrete.inheritance.C r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.C;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodC");
+
+        return;
+    }
+
+    public volatile void methodB()
+    {
+        de.upb.sootup.concrete.inheritance.C r0;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.C;
+
+        specialinvoke r0.<de.upb.sootup.concrete.inheritance.B: void methodB()>();
+
+        return;
+    }
+
+    public volatile void print()
+    {
+        de.upb.sootup.concrete.inheritance.C r0;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.C;
+
+        specialinvoke r0.<de.upb.sootup.concrete.inheritance.B: void print()>();
+
+        return;
+    }
+}

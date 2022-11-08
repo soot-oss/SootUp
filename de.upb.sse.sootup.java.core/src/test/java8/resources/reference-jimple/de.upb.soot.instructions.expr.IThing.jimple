@@ -1,0 +1,5 @@
+interface  de.upb.sootup.instructions.expr.IThing extends java.lang.Object
+{
+
+    public abstract int getId();
+}

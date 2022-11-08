@@ -1,0 +1,94 @@
+public class de.upb.sootup.instructions.stmt.ReturnStmtsTest extends java.lang.Object
+{
+
+    void <init>(int)
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+        int i0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        if i0 >= 18 goto label1;
+
+        return;
+
+     label1:
+        return;
+    }
+
+    public void returnnothing()
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        return;
+    }
+
+    public void pointofnoreturn()
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        return;
+    }
+
+    public int returnA(int)
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+        int i0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        i0 := @parameter0: int;
+
+        return i0;
+    }
+
+    public int returnB()
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        return 42;
+    }
+
+    public char returnC()
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        return 99;
+    }
+
+    public java.lang.Integer returnObject()
+    {
+        de.upb.sootup.instructions.stmt.ReturnStmtsTest r0;
+        java.lang.Integer $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmtsTest;
+
+        $r1 = new java.lang.Integer;
+
+        specialinvoke $r1.<java.lang.Integer: void <init>(int)>(5);
+
+        return $r1;
+    }
+}

@@ -1,0 +1,64 @@
+public class de.upb.sootup.basic.fieldReference.FieldReference extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.fieldReference.FieldReference r0;
+
+        r0 := @this: de.upb.sootup.basic.fieldReference.FieldReference;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void JFieldReference(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i0;
+        java.lang.String r2, $r11;
+        de.upb.sootup.basic.fieldReference.A $r3;
+        java.lang.StringBuilder $r4, $r6, $r7, $r8, $r9, $r10;
+        java.io.PrintStream $r5, $r12, $r13;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new de.upb.sootup.basic.fieldReference.A;
+
+        specialinvoke $r3.<de.upb.sootup.basic.fieldReference.A: void <init>()>();
+
+        i0 = $r3.<de.upb.sootup.basic.fieldReference.A: int i>;
+
+        r2 = $r3.<de.upb.sootup.basic.fieldReference.A: java.lang.String j>;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = new java.lang.StringBuilder;
+
+        specialinvoke $r4.<java.lang.StringBuilder: void <init>()>();
+
+        $r6 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(20);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is ");
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r2);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" than ");
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r12.<java.io.PrintStream: void println(int)>(2147483647);
+
+        $r13 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r13.<java.io.PrintStream: void println(float)>(3.4028235E38F);
+
+        return;
+    }
+}

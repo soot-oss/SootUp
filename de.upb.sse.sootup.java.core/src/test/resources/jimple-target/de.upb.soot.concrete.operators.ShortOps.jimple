@@ -1,0 +1,388 @@
+public class de.upb.sootup.concrete.operators.ShortOps extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void addition()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        int $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i3 = 5 + 5;
+
+        s2 = (short) $i3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void subtraction()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        int $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i3 = 5 - 5;
+
+        s2 = (short) $i3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void multiplication()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        int $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i3 = 5 * 5;
+
+        s2 = (short) $i3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void division()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        int $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i3 = 5 / 5;
+
+        s2 = (short) $i3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void modulus()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        int $i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i3 = 5 % 5;
+
+        s2 = (short) $i3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void simpleAssignmentOperator()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(5);
+
+        return;
+    }
+
+    public void bitwiseAnd()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        byte $b3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b3 = 5 & 5;
+
+        s2 = (short) $b3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void bitwiseOr()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        byte $b3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b3 = 5 | 5;
+
+        s2 = (short) $b3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void bitwiseXor()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s2;
+        byte $b3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b3 = 5 ^ 5;
+
+        s2 = (short) $b3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s2);
+
+        return;
+    }
+
+    public void bitwiseCompliment()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s1;
+        byte $b2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b2 = 5 ^ -1;
+
+        s1 = (short) $b2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s1);
+
+        return;
+    }
+
+    public void bitwiseLeftShift()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s1;
+        int $i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $i2 = 5 << 2;
+
+        s1 = (short) $i2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s1);
+
+        return;
+    }
+
+    public void bitwiseRightShift()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s1;
+        byte $b2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b2 = 5 >> 2;
+
+        s1 = (short) $b2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s1);
+
+        return;
+    }
+
+    public void bitwiseRightShiftZerofill()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        short s1;
+        byte $b2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $b2 = 5 >>> 2;
+
+        s1 = (short) $b2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(s1);
+
+        return;
+    }
+
+    public void equals()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $z1 = 1;
+
+        goto label1;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void notEquals()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        goto label1;
+
+     label1:
+        $z1 = 0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void greateThan()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        goto label1;
+
+     label1:
+        $z1 = 0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void lessThan()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        goto label1;
+
+     label1:
+        $z1 = 0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void greaterOrEqualsThan()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $z1 = 1;
+
+        goto label1;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void lessOrEqualsThan()
+    {
+        de.upb.sootup.concrete.operators.ShortOps r0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.ShortOps;
+
+        $z1 = 1;
+
+        goto label1;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

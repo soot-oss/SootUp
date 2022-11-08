@@ -1,6 +1,6 @@
-package de.upb.soot.basic.locals;
+package de.upb.sootup.basic.locals;
 
-import de.upb.soot.basic.expr.Dummy;
+import de.upb.sootup.basic.expr.Dummy;
 
 public class AssignStmt {
 

@@ -16,7 +16,7 @@
 # Package Files #
 *.jar
 *.war
-!de.upb.swt.soot.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar
+!de.upb.sse.sootup.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar
 !shared-test-resources/java-miniapps/MiniApp.jar
 !shared-test-resources/java-warApp/dummyWarApp.war
 !shared-test-resources/multi-release-jar/mrjar.jar

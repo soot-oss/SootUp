@@ -1,0 +1,99 @@
+public class de.upb.sootup.instructions.stmt.InvokeStmt extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void someMethod()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Sth");
+
+        return;
+    }
+
+    public static void somethingStatic()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Polyester Shirt");
+
+        return;
+    }
+
+    public void specialInvoke()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0, $r2;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        $r2 = new de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        specialinvoke $r2.<de.upb.sootup.instructions.stmt.InvokeStmt: void <init>()>();
+
+        specialinvoke $r2.<de.upb.sootup.instructions.stmt.InvokeStmt: void someMethod()>();
+
+        specialinvoke r0.<de.upb.sootup.instructions.stmt.InvokeStmt: void someMethod()>();
+
+        return;
+    }
+
+    public void interfaceInvoke()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0;
+        de.upb.sootup.instructions.stmt.Pear $r2;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        $r2 = new de.upb.sootup.instructions.stmt.Pear;
+
+        specialinvoke $r2.<de.upb.sootup.instructions.stmt.Pear: void <init>()>();
+
+        interfaceinvoke $r2.<de.upb.sootup.instructions.stmt.IThing: void printId()>();
+
+        return;
+    }
+
+    public void virtualInvoke()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("virtual invoked");
+
+        return;
+    }
+
+    public void staticInvoke()
+    {
+        de.upb.sootup.instructions.stmt.InvokeStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.InvokeStmt;
+
+        staticinvoke <de.upb.sootup.instructions.stmt.InvokeStmt: void somethingStatic()>();
+
+        staticinvoke <java.lang.System: void gc()>();
+
+        return;
+    }
+}

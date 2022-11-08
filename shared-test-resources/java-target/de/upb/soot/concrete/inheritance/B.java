@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.inheritance;
+package de.upb.sootup.concrete.inheritance;
 
 class B extends A {
   protected int a = 5;

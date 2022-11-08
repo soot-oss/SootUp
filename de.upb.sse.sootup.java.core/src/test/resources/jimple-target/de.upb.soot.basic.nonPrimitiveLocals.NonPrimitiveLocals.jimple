@@ -1,0 +1,48 @@
+public class de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals extends de.upb.sootup.basic.nonPrimitiveLocals.A
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals r0;
+
+        r0 := @this: de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals;
+
+        specialinvoke r0.<de.upb.sootup.basic.nonPrimitiveLocals.A: void <init>()>();
+
+        return;
+    }
+
+    public void nonPrimitiveLocalsTarget()
+    {
+        de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals r0;
+        int[] r1;
+        de.upb.sootup.basic.nonPrimitiveLocals.A $r3;
+
+        r0 := @this: de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals;
+
+        r1 = newarray (int)[10];
+
+        $r3 = new de.upb.sootup.basic.nonPrimitiveLocals.A;
+
+        specialinvoke $r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void <init>()>();
+
+        virtualinvoke $r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void foo()>();
+
+        r1[1] = 10;
+
+        r1[7] = 70;
+
+        return;
+    }
+
+    public volatile void foo()
+    {
+        de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals r0;
+
+        r0 := @this: de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals;
+
+        specialinvoke r0.<de.upb.sootup.basic.nonPrimitiveLocals.A: void foo()>();
+
+        return;
+    }
+}

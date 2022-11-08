@@ -3,53 +3,53 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Soot Examples</name>
+    <name>SootUp Examples</name>
     <artifactId>examples</artifactId>
     <parent>
-        <groupId>de.upb.swt</groupId>
-        <artifactId>soot</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <groupId>de.upb.sse</groupId>
+        <artifactId>sootup</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.callgraph</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.callgraph</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.core</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.bytecode</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.java.bytecode</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.core</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.java.core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.java.sourcecode</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.java.sourcecode</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.upb.swt</groupId>
-            <artifactId>soot.jimple.parser</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <groupId>de.upb.sse</groupId>
+            <artifactId>sootup.jimple.parser</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>de.upb.swt</groupId>
-                <artifactId>soot.java.sourcecode</artifactId>
-                <version>4.0.0-SNAPSHOT</version>
+                <groupId>de.upb.sse</groupId>
+                <artifactId>sootup.java.sourcecode</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

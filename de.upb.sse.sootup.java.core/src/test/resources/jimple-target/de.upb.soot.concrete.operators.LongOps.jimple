@@ -1,0 +1,400 @@
+public class de.upb.sootup.concrete.operators.LongOps extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void addition()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 2147483648L + 5L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void subtraction()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 5L - 2147483648L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void multiplication()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 5L * 2147483648L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void division()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 5L / 2147483648L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void modulus()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 5L % 2147483648L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void simpleAssignmentOperator()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(2147483648L);
+
+        return;
+    }
+
+    public void bitwiseAnd()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 2147483648L & 5L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void bitwiseOr()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 2147483648L | 5L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void bitwiseXor()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l2 = 2147483648L ^ 5L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l2);
+
+        return;
+    }
+
+    public void bitwiseCompliment()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l1;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l1 = 2147483648L ^ -1L;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l1);
+
+        return;
+    }
+
+    public void bitwiseLeftShift()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l1;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l1 = 2147483648L << 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l1);
+
+        return;
+    }
+
+    public void bitwiseRightShift()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l1;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l1 = 2147483648L >> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l1);
+
+        return;
+    }
+
+    public void bitwiseRightShiftZerofill()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        long l1;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        l1 = 2147483648L >>> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(l1);
+
+        return;
+    }
+
+    public void equals()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void notEquals()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void greateThan()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void lessThan()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void greaterOrEqualsThan()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void lessOrEqualsThan()
+    {
+        de.upb.sootup.concrete.operators.LongOps r0;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.LongOps;
+
+        $b2 = 2147483648L cmp 5L;
+
+        if $b2 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

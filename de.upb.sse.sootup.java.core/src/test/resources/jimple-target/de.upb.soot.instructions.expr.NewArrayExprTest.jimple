@@ -1,0 +1,52 @@
+public class de.upb.sootup.instructions.expr.NewArrayExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.NewArrayExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewArrayExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.instructions.expr.NewArrayExprTest r0;
+        int[] r1, r2;
+        double[] r3;
+        boolean[] r4;
+        char[] r5;
+        java.lang.String[] r6;
+        java.lang.Integer[] r7;
+        java.lang.Double[] r8;
+        java.lang.Boolean[] r9;
+        java.lang.Object[] r10;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewArrayExprTest;
+
+        r1 = newarray (int)[123];
+
+        r2 = newarray (int)[2];
+
+        r3 = newarray (double)[3];
+
+        r4 = newarray (boolean)[4];
+
+        r5 = newarray (char)[5];
+
+        r6 = newarray (java.lang.String)[6];
+
+        r7 = newarray (java.lang.Integer)[7];
+
+        r8 = newarray (java.lang.Double)[8];
+
+        r9 = newarray (java.lang.Boolean)[9];
+
+        r10 = newarray (java.lang.Object)[10];
+
+        return;
+    }
+}

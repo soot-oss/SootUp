@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.type;
+package de.upb.sootup.instructions.type;
 
 public class AllTypesTest {
 

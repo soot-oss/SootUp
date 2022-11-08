@@ -7,7 +7,7 @@ The purpose of the FutureSoot project is to make [Soot](https://github.com/soot-
 
 !!! important
 
-    FutureSoot is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of Soot.
+    FutureSoot is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of sootup.
 
 
 ## What is new?
@@ -24,31 +24,31 @@ FutureSoot has a modular architecture, which enables its clients to include only
 
 ??? info "core"
 
-    [core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
+    [core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
     
 ??? info "java.core"
     
-    [java.core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.core) contains parts that are essential for analyzing Java code.
+    [java.core module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.java.core) contains parts that are essential for analyzing Java code.
 
 ??? info "java.bytecode"
 
-    [java.bytecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
+    [java.bytecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
     
 ??? info "java.sourcecode"
 
-    [java.sourcecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
+    [java.sourcecode module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
     
 ??? info "callgraph"
  
-    [callgraph module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**, **VTA**, as well as a reimplementation of **Spark** pointer analysis framework.
+    [callgraph module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**, **VTA**, as well as a reimplementation of **Spark** pointer analysis framework.
   
 ??? info "jimple.parser"
     
-    [jimple.parser module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
+    [jimple.parser module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
 
 ??? info "tests" 
 
-    [tests module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.swt.soot.tests) contains integrations tests, that depend on all of the above modules.
+    [tests module](https://github.com/secure-software-engineering/soot-reloaded/tree/develop/de.upb.sse.sootup.tests) contains integrations tests, that depend on all of the above modules.
 
 ### No More Singletons
 
@@ -64,7 +64,7 @@ FutureSoot has been designed with the goal of immutability in mind. This makes s
 
 #### Withers instead of Setters
 
-Due to the immutability goal, many classes do not have setters anymore. For example, a `Body` does not have a method `setStmts(List<Stmt> stmts)`. Instead, a method called `withStmts(List<Stmt> stmts)` has been added. This does not modify the original instance, but returns a copy that has different `stmts` than the original instance. This concept of so-called `with`-ers can be found all throughout FutureSoot. 
+Due to the immutability goal, many classes do not have setters anymore. For example, a `Body` does not have a method `setStmts(List<Stmt> stmts)`. Instead, a method called `withStmts(List<Stmt> stmts)` has been added. This does not modify the original instance, but returns a copy that has different `stmts` than the original instance. This concept of so-called `with`-ers can be found all throughout Futuresootup. 
 
 !!! example "A simplified example"
 
@@ -87,8 +87,8 @@ Due to the immutability goal, many classes do not have setters anymore. For exam
 
 ### Intermediate Representation
 
-Jimple is the only intermediate representation (IR) in FutureSoot. We changed it slightly to be able to accommodate different programming languages in future.
+Jimple is the only intermediate representation (IR) in Futuresootup. We changed it slightly to be able to accommodate different programming languages in future.
 
 ### Is this a drop-in replacement for Soot?
 
-Not really. FutureSoot has a completely new architecture and API, so it is not trivial to update existing projects that build on Soot. We recommend using it for greenfield projects.
+Not really. FutureSoot has a completely new architecture and API, so it is not trivial to update existing projects that build on sootup. We recommend using it for greenfield projects.

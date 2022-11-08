@@ -1,4 +1,4 @@
-package de.upb.soot.basic.hierarchy;
+package de.upb.sootup.basic.hierarchy;
 
 public class Hierarchy extends A {
   public static void hierarchy(String[] args) {

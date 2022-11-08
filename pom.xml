@@ -5,10 +5,10 @@
 		 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <name>Soot</name>
-    <groupId>de.upb.swt</groupId>
-    <artifactId>soot</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <name>SootUp</name>
+    <groupId>de.upb.sse</groupId>
+    <artifactId>sootup</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <licenses>
         <license>
             <name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
@@ -18,14 +18,14 @@
     </licenses>
 
     <modules>
-        <module>de.upb.swt.soot.core</module>
-        <module>de.upb.swt.soot.jimple.parser</module>
-        <module>de.upb.swt.soot.java.core</module>
-        <module>de.upb.swt.soot.java.bytecode</module>
-        <module>de.upb.swt.soot.java.sourcecode</module>
-        <module>de.upb.swt.soot.tests</module>
-        <module>de.upb.swt.soot.callgraph</module>
-        <module>de.upb.swt.soot.analysis</module>
+        <module>de.upb.sse.sootup.core</module>
+        <module>de.upb.sse.sootup.jimple.parser</module>
+        <module>de.upb.sse.sootup.java.core</module>
+        <module>de.upb.sse.sootup.java.bytecode</module>
+        <module>de.upb.sse.sootup.java.sourcecode</module>
+        <module>de.upb.sse.sootup.tests</module>
+        <module>de.upb.sse.sootup.callgraph</module>
+        <module>de.upb.sse.sootup.analysis</module>
         <module>examples</module>
         <module>report</module>
     </modules>
@@ -118,7 +118,7 @@
                     <executable>mvn</executable>
                     <arguments>
                         <argument>install:install-file</argument>
-                        <argument>-Dfile=de.upb.swt.soot.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar</argument>
+                        <argument>-Dfile=de.upb.sse.sootup.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar</argument>
                         <argument>-DgroupId=com.googlecode.d2j</argument>
                         <argument>-DartifactId=dex-tools</argument>
                         <argument>-Dversion=2.2-SNAPSHOT</argument>
@@ -282,9 +282,9 @@
                     <licenseName>lgpl_v2_1</licenseName>
                     <organizationName>Raja Vallée-Rai and others</organizationName>
                     <roots>
-                        <root>de.upb.swt.soot.callgraph/src/main/java</root>
-                        <root>de.upb.swt.soot.java.bytecode/src/main/java</root>
-                        <root>de.upb.swt.soot.java.sourcecode/src/main/java</root>
+                        <root>de.upb.sse.sootup.callgraph/src/main/java</root>
+                        <root>de.upb.sse.sootup.java.bytecode/src/main/java</root>
+                        <root>de.upb.sse.sootup.java.sourcecode/src/main/java</root>
                     </roots>
                 </configuration>
                 <executions>

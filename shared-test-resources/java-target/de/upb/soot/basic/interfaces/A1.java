@@ -1,4 +1,4 @@
-package de.upb.soot.basic.interfaces;
+package de.upb.sootup.basic.interfaces;
 
 interface A1 {
   // methodRef signature

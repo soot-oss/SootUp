@@ -1,0 +1,65 @@
+public class de.upb.sootup.basic.invoke.ReflectionInvoke extends de.upb.sootup.basic.invoke.A
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.invoke.ReflectionInvoke r0;
+
+        r0 := @this: de.upb.sootup.basic.invoke.ReflectionInvoke;
+
+        specialinvoke r0.<de.upb.sootup.basic.invoke.A: void <init>()>();
+
+        return;
+    }
+
+    public static void ReflectionInvoke() throws java.lang.NoSuchMethodException
+    {
+        staticinvoke <de.upb.sootup.basic.invoke.A: int methodA()>();
+
+        return;
+    }
+
+    public static void staticInvokeReflection() throws java.lang.NoSuchMethodException
+    {
+        java.lang.reflect.Method r0;
+        java.lang.Class $r1, $r2;
+        java.lang.Class[] $r3;
+        java.lang.Object[] $r4;
+        java.lang.reflect.InvocationTargetException $r6;
+        java.lang.IllegalAccessException $r7;
+
+        $r1 = class "Lde/upb/soot/basic/invoke/A;";
+
+        $r2 = virtualinvoke $r1.<java.lang.Object: java.lang.Class getClass()>();
+
+        $r3 = newarray (java.lang.Class)[0];
+
+        r0 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Method getMethod(java.lang.String,java.lang.Class[])>("methodA", $r3);
+
+     label1:
+        $r4 = newarray (java.lang.Object)[0];
+
+        virtualinvoke r0.<java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>(r0, $r4);
+
+     label2:
+        goto label5;
+
+     label3:
+        $r7 := @caughtexception;
+
+        virtualinvoke $r7.<java.lang.IllegalAccessException: void printStackTrace()>();
+
+        goto label5;
+
+     label4:
+        $r6 := @caughtexception;
+
+        virtualinvoke $r6.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
+
+     label5:
+        return;
+
+        catch java.lang.IllegalAccessException from label1 to label2 with label3;
+        catch java.lang.reflect.InvocationTargetException from label1 to label2 with label4;
+    }
+}

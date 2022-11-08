@@ -1,6 +1,6 @@
-package de.upb.soot.instructions.stmt;
+package de.upb.sootup.instructions.stmt;
 
-import de.upb.soot.basic.expr.Dummy;
+import de.upb.sootup.basic.expr.Dummy;
 
 public class AssignStmtTest {
 

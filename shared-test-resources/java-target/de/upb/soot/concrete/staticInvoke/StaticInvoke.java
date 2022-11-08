@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.staticInvoke;
+package de.upb.sootup.concrete.staticInvoke;
 
 public class StaticInvoke {
 

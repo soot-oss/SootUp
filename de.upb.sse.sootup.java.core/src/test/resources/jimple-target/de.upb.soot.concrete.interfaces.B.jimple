@@ -1,0 +1,28 @@
+class de.upb.sootup.concrete.interfaces.B extends java.lang.Object implements de.upb.sootup.concrete.interfaces.I1
+{
+
+    void <init>()
+    {
+        de.upb.sootup.concrete.interfaces.B r0;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.B;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void printI1()
+    {
+        de.upb.sootup.concrete.interfaces.B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface I1");
+
+        return;
+    }
+}

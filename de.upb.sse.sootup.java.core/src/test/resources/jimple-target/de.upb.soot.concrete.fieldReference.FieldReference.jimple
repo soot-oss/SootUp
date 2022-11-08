@@ -1,0 +1,262 @@
+public class de.upb.sootup.concrete.fieldReference.FieldReference extends java.lang.Object
+{
+    private final int f;
+    protected java.lang.String b;
+    private int a;
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int f> = 2;
+
+        r0.<de.upb.sootup.concrete.fieldReference.FieldReference: java.lang.String b> = "foo";
+
+        r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int a> = 1;
+
+        return;
+    }
+
+    public void ownField()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        int $i0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int a>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0);
+
+        return;
+    }
+
+    public void ownFieldWrite()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        int $i0, $i1, $i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $i0 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int a>;
+
+        $i1 = $i0 + 1;
+
+        r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int a> = $i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i2 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: int a>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i2);
+
+        return;
+    }
+
+    public void otherField()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        de.upb.sootup.concrete.fieldReference.A $r2;
+        int $i0;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = $r2.<de.upb.sootup.concrete.fieldReference.A: int i>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i0);
+
+        return;
+    }
+
+    public void otherFieldWrite()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        de.upb.sootup.concrete.fieldReference.A $r2;
+        int $i0, $i1, $i2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        $i0 = $r2.<de.upb.sootup.concrete.fieldReference.A: int i>;
+
+        $i1 = $i0 + 1;
+
+        $r2.<de.upb.sootup.concrete.fieldReference.A: int i> = $i1;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $i2 = $r2.<de.upb.sootup.concrete.fieldReference.A: int i>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i2);
+
+        return;
+    }
+
+    public void otherFieldWrite2()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        de.upb.sootup.concrete.fieldReference.A $r2;
+        int $i1, $i2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        $i1 = $r2.<de.upb.sootup.concrete.fieldReference.A: int i>;
+
+        $i2 = $i1 + 1;
+
+        $r2.<de.upb.sootup.concrete.fieldReference.A: int i> = $i2;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i1);
+
+        return;
+    }
+
+    public void ownFieldObject()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        java.lang.String $r1;
+        java.io.PrintStream $r2;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: java.lang.String b>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1);
+
+        return;
+    }
+
+    public void ownFieldWriteObject()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        java.lang.String $r1;
+        java.io.PrintStream $r2;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        r0.<de.upb.sootup.concrete.fieldReference.FieldReference: java.lang.String b> = "new";
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: java.lang.String b>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1);
+
+        return;
+    }
+
+    public void otherFieldObject()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        de.upb.sootup.concrete.fieldReference.A $r2;
+        java.lang.String $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = $r2.<de.upb.sootup.concrete.fieldReference.A: java.lang.String j>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r3);
+
+        return;
+    }
+
+    public void otherFieldWriteObject()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        de.upb.sootup.concrete.fieldReference.A $r2;
+        java.lang.String $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        $r2.<de.upb.sootup.concrete.fieldReference.A: java.lang.String j> = "new";
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = $r2.<de.upb.sootup.concrete.fieldReference.A: java.lang.String j>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r3);
+
+        return;
+    }
+
+    public void otherFieldWrite2Object()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        java.lang.String r2;
+        de.upb.sootup.concrete.fieldReference.A $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r3 = new de.upb.sootup.concrete.fieldReference.A;
+
+        specialinvoke $r3.<de.upb.sootup.concrete.fieldReference.A: void <init>()>();
+
+        r2 = $r3.<de.upb.sootup.concrete.fieldReference.A: java.lang.String j>;
+
+        $r3.<de.upb.sootup.concrete.fieldReference.A: java.lang.String j> = "new";
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r2);
+
+        return;
+    }
+
+    public void finalField()
+    {
+        de.upb.sootup.concrete.fieldReference.FieldReference r0;
+        java.lang.String $r1;
+        java.io.PrintStream $r2;
+
+        r0 := @this: de.upb.sootup.concrete.fieldReference.FieldReference;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = r0.<de.upb.sootup.concrete.fieldReference.FieldReference: java.lang.String b>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1);
+
+        return;
+    }
+}

@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.inheritance;
+package de.upb.sootup.concrete.inheritance;
 
 public class Inheritance {
   public void dynDispatch1() {

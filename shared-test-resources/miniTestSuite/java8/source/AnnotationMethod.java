@@ -10,18 +10,18 @@ public class AnnotationMethod {
 
 
     public String demoMethod() {
-        @FutureSootAnnotation List<String> str = new ArrayList<>();
+        @SootUpAnnotation List<String> str = new ArrayList<>();
         return "";
     }
-    public @FutureSootAnnotation String getString() { return "";}
+    public @SootUpAnnotation String getString() { return "";}
 
-    public void showString(@FutureSootAnnotation String str) throws  @AnnotationTryCatch.FutureSootAnnotation Exception{}
+    public void showString(@SootUpAnnotation String str) throws  @AnnotationTryCatch.SootUpAnnotation Exception{}
 
-    <@FutureSootAnnotation number> void demoGenericMethod(){}
+    <@SootUpAnnotation number> void demoGenericMethod(){}
 
-    Function<AnnotationMethod, String> f = @FutureSootAnnotation AnnotationMethod::demoMethod;
-    public void demoMethod1() throws @FutureSootAnnotation Exception{
-        @FutureSootAnnotation List<String> str = new ArrayList<>();
+    Function<AnnotationMethod, String> f = @SootUpAnnotation AnnotationMethod::demoMethod;
+    public void demoMethod1() throws @SootUpAnnotation Exception{
+        @SootUpAnnotation List<String> str = new ArrayList<>();
     }
 
     public static void main(String[] args) {
@@ -37,5 +37,5 @@ public class AnnotationMethod {
 
     @Target({ElementType.TYPE_USE,ElementType.TYPE_PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface FutureSootAnnotation{}
+    public @interface SootUpAnnotation{}
 }
