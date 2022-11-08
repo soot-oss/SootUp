@@ -30,8 +30,8 @@ public class AllDispatchTest extends MethodDispatchBase {
         identifierFactory.getMethodSignature(
             sootClassTypeC, "method", "void", Collections.emptyList());
     MethodSignature sootMethodAbstract =
-    identifierFactory.getMethodSignature(
-        sootClassTypeAbstract, "method", "void", Collections.emptyList());
+        identifierFactory.getMethodSignature(
+            sootClassTypeAbstract, "method", "void", Collections.emptyList());
 
     Set<MethodSignature> candidatesAbstract =
         MethodDispatchResolver.resolveAllDispatches(
@@ -41,7 +41,6 @@ public class AllDispatchTest extends MethodDispatchBase {
 
     assertTrue(candidatesAbstract.contains(sootMethodB));
     assertTrue(candidatesAbstract.contains(sootMethodC));
-    assertTrue(candidatesAbstract.contains(sootMethodAbstract));
+    assertFalse(candidatesAbstract.contains(sootMethodAbstract));
   }
 }
-

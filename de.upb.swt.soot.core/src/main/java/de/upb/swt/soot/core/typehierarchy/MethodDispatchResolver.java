@@ -39,8 +39,8 @@ public final class MethodDispatchResolver {
 
   /**
    * Searches the view for classes that are subtypes of the class contained in the signature.
-   * returns method signatures to all subtypes.
-   * the returned set can contain signatures to abstract methods or not implemented methods.
+   * returns method signatures to all subtypes. Abstract methods are filtered the returned set can
+   * contain signatures of not implemented methods.
    */
   @Nonnull
   public static Set<MethodSignature> resolveAllDispatches(
@@ -55,8 +55,13 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .map(
-            sootClass -> new MethodSignature(sootClass.getType(), m.getSubSignature()))
+        .filter(
+            sootClass -> {
+              SootMethod sootMethod = sootClass.getMethod(m.getSubSignature()).orElse(null);
+              // method is not implemented or not abstract
+              return sootMethod == null || !sootMethod.isAbstract();
+            })
+        .map(sootClass -> new MethodSignature(sootClass.getType(), m.getSubSignature()))
         .collect(Collectors.toSet());
   }
 
