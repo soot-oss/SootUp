@@ -1,0 +1,28 @@
+public class de.upb.sootup.concrete.interfaces.D extends de.upb.sootup.concrete.interfaces.C
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.interfaces.D r0;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.D;
+
+        specialinvoke r0.<de.upb.sootup.concrete.interfaces.C: void <init>()>();
+
+        return;
+    }
+
+    public void printI2()
+    {
+        de.upb.sootup.concrete.interfaces.D r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.D;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("overwrites i2");
+
+        return;
+    }
+}

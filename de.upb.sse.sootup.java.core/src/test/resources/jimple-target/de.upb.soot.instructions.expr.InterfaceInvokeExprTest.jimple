@@ -1,0 +1,36 @@
+public class de.upb.sootup.instructions.expr.InterfaceInvokeExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.InterfaceInvokeExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.InterfaceInvokeExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.instructions.expr.InterfaceInvokeExprTest r0;
+        int i0;
+        de.upb.sootup.instructions.expr.Pear $r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.instructions.expr.InterfaceInvokeExprTest;
+
+        $r2 = new de.upb.sootup.instructions.expr.Pear;
+
+        specialinvoke $r2.<de.upb.sootup.instructions.expr.Pear: void <init>()>();
+
+        i0 = interfaceinvoke $r2.<de.upb.sootup.instructions.expr.IThing: int getId()>();
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+
+        return;
+    }
+}

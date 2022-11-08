@@ -1,0 +1,50 @@
+public class de.upb.sootup.basic.expr.NewArray extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.expr.NewArray r0;
+
+        r0 := @this: de.upb.sootup.basic.expr.NewArray;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.basic.expr.NewArray r0;
+        int[] r1;
+        double[] r2;
+        boolean[] r3;
+        char[] r4;
+        java.lang.String[] r5;
+        java.lang.Integer[] r6;
+        java.lang.Double[] r7;
+        java.lang.Boolean[] r8;
+        java.lang.Object[] r9;
+
+        r0 := @this: de.upb.sootup.basic.expr.NewArray;
+
+        r1 = newarray (int)[42];
+
+        r2 = newarray (double)[42];
+
+        r3 = newarray (boolean)[42];
+
+        r4 = newarray (char)[42];
+
+        r5 = newarray (java.lang.String)[42];
+
+        r6 = newarray (java.lang.Integer)[42];
+
+        r7 = newarray (java.lang.Double)[42];
+
+        r8 = newarray (java.lang.Boolean)[42];
+
+        r9 = newarray (java.lang.Object)[42];
+
+        return;
+    }
+}

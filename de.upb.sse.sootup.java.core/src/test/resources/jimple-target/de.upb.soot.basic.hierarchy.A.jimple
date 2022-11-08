@@ -1,0 +1,32 @@
+class de.upb.sootup.basic.hierarchy.A extends de.upb.sootup.basic.hierarchy.B
+{
+
+    void <init>()
+    {
+        de.upb.sootup.basic.hierarchy.A r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.A;
+
+        specialinvoke r0.<de.upb.sootup.basic.hierarchy.B: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String methodA()
+    {
+        de.upb.sootup.basic.hierarchy.A r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.A;
+
+        return "Return from methodA of class A";
+    }
+
+    public int method_intA()
+    {
+        de.upb.sootup.basic.hierarchy.A r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.A;
+
+        return 7;
+    }
+}

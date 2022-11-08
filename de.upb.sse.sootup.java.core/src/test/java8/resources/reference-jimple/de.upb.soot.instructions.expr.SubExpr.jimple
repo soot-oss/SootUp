@@ -1,0 +1,35 @@
+public class de.upb.sootup.instructions.expr.SubExpr extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.SubExpr r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.SubExpr;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void subtraction(int, int)
+    {
+        de.upb.sootup.instructions.expr.SubExpr r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.SubExpr;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 - i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+}

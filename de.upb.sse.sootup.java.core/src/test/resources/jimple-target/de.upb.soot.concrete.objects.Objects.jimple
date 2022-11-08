@@ -1,0 +1,129 @@
+public class de.upb.sootup.concrete.objects.Objects extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void emptyConstructor()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.A $r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r2 = new de.upb.sootup.concrete.objects.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.objects.A: void <init>()>();
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        return;
+    }
+
+    public void singleConstructor()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.B $r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r2 = new de.upb.sootup.concrete.objects.B;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.objects.B: void <init>()>();
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("B");
+
+        return;
+    }
+
+    public void methodCall()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.A $r1;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r1 = new de.upb.sootup.concrete.objects.A;
+
+        specialinvoke $r1.<de.upb.sootup.concrete.objects.A: void <init>()>();
+
+        virtualinvoke $r1.<de.upb.sootup.concrete.objects.A: void voidM()>();
+
+        return;
+    }
+
+    public void methodCallReturn()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.A $r1;
+        java.io.PrintStream $r2;
+        java.lang.String $r3;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new de.upb.sootup.concrete.objects.A;
+
+        specialinvoke $r1.<de.upb.sootup.concrete.objects.A: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<de.upb.sootup.concrete.objects.A: java.lang.String returnM()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3);
+
+        return;
+    }
+
+    public void methodCallArgs()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.A $r1;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r1 = new de.upb.sootup.concrete.objects.A;
+
+        specialinvoke $r1.<de.upb.sootup.concrete.objects.A: void <init>()>();
+
+        virtualinvoke $r1.<de.upb.sootup.concrete.objects.A: void argsM(java.lang.String,java.lang.String)>("foo", "bar");
+
+        return;
+    }
+
+    public void methodCallVarArgs()
+    {
+        de.upb.sootup.concrete.objects.Objects r0;
+        de.upb.sootup.concrete.objects.A $r1;
+        java.lang.String[] $r2;
+
+        r0 := @this: de.upb.sootup.concrete.objects.Objects;
+
+        $r1 = new de.upb.sootup.concrete.objects.A;
+
+        specialinvoke $r1.<de.upb.sootup.concrete.objects.A: void <init>()>();
+
+        $r2 = newarray (java.lang.String)[2];
+
+        $r2[0] = "foo";
+
+        $r2[1] = "bar";
+
+        virtualinvoke $r1.<de.upb.sootup.concrete.objects.A: void argsVar(java.lang.String[])>($r2);
+
+        return;
+    }
+}

@@ -1,3 +1,3 @@
-module de.upb.swt.multirelease {
-exports de.upb.swt.multirelease;
+module de.upb.sse.multirelease {
+exports de.upb.sse.multirelease;
 }

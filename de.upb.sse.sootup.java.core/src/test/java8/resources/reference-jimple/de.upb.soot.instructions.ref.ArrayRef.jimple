@@ -1,0 +1,41 @@
+public class de.upb.sootup.instructions.ref.ArrayRef extends java.lang.Object
+{
+    int[] arr;
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.ref.ArrayRef r0;
+
+        r0 := @this: de.upb.sootup.instructions.ref.ArrayRef;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    boolean[] someMethod()
+    {
+        de.upb.sootup.instructions.ref.ArrayRef r0;
+        java.lang.String[] r1;
+        int[] $r2, $r3;
+        boolean[] $r4;
+
+        r0 := @this: de.upb.sootup.instructions.ref.ArrayRef;
+
+        $r2 = newarray (int)[123];
+
+        r0.<de.upb.sootup.instructions.ref.ArrayRef: int[] arr> = $r2;
+
+        $r3 = r0.<de.upb.sootup.instructions.ref.ArrayRef: int[] arr>;
+
+        $r3[100] = 42;
+
+        r1 = newarray (java.lang.String)[2];
+
+        r1[0] = "zero";
+
+        $r4 = newarray (boolean)[0];
+
+        return $r4;
+    }
+}

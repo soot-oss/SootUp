@@ -1,4 +1,4 @@
-package de.upb.soot.basic.primitiveLocals;
+package de.upb.sootup.basic.primitiveLocals;
 
 public class PrimitiveLocals {
   public void primitiveInt() {

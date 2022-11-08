@@ -1,4 +1,4 @@
-package de.upb.soot.basic.invoke;
+package de.upb.sootup.basic.invoke;
 
 public class A {
   private String name;

@@ -1,4 +1,4 @@
-package de.upb.soot.basic.abstractClasses;
+package de.upb.sootup.basic.abstractClasses;
 
 class B extends A {
   public void print() {

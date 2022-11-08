@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.stmt;
+package de.upb.sootup.instructions.stmt;
 
 public class IfStmtTest {
 

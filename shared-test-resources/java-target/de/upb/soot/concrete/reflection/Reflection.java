@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.reflection;
+package de.upb.sootup.concrete.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

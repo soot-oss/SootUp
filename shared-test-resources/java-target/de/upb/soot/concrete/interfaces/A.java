@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.interfaces;
+package de.upb.sootup.concrete.interfaces;
 
 /**
  * @author Manuel Benz created on 12.07.18

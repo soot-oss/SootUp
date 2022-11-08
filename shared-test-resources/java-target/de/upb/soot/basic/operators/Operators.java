@@ -1,4 +1,4 @@
-package de.upb.soot.basic.operators;
+package de.upb.sootup.basic.operators;
 
 public class Operators {
   // Addition

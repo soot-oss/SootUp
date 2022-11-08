@@ -1,4 +1,4 @@
-package de.upb.swt.multirelease;
+package de.upb.sse.multirelease;
 
 public class Main {
 

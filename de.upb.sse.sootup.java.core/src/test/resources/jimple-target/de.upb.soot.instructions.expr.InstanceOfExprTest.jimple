@@ -1,0 +1,82 @@
+public class de.upb.sootup.instructions.expr.InstanceOfExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.InstanceOfExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.InstanceOfExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void isObject()
+    {
+        de.upb.sootup.instructions.expr.InstanceOfExprTest r0;
+        boolean z0;
+        java.lang.Integer $r2;
+        java.lang.StringBuilder $r3, $r5, $r6;
+        java.io.PrintStream $r4;
+        java.lang.String $r7;
+
+        r0 := @this: de.upb.sootup.instructions.expr.InstanceOfExprTest;
+
+        $r2 = new java.lang.Integer;
+
+        specialinvoke $r2.<java.lang.Integer: void <init>(int)>(42);
+
+        z0 = $r2 instanceof java.lang.Object;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = new java.lang.StringBuilder;
+
+        specialinvoke $r3.<java.lang.StringBuilder: void <init>()>();
+
+        $r5 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("is someNumber an Object: ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>(z0);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+        return;
+    }
+
+    void isInteger()
+    {
+        de.upb.sootup.instructions.expr.InstanceOfExprTest r0;
+        boolean z0;
+        java.lang.Integer $r2;
+        java.lang.StringBuilder $r3, $r5, $r6;
+        java.io.PrintStream $r4;
+        java.lang.String $r7;
+
+        r0 := @this: de.upb.sootup.instructions.expr.InstanceOfExprTest;
+
+        $r2 = new java.lang.Integer;
+
+        specialinvoke $r2.<java.lang.Integer: void <init>(int)>(42);
+
+        z0 = $r2 instanceof java.lang.Integer;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = new java.lang.StringBuilder;
+
+        specialinvoke $r3.<java.lang.StringBuilder: void <init>()>();
+
+        $r5 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("is someNumber an Integer: ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(boolean)>(z0);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+        return;
+    }
+}

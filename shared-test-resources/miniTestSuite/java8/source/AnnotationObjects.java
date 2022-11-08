@@ -8,14 +8,14 @@ import java.util.function.Function;
 
 public class AnnotationObjects {
 
-    List<String> list = new @FutureSootAnnotation ArrayList<>();
-    AnnotationObjects myClass = new @FutureSootAnnotation AnnotationObjects();
-    //AnnotationMethod.NestedClass nestedClass = myClass.new @FutureSootAnnotation NestedClass();
-    AnnotationObjects otherClassInstance = (@FutureSootAnnotation AnnotationObjects) myClass;// type casting
-    boolean b = myClass instanceof @FutureSootAnnotation Object; //instaceOf check
+    List<String> list = new @SootUpAnnotation ArrayList<>();
+    AnnotationObjects myClass = new @SootUpAnnotation AnnotationObjects();
+    //AnnotationMethod.NestedClass nestedClass = myClass.new @SootUpAnnotation NestedClass();
+    AnnotationObjects otherClassInstance = (@SootUpAnnotation AnnotationObjects) myClass;// type casting
+    boolean b = myClass instanceof @SootUpAnnotation Object; //instaceOf check
 
     @Target({ElementType.TYPE_USE,ElementType.TYPE_PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface FutureSootAnnotation{}
+    public @interface SootUpAnnotation{}
 }
 

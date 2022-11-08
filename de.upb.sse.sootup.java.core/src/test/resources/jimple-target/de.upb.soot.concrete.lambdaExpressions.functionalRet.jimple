@@ -1,0 +1,5 @@
+interface  de.upb.sootup.concrete.lambdaExpressions.functionalRet extends java.lang.Object
+{
+
+    public abstract java.lang.String eval();
+}

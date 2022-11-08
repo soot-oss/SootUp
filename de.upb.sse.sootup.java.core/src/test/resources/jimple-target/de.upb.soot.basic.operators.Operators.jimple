@@ -1,0 +1,1232 @@
+public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void addition(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 + i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void subtraction(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 - i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void multiplication(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 * i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void division(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 / i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void modulus(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 % i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void increment(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void decrement(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void simpleAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+
+        return;
+    }
+
+    public void addAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 + i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void subtractAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 - i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void multiplyAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 * i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void divideAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 / i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void modulusAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 % i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void leftShiftAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 << 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void rightShiftAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0;
+        java.io.PrintStream $r1;
+        byte b2;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        b2 = 0 >> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+
+        return;
+    }
+
+    public void bitwiseAND(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0;
+        java.io.PrintStream $r1;
+        byte b2;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        b2 = 0 & 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+
+        return;
+    }
+
+    public void bitwiseXOR(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0;
+        java.io.PrintStream $r1;
+        byte b2;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        b2 = 0 ^ 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+
+        return;
+    }
+
+    public void bitwiseIncORAssignmentOperator(int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0;
+        java.io.PrintStream $r1;
+        byte b2;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        b2 = 0 | 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+
+        return;
+    }
+
+    public void relationalEqualTo(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 != i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void relationalNotEqualTo(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 == i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void relationalGreaterThan(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 <= i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void relationalLessThan(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 >= i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void relationalGreaterThanEqualTo(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 < i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void relationalLessThanEqualTo(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 > i1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void logicalOR(boolean, boolean)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        boolean z0, z1, $z3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        z0 := @parameter0: boolean;
+
+        z1 := @parameter1: boolean;
+
+        if z0 != 0 goto label1;
+
+        if z1 == 0 goto label2;
+
+     label1:
+        $z3 = 1;
+
+        goto label3;
+
+     label2:
+        $z3 = 0;
+
+     label3:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+
+        return;
+    }
+
+    public void logicalAND(boolean, boolean)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        boolean z0, z1, $z3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        z0 := @parameter0: boolean;
+
+        z1 := @parameter1: boolean;
+
+        if z0 == 0 goto label1;
+
+        if z1 == 0 goto label1;
+
+        $z3 = 1;
+
+        goto label2;
+
+     label1:
+        $z3 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+
+        return;
+    }
+
+    public void logicalNOT(boolean, boolean)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        boolean z0, z1, $z3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        z0 := @parameter0: boolean;
+
+        z1 := @parameter1: boolean;
+
+        if z0 == z1 goto label1;
+
+        $z3 = 1;
+
+        goto label2;
+
+     label1:
+        $z3 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+
+        return;
+    }
+
+    public void bitwiseAND(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 & i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseOR(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 | i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseXOR(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 ^ i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseCompliment(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 ^ -1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseLeftShift(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 << 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseRightShift(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 >> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void bitwiseRightShiftZerofill(int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 >>> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void conditionalOperator(int, int, int)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+        short $s4;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        if i0 != i1 goto label1;
+
+        $s4 = 123;
+
+        goto label2;
+
+     label1:
+        $s4 = 456;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($s4);
+
+        return;
+    }
+
+    public void instanceofOperator()
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        boolean z0;
+        java.io.PrintStream $r2;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        z0 = "Java" instanceof java.lang.String;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(boolean)>(z0);
+
+        return;
+    }
+
+    public void cmpOperatorNotEqual(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorEqual(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLower(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLowerEqual(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreater(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreaterEqual(long, long)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorNotEqual(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorEqual(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpgOperatorLower(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpg f1;
+
+        if $b0 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpgOperatorLowerEqual(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpg f1;
+
+        if $b0 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreater(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreaterEqual(float, float)
+    {
+        de.upb.sootup.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

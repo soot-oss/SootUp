@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.operators;
+package de.upb.sootup.concrete.operators;
 
 /**
  * @author Manuel Benz created on 20.07.18

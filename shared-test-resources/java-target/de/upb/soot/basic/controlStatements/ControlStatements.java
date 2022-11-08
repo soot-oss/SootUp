@@ -1,4 +1,4 @@
-package de.upb.soot.basic.controlStatements;
+package de.upb.sootup.basic.controlStatements;
 
 public class ControlStatements {
 

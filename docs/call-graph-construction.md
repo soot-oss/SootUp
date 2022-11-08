@@ -76,7 +76,7 @@ All the call graph construction algorithms require an entry method to start with
     ```
 
 ## Class Hierarchy Analysis
-Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in FutureSoot. It soundly includes all implementers of an interface, when resolving a method call on an interface.
+Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in Futuresootup. It soundly includes all implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with CHA as follows:
 
 === "FutureSoot"

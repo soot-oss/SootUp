@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.interfaces;
+package de.upb.sootup.concrete.interfaces;
 
 public class C implements I1, I2 {
 

@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.interfaces;
+package de.upb.sootup.concrete.interfaces;
 
 // implementing single interface
 class B implements I1 {
