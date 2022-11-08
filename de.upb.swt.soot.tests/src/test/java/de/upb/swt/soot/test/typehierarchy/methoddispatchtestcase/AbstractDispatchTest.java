@@ -12,7 +12,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author : Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class AbstractDispatchTest extends MethodDispatchBase {
   @Test
@@ -32,22 +32,25 @@ public class AbstractDispatchTest extends MethodDispatchBase {
     MethodSignature sootMethodC =
         identifierFactory.getMethodSignature(
             sootClassTypeC, "method", "void", Collections.emptyList());
+    MethodSignature sootMethodAbstract =
+        identifierFactory.getMethodSignature(
+            sootClassTypeAbstract, "method", "void", Collections.emptyList());
 
     Set<MethodSignature> candidatesAbstract =
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                sootClassTypeAbstract, "method", "void", Collections.emptyList()));
-    assertTrue(candidatesAbstract.contains(sootMethodA));
-    assertTrue(candidatesAbstract.contains(sootMethodB));
+                sootClassTypeA, "method", "void", Collections.emptyList()));
+    assertFalse(candidatesAbstract.contains(sootMethodAbstract));
+    assertFalse(candidatesAbstract.contains(sootMethodB));
     assertTrue(candidatesAbstract.contains(sootMethodC));
 
     Set<MethodSignature> candidatesSuper =
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
-                sootClassTypeA, "method", "void", Collections.emptyList()));
-    assertTrue(candidatesSuper.contains(sootMethodB));
+                sootClassTypeAbstract, "method", "void", Collections.emptyList()));
+    assertFalse(candidatesSuper.contains(sootMethodB));
     assertTrue(candidatesSuper.contains(sootMethodC));
   }
 }

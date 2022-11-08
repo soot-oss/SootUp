@@ -1,7 +1,7 @@
 
 /** @author: Hasitha Rajapakse **/
 
-public class A extends AbstractClass{
+public class A {
     public void method(){
         int num = 5;
     }
