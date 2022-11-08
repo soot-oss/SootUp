@@ -38,6 +38,29 @@ public final class MethodDispatchResolver {
   private MethodDispatchResolver() {}
 
   /**
+   * Searches the view for classes that are subtypes of the class contained in the signature.
+   * returns method signatures to all subtypes.
+   * the returned set can contain signatures to abstract methods or not implemented methods.
+   */
+  @Nonnull
+  public static Set<MethodSignature> resolveAllDispatches(
+      View<? extends SootClass<?>> view, MethodSignature m) {
+    TypeHierarchy hierarchy = view.getTypeHierarchy();
+
+    return hierarchy.subtypesOf(m.getDeclClassType()).stream()
+        .map(
+            subtype ->
+                view.getClass(subtype)
+                    .orElseThrow(
+                        () ->
+                            new ResolveException(
+                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
+        .map(
+            sootClass -> new MethodSignature(sootClass.getType(), m.getSubSignature()))
+        .collect(Collectors.toSet());
+  }
+
+  /**
    * Searches the view for classes that implement or override the method <code>m</code> and returns
    * the set of method signatures that a method call could resolve to.
    */
