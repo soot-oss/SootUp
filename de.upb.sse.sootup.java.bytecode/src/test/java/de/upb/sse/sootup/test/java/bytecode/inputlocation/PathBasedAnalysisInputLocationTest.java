@@ -64,9 +64,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void multiReleaseJar() {
     final ClassType classType =
-        getIdentifierFactory().getClassType("de.upb.sse.multirelease.Utility");
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
     final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.sse.multirelease.Main");
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
@@ -173,14 +173,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void modularMultiReleaseJar() {
     final ClassType utilityNoModule =
-        getIdentifierFactory().getClassType("de.upb.sse.multirelease.Utility");
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
 
     final ModuleJavaClassType utilityModule =
         JavaModuleIdentifierFactory.getInstance()
-            .getClassType("de.upb.sse.multirelease/de.upb.sse.multirelease.Utility");
+            .getClassType("de.upb.swt.multirelease/de.upb.swt.multirelease.Utility");
 
     final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.sse.multirelease.Main");
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
@@ -201,7 +201,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     final JavaModuleView view_9 = project_9.createOnDemandView();
 
     ModuleSignature moduleSignature =
-        JavaModuleIdentifierFactory.getModuleSignature("de.upb.sse.multirelease");
+        JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
 
     Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
 
@@ -210,7 +210,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
 
     Assert.assertEquals(
-        "de.upb.sse.multirelease.Utility",
+        "de.upb.swt.multirelease.Utility",
         view_9.getModuleClasses(moduleSignature).stream()
             .findAny()
             .get()
@@ -274,7 +274,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         new PathBasedAnalysisInputLocation(apk, null);
     final ClassType mainClass =
-        getIdentifierFactory().getClassType("de.upb.sootup.fields.MainActivity");
+        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
     testClassReceival(pathBasedNamespace, mainClass, 1);
   }
 
