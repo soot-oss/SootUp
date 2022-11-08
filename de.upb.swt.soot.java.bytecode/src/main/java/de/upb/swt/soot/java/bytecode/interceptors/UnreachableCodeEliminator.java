@@ -25,8 +25,10 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
@@ -36,7 +38,7 @@ import javax.annotation.Nonnull;
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     ExceptionalStmtGraph graph = builder.getStmtGraph();
 

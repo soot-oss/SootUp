@@ -23,6 +23,7 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/typing/TypeAssigner.java
@@ -37,8 +38,5 @@ import javax.annotation.Nonnull;
 public class TypeAssigner implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // TODO Implement
-
-  }
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {}
 }

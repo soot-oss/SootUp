@@ -88,7 +88,7 @@ public class LocalSplitterTest {
     Body body = createBBBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder);
+    localSplitter.interceptBody(builder, null);
     Body expectedBody = createExpectedBBBody();
 
     // check newBody's locals
@@ -127,7 +127,7 @@ public class LocalSplitterTest {
     Body body = createMultilocalsBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder);
+    localSplitter.interceptBody(builder, null);
     Body expectedBody = createExpectedMuiltilocalsBody();
 
     // check newBody's locals
@@ -178,7 +178,7 @@ public class LocalSplitterTest {
     Body body = createLoopBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder);
+    localSplitter.interceptBody(builder, null);
     Body expectedBody = createExpectedLoopBody();
 
     // check newBody's locals
@@ -221,7 +221,7 @@ public class LocalSplitterTest {
     Body body = createTrapBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder);
+    localSplitter.interceptBody(builder, null);
 
     Body expectedBody = createExpectedTrapBody();
 

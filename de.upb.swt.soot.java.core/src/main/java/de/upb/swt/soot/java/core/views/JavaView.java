@@ -61,7 +61,8 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
-    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
+    super(project);
+    classLoadingOptionsSpecifier = analysisInputLocation -> EmptyClassLoadingOptions.Default;
   }
 
   /**
@@ -71,14 +72,14 @@ public class JavaView extends AbstractView<JavaSootClass> {
    *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
    *     options.
    */
-  public JavaView(
+  /*public JavaView(
       @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-  }
+  }*/
 
   @Nonnull
   @Override
@@ -94,6 +95,13 @@ public class JavaView extends AbstractView<JavaSootClass> {
     // TODO add default interceptors from
     // de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
     return Collections.emptyList();
+  }
+
+  public void configBodyInterceptors(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override

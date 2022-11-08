@@ -133,13 +133,6 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   @Nonnull
   public abstract V createOnDemandView();
 
-  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
-  @Nonnull
-  public abstract V createOnDemandView(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier);
-
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
    * project and scope.
@@ -149,4 +142,11 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
    */
   @Nonnull
   public abstract V createView(Scope s);
+
+  /** Configure a View with custom {@link ClassLoadingOptions}. */
+  @Nonnull
+  public abstract V configBodyInterceptors(
+      V view,
+      Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
+          classLoadingOptionsSpecifier);
 }

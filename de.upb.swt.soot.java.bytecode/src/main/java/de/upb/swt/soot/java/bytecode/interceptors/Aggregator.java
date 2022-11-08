@@ -32,9 +32,11 @@ import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class Aggregator implements BodyInterceptor {
 
@@ -45,7 +47,7 @@ public class Aggregator implements BodyInterceptor {
    * <p>option: only-stack-locals; if this is true, only aggregate variables starting with $
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     StmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();

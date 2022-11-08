@@ -36,7 +36,7 @@ public class AggregatorTest {
   public void testAggregation() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new Aggregator().interceptBody(testBuilder);
+    new Aggregator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -57,7 +57,7 @@ public class AggregatorTest {
   public void testNoAggregation() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new Aggregator().interceptBody(testBuilder);
+    new Aggregator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();

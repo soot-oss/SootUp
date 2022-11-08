@@ -29,14 +29,16 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /* @author Zun Wang **/
 public class TrapTightener implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     ExceptionalStmtGraph exceptionalGraph = builder.getStmtGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 

@@ -32,9 +32,11 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Does constant propagation and folding. Constant folding is the compile-time evaluation of
@@ -45,7 +47,7 @@ import javax.annotation.Nonnull;
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     List<Stmt> defs = new ArrayList<>();
     List<Stmt> remainingStmts = builder.getStmts();
 

@@ -114,7 +114,7 @@ public class TrapTightenerTest {
     builder.removeDestinations(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder);
+    trapTightener.interceptBody(builder, null);
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
@@ -154,7 +154,7 @@ public class TrapTightenerTest {
     builder.removeDestinations(stmt4);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder);
+    trapTightener.interceptBody(builder, null);
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);

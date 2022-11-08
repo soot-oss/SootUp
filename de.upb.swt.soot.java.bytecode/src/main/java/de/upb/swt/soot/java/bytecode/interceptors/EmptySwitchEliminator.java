@@ -27,8 +27,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Removes empty switch statements which always take the default action from a method body, i.e.
@@ -40,7 +42,7 @@ import javax.annotation.Nonnull;
 public class EmptySwitchEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     // Iterate all stmts in the body
     Iterator<Stmt> stmts = builder.getStmtGraph().iterator();
 

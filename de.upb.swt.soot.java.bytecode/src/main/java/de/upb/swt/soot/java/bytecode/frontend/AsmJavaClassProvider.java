@@ -27,15 +27,14 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.types.AnnotationType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
@@ -43,10 +42,10 @@ import org.objectweb.asm.tree.ClassNode;
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @Nonnull private final View view;
 
-  public AsmJavaClassProvider(@Nonnull List<BodyInterceptor> bodyInterceptors) {
-    this.bodyInterceptors = bodyInterceptors;
+  public AsmJavaClassProvider(@Nonnull View view) {
+    this.view = view;
   }
 
   @Override
@@ -98,8 +97,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
         @Nonnull String signature,
         @Nonnull String[] exceptions) {
 
-      AsmMethodSource mn =
-          new AsmMethodSource(access, name, desc, signature, exceptions, bodyInterceptors);
+      AsmMethodSource mn = new AsmMethodSource(access, name, desc, signature, exceptions, view);
       methods.add(mn);
       return mn;
     }

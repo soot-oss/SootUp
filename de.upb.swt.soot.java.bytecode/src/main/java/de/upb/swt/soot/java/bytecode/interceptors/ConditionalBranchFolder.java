@@ -28,10 +28,12 @@ import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Statically evaluates the conditional expression of Jimple if statements. If the condition is
@@ -44,7 +46,7 @@ import javax.annotation.Nonnull;
 public class ConditionalBranchFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     final StmtGraph builderStmtGraph = builder.getStmtGraph();
     final StmtGraph stmtGraph = builder.getStmtGraph();

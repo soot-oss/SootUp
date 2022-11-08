@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Body.BodyBuilder;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,7 +69,7 @@ public class LocalSplitter implements BodyInterceptor {
 
   @Override
   @Nonnull
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split

@@ -59,15 +59,6 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   @Nonnull
   @Override
-  public JavaView createOnDemandView(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    return new JavaView(this, classLoadingOptionsSpecifier);
-  }
-
-  @Nonnull
-  @Override
   public JavaView createFullView() {
     final JavaView view = createOnDemandView();
     view.getClasses();
@@ -78,6 +69,16 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   @Override
   public JavaView createView(Scope s) {
     return createOnDemandView();
+  }
+
+  @Nonnull
+  @Override
+  public JavaView configBodyInterceptors(
+      JavaView view,
+      Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+          classLoadingOptionsSpecifier) {
+    view.configBodyInterceptors(classLoadingOptionsSpecifier);
+    return view;
   }
 
   /**

@@ -1,6 +1,5 @@
 package de.upb.swt.soot.jimple.parser;
 
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -40,7 +39,8 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   /** Creates a new instance of the {@link de.upb.swt.soot.java.core.views.JavaView} class. */
   public JimpleView(@Nonnull JimpleProject project) {
-    this(project, analysisInputLocation -> null);
+    super(project);
+    classLoadingOptionsSpecifier = analysisInputLocation -> null;
   }
 
   /**
@@ -50,14 +50,14 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
    *     options.
    */
-  public JimpleView(
+  /*public JimpleView(
       @Nonnull Project project,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
-  }
+  }*/
 
   @Nonnull
   @Override
@@ -71,6 +71,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   @Nonnull
   public List<BodyInterceptor> getBodyInterceptors() {
     return Collections.emptyList();
+  }
+
+  public void configBodyInterceptors(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override

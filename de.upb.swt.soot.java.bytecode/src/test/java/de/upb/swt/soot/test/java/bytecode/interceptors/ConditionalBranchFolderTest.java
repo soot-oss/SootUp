@@ -39,7 +39,7 @@ public class ConditionalBranchFolderTest {
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBody(true);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder);
+    new ConditionalBranchFolder().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     assertEquals(
@@ -57,7 +57,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranching() {
     Body.BodyBuilder builder = createBody(false);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder);
+    new ConditionalBranchFolder().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     assertEquals(originalBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());

@@ -39,8 +39,10 @@ import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This interceptor eliminates assignment statements to locals whose values are not subsequently
@@ -55,7 +57,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   Map<Local, List<Stmt>> allUses = new HashMap<>();
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field
     // TODO[MN]: config parameter
     boolean eliminateOnlyStackLocals = false;

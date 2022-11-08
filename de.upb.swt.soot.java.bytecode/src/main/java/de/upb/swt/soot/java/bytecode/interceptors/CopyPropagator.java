@@ -35,14 +35,16 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /** @author Zun Wang */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     for (Stmt stmt : builder.getStmtGraph()) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {

@@ -25,7 +25,7 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
     ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
@@ -37,7 +37,7 @@ public class DeadAssignmentEliminatorTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
     ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();

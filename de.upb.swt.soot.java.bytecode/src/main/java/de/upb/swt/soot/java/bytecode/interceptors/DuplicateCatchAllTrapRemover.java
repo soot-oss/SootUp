@@ -24,8 +24,10 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Some compilers generate duplicate traps:
@@ -51,7 +53,7 @@ import javax.annotation.Nonnull;
 public class DuplicateCatchAllTrapRemover implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     // TODO: [ms] this algorithms costs are cubic!
     // maybe sorting it into some kind of interval tree and retrieve overlaps will help to reduce

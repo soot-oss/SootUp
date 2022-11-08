@@ -91,7 +91,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder);
+    standardizer.interceptBody(builder, null);
 
     Body expectedBody = createExpectedBody();
 

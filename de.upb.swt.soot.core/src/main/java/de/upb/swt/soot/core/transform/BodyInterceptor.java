@@ -23,19 +23,18 @@ package de.upb.swt.soot.core.transform;
  */
 
 import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * @author
- * @see #interceptBody(Body.BodyBuilder)
+ * @see #interceptBody(Body.BodyBuilder, View)
  */
 public interface BodyInterceptor {
 
   /**
    * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
    * variables.
-   *
-   * @param builder
    */
-  void interceptBody(@Nonnull Body.BodyBuilder builder);
+  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view);
 }

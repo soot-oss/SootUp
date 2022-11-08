@@ -56,7 +56,8 @@ public class JavaModuleView extends JavaView {
       classLoadingOptionsSpecifier;
 
   public JavaModuleView(@Nonnull Project<? extends JavaSootClass, ? extends JavaView> project) {
-    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
+    super(project);
+    classLoadingOptionsSpecifier = analysisInputLocation -> EmptyClassLoadingOptions.Default;
   }
 
   /**
@@ -66,7 +67,7 @@ public class JavaModuleView extends JavaView {
    *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
    *     options.
    */
-  public JavaModuleView(
+  /*public JavaModuleView(
       @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
@@ -75,7 +76,7 @@ public class JavaModuleView extends JavaView {
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     JavaModuleInfo unnamedModuleInfo = getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
-  }
+  }*/
 
   @Nonnull
   @Override
@@ -99,6 +100,13 @@ public class JavaModuleView extends JavaView {
       }
     }
     return Optional.empty();
+  }
+
+  public void configBodyInterceptors(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   /**

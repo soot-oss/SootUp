@@ -39,7 +39,7 @@ public class DuplicateCatchAllTrapRemoverTest {
     Body.BodyBuilder originalBuilder = createBody(true);
     Body originalBody = originalBuilder.build();
 
-    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder);
+    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder, null);
     Body processedBody = originalBuilder.build();
 
     Collection<Trap> originalTraps = originalBody.getTraps();
@@ -58,7 +58,7 @@ public class DuplicateCatchAllTrapRemoverTest {
     Body.BodyBuilder originalBuilder = createBody(false);
     Body originalBody = originalBuilder.build();
 
-    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder);
+    new DuplicateCatchAllTrapRemover().interceptBody(originalBuilder, null);
     Body processedBody = originalBuilder.build();
 
     assertArrayEquals(originalBody.getTraps().toArray(), processedBody.getTraps().toArray());

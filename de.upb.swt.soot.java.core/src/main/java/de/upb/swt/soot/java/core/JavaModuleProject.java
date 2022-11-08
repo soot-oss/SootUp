@@ -48,11 +48,11 @@ public class JavaModuleProject extends JavaProject {
   }
 
   @Nonnull
-  @Override
-  public JavaModuleView createOnDemandView(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    return new JavaModuleView(this, classLoadingOptionsSpecifier);
+  public JavaModuleView configBodyInterceptors(
+      JavaModuleView view,
+      Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+          classLoadingOptionsSpecifier) {
+    view.configBodyInterceptors(classLoadingOptionsSpecifier);
+    return view;
   }
 }

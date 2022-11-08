@@ -35,8 +35,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.BodyUtils;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * In Static Single Assignment Form, each variable be assigned exactly once, and every variable be
@@ -49,7 +51,7 @@ import javax.annotation.Nonnull;
 public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;

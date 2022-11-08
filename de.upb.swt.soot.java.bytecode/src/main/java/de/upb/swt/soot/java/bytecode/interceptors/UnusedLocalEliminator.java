@@ -26,9 +26,11 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A BodyTransformer that removes all unused local variables from a given Body.
@@ -44,7 +46,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
 
     Set<Local> locals = new LinkedHashSet<>();
 

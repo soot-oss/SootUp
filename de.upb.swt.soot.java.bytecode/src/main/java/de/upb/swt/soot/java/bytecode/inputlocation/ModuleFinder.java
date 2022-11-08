@@ -23,9 +23,7 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.PathUtils;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.frontend.AsmModuleSource;
-import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.JavaSootClass;
@@ -66,10 +64,6 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
-
-  @Nonnull
-  private final AsmJavaClassProvider classProvider =
-      new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();

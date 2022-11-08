@@ -78,7 +78,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = new Body.BodyBuilder(createBody(), Collections.emptySet());
-    ssa.interceptBody(builder);
+    ssa.interceptBody(builder, null);
 
     String expectedBodyString =
         "{\n"
@@ -129,7 +129,7 @@ public class StaticSingleAssignmentFormerTest {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = new Body.BodyBuilder(createTrapedBody(), Collections.emptySet());
 
-    ssa.interceptBody(builder);
+    ssa.interceptBody(builder, null);
 
     String expectedBodyString =
         "{\n"

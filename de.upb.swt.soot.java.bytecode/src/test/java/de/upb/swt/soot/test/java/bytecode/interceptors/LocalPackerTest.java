@@ -139,7 +139,7 @@ public class LocalPackerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder);
+    localPacker.interceptBody(builder, null);
     body = builder.build();
 
     Body expectedBody = createExpectedBody();
@@ -211,7 +211,7 @@ public class LocalPackerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder);
+    localPacker.interceptBody(builder, null);
     body = builder.build();
 
     Body expectedBody = createExpectedTrapBody();

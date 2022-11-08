@@ -26,8 +26,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
+import de.upb.swt.soot.core.views.View;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This class removes {@link JNopStmt}s from a given {@link Body}.
@@ -44,7 +46,7 @@ public class NopEliminator implements BodyInterceptor {
    * @param builder The current body before interception.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
     StmtGraph graph = builder.getStmtGraph();
     Set<Stmt> stmtSet = graph.nodes();
 

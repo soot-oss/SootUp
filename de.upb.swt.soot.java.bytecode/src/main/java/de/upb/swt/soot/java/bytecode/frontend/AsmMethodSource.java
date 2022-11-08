@@ -90,6 +90,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.jimple.basic.JavaLocal;
 import de.upb.swt.soot.java.core.language.JavaJimple;
@@ -143,6 +144,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull private Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
   private Body.BodyBuilder bodyBuilder = null;
+  private View view;
 
   Stmt rememberedStmt = null;
   boolean isFirstStmtSet = false;
@@ -163,10 +165,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      @Nonnull View view) {
+    super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
+    this.view = view;
+    this.bodyInterceptors = view.getBodyInterceptors();
+  }
+
+  /*AsmMethodSource(
+          int access,
+          @Nonnull String name,
+          @Nonnull String desc,
+          @Nonnull String signature,
+          @Nonnull String[] exceptions,
+          @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
-  }
+  }*/
 
   @Override
   @Nonnull
@@ -231,7 +245,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
-        bodyInterceptor.interceptBody(bodyBuilder);
+        bodyInterceptor.interceptBody(bodyBuilder, view);
       } catch (Exception e) {
         throw new RuntimeException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);

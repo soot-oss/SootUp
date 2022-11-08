@@ -36,7 +36,7 @@ public class NopEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body testBody = builder.build();
 
-    new NopEliminator().interceptBody(builder);
+    new NopEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
@@ -56,7 +56,7 @@ public class NopEliminatorTest {
   public void testNoJNops() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new NopEliminator().interceptBody(testBuilder);
+    new NopEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
 
     assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());

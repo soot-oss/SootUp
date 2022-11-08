@@ -53,16 +53,17 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
   @Nonnull
   @Override
-  public JimpleView createOnDemandView(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    return new JimpleView(this, classLoadingOptionsSpecifier);
+  public JimpleView createView(Scope s) {
+    throw new NotImplementedException();
   }
 
   @Nonnull
   @Override
-  public JimpleView createView(Scope s) {
-    throw new NotImplementedException();
+  public JimpleView configBodyInterceptors(
+      JimpleView view,
+      Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+          classLoadingOptionsSpecifier) {
+    view.configBodyInterceptors(classLoadingOptionsSpecifier);
+    return view;
   }
 }

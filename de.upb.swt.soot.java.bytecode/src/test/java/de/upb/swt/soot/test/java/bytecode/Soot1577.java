@@ -22,8 +22,10 @@ public class Soot1577 {
     JavaProject project =
         JavaProject.builder(new JavaLanguage(7)).addInputLocation(inputLocation).build();
 
-    JavaView view =
-        project.createOnDemandView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view = project.createOnDemandView();
+    view =
+        project.configBodyInterceptors(
+            view, analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     Assert.assertEquals(1, view.getClasses().size());
 
