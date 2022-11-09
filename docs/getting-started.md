@@ -1,11 +1,11 @@
 # Getting Started
 
-This page walks you through the core data structures, as well as shows how to get started with Futuresootup.
+This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
 ## Core Data Structures
-Before you get started with the FutureSoot library, it helps to learn about the following core data structures: 
+Before you get started with the SootUp library, it helps to learn about the following core data structures: 
 
-- `Project`: defines the outlines of an analysis. Soot users should first create a `Project` instance. It is the starting point for all operations. 
+- `Project`: defines the outlines of an analysis. SootUp users should first create a `Project` instance. It is the starting point for all operations. 
   You can define multiple instances of `Project` at the same time and there are no information shared between them. All caches are always at the project level.
 
 - `Language`: represents the programming language of the analyzed code. 
@@ -197,11 +197,11 @@ You can view all the code used until this point below:
 
     [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/examples/src/test/java/de/upb/sse/soot/examples/basicSetup/BasicSetup.java)
 
-## FutureSoot vs Soot
+## SootUp vs Soot
 
 Below we show a comparison of the code so far with the same functionality in sootup.
 
-=== "FutureSoot"
+=== "SootUp"
 
     ``` java
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
