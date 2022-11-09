@@ -5,10 +5,10 @@
 You can download the project as a zip file, or clone it using your favorite git client app or the command line:
 
 ```
-git clone https://github.com/secure-software-engineering/soot-reloaded.git
+git clone https://github.com/secure-software-engineering/SootUp.git
 ```
 
-FutureSoot is a maven project. You can import it into your favorite IDE as a maven project. Run maven clean and install tasks using your IDE's maven plugin to set up the project.
+SootUp is a maven project. You can import it into your favorite IDE as a maven project. Run maven clean and install tasks using your IDE's maven plugin to set up the project.
 
 Alternatively, you can execute the following command in the project directory:
 
@@ -22,7 +22,7 @@ Or if you want to skip unit tests while building:
 mvn -Dskiptests install
 ```
 
-## Add Soot as Library Dependency to Your Project
+## Add SootUp as Library Dependency to Your Project
 
 Since the project is not available as a maven artefact, you first need to built it from source. See [Building from Source](#building-from-source)
 
