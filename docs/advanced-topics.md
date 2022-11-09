@@ -1,6 +1,6 @@
 # Advanced Topics
 
-As a user of the FutureSoot framework, you can omit these topics which mostly explain how some of the concepts work internally.
+As a user of the SootUp framework, you can omit these topics which mostly explain how some of the concepts work internally.
 
 ## Body Interceptors
 
