@@ -1,6 +1,6 @@
-site_name: FutureSoot
+site_name: SootUp
 #site_url: https://example.com/
-repo_url: https://github.com/secure-software-engineering/soot-reloaded/
+repo_url: https://github.com/secure-software-engineering/SootUp/
 
 nav:
     - Home: index.md
