@@ -1,7 +1,7 @@
 site_name: SootUp
 #site_url: https://example.com/
 repo_url: https://github.com/secure-software-engineering/SootUp/
-edit_uri: develop/docs/
+edit_uri: edit/develop/docs/
 
 nav:
     - Home: index.md
