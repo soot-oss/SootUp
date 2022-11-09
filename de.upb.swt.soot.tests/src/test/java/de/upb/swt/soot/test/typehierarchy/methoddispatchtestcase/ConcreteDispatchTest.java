@@ -11,11 +11,12 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author : Hasitha Rajapakse, Jonas Klauke * */
 @Category(Java8Test.class)
 public class ConcreteDispatchTest extends MethodDispatchBase {
   @Test
   public void method() {
+    // test concrete method in super class
     ClassType sootClassTypeA = getClassType("A");
     ClassType sootClassTypeB = getClassType("B");
 
@@ -36,5 +37,21 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
     MethodSignature candidate2 =
         MethodDispatchResolver.resolveConcreteDispatch(customTestWatcher.getView(), sootMethod2);
     assertEquals(candidate2, sootMethod3);
+
+    // test concrete method in interface
+    ClassType sootClassInterface = getClassType("I");
+    System.out.println(sootClassInterface);
+    MethodSignature sootInterfaceMethod =
+        identifierFactory.getMethodSignature(
+            sootClassInterface, "interfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature sootInterfaceMethodB =
+        identifierFactory.getMethodSignature(
+            sootClassTypeA, "interfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature candidateInterface =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            customTestWatcher.getView(), sootInterfaceMethodB);
+    assertEquals(candidateInterface, sootInterfaceMethod);
   }
 }

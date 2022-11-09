@@ -30,6 +30,8 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -170,6 +172,8 @@ public final class MethodDispatchResolver {
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
 
+    // search concrete method in the class itself and its super classes
+    ArrayList<SootClass<?>> classesInHierachyOrder = new ArrayList<>();
     ClassType superClassType = m.getDeclClassType();
     do {
       ClassType finalSuperClassType = superClassType;
@@ -180,17 +184,41 @@ public final class MethodDispatchResolver {
                       new ResolveException(
                           "Did not find class " + finalSuperClassType + " in View"));
 
+      classesInHierachyOrder.add(superClass);
+
       SootMethod concreteMethod =
           superClass.getMethods().stream()
               .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
               .findAny()
               .orElse(null);
       if (concreteMethod != null && !concreteMethod.isAbstract()) {
+        // method found and it is not abstract
         return concreteMethod.getSignature();
       }
 
       superClassType = hierarchy.superClassOf(superClassType);
     } while (superClassType != null);
+
+    // No super class contains the implemented method, search the concrete method in interfaces
+    for (SootClass<?> clazz : classesInHierachyOrder) {
+      SootMethod concreteDefaultMethod =
+          clazz.getInterfaces().stream()
+              .map(
+                  interfaceType ->
+                      view.getMethod(
+                          view.getIdentifierFactory()
+                              .getMethodSignature(interfaceType, m.getSubSignature())))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+              .findAny()
+              .orElse(null);
+
+      if (concreteDefaultMethod != null && !concreteDefaultMethod.isAbstract()) {
+        // method found and it is not abstract
+        return concreteDefaultMethod.getSignature();
+      }
+    }
 
     throw new ResolveException("Could not find concrete method for " + m);
   }

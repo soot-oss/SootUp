@@ -2,8 +2,12 @@ package de.upb.swt.soot.test.typehierarchy;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.JavaSootClass;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -26,19 +30,20 @@ public class MethodDispatchBase {
 
   public static class CustomTestWatcher extends TestWatcher {
     private String className = MethodDispatchBase.class.getSimpleName();
-    private AnalysisInputLocation srcCode;
     private JavaView view;
-    private JavaProject project;
 
     @Override
     protected void starting(Description description) {
       String prevClassName = getClassName();
       setClassName(extractClassName(description.getClassName()));
       if (!prevClassName.equals(getClassName())) {
-        srcCode =
-            new JavaSourcePathAnalysisInputLocation(
-                Collections.singleton(baseDir + "/" + getClassName()));
-        project = JavaProject.builder(new JavaLanguage(8)).addInputLocation(this.srcCode).build();
+        JavaProject project = JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(new JavaSourcePathAnalysisInputLocation(
+                Collections.singleton(baseDir + "/" + getClassName())))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .build();
         setView(project.createFullView());
       }
     }
