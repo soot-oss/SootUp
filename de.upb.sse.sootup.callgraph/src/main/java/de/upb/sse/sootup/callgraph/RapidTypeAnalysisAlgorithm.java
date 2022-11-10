@@ -23,10 +23,10 @@ package de.upb.sse.sootup.callgraph;
  */
 
 import com.google.common.collect.Sets;
-import de.upb.sse.sootup.core.jimple.common.expr.JNewExpr;
-import de.upb.sse.sootup.core.jimple.common.stmt.JAssignStmt;
 import de.upb.sse.sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.sse.sootup.core.jimple.common.expr.JNewExpr;
 import de.upb.sse.sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.sse.sootup.core.jimple.common.stmt.JAssignStmt;
 import de.upb.sse.sootup.core.model.Modifier;
 import de.upb.sse.sootup.core.model.SootClass;
 import de.upb.sse.sootup.core.model.SootMethod;

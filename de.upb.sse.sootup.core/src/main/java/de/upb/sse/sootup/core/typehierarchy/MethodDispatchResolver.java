@@ -30,6 +30,8 @@ import de.upb.sse.sootup.core.model.SootMethod;
 import de.upb.sse.sootup.core.signatures.MethodSignature;
 import de.upb.sse.sootup.core.types.ClassType;
 import de.upb.sse.sootup.core.views.View;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;

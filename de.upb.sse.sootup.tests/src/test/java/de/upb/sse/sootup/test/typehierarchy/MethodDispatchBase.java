@@ -1,7 +1,7 @@
 package de.upb.sse.sootup.test.typehierarchy;
 
 import categories.Java8Test;
-import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
+import de.upb.sse.sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.sse.sootup.java.core.JavaIdentifierFactory;
 import de.upb.sse.sootup.java.core.JavaProject;
 import de.upb.sse.sootup.java.core.language.JavaLanguage;
