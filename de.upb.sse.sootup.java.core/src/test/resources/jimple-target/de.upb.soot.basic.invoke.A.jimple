@@ -1,0 +1,62 @@
+public class de.upb.sootup.basic.invoke.A extends java.lang.Object
+{
+    private java.lang.String name;
+    private int num;
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.invoke.A r0;
+
+        r0 := @this: de.upb.sootup.basic.invoke.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void <init>(java.lang.String, int)
+    {
+        de.upb.sootup.basic.invoke.A r0;
+        java.lang.String r1;
+        int i0;
+
+        r0 := @this: de.upb.sootup.basic.invoke.A;
+
+        r1 := @parameter0: java.lang.String;
+
+        i0 := @parameter1: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.basic.invoke.A: java.lang.String name> = r1;
+
+        r0.<de.upb.sootup.basic.invoke.A: int num> = i0;
+
+        return;
+    }
+
+    public static int methodA()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Method A called");
+
+        return 0;
+    }
+
+    public static int methodB(java.lang.String)
+    {
+        java.lang.String r0;
+        java.io.PrintStream $r1;
+
+        r0 := @parameter0: java.lang.String;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(r0);
+
+        return 0;
+    }
+}

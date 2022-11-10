@@ -1,0 +1,5 @@
+interface  de.upb.sootup.basic.interfaces.A2 extends java.lang.Object
+{
+
+    public abstract void printA2();
+}

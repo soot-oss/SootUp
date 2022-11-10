@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.generics;
+package de.upb.sootup.concrete.generics;
 
 /**
  * @author Manuel Benz created on 13.07.18

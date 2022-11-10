@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.generics;
+package de.upb.sootup.concrete.generics;
 
 import java.util.ArrayList;
 

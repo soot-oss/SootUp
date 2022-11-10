@@ -1,0 +1,31 @@
+public abstract class de.upb.sootup.basic.abstractClasses.AbstractClasses extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.abstractClasses.AbstractClasses r0;
+
+        r0 := @this: de.upb.sootup.basic.abstractClasses.AbstractClasses;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void abstractClasses()
+    {
+        de.upb.sootup.basic.abstractClasses.B $r1;
+
+        $r1 = new de.upb.sootup.basic.abstractClasses.B;
+
+        specialinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void <init>()>();
+
+        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void methodB()>();
+
+        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void methodA()>();
+
+        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void print()>();
+
+        return;
+    }
+}

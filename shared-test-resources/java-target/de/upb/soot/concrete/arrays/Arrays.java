@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.arrays;
+package de.upb.sootup.concrete.arrays;
 
 public class Arrays {
 

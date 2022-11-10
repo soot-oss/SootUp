@@ -1,4 +1,4 @@
-package de.upb.soot.basic.abstractClasses;
+package de.upb.sootup.basic.abstractClasses;
 
 abstract class A {
   abstract void print();

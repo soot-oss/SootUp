@@ -1,0 +1,36 @@
+class de.upb.sootup.basic.staticFields.A extends java.lang.Object
+{
+    public static int a;
+    public static java.lang.String b;
+
+    void <init>()
+    {
+        de.upb.sootup.basic.staticFields.A r0;
+
+        r0 := @this: de.upb.sootup.basic.staticFields.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void methodA()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Static methodA");
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <de.upb.sootup.basic.staticFields.A: int a> = 10;
+
+        <de.upb.sootup.basic.staticFields.A: java.lang.String b> = " is a number.";
+
+        return;
+    }
+}

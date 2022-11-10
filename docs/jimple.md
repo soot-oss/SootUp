@@ -1,5 +1,5 @@
 # Jimple
-What is Jimple? Jimple is the intermediate representation [**IR**]{A data structure which represents (source) code} of Soot.
+What is Jimple? Jimple is the intermediate representation [**IR**]{A data structure which represents (source) code} of Soot, and thus SootUp.
 Soot's intention is to provide a simplified way to analyze JVM bytecode. JVM bytecode is stack-based, which makes it difficult for program analysis.
 Java source code, on the other hand, is also not quite suitable for program analysis, due to its nested structures.
 Therefore, Jimple aims to bring the best of both worlds, a non-stack-based and flat (non-nested) representation.

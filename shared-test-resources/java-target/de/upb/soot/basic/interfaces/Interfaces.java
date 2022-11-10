@@ -1,4 +1,4 @@
-package de.upb.soot.basic.interfaces;
+package de.upb.sootup.basic.interfaces;
 
 public class Interfaces {
   public void singleInterface() {

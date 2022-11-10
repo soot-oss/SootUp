@@ -1,0 +1,67 @@
+public class de.upb.sootup.basic.locals.AssignStmt extends java.lang.Object
+{
+    int field;
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.locals.AssignStmt r0;
+
+        r0 := @this: de.upb.sootup.basic.locals.AssignStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.basic.locals.AssignStmt: int field> = 3;
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.basic.locals.AssignStmt r0;
+        int[] r2;
+        int i1, i2, i3, $i6, $i7, $i8, $i9;
+        de.upb.sootup.basic.expr.Dummy $r3;
+
+        r0 := @this: de.upb.sootup.basic.locals.AssignStmt;
+
+        $r3 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r3.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        r2 = newarray (int)[666];
+
+        i1 = $r3.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        i2 = r2[42];
+
+        $i6 = r0.<de.upb.sootup.basic.locals.AssignStmt: int field>;
+
+        i3 = r2[$i6];
+
+        staticinvoke <java.lang.Math: int abs(int)>(-1);
+
+        r0.<de.upb.sootup.basic.locals.AssignStmt: int field> = 42;
+
+        r0.<de.upb.sootup.basic.locals.AssignStmt: int field> = 42;
+
+        $r3.<de.upb.sootup.basic.expr.Dummy: int field> = 666;
+
+        $i7 = r0.<de.upb.sootup.basic.locals.AssignStmt: int field>;
+
+        $r3.<de.upb.sootup.basic.expr.Dummy: int field> = $i7;
+
+        r2[0] = 42;
+
+        r2[42] = 123;
+
+        $i8 = staticinvoke <java.lang.Math: int abs(int)>(-1);
+
+        r2[$i8] = 43;
+
+        $i9 = r0.<de.upb.sootup.basic.locals.AssignStmt: int field>;
+
+        r2[$i9] = 0;
+
+        return;
+    }
+}

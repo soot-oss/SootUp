@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.staticFields;
+package de.upb.sootup.concrete.staticFields;
 
 public class StaticFields {
   private static final int finalInt = 10;

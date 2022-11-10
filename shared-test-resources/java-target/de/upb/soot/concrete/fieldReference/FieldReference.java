@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.fieldReference;
+package de.upb.sootup.concrete.fieldReference;
 
 public class JFieldReference {
   private final int f = 2;

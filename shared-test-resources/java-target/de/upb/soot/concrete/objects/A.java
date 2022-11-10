@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.objects;
+package de.upb.sootup.concrete.objects;
 
 /**
  * @author Manuel Benz created on 12.07.18

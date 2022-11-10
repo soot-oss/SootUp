@@ -1,0 +1,26 @@
+public class de.upb.sootup.basic.expr.Cast extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.expr.Cast r0;
+
+        r0 := @this: de.upb.sootup.basic.expr.Cast;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.basic.expr.Cast r0;
+        int i0;
+
+        r0 := @this: de.upb.sootup.basic.expr.Cast;
+
+        i0 = (int) 3.14;
+
+        return;
+    }
+}

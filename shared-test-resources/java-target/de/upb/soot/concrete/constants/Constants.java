@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.constants;
+package de.upb.sootup.concrete.constants;
 
 public class Constants {
   public void intConstant() {

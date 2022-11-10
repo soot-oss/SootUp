@@ -1,0 +1,23 @@
+final class de.upb.sootup.concrete.emulation.Objects$Foo extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.emulation.Objects$Foo r0;
+
+        r0 := @this: de.upb.sootup.concrete.emulation.Objects$Foo;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String toString()
+    {
+        de.upb.sootup.concrete.emulation.Objects$Foo r0;
+
+        r0 := @this: de.upb.sootup.concrete.emulation.Objects$Foo;
+
+        return "foo";
+    }
+}

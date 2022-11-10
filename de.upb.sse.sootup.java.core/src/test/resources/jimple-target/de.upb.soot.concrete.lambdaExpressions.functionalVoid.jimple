@@ -1,0 +1,5 @@
+public interface  de.upb.sootup.concrete.lambdaExpressions.functionalVoid extends java.lang.Object
+{
+
+    public abstract void eval();
+}

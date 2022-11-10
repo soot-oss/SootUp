@@ -1,0 +1,1674 @@
+public class de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements extends java.lang.Object
+{
+    private int[][] permutations3;
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[][] $r1;
+        int[] $r2, $r3, $r4, $r5, $r6, $r7;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = newarray (int[])[6];
+
+        $r2 = newarray (int)[3];
+
+        $r2[0] = 1;
+
+        $r2[1] = 2;
+
+        $r2[2] = 3;
+
+        $r1[0] = $r2;
+
+        $r3 = newarray (int)[3];
+
+        $r3[0] = 2;
+
+        $r3[1] = 1;
+
+        $r3[2] = 3;
+
+        $r1[1] = $r3;
+
+        $r4 = newarray (int)[3];
+
+        $r4[0] = 3;
+
+        $r4[1] = 1;
+
+        $r4[2] = 2;
+
+        $r1[2] = $r4;
+
+        $r5 = newarray (int)[3];
+
+        $r5[0] = 1;
+
+        $r5[1] = 3;
+
+        $r5[2] = 2;
+
+        $r1[3] = $r5;
+
+        $r6 = newarray (int)[3];
+
+        $r6[0] = 2;
+
+        $r6[1] = 3;
+
+        $r6[2] = 1;
+
+        $r1[4] = $r6;
+
+        $r7 = newarray (int)[3];
+
+        $r7[0] = 3;
+
+        $r7[1] = 2;
+
+        $r7[2] = 1;
+
+        $r1[5] = $r7;
+
+        r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3> = $r1;
+
+        return;
+    }
+
+    public void nestedIfElse()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedIfElse(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedIfElse(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        if i0 >= i1 goto label2;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(1);
+
+        if i1 >= i2 goto label1;
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(2);
+
+        goto label6;
+
+     label1:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(3);
+
+        goto label6;
+
+     label2:
+        if i0 >= i2 goto label4;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        if i1 >= i2 goto label3;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(5);
+
+        goto label6;
+
+     label3:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(6);
+
+        goto label6;
+
+     label4:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(7);
+
+        if i1 >= i2 goto label5;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(8);
+
+        goto label6;
+
+     label5:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(9);
+
+     label6:
+        return;
+    }
+
+    public void nestedSwitchIf()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedSwitchIf(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedSwitchIf(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9, $r10, $r11;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        if i0 >= i1 goto label04;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label01;
+            case 2: goto label02;
+            default: goto label03;
+        };
+
+     label01:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(1);
+
+     label02:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(2);
+
+     label03:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(3);
+
+        goto label12;
+
+     label04:
+        if i0 >= i2 goto label08;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        lookupswitch(i0)
+        {
+            case 1: goto label05;
+            case 2: goto label06;
+            default: goto label07;
+        };
+
+     label05:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(5);
+
+     label06:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(6);
+
+     label07:
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(int)>(7);
+
+        goto label12;
+
+     label08:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(8);
+
+        lookupswitch(i0)
+        {
+            case 1: goto label09;
+            case 2: goto label10;
+            default: goto label11;
+        };
+
+     label09:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(9);
+
+     label10:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(10);
+
+     label11:
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(int)>(11);
+
+     label12:
+        return;
+    }
+
+    public void nestedWhileIf()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedWhileIf(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedWhileIf(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        i1 := @parameter2: int;
+
+        if i2 >= i0 goto label2;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(1);
+
+     label1:
+        if i2 >= i0 goto label6;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(2);
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label2:
+        if i2 >= i1 goto label4;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(3);
+
+     label3:
+        if i2 >= i0 goto label6;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        i2 = i2 + 1;
+
+        goto label3;
+
+     label4:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(5);
+
+     label5:
+        if i2 >= i0 goto label6;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(6);
+
+        i2 = i2 + 1;
+
+        goto label5;
+
+     label6:
+        return;
+    }
+
+    public void nestedForIf()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedForIf(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedForIf(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2, i3, i4, i5;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        if i0 >= i1 goto label3;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(1);
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label2;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(2);
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label2:
+        goto label8;
+
+     label3:
+        if i0 >= i2 goto label6;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(3);
+
+        i4 = 0;
+
+     label4:
+        if i4 >= i0 goto label5;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        i4 = i4 + 1;
+
+        goto label4;
+
+     label5:
+        goto label8;
+
+     label6:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(5);
+
+        i5 = 0;
+
+     label7:
+        if i5 >= i0 goto label8;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(6);
+
+        i5 = i5 + 1;
+
+        goto label7;
+
+     label8:
+        return;
+    }
+
+    public void nestedSwitchSwitch()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedSwitchSwitch(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedSwitchSwitch(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9, $r10, $r11, $r12;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label01;
+            case 2: goto label05;
+            default: goto label09;
+        };
+
+     label01:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(1);
+
+        lookupswitch(i1)
+        {
+            case 1: goto label03;
+            case 5: goto label02;
+            default: goto label04;
+        };
+
+     label02:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(2);
+
+     label03:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(3);
+
+     label04:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(4);
+
+     label05:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(5);
+
+        lookupswitch(i1)
+        {
+            case 1: goto label07;
+            case 5: goto label06;
+            default: goto label08;
+        };
+
+     label06:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(6);
+
+     label07:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(7);
+
+     label08:
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(int)>(8);
+
+     label09:
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(int)>(9);
+
+        lookupswitch(i1)
+        {
+            case 1: goto label11;
+            case 5: goto label10;
+            default: goto label12;
+        };
+
+     label10:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(10);
+
+     label11:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(11);
+
+     label12:
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r12.<java.io.PrintStream: void println(int)>(12);
+
+        return;
+    }
+
+    public void nestedIfSwitch()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedIfSwitch(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedIfSwitch(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9, $r10, $r11, $r12;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label01;
+            case 2: goto label04;
+            default: goto label07;
+        };
+
+     label01:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(1);
+
+        if i0 >= i1 goto label02;
+
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(int)>(2);
+
+        goto label04;
+
+     label02:
+        if i0 >= i2 goto label03;
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(3);
+
+        goto label04;
+
+     label03:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(4);
+
+     label04:
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(int)>(5);
+
+        if i0 >= i1 goto label05;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(6);
+
+        goto label07;
+
+     label05:
+        if i0 >= i2 goto label06;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(7);
+
+        goto label07;
+
+     label06:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(8);
+
+     label07:
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r12.<java.io.PrintStream: void println(int)>(9);
+
+        if i0 >= i1 goto label08;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(10);
+
+        goto label10;
+
+     label08:
+        if i0 >= i2 goto label09;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(11);
+
+        goto label10;
+
+     label09:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(12);
+
+     label10:
+        return;
+    }
+
+    public void nestedWhileSwitch()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedWhileSwitch(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedWhileSwitch(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        i1 := @parameter2: int;
+
+        lookupswitch(i2)
+        {
+            case 1: goto label1;
+            case 2: goto label3;
+            default: goto label5;
+        };
+
+     label1:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(1);
+
+     label2:
+        if i2 >= i0 goto label3;
+
+        i2 = i2 + 1;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(2);
+
+        goto label2;
+
+     label3:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(3);
+
+     label4:
+        if i2 >= i0 goto label5;
+
+        i2 = i2 + 1;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        goto label4;
+
+     label5:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(5);
+
+     label6:
+        if i2 >= i0 goto label7;
+
+        i2 = i2 + 1;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(6);
+
+        goto label6;
+
+     label7:
+        return;
+    }
+
+    public void nestedForSwitch()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedForSwitch(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedForSwitch(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2, i3, i4, i5;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label1;
+            case 2: goto label3;
+            default: goto label5;
+        };
+
+     label1:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(1);
+
+        i3 = 0;
+
+     label2:
+        if i3 >= i0 goto label3;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(2);
+
+        i3 = i3 + 1;
+
+        goto label2;
+
+     label3:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(3);
+
+        i4 = 0;
+
+     label4:
+        if i4 >= i0 goto label5;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        i4 = i4 + 1;
+
+        goto label4;
+
+     label5:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(5);
+
+        i5 = 0;
+
+     label6:
+        if i5 >= i0 goto label7;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(6);
+
+        i5 = i5 + 1;
+
+        goto label6;
+
+     label7:
+        return;
+    }
+
+    public void nestedWhileWhile()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedWhileWhile(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedWhileWhile(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i1 := @parameter0: int;
+
+        i2 := @parameter1: int;
+
+        i0 := @parameter2: int;
+
+     label1:
+        if i1 >= i2 goto label4;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(1);
+
+     label2:
+        if i2 >= i0 goto label3;
+
+        i2 = i2 + 1;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(2);
+
+        goto label2;
+
+     label3:
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nestedIfWhile()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedIfWhile(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedIfWhile(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        i1 := @parameter2: int;
+
+     label1:
+        if i2 >= i0 goto label5;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(1);
+
+        if i2 >= i0 goto label2;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(2);
+
+        goto label4;
+
+     label2:
+        if i2 >= i1 goto label3;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(3);
+
+        goto label4;
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(4);
+
+     label4:
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label5:
+        return;
+    }
+
+    public void nestedSwitchWhile()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedSwitchWhile(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedSwitchWhile(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        i1 := @parameter2: int;
+
+     label1:
+        if i2 >= i0 goto label5;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(1);
+
+        lookupswitch(i2)
+        {
+            case 1: goto label2;
+            case 2: goto label3;
+            default: goto label4;
+        };
+
+     label2:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(2);
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(3);
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(4);
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label5:
+        return;
+    }
+
+    public void nestedForWhile()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedForWhile(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedForWhile(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        i1 := @parameter2: int;
+
+     label1:
+        if i2 >= i0 goto label4;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(1);
+
+        i3 = 0;
+
+     label2:
+        if i3 >= i2 goto label3;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(2);
+
+        i3 = i3 + 1;
+
+        goto label2;
+
+     label3:
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nestedIfFor()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int[] r1;
+        int[][] $r2, $r3;
+        int $i0, $i1, $i2, $i3, i4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i4 = 0;
+
+     label1:
+        $r2 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        $i0 = lengthof $r2;
+
+        if i4 >= $i0 goto label2;
+
+        $r3 = r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: int[][] permutations3>;
+
+        r1 = $r3[i4];
+
+        $i3 = r1[0];
+
+        $i2 = r1[1];
+
+        $i1 = r1[2];
+
+        specialinvoke r0.<de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements: void nestedIfFor(int,int,int)>($i3, $i2, $i1);
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void nestedIfFor(int, int, int)
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label5;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(1);
+
+        if i0 >= i1 goto label2;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(2);
+
+        goto label4;
+
+     label2:
+        if i0 >= i2 goto label3;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(3);
+
+        goto label4;
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(4);
+
+     label4:
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label5:
+        return;
+    }
+
+    public void nested_switch_in_for()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+        int i1, i2;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i1 = 0;
+
+        i2 = 0;
+
+     label1:
+        if i2 >= 5 goto label5;
+
+        i1 = i1 + 1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i1);
+
+        lookupswitch(i1)
+        {
+            case 1: goto label2;
+            case 2: goto label3;
+            default: goto label4;
+        };
+
+     label2:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("a");
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("b");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(i1);
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label5:
+        return;
+    }
+
+    public void nestedWhileFor()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        java.io.PrintStream $r1, $r2;
+        int i1, i2;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i1 = 5;
+
+        i2 = 0;
+
+     label1:
+        if i2 >= i1 goto label4;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+     label2:
+        if i1 >= 3 goto label3;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("a is smaller than b");
+
+        i1 = i1 + 1;
+
+        goto label2;
+
+     label3:
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nestedSwitchFor()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        java.io.PrintStream $r1, $r2;
+        int i1;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= 5 goto label4;
+
+        lookupswitch(5)
+        {
+            case 1: goto label2;
+            default: goto label3;
+        };
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("foo");
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(5);
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nestedForFor()
+    {
+        de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements r0;
+        int $i1, i2, i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.nestedControlStatements.NestedControlStatements;
+
+        i2 = 0;
+
+     label1:
+        if i2 >= 5 goto label4;
+
+        i3 = 0;
+
+     label2:
+        if i3 > i2 goto label3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = i2 + i3;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i1);
+
+        i3 = i3 + 1;
+
+        goto label2;
+
+     label3:
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+}

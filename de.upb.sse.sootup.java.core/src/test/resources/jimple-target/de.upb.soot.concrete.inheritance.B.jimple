@@ -1,0 +1,48 @@
+class de.upb.sootup.concrete.inheritance.B extends de.upb.sootup.concrete.inheritance.A
+{
+    protected int a;
+    protected int b;
+
+    void <init>()
+    {
+        de.upb.sootup.concrete.inheritance.B r0;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.B;
+
+        specialinvoke r0.<de.upb.sootup.concrete.inheritance.A: void <init>()>();
+
+        r0.<de.upb.sootup.concrete.inheritance.B: int a> = 5;
+
+        r0.<de.upb.sootup.concrete.inheritance.B: int b> = 3;
+
+        return;
+    }
+
+    public void print()
+    {
+        de.upb.sootup.concrete.inheritance.B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("printB");
+
+        return;
+    }
+
+    public void methodB()
+    {
+        de.upb.sootup.concrete.inheritance.B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.inheritance.B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodB");
+
+        return;
+    }
+}
