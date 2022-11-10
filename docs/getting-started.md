@@ -93,7 +93,7 @@ It is possible to create different views based on your needs. You can prefer cre
 You can call different view creation methods on the `project` object.
 
 ```java
-project.createFullView();
+project.createView();
 ```
 
 
@@ -224,7 +224,7 @@ Below we show a comparison of the code so far with the same functionality in soo
                 "main", classType, "void",
                 Collections.singletonList("java.lang.String[]"));
 
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     SootClass<JavaSootClassSource> sootClass =
         (SootClass<JavaSootClassSource>) view.getClass(classType).get();
@@ -298,7 +298,7 @@ Below we show a comparison of the code so far with the same functionality in soo
 ## Creating Different Views
 1. Create a full view of all classes found in given analysis input location. 
 ~~~java
-  project.createFullView();
+  project.createView();
 ~~~  
 2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
 

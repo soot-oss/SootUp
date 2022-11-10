@@ -58,7 +58,7 @@ public class PrinterTest {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =

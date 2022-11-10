@@ -2,6 +2,8 @@ package de.upb.sse.sootup.java.core.views;
 
 import de.upb.sse.sootup.core.Project;
 import de.upb.sse.sootup.core.ViewChangeListener;
+import de.upb.sse.sootup.core.cache.MutableCache;
+import de.upb.sse.sootup.core.cache.provider.MutableFullCacheProvider;
 import de.upb.sse.sootup.core.model.SootMethod;
 import de.upb.sse.sootup.core.signatures.MethodSubSignature;
 import de.upb.sse.sootup.core.types.ClassType;
@@ -19,21 +21,21 @@ public class MutableJavaView extends JavaView implements MutableView {
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
   public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
-    super(project);
+    super(project, new MutableFullCacheProvider<>());
   }
 
   public void addClass(JavaSootClass clazz) {
     ClassType classType = clazz.getClassSource().getClassType();
-    if (this.cache.containsKey(classType)) {
+    if (this.cache.hasClass(classType)) {
       logger.warn("Class " + classType + " already exists in view.");
       return;
     }
-    this.cache.putIfAbsent(classType, clazz);
+    this.cache.putClass(classType, clazz);
     this.fireAddition(clazz);
   }
 
   public void removeClass(ClassType classType) {
-    JavaSootClass removedClass = this.cache.remove(classType);
+    JavaSootClass removedClass = ((MutableCache<JavaSootClass>) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 
@@ -51,7 +53,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     ClassType classType = method.getDeclaringClassType();
     MethodSubSignature mss = method.getSignature().getSubSignature();
 
-    JavaSootClass clazz = this.cache.get(classType);
+    JavaSootClass clazz = this.cache.getClass(classType);
     if (clazz == null) return;
 
     Set<? extends JavaSootMethod> methods = clazz.getMethods();
@@ -68,7 +70,7 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void addMethod(JavaSootMethod method) {
     ClassType classType = method.getDeclaringClassType();
 
-    JavaSootClass clazz = this.cache.get(classType);
+    JavaSootClass clazz = this.cache.getClass(classType);
     if (clazz == null) return;
 
     Set<? extends JavaSootMethod> methods = clazz.getMethods();

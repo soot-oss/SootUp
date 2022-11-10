@@ -59,7 +59,7 @@ public abstract class MinimalSourceTestSuiteBase {
                             + "source"
                             + File.separator))
                 .build();
-        javaView = project.createOnDemandView();
+        javaView = project.createView();
         setJavaView(javaView);
       }
     }

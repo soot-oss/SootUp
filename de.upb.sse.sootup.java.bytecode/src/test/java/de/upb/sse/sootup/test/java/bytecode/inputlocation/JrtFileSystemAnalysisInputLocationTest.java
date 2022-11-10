@@ -37,7 +37,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazz =
-        inputLocation.getClassSource(sig, project.createOnDemandView());
+        inputLocation.getClassSource(sig, project.createView());
     assertTrue(clazz.isPresent());
     assertEquals(sig, clazz.get().getClassType());
   }
@@ -58,7 +58,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
     final Collection<? extends AbstractClassSource<?>> classSources =
-        inputLocation.getClassSources(project.createOnDemandView());
+        inputLocation.getClassSources(project.createView());
     assertTrue(classSources.size() > 26000);
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig2)));

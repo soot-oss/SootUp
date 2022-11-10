@@ -38,7 +38,7 @@ public class MutableSootClientTest {
 
   @Before
   public void setupMutableView() {
-    mv = p.createMutableFullView();
+    mv = p.createMutableView();
   }
 
   @Test

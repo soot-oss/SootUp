@@ -23,6 +23,9 @@ package de.upb.sse.sootup.java.core.views;
  */
 
 import de.upb.sse.sootup.core.Project;
+import de.upb.sse.sootup.core.cache.Cache;
+import de.upb.sse.sootup.core.cache.provider.CacheProvider;
+import de.upb.sse.sootup.core.cache.provider.FullCacheProvider;
 import de.upb.sse.sootup.core.frontend.AbstractClassSource;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
 import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
@@ -36,9 +39,7 @@ import de.upb.sse.sootup.java.core.JavaSootClass;
 import de.upb.sse.sootup.java.core.types.AnnotationType;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -51,7 +52,7 @@ import javax.annotation.Nonnull;
  */
 public class JavaView extends AbstractView<JavaSootClass> {
 
-  @Nonnull protected final Map<ClassType, JavaSootClass> cache = new HashMap<>();
+  @Nonnull protected final Cache<JavaSootClass> cache;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -59,9 +60,17 @@ public class JavaView extends AbstractView<JavaSootClass> {
   protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
-  /** Creates a new instance of the {@link JavaView} class. */
+  @Nonnull
   public JavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
-    this(project, analysisInputLocation -> EmptyClassLoadingOptions.Default);
+    this(project, new FullCacheProvider<>());
+  }
+
+  /** Creates a new instance of the {@link JavaView} class. */
+  @Nonnull
+  public JavaView(
+      @Nonnull Project<JavaSootClass, ? extends JavaView> project,
+      @Nonnull CacheProvider<JavaSootClass> cacheProvider) {
+    this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   /**
@@ -76,8 +85,18 @@ public class JavaView extends AbstractView<JavaSootClass> {
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
+    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
+  }
+
+  public JavaView(
+      @Nonnull Project<JavaSootClass, ? extends JavaView> project,
+      @Nonnull CacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+    this.cache = cacheProvider.createCache();
   }
 
   @Nonnull
@@ -100,13 +119,13 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
     resolveAll();
-    return cache.values();
+    return cache.getClasses();
   }
 
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    JavaSootClass cachedClass = cache.get(type);
+    JavaSootClass cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -136,12 +155,16 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Nonnull
   protected synchronized Optional<JavaSootClass> buildClassFrom(
       AbstractClassSource<? extends JavaSootClass> classSource) {
-    JavaSootClass theClass =
-        cache.computeIfAbsent(
-            classSource.getClassType(),
-            type ->
-                classSource.buildClass(
-                    getProject().getSourceTypeSpecifier().sourceTypeFor(classSource)));
+
+    ClassType classType = classSource.getClassType();
+    JavaSootClass theClass;
+    if (!cache.hasClass(classType)) {
+      theClass =
+          classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(classSource));
+      cache.putClass(classType, theClass);
+    } else {
+      theClass = cache.getClass(classType);
+    }
 
     if (theClass.getType() instanceof AnnotationType) {
       JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;

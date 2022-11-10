@@ -22,6 +22,7 @@ package de.upb.sse.sootup.core;
  * #L%
  */
 
+import de.upb.sse.sootup.core.cache.provider.CacheProvider;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
 import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
 import de.upb.sse.sootup.core.model.SootClass;
@@ -119,22 +120,29 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   }
 
   /**
-   * Create a complete view from everything in all provided input locations.
+   * Create a view with a default cache.
    *
-   * @return A complete view on the provided code
+   * @return A view on the provided code
    */
   @Nonnull
-  public abstract V createFullView();
+  public abstract V createView();
+
+  /**
+   * Create a view with a provided cache.
+   *
+   * @return A view on the provided code
+   */
+  @Nonnull
+  public abstract V createView(@Nonnull CacheProvider<S> cacheProvider);
 
   /**
    * Creates an on-demand View that uses the default {@link ClassLoadingOptions} of each frontend.
    */
-  @Nonnull
-  public abstract V createOnDemandView();
 
-  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
+  /** Creates a View with custom {@link ClassLoadingOptions}. */
   @Nonnull
-  public abstract V createOnDemandView(
+  public abstract V createView(
+      @Nonnull CacheProvider<S> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);

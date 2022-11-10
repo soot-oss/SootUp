@@ -49,7 +49,7 @@ public class ClassHierarchy {
                     System.getProperty("java.home") + "/lib/rt.jar")) // add rt.jar
             .build();
 
-    JavaView view = project.createOnDemandView();
+    JavaView view = project.createView();
 
     // Create type hierarchy
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);

@@ -40,7 +40,7 @@ public class CallgraphExample {
                     System.getProperty("java.home") + "/lib/rt.jar")) // add rt.jar
             .build();
 
-    JavaView view = project.createFullView();
+    JavaView view = project.createView();
 
     // Get a MethodSignature
     ClassType classTypeA = project.getIdentifierFactory().getClassType("A");

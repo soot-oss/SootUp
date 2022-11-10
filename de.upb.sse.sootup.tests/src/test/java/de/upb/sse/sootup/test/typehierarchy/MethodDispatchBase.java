@@ -39,7 +39,7 @@ public class MethodDispatchBase {
             new JavaSourcePathAnalysisInputLocation(
                 Collections.singleton(baseDir + "/" + getClassName()));
         project = JavaProject.builder(new JavaLanguage(8)).addInputLocation(this.srcCode).build();
-        setView(project.createFullView());
+        setView(project.createView());
       }
     }
 

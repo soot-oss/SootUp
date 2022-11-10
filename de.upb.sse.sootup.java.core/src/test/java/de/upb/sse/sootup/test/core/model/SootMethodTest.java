@@ -41,7 +41,7 @@ public class SootMethodTest {
   public void testCreateMethod() {
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    View view = project.createView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());

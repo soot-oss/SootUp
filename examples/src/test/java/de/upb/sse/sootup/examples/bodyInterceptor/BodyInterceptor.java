@@ -56,7 +56,7 @@ public class BodyInterceptor {
     // Create a view for project, which allows us to retrieve classes
     // add class loading options, which can specify body interceptors
     JavaView view =
-        project.createOnDemandView(
+        project.createView(
             analysisInputLocation ->
                 new ClassLoadingOptions() {
                   @Nonnull

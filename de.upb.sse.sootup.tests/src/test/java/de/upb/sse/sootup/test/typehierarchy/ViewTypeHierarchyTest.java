@@ -66,7 +66,7 @@ public class ViewTypeHierarchyTest {
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(analysisInputLocation).build();
-    view = p.createOnDemandView();
+    view = p.createView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }
 

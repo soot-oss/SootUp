@@ -1,4 +1,4 @@
-package de.upb.sse.sootup.test.analysis.interprocedural.ifds;
+package de.upb.sse.sootUp.test.analysis.interprocedural.ifds;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package de.upb.sse.sootup.test.analysis.interprocedural.ifds;
  * #L%
  */
 
-import de.upb.sse.sootup.analysis.interprocedural.ifds.DefaultJimpleIFDSTabulationProblem;
+import de.upb.sse.sootUp.analysis.interprocedural.ifds.DefaultJimpleIFDSTabulationProblem;
 import de.upb.sse.sootup.core.jimple.basic.Immediate;
 import de.upb.sse.sootup.core.jimple.basic.Local;
 import de.upb.sse.sootup.core.jimple.basic.Value;

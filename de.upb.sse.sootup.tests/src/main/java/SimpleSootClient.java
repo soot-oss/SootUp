@@ -51,7 +51,7 @@ public class SimpleSootClient {
     JavaProject p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(walaSource).build();
 
     // 1. simple case
-    JavaView fullView = p.createFullView();
+    JavaView fullView = p.createView();
 
     /*
         CallGraph cg = fullView.createCallGraph();

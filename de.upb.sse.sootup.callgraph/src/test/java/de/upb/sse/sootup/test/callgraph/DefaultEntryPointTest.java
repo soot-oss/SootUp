@@ -51,7 +51,7 @@ public class DefaultEntryPointTest {
                     System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
             .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
-    return javaProject.createOnDemandView();
+    return javaProject.createView();
   }
 
   /**
@@ -290,7 +290,7 @@ public class DefaultEntryPointTest {
             .addInputLocation(
                 new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath))
             .build();
-    JavaView view = javaProject.createOnDemandView();
+    JavaView view = javaProject.createView();
 
     Set<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check
@@ -318,7 +318,7 @@ public class DefaultEntryPointTest {
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
             .build();
-    JavaView view = javaProject.createOnDemandView();
+    JavaView view = javaProject.createView();
 
     Collection<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check
@@ -345,7 +345,7 @@ public class DefaultEntryPointTest {
     String classPath = "src/test/resources/callgraph/jimple";
     AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
         new JimpleAnalysisInputLocation<>(Paths.get(classPath), SourceType.Library);
-    JimpleView view = new JimpleProject(jimpleInputLocation).createOnDemandView();
+    JimpleView view = new JimpleProject(jimpleInputLocation).createView();
 
     Collection<SootClass<?>> classes = new HashSet<>(); // Set to track the classes to check
 

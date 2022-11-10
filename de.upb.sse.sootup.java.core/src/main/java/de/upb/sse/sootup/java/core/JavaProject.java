@@ -25,6 +25,7 @@ package de.upb.sse.sootup.java.core;
 import com.google.common.base.Preconditions;
 import de.upb.sse.sootup.core.Project;
 import de.upb.sse.sootup.core.SourceTypeSpecifier;
+import de.upb.sse.sootup.core.cache.provider.CacheProvider;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
 import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
 import de.upb.sse.sootup.core.inputlocation.DefaultSourceTypeSpecifier;
@@ -52,19 +53,12 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   @Nonnull
-  @Override
-  public JavaView createOnDemandView() {
-    return new JavaView(this);
-  }
-
-  @Nonnull
-  public MutableJavaView createMutableOnDemandView() {
+  public MutableJavaView createMutableView() {
     return new MutableJavaView(this);
   }
 
   @Nonnull
-  @Override
-  public JavaView createOnDemandView(
+  public JavaView createView(
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -73,17 +67,22 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   @Nonnull
   @Override
-  public JavaView createFullView() {
-    final JavaView view = createOnDemandView();
-    view.getClasses();
-    return view;
+  public JavaView createView(
+      @Nonnull CacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaView(this, cacheProvider, classLoadingOptionsSpecifier);
   }
 
   @Nonnull
-  public MutableJavaView createMutableFullView() {
-    final MutableJavaView view = createMutableOnDemandView();
-    view.getClasses();
-    return view;
+  public JavaView createView(@Nonnull CacheProvider<JavaSootClass> cacheProvider) {
+    return new JavaView(this, cacheProvider);
+  }
+
+  @Nonnull
+  public JavaView createView() {
+    return new JavaView(this);
   }
 
   /**

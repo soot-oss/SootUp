@@ -32,7 +32,7 @@ public class JavaModuleViewTest {
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
     ModuleJavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
@@ -72,7 +72,7 @@ public class JavaModuleViewTest {
                     "../shared-test-resources/miniTestSuite/java6/binary/"))
             .enableModules()
             .build();
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("A", "", "");
@@ -106,7 +106,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -151,7 +151,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -193,7 +193,7 @@ public class JavaModuleViewTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -248,7 +248,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -297,7 +297,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "reflection/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -352,7 +352,7 @@ public class JavaModuleViewTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainModmainSig =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -402,7 +402,7 @@ public class JavaModuleViewTest {
                     testPath + "uses-provides_uses-in-client/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
     ModuleJavaClassType mainModmainSig =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> mainModmainClass = view.getClass(mainModmainSig);
@@ -452,7 +452,7 @@ public class JavaModuleViewTest {
                     testPath + "derived_private-package-protected/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -499,7 +499,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -538,7 +538,7 @@ public class JavaModuleViewTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "interface-callback/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -577,7 +577,7 @@ public class JavaModuleViewTest {
                     testPath + "splitpackage_automatic-modules/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     assertEquals(3, view.getNamedModules().size());
 
@@ -613,7 +613,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "splitpackage"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
@@ -630,7 +630,7 @@ public class JavaModuleViewTest {
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -654,7 +654,7 @@ public class JavaModuleViewTest {
                     testPath + "unnamed-module_access-from-automatic-module/jar/cpa.jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModuleJavaClassType mainClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain.auto");
@@ -687,7 +687,7 @@ public class JavaModuleViewTest {
                     testPath + "unnamed-module_access-from-explicit-module/jar/cpb.jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
     JavaModuleInfo moduleInfo_cpb = view.getModuleInfo(cpb.getModuleSignature()).get();
@@ -737,7 +737,7 @@ public class JavaModuleViewTest {
                     testPath + "unnamed-module_accessing-module-path/jar/cpmain.jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName pkgbModb =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "modb");
@@ -828,7 +828,7 @@ public class JavaModuleViewTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");

@@ -1,6 +1,7 @@
 package de.upb.sse.sootup.jimple.parser;
 
 import de.upb.sse.sootup.core.*;
+import de.upb.sse.sootup.core.cache.provider.CacheProvider;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
 import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
 import de.upb.sse.sootup.core.inputlocation.DefaultSourceTypeSpecifier;
@@ -38,21 +39,28 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
   @Nonnull
   @Override
-  public JimpleView createFullView() {
-    final JimpleView jimpleView = new JimpleView(this);
-    jimpleView.getClasses();
-    return jimpleView;
-  }
-
-  @Nonnull
-  @Override
-  public JimpleView createOnDemandView() {
+  public JimpleView createView() {
     return new JimpleView(this);
   }
 
   @Nonnull
   @Override
-  public JimpleView createOnDemandView(
+  public JimpleView createView(@Nonnull CacheProvider<SootClass<?>> cacheProvider) {
+    return new JimpleView(this, cacheProvider);
+  }
+
+  @Nonnull
+  @Override
+  public JimpleView createView(
+      @Nonnull CacheProvider<SootClass<?>> cacheProvider,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JimpleView(this, classLoadingOptionsSpecifier);
+  }
+
+  @Nonnull
+  public JimpleView createView(
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {

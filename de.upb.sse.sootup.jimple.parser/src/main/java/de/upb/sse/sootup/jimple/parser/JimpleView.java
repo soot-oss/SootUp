@@ -1,10 +1,14 @@
 package de.upb.sse.sootup.jimple.parser;
 
 import de.upb.sse.sootup.core.Project;
+import de.upb.sse.sootup.core.cache.Cache;
+import de.upb.sse.sootup.core.cache.provider.CacheProvider;
+import de.upb.sse.sootup.core.cache.provider.FullCacheProvider;
 import de.upb.sse.sootup.core.frontend.AbstractClassSource;
 import de.upb.sse.sootup.core.frontend.ResolveException;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
 import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
+import de.upb.sse.sootup.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.sse.sootup.core.model.SootClass;
 import de.upb.sse.sootup.core.transform.BodyInterceptor;
 import de.upb.sse.sootup.core.types.ClassType;
@@ -12,9 +16,7 @@ import de.upb.sse.sootup.core.views.AbstractView;
 import de.upb.sse.sootup.java.core.views.JavaView;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,7 +33,7 @@ import javax.annotation.Nonnull;
 // for View if we really need different views in the future?
 public class JimpleView extends AbstractView<SootClass<?>> {
 
-  @Nonnull private final Map<ClassType, SootClass<?>> cache = new HashMap<>();
+  @Nonnull private final Cache<SootClass<?>> cache;
 
   private volatile boolean isFullyResolved = false;
 
@@ -41,7 +43,12 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JimpleView(@Nonnull JimpleProject project) {
-    this(project, analysisInputLocation -> null);
+    this(project, new FullCacheProvider<>(), analysisInputLocation -> null);
+  }
+
+  public JimpleView(
+      @Nonnull JimpleProject project, @Nonnull CacheProvider<SootClass<?>> cacheProvider) {
+    this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   /**
@@ -56,8 +63,18 @@ public class JimpleView extends AbstractView<SootClass<?>> {
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
+    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
+  }
+
+  public JimpleView(
+      @Nonnull Project project,
+      @Nonnull CacheProvider<SootClass<?>> cacheProvider,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
     super(project);
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+    this.cache = cacheProvider.createCache();
   }
 
   @Nonnull
@@ -83,7 +100,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   @Nonnull
   synchronized Collection<SootClass<?>> getAbstractClassSources() {
     resolveAll();
-    return cache.values();
+    return cache.getClasses();
   }
 
   @Override
@@ -94,7 +111,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Nonnull
   Optional<SootClass<?>> getAbstractClass(@Nonnull ClassType type) {
-    SootClass<?> cachedClass = cache.get(type);
+    SootClass<?> cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
@@ -126,12 +143,17 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   @Nonnull
   private synchronized Optional<SootClass<?>> buildClassFrom(
       AbstractClassSource<? extends SootClass<?>> classSource) {
-    SootClass<?> theClass =
-        cache.computeIfAbsent(
-            classSource.getClassType(),
-            type ->
-                classSource.buildClass(
-                    getProject().getSourceTypeSpecifier().sourceTypeFor(classSource)));
+
+    ClassType classType = classSource.getClassType();
+    SootClass<?> theClass;
+    if (!cache.hasClass(classType)) {
+      theClass =
+          classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(classSource));
+      cache.putClass(classType, theClass);
+    } else {
+      theClass = cache.getClass(classType);
+    }
+
     return Optional.of(theClass);
   }
 

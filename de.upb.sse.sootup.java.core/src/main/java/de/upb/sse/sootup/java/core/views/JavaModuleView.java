@@ -23,6 +23,7 @@ package de.upb.sse.sootup.java.core.views;
  */
 
 import de.upb.sse.sootup.core.Project;
+import de.upb.sse.sootup.core.cache.provider.FullCacheProvider;
 import de.upb.sse.sootup.core.frontend.AbstractClassSource;
 import de.upb.sse.sootup.core.frontend.ResolveException;
 import de.upb.sse.sootup.core.inputlocation.AnalysisInputLocation;
@@ -30,7 +31,6 @@ import de.upb.sse.sootup.core.inputlocation.ClassLoadingOptions;
 import de.upb.sse.sootup.core.inputlocation.EmptyClassLoadingOptions;
 import de.upb.sse.sootup.core.signatures.PackageName;
 import de.upb.sse.sootup.core.types.ClassType;
-import de.upb.sse.sootup.java.core.*;
 import de.upb.sse.sootup.java.core.JavaModuleInfo;
 import de.upb.sse.sootup.java.core.JavaModuleProject;
 import de.upb.sse.sootup.java.core.JavaSootClass;
@@ -73,7 +73,7 @@ public class JavaModuleView extends JavaView {
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
-    super(project);
+    super(project, new FullCacheProvider<>());
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
