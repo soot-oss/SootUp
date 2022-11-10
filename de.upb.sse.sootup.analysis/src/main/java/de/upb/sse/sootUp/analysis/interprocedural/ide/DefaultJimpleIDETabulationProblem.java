@@ -1,4 +1,4 @@
-package de.upb.sse.sootUp.analysis.interprocedural.ide;
+package de.upb.sse.sootup.analysis.interprocedural.ide;
 
 /*-
  * #%L

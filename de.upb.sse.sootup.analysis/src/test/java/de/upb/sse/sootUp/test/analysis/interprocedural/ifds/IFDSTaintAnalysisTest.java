@@ -1,4 +1,4 @@
-package de.upb.sse.sootUp.test.analysis.interprocedural.ifds;
+package de.upb.sse.sootup.test.analysis.interprocedural.ifds;
 
 /*-
  * #%L
@@ -24,7 +24,7 @@ package de.upb.sse.sootUp.test.analysis.interprocedural.ifds;
 
 import static org.junit.Assert.*;
 
-import de.upb.sse.sootUp.analysis.interprocedural.ifds.JimpleIFDSSolver;
+import de.upb.sse.sootup.analysis.interprocedural.ifds.JimpleIFDSSolver;
 import de.upb.sse.sootup.core.jimple.basic.Local;
 import de.upb.sse.sootup.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.sse.sootup.core.jimple.common.ref.JStaticFieldRef;

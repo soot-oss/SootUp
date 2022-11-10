@@ -1,4 +1,4 @@
-package de.upb.sse.sootUp.analysis.interprocedural.icfg;
+package de.upb.sse.sootup.analysis.interprocedural.icfg;
 
 /*-
  * #%L

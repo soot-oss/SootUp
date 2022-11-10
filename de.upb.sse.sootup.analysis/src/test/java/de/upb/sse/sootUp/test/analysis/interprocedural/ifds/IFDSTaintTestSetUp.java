@@ -1,4 +1,4 @@
-package de.upb.sse.sootUp.test.analysis.interprocedural.ifds;
+package de.upb.sse.sootup.test.analysis.interprocedural.ifds;
 
 /*-
  * #%L
@@ -24,8 +24,8 @@ package de.upb.sse.sootUp.test.analysis.interprocedural.ifds;
 
 import static org.junit.Assert.assertNotNull;
 
-import de.upb.sse.sootUp.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
-import de.upb.sse.sootUp.analysis.interprocedural.ifds.JimpleIFDSSolver;
+import de.upb.sse.sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
+import de.upb.sse.sootup.analysis.interprocedural.ifds.JimpleIFDSSolver;
 import de.upb.sse.sootup.core.jimple.common.stmt.Stmt;
 import de.upb.sse.sootup.core.model.SootClass;
 import de.upb.sse.sootup.core.model.SootMethod;
