@@ -245,7 +245,7 @@ jobs:
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.6.1
         with:
-          jacoco-csv-file: report/target/jacoco-aggregate/jacoco.csv
+          jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
       - name: Comment Coverage info
         uses: marocchino/sticky-pull-request-comment@v2
