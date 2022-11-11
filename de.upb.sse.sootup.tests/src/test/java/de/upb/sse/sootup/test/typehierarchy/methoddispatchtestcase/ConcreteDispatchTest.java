@@ -40,18 +40,32 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
 
     // test concrete method in interface
     ClassType sootClassInterface = getClassType("I");
-    System.out.println(sootClassInterface);
     MethodSignature sootInterfaceMethod =
         identifierFactory.getMethodSignature(
             sootClassInterface, "interfaceMethod", "void", Collections.emptyList());
 
-    MethodSignature sootInterfaceMethodB =
+    MethodSignature sootInterfaceMethodA =
         identifierFactory.getMethodSignature(
             sootClassTypeA, "interfaceMethod", "void", Collections.emptyList());
 
     MethodSignature candidateInterface =
         MethodDispatchResolver.resolveConcreteDispatch(
-            customTestWatcher.getView(), sootInterfaceMethodB);
+            customTestWatcher.getView(), sootInterfaceMethodA);
     assertEquals(candidateInterface, sootInterfaceMethod);
+
+    // test concrete method in interface
+    ClassType sootClassSuperInterface = getClassType("J");
+    MethodSignature sootSuperInterfaceMethod =
+        identifierFactory.getMethodSignature(
+            sootClassSuperInterface, "superInterfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature sootSuperInterfaceMethodA =
+        identifierFactory.getMethodSignature(
+            sootClassTypeA, "superInterfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature candidateSuperInterface =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            customTestWatcher.getView(), sootSuperInterfaceMethodA);
+    assertEquals(candidateSuperInterface, sootSuperInterfaceMethod);
   }
 }
