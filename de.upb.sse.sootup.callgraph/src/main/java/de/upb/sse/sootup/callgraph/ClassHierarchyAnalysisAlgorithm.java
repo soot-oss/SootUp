@@ -76,7 +76,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return result;
     } else {
       return Stream.concat(
-          result,
+          Stream.of(MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)),
           MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
               .map(
                   methodSignature ->
