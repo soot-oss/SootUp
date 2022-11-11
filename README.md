@@ -23,7 +23,7 @@ Documentation is available [here](https://soot-oss.github.io/SootUp/).
 
 ## Contribution Guidelines 
 
-- [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+- [Coding guidelines and contributors notice!](../../wiki/contribution-to-SootUp)
 
 ## [Contributors](https://github.com/soot-oss/SootUp/graphs/contributors) 
 
