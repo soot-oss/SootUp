@@ -158,8 +158,8 @@ public final class MethodDispatchResolver {
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
         && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
-        && (called.getType().equals(potentialTarget.getType())
-            || hierarchy.isSubtype(called.getType(), potentialTarget.getType()));
+        && (called.getType().equals(potentialTarget.getType()) //return types are equal
+            || hierarchy.isSubtype(called.getType(), potentialTarget.getType())); // covariant
   }
 
   /**
