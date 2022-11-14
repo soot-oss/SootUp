@@ -224,6 +224,29 @@ public final class MethodDispatchResolver {
   }
 
   /**
+   * finds the concrete method in a SootClass
+   *
+   * <p>this method returns the concrete method of given method signature in a SootClass. Due to
+   * covariant, the given method signature can differ from the concrete method at the return type
+   * The method goes through all methods of the given SootClass and searches for a method which can
+   * dispatch.
+   *
+   * @param sootClass The method is searched in this SootClass
+   * @param methodSignature the signature of the searched method
+   * @param hierarchy the hierarchy is used to resolve the dispatch of a method signature since the
+   *     return type has to be equal or a subclass of the return type of the method signature
+   * @return an Optional Object that can contain the found concrete method in the given SootClass
+   */
+  private static Optional<? extends SootMethod> findConcreteMethodInSootClass(
+      SootClass<?> sootClass, MethodSignature methodSignature, TypeHierarchy hierarchy) {
+    return sootClass.getMethods().stream()
+        .filter(
+            potentialTarget ->
+                canDispatch(methodSignature, potentialTarget.getSignature(), hierarchy))
+        .findAny();
+  }
+
+  /**
    * Resolves the actual method called by the <code>specialInvokeExpr</code> that is contained by
    * <code>container</code>.
    */
