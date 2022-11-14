@@ -232,10 +232,10 @@ public final class MethodDispatchResolver {
           (interface1, interface2) -> {
             // interface1 is a sub-interface of interface2
             if (hierarchy.isSubtype(
-                interface1.getDeclaringClassType(), interface2.getDeclaringClassType())) return -1;
+                interface2.getDeclaringClassType(), interface1.getDeclaringClassType())) return -1;
             // interface1 is a super-interface of interface2
             if (hierarchy.isSubtype(
-                interface2.getDeclaringClassType(), interface1.getDeclaringClassType())) return 1;
+                interface1.getDeclaringClassType(), interface2.getDeclaringClassType())) return 1;
             // due to multiple inheritance in interfaces
             return 0;
           });

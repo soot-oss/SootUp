@@ -39,10 +39,10 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
     assertEquals(candidate2, sootMethod3);
 
     // test concrete method in interface
-    ClassType sootClassInterface = getClassType("I");
+    ClassType sootClassInterfaceI = getClassType("I");
     MethodSignature sootInterfaceMethod =
         identifierFactory.getMethodSignature(
-            sootClassInterface, "interfaceMethod", "void", Collections.emptyList());
+            sootClassInterfaceI, "interfaceMethod", "void", Collections.emptyList());
 
     MethodSignature sootInterfaceMethodA =
         identifierFactory.getMethodSignature(
@@ -53,11 +53,11 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
             customTestWatcher.getView(), sootInterfaceMethodA);
     assertEquals(candidateInterface, sootInterfaceMethod);
 
-    // test concrete method in interface
-    ClassType sootClassSuperInterface = getClassType("J");
+    // test concrete method in super-interface
+    ClassType sootClassInterfaceJ = getClassType("J");
     MethodSignature sootSuperInterfaceMethod =
         identifierFactory.getMethodSignature(
-            sootClassSuperInterface, "superInterfaceMethod", "void", Collections.emptyList());
+            sootClassInterfaceJ, "superInterfaceMethod", "void", Collections.emptyList());
 
     MethodSignature sootSuperInterfaceMethodA =
         identifierFactory.getMethodSignature(
@@ -67,5 +67,21 @@ public class ConcreteDispatchTest extends MethodDispatchBase {
         MethodDispatchResolver.resolveConcreteDispatch(
             customTestWatcher.getView(), sootSuperInterfaceMethodA);
     assertEquals(candidateSuperInterface, sootSuperInterfaceMethod);
+
+    // test concrete method with two possible default methods but one is in the sub-interface
+    ClassType sootClassTypeC = getClassType("C");
+    ClassType sootClassTypeD = getClassType("D");
+    MethodSignature subInterfaceMethod =
+        identifierFactory.getMethodSignature(
+            sootClassInterfaceI, "interfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature sootSuperInterfaceMethodD =
+        identifierFactory.getMethodSignature(
+            sootClassTypeD, "interfaceMethod", "void", Collections.emptyList());
+
+    MethodSignature candidateSubInterface =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            customTestWatcher.getView(), sootSuperInterfaceMethodD);
+    assertEquals(candidateSubInterface, subInterfaceMethod);
   }
 }
