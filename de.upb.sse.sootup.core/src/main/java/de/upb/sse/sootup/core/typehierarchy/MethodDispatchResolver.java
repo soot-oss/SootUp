@@ -200,27 +200,69 @@ public final class MethodDispatchResolver {
     } while (superClassType != null);
 
     // No super class contains the implemented method, search the concrete method in interfaces
-    for (SootClass<?> clazz : classesInHierachyOrder) {
-      SootMethod concreteDefaultMethod =
-          clazz.getInterfaces().stream()
-              .map(
-                  interfaceType ->
-                      view.getMethod(
-                          view.getIdentifierFactory()
-                              .getMethodSignature(interfaceType, m.getSubSignature())))
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-              .findAny()
-              .orElse(null);
-
-      if (concreteDefaultMethod != null && !concreteDefaultMethod.isAbstract()) {
-        // method found and it is not abstract
-        return concreteDefaultMethod.getSignature();
+    // first collect all interfaces and super interfaces
+    List<SootClass<?>> worklist =
+        classesInHierachyOrder.stream()
+            .flatMap(sootClass -> getSootClassesOfInterfaces(view, sootClass).stream())
+            .collect(Collectors.toList());
+    ArrayList<SootClass<?>> processedInterface = new ArrayList<>();
+    ArrayList<SootMethod> possibleDefaultMethods = new ArrayList<>();
+    while (!worklist.isEmpty()) {
+      SootClass<?> currentInterface = worklist.remove(0);
+      if (processedInterface.contains(currentInterface)) {
+        // interface was already processed
+        continue;
       }
+
+      // add found default method to possibleDefaultMethods
+      Optional<? extends SootMethod> concreteMethod =
+          findConcreteMethodInSootClass(currentInterface, m, hierarchy);
+      concreteMethod.ifPresent(possibleDefaultMethods::add);
+
+      // if no default message is found search the default message in super interfaces
+      if (!concreteMethod.isPresent()) {
+        worklist.addAll(getSootClassesOfInterfaces(view, currentInterface));
+      }
+      processedInterface.add(currentInterface);
     }
 
+    if (!possibleDefaultMethods.isEmpty()) {
+      // the interfaces are sorted by hierarchy
+      possibleDefaultMethods.sort(
+          (interface1, interface2) -> {
+            // interface1 is a sub-interface of interface2
+            if (hierarchy.isSubtype(
+                interface1.getDeclaringClassType(), interface2.getDeclaringClassType())) return -1;
+            // interface1 is a super-interface of interface2
+            if (hierarchy.isSubtype(
+                interface2.getDeclaringClassType(), interface1.getDeclaringClassType())) return 1;
+            // due to multiple inheritance in interfaces
+            return 0;
+          });
+      // return the lowest element in the hierarchy
+      return possibleDefaultMethods.get(0).getSignature();
+    }
     throw new ResolveException("Could not find concrete method for " + m);
+  }
+
+  /**
+   * Returns all SootClasses of interfaces that are implemented in the given SootClass
+   *
+   * <p>returns a list of all SootClass Objects of interfaces that are associated with the given
+   * sootClass parameter. The ClassTypes of the interfaces are converted to SootClasses and not
+   * contained Interfaces are filtered.
+   *
+   * @param view the view that contains all searched SootClasses
+   * @param sootClass it contains the interfaces
+   * @return a list of SootClasses of the interfaces of sootClass
+   */
+  private static List<SootClass<?>> getSootClassesOfInterfaces(
+      View<? extends SootClass<?>> view, SootClass<?> sootClass) {
+    return sootClass.getInterfaces().stream()
+        .map(view::getClass)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
   }
 
   /**
