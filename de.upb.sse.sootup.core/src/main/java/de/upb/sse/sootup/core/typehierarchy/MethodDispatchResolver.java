@@ -31,6 +31,7 @@ import de.upb.sse.sootup.core.signatures.MethodSignature;
 import de.upb.sse.sootup.core.types.ClassType;
 import de.upb.sse.sootup.core.views.View;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,8 +85,9 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .flatMap(abstractClass -> abstractClass.getMethods().stream())
-        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m, hierarchy))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
@@ -109,8 +111,9 @@ public final class MethodDispatchResolver {
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .filter(c -> classes.contains(c.getType()))
-        .flatMap(abstractClass -> abstractClass.getMethods().stream())
-        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m, hierarchy))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .filter(method -> !method.isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
@@ -158,7 +161,7 @@ public final class MethodDispatchResolver {
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
         && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
-        && (called.getType().equals(potentialTarget.getType()) //return types are equal
+        && (called.getType().equals(potentialTarget.getType()) // return types are equal
             || hierarchy.isSubtype(called.getType(), potentialTarget.getType())); // covariant
   }
 
@@ -187,10 +190,7 @@ public final class MethodDispatchResolver {
       classesInHierachyOrder.add(superClass);
 
       SootMethod concreteMethod =
-          superClass.getMethods().stream()
-              .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
-              .findAny()
-              .orElse(null);
+          findConcreteMethodInSootClass(superClass, m, hierarchy).orElse(null);
       if (concreteMethod != null && !concreteMethod.isAbstract()) {
         // method found and it is not abstract
         return concreteMethod.getSignature();
