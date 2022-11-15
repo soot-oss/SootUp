@@ -74,6 +74,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   private void collectInstantiatedClassesInMethod(SootMethod method) {
+    if (method==null||method.isAbstract()||method.getBody().getStmts().isEmpty()){
+      return;
+    }
+
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
@@ -104,9 +108,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     } else {
       Set<MethodSignature> notInstantiatedCallTargets = Sets.newHashSet();
       Set<MethodSignature> implAndOverrides =
-          MethodDispatchResolver.resolveAbstractDispatchInClasses(
+          MethodDispatchResolver.resolveAllDispatchesInClasses(
               view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
 
+      // save filtered calls to include them later when their class is instantiated
       notInstantiatedCallTargets.forEach(
           ignoredMethodSignature -> {
             ClassType notInstantiatedClass = ignoredMethodSignature.getDeclClassType();
@@ -120,12 +125,21 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             }
           });
 
-      // the statically dispatched call is not instantiated
-      if (!instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
-        return implAndOverrides.stream();
+      // find the concrete dispatch of all possible dispatches
+      Set<MethodSignature> concreteCallTargets =
+          implAndOverrides.stream()
+              .map(
+                  methodSignature ->
+                      MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+              .collect(Collectors.toSet());
+
+      // the class of the actual method call is instantiated
+      if (instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
+        concreteCallTargets.add(
+            MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature));
       }
 
-      return Stream.concat(result, implAndOverrides.stream());
+      return concreteCallTargets.stream();
     }
   }
 
@@ -178,14 +192,16 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
           if (newEdges != null) {
             newEdges.forEach(
                 call -> {
-                  if (cg.containsMethod(call.target)) {
+                  MethodSignature concreteTarget =
+                      MethodDispatchResolver.resolveConcreteDispatch(view, call.target);
+                  if (cg.containsMethod(concreteTarget)) {
                     // method is already analyzed or is in the work list, simply add the call
-                    cg.addCall(call.source, call.target);
+                    cg.addCall(call.source, concreteTarget);
                   } else {
                     // new target method found that has to be analyzed
-                    cg.addMethod(call.target);
-                    cg.addCall(call.source, call.target);
-                    workList.push(call.target);
+                    cg.addMethod(concreteTarget);
+                    cg.addCall(call.source, concreteTarget);
+                    workList.push(concreteTarget);
                   }
                 });
             // can be removed because the instantiated class will be considered in future resolves

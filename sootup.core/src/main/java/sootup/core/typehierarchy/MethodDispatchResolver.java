@@ -98,7 +98,7 @@ public final class MethodDispatchResolver {
    * the set of method signatures that a method call could resolve to within the given classes.
    */
   @Nonnull
-  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+  public static Set<MethodSignature> resolveAllDispatchesInClasses(
       View<? extends SootClass<?>> view, MethodSignature m, Set<ClassType> classes) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
 
@@ -120,20 +120,27 @@ public final class MethodDispatchResolver {
   }
 
   /**
-   * Searches the view for classes that implement or override the method <code>m</code> and returns
-   * the set of method signatures that a method call could resolve to within the given classes.
+   * Resolves all dispatches of a given call filtered by a set of given classes
    *
-   * @param filteredSignatures all resolvable method signatures that are not within the given
-   *     classes are added to this set
+   * <p>searches the view for classes that can override the method <code>m</code> and returns the
+   * set of method signatures that a method call could resolve to within the given classes. All
+   * filtered signatures are added to the given set <code>filteredSignatures</code>.
+   *
+   * @param view it contains all classes and their connections.
+   * @param m it defines the actual invoked method signature.
+   * @param classes the set of classes that define possible dispatch targets of method signatures
+   * @param filteredSignatures the set of method signatures which is filled with filtered method
+   *     signatures in the execution of this method.
+   * @return a set of method signatures that a method call could resolve to within the given classes
    */
   @Nonnull
-  public static Set<MethodSignature> resolveAbstractDispatchInClasses(
+  public static Set<MethodSignature> resolveAllDispatchesInClasses(
       View<? extends SootClass<?>> view,
       MethodSignature m,
       Set<ClassType> classes,
       Set<MethodSignature> filteredSignatures) {
 
-    Set<MethodSignature> allSignatures = resolveAbstractDispatch(view, m);
+    Set<MethodSignature> allSignatures = resolveAllDispatches(view, m);
     Set<MethodSignature> signatureInClasses = Sets.newHashSet();
     allSignatures.forEach(
         methodSignature -> {
