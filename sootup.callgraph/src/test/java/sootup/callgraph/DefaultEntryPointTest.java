@@ -62,7 +62,7 @@ public class DefaultEntryPointTest {
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-    JavaClassType mainClassSignature = identifierFactory.getClassType("example1.Example");
+    JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
@@ -74,69 +74,67 @@ public class DefaultEntryPointTest {
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
     assertNotNull(cg);
 
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example2.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
+            identifierFactory.getClassType("example2.B"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
+            identifierFactory.getClassType("example2.C"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.A"),
+            identifierFactory.getClassType("example2.A"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
+            identifierFactory.getClassType("example2.B"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
+            identifierFactory.getClassType("example2.C"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature methodD =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.D"),
-            "print",
-            "void",
-            Collections.singletonList("java.lang.Object"));
-
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
 
     assertTrue(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
-    assertTrue(cg.containsCall(mainMethodSignature, methodD));
 
-    assertEquals(6, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(5, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
     assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
-    assertEquals(1, cg.callsTo(methodD).size());
 
     assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
-    assertEquals(0, cg.callsFrom(methodD).size());
   }
 
   /**
@@ -197,7 +195,7 @@ public class DefaultEntryPointTest {
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-    JavaClassType mainClassSignature = identifierFactory.getClassType("example1.Example");
+    JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
@@ -209,65 +207,63 @@ public class DefaultEntryPointTest {
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
     assertNotNull(cg);
 
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("example2.A"),
+            "<init>",
+            "void",
+            Collections.emptyList());
+
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
+            identifierFactory.getClassType("example2.B"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature constructorC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
+            identifierFactory.getClassType("example2.C"),
             "<init>",
             "void",
             Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.A"),
+            identifierFactory.getClassType("example2.A"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.B"),
+            identifierFactory.getClassType("example2.B"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.C"),
+            identifierFactory.getClassType("example2.C"),
             "print",
             "void",
             Collections.singletonList("java.lang.Object"));
 
-    MethodSignature methodD =
-        identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("example1.D"),
-            "print",
-            "void",
-            Collections.singletonList("java.lang.Object"));
-
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodA));
+    assertFalse(cg.containsCall(mainMethodSignature, methodA));
     assertTrue(cg.containsCall(mainMethodSignature, methodB));
     assertTrue(cg.containsCall(mainMethodSignature, methodC));
-    assertFalse(cg.containsMethod(methodD));
 
-    assertEquals(5, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(4, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(2, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
-    assertEquals(1, cg.callsTo(methodA).size());
     assertEquals(1, cg.callsTo(methodB).size());
     assertEquals(1, cg.callsTo(methodC).size());
 
-    assertEquals(0, cg.callsFrom(methodA).size());
     assertEquals(0, cg.callsFrom(methodB).size());
     assertEquals(0, cg.callsFrom(methodC).size());
   }
