@@ -1,16 +1,16 @@
-package de.upb.sse.sootup.test.typehierarchy.methoddispatchtestcase;
+package sootup.tests.typehierarchy.methoddispatchtestcase;
 
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.sse.sootup.core.signatures.MethodSignature;
-import de.upb.sse.sootup.core.typehierarchy.MethodDispatchResolver;
-import de.upb.sse.sootup.core.types.ClassType;
-import de.upb.sse.sootup.test.typehierarchy.MethodDispatchBase;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.typehierarchy.MethodDispatchResolver;
+import sootup.core.types.ClassType;
+import sootup.tests.typehierarchy.MethodDispatchBase;
 
 /** @author : Jonas Klauke * */
 @Category(Java8Test.class)
