@@ -34,7 +34,7 @@ Below we only show how you can add the ```sootup.core``` module to your project.
  
 ```
 <dependency>
-  <groupId>de.upb.sse</groupId>
+  <groupId>org.soot-oss</groupId>
   <artifactId>sootup.core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -45,5 +45,5 @@ Below we only show how you can add the ```sootup.core``` module to your project.
 Add the following dependency in the ```build.gradle``` file of your project.
 
 ```
-compile "de.upb.sse:sootup.core:1.0.0-SNAPSHOT"
+compile "org.soot-oss:sootup.core:1.0.0-SNAPSHOT"
 ```

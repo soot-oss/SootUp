@@ -1,9 +1,9 @@
-# SootUp core library ![Java CI with Maven](https://github.com/secure-software-engineering/soot-reloaded/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) ![Coverage](.github/badges/jacoco.svg)
+# SootUp core library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) ![Coverage](.github/badges/jacoco.svg)
 
 ![Logo](logo.png)
 
 This is the home of the **SootUp** project.
-A complete overhaul of the good, old static analysis framework [Soot](https://github.com/Sable/soot).
+A complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
 
 ## SootUp provides
 - New Improved API
@@ -15,17 +15,17 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Fully-Parallelized/Distributed Architecture
 
 ## Documentation
-Documentation is available [here](https://secure-software-engineering.github.io/SootUp/).
+Documentation is available [here](https://soot-oss.github.io/SootUp/).
 
 ## What is done and what needs to be done
-- Big todo list: https://github.com/secure-software-engineering/SootUp/wiki/TODOs
+- Big todo list: https://github.com/soot-oss/SootUp/wiki/TODOs
 - Project Management: We use Zenhub to manage the project. Issues are created according to the big todo list.
 
 ## Contribution Guidelines 
 
-- [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
+- [Coding guidelines and contributors notice!](../../wiki/contribution-to-SootUp)
 
-## [Contributors](https://github.com/secure-software-engineering/SootUp/graphs/contributors) 
+## [Contributors](https://github.com/soot-oss/SootUp/graphs/contributors) 
 
 
 
