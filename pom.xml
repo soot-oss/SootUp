@@ -45,7 +45,7 @@
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
         <guava.version>25.1-jre</guava.version>
         <apache-commons.version>3.5</apache-commons.version>
-        <apache-commons-io.version>2.6</apache-commons-io.version>
+        <apache-commons-io.version>2.7</apache-commons-io.version>
         <junit.version>4.12</junit.version>
         <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
         <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
