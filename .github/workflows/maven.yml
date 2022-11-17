@@ -75,7 +75,7 @@ jobs:
           java-version: 1.8
 
       - name: Test (JDK8)
-        run: mvn -pl '!de.upb.sse.sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -83,7 +83,7 @@ jobs:
           name: coverage-exec
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
-                  !de.upb.sse.sootup.tests/
+                  !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -91,7 +91,7 @@ jobs:
           name: test-reports-jdk8
           path: |
                   */target/surefire-reports
-                  !de.upb.sse.sootup.tests/
+                  !sootup.tests/
 
 
   JDK9:
@@ -125,7 +125,7 @@ jobs:
           java-version: 1.9
 
       - name: Test (JDK9)
-        run: mvn -pl '!de.upb.sse.sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -133,7 +133,7 @@ jobs:
           name: coverage-exec
           path: |
             */target/coverage-reports/jacoco-ut-jdk9.exec
-            !de.upb.sse.sootup.tests/
+            !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -141,7 +141,7 @@ jobs:
           name: test-reports-jdk9
           path: |
             */target/surefire-reports
-            !de.upb.sse.sootup.tests/
+            !sootup.tests/
 
       # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
       - name: Check Format
@@ -179,7 +179,7 @@ jobs:
             ${{ runner.os }}-maven-    
 
       - name: Test (IntegrationTest)
-        run: mvn -pl de.upb.sse.sootup.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -pl sootup.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -245,7 +245,7 @@ jobs:
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2.6.1
         with:
-          jacoco-csv-file: report/target/jacoco-aggregate/jacoco.csv
+          jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
       - name: Comment Coverage info
         uses: marocchino/sticky-pull-request-comment@v2

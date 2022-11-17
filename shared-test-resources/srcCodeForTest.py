@@ -12,10 +12,10 @@ srcTargetDir='..\\..\\target'
 for root, dirnames, filenames in os.walk(srcTargetDir):
     for filename in fnmatch.filter(filenames, '*.java'):
         srcMatches.append(os.path.join(root, filename))
-for root, dirnames, filenames in os.walk('..\\de.upb.sse.sootup.java.sourcecode\\src\\test\\java\\de\\upb\\sse\\soot\\test\\java\\sourcecode\\minimaltestsuite\\'):
+for root, dirnames, filenames in os.walk('..\\sootup.java.sourcecode\\src\\test\\java\\soot\\test\\java\\sourcecode\\minimaltestsuite\\'):
     for filename in fnmatch.filter(filenames, '*Test.java'):
         srcTestMatches.append(os.path.join(root, filename))		
-for root, dirnames, filenames in os.walk('..\\de.upb.sse.sootup.java.bytecode\\src\\test\\java\\de\\upb\\sse\\soot\\test\\java\\bytecode\\minimaltestsuite\\'):
+for root, dirnames, filenames in os.walk('..\\sootup.java.bytecode\\src\\test\\java\\soot\\test\\java\\bytecode\\minimaltestsuite\\'):
     for filename in fnmatch.filter(filenames, '*Test.java'):
         srcTestMatches.append(os.path.join(root, filename))
 for srcFile in srcMatches:

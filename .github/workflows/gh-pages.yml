@@ -6,7 +6,7 @@ on:
     # only trigger workflow if one of these paths are affected as well
     paths:
       - 'mkdocs.yml'
-      - 'examples/**'
+      - 'sootup.examples/**'
       - 'docs/**'
 
 jobs:

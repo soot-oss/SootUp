@@ -195,7 +195,7 @@ You can view all the code used until this point below:
 
 !!! info "All the code used above"
 
-    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/examples/src/test/java/de/upb/sse/soot/examples/basicSetup/BasicSetup.java)
+    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
 
 ## SootUp vs Soot
 

@@ -1,4 +1,4 @@
-package de.upb.sse.multirelease;
+package multirelease;
 
 public class Utility {
 

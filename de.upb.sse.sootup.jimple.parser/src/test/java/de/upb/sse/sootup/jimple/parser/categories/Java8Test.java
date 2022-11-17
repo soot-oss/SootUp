@@ -1,5 +1,0 @@
-package de.upb.sse.sootup.jimple.parser.categories;
-
-public interface Java8Test {
-
-  /* category marker */ }

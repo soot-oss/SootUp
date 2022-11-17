@@ -22,7 +22,7 @@ plugins:
   - tooltips
   - search
   - include:
-      src_path: 'examples/src/test/java/de/upb/sse/soot/examples'
+      src_path: 'sootup.examples/src/test/java/sootup/examples'
 
 extra_css:
   - css/hint.min.css
