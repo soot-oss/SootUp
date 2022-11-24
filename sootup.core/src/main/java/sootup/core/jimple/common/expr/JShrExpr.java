@@ -31,7 +31,7 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.util.Copyable;
 
-/** An expression that shifts its operand to the left (>>). */
+/** An expression that shifts its operand to the left (&gt;&gt;). */
 public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable {
 
   public JShrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {

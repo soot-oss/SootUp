@@ -34,7 +34,7 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
- * stores (already loaded) ClassType -> ClassSource associations for retrieval
+ * stores (already loaded) ClassType -&gt; ClassSource associations for retrieval
  *
  * @author Markus Schmidt
  */
@@ -44,7 +44,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
 
   /**
-   * not useful for retrieval of classes via view. // FIXME: circular dependency on sootclass <->
+   * not useful for retrieval of classes via view.
    * remove inputlocation from sootclass?
    */
   public EagerInputLocation() {
