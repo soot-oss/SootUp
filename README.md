@@ -26,6 +26,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 
 ## Getting started
 [Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
+Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
 
 ## SootUp Roadmap
 See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
