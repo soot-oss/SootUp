@@ -47,8 +47,8 @@ public class NonIndexOutofBoundsArrayList<T> extends ArrayList<T> {
   }
 
   /**
-   * modified in the way that the underlying array grows if index &gt;= size() and fills the gap with
-   * null elements instead of throwing an IndexOutOfBoundsException
+   * modified in the way that the underlying array grows if index &gt;= size() and fills the gap
+   * with null elements instead of throwing an IndexOutOfBoundsException
    */
   @Override
   public T set(int idx, T t) {

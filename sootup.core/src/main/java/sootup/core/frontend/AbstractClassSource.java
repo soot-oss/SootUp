@@ -37,7 +37,7 @@ import sootup.core.views.View;
  * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
  * View} can resolve.
  */
-public abstract class AbstractClassSource<T extends AbstractClass> {
+public abstract class AbstractClassSource<T extends AbstractClass<?>> {
 
   protected final AnalysisInputLocation<? extends SootClass<?>> classSource;
   protected final Path sourcePath;
@@ -52,6 +52,8 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     this.sourcePath = sourcePath;
   }
 
+  public abstract T buildClass(@Nonnull SourceType sourceType);
+
   public ClassType getClassType() {
     return classSignature;
   }
@@ -60,14 +62,8 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     return classSource;
   }
 
-  public abstract T buildClass(@Nonnull SourceType sourceType);
-
   public Path getSourcePath() {
     return sourcePath;
-  }
-
-  public void setClassSignature(ClassType classSignature) {
-    this.classSignature = classSignature;
   }
 
   /**
