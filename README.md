@@ -11,6 +11,10 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Applys/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
+## Getting started
+[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
+Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
+
 ## SootUp improvements 
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
 - [x] New Improved API (without Globals/Singletons)
@@ -23,10 +27,6 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - [ ] Full-Diff Support for Classes (across different View instances)
 - [x] Immutable Jimple IR Objects and Graphs
 - [ ] Incremental Updates of Program Representation
-
-## Getting started
-[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
-Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
 
 ## SootUp Roadmap
 See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
