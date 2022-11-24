@@ -36,7 +36,7 @@ import sootup.core.types.Type;
 
 /**
  * This class resembles the stack which the bytecode fills. It is used to convert to jimple with
- * Locals. (stack-machine -> "register" machine model)
+ * Locals. (stack-machine -&gt; "register" machine model)
  */
 public class OperandStack {
 
