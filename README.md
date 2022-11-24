@@ -25,10 +25,10 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - [ ] Incremental Updates of Program Representation
 
 ## Getting started
-[Documentation](https://soot-oss.github.io/SootUp/) and usage Examples are available on Github pages.
+[Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
 
 ## SootUp Roadmap
-See our [big todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
+See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
 
 ## Feel free to improve Soot!
 ### Collaboration
