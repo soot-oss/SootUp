@@ -11,7 +11,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Applys/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
-## SootUp provides
+## SootUp improvements 
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
 - [x] New Improved API (without Globals/Singletons)
 - [x] Fully-Parallelizable Architecture
