@@ -43,10 +43,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
 
   @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
 
-  /**
-   * not useful for retrieval of classes via view.
-   * remove inputlocation from sootclass?
-   */
+  /** not useful for retrieval of classes via view. remove inputlocation from sootclass? */
   public EagerInputLocation() {
     map = Collections.emptyMap();
   }

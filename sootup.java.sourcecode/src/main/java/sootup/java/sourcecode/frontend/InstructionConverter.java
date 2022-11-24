@@ -1171,8 +1171,9 @@ public class InstructionConverter {
   }
 
   /**
-   * This methods adds stmts with all branch stmts to builder ({@link JIfStmt}, {@link
-   * JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
+   * This methods adds stmts with all branch stmts to builder ({@link JIfStmt}, {@link JGotoStmt},
+   * {@link JSwitchStmt}) having set up their target stmts.
+   *
    * @param stmt2iIndex
    * @param builder
    */

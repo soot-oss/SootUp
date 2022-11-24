@@ -46,8 +46,8 @@ public abstract class StmtGraph implements Iterable<Stmt> {
   public abstract Stmt getStartingStmt();
 
   /**
-   * returns the nodes in this graph in no deterministic order (-&gt;Set) to get a linearized flow use
-   * iterator().
+   * returns the nodes in this graph in no deterministic order (-&gt;Set) to get a linearized flow
+   * use iterator().
    */
   @Nonnull
   public abstract Set<Stmt> nodes();
