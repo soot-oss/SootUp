@@ -80,9 +80,9 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   /**
    * resolve and check for accessibility of the class from a given package * TODO: incorporate
-   * AccessUtil @Nonnull public synchronized Optional<T> getClass( @Nonnull PackageName
-   * entryPackage, @Nonnull ClassType type) { Optional<T> aClass = getClass(type); if
-   * (aClass.isPresent() && AccessUtil.isAccessible(entryPackage, aClass.get()) ) { return
+   * AccessUtil @Nonnull public synchronized Optional&lt;T&gt; getClass( @Nonnull PackageName
+   * entryPackage, @Nonnull ClassType type) { Optional&lt;T&gt; aClass = getClass(type); if
+   * (aClass.isPresent() &amp;&amp; AccessUtil.isAccessible(entryPackage, aClass.get()) ) { return
    * Optional.empty(); } return aClass; }
    */
   @Nonnull

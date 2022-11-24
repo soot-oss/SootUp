@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 /**
  * Represents a build error.
  *
- * @see AbstractBuilder Fixme: there's no such class
  * @author Jan Martin Persch
  */
 public class BuilderException extends IllegalStateException {
