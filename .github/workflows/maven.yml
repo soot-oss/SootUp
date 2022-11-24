@@ -262,42 +262,13 @@ jobs:
           message: 'commit badge'
           add: '**/badges/jacoco.svg'
 
-  api-website:
+  publish-javadoc:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the repo
-      uses: actions/checkout@v2
-
-    - name: Set up the Java JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '8'
-        distribution: 'adopt'
-
-    - name: Build docs with Maven
-      run: mvn javadoc:aggregate
-
-    - name: Copy to Documentation Website Location
-      run: |
-        rm -rf docs/apidocs
-        cp -rf target/site/apidocs/. docs/apidocs
-
-    - name: Tidy up the javadocs
-      id: tidy
-      uses: cicirello/javadoc-cleanup@v1
-      with:
-        base-url-path: https://soot-oss.github.io/SootUp/
-        path-to-root: docs/apidocs
-    
-    - name: Log javadoc-cleanup output
-      run: |
-        echo "modified-count = ${{ steps.tidy.outputs.modified-count }}"
-    
-    - name: Commit documentation changes
-      run: |
-        if [[ `git status --porcelain` ]]; then
-          git config --global user.name 'kadirayk'
-          git config --global user.email 'kadiray.k@hotmail.com'
-          git add -A
-          git commit -m "Automated API website updates."
-        fi
+      - name: Deploy JavaDoc 🚀
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-branch: develop
+          java-version: 17
+          target-folder: docs/apidocs 
