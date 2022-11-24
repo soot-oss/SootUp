@@ -72,7 +72,7 @@ public class StreamUtils {
    * <pre><code>
    * List&lt;Foo&gt; foosWithName =
    *     filterAllCasted(collection.stream(), Foo.class)
-   *         .filter(it -> !it.getName().isEmpty());
+   *         .filter(it -&gt; !it.getName().isEmpty());
    * </code></pre>
    *
    * @param stream The {@link Stream} to filter.

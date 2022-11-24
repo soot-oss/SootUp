@@ -23,6 +23,10 @@ import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.MutableJavaView;
 
+/**
+ * Comprises test that test the addition and removal of classes and methods to the mutable view. It
+ * uses the MiniApp.jar for testing.
+ */
 @Category(Java8Test.class)
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
@@ -30,17 +34,23 @@ public class MutableSootClientTest {
   static JavaProject p;
   MutableJavaView mv;
 
+  /** Load the jar file for analysis as input location. */
   @BeforeClass
   public static void setupProject() {
     location = new PathBasedAnalysisInputLocation(pathToJar, SourceType.Application);
     p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
   }
 
+  /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
     mv = p.createMutableFullView();
   }
 
+  /**
+   * Remove a class from the mutable view and check whether the amount of classes in the view is
+   * reduced by one.
+   */
   @Test
   public void classRemovalTest() {
     int classesBeforeSize = mv.getClasses().size();
@@ -51,6 +61,10 @@ public class MutableSootClientTest {
     assertTrue(classesBeforeSize == classesAfterSize + 1);
   }
 
+  /**
+   * Add a class to the mutable view and check whether the amount of classes in the view is
+   * increased by one.
+   */
   @Test
   public void classAdditionTest() {
     ClassType addedClassType = p.getIdentifierFactory().getClassType("AddedClass");
@@ -77,6 +91,10 @@ public class MutableSootClientTest {
     assertTrue(classesBeforeSize == classesAfterSize - 1);
   }
 
+  /**
+   * Remove a method from a class within the mutable view and check whether the class in the view
+   * does not contain the specified method anymore.
+   */
   @Test
   public void methodRemovalTest() {
     ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
@@ -103,6 +121,10 @@ public class MutableSootClientTest {
     assertFalse(updatedUtilsClass.getMethods().contains(removeDepartmentMethod));
   }
 
+  /**
+   * Add a method to a class within the mutable view and check whether the class in the view does
+   * contain the specified method afterwards.
+   */
   @Test
   public void methodAdditionTest() {
     MethodSignature methodSignature =
