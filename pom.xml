@@ -266,8 +266,6 @@
                     <force>true</force>
                     <fixFieldComment>false</fixFieldComment>
                     <fixMethodComment>false</fixMethodComment>
-                    <reportOutputDirectory>${basedir}/docs/</reportOutputDirectory>
-                    <destDir>apidocs</destDir>
                 </configuration>
             </plugin>
             <!-- check headers -->
