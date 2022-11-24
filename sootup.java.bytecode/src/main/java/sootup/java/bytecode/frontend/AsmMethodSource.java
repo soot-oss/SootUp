@@ -1986,8 +1986,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    * Returns the latest version of a statement that is used in this method source, or null if the
    * statement is not used
    *
-   * @param oldStmt
-   * @return
+   * @param oldStmt the Stmt which we want to check if there is a newer Stmt replacing it
+   * @return the most recent version of a Stmt or itself if there is no newer version. Otherwise
+   *     returns null.
    */
   public Stmt getLatestVersionOfStmt(Stmt oldStmt) {
     if (replacedStmt.containsKey(oldStmt)) {

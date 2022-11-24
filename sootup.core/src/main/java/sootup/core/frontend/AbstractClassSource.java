@@ -39,7 +39,9 @@ import sootup.core.views.View;
  */
 public abstract class AbstractClassSource<T extends AbstractClass> {
 
+  // holds information about the class
   protected final AnalysisInputLocation<? extends SootClass<?>> classSource;
+  // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
   protected ClassType classSignature;
 
@@ -52,6 +54,12 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     this.sourcePath = sourcePath;
   }
 
+  /**
+   * @param sourceType instantiates the Subclass of AbstractClassSource to create a *SootClass
+   * @return a *SootClass
+   */
+  public abstract T buildClass(@Nonnull SourceType sourceType);
+
   public ClassType getClassType() {
     return classSignature;
   }
@@ -60,14 +68,8 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     return classSource;
   }
 
-  public abstract T buildClass(@Nonnull SourceType sourceType);
-
   public Path getSourcePath() {
     return sourcePath;
-  }
-
-  public void setClassSignature(ClassType classSignature) {
-    this.classSignature = classSignature;
   }
 
   /**
