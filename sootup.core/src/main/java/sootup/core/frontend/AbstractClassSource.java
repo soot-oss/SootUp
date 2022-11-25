@@ -43,6 +43,7 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
   protected final AnalysisInputLocation<? extends SootClass<?>> classSource;
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
+  // the classType that identifies the containing class information
   protected ClassType classSignature;
 
   public AbstractClassSource(

@@ -241,7 +241,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Override
-  public Object resolveDefaultValue() {
+  public Object resolveAnnotationsDefaultValue() {
     return resolveAnnotationsInDefaultValue(this.annotationDefault);
   }
 

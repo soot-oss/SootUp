@@ -73,8 +73,8 @@ public class OverridingBodySource implements BodySource {
   }
 
   @Override
-  public Object resolveDefaultValue() {
-    return delegate.resolveDefaultValue();
+  public Object resolveAnnotationsDefaultValue() {
+    return delegate.resolveAnnotationsDefaultValue();
   }
 
   @Nonnull

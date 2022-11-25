@@ -23,6 +23,6 @@ public class JavaAnnotationSootMethod extends JavaSootMethod {
   /** @return returns default value of annotation. May be null, if there is no default value */
   @Nullable
   public Object getDefaultValue() {
-    return this.bodySource.resolveDefaultValue();
+    return this.bodySource.resolveAnnotationsDefaultValue();
   }
 }
