@@ -261,6 +261,11 @@ jobs:
           default_author: github_actions
           message: 'commit badge'
           add: '**/badges/jacoco.svg'
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+
 
   publish-javadoc:
     runs-on: ubuntu-latest
