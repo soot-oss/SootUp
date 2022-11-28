@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.signatures.MethodSignature;
 
+/** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
   /**
