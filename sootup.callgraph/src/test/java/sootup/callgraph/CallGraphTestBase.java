@@ -220,7 +220,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("vc2.Class"), "method", "void", Collections.emptyList());
+            subClassSig, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
   }
 
