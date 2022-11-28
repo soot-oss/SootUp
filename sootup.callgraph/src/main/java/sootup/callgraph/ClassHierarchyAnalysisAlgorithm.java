@@ -68,12 +68,13 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   /**
    * In the CHA algorithm, every virtual call is resolved by only using the hierarchy. Every
-   * subclass of the class called by the invoke expression that implements the methods is considered
-   * as target.
+   * subclass of the class is considered as target if it contains an implementation of the methods
+   * called in the invoke expression.
    *
    * @param method the method object that contains the given invoke expression in the body.
    * @param invokeExpr it contains the call which is resolved.
-   * @return a genereted call graph using the CHA call graph algorithm
+   * @return a stream containing all reachable method signatures after applying the CHA call graph
+   *     algorithm
    */
   @Override
   @Nonnull

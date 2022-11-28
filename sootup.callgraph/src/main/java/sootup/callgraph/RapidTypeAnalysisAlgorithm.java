@@ -38,8 +38,21 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
+/**
+ * This class implements the Rapid Type Analysis call graph algorithm. In this algorithm, every
+ * virtual call is resolved to the all implemented overwritten methods of subclasses in the entire
+ * class path which have been instantiated by a new expression.
+ *
+ * <p>Compared to the CHA algorithm, this algorithm is more precise because it only considers
+ * instantiated subclasses as call targets and CHA considers all subclasses.
+ */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
+  /**
+   * This private class is used to save reachable calls. Because every method is only processed
+   * once, ignored calls are saved to include them at a later time if their class is instantiated at
+   * a later time.
+   */
   private static class Call {
     @Nonnull final MethodSignature source;
     @Nonnull final MethodSignature target;
@@ -54,6 +67,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull private HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
   @Nonnull private CallGraph chaGraph;
 
+  /**
+   * The constructor of the RTA algorithm.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
+   */
   public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
   }
@@ -75,6 +94,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     return constructCompleteCallGraph(view, entryPoints);
   }
 
+  /**
+   * This method is called to collect all instantiation of classes in a given method body. This is
+   * important since the RTA algorithm resolves virtual calls only to instantiated classes
+   *
+   * @param method this object contains the method body which is inspected.
+   */
   private void collectInstantiatedClassesInMethod(SootMethod method) {
     Set<ClassType> instantiated =
         chaGraph.callsFrom(method.getSignature()).stream()
@@ -94,6 +119,17 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         .forEach(instantiatedClasses::add);
   }
 
+  /**
+   * In the RTA algorithm, every virtual call is resolved by using the hierarchy and a hashset
+   * containing every instantiated class. Every subclass of the class is considered as target if it
+   * is instantiated and if it contains an implementation of the methods called in the invoke
+   * expression.
+   *
+   * @param method the method object that contains the given invoke expression in the body.
+   * @param invokeExpr it contains the call which is resolved.
+   * @return a stream containing all reachable method signatures after applying the RTA call graph
+   *     algorithm
+   */
   @Override
   @Nonnull
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
@@ -139,8 +175,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   /**
    * Post processing of a method in the RTA call graph algorithm
    *
-   * <p>RTA has to add previously ignored calls since a later found instantiation of the class could
-   * enables a call to the ignored method.
+   * <p>RTA has to add previously ignored calls because a found instantiation of a class could
+   * enable a call to a ignored method at a later time.
    *
    * @param view view
    * @param sourceMethod the processed method
