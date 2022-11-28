@@ -74,7 +74,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   private void collectInstantiatedClassesInMethod(SootMethod method) {
-    if (method==null||method.isAbstract()||method.getBody().getStmts().isEmpty()){
+    if (method == null || method.isAbstract() || method.getBody().getStmts().isEmpty()) {
       return;
     }
 
