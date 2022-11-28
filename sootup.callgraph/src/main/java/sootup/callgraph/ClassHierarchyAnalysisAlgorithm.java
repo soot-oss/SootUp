@@ -36,8 +36,19 @@ import sootup.core.typehierarchy.MethodDispatchResolver;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.views.View;
 
+/**
+ * This class implements the Class Hierarchy Analysis call graph algorithm. In this algorithm, every
+ * virtual call is resolved to the all implemented overwritten methods of subclasses in the entire
+ * class path.
+ */
 public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
+  /**
+   * The constructor of the CHA algorithm.
+   *
+   * @param view it contains the data of the classes and methods
+   * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
+   */
   public ClassHierarchyAnalysisAlgorithm(
       @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
@@ -55,6 +66,15 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     return constructCompleteCallGraph(view, entryPoints);
   }
 
+  /**
+   * In the CHA algorithm, every virtual call is resolved by only using the hierarchy. Every
+   * subclass of the class called by the invoke expression that implements the methods is considered
+   * as target.
+   *
+   * @param method the method object that contains the given invoke expression in the body.
+   * @param invokeExpr it contains the call which is resolved.
+   * @return a genereted call graph using the CHA call graph algorithm
+   */
   @Override
   @Nonnull
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
