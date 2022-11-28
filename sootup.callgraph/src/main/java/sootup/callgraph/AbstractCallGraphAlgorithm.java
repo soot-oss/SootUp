@@ -81,14 +81,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return cg;
   }
 
-
   /**
    * Processes all entries in the <code>workList</code>, skipping those present in <code>processed
    *  </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
-   *  workList</code> and processed as well. <code>cg</code> is updated accordingly.
-   *  The method postProcessingMethod is called after a method is processed in the <code>worklist</code>.
+   *  workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
+   * postProcessingMethod is called after a method is processed in the <code>worklist</code>.
+   *
    * @param view it contains the classes.
-   * @param workList it contains all method that have to be processed in the call graph generation. This list is filled in the execution with found call targets in the call graph algorithm.
+   * @param workList it contains all method that have to be processed in the call graph generation.
+   *     This list is filled in the execution with found call targets in the call graph algorithm.
    * @param processed the list of processed method to only process the method once.
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
@@ -120,11 +121,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  /** This method resolves all calls from a given source method.
-   *  resolveCall is called for each invoke statement in the body of the source method that is implemented in the corresponding call graph algorithm.
+  /**
+   * This method resolves all calls from a given source method. resolveCall is called for each
+   * invoke statement in the body of the source method that is implemented in the corresponding call
+   * graph algorithm.
    *
    * @param view it contains all classes.
-   * @param sourceMethod this signature is used to access the statements contained method body of the specified method
+   * @param sourceMethod this signature is used to access the statements contained method body of
+   *     the specified method
    * @return a stream containing all resolved callable method signatures by the given source method
    */
   @Nonnull
@@ -145,7 +149,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  /** searches the method object in the given hierarchy
+  /**
+   * searches the method object in the given hierarchy
    *
    * @param view it contains all classes
    * @param sig the signature of the searched method
@@ -299,12 +304,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return mainMethods.stream().findFirst().get().getSignature();
   }
 
-  /** This methods resolves the possible targets of a given invoke expression.
-   * The results are dependable of the applied call graph algorithm. therefore, it is abstract.
+  /**
+   * This methods resolves the possible targets of a given invoke expression. The results are
+   * dependable of the applied call graph algorithm. therefore, it is abstract.
    *
    * @param method the method object that contains the given invoke expression in the body.
    * @param invokeExpr it contains the call which is resolved.
-   * @return a stream of all reachable method signatures defined by the applied call graph algorithm.
+   * @return a stream of all reachable method signatures defined by the applied call graph
+   *     algorithm.
    */
   @Nonnull
   abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
