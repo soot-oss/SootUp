@@ -29,6 +29,8 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
@@ -37,6 +39,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
@@ -86,18 +89,32 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
       // process the method
       if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+
+      // transform the method signature to the actual SootMethod
+      SootMethod currentMethod =
+          view.getClass(currentMethodSignature.getDeclClassType())
+              .flatMap(c -> c.getMethod(currentMethodSignature.getSubSignature()))
+              .orElse(null);
+
       // get all call targets of invocations in the method body
       Stream<MethodSignature> invocationTargets =
-          resolveAllCallsFromSourceMethod(view, currentMethodSignature);
+          resolveAllCallsFromSourceMethod(view, currentMethod);
+
+      // get all call targets of implicit edges in the method body
+      Stream<MethodSignature> implicitTargets =
+          resolveAllImplicitCallsFromSourceMethod(view, currentMethod);
+
       // save calls in the call graphs
-      invocationTargets.forEach(
-          t -> {
-            if (!cg.containsMethod(t)) cg.addMethod(t);
-            if (!cg.containsCall(currentMethodSignature, t)) {
-              cg.addCall(currentMethodSignature, t);
-              workList.push(t);
-            }
-          });
+      Stream.concat(invocationTargets, implicitTargets)
+          .forEach(
+              t -> {
+                if (!cg.containsMethod(t)) cg.addMethod(t);
+                if (!cg.containsCall(currentMethodSignature, t)) {
+                  cg.addCall(currentMethodSignature, t);
+                  workList.push(t);
+                }
+              });
+
       // set method as processed
       processed.add(currentMethodSignature);
 
@@ -108,20 +125,76 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @Nonnull
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(
-      View<? extends SootClass<?>> view, MethodSignature sourceMethod) {
-    SootMethod currentMethodCandidate =
-        view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
-            .orElse(null);
-    if (currentMethodCandidate == null) return Stream.empty();
+      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
-    if (currentMethodCandidate.hasBody()) {
-      return currentMethodCandidate.getBody().getStmtGraph().nodes().stream()
-          .filter(Stmt::containsInvokeExpr)
-          .flatMap(s -> resolveCall(currentMethodCandidate, s.getInvokeExpr()));
-    } else {
-      return Stream.empty();
-    }
+    return sourceMethod.getBody().getStmtGraph().nodes().stream()
+        .filter(Stmt::containsInvokeExpr)
+        .flatMap(s -> resolveCall(sourceMethod, s.getInvokeExpr()));
+  }
+
+  /**
+   * It resolves all implicit calls caused by the given source method
+   *
+   * @param view it contains the class data
+   * @param sourceMethod the inspected source method
+   * @return a stream containing all method signatures of targets of implicit calls.
+   */
+  @Nonnull
+  Stream<MethodSignature> resolveAllImplicitCallsFromSourceMethod(
+      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+
+    // collect all clinit calls
+    Stream<MethodSignature> clinitStream =
+        resolveAllClinitCallsFromSourceMethod(view, sourceMethod);
+    return clinitStream;
+  }
+
+  /**
+   * It resolves all clinit calls caused by the given source method
+   *
+   * @param view it contains the class data
+   * @param sourceMethod the inspected source method
+   * @return a stream containing all method signatures of targets of implicit calls.
+   */
+  @Nonnull
+  Stream<MethodSignature> resolveAllClinitCallsFromSourceMethod(
+      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+
+    HashSet<ClassType> targetsToClinit = new HashSet<>();
+
+    sourceMethod
+        .getBody()
+        .getStmts()
+        .forEach(
+            stmt -> {
+              // static field usage
+              if (stmt.containsFieldRef() && stmt.getFieldRef() instanceof JStaticFieldRef) {
+                targetsToClinit.add(stmt.getFieldRef().getFieldSignature().getDeclClassType());
+              }
+
+              if (!stmt.containsInvokeExpr()) return;
+
+              MethodSignature callTarget = stmt.getInvokeExpr().getMethodSignature();
+              // constructor calls
+              if (callTarget.isConstructorSignature()) {
+                targetsToClinit.add(callTarget.getDeclClassType());
+              }
+              // static method calls
+              if (stmt.getInvokeExpr() instanceof JStaticInvokeExpr) {
+                targetsToClinit.add(callTarget.getDeclClassType());
+              }
+            });
+
+    return targetsToClinit.stream()
+        .map(
+            classType ->
+                new MethodSignature(
+                    classType,
+                    new MethodSubSignature(
+                        "<clinit>", Collections.emptyList(), VoidType.getInstance())));
   }
 
   /** finds the given method signature in class's superclasses */
