@@ -25,8 +25,21 @@ package sootup.callgraph;
 import javax.annotation.Nonnull;
 import sootup.core.signatures.MethodSignature;
 
+/**
+ * This interface defines a mutable call graph. this means a call graph that can be modified after the creation.
+ */
 public interface MutableCallGraph extends CallGraph {
+
+  /**
+   * This method enables to add method that are nodes in the call graph.
+   * @param calledMethod the method that will be added to the call graph.
+   */
   void addMethod(@Nonnull MethodSignature calledMethod);
 
+  /**
+   * This method enables to add calls that are edges in the call graph.
+   * @param sourceMethod this parameter defines the source node of the edge in the call graph.
+   * @param targetMethod this paramter defines the target node of the edge in the call graph.
+   */
   void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 }
