@@ -620,7 +620,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /**
-   * Convert className in wala-format to soot-format, e.g., wala-format: Ljava/lang/String ->
+   * Convert className in wala-format to soot-format, e.g., wala-format: Ljava/lang/String -&gt;
    * soot-format: java.lang.String.
    *
    * @param className in wala-format
@@ -679,7 +679,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /**
-   * Convert className in soot-format to wala-format, e.g.,soot-format: java.lang.String.->
+   * Convert className in soot-format to wala-format, e.g.,soot-format: java.lang.String.-&gt;
    * wala-format: Ljava/lang/String
    */
   public String convertClassNameFromSoot(String signature) {

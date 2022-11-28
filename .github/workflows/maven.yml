@@ -146,9 +146,7 @@ jobs:
       # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
       - name: Check Format
         run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    
-    
-    
+      
 
     # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
@@ -263,3 +261,19 @@ jobs:
           default_author: github_actions
           message: 'commit badge'
           add: '**/badges/jacoco.svg'
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
+
+
+  publish-javadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy JavaDoc 🚀
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-branch: gh-pages
+          java-version: 17
+          target-folder: apidocs 

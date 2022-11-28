@@ -56,8 +56,8 @@ public class Printer {
    * Options to control.. UseAbbreviations: print a brief overview of the given SootClass|SootMethod
    * OmitLocalsDeclaration: don't print Local declarations at the beginning of each method
    * AddJimpleLn: unsupported yet UseImports: Enable Java like imports to improve readability by
-   * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (<= Version
-   * 4)
+   * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (&lt;=
+   * Version 4)
    */
   // TODO: [ms] enhancement: add option to print a class with all inherited members
   public enum Option {

@@ -36,10 +36,9 @@ import sootup.core.signatures.MethodSignature;
  * <p>When replacing specific parts of a method by default, it delegates to the {@link BodySource}
  * delegate provided in the constructor.
  *
- * <p>To alter the results of invocations to e.g. {@link #resolveBody(Iterable< Modifier >)}, simply
- * call {@link #withBody(Body)} to obtain a new {@link OverridingBodySource}. The new instance will
- * then use the supplied value instead of calling {@link #resolveBody(Iterable<Modifier>)} on the
- * delegate.
+ * <p>To alter the results of invocations to e.g. {@link #resolveBody(Iterable)}, simply call {@link
+ * #withBody(Body)} to obtain a new {@link OverridingBodySource}. The new instance will then use the
+ * supplied value instead of calling {@link #resolveBody(Iterable)} on the delegate.
  */
 public class OverridingBodySource implements BodySource {
 
@@ -74,8 +73,8 @@ public class OverridingBodySource implements BodySource {
   }
 
   @Override
-  public Object resolveDefaultValue() {
-    return delegate.resolveDefaultValue();
+  public Object resolveAnnotationsDefaultValue() {
+    return delegate.resolveAnnotationsDefaultValue();
   }
 
   @Nonnull

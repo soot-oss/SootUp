@@ -371,7 +371,7 @@ public class MutableStmtGraph extends StmtGraph {
   }
   /**
    * Remove a node from the graph. The succs and preds after the node removing don't have any
-   * connection to each other. the removal of b in "a->b->c" does NOT connect "a->c"
+   * connection to each other. the removal of b in "a-&gt;b-&gt;c" does NOT connect "a-&gt;c"
    *
    * @param node a stmt to be removed from the StmtGraph
    */

@@ -240,7 +240,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * The method iterates over all classes present in view, and finds method with name main &
+   * The method iterates over all classes present in view, and finds method with name main and
    * SourceType - Library. This method is used by initialize() method used for creating call graph
    * and the call graph is created by considering the main method as an entry point.
    *
