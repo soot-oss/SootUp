@@ -99,7 +99,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param method this object contains the method body which is inspected.
    */
   private void collectInstantiatedClassesInMethod(SootMethod method) {
-    if (method == null || method.isAbstract() ||method.isNative()) {
+    if (method == null || method.isAbstract() || method.isNative()) {
       return;
     }
 

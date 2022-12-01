@@ -3,7 +3,6 @@ package sootup.callgraph;
 import static junit.framework.TestCase.*;
 
 import java.util.Collections;
-import java.util.Optional;
 import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -255,10 +254,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     // more precise its: declareClassSig
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("vc4.Class"),
-            "method",
-            "void",
-            Collections.emptyList());
+            identifierFactory.getClassType("vc4.Class"), "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
