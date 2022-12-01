@@ -2,7 +2,7 @@ package sootup.tests;
 
 import static junit.framework.TestCase.*;
 
-import categories.SlowTest;
+import categories.Java8Test;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Test;
@@ -25,7 +25,7 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(SlowTest.class)
+@Category(Java8Test.class)
 public class CallGraphTest {
 
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
