@@ -27,19 +27,23 @@ import sootup.core.model.Body;
 import sootup.core.model.Modifier;
 import sootup.core.signatures.MethodSignature;
 
-/** A class which knows how to produce Body's for SootMethods. */
+/**
+ * A class which holds the information of a methods body and knows how to produce a Body for a
+ * SootMethod.
+ */
 public interface BodySource {
 
   /**
    * Returns a filled-out body for the given SootMethod. This may be an expensive operation.
    *
-   * @param modifiers The collection of modifiers
+   * @param modifiers The collection of modifiers which are needed by BodyInterceptors to modify the
+   *     body accordingly.
    */
   @Nonnull
   Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException, IOException;
 
-  /** @return returns default value of method */
-  Object resolveDefaultValue();
+  /** @return returns the default value of the Annotation for this method */
+  Object resolveAnnotationsDefaultValue();
 
   @Nonnull
   MethodSignature getSignature();

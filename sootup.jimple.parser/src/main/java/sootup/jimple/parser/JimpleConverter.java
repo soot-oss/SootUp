@@ -64,6 +64,8 @@ public class JimpleConverter {
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
 
+    // FIXME: [ms] apply bodyInterceptors or better: move that logic into View itself!
+
     ClassVisitor classVisitor;
     try {
       classVisitor = new ClassVisitor(sourcePath);

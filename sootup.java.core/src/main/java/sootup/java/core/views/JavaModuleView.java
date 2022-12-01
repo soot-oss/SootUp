@@ -44,7 +44,7 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 
 /**
- * The JavaModuleView manages the Java classes of the application being analyzed for >=Java9
+ * The JavaModuleView manages the Java classes of the application being analyzed for &gt;=Java9
  *
  * @author Markus Schmidt
  */

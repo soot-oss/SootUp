@@ -57,7 +57,7 @@ public class AnnotationType extends JavaClassType {
 
   /**
    * Returns default values of annotation parameters. Needs to be called at least once with a
-   * JavaView (per annotationtype). A mapping of string -> NullConstant means, that there is no
+   * JavaView (per annotationtype). A mapping of string -&gt; NullConstant means, that there is no
    * default value for this parameter method (it needs to be declared on annotation use!)
    *
    * @param viewOptional view to resolve annotation soot class of AnnotationType

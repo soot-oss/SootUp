@@ -1171,11 +1171,11 @@ public class InstructionConverter {
   }
 
   /**
-   * @param
+   * This methods adds stmts with all branch stmts to builder ({@link JIfStmt}, {@link JGotoStmt},
+   * {@link JSwitchStmt}) having set up their target stmts.
+   *
    * @param stmt2iIndex
    * @param builder
-   * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
-   *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
   protected void setUpTargets(HashMap<Integer, Stmt> stmt2iIndex, Body.BodyBuilder builder) {
 

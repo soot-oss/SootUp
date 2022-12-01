@@ -27,7 +27,7 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.util.Copyable;
 
-/** An expression that checks whether operand 1 <= operand 2. */
+/** An expression that checks whether operand 1 &lt;= operand 2. */
 public final class JLeExpr extends AbstractConditionExpr implements Copyable {
 
   public JLeExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {

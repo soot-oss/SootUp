@@ -34,7 +34,7 @@ import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-/** @Zun Wang */
+/** @author Zun Wang */
 public final class JPhiExpr implements Expr, Copyable {
 
   private List<Local> args = new ArrayList<>();

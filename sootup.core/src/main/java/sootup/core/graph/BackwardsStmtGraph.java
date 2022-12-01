@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/** @auther Zun Wang */
+/** @author Zun Wang */
 public class BackwardsStmtGraph extends StmtGraph {
 
   @Nonnull private final ArrayList<List<Stmt>> predecessors = new ArrayList<>();
