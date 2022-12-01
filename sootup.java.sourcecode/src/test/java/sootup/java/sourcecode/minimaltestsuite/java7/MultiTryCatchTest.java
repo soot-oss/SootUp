@@ -1,5 +1,6 @@
 package sootup.java.sourcecode.minimaltestsuite.java7;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
