@@ -34,8 +34,13 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.java.core.types.JavaClassType;
 
+/** This class implements a mutable call graph as a graph. */
 public final class GraphBasedCallGraph implements MutableCallGraph {
 
+  /**
+   * This internal class is used to describe a vertex in the graph. The vertex is defined by a
+   * method signature that describes the method.
+   */
   private static class Vertex {
     @Nonnull final MethodSignature methodSignature;
 
@@ -44,6 +49,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     }
   }
 
+  /** This internal class is used to describe the edge in the graph. */
   private static class Edge {}
 
   @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
@@ -51,6 +57,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   // TODO: [ms] typeToVertices is not used in a useful way, yet?
   @Nonnull private final Map<JavaClassType, Set<Vertex>> typeToVertices;
 
+  /** The constructor of the graph based call graph. it initializes the call graph object. */
   GraphBasedCallGraph() {
     graph = new DefaultDirectedGraph<>(null, null, false);
     signatureToVertex = new HashMap<>();
@@ -132,6 +139,12 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
         new HashMap<>(typeToVertices));
   }
 
+  /**
+   * it returns the vertex of the graph that describes the given method signature in the call graph.
+   *
+   * @param method the method signature searched in the call graph
+   * @return the vertex of the requested method signature.
+   */
   @Nonnull
   private Vertex vertexOf(@Nonnull MethodSignature method) {
     Vertex methodVertex = signatureToVertex.get(method);

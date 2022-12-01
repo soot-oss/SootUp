@@ -3,6 +3,7 @@
 # Compiled class file
 *.class
 !shared-test-resources/miniTestSuite/**/*.class
+!sootup.analysis/src/test/resources/taint/binary/*.class
 
 # Log file
 *.log

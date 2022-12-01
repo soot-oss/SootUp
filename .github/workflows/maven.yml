@@ -242,7 +242,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aggregated-coverage-report
-          path: ${{ github.workspace }}/report/target/jacoco-aggregate/
+          path: sootup.report/target/jacoco-aggregate/
 
       - name: jacoco-badge-generator
         if: ${{ github.event_name == 'pull_request' }}
