@@ -22,7 +22,6 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
-import de.upb.swt.soot.core.types.*;
 import javax.annotation.Nonnull;
 import sootup.core.types.*;
 

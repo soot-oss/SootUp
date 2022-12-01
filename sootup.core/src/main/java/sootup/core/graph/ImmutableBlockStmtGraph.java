@@ -1,12 +1,12 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
 import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 // FIXME: implement!
 public class ImmutableBlockStmtGraph

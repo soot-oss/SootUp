@@ -23,6 +23,7 @@ package sootup.core.graph;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 /**
  * @author Markus Schmidt

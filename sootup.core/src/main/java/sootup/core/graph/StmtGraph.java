@@ -20,6 +20,9 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Iterators;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -27,6 +30,10 @@ import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.types.ClassType;
+import sootup.core.util.EscapedWriter;
+import sootup.core.util.GraphVizExporter;
+import sootup.core.util.printer.Printer;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except

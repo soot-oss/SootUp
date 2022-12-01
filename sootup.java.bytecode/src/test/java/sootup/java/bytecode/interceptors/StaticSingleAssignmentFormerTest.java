@@ -1,17 +1,17 @@
 package sootup.java.bytecode.interceptors;
 
 import categories.Java8Test;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;

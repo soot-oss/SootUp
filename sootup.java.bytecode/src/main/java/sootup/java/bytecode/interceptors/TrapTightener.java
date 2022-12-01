@@ -24,12 +24,16 @@ package sootup.java.bytecode.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.ClassType;
 
 /**
  * @author Zun Wang

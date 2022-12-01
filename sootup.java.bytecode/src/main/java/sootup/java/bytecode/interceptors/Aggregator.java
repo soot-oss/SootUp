@@ -21,18 +21,6 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 import com.google.common.collect.Lists;
-import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
-import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
-import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
-import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.BodyUtils;
-import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -44,6 +32,7 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;

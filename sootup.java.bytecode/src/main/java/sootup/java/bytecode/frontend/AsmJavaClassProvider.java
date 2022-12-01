@@ -39,6 +39,7 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {

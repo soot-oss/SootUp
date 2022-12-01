@@ -24,6 +24,7 @@ package sootup.core.jimple;
 
 import java.util.*;
 import sootup.core.IdentifierFactory;
+import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;

@@ -25,6 +25,7 @@ package sootup.core.jimple.common.expr;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;

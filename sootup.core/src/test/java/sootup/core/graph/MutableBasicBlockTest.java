@@ -1,11 +1,11 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
 import static org.junit.Assert.*;
 
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import org.junit.Test;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.JNopStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 
 public class MutableBasicBlockTest {
 

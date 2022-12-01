@@ -28,9 +28,6 @@ import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
-import sootup.core.graph.ExceptionalStmtGraph;
-import sootup.core.graph.ForwardingStmtGraph;
-import sootup.core.graph.MutableExceptionalStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -120,9 +117,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   protected StmtGraph makeGraph(Body body) {
-    return enableExceptions
-        ? new ExceptionalStmtGraph(new MutableExceptionalStmtGraph())
-        : new ForwardingStmtGraph(body.getStmtGraph());
+    return body.getStmtGraph();
   }
 
   protected Set<Stmt> getCallsFromWithinMethod(SootMethod m) {

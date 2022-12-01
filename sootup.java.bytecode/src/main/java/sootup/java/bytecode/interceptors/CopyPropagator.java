@@ -21,8 +21,10 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;

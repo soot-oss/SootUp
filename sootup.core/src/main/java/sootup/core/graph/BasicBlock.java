@@ -1,11 +1,11 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.ClassType;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 public interface BasicBlock<V extends BasicBlock<V>> {
   @Nonnull

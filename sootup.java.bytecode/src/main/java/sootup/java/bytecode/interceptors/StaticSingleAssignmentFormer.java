@@ -24,8 +24,10 @@ package sootup.java.bytecode.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;

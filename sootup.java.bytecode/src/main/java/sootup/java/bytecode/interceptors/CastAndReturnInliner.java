@@ -20,6 +20,7 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.JCastExpr;

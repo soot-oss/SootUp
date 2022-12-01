@@ -1,17 +1,17 @@
 package de.upb.swt.soot.java.bytecode;
 
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
-import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.views.JavaView;
 import java.nio.file.Paths;
 import org.junit.Test;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
 

@@ -21,11 +21,12 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import com.google.common.collect.Lists;
+import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;

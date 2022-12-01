@@ -6,6 +6,8 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.MutableBasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;

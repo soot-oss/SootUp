@@ -1,21 +1,23 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
 import com.google.common.collect.ComparisonChain;
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.LocalGenerator;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 
 /*
  * Implementation of a Control Flow Graph which stores Stmts, each Trap- and Branching Information directly in its Blocks.

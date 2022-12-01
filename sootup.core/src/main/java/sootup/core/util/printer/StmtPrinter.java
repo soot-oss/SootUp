@@ -23,6 +23,7 @@ package sootup.core.util.printer;
  */
 
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.ref.IdentityRef;

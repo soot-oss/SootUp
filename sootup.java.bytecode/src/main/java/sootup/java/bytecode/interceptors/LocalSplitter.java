@@ -28,11 +28,14 @@ import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Body.BodyBuilder;
 import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.ClassType;
 
 /**
  * A BodyInterceptor that attempts to identify and separate uses of a local variable (definition)

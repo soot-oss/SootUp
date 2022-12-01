@@ -1,25 +1,25 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
-import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
-import de.upb.swt.soot.core.jimple.common.expr.JLeExpr;
-import de.upb.swt.soot.core.jimple.common.expr.JNeExpr;
-import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.UnknownType;
 import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.constant.BooleanConstant;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.JLeExpr;
+import sootup.core.jimple.common.expr.JNeExpr;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.*;
+import sootup.core.signatures.PackageName;
+import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.UnknownType;
 
 @Category(Java8Test.class)
 public class MutableBlockStmtGraphTest {

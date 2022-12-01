@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
+import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;

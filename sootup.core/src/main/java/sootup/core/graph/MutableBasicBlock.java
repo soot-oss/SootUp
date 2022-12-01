@@ -1,10 +1,10 @@
-package de.upb.swt.soot.core.graph;
+package sootup.core.graph;
 
-import de.upb.swt.soot.core.jimple.common.stmt.BranchingStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.ClassType;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 /*-
  * #%L

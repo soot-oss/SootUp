@@ -1,15 +1,15 @@
-package de.upb.swt.soot.core.util;
+package sootup.core.util;
 
 import com.google.common.collect.Sets;
-import de.upb.swt.soot.core.graph.BasicBlock;
-import de.upb.swt.soot.core.graph.StmtGraph;
-import de.upb.swt.soot.core.jimple.common.stmt.*;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
-import de.upb.swt.soot.core.types.ClassType;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringEscapeUtils;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.stmt.*;
+import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.types.ClassType;
 
 /**
  * Exports a StmtGraph into a GraphViz representation (see https://graphviz.org) to visualize the

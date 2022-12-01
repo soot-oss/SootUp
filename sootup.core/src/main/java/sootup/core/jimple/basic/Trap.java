@@ -22,6 +22,7 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.Stmt;
