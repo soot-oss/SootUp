@@ -81,6 +81,21 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
 
+    // implicit edge from entry point to clinit
+    entryPoints.forEach(
+        methodSignature -> {
+          SootMethod clintMethod =
+              findClinitMethodOfClassType(view, methodSignature.getDeclClassType()).orElse(null);
+          if (clintMethod == null) return;
+          MethodSignature clinitSig = clintMethod.getSignature();
+          if (!cg.containsMethod(methodSignature)) cg.addMethod(methodSignature);
+          if (!cg.containsMethod(clinitSig)) cg.addMethod(clinitSig);
+          if (!cg.containsCall(methodSignature, clinitSig)) {
+            cg.addCall(methodSignature, clinitSig);
+            workList.push(clinitSig);
+          }
+        });
+
     processWorkList(view, workList, processed, cg);
     return cg;
   }
