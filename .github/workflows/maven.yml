@@ -273,6 +273,7 @@ jobs:
 
 
   publish-javadoc:
+    needs: Compilation
     runs-on: ubuntu-latest
     steps:
       - name: Deploy JavaDoc 🚀
