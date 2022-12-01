@@ -61,7 +61,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   private MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls = false;
-  protected boolean includePhantomCallees = false;
 
   @DontSynchronize("readonly")
   protected final CallGraph cg;
@@ -74,7 +73,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
           SootMethod sm = (SootMethod) view.getMethod(methodSignature).orElse(null);
           if (sm != null) {
-            if (includePhantomCallees || sm.hasBody()) {
+            if (sm.hasBody()) {
               res.add(sm);
             } else {
               logger.error(
@@ -170,17 +169,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   @Override
   public Collection<Stmt> getCallersOf(SootMethod m) {
     return methodToCallers.getUnchecked(m);
-  }
-
-  /**
-   * Sets whether methods that operate on the callgraph shall also return phantom methods as
-   * potential callees
-   *
-   * @param includePhantomCallees True if phantom methods shall be returned as potential callees,
-   *     otherwise false
-   */
-  public void setIncludePhantomCallees(boolean includePhantomCallees) {
-    this.includePhantomCallees = includePhantomCallees;
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
