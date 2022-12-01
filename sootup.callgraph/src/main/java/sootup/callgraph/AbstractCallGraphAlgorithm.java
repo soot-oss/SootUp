@@ -189,12 +189,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             });
 
     return targetsToClinit.stream()
-        .map(
-            classType ->
-                new MethodSignature(
-                    classType,
-                    new MethodSubSignature(
-                        "<clinit>", Collections.emptyList(), VoidType.getInstance())));
+        .map(classType -> findClinitMethodOfClassType(view,classType))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .map(sootMethod -> sootMethod.getSignature());
+  }
+
+  /**
+   * This methods returns the SootMethod of a clinit method if the requested class contains an implementation of the clinit method.
+   * @param view contains the method data
+   * @param classType the type of the class that might contain the clinit method
+   * @return an optional of a SootMethod. The SootMethod is contained if the class described by the class type contains an implementation of clinit, otherwise it is empty
+   */
+  private Optional<? extends SootMethod> findClinitMethodOfClassType(@Nonnull View<? extends SootClass<?>> view, @Nonnull ClassType classType){
+    MethodSignature clinitSig=new MethodSignature(
+        classType,
+        new MethodSubSignature(
+            "<clinit>", Collections.emptyList(), VoidType.getInstance()));
+    return view.getMethod(clinitSig);
   }
 
   /** finds the given method signature in class's superclasses */
