@@ -60,10 +60,10 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m =
-        (Optional<SootMethod>) sc.getMethod(mainMethodSignature.getSubSignature());
-    assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
+    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
+    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(mainMethodSignature + " not found in classloader", m);
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     algorithm = createAlgorithm(view, typeHierarchy);
@@ -255,7 +255,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     // more precise its: declareClassSig
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("vc4.Interface"),
+            identifierFactory.getClassType("vc4.Class"),
             "method",
             "void",
             Collections.emptyList());
@@ -280,7 +280,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("j8dim2.Interface"),
+            identifierFactory.getClassType("j8dim2.SuperClass"),
             "method",
             "void",
             Collections.emptyList());
