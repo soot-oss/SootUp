@@ -26,26 +26,81 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.signatures.MethodSignature;
 
+/** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
+  /**
+   * This method returns method signatures in the call graph. A method signature is a node in the
+   * call graph.
+   *
+   * @return a set containing all method signatures in the call graph.
+   */
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
 
+  /**
+   * This method returns all method signatures that are called by a given method signature. It
+   * returns the targets of outgoing edges of the given node (method signature) in the call graph
+   *
+   * @param sourceMethod the method signature of the requested node in the call graph
+   * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
+   */
   @Nonnull
   Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);
 
+  /**
+   * This method returns all method signatures that call a given method signature. It returns the
+   * sources of incoming edges of the given node (method signature) in the call graph
+   *
+   * @param targetMethod the method signature of the requested node in the call graph
+   * @return a set of method signatures that reach the targetMethod by a direct edge in the call
+   *     graph
+   */
   @Nonnull
   Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
 
+  /**
+   * This method checks if a given method signature is a node in the call graph.
+   *
+   * @param method the method signature of the requested node
+   * @return it returns true if the node described by the method signature is included in the call
+   *     graph, otherwise it will return false.
+   */
   boolean containsMethod(@Nonnull MethodSignature method);
 
+  /**
+   * This method checks if an edge is contained in the call graph. The edge is defined by a source
+   * and target method signature which can be nodes in the call graph
+   *
+   * @param sourceMethod it defines the source node in the call graph
+   * @param targetMethod it defines the target node in the call graph
+   * @return true if the edge is contained in the call graph, otherwise it will be false.
+   */
   boolean containsCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 
+  /**
+   * This method counts every edge in the call graph.
+   *
+   * @return it returns the number of all edges in the call graph.
+   */
   int callCount();
 
+  /**
+   * This method copies a call graph.
+   *
+   * @return it returns a copied call graph.
+   */
   @Nonnull
   MutableCallGraph copy();
 
+  /**
+   * This method exports the call graph in a human-readable string. The String lists all nodes in
+   * the call graph. For each node it also lists the outgoing and incoming edges. An outgoing edge
+   * is marked by a "To" and an incoming edge by a "From" The nodes, incoming edges, and outgoing
+   * edges are sorted in order by the classname, method name, parameter list
+   *
+   * @return a string containing all nodes and edges of the call graph.
+   */
   String toStringSorted();
 }

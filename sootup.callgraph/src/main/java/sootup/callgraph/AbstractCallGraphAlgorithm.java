@@ -44,6 +44,12 @@ import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
+/**
+ * The AbstractCallGraphAlgorithm class is the super class of all call graph algorithmen. It
+ * provides basic methods used in all call graph algorithm. It is abstract since it has no
+ * implemented functionality to resolve method calls because it is decided by the applied call graph
+ * algorithm
+ */
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
@@ -57,6 +63,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     this.typeHierarchy = typeHierarchy;
   }
 
+  /**
+   * This method starts the construction of the call graph algorithm. It initializes the needed
+   * objects for the call graph generation and calls processWorkList method.
+   *
+   * @param view the view contains all needed class files.
+   * @param entryPoints a list of method signatures that will be added to the work list in the call
+   *     graph generation.
+   * @return the complete constructed call graph starting from the entry methods.
+   */
   @Nonnull
   final CallGraph constructCompleteCallGraph(
       View<? extends SootClass<?>> view, List<MethodSignature> entryPoints) {
@@ -71,8 +86,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * Processes all entries in the <code>workList</code>, skipping those present in <code>processed
-   * </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
-   * workList</code> and processed as well. <code>cg</code> is updated accordingly.
+   *  </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
+   *  workList</code> and processed as well. <code>cg</code> is updated accordingly. The method
+   * postProcessingMethod is called after a method is processed in the <code>worklist</code>.
+   *
+   * @param view it contains the classes.
+   * @param workList it contains all method that have to be processed in the call graph generation.
+   *     This list is filled in the execution with found call targets in the call graph algorithm.
+   * @param processed the list of processed method to only process the method once.
+   * @param cg the call graph object that is filled with the found methods and call edges.
    */
   final void processWorkList(
       View<? extends SootClass<?>> view,
@@ -123,6 +145,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
+  /**
+   * This method resolves all calls from a given source method. resolveCall is called for each
+   * invoke statement in the body of the source method that is implemented in the corresponding call
+   * graph algorithm.
+   *
+   * @param view it contains all classes.
+   * @param sourceMethod this signature is used to access the statements contained method body of
+   *     the specified method
+   * @return a stream containing all resolved callable method signatures by the given source method
+   */
   @Nonnull
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(
       View<? extends SootClass<?>> view, SootMethod sourceMethod) {
@@ -209,7 +241,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return view.getMethod(clinitSig);
   }
 
-  /** finds the given method signature in class's superclasses */
+  /**
+   * searches the method object in the given hierarchy
+   *
+   * @param view it contains all classes
+   * @param sig the signature of the searched method
+   * @param <T> the generic type of the searched method object
+   * @return the found method object, or null if the metod was not found.
+   */
   final <T extends Method> T findMethodInHierarchy(
       @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
     Optional<? extends SootClass<?>> optSc = view.getClass(sig.getDeclClassType());
@@ -262,7 +301,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * This method enables optional post-processing of a method in the call graph algorithm
    *
-   * @param view view
+   * @param view it contains classes and the type hierarchy.
    * @param sourceMethod the processed method
    * @param workList the current worklist that might be extended
    * @param cg the current cg that might be extended
@@ -373,6 +412,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return mainMethods.stream().findFirst().get().getSignature();
   }
 
+  /**
+   * This methods resolves the possible targets of a given invoke expression. The results are
+   * dependable of the applied call graph algorithm. therefore, it is abstract.
+   *
+   * @param method the method object that contains the given invoke expression in the body.
+   * @param invokeExpr it contains the call which is resolved.
+   * @return a stream of all reachable method signatures defined by the applied call graph
+   *     algorithm.
+   */
   @Nonnull
   abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
 }
