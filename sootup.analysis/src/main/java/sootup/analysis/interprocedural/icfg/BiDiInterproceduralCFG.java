@@ -30,7 +30,6 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 
 /**
- *
  * @param <N> Nodes in the CFG, e.g. {@link sootup.core.jimple.common.stmt.Stmt}
  * @param <M> Method representation, e.g. {@link sootup.core.model.SootMethod}
  */
@@ -38,6 +37,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
 
   /**
    * returns the predecessors of a node
+   *
    * @param u
    * @return
    */
@@ -45,6 +45,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
 
   /**
    * returns entry points of a method
+   *
    * @param m
    * @return
    */
@@ -52,6 +53,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
 
   /**
    * returns predecessors of a call node
+   *
    * @param u
    * @return
    */
