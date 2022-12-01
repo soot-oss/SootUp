@@ -30,7 +30,7 @@ jobs:
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:
-          distribution: 'corretto'
+          distribution: 'zulu'
           java-version: '8'
 
       - name: cache maven dependencies
@@ -78,7 +78,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'corretto'
+          distribution: 'zulu'
 
       - name: Test (JDK8)
         run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
@@ -127,7 +127,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '9'
-          distribution: 'corretto'
+          distribution: 'zulu'
 
       - name: Test (JDK9)
         run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
@@ -163,7 +163,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'corretto'
+          distribution: 'zulu'
 
       - name: get cached compilation
         id: cache-compilation
@@ -209,7 +209,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'corretto'
+          distribution: 'zulu'
 
       - name: cache maven dependencies
         uses: actions/cache@v3
