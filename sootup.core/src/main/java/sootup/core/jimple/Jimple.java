@@ -53,9 +53,9 @@ import sootup.core.util.StringTools;
  * Jimple body. <br>
  * <br>
  *
- * <p>Immediate -> Local | Constant <br>
- * RValue -> Local | Constant | ConcreteRef | Expr<br>
- * Variable -> Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
+ * <p>Immediate -&gt; Local | Constant <br>
+ * RValue -&gt; Local | Constant | ConcreteRef | Expr<br>
+ * Variable -&gt; Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
 public abstract class Jimple {
   public static final String NEWARRAY = "newarray";
