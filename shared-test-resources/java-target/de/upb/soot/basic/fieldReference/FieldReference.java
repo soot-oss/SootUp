@@ -1,4 +1,4 @@
-package de.upb.soot.basic.fieldReference;
+package de.upb.sootup.basic.fieldReference;
 
 public class JFieldReference {
   public static void JFieldReference(String[] args) {

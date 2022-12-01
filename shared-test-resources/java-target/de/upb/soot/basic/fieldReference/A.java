@@ -1,4 +1,4 @@
-package de.upb.soot.basic.fieldReference;
+package de.upb.sootup.basic.fieldReference;
 
 class A {
   int i = 15;

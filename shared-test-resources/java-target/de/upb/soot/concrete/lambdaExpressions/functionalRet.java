@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.lambdaExpressions;
+package de.upb.sootup.concrete.lambdaExpressions;
 
 @FunctionalInterface
 interface functionalRet {

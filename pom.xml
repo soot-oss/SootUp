@@ -5,10 +5,10 @@
 		 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <name>Soot</name>
-    <groupId>de.upb.swt</groupId>
-    <artifactId>soot</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <name>SootUp</name>
+    <groupId>org.soot-oss</groupId>
+    <artifactId>sootup</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <licenses>
         <license>
             <name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
@@ -18,15 +18,16 @@
     </licenses>
 
     <modules>
-        <module>de.upb.swt.soot.core</module>
-        <module>de.upb.swt.soot.jimple.parser</module>
-        <module>de.upb.swt.soot.java.core</module>
-        <module>de.upb.swt.soot.java.bytecode</module>
-        <module>de.upb.swt.soot.java.sourcecode</module>
-        <module>de.upb.swt.soot.tests</module>
-        <module>de.upb.swt.soot.callgraph</module>
-        <module>examples</module>
-        <module>report</module>
+        <module>sootup.core</module>
+        <module>sootup.jimple.parser</module>
+        <module>sootup.java.core</module>
+        <module>sootup.java.bytecode</module>
+        <module>sootup.java.sourcecode</module>
+        <module>sootup.tests</module>
+        <module>sootup.callgraph</module>
+        <module>sootup.analysis</module>
+        <module>sootup.examples</module>
+        <module>sootup.report</module>
     </modules>
 
     <!-- Shared Configuration -->
@@ -44,8 +45,8 @@
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
         <guava.version>25.1-jre</guava.version>
         <apache-commons.version>3.5</apache-commons.version>
-        <apache-commons-io.version>2.6</apache-commons-io.version>
-        <junit.version>4.12</junit.version>
+        <apache-commons-io.version>2.7</apache-commons-io.version>
+        <junit.version>4.13.1</junit.version>
         <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
         <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
         <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
@@ -99,6 +100,32 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>install-dex2jar</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>mvn</executable>
+                    <arguments>
+                        <argument>install:install-file</argument>
+                        <argument>-Dfile=sootup.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar</argument>
+                        <argument>-DgroupId=com.googlecode.d2j</argument>
+                        <argument>-DartifactId=dex-tools</argument>
+                        <argument>-Dversion=2.2-SNAPSHOT</argument>
+                        <argument>-Dpackaging=jar</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -235,7 +262,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <version>3.1.1</version>
                 <configuration>
-                    <additionalOptions>-html5</additionalOptions>
                     <fixTags>author</fixTags>
                     <force>true</force>
                     <fixFieldComment>false</fixFieldComment>
@@ -255,9 +281,9 @@
                     <licenseName>lgpl_v2_1</licenseName>
                     <organizationName>Raja Vallée-Rai and others</organizationName>
                     <roots>
-                        <root>de.upb.swt.soot.callgraph/src/main/java</root>
-                        <root>de.upb.swt.soot.java.bytecode/src/main/java</root>
-                        <root>de.upb.swt.soot.java.sourcecode/src/main/java</root>
+                        <root>sootup.callgraph/src/main/java</root>
+                        <root>sootup.java.bytecode/src/main/java</root>
+                        <root>sootup.java.sourcecode/src/main/java</root>
                     </roots>
                 </configuration>
                 <executions>

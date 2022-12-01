@@ -1,0 +1,573 @@
+public class de.upb.sootup.basic.controlStatements.ControlStatements extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void simpleIfElse(int, int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1, i2;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r7, $r8, $r10, $r12, $r13, $r14, $r15, $r17, $r19, $r20, $r21, $r22;
+        java.io.PrintStream $r2, $r11, $r18;
+        java.lang.String $r9, $r16, $r23;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        if i0 >= i1 goto label1;
+
+        $r18 = <java.lang.System: java.io.PrintStream out>;
+
+        $r17 = new java.lang.StringBuilder;
+
+        specialinvoke $r17.<java.lang.StringBuilder: void <init>()>();
+
+        $r19 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("IF: ");
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+
+        $r22 = virtualinvoke $r21.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r23 = virtualinvoke $r22.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r18.<java.io.PrintStream: void println(java.lang.String)>($r23);
+
+        goto label3;
+
+     label1:
+        if i0 >= i2 goto label2;
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        $r10 = new java.lang.StringBuilder;
+
+        specialinvoke $r10.<java.lang.StringBuilder: void <init>()>();
+
+        $r12 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("ELSE IF: ");
+
+        $r13 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r14 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+
+        $r15 = virtualinvoke $r14.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i2);
+
+        $r16 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.String)>($r16);
+
+        goto label3;
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("ELSE: ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is greater than ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" and ");
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i2);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r9);
+
+     label3:
+        return;
+    }
+
+    public void simpleSwitchCase(int, int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1, i2;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r8, $r10, $r11, $r12, $r13, $r16, $r17, $r18, $r19, $r20;
+        java.io.PrintStream $r2, $r9, $r15;
+        java.lang.String $r7, $r14, $r21;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        lookupswitch(i0)
+        {
+            case 10: goto label1;
+            case 20: goto label2;
+            default: goto label3;
+        };
+
+     label1:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = new java.lang.StringBuilder;
+
+        specialinvoke $r8.<java.lang.StringBuilder: void <init>()>();
+
+        $r10 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: a is equal to ");
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" and b is equal to ");
+
+        $r13 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r14 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r14);
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: a is equal to ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("and b is equal to ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+     label3:
+        $r15 = <java.lang.System: java.io.PrintStream out>;
+
+        $r16 = new java.lang.StringBuilder;
+
+        specialinvoke $r16.<java.lang.StringBuilder: void <init>()>();
+
+        $r17 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: a is equal to ");
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" and b is equal to ");
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r15.<java.io.PrintStream: void println(java.lang.String)>($r21);
+
+        return;
+    }
+
+    public void simpleSwitchBreak(int, int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1, i2;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r8, $r10, $r11, $r12, $r13, $r15, $r17, $r18, $r19, $r20;
+        java.io.PrintStream $r2, $r9, $r16;
+        java.lang.String $r7, $r14, $r21;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        lookupswitch(i0)
+        {
+            case 10: goto label1;
+            case 20: goto label2;
+            default: goto label3;
+        };
+
+     label1:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = new java.lang.StringBuilder;
+
+        specialinvoke $r8.<java.lang.StringBuilder: void <init>()>();
+
+        $r10 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: a is equal to ");
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" and b is equal to ");
+
+        $r13 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r14 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r14);
+
+        goto label4;
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: a is equal to ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("and b is equal to ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+        goto label4;
+
+     label3:
+        $r16 = <java.lang.System: java.io.PrintStream out>;
+
+        $r15 = new java.lang.StringBuilder;
+
+        specialinvoke $r15.<java.lang.StringBuilder: void <init>()>();
+
+        $r17 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: a is equal to ");
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" and b is equal to ");
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r21);
+
+     label4:
+        return;
+    }
+
+    public void tableSwitch(int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        tableswitch(i0)
+        {
+            case 0: goto label1;
+            case 1: goto label2;
+            case 2: goto label3;
+            case 3: goto label4;
+            case 4: goto label5;
+            default: goto label6;
+        };
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("two");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("three");
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("four");
+
+     label6:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+
+        return;
+    }
+
+    public void lookupSwitch(int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label1;
+            case 10: goto label2;
+            case 1000: goto label3;
+            case 10000000: goto label4;
+            default: goto label5;
+        };
+
+     label1:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+
+        return;
+    }
+
+    public void gotoStmt()
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+     label1:
+        goto label1;
+    }
+
+    public void throwSth() throws java.lang.Exception
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        java.lang.Exception $r1;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        $r1 = new java.lang.Exception;
+
+        specialinvoke $r1.<java.lang.Exception: void <init>(java.lang.String)>("Banana");
+
+        throw $r1;
+    }
+
+    public void throwAndCatch()
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        java.lang.Exception $r2, $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+     label1:
+        $r2 = new java.lang.Exception;
+
+        specialinvoke $r2.<java.lang.Exception: void <init>(java.lang.String)>("Banana");
+
+        throw $r2;
+
+     label2:
+        $r3 := @caughtexception;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("Exception catched");
+
+        return;
+
+        catch java.lang.Exception from label1 to label2 with label2;
+    }
+
+    public void simpleWhile(int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+     label1:
+        if i0 >= i1 goto label2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("a is smaller than b");
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    public void simpleDoWhile(int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1;
+        java.lang.StringBuilder $r1, $r3, $r4;
+        java.io.PrintStream $r2;
+        java.lang.String $r5;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+     label1:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a is ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        if i0 < i1 goto label1;
+
+        return;
+    }
+
+    public void simpleFor(int, int)
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        int i0, i1, i2;
+        java.lang.StringBuilder $r1, $r3, $r4;
+        java.io.PrintStream $r2;
+        java.lang.String $r5;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = 0;
+
+     label1:
+        if i2 >= i0 goto label2;
+
+        i1 = i1 + 1;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("FOR: Value of b is ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    public void monitor()
+    {
+        de.upb.sootup.basic.controlStatements.ControlStatements r0;
+        java.lang.StringBuffer $r4;
+        java.io.PrintStream $r8;
+        java.lang.String $r9;
+        java.lang.Throwable $r10;
+
+        r0 := @this: de.upb.sootup.basic.controlStatements.ControlStatements;
+
+        $r4 = new java.lang.StringBuffer;
+
+        specialinvoke $r4.<java.lang.StringBuffer: void <init>()>();
+
+        entermonitor $r4;
+
+     label1:
+        virtualinvoke $r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("monitored");
+
+        exitmonitor $r4;
+
+     label2:
+        goto label5;
+
+     label3:
+        $r10 := @caughtexception;
+
+        exitmonitor $r4;
+
+     label4:
+        throw $r10;
+
+     label5:
+        virtualinvoke $r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("unmonitored");
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r9 = virtualinvoke $r4.<java.lang.StringBuffer: java.lang.String toString()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r9);
+
+        return;
+
+        catch java.lang.Throwable from label1 to label2 with label3;
+        catch java.lang.Throwable from label3 to label4 with label3;
+    }
+}

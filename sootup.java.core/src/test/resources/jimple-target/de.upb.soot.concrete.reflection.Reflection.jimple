@@ -1,0 +1,56 @@
+public class de.upb.sootup.concrete.reflection.Reflection extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.reflection.Reflection r0;
+
+        r0 := @this: de.upb.sootup.concrete.reflection.Reflection;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void staticInvokeReflection() throws java.lang.NoSuchMethodException
+    {
+        java.lang.reflect.Method r0;
+        java.lang.Class[] $r1;
+        java.lang.Class $r2;
+        java.lang.Object[] $r3;
+        java.lang.reflect.InvocationTargetException $r5;
+        java.lang.IllegalAccessException $r6;
+
+        $r2 = class "Lde/upb/soot/concrete/reflection/A;";
+
+        $r1 = newarray (java.lang.Class)[0];
+
+        r0 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Method getMethod(java.lang.String,java.lang.Class[])>("staticFoo", $r1);
+
+     label1:
+        $r3 = newarray (java.lang.Object)[0];
+
+        virtualinvoke r0.<java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>(null, $r3);
+
+     label2:
+        goto label5;
+
+     label3:
+        $r6 := @caughtexception;
+
+        virtualinvoke $r6.<java.lang.IllegalAccessException: void printStackTrace()>();
+
+        goto label5;
+
+     label4:
+        $r5 := @caughtexception;
+
+        virtualinvoke $r5.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
+
+     label5:
+        return;
+
+        catch java.lang.IllegalAccessException from label1 to label2 with label3;
+        catch java.lang.reflect.InvocationTargetException from label1 to label2 with label4;
+    }
+}

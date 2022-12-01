@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.reflection;
+package de.upb.sootup.concrete.reflection;
 
 /**
  * @author Manuel Benz created on 21.07.18

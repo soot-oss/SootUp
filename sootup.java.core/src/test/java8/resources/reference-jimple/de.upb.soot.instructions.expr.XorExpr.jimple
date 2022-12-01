@@ -1,0 +1,34 @@
+public class de.upb.sootup.instructions.expr.XorExpr extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.XorExpr r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.XorExpr;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void bitwiseXOR(int)
+    {
+        de.upb.sootup.instructions.expr.XorExpr r0;
+        int i0;
+        java.io.PrintStream $r1;
+        byte b2;
+
+        r0 := @this: de.upb.sootup.instructions.expr.XorExpr;
+
+        i0 := @parameter0: int;
+
+        b2 = 0 ^ 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+
+        return;
+    }
+}

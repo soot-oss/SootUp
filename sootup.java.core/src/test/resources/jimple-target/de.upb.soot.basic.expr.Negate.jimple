@@ -1,0 +1,19 @@
+public class de.upb.sootup.basic.expr.Negate extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.expr.Negate r0;
+
+        r0 := @this: de.upb.sootup.basic.expr.Negate;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void sth()
+    {
+        return;
+    }
+}

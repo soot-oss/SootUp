@@ -1,0 +1,81 @@
+public class de.upb.sootup.basic.locals.IdentityStmt extends java.lang.Object
+{
+    int declProperty;
+    int initProperty;
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.locals.IdentityStmt r0;
+
+        r0 := @this: de.upb.sootup.basic.locals.IdentityStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.basic.locals.IdentityStmt: int initProperty> = 42;
+
+        return;
+    }
+
+    public void atThis()
+    {
+        de.upb.sootup.basic.locals.IdentityStmt r0;
+        int $i0, $i1;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @this: de.upb.sootup.basic.locals.IdentityStmt;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = r0.<de.upb.sootup.basic.locals.IdentityStmt: int declProperty>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0);
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = r0.<de.upb.sootup.basic.locals.IdentityStmt: int initProperty>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i1);
+
+        return;
+    }
+
+    public void atParameter(int, java.lang.String, boolean)
+    {
+        de.upb.sootup.basic.locals.IdentityStmt r0;
+        int i0;
+        java.lang.String r1;
+        boolean z0;
+        java.io.PrintStream $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.basic.locals.IdentityStmt;
+
+        i0 := @parameter0: int;
+
+        r1 := @parameter1: java.lang.String;
+
+        z0 := @parameter2: boolean;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i0);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(boolean)>(z0);
+
+        return;
+    }
+
+    public void atException()
+    {
+        de.upb.sootup.basic.locals.IdentityStmt r0;
+
+        r0 := @this: de.upb.sootup.basic.locals.IdentityStmt;
+
+        return;
+    }
+}

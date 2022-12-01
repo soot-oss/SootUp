@@ -1,0 +1,23 @@
+class de.upb.sootup.basic.hierarchy.C extends java.lang.Object
+{
+
+    void <init>()
+    {
+        de.upb.sootup.basic.hierarchy.C r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.C;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int methodC()
+    {
+        de.upb.sootup.basic.hierarchy.C r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.C;
+
+        return 77;
+    }
+}

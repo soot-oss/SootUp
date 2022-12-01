@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.javabytecode.stmt;
+package de.upb.sootup.instructions.javabytecode.stmt;
 
 public class SwitchStmtsTest {
 

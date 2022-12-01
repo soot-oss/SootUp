@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.emulation;
+package de.upb.sootup.concrete.emulation;
 
 /**
  * @author Manuel Benz created on 11.07.18

@@ -1,0 +1,57 @@
+public class de.upb.sootup.instructions.expr.NewMultiArrayExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.NewMultiArrayExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewMultiArrayExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void sth()
+    {
+        de.upb.sootup.instructions.expr.NewMultiArrayExprTest r0;
+        int[][] r1;
+        int i0;
+        java.io.PrintStream $r2;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewMultiArrayExprTest;
+
+        r1 = newmultiarray (int)[42][10];
+
+        i0 = lengthof r1;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i0);
+
+        return;
+    }
+
+    void nonPrimitive()
+    {
+        de.upb.sootup.instructions.expr.NewMultiArrayExprTest r0;
+        java.lang.String[][] r1;
+        int i0;
+        java.lang.String[] $r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewMultiArrayExprTest;
+
+        r1 = newmultiarray (java.lang.String)[3][10];
+
+        $r2 = r1[0];
+
+        i0 = lengthof $r2;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+
+        return;
+    }
+}

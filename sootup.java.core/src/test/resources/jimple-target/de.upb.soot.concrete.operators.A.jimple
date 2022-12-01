@@ -1,0 +1,19 @@
+public class de.upb.sootup.concrete.operators.A extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.operators.A r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+
+        return;
+    }
+}

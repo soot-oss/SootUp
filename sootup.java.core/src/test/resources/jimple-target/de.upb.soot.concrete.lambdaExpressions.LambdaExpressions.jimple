@@ -1,0 +1,194 @@
+public class de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private static void doSomethingStatic()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("something");
+
+        return;
+    }
+
+    public void lambdaRet()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        de.upb.sootup.concrete.lambdaExpressions.functionalRet r1;
+        java.io.PrintStream $r2;
+        java.lang.String $r3;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        r1 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalRet ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "()Ljava/lang/String;", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: java.lang.String lambda$lambdaRet$0()>, class "()Ljava/lang/String;");
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = interfaceinvoke r1.<de.upb.sootup.concrete.lambdaExpressions.functionalRet: java.lang.String eval()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3);
+
+        return;
+    }
+
+    public void lambdaParam()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        de.upb.sootup.concrete.lambdaExpressions.functionalArg r1;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        r1 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalArg ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "(Ljava/lang/String;)V", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void lambda$lambdaParam$1(java.lang.String)>, class "(Ljava/lang/String;)V");
+
+        interfaceinvoke r1.<de.upb.sootup.concrete.lambdaExpressions.functionalArg: void eval(java.lang.String)>("arg");
+
+        return;
+    }
+
+    public void lambdaVoid()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        de.upb.sootup.concrete.lambdaExpressions.functionalVoid r1;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        r1 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalVoid ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "()V", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void lambda$lambdaVoid$2()>, class "()V");
+
+        interfaceinvoke r1.<de.upb.sootup.concrete.lambdaExpressions.functionalVoid: void eval()>();
+
+        return;
+    }
+
+    public void passToMethod()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        de.upb.sootup.concrete.lambdaExpressions.functionalVoid $r1;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        $r1 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalVoid ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "()V", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void lambda$passToMethod$3()>, class "()V");
+
+        specialinvoke r0.<de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void doEval(de.upb.sootup.concrete.lambdaExpressions.functionalVoid)>($r1);
+
+        return;
+    }
+
+    private void doEval(de.upb.sootup.concrete.lambdaExpressions.functionalVoid)
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        de.upb.sootup.concrete.lambdaExpressions.functionalVoid r1;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        r1 := @parameter0: de.upb.sootup.concrete.lambdaExpressions.functionalVoid;
+
+        interfaceinvoke r1.<de.upb.sootup.concrete.lambdaExpressions.functionalVoid: void eval()>();
+
+        return;
+    }
+
+    public void functionPointer()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0, $r2;
+        de.upb.sootup.concrete.lambdaExpressions.functionalVoid $r4;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        $r2 = new de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void <init>()>();
+
+        virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+
+        $r4 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalVoid (de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions)>($r2) <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "()V", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void doSomething()>, class "()V");
+
+        specialinvoke r0.<de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void doEval(de.upb.sootup.concrete.lambdaExpressions.functionalVoid)>($r4);
+
+        return;
+    }
+
+    private void doSomething()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("something");
+
+        return;
+    }
+
+    public void functionPointerStatic()
+    {
+        de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions r0, $r2;
+        de.upb.sootup.concrete.lambdaExpressions.functionalVoid $r3;
+
+        r0 := @this: de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        $r2 = new de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void <init>()>();
+
+        $r3 = dynamicinvoke "eval" <de.upb.sootup.concrete.lambdaExpressions.functionalVoid ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "()V", handle: <de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void doSomethingStatic()>, class "()V");
+
+        specialinvoke r0.<de.upb.sootup.concrete.lambdaExpressions.LambdaExpressions: void doEval(de.upb.sootup.concrete.lambdaExpressions.functionalVoid)>($r3);
+
+        return;
+    }
+
+    private static void lambda$passToMethod$3()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("passed as param");
+
+        return;
+    }
+
+    private static void lambda$lambdaVoid$2()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("void");
+
+        return;
+    }
+
+    private static void lambda$lambdaParam$1(java.lang.String)
+    {
+        java.lang.String r0;
+        java.io.PrintStream $r1;
+
+        r0 := @parameter0: java.lang.String;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(r0);
+
+        return;
+    }
+
+    private static java.lang.String lambda$lambdaRet$0()
+    {
+        return "foo";
+    }
+}

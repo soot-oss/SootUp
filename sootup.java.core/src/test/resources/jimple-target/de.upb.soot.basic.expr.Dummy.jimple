@@ -1,0 +1,24 @@
+public class de.upb.sootup.basic.expr.Dummy extends java.lang.Object
+{
+    public int field;
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.expr.Dummy r0;
+
+        r0 := @this: de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int method()
+    {
+        de.upb.sootup.basic.expr.Dummy r0;
+
+        r0 := @this: de.upb.sootup.basic.expr.Dummy;
+
+        return 42;
+    }
+}

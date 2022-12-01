@@ -1,0 +1,43 @@
+public class de.upb.sootup.instructions.expr.StaticInvokeExpr extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.StaticInvokeExpr r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.StaticInvokeExpr;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static java.lang.String somethingStatic()
+    {
+        return "Polyester Shirt";
+    }
+
+    public void staticInvoke()
+    {
+        de.upb.sootup.instructions.expr.StaticInvokeExpr r0;
+        java.lang.String r1;
+        int i0;
+        java.io.PrintStream $r2, $r3;
+
+        r0 := @this: de.upb.sootup.instructions.expr.StaticInvokeExpr;
+
+        r1 = staticinvoke <de.upb.sootup.instructions.expr.StaticInvokeExpr: java.lang.String somethingStatic()>();
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>(r1);
+
+        i0 = staticinvoke <java.lang.Math: int abs(int)>(-42);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+
+        return;
+    }
+}

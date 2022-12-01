@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.ref;
+package de.upb.sootup.instructions.ref;
 
 public class ParameterRefTest {
   void noParameter() {

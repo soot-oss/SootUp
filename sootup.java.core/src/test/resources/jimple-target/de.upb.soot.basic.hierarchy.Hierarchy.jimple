@@ -1,0 +1,86 @@
+public class de.upb.sootup.basic.hierarchy.Hierarchy extends de.upb.sootup.basic.hierarchy.A
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.hierarchy.Hierarchy r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        specialinvoke r0.<de.upb.sootup.basic.hierarchy.A: void <init>()>();
+
+        return;
+    }
+
+    public static void hierarchy(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        de.upb.sootup.basic.hierarchy.Hierarchy $r2;
+        java.io.PrintStream $r4;
+        java.lang.String $r5;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        specialinvoke $r2.<de.upb.sootup.basic.hierarchy.Hierarchy: void <init>()>();
+
+        virtualinvoke $r2.<de.upb.sootup.basic.hierarchy.Hierarchy: java.lang.String methodB()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r5 = virtualinvoke $r2.<de.upb.sootup.basic.hierarchy.Hierarchy: java.lang.String methodA()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        return;
+    }
+
+    public volatile int method_intA()
+    {
+        de.upb.sootup.basic.hierarchy.Hierarchy r0;
+        int $i0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        $i0 = specialinvoke r0.<de.upb.sootup.basic.hierarchy.A: int method_intA()>();
+
+        return $i0;
+    }
+
+    public volatile java.lang.String methodA()
+    {
+        de.upb.sootup.basic.hierarchy.Hierarchy r0;
+        java.lang.String $r1;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        $r1 = specialinvoke r0.<de.upb.sootup.basic.hierarchy.A: java.lang.String methodA()>();
+
+        return $r1;
+    }
+
+    public volatile java.lang.String methodB()
+    {
+        de.upb.sootup.basic.hierarchy.Hierarchy r0;
+        java.lang.String $r1;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        $r1 = specialinvoke r0.<de.upb.sootup.basic.hierarchy.A: java.lang.String methodB()>();
+
+        return $r1;
+    }
+
+    public volatile int methodC()
+    {
+        de.upb.sootup.basic.hierarchy.Hierarchy r0;
+        int $i0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.Hierarchy;
+
+        $i0 = specialinvoke r0.<de.upb.sootup.basic.hierarchy.A: int methodC()>();
+
+        return $i0;
+    }
+}
