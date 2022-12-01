@@ -15,6 +15,12 @@ on:
       - synchronize
       - ready_for_review
 
+
+#cancel a running workflow if something new is pushed for the branch (to save calculation time budget)
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
 
   # Code coverage (i.e. jacoco) needs the same classes for its test otherwise its classids can possibly not match
