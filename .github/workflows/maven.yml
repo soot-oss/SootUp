@@ -17,7 +17,7 @@ on:
 
 #cancel a running workflow if something new is pushed for the branch (to save calculation time budget)
 concurrency:
-  group: ${{ github.head_ref }}
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
