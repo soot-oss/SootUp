@@ -83,7 +83,6 @@ jobs:
           name: coverage-exec
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
-                  !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -91,7 +90,6 @@ jobs:
           name: test-reports-jdk8
           path: |
                   */target/surefire-reports
-                  !sootup.tests/
 
 
   JDK9:
@@ -133,7 +131,6 @@ jobs:
           name: coverage-exec
           path: |
             */target/coverage-reports/jacoco-ut-jdk9.exec
-            !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -141,7 +138,6 @@ jobs:
           name: test-reports-jdk9
           path: |
             */target/surefire-reports
-            !sootup.tests/
 
       # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
       - name: Check Format
