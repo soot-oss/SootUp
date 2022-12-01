@@ -60,7 +60,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
   private MethodSignature mainMethodSignature;
 
-  protected boolean includeReflectiveCalls = false;
+  protected boolean includeReflectiveCalls;
 
   @DontSynchronize("readonly")
   protected final CallGraph cg;
