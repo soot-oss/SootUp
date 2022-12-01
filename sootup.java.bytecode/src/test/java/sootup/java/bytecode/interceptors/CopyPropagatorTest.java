@@ -1,5 +1,7 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import java.util.Collections;
 import java.util.Set;
@@ -8,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -15,6 +18,7 @@ import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;

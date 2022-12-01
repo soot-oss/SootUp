@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import sootup.core.graph.StmtGraph;

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import org.junit.Test;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;

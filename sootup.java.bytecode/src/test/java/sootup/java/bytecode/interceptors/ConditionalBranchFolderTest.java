@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
@@ -14,7 +15,10 @@ import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JEqExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
+import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -122,8 +126,8 @@ public class ConditionalBranchFolderTest {
     }
 
     Stmt ifStmt = Jimple.newIfStmt(jEqExpr, noPositionInfo);
-    Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt ret2 = JavaJimple.newReturnStmt(a, noPositionInfo);
+    Stmt reta = JavaJimple.newReturnStmt(a, noPositionInfo);
+    Stmt retb = JavaJimple.newReturnStmt(b, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
