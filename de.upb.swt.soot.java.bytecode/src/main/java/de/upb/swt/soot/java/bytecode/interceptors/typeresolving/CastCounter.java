@@ -18,15 +18,16 @@ public class CastCounter extends TypeChecker {
   private int newLocalsCount = 0;
   public Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
 
-  public CastCounter(Body body, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
-    super(body, evalFunction, hierarchy);
+  public CastCounter(
+      Body.BodyBuilder builder, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+    super(builder, evalFunction, hierarchy);
   }
 
   public int getCastCount(Typing typing) {
     this.castCount = 0;
     this.countOnly = true;
     setTyping(typing);
-    for (Stmt stmt : getBody().getStmts()) {
+    for (Stmt stmt : getBuilder().getStmts()) {
       stmt.accept(this);
     }
     return this.castCount;
@@ -36,16 +37,15 @@ public class CastCounter extends TypeChecker {
     return this.castCount;
   }
 
-  public Body insertCastStmts(Typing typing) {
+  public void insertCastStmts(Typing typing) {
     this.castCount = 0;
     this.countOnly = false;
     setTyping(typing);
-    List<Stmt> stmts = new ArrayList<>(getBody().getStmts());
+    List<Stmt> stmts = new ArrayList<>(getBuilder().getStmts());
     int size = stmts.size();
     for (int i = 0; i < size; i++) {
       stmts.get(i).accept(this);
     }
-    return getBody();
   }
 
   /** This method is used to check weather a value in a stmt need a cast. */
@@ -80,28 +80,27 @@ public class CastCounter extends TypeChecker {
       }
       this.castCount++;
       // TODO: modifiers later must be added
-      Body.BodyBuilder builder = new Body.BodyBuilder(body, Collections.emptySet());
 
       Local old_local;
       if (value instanceof Local) {
         old_local = (Local) value;
       } else {
         old_local = generateTempLocal(evaType);
-        builder.addLocal(old_local);
+        getBuilder().addLocal(old_local);
         typing.set(old_local, evaType);
         // todo: later position info should be adjusted
         JAssignStmt newAssign = JavaJimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-        builder.insertStmt(newAssign, stmt);
+        getBuilder().insertStmt(newAssign, stmt);
       }
       Local new_local = generateTempLocal(stdType);
-      builder.addLocal(new_local);
+      getBuilder().addLocal(new_local);
       typing.set(new_local, stdType);
       addUpdatedValue(oriValue, new_local, oriStmt);
       // todo: later position info should be adjusted
       JAssignStmt newCast =
           JavaJimple.newAssignStmt(
               new_local, JavaJimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-      builder.insertStmt(newCast, stmt);
+      getBuilder().insertStmt(newCast, stmt);
 
       Stmt newStmt;
       if (stmt.getUses().contains(value)) {
@@ -109,9 +108,9 @@ public class CastCounter extends TypeChecker {
       } else {
         newStmt = BodyUtils.withNewDef(stmt, new_local);
       }
-      BodyUtils.replaceStmtInBuilder(builder, stmt, newStmt);
+      BodyUtils.replaceStmtInBuilder(getBuilder(), stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);
-      setBody(builder.build());
+      setBody(getBuilder().build());
     }
   }
 

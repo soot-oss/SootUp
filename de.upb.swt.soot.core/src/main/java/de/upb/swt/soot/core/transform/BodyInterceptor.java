@@ -27,9 +27,7 @@ import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * @see #interceptBody(Body.BodyBuilder, View)
- */
+/** @see #interceptBody(Body.BodyBuilder, View) */
 public interface BodyInterceptor {
 
   /**

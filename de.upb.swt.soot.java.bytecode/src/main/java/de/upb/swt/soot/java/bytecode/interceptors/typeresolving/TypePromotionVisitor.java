@@ -16,8 +16,8 @@ public class TypePromotionVisitor extends TypeChecker {
   private static final Logger logger = LoggerFactory.getLogger(TypePromotionVisitor.class);
 
   public TypePromotionVisitor(
-      Body body, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
-    super(body, evalFunction, hierarchy);
+      Body.BodyBuilder builder, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+    super(builder, evalFunction, hierarchy);
   }
 
   public Typing getPromotedTyping(Typing typing) {

@@ -29,13 +29,16 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   private AugEvalFunction evalFunction;
   private BytecodeHierarchy hierarchy;
   private Typing typing;
+  private Body.BodyBuilder bodyBuilder;
   private Body body;
   private IdentifierFactory factory = JavaIdentifierFactory.getInstance();
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
-  public TypeChecker(Body body, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
-    this.body = body;
+  public TypeChecker(
+      Body.BodyBuilder builder, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+    this.bodyBuilder = builder;
+    this.body = builder.build();
     this.evalFunction = evalFunction;
     this.hierarchy = hierarchy;
   }
@@ -68,7 +71,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (TypeUtils.isObjectLikeType(type_base)
               || (TypeUtils.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(body.getStmts());
+            Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(bodyBuilder.getStmts());
             List<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
@@ -120,7 +123,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || TypeUtils.isObjectLikeType(type_base)) {
-          Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(body.getStmts());
+          Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(bodyBuilder.getStmts());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
@@ -221,6 +224,10 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
     visit(stmt.getOp(), factory.getType("java.lang.Throwable"), stmt);
+  }
+
+  public Body.BodyBuilder getBuilder() {
+    return this.bodyBuilder;
   }
 
   public Body getBody() {

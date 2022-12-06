@@ -36,70 +36,67 @@ import java.util.*;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
 public class TypeResolver {
-  private Body body;
   private Map<Integer, AbstractDefinitionStmt> id2assignments = new HashMap<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
   private int castCount;
+  private boolean isFail = false;
 
-  public TypeResolver(Body.BodyBuilder builder, JavaView view) {
-    this.body = builder.build();
+  public TypeResolver(JavaView view) {
     this.view = view;
-    init();
   }
 
-  public Body getBody() {
-    Typing typing = inferTypes();
-    Body.BodyBuilder builder = new Body.BodyBuilder(this.body, Collections.emptySet());
-    for (Local local : this.body.getLocals()) {
+  public void resolveBuilder(Body.BodyBuilder builder) {
+    init(builder);
+    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
+    AugEvalFunction evalFunction = new AugEvalFunction(view);
+    Typing iniTyping = new Typing(builder.getLocals());
+    Body body = builder.build();
+    Collection<Typing> typings =
+        applyAssignmentConstraint(body, iniTyping, evalFunction, hierarchy);
+    if (typings.isEmpty()) {
+      isFail = true;
+      return;
+    }
+    Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
+    if (this.castCount != 0) {
+      CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
+      castCounter.insertCastStmts(minCastsTyping);
+    }
+    TypePromotionVisitor promotionVisitor =
+        new TypePromotionVisitor(builder, evalFunction, hierarchy);
+    Typing promotedTyping = promotionVisitor.getPromotedTyping(minCastsTyping);
+    if (promotedTyping == null) {
+      isFail = true;
+      return;
+    } else {
+      for (Local local : builder.getLocals()) {
+        Type convertedType = convertType(promotedTyping.getType(local));
+        if (convertedType != null) {
+          promotedTyping.set(local, convertedType);
+        }
+      }
+    }
+
+    for (Local local : builder.getLocals()) {
       Type oldType = local.getType();
-      Type newType = typing.getType(local);
+      Type newType = promotedTyping.getType(local);
       if (oldType.equals(newType)) {
         continue;
       }
       Local newLocal = local.withType(newType);
       BodyUtils.replaceLocalInBuilder(builder, local, newLocal);
     }
-    return builder.build();
   }
 
-  public Typing inferTypes() {
-
-    BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
-    AugEvalFunction evalFunction = new AugEvalFunction(view);
-    Typing iniTyping = new Typing(body.getLocals());
-    Collection<Typing> typings = applyAssignmentConstraint(iniTyping, evalFunction, hierarchy);
-    if (typings.isEmpty()) {
-      // todo: use another type resolver solution!
-      return null;
-    }
-    Typing typing = getMinCastsTyping(typings, evalFunction, hierarchy);
-
-    if (this.castCount != 0) {
-      CastCounter castCounter = new CastCounter(body, evalFunction, hierarchy);
-      this.body = castCounter.insertCastStmts(typing);
-    }
-    TypePromotionVisitor promotionVisitor =
-        new TypePromotionVisitor(this.body, evalFunction, hierarchy);
-    Typing promotedTyping = promotionVisitor.getPromotedTyping(typing);
-    if (promotedTyping == null) {
-      // todo: use another type resolver solution!
-      return null;
-    } else {
-      for (Local local : this.body.getLocals()) {
-        Type convertedType = convertType(promotedTyping.getType(local));
-        if (convertedType != null) {
-          promotedTyping.set(local, convertedType);
-        }
-      }
-      return promotedTyping;
-    }
+  public boolean isFail() {
+    return isFail;
   }
 
   /** observe all definition assignments, add all locals at right-hand-side into the map depends */
-  private void init() {
+  private void init(Body.BodyBuilder builder) {
     int assignID = 0;
-    for (Stmt stmt : body.getStmts()) {
+    for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof AbstractDefinitionStmt) {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
         Value lhs = defStmt.getLeftOp();
@@ -150,7 +147,7 @@ public class TypeResolver {
   }
 
   private Collection<Typing> applyAssignmentConstraint(
-      Typing typing, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+      Body body, Typing typing, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
     int numOfAssigns = this.id2assignments.size();
     if (numOfAssigns == 0) {
       return Collections.emptyList();
@@ -259,8 +256,11 @@ public class TypeResolver {
   }
 
   private Typing getMinCastsTyping(
-      Collection<Typing> typings, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
-    CastCounter castCounter = new CastCounter(body, evalFunction, hierarchy);
+      Body.BodyBuilder builder,
+      Collection<Typing> typings,
+      AugEvalFunction evalFunction,
+      BytecodeHierarchy hierarchy) {
+    CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
     Iterator<Typing> typingIterator = typings.iterator();
     Typing ret = null;
     int min = Integer.MAX_VALUE;
