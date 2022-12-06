@@ -24,19 +24,26 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.TypeResolver;
+import de.upb.swt.soot.java.core.views.JavaView;
 import javax.annotation.Nonnull;
-
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/typing/TypeAssigner.java
 
 /**
  * This transformer assigns types to local variables.
  *
- * @author Etienne Gagnon
- * @author Ben Bellamy
- * @author Eric Bodden
+ * @author Zun Wang
  */
 public class TypeAssigner implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {}
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    TypeResolver resolver = new TypeResolver((JavaView) view);
+    resolver.resolveBuilder(builder);
+    if (resolver.isFail()) {
+      // Todo: use another type resolver solution!
+      return;
+    }
+    LocalNameStandardizer standardizer = new LocalNameStandardizer();
+    standardizer.interceptBody(builder, null);
+  }
 }
