@@ -1,28 +1,17 @@
 package de.upb.swt.soot.test.java.bytecode.interceptors.typeresolving;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.AugEvalFunction;
 import de.upb.swt.soot.java.bytecode.interceptors.typeresolving.Typing;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.JavaSootMethod;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
-import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,32 +20,16 @@ import org.junit.experimental.categories.Category;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-public class AugEvalFunctionTest {
+public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
-  JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   Typing typing = new Typing(new ArrayList<>());
-  ClassType classType;
-  SootClass clazz;
-  JavaView view;
   AugEvalFunction evalFunction;
-
-  Body body;
 
   @Before
   public void setup() {
     String baseDir = "../shared-test-resources/TypeResolverTestSuite/AugEvalFunctionTest/";
-    JavaClassPathAnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir);
-    JavaClassPathAnalysisInputLocation rtJar =
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(analysisInputLocation)
-            .addInputLocation(rtJar)
-            .build();
-    view = project.createOnDemandView();
-    classType = identifierFactory.getClassType("AugEvalFunctionDemos");
-    clazz = view.getClass(classType).get();
+    String className = "AugEvalFunctionDemos";
+    buildView(baseDir, className);
     evalFunction = new AugEvalFunction(view);
   }
 
@@ -65,7 +38,7 @@ public class AugEvalFunctionTest {
     Type actual, expected;
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("constant", "void");
+    setMethodBody("constant", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       String sn = s.toString();
       switch (sn) {
@@ -107,7 +80,7 @@ public class AugEvalFunctionTest {
         default:
       }
     }
-    setMethodBody("reflection", "void");
+    setMethodBody("reflection", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
         value = s.getUses().get(0);
@@ -126,7 +99,7 @@ public class AugEvalFunctionTest {
     Type expected = PrimitiveType.getBoolean();
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("condition", "void");
+    setMethodBody("condition", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("if l1 >= l2")) {
         for (Value use : s.getUses()) {
@@ -140,8 +113,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    // todo: [problem] body cannot be printed!!!
-    setMethodBody("shift", "void");
+    setMethodBody("shift", "void", Collections.emptyList());
     Map map = new HashMap();
     map.put("l1", PrimitiveType.getByte());
     map.put("l2", PrimitiveType.getLong());
@@ -173,7 +145,7 @@ public class AugEvalFunctionTest {
       }
     }
 
-    setMethodBody("xor", "void");
+    setMethodBody("xor", "void", Collections.emptyList());
     map.clear();
     map.put("l1", PrimitiveType.getBoolean());
     map.put("l2", PrimitiveType.getBoolean());
@@ -224,7 +196,7 @@ public class AugEvalFunctionTest {
       }
     }
 
-    setMethodBody("add", "void");
+    setMethodBody("add", "void", Collections.emptyList());
     map.clear();
     map.put("l1", PrimitiveType.getInteger1());
     map.put("l2", PrimitiveType.getFloat());
@@ -256,7 +228,7 @@ public class AugEvalFunctionTest {
       }
     }
 
-    setMethodBody("length", "void");
+    setMethodBody("length", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l2 = lengthof l1")) {
         for (Value use : s.getUses()) {
@@ -271,7 +243,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("instanceOf", "boolean");
+    setMethodBody("instanceOf", "boolean", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack3 = l1 instanceof A")) {
         for (Value use : s.getUses()) {
@@ -286,7 +258,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("newArrayExpr", "void");
+    setMethodBody("newArrayExpr", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
         for (Value use : s.getUses()) {
@@ -301,9 +273,8 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("invokeExpr", "void");
+    setMethodBody("invokeExpr", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
-      System.out.println(s);
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
         for (Value use : s.getUses()) {
           if (use instanceof AbstractInvokeExpr) {
@@ -334,7 +305,7 @@ public class AugEvalFunctionTest {
     Type expected = identifierFactory.getClassType("java.lang.ArithmeticException");
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("caughtException1", "void");
+    setMethodBody("caughtException1", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -348,7 +319,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("caughtException2", "void");
+    setMethodBody("caughtException2", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -363,7 +334,7 @@ public class AugEvalFunctionTest {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("fieldRef", "void");
+    setMethodBody("fieldRef", "void", Collections.emptyList());
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = l0.<ByteCodeTypeTest: A field>")) {
         for (Value use : s.getUses()) {
@@ -387,28 +358,5 @@ public class AugEvalFunctionTest {
         }
       }
     }
-  }
-
-  private void setMethodBody(String methodName, String returnType) {
-    MethodSignature methodSignature =
-        identifierFactory.getMethodSignature(
-            classType, methodName, returnType, Collections.emptyList());
-    Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
-    JavaSootMethod method = methodOptional.get();
-    body = method.getBody();
-  }
-
-  private Typing createTyping(Map<String, Type> map) {
-    Typing typing = new Typing(body.getLocals());
-    for (Local l : typing.getLocals()) {
-      // todo: [problem] body contains null local!!! (shift)
-      if (l == null) {
-        continue;
-      }
-      if (map.keySet().contains(l.getName())) {
-        typing.set(l, map.get(l.getName()));
-      }
-    }
-    return typing;
   }
 }
