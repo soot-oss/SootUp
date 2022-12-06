@@ -20,7 +20,6 @@ package de.upb.swt.soot.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import de.upb.swt.soot.core.graph.ExceptionalStmtGraph;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -126,7 +125,6 @@ public class LocalNameStandardizer implements BodyInterceptor {
     builder.setLocals(sortedLocals);
 
     // modify locals in stmtGraph with new locals
-    ExceptionalStmtGraph graph = builder.getStmtGraph();
     for (Stmt stmt : builder.getStmtGraph()) {
       Stmt newStmt = stmt;
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
