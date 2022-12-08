@@ -85,10 +85,16 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
       if (stmt instanceof JNopStmt) {
         // Do not remove nop if it is used for a Trap which is at the very end of the code
+        // TODO: [ms] check if that condition is still applicable as every method should have a
+        // return as last stmt and that way a trap end can refer to return as exclusive EndStmt..
+        // which is not really throwing exceptions as far as i understand.
+        // could clash/ already be removed by the JNopRemover?
         boolean removeNop = iterator.hasNext();
 
         if (!removeNop) {
           removeNop = true;
+          // TODO: [ms] performance getTraps() is comparibly slow for the amount of information..
+          // and if we are really only interested in the last stmt.. filter for that as well!
           for (Trap trap : builder.getTraps()) {
             if (trap.getEndStmt() == stmt) {
               removeNop = false;
