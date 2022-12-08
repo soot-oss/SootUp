@@ -28,7 +28,6 @@ import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-@Ignore("FIXME: does currently not work")
 public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -206,6 +205,7 @@ public class LocalPackerTest {
    * </pre>
    */
   @Test
+  @Ignore("FIXME: does currently not work - Isssue #487")
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 
