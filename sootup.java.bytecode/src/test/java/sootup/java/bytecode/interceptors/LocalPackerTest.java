@@ -20,7 +20,7 @@ import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.core.util.GraphVizExporter;
+import sootup.core.util.DotExporter;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
@@ -209,7 +209,7 @@ public class LocalPackerTest {
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 
-    System.out.println(GraphVizExporter.createUrlToWebeditor(builder.getStmtGraph()));
+    System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
     localPacker.interceptBody(builder);

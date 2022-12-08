@@ -32,7 +32,7 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.ClassType;
 import sootup.core.util.EscapedWriter;
-import sootup.core.util.GraphVizExporter;
+import sootup.core.util.DotExporter;
 import sootup.core.util.printer.Printer;
 
 /**
@@ -238,7 +238,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
 
     } catch (Exception e) {
-      final String urlToWebeditor = GraphVizExporter.createUrlToWebeditor(this);
+      final String urlToWebeditor = DotExporter.createUrlToWebeditor(this);
       throw new IllegalStateException("visualize invalid StmtGraph: " + urlToWebeditor, e);
     }
   }
@@ -657,7 +657,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
                   + (actualSize - returnedSize)
                   + " Blocks that are not iterated! i.e. the StmtGraph is not connected from its startingStmt!"
                   + info
-                  + GraphVizExporter.createUrlToWebeditor(StmtGraph.this));
+                  + DotExporter.createUrlToWebeditor(StmtGraph.this));
         }
       }
       return hasIteratorMoreElements;

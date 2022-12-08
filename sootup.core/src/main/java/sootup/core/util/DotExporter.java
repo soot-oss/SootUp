@@ -17,7 +17,7 @@ import sootup.core.types.ClassType;
  *
  * @author Markus Schmidt
  */
-public class GraphVizExporter {
+public class DotExporter {
 
   public static String buildGraph(@Nonnull StmtGraph<?> graph) {
 
