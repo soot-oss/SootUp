@@ -249,16 +249,6 @@ jobs:
         with:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
-      - name: Comment Coverage info
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: coverage-pr-message
-          recreate: true
-          message: |
-            ***Test Coverage***
-            Total coverage ${{ steps.jacoco.outputs.coverage }}
-            Amount of covered (bytecode-)branches ${{ steps.jacoco.outputs.branches }}
-      
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
