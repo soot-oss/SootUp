@@ -49,7 +49,7 @@ public class LocalGenerator {
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
    * LocalGenerator checks whether the name is already taken.
    */
-  // TODO: [ms] make it private - access it via BodyBuilder
+  // TODO: [ms] make it private - access it via BodyBuilder?
   public LocalGenerator(@Nonnull Set<Local> existingLocals) {
     locals = existingLocals;
   }
@@ -83,14 +83,14 @@ public class LocalGenerator {
   private Local generate(@Nonnull Type type, boolean isField) {
 
     StringBuilder name = new StringBuilder(7);
+    // non-field Locals traditionally begin with "$"
+    name.append("$");
     String localName;
     // determine locals name
     //noinspection SuspiciousMethodCalls
     do {
       // non-field Locals traditionally begin with "$"
-      if (!isField) {
-        name.append("$");
-      }
+      name.setLength(isField ? 0 : 1);
 
       if (type.equals(PrimitiveType.getInt())) {
         appendNextIntName(name);
