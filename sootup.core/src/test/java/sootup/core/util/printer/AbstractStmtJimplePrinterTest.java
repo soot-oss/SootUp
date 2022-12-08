@@ -15,7 +15,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 
 @Category(Java8Test.class)
-public class AbstractStmtPrinterTest {
+public class AbstractStmtJimplePrinterTest {
 
   @Test
   public void addImportTest() {

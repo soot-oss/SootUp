@@ -31,9 +31,9 @@ import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.ClassType;
-import sootup.core.util.EscapedWriter;
 import sootup.core.util.DotExporter;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.EscapedWriter;
+import sootup.core.util.printer.JimplePrinter;
 
 /**
  * Interface for control flow graphs on Jimple Stmts. A StmtGraph is directed and connected (except
@@ -704,7 +704,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public String toString() {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
-      new Printer().printTo(this, writerOut);
+      new JimplePrinter().printTo(this, writerOut);
     }
     return writer.toString();
   }

@@ -38,7 +38,7 @@ import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.core.validation.*;
 
 /**
@@ -263,7 +263,7 @@ public class Body implements Copyable {
   public String toString() {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
-      new Printer().printTo(this, writerOut);
+      new JimplePrinter().printTo(this, writerOut);
     }
     return writer.toString();
   }

@@ -50,7 +50,7 @@ import sootup.core.types.Type;
 // TODO: [ms] clean up or implement sth with addJimpleLn,getJimpleLnNum,addJimpleLnTags etc. check
 // old soot for intention
 
-public class Printer {
+public class JimplePrinter {
 
   /**
    * Options to control.. UseAbbreviations: print a brief overview of the given SootClass|SootMethod
@@ -71,7 +71,7 @@ public class Printer {
   private final Set<Option> options = EnumSet.noneOf(Option.class);
   private static int jimpleLnNum = 0; // actual line number
 
-  public Printer(Option... options) {
+  public JimplePrinter(Option... options) {
     this.options.addAll(Arrays.asList(options));
   }
 

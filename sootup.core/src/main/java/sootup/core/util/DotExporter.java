@@ -12,8 +12,7 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.types.ClassType;
 
 /**
- * Exports a StmtGraph into a GraphViz representation (see https://graphviz.org) to visualize the
- * Graph
+ * Exports a StmtGraph into a Dot representation (see https://graphviz.org) to visualize the Graph
  *
  * @author Markus Schmidt
  */
