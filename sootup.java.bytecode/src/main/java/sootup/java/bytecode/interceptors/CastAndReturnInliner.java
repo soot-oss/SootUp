@@ -20,11 +20,9 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.List;
+import com.google.common.collect.Lists;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -65,10 +63,9 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    StmtGraph originalGraph = builder.getStmtGraph();
+    StmtGraph<?> originalGraph = builder.getStmtGraph();
 
-    builder.enableDeferredStmtGraphChanges();
-    for (Stmt stmt : originalGraph.nodes()) {
+    for (Stmt stmt : Lists.newArrayList(originalGraph.nodes())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
@@ -79,7 +76,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
       }
-      JAssignStmt assign = (JAssignStmt) successorOfGoto;
+      JAssignStmt<?, ?> assign = (JAssignStmt) successorOfGoto;
 
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
@@ -97,40 +94,14 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
       // We need to replace the GOTO with the return
       JCastExpr ce = (JCastExpr) assign.getRightOp();
-      JReturnStmt newStmt = retStmt.withReturnValue((Immediate) ce.getOp());
+      JReturnStmt newStmt = retStmt.withReturnValue(ce.getOp());
 
       // Redirect all flows coming into the GOTO to the new return
-      List<Stmt> predecessors = originalGraph.predecessors(gotoStmt);
-      for (Stmt pred : predecessors) {
-        builder.addFlow(pred, newStmt);
-        builder.removeFlow(pred, gotoStmt);
-      }
-      // cleanup now obsolete cast and return statements
-      builder.removeFlow(gotoStmt, assign);
-      builder.removeFlow(assign, retStmt);
+      builder.replaceStmt(gotoStmt, newStmt);
 
-      List<Trap> traps = builder.getTraps();
-      // if used in a Trap replace occurences of goto by inlined return
-      for (int i = 0; i < traps.size(); i++) {
-        Trap trap = traps.get(i);
-        boolean modified = false;
-        if (trap.getBeginStmt() == gotoStmt) {
-          trap = trap.withBeginStmt(newStmt);
-          modified = true;
-        }
-        if (trap.getEndStmt() == gotoStmt) {
-          trap = trap.withEndStmt(newStmt);
-          modified = true;
-        }
-        if (trap.getHandlerStmt() == gotoStmt) {
-          trap = trap.withHandlerStmt(newStmt);
-          modified = true;
-        }
-        if (modified) {
-          traps.set(i, trap);
-        }
-      }
+      // cleanup now obsolete cast and return statements
+      builder.removeStmt(assign);
+      builder.removeStmt(retStmt);
     }
-    builder.commitDeferredStmtGraphChanges();
   }
 }

@@ -24,88 +24,80 @@ package sootup.java.bytecode.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.ExceptionalStmtGraph;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.ClassType;
 
-/* @author Zun Wang **/
+/**
+ * @author Zun Wang
+ *     <p>description from Soot: A BodyTransformer that shrinks the protected area covered by each
+ *     Trap in the Body so that it begins at the first of the Body's Units which might throw an
+ *     exception caught by the Trap and ends just after the last Unit which might throw an exception
+ *     caught by the Trap. In the case where none of the Units protected by a Trap can throw the
+ *     exception it catches, the Trap's protected area is left completely empty, which will likely
+ *     cause the UnreachableCodeEliminator to remove the Trap(handler?) completely (if the
+ *     traphandler does not cover another range). The TrapTightener is used to reduce the risk of
+ *     unverifiable code which can result from the use of ExceptionalUnitGraphs from which
+ *     unrealizable exceptional control flow edges have been removed.
+ */
 public class TrapTightener implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    ExceptionalStmtGraph exceptionalGraph = builder.getStmtGraph();
+
+    // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
+    // #486
+    if (true) {
+      return;
+    }
+
+    MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmtsInPrintOrder = builder.getStmts();
 
-    Set<Stmt> monitoredStmts = monitoredStmts(exceptionalGraph);
-    // System.out.println(monitoredStmts);
-    List<Trap> traps = builder.getTraps();
-    List<Trap> newTraps = new ArrayList<>();
-    for (Trap trap : traps) {
-      boolean isCatchAll =
-          trap.getExceptionType().getFullyQualifiedName().equals("java.lang.Throwable");
+    // collect stmts
+    Set<Stmt> monitoredStmts = monitoredStmts(graph);
+    Map<Stmt, Collection<ClassType>> toRemove = new HashMap<>();
+    for (BasicBlock<?> block : graph.getBlocks()) {
+      for (Stmt stmt : block.getStmts()) {
 
-      // determine the initial trap-scope
-      Stmt trapBegin = trap.getBeginStmt();
-      Stmt firstUnstrappedStmt = trap.getEndStmt();
-      int idx = stmtsInPrintOrder.indexOf(firstUnstrappedStmt);
-      Stmt trapEnd = stmtsInPrintOrder.get(idx - 1);
-      // initialize a new trap-scope
-      Stmt newTrapBegin = null;
-      Stmt newTrapEnd = null;
-      // set begin of new trap-scope
-      for (int i = stmtsInPrintOrder.indexOf(trapBegin); i < stmtsInPrintOrder.size(); i++) {
-        Stmt s = stmtsInPrintOrder.get(i);
-        if (mightThrow(exceptionalGraph, s, trap)) {
-          newTrapBegin = s;
-          break;
-        }
-        // If trap is a catch-all block and the current stmt has an active monitor, we need to keep
-        // the block
-        if (isCatchAll && monitoredStmts.contains(s)) {
-          if (newTrapBegin == null) {
-            newTrapBegin = s;
-          }
-          break;
-        }
-      }
-      // set end of new trap-scope
-      // if new trap begin is null, then trap should be empty trap, so don't need to set trap end
-      if (newTrapBegin != null) {
-        for (int i = stmtsInPrintOrder.indexOf(trapEnd); i >= 0; i--) {
-          Stmt s = stmtsInPrintOrder.get(i);
-          if (mightThrow(exceptionalGraph, s, trap)) {
-            newTrapEnd = s;
-            break;
-          }
-          // If trap is a catch-all block and the current stmt has an active monitor, we need to
-          // keep the block
-          if (isCatchAll && monitoredStmts.contains(s)) {
-            newTrapEnd = s;
+        Collection<ClassType> removeForStmt = new ArrayList<>();
+        for (Map.Entry<? extends ClassType, ?> exception :
+            block.getExceptionalSuccessors().entrySet()) {
+
+          // FIXME: check for java9 modules signature, too!
+          boolean isCatchAll =
+              exception.getKey().getFullyQualifiedName().equals("java.lang.Throwable");
+
+          if (
+          /* mightThrow(graph, stmt, trap) || */ (isCatchAll && monitoredStmts.contains(stmt))) {
+            // if it might throw or if trap is a catch-all block and the current stmt has an active
+            // monitor, we need to keep the block
+            removeForStmt.add(exception.getKey());
             break;
           }
         }
-      }
-      Trap newTrap = null;
-      if (newTrapBegin != null && (newTrapBegin != trapBegin || newTrapEnd != trapEnd)) {
-        if (newTrapEnd != trapEnd) {
-          int id = stmtsInPrintOrder.indexOf(newTrapEnd);
-          firstUnstrappedStmt = stmtsInPrintOrder.get(id + 1);
+        if (!removeForStmt.isEmpty()) {
+          toRemove.put(stmt, removeForStmt);
         }
-        newTrap =
-            new Trap(
-                trap.getExceptionType(), newTrapBegin, firstUnstrappedStmt, trap.getHandlerStmt());
-      }
-      if (newTrap != null) {
-        newTraps.add(newTrap);
-      } else if (newTrapBegin != null) {
-        newTraps.add(trap);
       }
     }
-    builder.setTraps(newTraps);
+
+    // remove exceptions for stmts
+    for (Map.Entry<Stmt, Collection<ClassType>> entry : toRemove.entrySet()) {
+      for (ClassType classType : entry.getValue()) {
+        graph.removeExceptionalEdge(entry.getKey(), classType);
+      }
+    }
+
+    // FIXME: check if there are traphandlers that have no predecessor
+
   }
 
   /**
@@ -114,7 +106,7 @@ public class TrapTightener implements BodyInterceptor {
    * @param graph a given exceptionalStmtGraph
    * @return a list of monitored stmts
    */
-  private Set<Stmt> monitoredStmts(ExceptionalStmtGraph graph) {
+  private Set<Stmt> monitoredStmts(@Nonnull StmtGraph<?> graph) {
     Set<Stmt> monitoredStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -125,40 +117,27 @@ public class TrapTightener implements BodyInterceptor {
       visitedStmts.add(stmt);
       // enter a monitored block
       if (stmt instanceof JEnterMonitorStmt) {
-        Deque<Stmt> monitoredQueue = new ArrayDeque();
+        Deque<Stmt> monitoredQueue = new ArrayDeque<>();
         monitoredQueue.add(stmt);
         while (!monitoredQueue.isEmpty()) {
-          Stmt monitorStmt = monitoredQueue.removeFirst();
-          monitoredStmts.add(monitorStmt);
-          visitedStmts.add(monitorStmt);
-          if (!(monitorStmt instanceof JExitMonitorStmt)) {
-            for (Stmt succ : getMixSuccessors(graph, monitorStmt)) {
+          Stmt monitoredStmt = monitoredQueue.removeFirst();
+          monitoredStmts.add(monitoredStmt);
+          visitedStmts.add(monitoredStmt);
+          if (monitoredStmt instanceof JExitMonitorStmt) {
+            queue.addAll(graph.getAllSuccessors(monitoredStmt));
+          } else {
+            for (Stmt succ : graph.getAllSuccessors(monitoredStmt)) {
               if (!visitedStmts.contains(succ)) {
                 monitoredQueue.add(succ);
               }
             }
-          } else {
-            queue.addAll(getMixSuccessors(graph, monitorStmt));
           }
         }
       } else {
-        queue.addAll(getMixSuccessors(graph, stmt));
+        queue.addAll(graph.getAllSuccessors(stmt));
       }
     }
     return monitoredStmts;
-  }
-
-  /**
-   * Collect all successors (normal and exceptional) of a given stmt into a list.
-   *
-   * @param graph a ExceptionalStmtGraph
-   * @param stmt is a stmt in the given graph
-   * @return a list of successors(normal+exceptional) of the given stmt
-   */
-  private List<Stmt> getMixSuccessors(ExceptionalStmtGraph graph, Stmt stmt) {
-    List<Stmt> succs = new ArrayList<>(graph.successors(stmt));
-    succs.addAll(graph.exceptionalSuccessors(stmt));
-    return succs;
   }
 
   /**
@@ -170,9 +149,18 @@ public class TrapTightener implements BodyInterceptor {
    * @return If trap-destinations of the given stmt contain the given trap, return true, otherwise
    *     return false
    */
-  private boolean mightThrow(ExceptionalStmtGraph graph, Stmt stmt, Trap trap) {
-    for (Trap dest : graph.getDestTraps(stmt)) {
-      if (dest == trap) {
+
+  // FIXME: [ms] makes no sense in that Implementation! StmtGraph is not the legacy
+  // ExceptionalUnitGraph
+  private boolean mightThrow(@Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Trap trap) {
+    final BasicBlock<?> block = graph.getBlockOf(stmt);
+
+    for (Map.Entry<? extends ClassType, ? extends BasicBlock<?>> dest :
+        block.getExceptionalSuccessors().entrySet()) {
+      final ClassType exceptionType = dest.getKey();
+      final BasicBlock<?> traphandlerBlock = dest.getValue();
+      if (exceptionType.equals(trap.getExceptionType())
+          && traphandlerBlock.getHead().equals(trap.getHandlerStmt())) {
         return true;
       }
     }

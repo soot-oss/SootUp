@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import sootup.core.graph.Block;
+import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -43,7 +43,9 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
 
   private Value oldUse;
   private Value newUse;
-  Block phiBlock = null;
+
+  // TODO: [ms] is this (phiBlock) really a necessary field?
+  BasicBlock<?> phiBlock = null;
 
   public ReplaceUseExprVisitor() {}
 
@@ -53,7 +55,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   }
 
   /* This constructor is for PhiExpr. The phiBlock is a block which newUse belongs to.*/
-  public ReplaceUseExprVisitor(Value oldUse, Value newUse, Block phiBlock) {
+  public ReplaceUseExprVisitor(Value oldUse, Value newUse, BasicBlock<?> phiBlock) {
     this.oldUse = oldUse;
     this.newUse = newUse;
     this.phiBlock = phiBlock;
@@ -498,8 +500,8 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
       argsList.set(index, (Local) newUse);
       v = v.withArgs(argsList);
 
-      Map<Local, Block> newArgToBlock = new HashMap<>();
-      List<Block> blocks = v.getBlocks();
+      Map<Local, BasicBlock<?>> newArgToBlock = new HashMap<>();
+      List<BasicBlock<?>> blocks = v.getBlocks();
       for (int i = 0; i < v.getArgsSize(); i++) {
         if (i == index) {
           newArgToBlock.put((Local) newUse, phiBlock);

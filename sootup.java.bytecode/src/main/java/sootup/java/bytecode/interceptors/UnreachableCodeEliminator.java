@@ -22,8 +22,7 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.ExceptionalStmtGraph;
-import sootup.core.jimple.basic.Trap;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
@@ -38,44 +37,33 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
 
-    ExceptionalStmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
 
-    // collect all reachable stmts
-    Set<Stmt> reachableStmts = new HashSet<>();
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
 
+    // calculate all reachable stmts
+    Set<Stmt> reachableStmts = new HashSet<>();
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
       reachableStmts.add(stmt);
-      for (Stmt succ : graph.successors(stmt)) {
+      for (Stmt succ : graph.getAllSuccessors(stmt)) {
         if (!reachableStmts.contains(succ)) {
-          queue.addLast(succ);
-        }
-      }
-      for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
-        if (!reachableStmts.contains(esucc)) {
-          queue.addLast(esucc);
+          queue.add(succ);
         }
       }
     }
 
     // remove unreachable stmts from StmtGraph
-    builder.enableDeferredStmtGraphChanges();
+    Queue<Stmt> removeQ = new ArrayDeque<>();
     for (Stmt stmt : graph.nodes()) {
       if (!reachableStmts.contains(stmt)) {
-        builder.removeStmt(stmt);
+        removeQ.add(stmt);
       }
     }
-    builder.disableAndCommitDeferredStmtGraphChanges();
 
-    // cleanup invalid traps
-    List<Trap> traps = new ArrayList<>(builder.getTraps());
-    for (Trap trap : traps) {
-      if (trap.getBeginStmt() == trap.getEndStmt()
-          || !reachableStmts.contains(trap.getHandlerStmt())) {
-        builder.removeTrap(trap);
-      }
+    for (Stmt stmt : removeQ) {
+      builder.removeStmt(stmt);
     }
   }
 }

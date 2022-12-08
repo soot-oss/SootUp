@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
+import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
@@ -33,29 +34,33 @@ import sootup.core.jimple.common.expr.*;
  */
 public class Evaluator {
 
+  // TODO: [ms] please rewrite that huge elseif construct to a ExprVisitor
+
   /**
    * Checks whether the value of op is constant
    *
    * @param op The value to be evaluated
    * @return True, if op is constant. Otherwise, false.
    */
-  public static boolean isValueConstantValue(Value op) {
+  public static boolean isConstantValue(Value op) {
     if (op instanceof Constant) {
       return true;
-    } else if (op instanceof AbstractUnopExpr) {
+    }
+    if (op instanceof AbstractUnopExpr) {
       Value innerOp = ((AbstractUnopExpr) op).getOp();
       if (innerOp == NullConstant.getInstance()) {
         return false;
       }
-      return isValueConstantValue(innerOp);
-    } else if (op instanceof AbstractBinopExpr) {
+      return isConstantValue(innerOp);
+    }
+    if (op instanceof AbstractBinopExpr) {
       final AbstractBinopExpr binExpr = (AbstractBinopExpr) op;
       final Value op1 = binExpr.getOp1();
       final Value op2 = binExpr.getOp2();
 
       // Only evaluate these checks once and then use the result multiple times
-      final boolean isOp1Constant = isValueConstantValue(op1);
-      final boolean isOp2Constant = isValueConstantValue(op2);
+      final boolean isOp1Constant = isConstantValue(op1);
+      final boolean isOp2Constant = isConstantValue(op2);
 
       // Handle weird cases
       if (op instanceof JDivExpr || op instanceof JRemExpr) {
@@ -82,16 +87,17 @@ public class Evaluator {
    * @param op The value to be evaluated
    * @return The resulting constant or null
    */
-  public static Value getConstantValueOf(Value op) {
-    if (!isValueConstantValue(op)) {
+  @Nullable
+  public static Constant getConstantValueOf(Value op) {
+    if (!isConstantValue(op)) {
       return null;
     }
 
     if (op instanceof Constant) {
-      return op;
+      return (Constant) op;
     } else if (op instanceof AbstractUnopExpr) {
-      Value constant = getConstantValueOf(((AbstractUnopExpr) op).getOp());
       if (op instanceof JNegExpr) {
+        Value constant = getConstantValueOf(((JNegExpr) op).getOp());
         return ((NumericConstant) constant).negate();
       }
     } else if (op instanceof AbstractBinopExpr) {
@@ -127,7 +133,8 @@ public class Evaluator {
           boolean truth = (op instanceof JEqExpr) == equality;
           return IntConstant.getInstance(truth ? 1 : 0);
         }
-        throw new RuntimeException("Constant neither numeric nor string");
+        return null;
+        // throw new RuntimeException("Constant neither numeric nor string");
       } else if (op instanceof JGtExpr) {
         return ((NumericConstant) c1).greaterThan((NumericConstant) c2);
       } else if (op instanceof JGeExpr) {
@@ -165,10 +172,12 @@ public class Evaluator {
           throw new IllegalArgumentException("CmpExpr: RealConstant(s) expected");
         }
       } else {
-        throw new RuntimeException("Unknown binary operator: " + op);
+        // throw new RuntimeException("Unknown binary operator: " + op);
+        return null;
       }
     }
 
-    throw new RuntimeException("couldn't getConstantValueOf of: " + op);
+    // throw new RuntimeException("couldn't getConstantValueOf of: " + op);
+    return null;
   }
 }

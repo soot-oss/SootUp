@@ -41,7 +41,7 @@ import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 
 /** @author Linghui Luo */
 public class Utils {
@@ -91,7 +91,7 @@ public class Utils {
       PrintWriter writer;
       try {
         writer = new PrintWriter(file);
-        Printer printer = new Printer();
+        JimplePrinter printer = new JimplePrinter();
         printer.printTo(cl, writer);
         writer.flush();
         writer.close();
@@ -105,7 +105,7 @@ public class Utils {
   public static void print(SootClass cl, boolean print) {
     if (print) {
       PrintWriter writer = new PrintWriter(System.out);
-      Printer printer = new Printer();
+      JimplePrinter printer = new JimplePrinter();
       printer.printTo(cl, writer);
       writer.flush();
       writer.close();
@@ -115,7 +115,7 @@ public class Utils {
   public static void print(SootMethod method, boolean print) {
     if (print) {
       PrintWriter writer = new PrintWriter(System.out);
-      Printer printer = new Printer();
+      JimplePrinter printer = new JimplePrinter();
       printer.printTo(method.getBody(), writer);
       writer.flush();
       writer.close();
@@ -145,8 +145,8 @@ public class Utils {
   public static ArrayList<String> bodyStmtsAsStrings(@Nonnull Body body) {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
-      Printer printer = new Printer();
-      printer.setOption(Printer.Option.OmitLocalsDeclaration);
+      JimplePrinter printer = new JimplePrinter();
+      printer.setOption(JimplePrinter.Option.OmitLocalsDeclaration);
       printer.printTo(body, writerOut);
     }
 

@@ -21,8 +21,10 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;
@@ -43,11 +45,11 @@ public class CopyPropagator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph()) {
+    final StmtGraph<?> stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
-          List<Stmt> defsOfUse =
-              BodyUtils.getDefsForLocalUse(builder.getStmtGraph(), (Local) use, stmt);
+          List<Stmt> defsOfUse = BodyUtils.getDefsForLocalUse(stmtGraph, (Local) use, stmt);
 
           if (isPropagable(defsOfUse)) {
             AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
@@ -75,18 +77,20 @@ public class CopyPropagator implements BodyInterceptor {
     }
   }
 
-  private void replaceUse(@Nonnull Body.BodyBuilder builder, Stmt stmt, Value use, Value rhs) {
+  private void replaceUse(
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt stmt, Value use, Value rhs) {
     Stmt newStmt = BodyUtils.withNewUse(stmt, use, rhs);
-    if (!stmt.equals(newStmt)) {
+    // TODO: [ms] check if the following check could be obsolete as checks are already done?
+    if (!stmt.equivTo(newStmt)) {
       builder.replaceStmt(stmt, newStmt);
     }
   }
 
   private boolean isPropagable(List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
-    boolean propagable = false;
+    boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {
-      propagable = true;
+      isPropagateable = true;
 
       // If local is defined two or more times, and each defStmt in form :
       // defLocal = constant and all constants are same,
@@ -101,17 +105,17 @@ public class CopyPropagator implements BodyInterceptor {
           if (con == null) {
             con = rhs;
           } else if (rhs.equals(con)) {
-            propagable = true;
+            isPropagateable = true;
           } else {
-            propagable = false;
+            isPropagateable = false;
             break;
           }
         } else {
-          propagable = false;
+          isPropagateable = false;
           break;
         }
       }
     }
-    return propagable;
+    return isPropagateable;
   }
 }

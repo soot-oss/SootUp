@@ -23,11 +23,12 @@ package sootup.core.util.printer;
  */
 
 import java.util.*;
+import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
@@ -104,11 +105,16 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
    *
    * @return the linearized StmtGraph
    */
-  public Iterable<Stmt> initializeSootMethod(Body body) {
-    this.body = body;
+  public Iterable<Stmt> initializeSootMethod(@Nonnull StmtGraph<?> stmtGraph) {
+    this.graph = stmtGraph;
+    final List<Stmt> linearizedStmtGraph = getStmts(stmtGraph);
+    return linearizedStmtGraph;
+  }
 
-    final Collection<Stmt> targetStmtsOfBranches = body.getTargetStmtsInBody();
-    final List<Trap> traps = body.getTraps();
+  @Nonnull
+  public List<Stmt> getStmts(@Nonnull StmtGraph<?> stmtGraph) {
+    final Collection<Stmt> targetStmtsOfBranches = stmtGraph.getLabeledStmts();
+    final List<Trap> traps = stmtGraph.getTraps();
 
     final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
     labels = new HashMap<>(maxEstimatedSize, 1);
@@ -126,9 +132,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
           trapStmts.add(trap.getEndStmt());
         });
 
-    // Build labelStmts and refStmts
+    // Build labelStmts and refStmts -> is stmt head of a block (as its a branch target/trapHandler
+    // or is the begin of a trap-range) or does it mark the end of a trap range
+    // does it need a label
     for (Stmt stmt : targetStmtsOfBranches) {
-      if (body.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
+      if (stmtGraph.isStmtBranchTarget(stmt) || trapStmts.contains(stmt)) {
         labelStmts.add(stmt);
       } else {
         refStmts.add(stmt);
@@ -145,7 +153,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    final List<Stmt> linearizedStmtGraph = body.getStmts();
+    final List<Stmt> linearizedStmtGraph = stmtGraph.getStmts();
     for (Stmt s : linearizedStmtGraph) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));

@@ -22,9 +22,8 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.ExceptionalStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -118,7 +117,7 @@ public class LocalPacker implements BodyInterceptor {
         newStmt = BodyUtils.withNewDef(newStmt, newLocal);
       }
       if (!stmt.equals(newStmt)) {
-        replaceStmtInBuilder(builder, stmt, newStmt);
+        builder.replaceStmt(stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
@@ -144,8 +143,8 @@ public class LocalPacker implements BodyInterceptor {
     // assign each parameter local a color (local from IdentityStmt)
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt) stmt).getLeftOp() instanceof Local) {
-          Local l = (Local) ((JIdentityStmt) stmt).getLeftOp();
+        if (((JIdentityStmt<?>) stmt).getLeftOp() instanceof Local) {
+          Local l = (Local) ((JIdentityStmt<?>) stmt).getLeftOp();
           Type type = l.getType();
           int count = typeToColorCount.get(type);
           localToColor.put(l, count);
@@ -158,8 +157,7 @@ public class LocalPacker implements BodyInterceptor {
     // local with less interferences
     Map<Local, Set<Local>> localInterferenceMap = buildLocalInterferenceMap(builder);
     List<Local> sortedLocals = new ArrayList<>(builder.getLocals());
-    Collections.sort(
-        sortedLocals,
+    sortedLocals.sort(
         (o1, o2) -> {
           int num1 = localInterferenceMap.containsKey(o1) ? localInterferenceMap.get(o1).size() : 0;
           int num2 = localInterferenceMap.containsKey(o2) ? localInterferenceMap.get(o2).size() : 0;
@@ -210,7 +208,7 @@ public class LocalPacker implements BodyInterceptor {
   private Map<Local, Set<Local>> buildLocalInterferenceMap(Body.BodyBuilder builder) {
     // Maps local to its interfering locals
     Map<Local, Set<Local>> localToLocals = new HashMap<>();
-    ExceptionalStmtGraph graph = builder.getStmtGraph();
+    StmtGraph<?> graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
     for (Stmt stmt : builder.getStmts()) {
@@ -222,7 +220,7 @@ public class LocalPacker implements BodyInterceptor {
         for (Stmt succ : graph.successors(stmt)) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(succ));
         }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
           aliveLocals.addAll(analyser.getLiveLocalsBeforeStmt(esucc));
         }
         for (Local aliveLocal : aliveLocals) {
@@ -250,51 +248,39 @@ public class LocalPacker implements BodyInterceptor {
     return localToLocals;
   }
 
-  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
-  private void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
-    builder.replaceStmt(oldStmt, newStmt);
-    adaptTraps(builder, oldStmt, newStmt);
-  }
-  /**
-   * Fit the modified stmt in Traps
-   *
-   * @param builder a bodybuilder, use it to modify Trap
-   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
-   * @param newStmt a modified stmt to replace the oldStmt.
-   */
-  private void adaptTraps(
-      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = trap.withBeginStmt(newStmt);
-        iterator.set(newTrap);
-      } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = trap.withEndStmt(newStmt);
-        iterator.set(newTrap);
-      }
-    }
-    builder.setTraps(traps);
-  }
-
-  private class TypeColorPair {
-    public Type type;
-    public int color;
+  private static class TypeColorPair {
+    private Type type;
+    private int color;
 
     public TypeColorPair(Type type, int color) {
+      this.setType(type);
+      this.setColor(color);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public void setType(Type type) {
       this.type = type;
+    }
+
+    public int getColor() {
+      return color;
+    }
+
+    public void setColor(int color) {
       this.color = color;
     }
 
     public int hashCode() {
-      return type.hashCode() + 1013 * color;
+      return getType().hashCode() + 1013 * getColor();
     }
 
     public boolean equals(Object other) {
       if (other instanceof TypeColorPair) {
-        return ((TypeColorPair) other).type.equals(this.type)
-            && ((TypeColorPair) other).color == this.color;
+        return ((TypeColorPair) other).getType().equals(this.getType())
+            && ((TypeColorPair) other).getColor() == this.getColor();
       } else {
         return false;
       }

@@ -33,13 +33,12 @@ import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
-import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.core.validation.*;
 
 /**
@@ -52,7 +51,7 @@ public class Body implements Copyable {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
-  @Nonnull private final ImmutableExceptionalStmtGraph ecfg;
+  @Nonnull private final StmtGraph<?> graph;
 
   /** The Position Information in the Source for this Body. */
   @Nonnull private final Position position;
@@ -82,14 +81,30 @@ public class Body implements Copyable {
   private Body(
       @Nonnull MethodSignature methodSignature,
       @Nonnull Set<Local> locals,
-      @Nonnull StmtGraph stmtGraph,
+      @Nonnull StmtGraph<?> stmtGraph,
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.ecfg = new ImmutableExceptionalStmtGraph(stmtGraph);
+    this.graph = /* FIXME: [ms] make immutable when availabe */
+        new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
     this.position = position;
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
+  }
+
+  /**
+   * Returns the LHS of the first identity stmt assigning from \@this.
+   *
+   * @return The this local
+   */
+  public static Local getThisLocal(StmtGraph<?> stmtGraph) {
+    for (Stmt stmt : stmtGraph.nodes()) {
+      if (stmt instanceof JIdentityStmt
+          && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
+        return (Local) ((JIdentityStmt) stmt).getLeftOp();
+      }
+    }
+    throw new RuntimeException("couldn't find *this* assignment");
   }
 
   /**
@@ -125,16 +140,6 @@ public class Body implements Copyable {
     runValidation(new LocalsValidator());
   }
 
-  /** Verifies that the begin, end and handler units of each trap are in this body. */
-  public void validateTraps() {
-    runValidation(new TrapsValidator());
-  }
-
-  /** Verifies that the Stmts of this Body all point to a Stmt contained within this body. */
-  public void validateStmts() {
-    runValidation(new StmtsValidator());
-  }
-
   /** Verifies that each use in this Body has a def. */
   public void validateUses() {
     runValidation(new UsesValidator());
@@ -148,38 +153,55 @@ public class Body implements Copyable {
   /** Returns an unmodifiable view of the traps found in this Body. */
   @Nonnull
   public List<Trap> getTraps() {
-    return ecfg.getTraps();
+    return graph.getTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
+  @Nullable
   public Stmt getThisStmt() {
     for (Stmt u : getStmts()) {
-      if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
-        return u;
+      if (u instanceof JIdentityStmt) {
+        if (((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
+          return u;
+        }
+      } else {
+        // TODO: possible optimization see getParameterLocals()
+        //  break;
       }
     }
-
-    throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethodSignature());
+    return null;
+    //    throw new RuntimeException("couldn't find this-assignment!" + " in " +
+    // getMethodSignature());
   }
 
   /** Return LHS of the first identity stmt assigning from \@this. */
+  @Nullable
   public Local getThisLocal() {
-    return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
+    final JIdentityStmt<?> thisStmt = (JIdentityStmt<?>) getThisStmt();
+    if (thisStmt == null) {
+      return null;
+    }
+    return thisStmt.getLeftOp();
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
+  @Nullable
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
-      if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
-        JIdentityStmt is = (JIdentityStmt) s;
-        JParameterRef pr = (JParameterRef) is.getRightOp();
-        if (pr.getIndex() == i) {
-          return (Local) is.getLeftOp();
+      if (s instanceof JIdentityStmt) {
+        if (((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
+          JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
+          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
+          if (pr.getIndex() == i) {
+            return idStmt.getLeftOp();
+          }
         }
+      } else {
+        // TODO: possible optimization see getParameterLocals()
+        //  break;
       }
     }
-
-    throw new RuntimeException("couldn't find JParameterRef" + i + "! in " + getMethodSignature());
+    return null;
   }
 
   /**
@@ -194,47 +216,22 @@ public class Body implements Copyable {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
-    for (Stmt u : ecfg.nodes()) {
+    for (Stmt u : graph.nodes()) {
       if (u instanceof JIdentityStmt) {
-        JIdentityStmt is = (JIdentityStmt) u;
-        if (is.getRightOp() instanceof JParameterRef) {
-          JParameterRef pr = (JParameterRef) is.getRightOp();
-          retVal.add(pr.getIndex(), (Local) is.getLeftOp());
+        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) u;
+        if (idStmt.getRightOp() instanceof JParameterRef) {
+          JParameterRef pr = (JParameterRef) idStmt.getRightOp();
+          retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
+      /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
+      else{
+        break;
+      }
+      * */
+
     }
     return Collections.unmodifiableCollection(retVal);
-  }
-
-  /**
-   * Returns the result of iterating through all Stmts in this body. All Stmts thus found are
-   * returned. Branching Stmts and statements which use PhiExpr will have Stmts; a Stmt contains a
-   * Stmt that is either a target of a branch or is being used as a pointer to the end of a CFG
-   * block.
-   *
-   * <p>This method was typically used for pointer patching, e.g. when the unit chain is cloned.
-   *
-   * @return A collection of all the Stmts
-   */
-  @Nonnull
-  public Collection<Stmt> getTargetStmtsInBody() {
-    List<Stmt> stmtList = new ArrayList<>();
-    for (Stmt stmt : ecfg.nodes()) {
-      if (stmt instanceof BranchingStmt) {
-        if (stmt instanceof JIfStmt) {
-          stmtList.add(((JIfStmt) stmt).getTarget(this));
-        } else if (stmt instanceof JGotoStmt) {
-          stmtList.add(((JGotoStmt) stmt).getTarget(this));
-        } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
-        }
-      }
-    }
-
-    for (Trap item : getTraps()) {
-      stmtList.addAll(item.getStmts());
-    }
-    return Collections.unmodifiableCollection(stmtList);
   }
 
   /**
@@ -244,16 +241,17 @@ public class Body implements Copyable {
    */
   @Nonnull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(ecfg.nodes().size());
-    for (Stmt stmt : ecfg) {
+    final ArrayList<Stmt> stmts = new ArrayList<>(graph.nodes().size());
+    for (Stmt stmt : graph) {
       stmts.add(stmt);
     }
     return stmts;
   }
 
   @Nonnull
-  public ImmutableExceptionalStmtGraph getStmtGraph() {
-    return ecfg;
+  // TODO: [ms] should be an ImmutableStmtGraph!
+  public StmtGraph<?> getStmtGraph() {
+    return graph;
   }
 
   private void checkInit() {
@@ -265,7 +263,7 @@ public class Body implements Copyable {
   public String toString() {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
-      new Printer().printTo(this, writerOut);
+      new JimplePrinter().printTo(this, writerOut);
     }
     return writer.toString();
   }
@@ -278,27 +276,11 @@ public class Body implements Copyable {
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
   public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
-    return ecfg.successors(fromStmt);
+    return getStmtGraph().getBranchTargetsOf(fromStmt);
   }
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
-    final List<Stmt> predecessors = ecfg.predecessors(targetStmt);
-    if (predecessors.size() > 1) {
-      return true;
-    }
-
-    final Iterator<Stmt> iterator = predecessors.iterator();
-    if (iterator.hasNext()) {
-      Stmt pred = iterator.next();
-      if (pred.branches()) {
-        if (pred instanceof JIfStmt) {
-          return ((JIfStmt) pred).getTarget(this) == targetStmt;
-        }
-        return true;
-      }
-    }
-
-    return false;
+    return getStmtGraph().isStmtBranchTarget(targetStmt);
   }
 
   public void validateIdentityStatements() {
@@ -330,7 +312,7 @@ public class Body implements Copyable {
   public Collection<Value> getUses() {
     ArrayList<Value> useList = new ArrayList<>();
 
-    for (Stmt stmt : ecfg.nodes()) {
+    for (Stmt stmt : graph.nodes()) {
       useList.addAll(stmt.getUses());
     }
     return useList;
@@ -345,7 +327,7 @@ public class Body implements Copyable {
   public Collection<Value> getDefs() {
     ArrayList<Value> defList = new ArrayList<>();
 
-    for (Stmt stmt : ecfg.nodes()) {
+    for (Stmt stmt : graph.nodes()) {
       defList.addAll(stmt.getDefs());
     }
     return defList;
@@ -356,81 +338,12 @@ public class Body implements Copyable {
     return new Body(getMethodSignature(), locals, getStmtGraph(), getPosition());
   }
 
-  /** helps against ConcurrentModificationException; it queues changes until they are committed */
-  // TODO: think about same nodes/flows added AND removed
-  // [ms] use/implement a snapshotiterator instead?
-  private static class StmtGraphManipulationQueue {
-
-    @Nonnull private final List<Stmt> nodesToRemove = new ArrayList<>();
-    @Nonnull private final List<Stmt> nodesToAdd = new ArrayList<>();
-
-    void addNode(@Nonnull Stmt node) {
-      nodesToAdd.add(node);
-    }
-
-    void removeNode(@Nonnull Stmt node) {
-      nodesToRemove.add(node);
-    }
-
-    // List sizes are a multiple of 2; even: from odd: to of an edge
-    @Nonnull private final List<Stmt> flowsToRemove = new ArrayList<>();
-    @Nonnull private final List<Stmt> flowsToAdd = new ArrayList<>();
-
-    void addFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
-      flowsToAdd.add(from);
-      flowsToAdd.add(to);
-    }
-
-    void removeFlow(@Nonnull Stmt from, @Nonnull Stmt to) {
-      flowsToRemove.add(from);
-      flowsToRemove.add(to);
-    }
-
-    /** return true if there where queued changes */
-    boolean commit(MutableStmtGraph graph) {
-
-      if (!flowsToAdd.isEmpty()
-          || !flowsToRemove.isEmpty()
-          || !nodesToAdd.isEmpty()
-          || !nodesToRemove.isEmpty()) {
-        for (Stmt stmt : nodesToAdd) {
-          graph.addNode(stmt);
-        }
-
-        for (Stmt stmt : nodesToRemove) {
-          graph.removeNode(stmt);
-        }
-
-        Iterator<Stmt> addIt = flowsToAdd.iterator();
-        while (addIt.hasNext()) {
-          final Stmt from = addIt.next();
-          final Stmt to = addIt.next();
-          graph.putEdge(from, to);
-        }
-
-        Iterator<Stmt> remIt = flowsToRemove.iterator();
-        while (remIt.hasNext()) {
-          final Stmt from = remIt.next();
-          final Stmt to = remIt.next();
-          graph.removeEdge(from, to);
-        }
-        clear();
-
-        return true;
-      }
-      return false;
-    }
-
-    public void clear() {
-      nodesToAdd.clear();
-      nodesToRemove.clear();
-      flowsToAdd.clear();
-      flowsToRemove.clear();
-    }
-  }
-
   public static BodyBuilder builder() {
     return new BodyBuilder();
+  }
+
+  public static BodyBuilder builder(@Nonnull MutableStmtGraph graph) {
+    return new BodyBuilder(graph);
   }
 
   public static BodyBuilder builder(@Nonnull Body body, Set<Modifier> modifiers) {
@@ -461,41 +374,35 @@ public class Body implements Copyable {
     @Nonnull private Set<Modifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
-    @Nonnull private final MutableExceptionalStmtGraph ecfg;
-    @Nonnull private BlockGraph bg;
+    @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private StmtGraphManipulationQueue changeQueue = null;
     @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
-      ecfg = new MutableExceptionalStmtGraph();
+      graph = new MutableBlockStmtGraph();
     }
 
-    public BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
+    BodyBuilder(@Nonnull MutableStmtGraph graph) {
+      this.graph = graph;
+    }
+
+    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(body.getLocals());
       setPosition(body.getPosition());
-      bg = new BlockGraph(body.getStmtGraph());
-      ecfg = bg.getStmtGraph();
-      setTraps(body.getTraps());
+      graph = new MutableBlockStmtGraph(body.getStmtGraph());
     }
 
     @Nonnull
-    // TODO: should return bg.unmodifiableBlockGraph
-    public BlockGraph getBlockGraph() {
-      return this.bg;
-    }
-
-    @Nonnull
-    public ExceptionalStmtGraph getStmtGraph() {
-      return ecfg.unmodifiableStmtGraph();
+    public MutableStmtGraph getStmtGraph() {
+      return graph;
     }
 
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = Lists.newArrayList(ecfg);
+      cachedLinearizedStmts = Lists.newArrayList(graph);
       return cachedLinearizedStmts;
     }
 
@@ -506,7 +413,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      ecfg.setStartingStmt(startingStmt);
+      graph.setStartingStmt(startingStmt);
       return this;
     }
 
@@ -528,69 +435,44 @@ public class Body implements Copyable {
       return this;
     }
 
-    @Nonnull
-    public BodyBuilder setTraps(@Nonnull List<Trap> traps) {
-      ecfg.setTraps(traps);
-      return this;
-    }
-
     /** replace the oldStmt with newStmt in stmtGraph and branches */
     @Nonnull
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      ecfg.replaceNode(oldStmt, newStmt);
+      graph.replaceNode(oldStmt, newStmt);
       return this;
     }
 
     /** remove the a stmt from the graph and stmt */
     @Nonnull
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      if (changeQueue == null) {
-        ecfg.removeNode(stmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.removeNode(stmt);
-      }
+      graph.removeNode(stmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
     @Nonnull
-    public BodyBuilder removeDestinations(@Nonnull Stmt stmt) {
-      if (ecfg.containsNode(stmt)) {
-        ecfg.removeDestinations(stmt);
-      }
+    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
+      graph.clearExceptionalEdges(stmt);
       return this;
     }
 
     @Nonnull
-    public BodyBuilder removeTrap(@Nonnull Trap trap) {
-      ecfg.removeTrap(trap);
-      return this;
-    }
-
-    @Nonnull
+    @Deprecated
     public List<Trap> getTraps() {
-      return ecfg.getTraps();
+      return graph.getTraps();
     }
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (changeQueue == null) {
-        ecfg.putEdge(fromStmt, toStmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.addFlow(fromStmt, toStmt);
-      }
+      graph.putEdge(fromStmt, toStmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
     @Nonnull
     public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      if (changeQueue == null) {
-        ecfg.removeEdge(fromStmt, toStmt);
-        cachedLinearizedStmts = null;
-      } else {
-        changeQueue.removeFlow(fromStmt, toStmt);
-      }
+      graph.removeEdge(fromStmt, toStmt);
+      cachedLinearizedStmts = null;
       return this;
     }
 
@@ -610,44 +492,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    /**
-     * Queues changes to the StmtGraph (e.g. addFlow, removeFlow) until they are commited. helps to
-     * prevent ConcurrentModificationException
-     */
-    public BodyBuilder enableDeferredStmtGraphChanges() {
-      if (changeQueue == null) {
-        changeQueue = new StmtGraphManipulationQueue();
-      }
-      return this;
-    }
-
-    /**
-     * commits the changes that were added to the queue if that was enabled before AND disables
-     * further queueing of changes.
-     */
-    public BodyBuilder disableAndCommitDeferredStmtGraphChanges() {
-      commitDeferredStmtGraphChanges();
-      changeQueue = null;
-      return this;
-    }
-
-    /** commits the changes that were added to the queue if that was enabled before */
-    public BodyBuilder commitDeferredStmtGraphChanges() {
-      if (changeQueue != null) {
-        if (changeQueue.commit(ecfg)) {
-          cachedLinearizedStmts = null;
-        }
-      }
-      return this;
-    }
-    /** clears queued changes fot */
-    public BodyBuilder clearDeferredStmtGraphChanges() {
-      if (changeQueue != null) {
-        changeQueue.clear();
-      }
-      return this;
-    }
-
     @Nonnull
     public Body build() {
 
@@ -659,31 +503,38 @@ public class Body implements Copyable {
         setPosition(NoPositionInformation.getInstance());
       }
 
-      // commit pending changes
-      commitDeferredStmtGraphChanges();
-
-      final Stmt startingStmt = ecfg.getStartingStmt();
-      final Set<Stmt> nodes = ecfg.nodes();
+      final Stmt startingStmt = graph.getStartingStmt();
+      final Collection<Stmt> nodes = graph.nodes();
       if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
-        throw new RuntimeException(
+        // TODO: already handled in MutableBlockStmtGraph.. check the others as well
+        throw new IllegalStateException(
             methodSig
                 + ": The given startingStmt '"
                 + startingStmt
                 + "' does not exist in the StmtGraph.");
       }
-
       // validate statements
       try {
-        ecfg.validateStmtConnectionsInGraph();
+        graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
         throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
       }
 
-      return new Body(methodSig, locals, ecfg, position);
+      return new Body(methodSig, locals, graph, position);
     }
 
+    @Nonnull
     public Set<Modifier> getModifiers() {
       return modifiers;
+    }
+
+    @Override
+    public String toString() {
+      if (methodSig != null) {
+        return "BodyBuilder for " + methodSig;
+      } else {
+        return super.toString();
+      }
     }
   }
 }

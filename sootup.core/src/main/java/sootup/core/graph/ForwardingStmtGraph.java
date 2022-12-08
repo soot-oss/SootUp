@@ -20,22 +20,25 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 /**
  * forwarding implementation for encapsulating a StmtGraph.
  *
  * @author Markus Schmidt
  */
-public class ForwardingStmtGraph extends StmtGraph {
+public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
-  @Nonnull private final StmtGraph backingGraph;
+  @Nonnull protected final StmtGraph<V> backingGraph;
 
-  public ForwardingStmtGraph(@Nonnull StmtGraph backingGraph) {
+  public ForwardingStmtGraph(@Nonnull StmtGraph<V> backingGraph) {
     this.backingGraph = backingGraph;
   }
 
@@ -44,10 +47,32 @@ public class ForwardingStmtGraph extends StmtGraph {
     return backingGraph.getStartingStmt();
   }
 
+  @Override
+  public BasicBlock<?> getStartingStmtBlock() {
+    return backingGraph.getStartingStmtBlock();
+  }
+
+  @Override
+  public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
+    return backingGraph.getBlockOf(stmt);
+  }
+
   @Nonnull
   @Override
-  public Set<Stmt> nodes() {
+  public Collection<Stmt> nodes() {
     return backingGraph.nodes();
+  }
+
+  @Nonnull
+  @Override
+  public Collection<? extends BasicBlock<?>> getBlocks() {
+    return backingGraph.getBlocks();
+  }
+
+  @Nonnull
+  @Override
+  public List<? extends BasicBlock<?>> getBlocksSorted() {
+    return backingGraph.getBlocksSorted();
   }
 
   @Override
@@ -61,10 +86,22 @@ public class ForwardingStmtGraph extends StmtGraph {
     return backingGraph.predecessors(stmt);
   }
 
+  @Nonnull
+  @Override
+  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+    return backingGraph.exceptionalPredecessors(node);
+  }
+
   @Override
   @Nonnull
   public List<Stmt> successors(@Nonnull Stmt stmt) {
     return backingGraph.successors(stmt);
+  }
+
+  @Nonnull
+  @Override
+  public Map<ClassType, Stmt> exceptionalSuccessors(@Nonnull Stmt node) {
+    return backingGraph.exceptionalSuccessors(node);
   }
 
   @Override
@@ -85,6 +122,12 @@ public class ForwardingStmtGraph extends StmtGraph {
   @Override
   public boolean hasEdgeConnecting(@Nonnull Stmt from, @Nonnull Stmt to) {
     return backingGraph.hasEdgeConnecting(from, to);
+  }
+
+  @Nonnull
+  @Override
+  public Iterator<Stmt> iterator() {
+    return backingGraph.iterator();
   }
 
   @Nonnull

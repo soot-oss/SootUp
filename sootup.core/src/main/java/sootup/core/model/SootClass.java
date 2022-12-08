@@ -33,7 +33,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 
 /**
  * Soot's counterpart of the source languages class concept. Soot representation of a Java class.
@@ -218,7 +218,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
   @Nonnull
   public String print() {
     StringWriter output = new StringWriter();
-    Printer p = new Printer();
+    JimplePrinter p = new JimplePrinter();
     p.printTo(this, new PrintWriter(output));
     return output.toString();
   }

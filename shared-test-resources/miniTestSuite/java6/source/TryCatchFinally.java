@@ -38,7 +38,6 @@ public class TryCatchFinally {
         }
     }
 
-
     public void tryCatchFinallyCombined() {
         String str = "";
         try {

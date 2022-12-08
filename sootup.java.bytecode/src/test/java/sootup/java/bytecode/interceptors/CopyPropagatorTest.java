@@ -1,5 +1,7 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import java.util.Collections;
 import java.util.Set;
@@ -8,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -15,6 +18,7 @@ import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -110,8 +114,15 @@ public class CopyPropagatorTest {
   // r6 = r3
   Stmt stmt14 = JavaJimple.newAssignStmt(r6, r3, noStmtPositionInfo);
 
-  Stmt eestmt4 = JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
-  Stmt estmt13 = JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
+  JAssignStmt<Local, Constant> eestmt4 =
+      JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
+  JAssignStmt<Local, Constant> estmt13 =
+      JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
+
+  @Test
+  public void testEqualStmt() {
+    assertTrue(eestmt4.equivTo(eestmt4.withRValue(NullConstant.getInstance())));
+  }
 
   @Test
   /** Test the copy propagation's chain */
@@ -130,8 +141,8 @@ public class CopyPropagatorTest {
   /** Test the copy propagation for loop */
   public void testLoopBody() {
 
-    Body body = createLoopBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    Body.BodyBuilder builder = createLoopBody();
+
     CopyPropagator propagator = new CopyPropagator();
     propagator.interceptBody(builder);
 
@@ -140,7 +151,7 @@ public class CopyPropagatorTest {
   }
 
   @Test
-  /** Test the copy propagation for castExpr */
+  /* Test the copy propagation for castExpr */
   public void testCastExprBody() {
 
     Body body = createCastExprBody();
@@ -212,7 +223,7 @@ public class CopyPropagatorTest {
    * l0 := @this Test; i1 = 5; i2 = 0; if i2 > i1 goto label2; i3 = i1 + 1; i2 = i2 + 1; goto
    * label1; return
    */
-  private Body createLoopBody() {
+  private Body.BodyBuilder createLoopBody() {
 
     // build an instance of BodyBuilder
     Body.BodyBuilder builder = Body.builder();
@@ -236,10 +247,7 @@ public class CopyPropagatorTest {
     // set startingStmt
     builder.setStartingStmt(startingStmt);
 
-    // set Position
-    builder.setPosition(NoPositionInformation.getInstance());
-
-    return builder.build();
+    return builder;
   }
 
   /**

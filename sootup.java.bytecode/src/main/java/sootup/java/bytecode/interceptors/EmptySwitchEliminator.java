@@ -20,7 +20,6 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.Iterator;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -42,10 +41,8 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
     // Iterate all stmts in the body
-    Iterator<Stmt> stmts = builder.getStmtGraph().iterator();
 
-    while (stmts.hasNext()) {
-      Stmt stmt = stmts.next();
+    for (Stmt stmt : builder.getStmtGraph()) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {
         JSwitchStmt sw = (JSwitchStmt) stmt;
