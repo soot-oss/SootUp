@@ -22,10 +22,10 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -34,7 +34,6 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.BodyUtils;
@@ -68,7 +67,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    StmtGraph<?> stmtGraph = builder.getStmtGraph();
+    StmtGraph<MutableBasicBlock> stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
@@ -83,31 +82,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
 
-      if (stmt instanceof JNopStmt) {
-        // Do not remove nop if it is used for a Trap which is at the very end of the code
-        // TODO: [ms] check if that condition is still applicable as every method should have a
-        // return as last stmt and that way a trap end can refer to return as exclusive EndStmt..
-        // which is not really throwing exceptions as far as i understand.
-        // could clash/ already be removed by the JNopRemover?
-        boolean removeNop = iterator.hasNext();
-
-        if (!removeNop) {
-          removeNop = true;
-          // TODO: [ms] performance getTraps() is comparibly slow for the amount of information..
-          // and if we are really only interested in the last stmt.. filter for that as well!
-          for (Trap trap : builder.getTraps()) {
-            if (trap.getEndStmt() == stmt) {
-              removeNop = false;
-              break;
-            }
-          }
-        }
-
-        if (removeNop) {
-          iterator.remove();
-          continue;
-        }
-      } else if (stmt instanceof JAssignStmt) {
+      if (stmt instanceof JAssignStmt) {
         JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
