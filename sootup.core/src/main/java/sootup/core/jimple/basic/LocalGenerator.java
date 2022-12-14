@@ -82,17 +82,18 @@ public class LocalGenerator {
     StringBuilder name = ns.getResult();
 
     // non-field Locals traditionally begin with "$"
-    String localName;
+    Local localCandidate;
     // determine locals name - name collision free
     do {
       // non-field Locals traditionally begin with "$"
       name.setLength(isField ? 0 : 1);
       type.accept(ns);
 
-      localName = name.toString();
-    } while (locals.contains(localName));
+      localCandidate = Jimple.newLocal(name.toString(), type);
+    } while (locals.contains(localCandidate));
 
-    return createLocal(localName, type);
+    locals.add(localCandidate);
+    return localCandidate;
   }
 
   private static class NamingSwitch extends AbstractTypeVisitor<StringBuilder> {
@@ -185,17 +186,12 @@ public class LocalGenerator {
     }
   }
 
-  private Local createLocal(String name, Type sootType) {
-    Local sootLocal = Jimple.newLocal(name, sootType);
-    locals.add(sootLocal);
-    return sootLocal;
-  }
-
   /** Return all locals created for the body referenced in this LocalGenrator. */
   public Set<Local> getLocals() {
     return this.locals;
   }
 
+  @Nullable
   public Local getThisLocal() {
     return this.thisLocal;
   }
