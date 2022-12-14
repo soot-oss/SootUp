@@ -30,6 +30,8 @@ import heros.SynchronizedBy;
 import heros.ThreadSafe;
 import heros.solver.IDESolver;
 import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -68,11 +70,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
       new CacheLoader<Stmt, Collection<SootMethod>>() {
         @Override
-        public Collection<SootMethod> load(Stmt stmt) throws Exception {
+        public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
           MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
-          SootMethod sm = (SootMethod) view.getMethod(methodSignature).orElse(null);
-          if (sm != null) {
+          Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
+          if (smOpt.isPresent()) {
+            SootMethod sm = smOpt.get();
             if (sm.hasBody()) {
               res.add(sm);
             } else {
@@ -92,13 +95,13 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
       new CacheLoader<SootMethod, Collection<Stmt>>() {
         @Override
-        public Collection<Stmt> load(SootMethod m) throws Exception {
+        public Collection<Stmt> load(SootMethod method) throws Exception {
           ArrayList<Stmt> res = new ArrayList<>();
           // only retain callers that are explicit call sites or
           // Thread.start()
-          Set<MethodSignature> callsToMethod = cg.callsTo(m.getSignature());
-          for (MethodSignature ms : callsToMethod) {
-            Stmt stmt = filterEdgeAndGetCallerStmt(ms);
+          Set<MethodSignature> callsToMethod = cg.callsTo(method.getSignature());
+          for (MethodSignature methodSignature : callsToMethod) {
+            Stmt stmt = filterEdgeAndGetCallerStmt(methodSignature);
             if (stmt != null) {
               res.add(stmt);
             }
@@ -112,7 +115,8 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
          *
          * @param methodSignature
          */
-        private Stmt filterEdgeAndGetCallerStmt(MethodSignature methodSignature) {
+        @Nullable
+        private Stmt filterEdgeAndGetCallerStmt(@Nonnull MethodSignature methodSignature) {
           Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
               CGEdgeUtil.getCallEdges(view, cg);
           for (Pair<MethodSignature, CalleeMethodSignature> callEdge : callEdges) {
@@ -156,36 +160,39 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected void initializeStmtToOwner() {
     for (MethodSignature methodSignature : cg.getMethodSignatures()) {
-      SootMethod sootMethod = (SootMethod) view.getMethod(methodSignature).orElse(null);
-      initializeStmtToOwner(sootMethod);
+      final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+      methodOpt.ifPresent(this::initializeStmtToOwner);
     }
   }
 
   @Override
-  public Collection<SootMethod> getCalleesOfCallAt(Stmt u) {
+  public Collection<SootMethod> getCalleesOfCallAt(@Nonnull Stmt u) {
     return stmtToCallees.getUnchecked(u);
   }
 
   @Override
-  public Collection<Stmt> getCallersOf(SootMethod m) {
+  public Collection<Stmt> getCallersOf(@Nonnull SootMethod m) {
     return methodToCallers.getUnchecked(m);
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      View<? extends SootClass> view, CallGraph cg) {
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull CallGraph cg) {
     Set<MethodSignature> methodSigs = cg.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
-      SootMethod method = view.getMethod(caller).orElse(null);
-      if (method != null && method.hasBody()) {
-        for (Stmt s : method.getBody().getStmtGraph().nodes()) {
-          if (s.containsInvokeExpr()) {
-            CalleeMethodSignature callee =
-                new CalleeMethodSignature(
-                    s.getInvokeExpr().getMethodSignature(),
-                    CGEdgeUtil.findCallGraphEdgeType(s.getInvokeExpr()),
-                    s);
-            callEdges.add(new ImmutablePair<>(caller, callee));
+      Optional<? extends SootMethod> methodOpt = view.getMethod(caller);
+      if (methodOpt.isPresent()) {
+        final SootMethod method = methodOpt.get();
+        if (method.hasBody()) {
+          for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+            if (s.containsInvokeExpr()) {
+              CalleeMethodSignature callee =
+                  new CalleeMethodSignature(
+                      s.getInvokeExpr().getMethodSignature(),
+                      CGEdgeUtil.findCallGraphEdgeType(s.getInvokeExpr()),
+                      s);
+              callEdges.add(new ImmutablePair<>(caller, callee));
+            }
           }
         }
       }
