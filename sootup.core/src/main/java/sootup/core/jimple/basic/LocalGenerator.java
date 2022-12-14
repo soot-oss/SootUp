@@ -107,50 +107,49 @@ public class LocalGenerator {
     private int tempShort = 0;
     private int tempChar = 0;
     private int tempUnknownType = 0;
-    private StringBuilder str;
 
     private NamingSwitch(@Nonnull StringBuilder str) {
-      this.str = str;
+      this.result = str;
     }
 
     @Override
     public void caseBooleanType() {
-      str.append("z").append(tempBoolean++);
+      result.append("z").append(tempBoolean++);
     }
 
     @Override
     public void caseByteType() {
-      str.append("b").append(tempByte++);
+      result.append("b").append(tempByte++);
     }
 
     @Override
     public void caseCharType() {
-      str.append("c").append(tempChar++);
+      result.append("c").append(tempChar++);
     }
 
     @Override
     public void caseShortType() {
-      str.append("s").append(tempShort++);
+      result.append("s").append(tempShort++);
     }
 
     @Override
     public void caseIntType() {
-      str.append("i").append(tempInt++);
+      result.append("i").append(tempInt++);
     }
 
     @Override
     public void caseLongType() {
-      str.append("l").append(tempLong++);
+      result.append("l").append(tempLong++);
     }
 
     @Override
     public void caseDoubleType() {
-      str.append("d").append(tempDouble++);
+      result.append("d").append(tempDouble++);
     }
 
     @Override
     public void caseFloatType() {
-      str.append("f").append(tempFloat++);
+      result.append("f").append(tempFloat++);
     }
 
     @Override
@@ -160,7 +159,7 @@ public class LocalGenerator {
 
     @Override
     public void caseClassType(@Nonnull ClassType classType) {
-      str.append("r").append(tempRefLikeType++);
+      result.append("r").append(tempRefLikeType++);
     }
 
     @Override
@@ -172,12 +171,12 @@ public class LocalGenerator {
     public void caseVoidType() {
       // TODO: how does a local with a voidtype make sense..? but obviously there was code/ a letter
       // assigned for it in old soot..
-      str.append("v").append(tempVoid++);
+      result.append("v").append(tempVoid++);
     }
 
     @Override
     public void caseUnknownType() {
-      str.append("u").append(tempUnknownType++);
+      result.append("u").append(tempUnknownType++);
     }
 
     @Override
