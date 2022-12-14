@@ -150,13 +150,13 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   @Override
-  public boolean isFallThroughSuccessor(Stmt stmt, Stmt successor) {
-    assert getSuccsOf(stmt).contains(successor);
+  public boolean isFallThroughSuccessor(Stmt stmt, Stmt successorCandidate) {
+    assert getSuccsOf(stmt).contains(successorCandidate);
     if (!stmt.fallsThrough()) {
       return false;
     }
     Body body = getBodyOf(stmt);
-    return body.getStmtGraph().successors(stmt) == successor;
+    return body.getStmtGraph().successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
