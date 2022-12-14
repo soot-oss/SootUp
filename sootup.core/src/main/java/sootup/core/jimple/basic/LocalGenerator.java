@@ -155,7 +155,7 @@ public class LocalGenerator {
 
     @Override
     public void caseArrayType() {
-      defaultCaseType();
+      result.append("r").append(tempRefLikeType++);
     }
 
     @Override
