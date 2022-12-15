@@ -22,6 +22,11 @@ public class LocalGeneratorTest extends TestCase {
               }
 
               @Override
+              public String getFullyQualifiedName() {
+                return "Fruit.Banana";
+              }
+
+              @Override
               public String getClassName() {
                 return "Banana";
               }

@@ -35,22 +35,7 @@ import sootup.core.signatures.Signature;
 public abstract class ClassType extends ReferenceType implements Signature {
   public abstract boolean isBuiltInClass();
 
-  /**
-   * The fully-qualified name of the class. Concat package and class name , e.g.,
-   * "java.lang.System".
-   *
-   * @return fully-qualified name
-   */
-  public String getFullyQualifiedName() {
-    StringBuilder sb = new StringBuilder();
-    final String packageName = getPackageName().toString();
-    if (!packageName.isEmpty()) {
-      sb.append(packageName);
-      sb.append('.');
-    }
-    sb.append(getClassName());
-    return sb.toString();
-  }
+  public abstract String getFullyQualifiedName();
 
   public abstract String getClassName();
 

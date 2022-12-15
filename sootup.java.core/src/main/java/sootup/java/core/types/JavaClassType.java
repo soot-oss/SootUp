@@ -78,13 +78,31 @@ public class JavaClassType extends ClassType {
     return Objects.hashCode(className, packageName);
   }
 
+  /**
+   * The fully-qualified name of the class. Concat package and class name , e.g.,
+   * "java.lang.System".
+   *
+   * @return fully-qualified name
+   */
+  public String getFullyQualifiedName() {
+    StringBuilder sb = new StringBuilder();
+    if (!packageName.getPackageName().isEmpty()) {
+      sb.append(packageName.getPackageName());
+      sb.append('.');
+    }
+    sb.append(className);
+    return sb.toString();
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     String packageNameStr = packageName.toString();
     if (!packageNameStr.isEmpty()) {
-      sb.append(packageNameStr);
-      sb.append('.');
+      sb.append(packageName);
+      if (!packageName.getPackageName().isEmpty()) {
+        sb.append('.');
+      }
     }
     sb.append(className);
     return sb.toString();
@@ -110,6 +128,6 @@ public class JavaClassType extends ClassType {
       String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
       return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
     }
-    return LIBRARY_CLASS_PATTERN.matcher(packageName.toString()).find();
+    return LIBRARY_CLASS_PATTERN.matcher(packageName.getPackageName()).find();
   }
 }
