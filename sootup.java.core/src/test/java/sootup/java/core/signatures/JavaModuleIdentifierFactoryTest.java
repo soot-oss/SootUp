@@ -80,7 +80,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
     assertNotSame(packageSignature1, packageSignature2);
     assertNotSame(packageSignature1.getModuleSignature(), packageSignature2.getModuleSignature());
 
-    assertSame(packageSignature1.getPackageName(), packageSignature2.getPackageName());
+    assertSame(packageSignature1.toString(), packageSignature2.toString());
     assertNotEquals(packageSignature1, packageSignature2);
   }
 

@@ -42,7 +42,7 @@ public class JimpleConverterUtil {
     PackageName packageName = imports.get(typename);
     return packageName == null
         ? identifierFactory.getType(typename)
-        : identifierFactory.getType(packageName.getPackageName() + "." + typename);
+        : identifierFactory.getType(packageName + "." + typename);
   }
 
   public ClassType getClassType(String typename) {
@@ -50,7 +50,7 @@ public class JimpleConverterUtil {
     PackageName packageName = this.imports.get(typename);
     return packageName == null
         ? this.identifierFactory.getClassType(typename)
-        : this.identifierFactory.getClassType(typename, packageName.getPackageName());
+        : this.identifierFactory.getClassType(typename, packageName.toString());
   }
 
   @Nonnull

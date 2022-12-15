@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import categories.Java9Test;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -169,6 +170,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
+  @Category(Java9Test.class)
   public void modularMultiReleaseJar() {
     final ClassType utilityNoModule =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");

@@ -23,7 +23,6 @@ package sootup.core.signatures;
  */
 
 import com.google.common.base.Objects;
-import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 
 /**
@@ -38,7 +37,7 @@ public class PackageName {
 
   public static final String PACKAGE_INFO = "package-info";
 
-  private final String packageName;
+  protected final String packageName;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
@@ -48,12 +47,6 @@ public class PackageName {
    */
   public PackageName(final String packageName) {
     this.packageName = packageName;
-  }
-
-  /** The name of the package. */
-  @Nonnull
-  public String getPackageName() {
-    return packageName;
   }
 
   @Override

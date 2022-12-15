@@ -83,10 +83,8 @@ public class JavaClassType extends ClassType {
     StringBuilder sb = new StringBuilder();
     String packageNameStr = packageName.toString();
     if (!packageNameStr.isEmpty()) {
-      sb.append(packageName);
-      if (!packageName.getPackageName().isEmpty()) {
-        sb.append('.');
-      }
+      sb.append(packageNameStr);
+      sb.append('.');
     }
     sb.append(className);
     return sb.toString();
@@ -112,6 +110,6 @@ public class JavaClassType extends ClassType {
       String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
       return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
     }
-    return LIBRARY_CLASS_PATTERN.matcher(packageName.getPackageName()).find();
+    return LIBRARY_CLASS_PATTERN.matcher(packageName.toString()).find();
   }
 }
