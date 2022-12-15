@@ -41,7 +41,7 @@ public class LocalGenerator {
   private final Set<Local> locals;
   @Nullable private Local thisLocal;
   private final Map<Integer, Local> parameterLocals = new HashMap<>();
-  NamingSwitch ns = new NamingSwitch(new StringBuilder(7).append("$"));
+  NamingSwitch ns = new NamingSwitch(new StringBuilder(7));
 
   /**
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
@@ -61,39 +61,49 @@ public class LocalGenerator {
 
   /** generates a new {@link Local} given the type for field. */
   public Local generateField(@Nonnull Type type) {
-    return generate(type, true);
-  }
+    // field Locals traditionally do not begin with "$"
 
-  /** generates a new {@link Local} given the type for local. */
-  public Local generateLocal(@Nonnull Type type) {
-    return generate(type, false);
-  }
-
-  public Local generateParameterLocal(@Nonnull Type type, int index) {
-    if (!this.parameterLocals.containsKey(index)) {
-      Local paraLocal = generate(type, false);
-      this.parameterLocals.put(index, paraLocal);
-    }
-    return this.parameterLocals.get(index);
-  }
-
-  private Local generate(@Nonnull Type type, boolean isField) {
-
-    StringBuilder name = ns.getResult();
-
-    // non-field Locals traditionally begin with "$"
     Local localCandidate;
-    // determine locals name - name collision free
+    StringBuilder name = ns.getResult();
+    // is there a name collision? retry!
     do {
-      // non-field Locals traditionally begin with "$"
-      name.setLength(isField ? 0 : 1);
+      name.setLength(0);
       type.accept(ns);
-
       localCandidate = Jimple.newLocal(name.toString(), type);
     } while (locals.contains(localCandidate));
 
     locals.add(localCandidate);
     return localCandidate;
+  }
+
+  /** generates a new {@link Local} given the type for local. */
+  public Local generateLocal(@Nonnull Type type) {
+    // non-field Locals traditionally begin with "$"
+
+    StringBuilder name = ns.getResult();
+    name.setLength(0); // clear buffer - remove possible leftovers from last generate call
+    name.append("$");
+
+    Local localCandidate;
+    type.accept(ns);
+    localCandidate = Jimple.newLocal(name.toString(), type);
+    // is there a name collision? retry!
+    while (locals.contains(localCandidate)) {
+      name.setLength(1);
+      type.accept(ns);
+      localCandidate = Jimple.newLocal(name.toString(), type);
+    }
+
+    locals.add(localCandidate);
+    return localCandidate;
+  }
+
+  public Local generateParameterLocal(@Nonnull Type type, int index) {
+    if (!this.parameterLocals.containsKey(index)) {
+      Local paraLocal = generateLocal(type);
+      this.parameterLocals.put(index, paraLocal);
+    }
+    return this.parameterLocals.get(index);
   }
 
   private static class NamingSwitch extends AbstractTypeVisitor<StringBuilder> {
