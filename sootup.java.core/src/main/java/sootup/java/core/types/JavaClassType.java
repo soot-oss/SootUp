@@ -78,22 +78,6 @@ public class JavaClassType extends ClassType {
     return Objects.hashCode(className, packageName);
   }
 
-  /**
-   * The fully-qualified name of the class. Concat package and class name , e.g.,
-   * "java.lang.System".
-   *
-   * @return fully-qualified name
-   */
-  public String getFullyQualifiedName() {
-    StringBuilder sb = new StringBuilder();
-    if (!packageName.getPackageName().isEmpty()) {
-      sb.append(packageName.getPackageName());
-      sb.append('.');
-    }
-    sb.append(className);
-    return sb.toString();
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
