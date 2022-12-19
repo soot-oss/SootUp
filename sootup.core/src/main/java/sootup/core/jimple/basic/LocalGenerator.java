@@ -28,11 +28,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.Jimple;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
-import sootup.core.types.VoidType;
+import sootup.core.jimple.visitor.AbstractTypeVisitor;
+import sootup.core.types.*;
 
 /**
  * Generates locals for Body.
@@ -43,13 +40,13 @@ import sootup.core.types.VoidType;
 public class LocalGenerator {
   private final Set<Local> locals;
   @Nullable private Local thisLocal;
-  private final Map<Integer, Local> paraLocals = new HashMap<>();
+  private final Map<Integer, Local> parameterLocals = new HashMap<>();
+  NamingSwitch ns = new NamingSwitch(new StringBuilder(7));
 
   /**
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
    * LocalGenerator checks whether the name is already taken.
    */
-  // TODO: [ms] make it private - access it via BodyBuilder?
   public LocalGenerator(@Nonnull Set<Local> existingLocals) {
     locals = existingLocals;
   }
@@ -57,133 +54,145 @@ public class LocalGenerator {
   /** generate this local with given type */
   public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
-      this.thisLocal = generateField(type);
+      this.thisLocal = generateFieldLocal(type);
     }
     return this.thisLocal;
   }
 
   /** generates a new {@link Local} given the type for field. */
-  public Local generateField(@Nonnull Type type) {
-    return generate(type, true);
+  public Local generateFieldLocal(@Nonnull Type type) {
+    // field Locals traditionally do not begin with "$"
+
+    Local localCandidate;
+    StringBuilder name = ns.getResult();
+    // is there a name collision? retry!
+    do {
+      name.setLength(0);
+      type.accept(ns);
+      localCandidate = Jimple.newLocal(name.toString(), type);
+    } while (locals.contains(localCandidate));
+
+    locals.add(localCandidate);
+    return localCandidate;
   }
 
   /** generates a new {@link Local} given the type for local. */
   public Local generateLocal(@Nonnull Type type) {
-    return generate(type, false);
+    // non-field Locals traditionally begin with "$"
+
+    StringBuilder name = ns.getResult();
+    name.setLength(0); // clear buffer - remove possible leftovers from last generate call
+    name.append("$");
+
+    Local localCandidate;
+    type.accept(ns);
+    localCandidate = Jimple.newLocal(name.toString(), type);
+    // is there a name collision? retry!
+    while (locals.contains(localCandidate)) {
+      name.setLength(1);
+      type.accept(ns);
+      localCandidate = Jimple.newLocal(name.toString(), type);
+    }
+
+    locals.add(localCandidate);
+    return localCandidate;
   }
 
   public Local generateParameterLocal(@Nonnull Type type, int index) {
-    if (!this.paraLocals.containsKey(index)) {
-      Local paraLocal = generate(type, false);
-      this.paraLocals.put(index, paraLocal);
+    if (!this.parameterLocals.containsKey(index)) {
+      Local paraLocal = generateLocal(type);
+      this.parameterLocals.put(index, paraLocal);
     }
-    return this.paraLocals.get(index);
+    return this.parameterLocals.get(index);
   }
 
-  private Local generate(@Nonnull Type type, boolean isField) {
+  private static class NamingSwitch extends AbstractTypeVisitor<StringBuilder> {
+    private int tempInt = 0;
+    private int tempBoolean = 0;
+    private int tempLong = 0;
+    private int tempDouble = 0;
+    private int tempFloat = 0;
+    private int tempRefLikeType = 0;
+    private int tempByte = 0;
+    private int tempShort = 0;
+    private int tempChar = 0;
+    private int tempUnknownType = 0;
 
-    StringBuilder name = new StringBuilder(7);
-    // non-field Locals traditionally begin with "$"
-    name.append("$");
-    String localName;
-    // determine locals name
-    //noinspection SuspiciousMethodCalls
-    do {
-      // non-field Locals traditionally begin with "$"
-      name.setLength(isField ? 0 : 1);
+    private NamingSwitch(@Nonnull StringBuilder str) {
+      this.result = str;
+    }
 
-      if (type.equals(PrimitiveType.getInt())) {
-        appendNextIntName(name);
-      } else if (type.equals(PrimitiveType.getByte())) {
-        appendNextByteName(name);
-      } else if (type.equals(PrimitiveType.getShort())) {
-        appendNextShortName(name);
-      } else if (type.equals(PrimitiveType.getBoolean())) {
-        appendNextBooleanName(name);
-      } else if (type.equals(VoidType.getInstance())) {
-        appendNextVoidName(name);
-      } else if (type.equals(PrimitiveType.getChar())) {
-        appendNextCharName(name);
-      } else if (type.equals(PrimitiveType.getDouble())) {
-        appendNextDoubleName(name);
-      } else if (type.equals(PrimitiveType.getFloat())) {
-        appendNextFloatName(name);
-      } else if (type.equals(PrimitiveType.getLong())) {
-        appendNextLongName(name);
-      } else if (type instanceof ReferenceType) {
-        appendNextRefLikeTypeName(name);
-      } else if (type.equals(UnknownType.getInstance())) {
-        appendNextUnknownTypeName(name);
-      } else {
-        throw new RuntimeException("Unhandled Type of Local variable to Generate");
-      }
+    @Override
+    public void caseBooleanType() {
+      result.append("z").append(tempBoolean++);
+    }
 
-      localName = name.toString();
-    } while (locals.contains(localName));
+    @Override
+    public void caseByteType() {
+      result.append("b").append(tempByte++);
+    }
 
-    return createLocal(localName, type);
-  }
+    @Override
+    public void caseCharType() {
+      result.append("c").append(tempChar++);
+    }
 
-  private int tempInt = 0;
-  private int tempVoid = 0;
-  private int tempBoolean = 0;
-  private int tempLong = 0;
-  private int tempDouble = 0;
-  private int tempFloat = 0;
-  private int tempRefLikeType = 0;
-  private int tempByte = 0;
-  private int tempShort = 0;
-  private int tempChar = 0;
-  private int tempUnknownType = 0;
+    @Override
+    public void caseShortType() {
+      result.append("s").append(tempShort++);
+    }
 
-  private void appendNextIntName(StringBuilder name) {
-    name.append("i").append(tempInt++);
-  }
+    @Override
+    public void caseIntType() {
+      result.append("i").append(tempInt++);
+    }
 
-  private void appendNextCharName(StringBuilder name) {
-    name.append("c").append(tempChar++);
-  }
+    @Override
+    public void caseLongType() {
+      result.append("l").append(tempLong++);
+    }
 
-  private void appendNextVoidName(StringBuilder name) {
-    name.append("v").append(tempVoid++);
-  }
+    @Override
+    public void caseDoubleType() {
+      result.append("d").append(tempDouble++);
+    }
 
-  private void appendNextByteName(StringBuilder name) {
-    name.append("b").append(tempByte++);
-  }
+    @Override
+    public void caseFloatType() {
+      result.append("f").append(tempFloat++);
+    }
 
-  private void appendNextShortName(StringBuilder name) {
-    name.append("s").append(tempShort++);
-  }
+    @Override
+    public void caseArrayType() {
+      result.append("r").append(tempRefLikeType++);
+    }
 
-  private void appendNextBooleanName(StringBuilder name) {
-    name.append("z").append(tempBoolean++);
-  }
+    @Override
+    public void caseClassType(@Nonnull ClassType classType) {
+      result.append("r").append(tempRefLikeType++);
+    }
 
-  private void appendNextDoubleName(StringBuilder name) {
-    name.append("d").append(tempDouble++);
-  }
+    @Override
+    public void caseNullType() {
+      defaultCaseType();
+    }
 
-  private void appendNextFloatName(StringBuilder name) {
-    name.append("f").append(tempFloat++);
-  }
+    @Override
+    public void caseVoidType() {
+      // how does a local with a voidtype make sense..? but obviously there was code/ a letter
+      // assigned for it in old soot.. result.append("v").append(tempVoid++);
+      defaultCaseType();
+    }
 
-  private void appendNextLongName(StringBuilder name) {
-    name.append("l").append(tempLong++);
-  }
+    @Override
+    public void caseUnknownType() {
+      result.append("u").append(tempUnknownType++);
+    }
 
-  private void appendNextRefLikeTypeName(StringBuilder name) {
-    name.append("r").append(tempRefLikeType++);
-  }
-
-  private void appendNextUnknownTypeName(StringBuilder name) {
-    name.append("u").append(tempUnknownType++);
-  }
-
-  private Local createLocal(String name, Type sootType) {
-    Local sootLocal = Jimple.newLocal(name, sootType);
-    locals.add(sootLocal);
-    return sootLocal;
+    @Override
+    public void defaultCaseType() {
+      throw new IllegalStateException("Unhandled Type of Local variable to Generate!");
+    }
   }
 
   /** Return all locals created for the body referenced in this LocalGenrator. */
@@ -191,11 +200,12 @@ public class LocalGenerator {
     return this.locals;
   }
 
+  @Nullable
   public Local getThisLocal() {
     return this.thisLocal;
   }
 
   public Local getParameterLocal(int i) {
-    return this.paraLocals.get(i);
+    return this.parameterLocals.get(i);
   }
 }

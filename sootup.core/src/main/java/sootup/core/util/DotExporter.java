@@ -1,6 +1,7 @@
 package sootup.core.util;
 
 import com.google.common.collect.Sets;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -50,16 +51,13 @@ public class DotExporter {
 
     Set<BasicBlock<?>> drawnBlocks = Sets.newHashSetWithExpectedSize(blocks.size());
 
-    List<BasicBlock<?>> hiddenSuccessors = new ArrayList<>();
-
     for (BasicBlock<?> block : blocks) {
 
-      sb.append(
-          "//  lines ["
-              + block.getHead().getPositionInfo().getStmtPosition().getFirstLine()
-              + ": "
-              + block.getTail().getPositionInfo().getStmtPosition().getFirstLine()
-              + "] \n");
+      sb.append("//  lines [")
+          .append(block.getHead().getPositionInfo().getStmtPosition().getFirstLine())
+          .append(": ")
+          .append(block.getTail().getPositionInfo().getStmtPosition().getFirstLine())
+          .append("] \n");
 
       sb.append("\tsubgraph cluster_")
           .append(block.hashCode())
@@ -122,7 +120,6 @@ public class DotExporter {
             sb.append(":e -> ");
           } else {
             sb.append(":s -> ");
-            hiddenSuccessors.add(successorBlock);
           }
           sb.append(successorBlock.getHead().hashCode()).append(":n");
 
@@ -170,6 +167,11 @@ public class DotExporter {
   }
 
   public static String createUrlToWebeditor(@Nonnull StmtGraph<?> graph) {
-    return "http://magjac.com/graphviz-visual-editor/?dot=" + URLEncoder.encode(buildGraph(graph));
+    try {
+      return "http://magjac.com/graphviz-visual-editor/?dot="
+          + URLEncoder.encode(buildGraph(graph), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
