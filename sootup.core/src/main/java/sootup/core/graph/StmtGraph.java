@@ -65,7 +65,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   public abstract BasicBlock<?> getStartingStmtBlock();
   /**
-   * returns the nodes in this graph in a non-deterministic order (->Set) to get the nodes in
+   * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
    * linearized, ordered manner use iterator() or getStmts.
    */
   @Nonnull
@@ -442,7 +442,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       final Map<? extends ClassType, ? extends BasicBlock<?>> lastBlocksExceptions =
           lastIteratedBlock.getExceptionalSuccessors();
 
-      // former trap info is not in the current blocks info -> add it to the trap collection
+      // former trap info is not in the current blocks info -&gt; add it to the trap collection
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
             if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
@@ -456,7 +456,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
             }
           });
 
-      // is there a new trap in the current block -> add it to currentTraps
+      // is there a new trap in the current block -&gt; add it to currentTraps
       block
           .getExceptionalSuccessors()
           .forEach(
@@ -471,7 +471,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
 
     /**
-     * for jimple serialization -> this is the info for the end of the method contains only
+     * for jimple serialization -&gt; this is the info for the end of the method contains only
      * valid/useful information when all stmts are iterated i.e. hasNext() == false!
      *
      * @return List of Traps
@@ -582,7 +582,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           nestedBlocks.addFirst(successors.get(0));
         } else {
 
-          // create the most biggest fallsthrough sequence of basicblocks as possible -> go to the
+          // create the most biggest fallsthrough sequence of basicblocks as possible -&gt; go to
+          // the
           // top until
           // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
           // from there.
@@ -633,7 +634,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       final boolean hasIteratorMoreElements;
       BasicBlock<?> b = retrieveNextBlock();
       if (b != null) {
-        // reinsert at FIRST position -> not great for performance - but easier handling in next()
+        // reinsert at FIRST position -&gt; not great for performance - but easier handling in
+        // next()
         nestedBlocks.addFirst(b);
         hasIteratorMoreElements = true;
       } else {

@@ -27,8 +27,9 @@ import sootup.core.types.ClassType;
 
 /**
  * @author Markus Schmidt
- *     <p>performance suggestions for multiple operations on sequential Stmts: addNode(): top->down
- *     removeNode(s): bottom->up as then there is no need for copying inside the MutableBasicBlock
+ *     <p>performance suggestions for multiple operations on sequential Stmts: addNode():
+ *     top-&gt;down removeNode(s): bottom-&gt;up as then there is no need for copying inside the
+ *     MutableBasicBlock
  */
 public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   @Nonnull
