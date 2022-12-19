@@ -54,13 +54,13 @@ public class LocalGenerator {
   /** generate this local with given type */
   public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
-      this.thisLocal = generateField(type);
+      this.thisLocal = generateFieldLocal(type);
     }
     return this.thisLocal;
   }
 
   /** generates a new {@link Local} given the type for field. */
-  public Local generateField(@Nonnull Type type) {
+  public Local generateFieldLocal(@Nonnull Type type) {
     // field Locals traditionally do not begin with "$"
 
     Local localCandidate;
@@ -108,7 +108,6 @@ public class LocalGenerator {
 
   private static class NamingSwitch extends AbstractTypeVisitor<StringBuilder> {
     private int tempInt = 0;
-    private int tempVoid = 0;
     private int tempBoolean = 0;
     private int tempLong = 0;
     private int tempDouble = 0;
@@ -180,9 +179,9 @@ public class LocalGenerator {
 
     @Override
     public void caseVoidType() {
-      // TODO: how does a local with a voidtype make sense..? but obviously there was code/ a letter
-      // assigned for it in old soot..
-      result.append("v").append(tempVoid++);
+      // how does a local with a voidtype make sense..? but obviously there was code/ a letter
+      // assigned for it in old soot.. result.append("v").append(tempVoid++);
+      defaultCaseType();
     }
 
     @Override
