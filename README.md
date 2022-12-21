@@ -32,17 +32,12 @@ Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
 See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
 
 ## Feel free to improve Soot!
+
+### Feedback and Feature Requests
+For feedbacks and feature requests, best create appropriate [issues](../../issues).
+
 ### Collaboration
 You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).
-
-
-### Feedback 
-You are using Soot and would like to help us support it in the future?
-Please support us by filling out [this little web form](http://TODO/).
-
-Filling out the form helps us in two ways:
-By letting us know how we can improve SootUp you can directly help us prioritize newly planned features.
-By stating your name and affiliation you help us showcasing Soot(Up)’s large user base. Thanks!
 
 
 ## Supporters
