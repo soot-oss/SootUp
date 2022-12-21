@@ -92,3 +92,17 @@ Jimple is the only intermediate representation (IR) in SootUp. We changed it sli
 ### Is this a drop-in replacement for Soot?
 
 Not really. SootUp has a completely new architecture and API, so it is not trivial to update existing projects that build on soot. We recommend using it for greenfield projects.
+
+
+## Supporters
+The development of SootUp is financed by generous support from the German Research Foundation (DFG),
+the Heinz Nixdorf Institute (HNI).
+
+<table border="0">
+<tr>
+<td><img src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
+<td><img src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
+</tr>
+</table>
+
+[Become a sponsor!](https://github.com/sponsors/soot-oss)
