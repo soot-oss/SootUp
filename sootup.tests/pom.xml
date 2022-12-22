@@ -56,11 +56,11 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>${nexus-staging-maven-plugin.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${maven-deploy-plugin.version}</version>
 				<configuration>
-					<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>

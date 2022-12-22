@@ -94,6 +94,8 @@
         <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
         <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
         <reactorRootsTarget>${basedir}/target</reactorRootsTarget>
@@ -152,20 +154,18 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus-staging-maven-plugin.version}</version>
-                        <extensions>true</extensions>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${maven-deploy-plugin.version}</version>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                            <skip>true</skip>
                         </configuration>
+                        <inherited>false</inherited>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -201,12 +201,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <fixTags>author</fixTags>
-                            <force>true</force>
-                            <fixFieldComment>false</fixFieldComment>
-                            <fixMethodComment>false</fixMethodComment>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -457,12 +451,15 @@
         </dependency>
     </dependencies>
 
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
 </project>
