@@ -1,7 +1,7 @@
 # Installation
 
 ## Building from Source
-
+Build from source if you'd like to get the most recent changes.
 You can download the project as a zip file, or clone it using your favorite git client app or the command line:
 
 ```
@@ -22,9 +22,9 @@ Or if you want to skip unit tests while building:
 mvn -Dskiptests install
 ```
 
-## Add SootUp as Library Dependency to Your Project
-
-Since the project is not available as a maven artefact, you first need to built it from source. See [Building from Source](#building-from-source)
+## Using the release
+Alternatively you can directly get the release versions.
+SootUp is available in maven central, you can include it in your project as follows.
 
 Below we only show how you can add the ```sootup.core``` module to your project. Depending on your needs you can import other modules too. See [Modules](../#modular-architecture) to learn more about the modules.
 
@@ -36,7 +36,7 @@ Below we only show how you can add the ```sootup.core``` module to your project.
 <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.core</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
@@ -45,5 +45,6 @@ Below we only show how you can add the ```sootup.core``` module to your project.
 Add the following dependency in the ```build.gradle``` file of your project.
 
 ```
-compile "org.soot-oss:sootup.core:1.0.0-SNAPSHOT"
+compile "org.soot-oss:sootup.core:1.0.0"
 ```
+
