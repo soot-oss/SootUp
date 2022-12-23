@@ -2,7 +2,7 @@
 
 The purpose of the SootUp project is to make [Soot](https://github.com/soot-oss/soot) future-proof. The focus of this project lies on restructuring Soot away from a framework that makes heavy use of singletons, towards a lighter library that can easily be included in other projects.
 
-
+# [Read here our announcement on the first release of SootUp](announce.md)
 
 
 !!! important
