@@ -84,6 +84,14 @@ public class ArrayType extends ReferenceType {
     return dimension;
   }
 
+  public Type getArrayElementType() {
+    if (dimension > 1) {
+      return new ArrayType(baseType, dimension - 1);
+    } else {
+      return baseType;
+    }
+  }
+
   @Override
   public void accept(@Nonnull TypeVisitor v) {
     v.caseArrayType();
