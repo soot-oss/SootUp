@@ -11,8 +11,8 @@ import qilin.util.collect.SetFactory;
 import qilin.util.graph.MergedNode;
 import qilin.util.graph.SCCMergedGraph;
 import qilin.util.graph.TopologicalSorter;
-import soot.SootMethod;
-import soot.Type;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

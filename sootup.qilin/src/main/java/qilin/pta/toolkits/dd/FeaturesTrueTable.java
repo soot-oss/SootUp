@@ -19,10 +19,23 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.Body;
-import soot.SootMethod;
-import soot.Unit;
-import soot.jimple.*;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.JNopStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
+import sootup.core.jimple.common.stmt.JThrowStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.javabytecode.stmt.JBreakpointStmt;
+import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JRetStmt;
+import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 
 /*
  * features and formulas used in "Data-driven context-sensitivity for Points-to Analysis (OOPSLA 2017)"
@@ -31,7 +44,7 @@ public class FeaturesTrueTable {
     private final boolean[] features = new boolean[26];
 
     public FeaturesTrueTable(SootMethod sm) {
-        String sig = sm.getSignature();
+        String sig = sm.getSignature().toString();
         this.features[1] = sig.contains("java");
         this.features[2] = sig.contains("lang");
         this.features[3] = sig.contains("sun");
@@ -43,37 +56,36 @@ public class FeaturesTrueTable {
         this.features[9] = sig.contains("String");
         this.features[10] = sig.contains("init");
         Body body = PTAUtils.getMethodBody(sm);
-        for (Unit unit : body.getUnits()) {
-            if (unit instanceof AssignStmt) {
+        for (Stmt stmt : body.getStmts()) {
+            if (stmt instanceof JAssignStmt) {
                 this.features[11] = true;
-            } else if (unit instanceof IdentityStmt) {
+            } else if (stmt instanceof JIdentityStmt) {
                 this.features[12] = true;
-            } else if (unit instanceof InvokeStmt) {
+            } else if (stmt instanceof JInvokeStmt) {
                 this.features[13] = true;
-            } else if (unit instanceof ReturnStmt) {
+            } else if (stmt instanceof JReturnStmt) {
                 this.features[14] = true;
-            } else if (unit instanceof ThrowStmt) {
+            } else if (stmt instanceof JThrowStmt) {
                 this.features[15] = true;
-            } else if (unit instanceof BreakpointStmt) {
+            } else if (stmt instanceof JBreakpointStmt) {
                 this.features[16] = true;
-            } else if (unit instanceof EnterMonitorStmt) {
+            } else if (stmt instanceof JEnterMonitorStmt) {
                 this.features[17] = true;
-            } else if (unit instanceof ExitMonitorStmt) {
+            } else if (stmt instanceof JExitMonitorStmt) {
                 this.features[18] = true;
-            } else if (unit instanceof GotoStmt) {
+            } else if (stmt instanceof JGotoStmt) {
                 this.features[19] = true;
-            } else if (unit instanceof IfStmt) {
+            } else if (stmt instanceof JIfStmt) {
                 this.features[20] = true;
-            } else if (unit instanceof LookupSwitchStmt) {
+            } else if (stmt instanceof JSwitchStmt) {
                 this.features[21] = true;
-            } else if (unit instanceof NopStmt) {
-                this.features[22] = true;
-            } else if (unit instanceof RetStmt) {
-                this.features[23] = true;
-            } else if (unit instanceof ReturnVoidStmt) {
-                this.features[24] = true;
-            } else if (unit instanceof TableSwitchStmt) {
                 this.features[25] = true;
+            } else if (stmt instanceof JNopStmt) {
+                this.features[22] = true;
+            } else if (stmt instanceof JRetStmt) {
+                this.features[23] = true;
+            } else if (stmt instanceof JReturnVoidStmt) {
+                this.features[24] = true;
             }
         }
     }

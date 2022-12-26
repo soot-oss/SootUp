@@ -18,10 +18,6 @@
 
 package qilin.core.natives;
 
-import soot.RefType;
-import soot.SootMethod;
-import soot.Value;
-
 public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
     public JavaIoFileSystemGetFileSystemNative(SootMethod method) {
         super(method);

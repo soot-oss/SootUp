@@ -18,13 +18,13 @@
 
 package qilin.parm.select;
 
+import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.util.PTAUtils;
-import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 public class HeuristicSelector extends CtxSelector {
 

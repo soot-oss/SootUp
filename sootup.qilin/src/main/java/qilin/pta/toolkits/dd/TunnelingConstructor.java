@@ -18,12 +18,12 @@
 
 package qilin.pta.toolkits.dd;
 
+import qilin.core.context.Context;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
+import qilin.core.pag.ContextMethod;
 import qilin.parm.ctxcons.*;
-import soot.Context;
-import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class TunnelingConstructor implements CtxConstructor {
     }
 
     @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context constructCtx(ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
         CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
         CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
         if (ctxCons instanceof CallsiteCtxConstructor) {

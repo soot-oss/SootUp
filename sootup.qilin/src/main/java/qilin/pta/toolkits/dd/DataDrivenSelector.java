@@ -18,6 +18,7 @@
 
 package qilin.pta.toolkits.dd;
 
+import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
@@ -26,8 +27,7 @@ import qilin.parm.ctxcons.HybObjCtxConstructor;
 import qilin.parm.ctxcons.ObjCtxConstructor;
 import qilin.parm.ctxcons.TypeCtxConstructor;
 import qilin.parm.select.CtxSelector;
-import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.Map;

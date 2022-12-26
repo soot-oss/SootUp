@@ -1,8 +1,8 @@
 package qilin.pta.toolkits.mahjong.automata;
 
 import qilin.core.pag.AllocNode;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
+import qilin.core.pag.SparkField;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.stream.Collectors;

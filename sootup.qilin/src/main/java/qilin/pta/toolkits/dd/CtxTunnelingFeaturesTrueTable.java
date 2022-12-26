@@ -19,8 +19,22 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.*;
-import soot.jimple.*;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 
 /*
  * features and formulas used in "Precise and Scalable Points-to Analysis via Data-Driven
@@ -30,7 +44,7 @@ public class CtxTunnelingFeaturesTrueTable {
     private final boolean[] f = new boolean[24];
 
     public CtxTunnelingFeaturesTrueTable(SootMethod sm) {
-        String sig = sm.getSignature();
+        String sig = sm.getSignature().toString();
         // the 10 atomic signature features.
         this.f[1] = sig.contains("java");
         this.f[2] = sig.contains("lang");
@@ -49,32 +63,32 @@ public class CtxTunnelingFeaturesTrueTable {
         Body body = PTAUtils.getMethodBody(sm);
         this.f[15] = body.getLocalCount() > 0;
         int heapAllocCnt = 0;
-        for (Unit unit : body.getUnits()) {
-            if (unit instanceof AssignStmt assignStmt) {
+        for (Stmt stmt : body.getStmts()) {
+            if (stmt instanceof JAssignStmt assignStmt) {
                 Value left = assignStmt.getLeftOp();
                 if (left instanceof Local) {
                     Value right = assignStmt.getRightOp();
                     if (right instanceof Local) {
                         this.f[14] = true;
-                    } else if (right instanceof NewExpr || right instanceof NewArrayExpr || right instanceof NewMultiArrayExpr) {
+                    } else if (right instanceof JNewExpr || right instanceof JNewArrayExpr || right instanceof JNewMultiArrayExpr) {
                         heapAllocCnt++;
-                    } else if (right instanceof InvokeExpr) {
-                        if (right instanceof StaticInvokeExpr) {
+                    } else if (right instanceof AbstractInvokeExpr) {
+                        if (right instanceof JStaticInvokeExpr) {
                             this.f[17] = true;
-                        } else if (right instanceof VirtualInvokeExpr || right instanceof InterfaceInvokeExpr) {
+                        } else if (right instanceof JVirtualInvokeExpr || right instanceof JInterfaceInvokeExpr) {
                             this.f[18] = true;
                         }
-                    } else if (right instanceof ArrayRef) {
+                    } else if (right instanceof JArrayRef) {
                         this.f[13] = true;
                     }
-                } else if (left instanceof InstanceFieldRef) {
+                } else if (left instanceof JInstanceFieldRef) {
                     this.f[16] = true;
                 }
-            } else if (unit instanceof InvokeStmt invokeStmt) {
-                InvokeExpr expr = invokeStmt.getInvokeExpr();
-                if (expr instanceof StaticInvokeExpr) {
+            } else if (stmt instanceof JInvokeStmt invokeStmt) {
+                AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+                if (expr instanceof JStaticInvokeExpr) {
                     this.f[17] = true;
-                } else if (expr instanceof VirtualInvokeExpr || expr instanceof InterfaceInvokeExpr) {
+                } else if (expr instanceof JVirtualInvokeExpr || expr instanceof JInterfaceInvokeExpr) {
                     this.f[18] = true;
                 }
             }

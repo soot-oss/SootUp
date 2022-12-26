@@ -21,12 +21,12 @@ package qilin.stat;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.pag.ContextMethod;
 import qilin.core.sets.PointsToSet;
-import soot.MethodOrMethodContext;
-import soot.SootMethod;
-import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,10 +48,10 @@ public class YummyStat implements AbstractStat {
     }
 
     private void init() {
-        Map<SootMethod, Set<Unit>> target2callsites = new HashMap<>();
+        Map<SootMethod, Set<Stmt>> target2callsites = new HashMap<>();
         CallGraph ciCallGraph = pta.getCallGraph();
         for (Edge edge : ciCallGraph) {
-            Unit callUnit = edge.srcUnit();
+            Stmt callUnit = edge.srcUnit();
             SootMethod target = edge.tgt();
             if (callUnit != null && target != null) {
                 target2callsites.computeIfAbsent(target, k -> new HashSet<>()).add(callUnit);
@@ -67,7 +67,7 @@ public class YummyStat implements AbstractStat {
 
 
         Set<SootMethod> instanceReachables = new HashSet<>();
-        for (final MethodOrMethodContext momc : pta.getReachableMethods()) {
+        for (final ContextMethod momc : pta.getReachableMethods()) {
             SootMethod method = momc.method();
             if (!method.isPhantom() && !method.isStatic()) {
                 instanceReachables.add(method);

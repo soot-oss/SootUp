@@ -23,11 +23,12 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
+import qilin.core.pag.Node;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.graph.DirectedGraph;
-import soot.SootMethod;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.QueueReader;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 
@@ -114,7 +115,7 @@ public class OAG implements DirectedGraph<AllocNode> {
             MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-            QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
+            QueueReader<Node> reader = srcmpag.getInternalReader().clone();
             while (reader.hasNext()) {
                 qilin.core.pag.Node from = reader.next(), to = reader.next();
                 if (from instanceof AllocNode tgt) {

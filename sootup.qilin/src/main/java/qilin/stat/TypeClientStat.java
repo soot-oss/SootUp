@@ -22,11 +22,20 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.pag.AllocNode;
+import qilin.core.pag.ContextMethod;
 import qilin.util.PTAUtils;
-import soot.*;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
+import sootup.core.types.Type;
 
 import java.util.*;
 
@@ -44,7 +53,7 @@ public class TypeClientStat implements AbstractStat {
     private int totalStaticCalls = 0;
     private int totalPolyCallTargets = 0;
     private int unreachable = 0;
-    private final Map<InvokeExpr, SootMethod> polyCalls = new HashMap<>();
+    private final Map<AbstractInvokeExpr, SootMethod> polyCalls = new HashMap<>();
     private final Map<SootMethod, Set<Stmt>> mayFailCasts = new HashMap<>();
 
     public TypeClientStat(PTA pta) {
@@ -58,7 +67,7 @@ public class TypeClientStat implements AbstractStat {
         // loop over all reachable method's statement to find casts, local
         // references, virtual call sites
         Set<SootMethod> reachableMethods = new HashSet<>();
-        for (MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
+        for (ContextMethod momc : pta.getCgb().getReachableMethods()) {
             final SootMethod sm = momc.method();
             reachableMethods.add(sm);
         }
@@ -67,13 +76,11 @@ public class TypeClientStat implements AbstractStat {
             boolean app = sm.getDeclaringClass().isApplicationClass();
 
             // All the statements in the method
-            for (Unit unit : PTAUtils.getMethodBody(sm).getUnits()) {
-                Stmt st = (Stmt) unit;
-
+            for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
                 // virtual calls
                 if (st.containsInvokeExpr()) {
-                    InvokeExpr ie = st.getInvokeExpr();
-                    if (ie instanceof StaticInvokeExpr) {
+                    AbstractInvokeExpr ie = st.getInvokeExpr();
+                    if (ie instanceof JStaticInvokeExpr) {
                         totalStaticCalls++;
                     } else {// Virtual, Special or Instance
                         totalVirtualCalls++;
@@ -98,12 +105,12 @@ public class TypeClientStat implements AbstractStat {
                             }
                         }
                     }
-                } else if (st instanceof AssignStmt) {
-                    Value rhs = ((AssignStmt) st).getRightOp();
-                    Value lhs = ((AssignStmt) st).getLeftOp();
-                    if (rhs instanceof CastExpr && lhs.getType() instanceof RefLikeType) {
-                        final Type targetType = ((CastExpr) rhs).getCastType();
-                        Value v = ((CastExpr) rhs).getOp();
+                } else if (st instanceof JAssignStmt) {
+                    Value rhs = ((JAssignStmt) st).getRightOp();
+                    Value lhs = ((JAssignStmt) st).getLeftOp();
+                    if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
+                        final Type targetType = rhs.getType();
+                        Value v = ((JCastExpr) rhs).getOp();
                         if (!(v instanceof Local)) {
                             continue;
                         }

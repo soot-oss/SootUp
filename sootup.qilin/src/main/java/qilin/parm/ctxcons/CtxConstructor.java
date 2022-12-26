@@ -18,16 +18,16 @@
 
 package qilin.parm.ctxcons;
 
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import soot.Context;
-import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import qilin.core.pag.ContextMethod;
+import sootup.core.model.SootMethod;
 
 public interface CtxConstructor {
-    Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
+    Context constructCtx(ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
 
     Context emptyContext = new ContextElements(new ContextElement[0], 0);
 }

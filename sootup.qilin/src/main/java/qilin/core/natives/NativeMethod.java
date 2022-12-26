@@ -20,8 +20,8 @@ package qilin.core.natives;
 
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
-import soot.SootMethod;
-import soot.Value;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootMethod;
 
 public abstract class NativeMethod extends ArtificialMethod {
 
@@ -29,7 +29,7 @@ public abstract class NativeMethod extends ArtificialMethod {
         this.method = method;
         this.body = PTAUtils.getMethodBody(method);
         int paraCount = method.getParameterCount();
-        paraLocals = new Value[paraCount];
+        paraLocals = new Local[paraCount];
         this.paraStart = method.isStatic() ? 0 : 1;
         this.localStart = this.paraStart + paraCount;
     }

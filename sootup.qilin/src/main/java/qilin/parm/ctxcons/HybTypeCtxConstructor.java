@@ -18,20 +18,20 @@
 
 package qilin.parm.ctxcons;
 
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.context.TypeContextElement;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import soot.Context;
-import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import qilin.core.pag.ContextMethod;
+import sootup.core.model.SootMethod;
 
 // implementation of selective hybrid context...(Yannis pldi'13)
 public class HybTypeCtxConstructor implements CtxConstructor {
 
     @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context constructCtx(ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
         Context callerContext = caller.context();
         if (receiverNode == null) { // static invoke
             assert callerContext instanceof ContextElements;

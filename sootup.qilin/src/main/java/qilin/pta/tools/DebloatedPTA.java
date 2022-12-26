@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
@@ -29,8 +30,9 @@ import qilin.pta.StagedPTA;
 import qilin.pta.toolkits.conch.Conch;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
-import soot.*;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -92,7 +94,7 @@ public class DebloatedPTA extends StagedPTA {
     }
 
     @Override
-    public MethodOrMethodContext parameterize(SootMethod method, Context context) {
+    public ContextMethod parameterize(SootMethod method, Context context) {
         return basePTA.parameterize(method, context);
     }
 
@@ -112,7 +114,7 @@ public class DebloatedPTA extends StagedPTA {
     }
 
     @Override
-    public Context createCalleeCtx(MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context createCalleeCtx(ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
         return basePTA.createCalleeCtx(caller, receiverNode, callSite, target);
     }
 

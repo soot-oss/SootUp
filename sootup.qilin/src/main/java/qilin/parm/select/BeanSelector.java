@@ -18,14 +18,14 @@
 
 package qilin.parm.select;
 
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.PAG;
-import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.Map;
 

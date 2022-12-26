@@ -26,11 +26,16 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.spark.pag.SparkField;
+import qilin.util.queue.QueueReader;
 import soot.jimple.toolkits.callgraph.Edge;
-import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 public class Selectx {
     private final PTA prePTA;
@@ -264,29 +269,27 @@ public class Selectx {
 
             // add invoke edges
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
-            for (final Unit u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
-
-                CallSite callSite = new CallSite(u);
-                InvokeExpr ie = s.getInvokeExpr();
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
+                CallSite callSite = new CallSite(s);
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                         continue;
                     }
                     args[i] = arg;
                 }
                 LocalVarNode retDest = null;
-                if (s instanceof AssignStmt) {
-                    Value dest = ((AssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof RefLikeType) {
+                if (s instanceof JAssignStmt) {
+                    Value dest = ((JAssignStmt) s).getLeftOp();
+                    if (dest.getType() instanceof ReferenceType) {
                         retDest = prePAG.findLocalVarNode(dest);
                     }
                 }
                 LocalVarNode receiver = null;
-                if (ie instanceof InstanceInvokeExpr iie) {
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 }
                 for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
@@ -295,13 +298,13 @@ public class Selectx {
                     MethodPAG tgtmpag = prePAG.getMethodPAG(tgtmtd);
                     MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
                     for (int i = 0; i < numArgs; i++) {
-                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof RefLikeType)) {
+                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof ReferenceType)) {
                             continue;
                         }
                         LocalVarNode parm = (LocalVarNode) tgtnf.caseParm(i);
                         this.addEntryEdge((LocalVarNode) srcnf.getNode(args[i]), parm, callSite);
                     }
-                    if (retDest != null && tgtmtd.getReturnType() instanceof RefLikeType) {
+                    if (retDest != null && tgtmtd.getReturnType() instanceof ReferenceType) {
                         LocalVarNode ret = (LocalVarNode) tgtnf.caseRet();
                         this.addExitEdge(ret, retDest, callSite);
                     }

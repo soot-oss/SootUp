@@ -25,15 +25,16 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Util;
-import soot.SootClass;
-import soot.SootMethod;
-import soot.Type;
-import soot.jimple.AssignStmt;
-import soot.jimple.CastExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.Type;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -81,7 +82,7 @@ public class Exporter {
     private void dumpMethods(Collection<SootMethod> methods, String fileName) {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : methods) {
-            String sig = sm.getSignature();
+            String sig = sm.getSignature().toString();
             sig = Util.stripQuotes(sig);
             builder.append(sig);
             builder.append("\n");
@@ -126,11 +127,11 @@ public class Exporter {
         Util.writeToFile(finalPath, builder.toString());
     }
 
-    public void dumpPolyCalls(Map<InvokeExpr, SootMethod> polys) {
+    public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
         StringBuilder builder = new StringBuilder();
-        for (InvokeExpr ie : polys.keySet()) {
-            SootMethod tgt = ie.getMethod();
-            String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClass() + "." + tgt.getName() + "\n";
+        for (AbstractInvokeExpr ie : polys.keySet()) {
+            MethodSignature tgtSig = ie.getMethodSignature();
+            String polySig = polys.get(ie).getSignature() + "/" + tgtSig.getDeclClassType() + "." + tgtSig.getName() + "\n";
             builder.append(polySig);
         }
         String polyCalls = "PolyCalls.csv";
@@ -142,16 +143,16 @@ public class Exporter {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : casts.keySet()) {
             for (Stmt stmt : casts.get(sm)) {
-                AssignStmt as = (AssignStmt) stmt;
-                CastExpr ce = (CastExpr) as.getRightOp();
-                final Type targetType = ce.getCastType();
+                JAssignStmt as = (JAssignStmt) stmt;
+                JCastExpr ce = (JCastExpr) as.getRightOp();
+                final Type targetType = ce.getType();
                 builder.append(sm.toString());
                 builder.append("\t");
-                builder.append(targetType.toString());
+                builder.append(targetType);
                 builder.append("\t");
                 builder.append(sm).append("/").append(ce.getOp().toString());
                 builder.append("\t");
-                builder.append(sm).append("/").append(as.getLeftOp().toString());
+                builder.append(sm).append("/").append(as.getLeftOp());
                 builder.append("\n");
             }
         }
@@ -175,7 +176,7 @@ public class Exporter {
                     StringBuilder builder = new StringBuilder();
                     builder.append(n.toString());
                     builder.append("\t");
-                    String sig = Util.stripQuotes(sm.getSignature());
+                    String sig = Util.stripQuotes(sm.getSignature().toString());
                     builder.append(sig);
                     builder.append("\n");
                     try {

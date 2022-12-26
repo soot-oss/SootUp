@@ -18,8 +18,10 @@
 
 package qilin.core.natives;
 
-import soot.SootMethod;
-import soot.Value;
+
+import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootMethod;
 
 public class JavaLangObjectCloneNative extends NativeMethod {
 
@@ -33,7 +35,7 @@ public class JavaLangObjectCloneNative extends NativeMethod {
      */
     public void simulate() {
         Value r0 = getThis();
-        addReturn(r0);
+        addReturn((Immediate) r0);
     }
 
 }

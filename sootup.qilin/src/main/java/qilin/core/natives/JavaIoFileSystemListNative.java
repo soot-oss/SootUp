@@ -18,9 +18,9 @@
 
 package qilin.core.natives;
 
-import soot.RefType;
-import soot.SootMethod;
-import soot.Value;
+import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootMethod;
 
 public class JavaIoFileSystemListNative extends NativeMethod {
     public JavaIoFileSystemListNative(SootMethod method) {
@@ -37,6 +37,6 @@ public class JavaIoFileSystemListNative extends NativeMethod {
         Value elem = getNew(RefType.v("java.lang.String"));
 //        addInvoke(elem, "<java.lang.String: void <init>()>");
         addAssign(getArrayRef(arrLocal), elem);
-        addReturn(arrLocal);
+        addReturn((Immediate) arrLocal);
     }
 }

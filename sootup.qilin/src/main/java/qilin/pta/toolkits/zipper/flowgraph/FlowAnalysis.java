@@ -8,11 +8,14 @@ import qilin.pta.toolkits.zipper.analysis.PotentialContextElement;
 import qilin.util.ANSIColor;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
 import qilin.util.graph.Reachability;
-import soot.*;
-import soot.jimple.AssignStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.Stmt;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -142,14 +145,14 @@ public class FlowAnalysis {
                     pta.getCgb().getReceiverToSitesMap()
                             .getOrDefault(var, Collections.emptySet())
                             .forEach(vcs -> {
-                                Stmt callsiteStmt = (Stmt) vcs.getUnit();
-                                InvokeExpr invo = callsiteStmt.getInvokeExpr();
-                                if (!(invo instanceof InstanceInvokeExpr)) {
+                                Stmt callsiteStmt = vcs.getUnit();
+                                AbstractInvokeExpr invo = callsiteStmt.getInvokeExpr();
+                                if (!(invo instanceof AbstractInstanceInvokeExpr)) {
                                     return;
                                 }
-                                if (callsiteStmt instanceof AssignStmt assignStmt) {
+                                if (callsiteStmt instanceof JAssignStmt assignStmt) {
                                     Value lv = assignStmt.getLeftOp();
-                                    if (!(lv.getType() instanceof RefLikeType)) {
+                                    if (!(lv.getType() instanceof ReferenceType)) {
                                         return;
                                     }
                                     final VarNode to = (VarNode) pta.getPag().findValNode(lv);

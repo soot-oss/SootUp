@@ -23,7 +23,9 @@ import qilin.core.pag.MergedNewExpr;
 import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.*;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
+import sootup.core.types.Type;
 
 import java.util.Set;
 
@@ -42,7 +44,7 @@ public class HeuristicAbstractor implements HeapAbstractor {
         Type type = heap.getType();
         SootMethod m = heap.getMethod();
         if (mergedTypes.contains(type) || (PTAUtils.isThrowable(type) && mergedTypes.add(type))) {
-            return pag.makeAllocNode(MergedNewExpr.v((RefLikeType) type), type, null);
+            return pag.makeAllocNode(MergedNewExpr.v((ReferenceType) type), type, null);
         } else {
             return heap;
         }

@@ -19,7 +19,7 @@
 package qilin.pta.toolkits.turner;
 
 import qilin.core.PTA;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.Set;
 

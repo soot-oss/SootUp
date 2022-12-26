@@ -4,9 +4,11 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.pta.toolkits.zipper.Global;
-import soot.SootMethod;
-import soot.Value;
-import soot.jimple.*;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 
@@ -106,9 +108,9 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
                 if (!callee.isStatic()) {
                     MethodNodeFactory calleeNF = pta.getPag().getMethodPAG(callee).nodeFactory();
                     LocalVarNode thisVar = (LocalVarNode) calleeNF.caseThis();
-                    InvokeExpr ie = callsite.getInvokeExpr();
+                    AbstractInvokeExpr ie = callsite.getInvokeExpr();
                     Value base = null;
-                    if (ie instanceof InstanceInvokeExpr iie) {
+                    if (ie instanceof AbstractInstanceInvokeExpr iie) {
                         base = iie.getBase();
                     }
                     if (base != null) {

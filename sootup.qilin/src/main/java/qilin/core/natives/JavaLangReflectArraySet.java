@@ -20,8 +20,8 @@ package qilin.core.natives;
 
 import soot.ArrayType;
 import soot.RefType;
-import soot.SootMethod;
-import soot.Value;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootMethod;
 
 /*
  * handle <java.lang.reflect.Array: void set(java.lang.Object,int,java.lang.Object)>

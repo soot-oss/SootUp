@@ -28,9 +28,16 @@ import qilin.pta.PTAConfig;
 import qilin.pta.StagedPTA;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.*;
-import soot.jimple.*;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -110,12 +117,12 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
 
     protected void extraStats() {
         int[] RM = new int[1], PCN = new int[1], NPCN = new int[1], totalN = new int[1];
-        for (MethodOrMethodContext momc : prePTA.getReachableMethods()) {
+        for (ContextMethod momc : prePTA.getReachableMethods()) {
             SootMethod method = momc.method();
             Set<Object> nodes = new HashSet<>();
-            if (method.isPhantom()) {
-                return;
-            }
+//            if (method.isPhantom()) {
+//                return;
+//            }
             MethodPAG srcmpag = pag.getMethodPAG(method);
             QueueReader<Node> reader = srcmpag.getInternalReader().clone();
             while (reader.hasNext()) {
@@ -140,26 +147,24 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
                     }
                 }
             }
-            for (final Unit u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
-
-                InvokeExpr ie = s.getInvokeExpr();
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                         continue;
                     }
                     nodes.add(arg);
                 }
 
-                if (s instanceof AssignStmt) {
-                    Value dest = ((AssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof RefLikeType) {
+                if (s instanceof JAssignStmt) {
+                    Value dest = ((JAssignStmt) s).getLeftOp();
+                    if (dest.getType() instanceof ReferenceType) {
                         nodes.add(dest);
                     }
                 }
-                if (ie instanceof InstanceInvokeExpr iie) {
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     Value base = iie.getBase();
                     if (base instanceof Local) {
                         nodes.add(base);

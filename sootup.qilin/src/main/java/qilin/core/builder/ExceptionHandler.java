@@ -34,7 +34,7 @@ import sootup.core.types.Type;
 import java.util.*;
 
 public class ExceptionHandler {
-    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
+    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(1000);
     protected PTA pta;
     protected PAG pag;
 

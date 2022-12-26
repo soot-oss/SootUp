@@ -22,7 +22,7 @@ import qilin.core.PTA;
 import qilin.pta.toolkits.zipper.analysis.Zipper;
 import qilin.util.ANSIColor;
 import qilin.util.Stopwatch;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.Comparator;
 import java.util.Set;
