@@ -50,6 +50,7 @@ import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.language.JavaJimple;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -121,6 +122,10 @@ public class PAG {
         this.methodToPag = DataFactory.createMap();
         this.globals = DataFactory.createSet(100000);
         this.locals = DataFactory.createSet(100000);
+    }
+
+    public View getView() {
+        return this.view;
     }
 
     public void setEdgeQueue(ChunkedQueue<Node> edgeQueue) {
@@ -319,7 +324,7 @@ public class PAG {
     public AllocNode makeStringConstantNode(StringConstant sc) {
         StringConstant stringConstant = sc;
         if (!CoreConfig.v().getPtaConfig().stringConstants) {
-            stringConstant = StringConstant.v(PointsToAnalysis.STRING_NODE);
+            stringConstant = JavaJimple.getInstance().newStringConstant(PointsToAnalysis.STRING_NODE);
         }
         AllocNode ret = valToAllocNode.get(stringConstant);
         if (ret == null) {
@@ -518,7 +523,7 @@ public class PAG {
     protected ReflectionModel createReflectionModel() {
         ReflectionModel model;
         if (CoreConfig.v().getAppConfig().REFLECTION_LOG != null && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
-            model = new TamiflexModel();
+            model = new TamiflexModel(view);
         } else {
             model = new NopReflectionModel();
         }
@@ -563,8 +568,7 @@ public class PAG {
             if (s.containsInvokeExpr()) {
                 AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
                 if (invokeExpr instanceof JStaticInvokeExpr sie) {
-                    SootMethod sm = sie.getMethod();
-                    String sig = sm.getSignature();
+                    String sig = sie.getMethodSignature().toString();
                     if (sig.equals("<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
                         Value srcArr = sie.getArg(0);
                         if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {

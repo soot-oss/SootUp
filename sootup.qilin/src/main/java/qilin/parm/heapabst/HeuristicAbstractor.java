@@ -23,9 +23,11 @@ import qilin.core.pag.MergedNewExpr;
 import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
+import sootup.core.IdentifierFactory;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 import java.util.Set;
 
@@ -35,8 +37,9 @@ public class HeuristicAbstractor implements HeapAbstractor {
 
     public HeuristicAbstractor(PAG pag) {
         this.pag = pag;
-        mergedTypes.add(RefType.v("java.lang.StringBuffer"));
-        mergedTypes.add(RefType.v("java.lang.StringBuilder"));
+        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+        mergedTypes.add(idFactory.getType("java.lang.StringBuffer"));
+        mergedTypes.add(idFactory.getType("java.lang.StringBuilder"));
     }
 
     @Override

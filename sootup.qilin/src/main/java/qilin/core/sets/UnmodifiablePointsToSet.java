@@ -6,8 +6,10 @@ import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.Node;
 import qilin.core.pag.StringConstantNode;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 import java.util.*;
 
@@ -45,7 +47,9 @@ public class UnmodifiablePointsToSet implements PointsToSet {
             public void visit(Node n) {
                 Type t = n.getType();
                 if (t instanceof ClassType rt) {
-                    if (rt.getSootClass().isAbstract()) {
+                    View view = pta.getPag().getView();
+                    SootClass sootClass = (SootClass) view.getClass(rt).get();
+                    if (sootClass.isAbstract()) {
                         return;
                     }
                 }

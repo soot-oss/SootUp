@@ -31,7 +31,12 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 
 import java.util.*;
 
@@ -52,6 +57,7 @@ public class MethodPAG {
      */
     private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
     protected MethodNodeFactory nodeFactory;
+    protected PAG pag;
     SootMethod method;
     /*
      * List[i-1] is wrappered in List[i].
@@ -63,6 +69,7 @@ public class MethodPAG {
     public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
 
     public MethodPAG(PAG pag, SootMethod m, Body body) {
+        this.pag = pag;
         this.method = m;
         this.nodeFactory = new MethodNodeFactory(pag, this);
         this.body = body;
@@ -97,7 +104,10 @@ public class MethodPAG {
 
     protected void buildNormal() {
         if (method.isStatic()) {
-            PTAUtils.clinitsOf(method.getDeclaringClass()).forEach(this::addTriggeredClinit);
+            View view = pag.getView();
+            ClassType declClassType = method.getDeclaringClassType();
+            SootClass declClass = (SootClass) view.getClass(declClassType).get();
+            PTAUtils.clinitsOf(declClass).forEach(this::addTriggeredClinit);
         }
         for (Stmt unit : body.getStmts()) {
             try {
@@ -167,7 +177,11 @@ public class MethodPAG {
     protected void addMiscEdges() {
         if (method.getSignature().equals("<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
             // Implements the special status of java.lang.ref.Reference just as in Doop (library/reference.logic).
-            JStaticFieldRef sfr = Jimple.newStaticFieldRef(RefType.v("java.lang.ref.Reference").getSootClass().getFieldByName("pending").makeRef());
+            ClassType type = (ClassType) JavaIdentifierFactory.getInstance().getType("java.lang.ref.Reference");
+            View view = pag.getView();
+            SootClass sootClass = (SootClass) view.getClass(type).get();
+            SootField sootField = (SootField) sootClass.getField("pending").get();
+            JStaticFieldRef sfr = Jimple.newStaticFieldRef(sootField.getSignature());
             addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
         }
     }

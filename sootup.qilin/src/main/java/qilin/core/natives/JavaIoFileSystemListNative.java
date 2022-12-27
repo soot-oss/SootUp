@@ -18,9 +18,13 @@
 
 package qilin.core.natives;
 
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class JavaIoFileSystemListNative extends NativeMethod {
     public JavaIoFileSystemListNative(SootMethod method) {
@@ -33,8 +37,9 @@ public class JavaIoFileSystemListNative extends NativeMethod {
      * only exists in old JDK(e.g., JDK6).
      */
     public void simulate() {
-        Value arrLocal = getNewArray(RefType.v("java.lang.String"));
-        Value elem = getNew(RefType.v("java.lang.String"));
+        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+        Value arrLocal = getNewArray((ReferenceType) idFactory.getType("java.lang.String"));
+        Value elem = getNew((ClassType) idFactory.getType("java.lang.String"));
 //        addInvoke(elem, "<java.lang.String: void <init>()>");
         addAssign(getArrayRef(arrLocal), elem);
         addReturn((Immediate) arrLocal);

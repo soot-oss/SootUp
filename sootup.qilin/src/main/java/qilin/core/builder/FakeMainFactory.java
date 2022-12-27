@@ -21,6 +21,9 @@ package qilin.core.builder;
 import qilin.CoreConfig;
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
 import java.util.ArrayList;
 import java.util.Collections;

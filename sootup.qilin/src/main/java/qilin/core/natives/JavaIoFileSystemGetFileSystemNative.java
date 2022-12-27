@@ -18,6 +18,12 @@
 
 package qilin.core.natives;
 
+import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.java.core.JavaIdentifierFactory;
+
 public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
     public JavaIoFileSystemGetFileSystemNative(SootMethod method) {
         super(method);
@@ -31,8 +37,8 @@ public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
      * only exists in old version of JDK(e.g., JDK6).
      */
     public void simulate() {
-        Value newLocal0 = getNew(RefType.v("java.io.UnixFileSystem"));
+        Value newLocal0 = getNew((ClassType) JavaIdentifierFactory.getInstance().getType("java.io.UnixFileSystem"));
         addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
-        addReturn(newLocal0);
+        addReturn((Immediate) newLocal0);
     }
 }

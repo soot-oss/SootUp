@@ -27,6 +27,7 @@ import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ReflectionModel {
@@ -73,7 +74,7 @@ public abstract class ReflectionModel {
             return;
         }
         Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-        UnitPatchingChain units = PTAUtils.getMethodBody(m).getStmts();
+        List<Stmt> units = PTAUtils.getMethodBody(m).getStmts();
         for (final Stmt s : units) {
             if (s.containsInvokeExpr()) {
                 newUnits.put(s, transform(s));

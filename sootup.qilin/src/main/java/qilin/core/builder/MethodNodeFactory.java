@@ -24,6 +24,7 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
@@ -47,13 +48,14 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * @author Ondrej Lhotak
@@ -141,7 +143,9 @@ public class MethodNodeFactory {
     }
 
     private void resolveClinit(JStaticFieldRef staticFieldRef) {
-        PTAUtils.clinitsOf(staticFieldRef.getField().getDeclaringClass()).forEach(mpag::addTriggeredClinit);
+        ClassType declClassType = staticFieldRef.getFieldSignature().getDeclClassType();
+        SootClass sootClass = (SootClass) pag.getView().getClass(declClassType).get();
+        PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
     }
 
     /**
@@ -213,7 +217,7 @@ public class MethodNodeFactory {
     }
 
     private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
-        SootField sf = ifr.getField();
+        SootField sf = (SootField) pag.getView().getField(ifr.getFieldSignature()).get();
 //        if (sf == null) {
 //            sf = new SootField(ifr.getFieldSignature(), ifr.getType(), Modifier.PUBLIC);
 //            sf.setNumber(Scene.v().getFieldNumberer().size());
@@ -226,7 +230,7 @@ public class MethodNodeFactory {
     private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {
         ArrayType type = (ArrayType) nmae.getType();
         int pos = 0;
-        AllocNode prevAn = pag.makeAllocNode(new JNewArrayExpr(type, nmae.getSize(pos)), type, method);
+        AllocNode prevAn = pag.makeAllocNode(new JNewArrayExpr(type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()), type, method);
         VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
         mpag.addInternalEdge(prevAn, prevVn); // new
         VarNode ret = prevVn;
@@ -237,13 +241,13 @@ public class MethodNodeFactory {
             }
             type = (ArrayType) t;
             ++pos;
-            Value sizeVal;
+            Immediate sizeVal;
             if (pos < nmae.getSizeCount()) {
                 sizeVal = nmae.getSize(pos);
             } else {
                 sizeVal = IntConstant.getInstance(1);
             }
-            AllocNode an = pag.makeAllocNode(new JNewArrayExpr(type, sizeVal), type, method);
+            AllocNode an = pag.makeAllocNode(new JNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()), type, method);
             VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
             mpag.addInternalEdge(an, vn); // new
             mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store
@@ -260,7 +264,7 @@ public class MethodNodeFactory {
     }
 
     public VarNode caseThis() {
-        Type type = method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClassType();
+        Type type = method.isStatic() ? JavaIdentifierFactory.getInstance().getType("java.lang.Object") : method.getDeclaringClassType();
         VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
         ret.setInterProcTarget();
         return ret;
@@ -279,7 +283,7 @@ public class MethodNodeFactory {
     }
 
     public VarNode caseMethodThrow() {
-        VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE), RefType.v("java.lang.Throwable"), method);
+        VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE), JavaIdentifierFactory.getInstance().getType("java.lang.Throwable"), method);
         ret.setInterProcSource();
         return ret;
     }
@@ -306,7 +310,7 @@ public class MethodNodeFactory {
     }
 
     private VarNode caseStaticFieldRef(JStaticFieldRef sfr) {
-        return pag.makeGlobalVarNode(sfr.getField(), sfr.getType());
+        return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
     }
 
     private Node caseNullConstant(NullConstant nr) {
@@ -314,23 +318,26 @@ public class MethodNodeFactory {
     }
 
     private VarNode caseStringConstant(StringConstant sc) {
+        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.String");
         AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
-        VarNode stringConstantVar = pag.makeGlobalVarNode(sc, RefType.v("java.lang.String"));
+        VarNode stringConstantVar = pag.makeGlobalVarNode(sc, type);
         mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, sc), RefType.v("java.lang.String"), method);
+        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, sc), type, method);
         mpag.addInternalEdge(stringConstantVar, vn);
         return vn;
     }
 
     public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-        return pag.makeLocalVarNode(invoke, RefType.v("java.lang.Throwable"), method);
+        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.Throwable");
+        return pag.makeLocalVarNode(invoke, type, method);
     }
 
     final public VarNode caseClassConstant(ClassConstant cc) {
+        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.Class");
         AllocNode classConstant = pag.makeClassConstantNode(cc);
-        VarNode classConstantVar = pag.makeGlobalVarNode(cc, RefType.v("java.lang.Class"));
+        VarNode classConstantVar = pag.makeGlobalVarNode(cc, type);
         mpag.addInternalEdge(classConstant, classConstantVar);
-        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, cc), RefType.v("java.lang.Class"), method);
+        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, cc), type, method);
         mpag.addInternalEdge(classConstantVar, vn);
         return vn;
     }

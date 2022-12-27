@@ -18,10 +18,10 @@
 
 package qilin.core.natives;
 
-import soot.ArrayType;
-import soot.RefType;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
+import sootup.java.core.JavaIdentifierFactory;
 
 /*
  * handle <java.lang.reflect.Array: void set(java.lang.Object,int,java.lang.Object)>
@@ -34,7 +34,8 @@ public class JavaLangReflectArraySet extends NativeMethod {
 
     @Override
     void simulate() {
-        Value arrayBase = getPara(0, ArrayType.v(RefType.v("java.lang.Object"), 1));
+        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+        Value arrayBase = getPara(0, idFactory.getArrayType(idFactory.getType("java.lang.Object"), 1));
         Value rightValue = getPara(2);
         Value arrayRef = getArrayRef(arrayBase);
         addAssign(arrayRef, rightValue); // a[] = b;
