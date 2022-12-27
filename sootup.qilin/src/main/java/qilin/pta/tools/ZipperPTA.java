@@ -40,6 +40,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +56,8 @@ public class ZipperPTA extends StagedPTA {
      * Zipper support object-sensitivity, callsite-sensitivity by using corresponding
      * context-constructor.
      * */
-    public ZipperPTA(int k, int hk, CtxConstructor ctxCons) {
+    public ZipperPTA(View view, int k, int hk, CtxConstructor ctxCons) {
+        super(view);
         this.ctxCons = ctxCons;
         CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -68,7 +70,7 @@ public class ZipperPTA extends StagedPTA {
         } else {
             this.heapAbst = new AllocSiteAbstractor();
         }
-        this.prePTA = new Spark();
+        this.prePTA = new Spark(view);
     }
 
     @Override

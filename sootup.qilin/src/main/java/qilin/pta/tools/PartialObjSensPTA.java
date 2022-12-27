@@ -39,6 +39,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -53,7 +54,8 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     Set<SootMethod> PCSM = new HashSet<>();
     Set<SootMethod> CSM = new HashSet<>();
 
-    public PartialObjSensPTA(int ctxLen) {
+    public PartialObjSensPTA(View view, int ctxLen) {
+        super(view);
         this.ctxCons = new ObjCtxConstructor();
         CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

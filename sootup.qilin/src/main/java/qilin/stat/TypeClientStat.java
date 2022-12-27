@@ -21,11 +21,11 @@ package qilin.stat;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.FakeMainFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextMethod;
 import qilin.util.PTAUtils;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -33,7 +33,9 @@ import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
@@ -73,7 +75,9 @@ public class TypeClientStat implements AbstractStat {
         }
 
         for (SootMethod sm : reachableMethods) {
-            boolean app = sm.getDeclaringClass().isApplicationClass();
+            ClassType declClassType = sm.getDeclaringClassType();
+            SootClass declClass = (SootClass) pta.getPag().getView().getClass(declClassType).get();
+            boolean app = declClass.isApplicationClass();
 
             // All the statements in the method
             for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {

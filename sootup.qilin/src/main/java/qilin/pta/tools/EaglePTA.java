@@ -28,6 +28,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.views.View;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -39,8 +40,8 @@ import java.util.Map;
  * (TOSEM'21)
  * */
 public class EaglePTA extends PartialObjSensPTA {
-    public EaglePTA(int ctxLen) {
-        super(ctxLen);
+    public EaglePTA(View view, int ctxLen) {
+        super(view, ctxLen);
         System.out.println("Eagle ....");
     }
 

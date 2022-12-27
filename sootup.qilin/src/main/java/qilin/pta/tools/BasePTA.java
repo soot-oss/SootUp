@@ -10,11 +10,14 @@ import qilin.stat.IEvaluator;
 import qilin.stat.PTAEvaluator;
 import qilin.stat.SimplifiedEvaluator;
 import qilin.util.PTAUtils;
+import sootup.core.views.View;
 
 public abstract class BasePTA extends CorePTA {
     protected IEvaluator evaluator;
+    protected View view;
 
-    public BasePTA() {
+    public BasePTA(View view) {
+        this.view = view;
 //        this.evaluator = new PTAEvaluator(this);
         this.evaluator = new SimplifiedEvaluator(this);
     }
@@ -25,7 +28,7 @@ public abstract class BasePTA extends CorePTA {
 
     @Override
     protected PAG createPAG() {
-        return new PAG(this);
+        return new PAG(view, this);
     }
 
     @Override

@@ -49,13 +49,14 @@ public class DebloatedPTA extends StagedPTA {
      * Thus the base PTA should be k-OBJ, Zipper-OBJ or Eagle-OBJ.
      * */
     public DebloatedPTA(BasePTA basePTA) {
+        super(basePTA.view);
         this.basePTA = basePTA;
         CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
         basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
         if (basePTA instanceof StagedPTA stagedPTA) {
             this.prePTA = stagedPTA.getPrePTA();
         } else {
-            this.prePTA = new Spark();
+            this.prePTA = new Spark(basePTA.view);
         }
         System.out.println("debloating ....");
     }

@@ -20,13 +20,13 @@ package qilin.stat;
 
 import qilin.CoreConfig;
 import qilin.core.PTA;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Util;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -202,8 +202,8 @@ public class Exporter {
             mfile.createNewFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
             for (Edge edge : ciCallGraph) {
-                String srcSig = Util.stripQuotes(edge.src().getSignature());
-                String dstSig = Util.stripQuotes(edge.tgt().getSignature());
+                String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
+                String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
                 String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
                 writer.write(str);
             }

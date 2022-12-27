@@ -1,6 +1,7 @@
 package qilin.pta;
 
 import qilin.pta.tools.BasePTA;
+import sootup.core.views.View;
 
 /*
  * Many recent pointer analyses are two-staged analyses with a preanalysis and a main analysis.
@@ -8,6 +9,10 @@ import qilin.pta.tools.BasePTA;
  * */
 public abstract class StagedPTA extends BasePTA {
     protected BasePTA prePTA;
+
+    public StagedPTA(View view) {
+        super(view);
+    }
 
     public BasePTA getPrePTA() {
         return this.prePTA;

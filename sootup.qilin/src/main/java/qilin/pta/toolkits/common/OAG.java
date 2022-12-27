@@ -109,9 +109,9 @@ public class OAG implements DirectedGraph<AllocNode> {
     protected void buildOAG() {
         Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
         for (SootMethod method : this.pta.getNakedReachableMethods()) {
-            if (method.isPhantom()) {
-                continue;
-            }
+//            if (method.isPhantom()) {
+//                continue;
+//            }
             MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();

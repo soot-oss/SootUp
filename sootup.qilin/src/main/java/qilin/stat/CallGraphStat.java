@@ -22,11 +22,11 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.model.SootMethod;
 
 import java.util.HashSet;

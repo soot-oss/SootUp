@@ -25,9 +25,9 @@ import java.util.stream.Stream;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.queue.QueueReader;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -229,9 +229,9 @@ public class Selectx {
 
     private void buildGraph() {
         for (SootMethod method : prePTA.getNakedReachableMethods()) {
-            if (method.isPhantom()) {
-                continue;
-            }
+//            if (method.isPhantom()) {
+//                continue;
+//            }
             MethodPAG srcmpag = prePAG.getMethodPAG(method);
             QueueReader<Node> reader = srcmpag.getInternalReader().clone();
             while (reader.hasNext()) {
@@ -292,7 +292,7 @@ public class Selectx {
                 if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 }
-                for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
+                for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                     Edge e = it.next();
                     SootMethod tgtmtd = e.tgt();
                     MethodPAG tgtmpag = prePAG.getMethodPAG(tgtmtd);

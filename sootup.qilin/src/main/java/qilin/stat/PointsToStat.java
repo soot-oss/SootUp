@@ -26,8 +26,10 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
@@ -144,7 +146,10 @@ public class PointsToStat implements AbstractStat {
                 if (!handledNatives.contains(lvn.getMethod().toString())) {
                     mLocalVarNodesNoNative.add(lvn);
                 }
-                boolean app = lvn.getMethod().getDeclaringClass().isApplicationClass();
+                SootMethod method = lvn.getMethod();
+                ClassType classType = method.getDeclaringClassType();
+                SootClass sootClass = (SootClass) pag.getView().getClass(classType).get();
+                boolean app = sootClass.isApplicationClass();
                 totalLocalPointersCi++;
                 if (app) {
                     appLocalPointersCi++;

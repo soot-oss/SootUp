@@ -29,6 +29,7 @@ import qilin.pta.PTAConfig;
 import qilin.pta.StagedPTA;
 import qilin.pta.toolkits.bean.Bean;
 import qilin.util.Stopwatch;
+import sootup.core.views.View;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,8 @@ public class BeanPTA extends StagedPTA {
     // [current heap, [allocator heap, [heap ctx, new ctx]]] only for B-2obj;
     Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap = new HashMap<>();
 
-    public BeanPTA(CtxConstructor ctxCons) {
+    public BeanPTA(View view, CtxConstructor ctxCons) {
+        super(view);
         this.ctxCons = ctxCons;
         CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -54,7 +56,7 @@ public class BeanPTA extends StagedPTA {
         } else {
             this.heapAbst = new AllocSiteAbstractor();
         }
-        prePTA = new Spark();
+        prePTA = new Spark(view);
         System.out.println("bean ...");
     }
 

@@ -167,25 +167,25 @@ public class Turner {
     }
 
     private Collection<Object> computeCtxLevelForVariables(SootMethod method) {
-        if (method.isPhantom()) {
-            return Collections.emptySet();
-        } else {
+//        if (method.isPhantom()) {
+//            return Collections.emptySet();
+//        } else {
             AbstractMVFG mvfg = MethodVFG.findOrCreateMethodVFG(prePTA, method, ocg);
             mvfg.computeNodesInPrecisionLossPatterns();
             mergeNodeAndEdgeCount(mvfg.getTotalNodeCount(), mvfg.getTotalEdgeCount());
             return mvfg.getCSNodes();
-        }
+//        }
     }
 
     private Collection<Object> computeCtxLevelForVariables(SootMethod method, MergedNode<SootMethod> sccNode) {
-        if (method.isPhantom()) {
-            return Collections.emptySet();
-        } else {
+//        if (method.isPhantom()) {
+//            return Collections.emptySet();
+//        } else {
             AbstractMVFG mvfg = ModularMVFG.findOrCreateMethodVFG(prePTA, method, ocg, sccNode);
             mvfg.computeNodesInPrecisionLossPatterns();
             mergeNodeAndEdgeCount(mvfg.getTotalNodeCount(), mvfg.getTotalEdgeCount());
             return mvfg.getCSNodes();
-        }
+//        }
     }
 
     private void mergeNodeAndEdgeCount(int nodeCnt, int edgeCnt) {

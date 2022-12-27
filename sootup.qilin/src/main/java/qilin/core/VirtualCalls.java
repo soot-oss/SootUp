@@ -19,10 +19,17 @@
 package qilin.core;
 
 import qilin.util.DataFactory;
-import soot.*;
-import soot.jimple.SpecialInvokeExpr;
-import soot.util.*;
-import soot.util.queue.ChunkedQueue;
+import qilin.util.queue.ChunkedQueue;
+import sootup.core.IdentifierFactory;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
+import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -36,7 +43,7 @@ import java.util.Set;
  */
 public class VirtualCalls {
     private static volatile VirtualCalls instance = null;
-    private final Map<Type, Map<NumberedString, SootMethod>> typeToVtbl = DataFactory.createMap(Scene.v().getTypeNumberer().size());
+    private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl = DataFactory.createMap(Scene.v().getTypeNumberer().size());
     protected Map<Type, Set<Type>> baseToSubTypes = DataFactory.createMap();
 
     private VirtualCalls() {
@@ -57,16 +64,16 @@ public class VirtualCalls {
         instance = null;
     }
 
-    public SootMethod resolveSpecial(SpecialInvokeExpr iie, NumberedString subSig, SootMethod container) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container) {
         return resolveSpecial(iie, subSig, container, false);
     }
 
-    public SootMethod resolveSpecial(SpecialInvokeExpr iie, NumberedString subSig, SootMethod container, boolean appOnly) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container, boolean appOnly) {
         SootMethod target = iie.getMethod();
         /* cf. JVM spec, invokespecial instruction */
-        if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClass().getType(),
-                target.getDeclaringClass().getType())
-                && container.getDeclaringClass().getType() != target.getDeclaringClass().getType()
+        if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClassType(),
+                target.getDeclaringClassType())
+                && container.getDeclaringClassType() != target.getDeclaringClassType()
                 && !target.getName().equals("<init>")
                 && subSig != Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()")) {
 
@@ -76,12 +83,12 @@ public class VirtualCalls {
         }
     }
 
-    public SootMethod resolveNonSpecial(RefType t, NumberedString subSig) {
+    public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig) {
         return resolveNonSpecial(t, subSig, false);
     }
 
-    public SootMethod resolveNonSpecial(RefType t, NumberedString subSig, boolean appOnly) {
-        Map<NumberedString, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
+    public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig, boolean appOnly) {
+        Map<MethodSubSignature, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
         SootMethod ret = vtbl.get(subSig);
         if (ret != null) {
             return ret;
@@ -109,26 +116,27 @@ public class VirtualCalls {
         return ret;
     }
 
-    public void resolve(Type t, Type declaredType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets) {
         resolve(t, declaredType, null, subSig, container, targets);
     }
 
-    public void resolve(Type t, Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets) {
         resolve(t, declaredType, sigType, subSig, container, targets, false);
     }
 
-    public void resolve(Type t, Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets, boolean appOnly) {
+        IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
         if (declaredType instanceof ArrayType) {
-            declaredType = RefType.v("java.lang.Object");
+            declaredType = identifierFactory.getType("java.lang.Object");
         }
         if (sigType instanceof ArrayType) {
-            sigType = RefType.v("java.lang.Object");
+            sigType = identifierFactory.getType("java.lang.Object");
         }
         if (t instanceof ArrayType) {
-            t = RefType.v("java.lang.Object");
+            t = identifierFactory.getType("java.lang.Object");
         }
 
         if (declaredType != null && !Scene.v().getFastHierarchy().canStoreType(t, declaredType)) {
@@ -137,13 +145,13 @@ public class VirtualCalls {
         if (sigType != null && !Scene.v().getFastHierarchy().canStoreType(t, sigType)) {
             return;
         }
-        if (t instanceof RefType) {
-            SootMethod target = resolveNonSpecial((RefType) t, subSig, appOnly);
+        if (t instanceof ClassType) {
+            SootMethod target = resolveNonSpecial((ClassType) t, subSig, appOnly);
             if (target != null) {
                 targets.add(target);
             }
-        } else if (t instanceof AnySubType) {
-            RefType base = ((AnySubType) t).getBase();
+        // } else if (t instanceof AnySubType) {
+            // RefType base = ((AnySubType) t).getBase();
 
             /*
              * Whenever any sub type of a specific type is considered as receiver for a method to call and the base type is an
@@ -156,15 +164,15 @@ public class VirtualCalls {
              *
              * Since Java has no multiple inheritance call by signature resolution is only activated if the base is an interface.
              */
-            resolveAnySubType(declaredType, sigType, subSig, container, targets, appOnly, base);
+            // resolveAnySubType(declaredType, sigType, subSig, container, targets, appOnly, base);
         } else if (t instanceof NullType) {
         } else {
             throw new RuntimeException("oops " + t);
         }
     }
 
-    protected void resolveAnySubType(Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
-                                     ChunkedQueue<SootMethod> targets, boolean appOnly, RefType base) {
+    protected void resolveAnySubType(Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
+                                     ChunkedQueue<SootMethod> targets, boolean appOnly, ClassType base) {
         {
             Set<Type> subTypes = baseToSubTypes.get(base);
             if (subTypes != null && !subTypes.isEmpty()) {

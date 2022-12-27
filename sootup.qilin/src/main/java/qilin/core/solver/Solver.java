@@ -24,6 +24,8 @@ import qilin.core.PTAScene;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.Edge;
+import qilin.core.callgraph.Kind;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.DoublePointsToSet;

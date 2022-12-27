@@ -21,10 +21,10 @@ package qilin.stat;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.sets.PointsToSet;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -69,7 +69,7 @@ public class YummyStat implements AbstractStat {
         Set<SootMethod> instanceReachables = new HashSet<>();
         for (final ContextMethod momc : pta.getReachableMethods()) {
             SootMethod method = momc.method();
-            if (!method.isPhantom() && !method.isStatic()) {
+            if (/*!method.isPhantom() && */!method.isStatic()) {
                 instanceReachables.add(method);
             }
         }

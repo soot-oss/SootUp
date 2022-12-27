@@ -49,7 +49,7 @@ public class PTAComparator {
         String[] ptaArg1 = Util.concat(args, new String[]{"-pta=" + ptaPtn1});
         comparator.record(Main.run(ptaArg1));
         PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPtn2);
-        PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+        PTA pta = PTAFactory.createPTA(null, PTAConfig.v().getPtaConfig().ptaPattern);
         pta.pureRun();
         comparator.compare(pta);
         comparator.out.close();

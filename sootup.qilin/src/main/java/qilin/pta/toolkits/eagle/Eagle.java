@@ -21,14 +21,14 @@ package qilin.pta.toolkits.eagle;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Util;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -264,9 +264,9 @@ public class Eagle {
 
         CallGraph callGraph = prePTA.getCallGraph();
         for (SootMethod method : prePTA.getNakedReachableMethods()) {
-            if (method.isPhantom()) {
-                continue;
-            }
+//            if (method.isPhantom()) {
+//                continue;
+//            }
             MethodPAG srcmpag = prePAG.getMethodPAG(method);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
@@ -346,7 +346,7 @@ public class Eagle {
                     // static call
                     receiver = thisRef;
                 }
-                for (Iterator<Edge> it = callGraph.edgesOutOf(u); it.hasNext(); ) {
+                for (Iterator<Edge> it = callGraph.edgesOutOf(s); it.hasNext(); ) {
                     Edge e = it.next();
                     SootMethod tgtmtd = e.tgt();
                     for (int i = 0; i < numArgs; i++) {

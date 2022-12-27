@@ -21,6 +21,9 @@ package qilin.core.builder;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
+import qilin.core.callgraph.Kind;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
@@ -30,8 +33,6 @@ import qilin.util.PTAUtils;
 
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -57,12 +58,13 @@ public class CallGraphBuilder {
     protected final Set<Edge> calledges;
     protected final PTA pta;
     protected final PAG pag;
+    protected CallGraph callGraph;
     protected CallGraph cicg;
 
     public CallGraphBuilder(PTA pta) {
         this.pta = pta;
         this.pag = pta.getPag();
-        PTAScene.v().setCallGraph(new CallGraph());
+        this.callGraph = new CallGraph();
         receiverToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
         methodToInvokeStmt = DataFactory.createMap();
         reachMethods = DataFactory.createSet();
@@ -91,7 +93,7 @@ public class CallGraphBuilder {
         if (cicg == null) {
             constructCallGraph();
         }
-        return PTAScene.v().getCallGraph();
+        return callGraph;
     }
 
     public CallGraph getCICallGraph() {
@@ -108,7 +110,7 @@ public class CallGraphBuilder {
             PTAScene.v().getCallGraph().addEdge(e);
             SootMethod src = e.src();
             SootMethod tgt = e.tgt();
-            Unit unit = e.srcUnit();
+            Stmt unit = e.srcUnit();
             Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> DataFactory.createMap());
             Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
             if (set.add(tgt)) {

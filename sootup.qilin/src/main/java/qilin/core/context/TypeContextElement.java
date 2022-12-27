@@ -24,7 +24,7 @@ import qilin.core.pag.StringConstantNode;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
-import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * Type based context element in the points to analysis.
@@ -37,9 +37,9 @@ public class TypeContextElement implements ContextElement {
         this.type = type;
     }
 
-    public static TypeContextElement getTypeContextElement(View view, AllocNode a) {
+    public static TypeContextElement getTypeContextElement(AllocNode a) {
         SootMethod declaringMethod = a.getMethod();
-        IdentifierFactory identifierFactory = view.getIdentifierFactory();
+        IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
         Type declType = identifierFactory.getType("java.lang.Object");
         if (declaringMethod != null) {
             declType = declaringMethod.getDeclaringClassType();

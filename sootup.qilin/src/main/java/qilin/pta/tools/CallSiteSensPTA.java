@@ -26,6 +26,7 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
+import sootup.core.views.View;
 
 /*
  * refer to "Two approaches to interprocedural data flow analysis" (PFA 1981)
@@ -33,7 +34,8 @@ import qilin.pta.PTAConfig;
 
 public class CallSiteSensPTA extends BasePTA {
 
-    public CallSiteSensPTA(int k, int hk) {
+    public CallSiteSensPTA(View view, int k, int hk) {
+        super(view);
         this.ctxCons = new CallsiteCtxConstructor();
         CtxSelector us = new UniformSelector(k, hk);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

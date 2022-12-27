@@ -25,6 +25,10 @@ import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
+import qilin.core.callgraph.Kind;
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
@@ -33,9 +37,12 @@ import qilin.core.sets.PointsToSetInternal;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -43,10 +50,13 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -58,7 +68,7 @@ public final class PTAUtils {
     private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
     static final String output_dir = CoreConfig.v().getOutConfig().outDir;
     static Map<String, Node> nodes = new TreeMap<>();
-    private static final ClassType clRunnable = RefType.v("java.lang.Runnable");
+    private static final ClassType clRunnable = (ClassType) JavaIdentifierFactory.getInstance().getType("java.lang.Runnable");
 
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();
@@ -536,7 +546,8 @@ public final class PTAUtils {
 
     public static boolean isThrowable(Type type) {
         if (type instanceof ClassType) {
-            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, RefType.v("java.lang.Throwable"));
+            IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, idFactory.getType("java.lang.Throwable"));
         }
         return false;
     }
@@ -550,11 +561,12 @@ public final class PTAUtils {
     }
 
     public static boolean supportFinalize(AllocNode heap) {
-        NumberedString sigFinalize = PTAScene.v().getSubSigNumberer().findOrAdd("void finalize()");
+        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
+        MethodSubSignature sigFinalize = idFactory.parseMethodSubSignature("void finalize()");
         Type type = heap.getType();
-        if (type instanceof ClassType refType && type != RefType.v("java.lang.Object")) {
+        if (type instanceof ClassType refType && type != idFactory.getType("java.lang.Object")) {
             SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
-            if (finalizeMethod != null && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
+            if (finalizeMethod != null && finalizeMethod.getSignature().toString().equals("<java.lang.Object: void finalize()>")) {
                 return false;
             }
             return finalizeMethod != null;
@@ -622,14 +634,14 @@ public final class PTAUtils {
 
     public static boolean isOfPrimitiveBaseType(AllocNode heap) {
         if (heap.getType() instanceof ArrayType arrayType) {
-            return arrayType.getBaseType() instanceof PrimType;
+            return arrayType.getBaseType() instanceof PrimitiveType;
         }
         return false;
     }
 
     public static boolean isPrimitiveArrayType(Type type) {
         if (type instanceof ArrayType arrayType) {
-            return arrayType.getArrayElementType() instanceof PrimType;
+            return arrayType.getArrayElementType() instanceof PrimitiveType;
         }
         return false;
     }
@@ -642,7 +654,7 @@ public final class PTAUtils {
     public static boolean enforceEmptyContext(AllocNode probe) {
         // primitive array objects should be context-insenstive.
         if (probe.getType() instanceof ArrayType arrayType) {
-            if (arrayType.getArrayElementType() instanceof PrimType) {
+            if (arrayType.getArrayElementType() instanceof PrimitiveType) {
                 return true;
             }
         }
@@ -756,10 +768,10 @@ public final class PTAUtils {
 
     public static SootClass getSootClass(Type type) {
         SootClass allocated = null;
-        if (type instanceof RefType) {
-            allocated = ((RefType) type).getSootClass();
-        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof RefType) {
-            allocated = ((RefType) ((ArrayType) type).getArrayElementType()).getSootClass();
+        if (type instanceof ClassType classType) {
+            allocated = classType.getSootClass();
+        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof ClassType classType) {
+            allocated = classType.getSootClass();
         }
         return allocated;
     }
@@ -785,10 +797,10 @@ public final class PTAUtils {
 
     public static boolean isEmptyArray(AllocNode heap) {
         Object var = heap.getNewExpr();
-        if (var instanceof NewArrayExpr nae) {
+        if (var instanceof JNewArrayExpr nae) {
             Value sizeVal = nae.getSize();
             if (sizeVal instanceof IntConstant size) {
-                return size.value == 0;
+                return size.getValue() == 0;
             }
         }
         return false;
@@ -846,7 +858,8 @@ public final class PTAUtils {
             }
         }
         for (SootClass sc : visit) {
-            final SootMethod initStart = sc.getMethod(Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()"));
+            MethodSubSignature msubsig = JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+            final SootMethod initStart = (SootMethod) sc.getMethod(msubsig).get();
             if (initStart != null) {
                 ret.add(initStart);
             }

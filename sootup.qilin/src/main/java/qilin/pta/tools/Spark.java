@@ -23,12 +23,14 @@ import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
 import qilin.parm.select.InsenSelector;
 import qilin.pta.PTAConfig;
+import sootup.core.views.View;
 
 /*
  * refer to "Scaling Java Points-To Analysis using SPARK" (CC'03)
  * */
 public class Spark extends BasePTA {
-    public Spark() {
+    public Spark(View view) {
+        super(view);
         this.ctxCons = new InsensCtxConstructor();
         this.ctxSel = new InsenSelector();
         if (PTAConfig.v().getPtaConfig().mergeHeap) {

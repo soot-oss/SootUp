@@ -21,12 +21,12 @@ package qilin.pta.toolkits.turner;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.CallGraph;
+import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -179,7 +179,7 @@ public abstract class AbstractMVFG {
             }
 
             Set<SootMethod> targets = new HashSet<>();
-            for (Iterator<Edge> it = callGraph.edgesOutOf(u); it.hasNext(); ) {
+            for (Iterator<Edge> it = callGraph.edgesOutOf(s); it.hasNext(); ) {
                 Edge e = it.next();
                 SootMethod tgtmtd = e.tgt();
                 targets.add(tgtmtd);
