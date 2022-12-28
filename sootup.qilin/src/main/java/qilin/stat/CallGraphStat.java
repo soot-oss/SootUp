@@ -124,7 +124,7 @@ public class CallGraphStat implements AbstractStat {
                     reachableAppStatic++;
                 }
             }
-            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(sm); iterator.hasNext(); ) {
+            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(new ContextMethod(sm, pta.emptyContext())); iterator.hasNext(); ) {
                 Edge e = iterator.next();
                 final SootMethod srcm = e.getSrc().method();
 //                if (sm.toString().equals("<java.lang.ClassNotFoundException: java.lang.Throwable getCause()>")) {

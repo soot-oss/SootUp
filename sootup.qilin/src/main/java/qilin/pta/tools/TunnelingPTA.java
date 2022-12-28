@@ -37,7 +37,7 @@ import sootup.core.views.View;
 public class TunnelingPTA extends BasePTA {
     public TunnelingPTA(View view, CtxConstructor ctxCons, int k, int hk) {
         super(view);
-        this.ctxCons = new TunnelingConstructor(ctxCons);
+        this.ctxCons = new TunnelingConstructor(view, ctxCons);
         CtxSelector us = new UniformSelector(k, hk);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
             this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);

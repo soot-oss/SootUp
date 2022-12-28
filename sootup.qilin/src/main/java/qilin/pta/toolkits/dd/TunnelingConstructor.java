@@ -24,19 +24,22 @@ import qilin.core.pag.ContextAllocNode;
 import qilin.core.pag.ContextMethod;
 import qilin.parm.ctxcons.*;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TunnelingConstructor implements CtxConstructor {
+    private final View view;
     private final CtxConstructor ctxCons;
     private final Map<SootMethod, CtxTunnelingFeaturesTrueTable> m2ftt = new HashMap<>();
 
     private CtxTunnelingFeaturesTrueTable findOrCreateTunnelingFeaturesTrueTable(SootMethod sm) {
-        return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm));
+        return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm, view));
     }
 
-    public TunnelingConstructor(CtxConstructor ctxCons) {
+    public TunnelingConstructor(View view, CtxConstructor ctxCons) {
+        this.view = view;
         this.ctxCons = ctxCons;
     }
 

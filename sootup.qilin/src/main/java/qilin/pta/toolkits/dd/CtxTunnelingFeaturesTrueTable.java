@@ -34,16 +34,20 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 /*
  * features and formulas used in "Precise and Scalable Points-to Analysis via Data-Driven
  * Context Tunneling" (OOPSLA 2018).
  * */
 public class CtxTunnelingFeaturesTrueTable {
+    private final View view;
     private final boolean[] f = new boolean[24];
 
-    public CtxTunnelingFeaturesTrueTable(SootMethod sm) {
+    public CtxTunnelingFeaturesTrueTable(SootMethod sm, View view) {
+        this.view = view;
         String sig = sm.getSignature().toString();
         // the 10 atomic signature features.
         this.f[1] = sig.contains("java");
@@ -98,11 +102,12 @@ public class CtxTunnelingFeaturesTrueTable {
         this.f[20] = heapAllocCnt == 1;
         this.f[21] = sig.contains("Object");
         this.f[22] = heapAllocCnt >= 1; // note, the original implementation is >=1 not > 1 which is conflict with the paper.
-        this.f[23] = sm.getDeclaringClass().getMethods().size() > 20; // their artifact uses 20 as the threshold.
+        SootClass sc = PTAUtils.getDeclaringClass(view, sm);
+        this.f[23] = sc.getMethods().size() > 20; // their artifact uses 20 as the threshold.
     }
 
     public boolean containedInNestedClass(SootMethod sm) {
-        SootClass sc = sm.getDeclaringClass();
+        SootClass sc = PTAUtils.getDeclaringClass(view, sm);
         return sc.toString().contains("$");
     }
 
