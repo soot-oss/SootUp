@@ -56,6 +56,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 
 import java.io.*;
@@ -69,6 +70,11 @@ public final class PTAUtils {
     static final String output_dir = CoreConfig.v().getOutConfig().outDir;
     static Map<String, Node> nodes = new TreeMap<>();
     private static final ClassType clRunnable = (ClassType) JavaIdentifierFactory.getInstance().getType("java.lang.Runnable");
+
+    public static SootClass getDeclaringClass(View view, SootMethod method) {
+        ClassType classType = method.getDeclaringClassType();
+        return (SootClass) view.getClass(classType).get();
+    }
 
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();

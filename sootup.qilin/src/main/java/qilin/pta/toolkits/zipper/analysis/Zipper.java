@@ -185,7 +185,7 @@ public class Zipper {
         // are also considered as the OUT methods of current type
         pce.PCEMethodsOf(type).stream()
                 .filter(m -> !m.isPrivate() && !m.isStatic())
-                .filter(m -> ToolUtil.isInnerType(
+                .filter(m -> ToolUtil.isInnerType(pta.getPag().getView(),
                         m.getDeclaringClassType(), type))
                 .forEach(outms::add);
         pce.PCEMethodsOf(type).stream()

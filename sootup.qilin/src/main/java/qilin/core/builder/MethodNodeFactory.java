@@ -148,59 +148,9 @@ public class MethodNodeFactory {
         PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
     }
 
-    /**
-     * Adds the edges required for this statement to the graph.
-     */
-    private void handleIntraStmt(Stmt s) {
-        s.apply(new AbstractStmtSwitch<>() {
-            public void caseAssignStmt(JAssignStmt as) {
-                Value l = as.getLeftOp();
-                Value r = as.getRightOp();
-                if (l instanceof JStaticFieldRef sfr) {
-                    resolveClinit(sfr);
-                } else if (r instanceof JStaticFieldRef sfr) {
-                    resolveClinit(sfr);
-                }
 
-                if (!(l.getType() instanceof ReferenceType))
-                    return;
-                // check for improper casts, with mal-formed code we might get
-                // l = (refliketype)int_type, if so just return
-                if (r instanceof JCastExpr && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
-                    return;
-                }
 
-                if (!(r.getType() instanceof ReferenceType))
-                    throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
-                            + " in method " + method.getSignature());
-                Node dest = getNode(l);
-                Node src = getNode(r);
-                mpag.addInternalEdge(src, dest);
-            }
-
-            public void caseReturnStmt(JReturnStmt rs) {
-                if (!(rs.getOp().getType() instanceof ReferenceType))
-                    return;
-                Node retNode = getNode(rs.getOp());
-                mpag.addInternalEdge(retNode, caseRet());
-            }
-
-            public void caseIdentityStmt(JIdentityStmt is) {
-                if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
-                    return;
-                }
-                Node dest = getNode(is.getLeftOp());
-                Node src = getNode(is.getRightOp());
-                mpag.addInternalEdge(src, dest);
-            }
-
-            public void caseThrowStmt(JThrowStmt ts) {
-                if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-                    mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
-                }
-            }
-        });
-    }
+    /* cases for handle values */
 
     private VarNode caseLocal(Local l) {
         return pag.makeLocalVarNode(l, l.getType(), method);
@@ -343,4 +293,66 @@ public class MethodNodeFactory {
     }
 
 
+    /* cases for handle intra-statements */
+    /**
+     * Adds the edges required for this statement to the graph.
+     */
+    public void caseAssignStmt(JAssignStmt as) {
+        Value l = as.getLeftOp();
+        Value r = as.getRightOp();
+        if (l instanceof JStaticFieldRef sfr) {
+            resolveClinit(sfr);
+        } else if (r instanceof JStaticFieldRef sfr) {
+            resolveClinit(sfr);
+        }
+
+        if (!(l.getType() instanceof ReferenceType))
+            return;
+        // check for improper casts, with mal-formed code we might get
+        // l = (refliketype)int_type, if so just return
+        if (r instanceof JCastExpr && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
+            return;
+        }
+
+        if (!(r.getType() instanceof ReferenceType))
+            throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
+                    + " in method " + method.getSignature());
+        Node dest = getNode(l);
+        Node src = getNode(r);
+        mpag.addInternalEdge(src, dest);
+    }
+
+    public void caseReturnStmt(JReturnStmt rs) {
+        if (!(rs.getOp().getType() instanceof ReferenceType))
+            return;
+        Node retNode = getNode(rs.getOp());
+        mpag.addInternalEdge(retNode, caseRet());
+    }
+
+    public void caseIdentityStmt(JIdentityStmt is) {
+        if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
+            return;
+        }
+        Node dest = getNode(is.getLeftOp());
+        Node src = getNode(is.getRightOp());
+        mpag.addInternalEdge(src, dest);
+    }
+
+    public void caseThrowStmt(JThrowStmt ts) {
+        if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+            mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+        }
+    }
+
+    private void handleIntraStmt(Stmt s) {
+        if (s instanceof JAssignStmt as) {
+            caseAssignStmt(as);
+        } else if (s instanceof JReturnStmt rs) {
+            caseReturnStmt(rs);
+        } else if (s instanceof JIdentityStmt is) {
+            caseIdentityStmt(is);
+        } else if (s instanceof JThrowStmt ts) {
+            caseThrowStmt(ts);
+        }
+    }
 }

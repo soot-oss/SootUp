@@ -65,7 +65,7 @@ public class CallGraphBuilder {
         this.pta = pta;
         this.pag = pta.getPag();
         this.callGraph = new CallGraph();
-        receiverToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
+        receiverToSites = DataFactory.createMap(1000);
         methodToInvokeStmt = DataFactory.createMap();
         reachMethods = DataFactory.createSet();
         calledges = DataFactory.createSet();
@@ -107,14 +107,14 @@ public class CallGraphBuilder {
         cicg = new CallGraph();
         Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
         calledges.forEach(e -> {
-            PTAScene.v().getCallGraph().addEdge(e);
+            callGraph.addEdge(e);
             SootMethod src = e.src();
             SootMethod tgt = e.tgt();
             Stmt unit = e.srcUnit();
             Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> DataFactory.createMap());
             Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
             if (set.add(tgt)) {
-                cicg.addEdge(new Edge(src, e.srcUnit(), tgt, e.kind()));
+                cicg.addEdge(new Edge(new ContextMethod(src, pta.emptyContext()), e.srcUnit(), new ContextMethod(tgt, pta.emptyContext()), e.kind()));
             }
         });
     }
@@ -236,7 +236,7 @@ public class CallGraphBuilder {
         }
         // add normal return edge
         if (s instanceof JAssignStmt jassign) {
-            Value dest = (jassign.getLeftOp();
+            Value dest = jassign.getLeftOp();
 
             if (dest.getType() instanceof ReferenceType) {
                 Node destNode = srcnf.getNode(dest);

@@ -23,6 +23,7 @@ import heros.solver.CountingThreadPoolExecutor;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.callgraph.CallGraph;
 import qilin.core.pag.*;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -67,7 +68,7 @@ public abstract class AbstractPAG {
 
     protected void build() {
         prePTA.getNakedReachableMethods()
-                .parallelStream().filter(m -> !m.isPhantom())
+                .parallelStream()// .filter(m -> !m.isPhantom())
                 .forEach(this::buildFG);
     }
 
@@ -217,6 +218,6 @@ public abstract class AbstractPAG {
     }
 
     protected AllocNode getSymbolicHeapOf(SootMethod method, Stmt invokeStmt) {
-        return symbolicHeaps.computeIfAbsent(method, k -> new ConcurrentHashMap<>()).computeIfAbsent(invokeStmt, k -> new AllocNode(invokeStmt, null, method));
+        return symbolicHeaps.computeIfAbsent(method, k -> new ConcurrentHashMap<>()).computeIfAbsent(invokeStmt, k -> new AllocNode(prePAG.getView(), invokeStmt, null, method));
     }
 }

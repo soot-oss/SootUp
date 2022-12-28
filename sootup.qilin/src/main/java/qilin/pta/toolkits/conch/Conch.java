@@ -31,6 +31,7 @@ import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.core.JavaSootMethod;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,8 +77,8 @@ public class Conch extends AbstractConch {
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
                     PointsToSet v1pts = pta.reachingObjects(baseNode);
                     MethodSignature targetSig = iie.getMethodSignature();
-                    SootMethod target = null;
-                    if (v1pts.size() == 1 && v1pts.toCIPointsToSet().contains(heap) && targetSig.isConstructor()) {
+                    JavaSootMethod target = (JavaSootMethod) pag.getView().getMethod(targetSig).get();
+                    if (v1pts.size() == 1 && v1pts.toCIPointsToSet().contains(heap) && target.isConstructor()) {
                         return target;
                     }
                 }
@@ -96,7 +97,8 @@ public class Conch extends AbstractConch {
                 if (expr instanceof JSpecialInvokeExpr iie) {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
-                    SootMethod target = iie.getMethod();
+                    MethodSignature methodSignature = iie.getMethodSignature();
+                    JavaSootMethod target = (JavaSootMethod) pag.getView().getMethod(methodSignature).get();
                     if (PTAUtils.mustAlias(pta, thisNode, baseNode) && target.isConstructor()) {
                         return target;
                     }
@@ -128,7 +130,9 @@ public class Conch extends AbstractConch {
             if (!(stmt.getInvokeExpr() instanceof JSpecialInvokeExpr)) {
                 continue;
             }
-            SootMethod target = stmt.getInvokeExpr().getMethod();
+            AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
+            MethodSignature methodSignature =  invokeExpr.getMethodSignature();
+            SootMethod target = (SootMethod) pag.getView().getMethod(methodSignature).get();
             if (target != null && target.equals(curr)) {
                 for (Node n : params) {
                     if (n instanceof VarNode paramNode) {
@@ -205,7 +209,8 @@ public class Conch extends AbstractConch {
 
     private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
         Set<Node> ret = this.pfg.fetchReachableParamsOf(from);
-        if (method.isConstructor()) {
+        JavaSootMethod method1 = (JavaSootMethod) method;
+        if (method1.isConstructor()) {
             return handleTransitiveConstructors(method, heap, ret);
         } else {
             return checkResult(ret);
@@ -295,7 +300,7 @@ public class Conch extends AbstractConch {
                     || PTAUtils.isOfPrimitiveBaseType(heap)) {
                 ciHeaps.add(heap);
             } else {
-                SootMethod mthd = heap.getMethod();
+                JavaSootMethod mthd = (JavaSootMethod) heap.getMethod();
                 if (mthd.isStaticInitializer()) {
                     ciHeaps.add(heap);
                 } else {

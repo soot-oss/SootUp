@@ -42,6 +42,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 
 import java.util.*;
@@ -109,9 +110,9 @@ public class Solver extends Propagator {
         while (newRMs.hasNext()) {
             ContextMethod momc = newRMs.next();
             SootMethod method = momc.method();
-            if (method.isPhantom()) {
-                continue;
-            }
+//            if (method.isPhantom()) {
+//                continue;
+//            }
             MethodPAG mpag = pag.getMethodPAG(method);
             addToPAG(mpag, momc.context());
             // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple times.
@@ -144,7 +145,8 @@ public class Solver extends Propagator {
                     // !TODO dynamicInvoke is provided in JDK after Java 7.
                     // currently, PTA does not handle dynamicInvokeExpr.
                 } else if (ie instanceof JStaticInvokeExpr sie) {
-                    SootMethod tgt = ie.getMethod();
+                    MethodSignature msig = sie.getMethodSignature();
+                    SootMethod tgt = (SootMethod) pag.getView().getMethod(msig).get();
                     VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
                     recNode = (VarNode) pta.parameterize(recNode, m.context());
                     cgb.addStaticEdge(m, s, tgt, Edge.ieToKind(ie));

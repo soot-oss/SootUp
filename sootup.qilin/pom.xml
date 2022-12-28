@@ -51,6 +51,12 @@
 			<artifactId>oshi-core</artifactId>
 			<version>6.4.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.upb.cs.swt/heros -->
+		<dependency>
+			<groupId>de.upb.cs.swt</groupId>
+			<artifactId>heros</artifactId>
+			<version>1.2.3</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

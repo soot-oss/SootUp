@@ -22,9 +22,11 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.PAG;
 import qilin.core.pag.VarNode;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -66,12 +68,13 @@ public class ToolUtil {
      * @param pOuter potential outer class
      * @return whether pInner is an inner class of pOuter
      */
-    public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
+    public static boolean isInnerType(final View view, final ClassType pInner, ClassType pOuter) {
         final String pInnerStr = pInner.toString();
         while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
-            SootClass sc = pOuter.getSootClass();
+            SootClass sc = (SootClass) view.getClass(pOuter).get();
             if (sc.hasSuperclass()) {
-                pOuter = sc.getSuperclass().getType();
+                SootClass superClass = (SootClass) sc.getSuperclass().get();
+                pOuter = superClass.getType();
             } else {
                 return false;
             }
