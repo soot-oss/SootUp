@@ -8,7 +8,7 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - ClassHierarchy generation
 - CallGraph generation with different algorithms/precisions
 - Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros))
-- Applys/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
+- Applies/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
 ## Getting started
