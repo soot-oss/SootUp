@@ -141,14 +141,14 @@ public interface TypeHierarchy {
         return false;
       }
     } else if (supertype instanceof ClassType) {
+      String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
         // First condition is a fast path
-        return supertype.equals(superClassOf((ClassType) potentialSubtype))
+        return fullyQualifiedName.equals("java.lang.Object") ||  supertype.equals(superClassOf((ClassType) potentialSubtype))
             || superClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
         return fullyQualifiedName.equals("java.lang.Object")
             || fullyQualifiedName.equals("java.io.Serializable")
             || fullyQualifiedName.equals("java.lang.Cloneable");
