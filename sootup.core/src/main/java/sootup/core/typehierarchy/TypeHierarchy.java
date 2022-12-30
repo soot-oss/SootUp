@@ -144,7 +144,8 @@ public interface TypeHierarchy {
       String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
         // First condition is a fast path
-        return fullyQualifiedName.equals("java.lang.Object") ||  supertype.equals(superClassOf((ClassType) potentialSubtype))
+        return fullyQualifiedName.equals("java.lang.Object")
+            || supertype.equals(superClassOf((ClassType) potentialSubtype))
             || superClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
