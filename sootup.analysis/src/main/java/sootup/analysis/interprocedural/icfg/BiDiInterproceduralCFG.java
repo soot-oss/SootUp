@@ -29,12 +29,34 @@ import java.util.Set;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 
+/**
+ * @param <N> Nodes in the CFG, e.g. {@link sootup.core.jimple.common.stmt.Stmt}
+ * @param <M> Method representation, e.g. {@link sootup.core.model.SootMethod}
+ */
 public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
 
+  /**
+   * returns the predecessors of a node
+   *
+   * @param u
+   * @return
+   */
   List<N> getPredsOf(N u);
 
+  /**
+   * returns entry points of a method
+   *
+   * @param m
+   * @return
+   */
   Collection<N> getEndPointsOf(M m);
 
+  /**
+   * returns predecessors of a call node
+   *
+   * @param u
+   * @return
+   */
   List<N> getPredsOfCallAt(N u);
 
   Set<N> allNonCallEndNodes();
@@ -53,7 +75,7 @@ public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {
   boolean isReturnSite(N n);
 
   /**
-   * Checks whether the given statement is rachable from the entry point
+   * Checks whether the given statement is reachable from the entry point
    *
    * @param u The statement to check
    * @return True if there is a control flow path from the entry point of the program to the given

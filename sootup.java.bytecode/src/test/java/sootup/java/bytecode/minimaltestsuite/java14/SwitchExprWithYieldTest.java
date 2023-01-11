@@ -1,20 +1,31 @@
 package sootup.java.bytecode.minimaltestsuite.java14;
 
+import categories.Java9Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 
 /** @author Bastian Haverkamp */
-public class SwitchExprWithoutBreakTest extends MinimalBytecodeTestSuiteBase {
+@Category(Java9Test.class)
+public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
+
+  @Override
+  public JavaClassType getDeclaredClassSignature() {
+    return JavaIdentifierFactory.getInstance().getClassType("SwitchExprWithYieldTest");
+  }
 
   @Override
   public MethodSignature getMethodSignature() {
+    System.out.println(getDeclaredClassSignature());
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "switchSomething", "void", Collections.emptyList());
   }
@@ -61,7 +72,7 @@ public class SwitchExprWithoutBreakTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SwitchExprWithoutBreak",
+            "l0 := @this: SwitchExprWithYieldTest",
             "l1 = 5",
             "l2 = \"\"",
             "switch(l1)",

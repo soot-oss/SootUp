@@ -39,9 +39,11 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    Project<?, ?> project =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(new EagerInputLocation<>())
+            .build();
+    View<?> view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
@@ -50,7 +52,7 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    final JIdentityStmt firstStmt =
+    final JIdentityStmt<?> firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
@@ -64,7 +66,6 @@ public class SootMethodTest {
             .addFlow(firstStmt, returnVoidStmt)
             .setMethodSignature(methodSignature)
             .setLocals(generator.getLocals())
-            .setTraps(Collections.emptyList())
             .build();
     assertEquals(1, body.getLocalCount());
 

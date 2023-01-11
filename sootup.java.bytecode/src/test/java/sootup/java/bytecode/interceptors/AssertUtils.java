@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.Assert.*;
 
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import sootup.core.graph.StmtGraph;
@@ -33,11 +34,13 @@ public class AssertUtils {
 
   // assert whether two bodys have the same stmtGraphs
   public static void assertStmtGraphEquiv(Body expected, Body actual) {
-    StmtGraph expected_SG = expected.getStmtGraph();
-    StmtGraph actual_SG = actual.getStmtGraph();
+    StmtGraph<?> expected_SG = expected.getStmtGraph();
+    StmtGraph<?> actual_SG = actual.getStmtGraph();
     assertNotNull(expected_SG);
     assertNotNull(actual_SG);
-    final boolean condition = expected_SG.equivTo(actual_SG);
+    final String expectedStr = expected.toString();
+    final String actualStr = actual.toString();
+    final boolean condition = expectedStr.equals(actualStr);
     if (!condition) {
       System.out.println("expected:");
       System.out.println(Lists.newArrayList(expected_SG.iterator()));
@@ -51,12 +54,12 @@ public class AssertUtils {
       for (Stmt s : actual_SG) {
         System.out.println(s + " => " + actual_SG.successors(s));
       }
+      assertEquals(expectedStr, actualStr);
     }
-    assertTrue(condition);
   }
 
   // assert whether two sets contain the same objects
-  public static void assertSetsEquiv(Set expected, Set actual) {
+  public static void assertSetsEquiv(Set<?> expected, Collection<?> actual) {
 
     assertNotNull(expected);
     assertNotNull(actual);
@@ -78,36 +81,9 @@ public class AssertUtils {
       System.out.println(expected);
       System.out.println("actual:");
       System.out.println(actual);
-    }
-    assertTrue(condition);
-  }
 
-  // assert whether two lists are equal
-  public static void assertListsEquiv(List expected, List actual) {
-
-    assertNotNull(expected);
-    assertNotNull(actual);
-    if (expected.size() != actual.size()) {
-      System.out.println("Expected size is not equal to actual size: ");
-      System.out.println("expected size of list: " + expected.size());
-      System.out.println("actual size of list: " + actual.size());
+      assertEquals(expected, actual);
     }
-    assertEquals(expected.size(), actual.size());
-    boolean condition = true;
-    for (Object o : actual) {
-      int idx = actual.indexOf(o);
-      if (!(expected.get(idx) == o)) {
-        condition = false;
-        break;
-      }
-    }
-    if (!condition) {
-      System.out.println("expected:");
-      System.out.println(expected);
-      System.out.println("actual:");
-      System.out.println(actual);
-    }
-    assertTrue(condition);
   }
 
   // assert whether two trap lists are equal

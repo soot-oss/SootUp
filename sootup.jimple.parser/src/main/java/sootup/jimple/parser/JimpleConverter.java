@@ -4,19 +4,20 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
+import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.*;
@@ -205,7 +206,7 @@ public class JimpleConverter {
 
     private class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
 
-      private final HashMap<Stmt, List<String>> unresolvedBranches = new HashMap<>();
+      private final HashMap<BranchingStmt, List<String>> unresolvedBranches = new HashMap<>();
       private final HashMap<String, Stmt> labeledStmts = new HashMap<>();
       private HashMap<String, Local> locals = new HashMap<>();
 
@@ -217,12 +218,9 @@ public class JimpleConverter {
       @Override
       @Nonnull
       public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
-        Body.BodyBuilder builder = Body.builder();
 
         EnumSet<Modifier> modifier =
             ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
-
-        builder.setModifiers(modifiers);
 
         final JimpleParser.Method_subsignatureContext method_subsignatureContext =
             ctx.method_subsignature();
@@ -247,12 +245,15 @@ public class JimpleConverter {
 
         MethodSignature methodSignature =
             identifierFactory.getMethodSignature(clazz, Jimple.unescape(methodname), type, params);
-        builder.setMethodSignature(methodSignature);
 
         List<ClassType> exceptions =
             ctx.throws_clause() == null
                 ? Collections.emptyList()
                 : util.getClassTypeList(ctx.throws_clause().type_list());
+
+        List<Trap> traps = new ArrayList<>();
+        List<Stmt> stmtList = new ArrayList<>();
+        Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
 
         if (ctx.method_body() == null) {
           throw new ResolveException(
@@ -296,18 +297,18 @@ public class JimpleConverter {
               }
             }
           }
-          builder.setLocals(new HashSet<>(locals.values()));
 
           // statements
-          StmtVisitor stmtVisitor = new StmtVisitor(builder);
+          StmtVisitor stmtVisitor = new StmtVisitor();
           final JimpleParser.StatementsContext statements =
               method_body_contentsContext.statements();
           if (statements != null && statements.statement() != null) {
-            statements.statement().forEach(stmtVisitor::visitStatement);
+            statements
+                .statement()
+                .forEach(stmtCtx -> stmtList.add(stmtVisitor.visitStatement(stmtCtx)));
           }
 
           // catch_clause
-          List<Trap> traps = new ArrayList<>();
           final List<JimpleParser.Trap_clauseContext> trap_clauseContexts =
               method_body_contentsContext.trap_clauses().trap_clause();
           if (trap_clauseContexts != null) {
@@ -324,17 +325,16 @@ public class JimpleConverter {
                       labeledStmts.get(handlerLabel)));
             }
           }
-          builder.setTraps(traps);
         } else {
           // no body is given: no brackets, but a semicolon -> abstract
         }
 
         Position classPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
-        builder.setPosition(classPosition);
 
         // associate labeled Stmts with Branching Stmts
-        for (Map.Entry<Stmt, List<String>> item : unresolvedBranches.entrySet()) {
+        for (Map.Entry<BranchingStmt, List<String>> item : unresolvedBranches.entrySet()) {
           final List<String> targetLabels = item.getValue();
+          final List<Stmt> targets = new ArrayList<>(targetLabels.size());
           for (String targetLabel : targetLabels) {
             final Stmt target = labeledStmts.get(targetLabel);
             if (target == null) {
@@ -345,32 +345,38 @@ public class JimpleConverter {
                       + targetLabel,
                   path,
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
-
-            } else {
-              builder.addFlow(item.getKey(), target);
             }
+            targets.add(target);
           }
+          branchingMap.put(item.getKey(), targets);
         }
 
         Position methodPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
         final Body build;
         try {
+
+          MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+          graph.initializeWith(stmtList, branchingMap, traps);
+          Body.BodyBuilder builder = Body.builder(graph);
+
+          builder.setModifiers(modifiers);
+          builder.setMethodSignature(methodSignature);
+          builder.setLocals(new HashSet<>(locals.values()));
+          builder.setPosition(classPosition);
+
           build = builder.build();
         } catch (Exception e) {
           throw new ResolveException(methodname + " " + e.getMessage(), path, methodPosition, e);
         }
+
         OverridingBodySource oms = new OverridingBodySource(methodSignature, build);
         return new SootMethod(oms, methodSignature, modifier, exceptions, methodPosition);
       }
 
       private class StmtVisitor extends JimpleBaseVisitor<Stmt> {
-        @Nonnull private final Body.BodyBuilder builder;
-        @Nullable private Stmt lastStmt = null;
         final ValueVisitor valueVisitor = new ValueVisitor();
 
-        private StmtVisitor(@Nonnull Body.BodyBuilder builder) {
-          this.builder = builder;
-        }
+        private StmtVisitor() {}
 
         @Override
         public Stmt visitStatement(JimpleParser.StatementContext ctx) {
@@ -384,16 +390,6 @@ public class JimpleConverter {
             final String labelname = ctx.label_name.getText();
             labeledStmts.put(labelname, stmt);
           }
-
-          if (lastStmt == null) {
-            builder.setStartingStmt(stmt);
-          } else {
-            if (lastStmt.fallsThrough()) {
-              builder.addFlow(lastStmt, stmt);
-            }
-          }
-
-          lastStmt = stmt;
           return stmt;
         }
 
@@ -406,14 +402,12 @@ public class JimpleConverter {
             return Jimple.newBreakpointStmt(pos);
           } else {
             if (ctx.ENTERMONITOR() != null) {
-              return Jimple.newEnterMonitorStmt(
-                  (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
+              return Jimple.newEnterMonitorStmt(valueVisitor.visitImmediate(ctx.immediate()), pos);
             } else if (ctx.EXITMONITOR() != null) {
-              return Jimple.newExitMonitorStmt(
-                  (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
+              return Jimple.newExitMonitorStmt(valueVisitor.visitImmediate(ctx.immediate()), pos);
             } else if (ctx.SWITCH() != null) {
 
-              Immediate key = (Immediate) valueVisitor.visitImmediate(ctx.immediate());
+              Immediate key = valueVisitor.visitImmediate(ctx.immediate());
               List<IntConstant> lookup = new ArrayList<>();
               List<String> targetLabels = new ArrayList<>();
               int min = Integer.MAX_VALUE;
@@ -493,32 +487,29 @@ public class JimpleConverter {
                 }
 
               } else if (ctx.IF() != null) {
-                final Stmt stmt =
+                final BranchingStmt stmt =
                     Jimple.newIfStmt(
                         (AbstractConditionExpr) valueVisitor.visitBool_expr(ctx.bool_expr()), pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
               } else if (ctx.goto_stmt() != null) {
-                final Stmt stmt = Jimple.newGotoStmt(pos);
+                final BranchingStmt stmt = Jimple.newGotoStmt(pos);
                 unresolvedBranches.put(
                     stmt, Collections.singletonList(ctx.goto_stmt().label_name.getText()));
                 return stmt;
               } else if (ctx.NOP() != null) {
                 return Jimple.newNopStmt(pos);
               } else if (ctx.RET() != null) {
-                return Jimple.newRetStmt(
-                    (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
+                return Jimple.newRetStmt(valueVisitor.visitImmediate(ctx.immediate()), pos);
               } else if (ctx.RETURN() != null) {
                 if (ctx.immediate() == null) {
                   return Jimple.newReturnVoidStmt(pos);
                 } else {
-                  return Jimple.newReturnStmt(
-                      (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
+                  return Jimple.newReturnStmt(valueVisitor.visitImmediate(ctx.immediate()), pos);
                 }
               } else if (ctx.THROW() != null) {
-                return Jimple.newThrowStmt(
-                    (Immediate) valueVisitor.visitImmediate(ctx.immediate()), pos);
+                return Jimple.newThrowStmt(valueVisitor.visitImmediate(ctx.immediate()), pos);
               } else if (ctx.invoke_expr() != null) {
                 return Jimple.newInvokeStmt(
                     (AbstractInvokeExpr) valueVisitor.visitInvoke_expr(ctx.invoke_expr()), pos);
@@ -552,7 +543,7 @@ public class JimpleConverter {
                   JimpleConverterUtil.buildPositionFromCtx(ctx));
             }
 
-            Immediate dim = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
+            Immediate dim = visitImmediate(ctx.array_descriptor().immediate());
             return JavaJimple.getInstance().newNewArrayExpr(type, dim);
           } else if (ctx.NEWMULTIARRAY() != null && ctx.immediate() != null) {
             final Type type = util.getType(ctx.multiarray_type.getText());
@@ -565,7 +556,7 @@ public class JimpleConverter {
 
             List<Immediate> sizes =
                 ctx.immediate().stream()
-                    .map(imm -> (Immediate) visitImmediate(imm))
+                    .map(imm -> visitImmediate(imm))
                     .collect(Collectors.toList());
             if (sizes.size() < 1) {
               throw new ResolveException(
@@ -577,11 +568,11 @@ public class JimpleConverter {
             return Jimple.newNewMultiArrayExpr(arrtype, sizes);
           } else if (ctx.nonvoid_cast != null && ctx.op != null) {
             final Type type = util.getType(ctx.nonvoid_cast.getText());
-            Immediate val = (Immediate) visitImmediate(ctx.op);
+            Immediate val = visitImmediate(ctx.op);
             return Jimple.newCastExpr(val, type);
           } else if (ctx.INSTANCEOF() != null && ctx.op != null) {
             final Type type = util.getType(ctx.nonvoid_type.getText());
-            Immediate val = (Immediate) visitImmediate(ctx.op);
+            Immediate val = visitImmediate(ctx.op);
             return Jimple.newInstanceOfExpr(val, type);
           }
           return super.visitValue(ctx);
@@ -600,7 +591,7 @@ public class JimpleConverter {
 
           if (ctx.array_descriptor() != null) {
             // array
-            Immediate idx = (Immediate) visitImmediate(ctx.array_descriptor().immediate());
+            Immediate idx = visitImmediate(ctx.array_descriptor().immediate());
             Local type = getLocal(ctx.identifier().getText());
             return JavaJimple.getInstance().newArrayRef(type, idx);
           } else if (ctx.DOT() != null) {
@@ -770,7 +761,7 @@ public class JimpleConverter {
 
         @Override
         public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
-          Immediate value = (Immediate) visitImmediate(ctx.immediate());
+          Immediate value = visitImmediate(ctx.immediate());
           if (ctx.unop().NEG() != null) {
             return Jimple.newNegExpr(value);
           } else {

@@ -24,17 +24,20 @@ package sootup.analysis.interprocedural.ifds;
 
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import heros.InterproceduralCFG;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
+@Category(Java8Test.class)
 public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   SootMethod getEntryPointMethod() {

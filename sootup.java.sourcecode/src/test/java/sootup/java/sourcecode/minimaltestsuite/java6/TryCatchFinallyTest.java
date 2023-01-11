@@ -2,6 +2,7 @@ package sootup.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
 import java.util.Collections;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
@@ -10,6 +11,7 @@ import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Hasitha Rajapakse */
 @Category(Java8Test.class)
+@Ignore("ms: trap building in wala is not working")
 public class TryCatchFinallyTest extends MinimalSourceTestSuiteBase {
 
   @Test

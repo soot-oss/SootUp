@@ -22,9 +22,7 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -50,9 +48,6 @@ public final class Trap implements Copyable {
   /** The stmt to which execution flows after the caught exception is triggered. */
   @Nonnull private final Stmt handlerStmt;
 
-  /** The list of stmts referred to in this Trap (begin, end and handler). */
-  @Nonnull private final List<Stmt> stmts;
-
   /** Creates a Trap with the given exception, handler, begin and end stmts. */
   public Trap(
       @Nonnull ClassType exception,
@@ -71,19 +66,16 @@ public final class Trap implements Copyable {
     this.beginStmt = beginStmt;
     this.endStmt = endStmt;
     this.handlerStmt = handlerStmt;
-    this.stmts = Collections.unmodifiableList(Arrays.asList(beginStmt, endStmt, handlerStmt));
   }
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder("Trap :");
-    buf.append("\nbegin  : ");
-    buf.append(getBeginStmt());
-    buf.append("\nend    : ");
-    buf.append(getEndStmt());
-    buf.append("\nhandler: ");
-    buf.append(getHandlerStmt());
-    return new String(buf);
+    StringBuilder sb = new StringBuilder();
+    sb.append(exception);
+    sb.append(" from: ").append(getBeginStmt());
+    sb.append(" to: ").append(getEndStmt());
+    sb.append(" handler: ").append(getHandlerStmt());
+    return new String(sb);
   }
 
   @Nonnull
@@ -122,12 +114,23 @@ public final class Trap implements Copyable {
   }
 
   @Nonnull
-  public List<Stmt> getStmts() {
-    return stmts;
-  }
-
-  @Nonnull
   public ClassType getExceptionType() {
     return exception;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getExceptionType(), getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Trap trap = (Trap) o;
+    return exception.equals(trap.exception)
+        && beginStmt.equals(trap.beginStmt)
+        && endStmt.equals(trap.endStmt)
+        && handlerStmt.equals(trap.handlerStmt);
   }
 }

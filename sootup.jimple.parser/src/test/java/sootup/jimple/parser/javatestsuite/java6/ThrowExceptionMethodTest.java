@@ -43,13 +43,18 @@ public class ThrowExceptionMethodTest extends JimpleTestSuiteBase {
   }
 
   @Test
-  public void test() {
+  public void testArithException() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     assertTrue(
         method.getExceptionSignatures().stream()
             .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
-    method = loadMethod(getMethodSignature1());
+  }
+
+  @Test
+  public void testCustomException() {
+
+    SootMethod method = loadMethod(getMethodSignature1());
     assertJimpleStmts(method, expectedBodyStmts1());
     assertTrue(
         method.getExceptionSignatures().stream()

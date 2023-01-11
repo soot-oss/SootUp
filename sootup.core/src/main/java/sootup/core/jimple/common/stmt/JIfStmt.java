@@ -51,15 +51,7 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public String toString() {
-    /*  // TODO [ms] leftover: Stmt t = getTarget();
-       String target = "(branch)";
-       if (!t.branches()) {
-         target = t.toString();
-       }
-    */
-    return Jimple.IF
-        + " "
-        + getCondition().toString(); // TODO [ms] leftover: + " " + Jimple.GOTO + " " + target;
+    return Jimple.IF + " " + getCondition();
   }
 
   @Override
@@ -71,26 +63,23 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
+    // [ms] bounds are validated in Body
+    stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 
+  @Nonnull
   public AbstractConditionExpr getCondition() {
     return condition;
   }
 
-  public Stmt getTarget(Body body) {
-    // [ms] bounds are validated in Body
-    return getTargetStmts(body).get(1);
-  }
-
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(@Nonnull Body body) {
     return body.getBranchTargetsOf(this);
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 2;
   }
 
@@ -109,11 +98,6 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public boolean fallsThrough() {
-    return true;
-  }
-
-  @Override
-  public boolean branches() {
     return true;
   }
 

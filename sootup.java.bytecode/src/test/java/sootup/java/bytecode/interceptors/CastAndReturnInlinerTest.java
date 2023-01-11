@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
@@ -57,14 +56,14 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = Collections.emptyList();
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setTraps(traps);
+
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, jump);
     bodyBuilder.addFlow(jump, bToA);
     bodyBuilder.addFlow(bToA, ret);
+
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
@@ -111,11 +110,8 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = Collections.emptyList();
-
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setTraps(traps);
     bodyBuilder.setStartingStmt(strToA);
     bodyBuilder.addFlow(strToA, strToC);
     bodyBuilder.addFlow(strToC, jump);

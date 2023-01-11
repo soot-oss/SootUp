@@ -24,7 +24,7 @@ package sootup.java.bytecode.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.ExceptionalStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -39,7 +39,7 @@ public class LocalLivenessAnalyser {
   // e.g: a = b + c; live-in={b,c}  live-out={a,b,c}
   private final Map<Stmt, Set<Local>> liveOut = new HashMap<>();
 
-  public LocalLivenessAnalyser(@Nonnull ExceptionalStmtGraph graph) {
+  public LocalLivenessAnalyser(@Nonnull StmtGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
     for (Stmt stmt : graph.nodes()) {
@@ -63,10 +63,10 @@ public class LocalLivenessAnalyser {
         for (Stmt succ : graph.successors(stmt)) {
           out = merge(out, liveIn.get(succ));
         }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt)) {
+        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
           out = merge(out, liveIn.get(esucc));
         }
-        if (!isEqual(out, liveOut.get(stmt))) {
+        if (isNotEqual(out, liveOut.get(stmt))) {
           fixed = false;
           liveOut.put(stmt, new HashSet<>(out));
         }
@@ -77,11 +77,15 @@ public class LocalLivenessAnalyser {
             in.add((Local) use);
           }
         }
-        if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-          out.remove(stmt.getDefs().get(0));
+        final List<Value> defs = stmt.getDefs();
+        if (!defs.isEmpty()) {
+          final Value value = defs.get(0);
+          if (value instanceof Local) {
+            out.remove(value);
+          }
         }
         in = merge(in, out);
-        if (!isEqual(in, liveIn.get(stmt))) {
+        if (isNotEqual(in, liveIn.get(stmt))) {
           fixed = false;
           liveIn.put(stmt, in);
         }
@@ -137,16 +141,16 @@ public class LocalLivenessAnalyser {
    *
    * @return if same return true, else return false;
    */
-  private boolean isEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
+  private boolean isNotEqual(@Nonnull Set<Local> set1, @Nonnull Set<Local> set2) {
     if (set1.size() != set2.size()) {
-      return false;
+      return true;
     } else {
       for (Local local : set1) {
         if (!set2.contains(local)) {
-          return false;
+          return true;
         }
       }
     }
-    return true;
+    return false;
   }
 }

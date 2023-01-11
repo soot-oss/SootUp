@@ -50,7 +50,7 @@ jobs:
           key: cache-compilation-${{ github.sha }}
 
       - name: Build with JDK8
-        run: mvn compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   JDK8:
     needs: Compilation
@@ -81,7 +81,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Test (JDK8)
-        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -112,9 +112,6 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: debug info
-        run: tree **/target
-
       - name: cache maven dependencies
         uses: actions/cache@v3
         with:
@@ -130,7 +127,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Test (JDK9)
-        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -148,7 +145,7 @@ jobs:
 
       # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
       - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       
 
     # takes a long time to run - so just run them when PR is not draft anymore
@@ -181,7 +178,7 @@ jobs:
             ${{ runner.os }}-maven-    
 
       - name: Test (IntegrationTest)
-        run: mvn -pl sootup.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B -pl sootup.tests -am verify -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -201,7 +198,6 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
-#    if: ${{ github.event_name == 'pull_request' }}
     needs: [ JDK9, JDK8, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
@@ -250,30 +246,16 @@ jobs:
         with:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
-      - name: Comment Coverage info
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: coverage-pr-message
-          recreate: true
-          message: |
-            ***Test Coverage***
-            Total coverage ${{ steps.jacoco.outputs.coverage }}
-            Amount of covered (bytecode-)branches ${{ steps.jacoco.outputs.branches }}
-
-      - name: Commit the badge (if it changed)
-        uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
-          message: 'commit badge'
-          add: '**/badges/jacoco.svg'
-      
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          files: sootup.report/target/jacoco-aggregate/jacoco.xml
 
 
 
   publish-javadoc:
     needs: Compilation
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy JavaDoc 🚀

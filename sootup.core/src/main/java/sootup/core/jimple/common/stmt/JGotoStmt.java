@@ -48,22 +48,18 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   public void toString(@Nonnull StmtPrinter stmtPrinter) {
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    stmtPrinter.stmtRef(getTarget(stmtPrinter.getBody()), true);
-  }
-
-  public Stmt getTarget(Body body) {
-    // [ms] bounds are validated in Body
-    return getTargetStmts(body).get(0);
+    // [ms] bounds are validated in Body if its a valid StmtGraph
+    stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
   }
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public List<Stmt> getTargetStmts(@Nonnull Body body) {
     return body.getBranchTargetsOf(this);
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 1;
   }
 
@@ -75,11 +71,6 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   @Override
   public boolean fallsThrough() {
     return false;
-  }
-
-  @Override
-  public boolean branches() {
-    return true;
   }
 
   @Override

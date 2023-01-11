@@ -24,7 +24,7 @@ package sootup.core.jimple;
 
 import java.util.*;
 import sootup.core.IdentifierFactory;
-import sootup.core.graph.Block;
+import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;
@@ -339,7 +339,7 @@ public abstract class Jimple {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
-  public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, Block> argToBlock) {
+  public static JPhiExpr newPhiExpr(List<Local> args, Map<Local, BasicBlock<?>> argToBlock) {
     return new JPhiExpr(args, argToBlock);
   }
 

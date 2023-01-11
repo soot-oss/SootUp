@@ -2,7 +2,7 @@
 
 The purpose of the SootUp project is to make [Soot](https://github.com/soot-oss/soot) future-proof. The focus of this project lies on restructuring Soot away from a framework that makes heavy use of singletons, towards a lighter library that can easily be included in other projects.
 
-
+# [Click here to read our announcement on the first release of SootUp](announce.md)
 
 
 !!! important
@@ -24,31 +24,31 @@ SootUp has a modular architecture, which enables its clients to include only the
 
 ??? info "core"
 
-    [core module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
+    [core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
     
 ??? info "java.core"
     
-    [java.core module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.java.core) contains parts that are essential for analyzing Java code.
+    [java.core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core) contains parts that are essential for analyzing Java code.
 
 ??? info "java.bytecode"
 
-    [java.bytecode module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
+    [java.bytecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
     
 ??? info "java.sourcecode"
 
-    [java.sourcecode module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
+    [java.sourcecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
     
 ??? info "callgraph"
  
-    [callgraph module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**. A reimplementation of **Spark** pointer analysis framework is in progress.
+    [callgraph module](https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**. A reimplementation of **Spark** pointer analysis framework is in progress.
   
 ??? info "jimple.parser"
     
-    [jimple.parser module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
+    [jimple.parser module](https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
 
-??? info "tests" 
+??? info "analysis" 
 
-    [tests module](https://github.com/secure-software-engineering/SootUp/tree/develop/sootup.tests) contains integrations tests, that depend on all of the above modules.
+    [analysis module](https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis) enables performing interprocedural dataflow analyses.
 
 ### No More Singletons
 
@@ -92,3 +92,17 @@ Jimple is the only intermediate representation (IR) in SootUp. We changed it sli
 ### Is this a drop-in replacement for Soot?
 
 Not really. SootUp has a completely new architecture and API, so it is not trivial to update existing projects that build on soot. We recommend using it for greenfield projects.
+
+
+## Supporters
+The development of SootUp is financed by generous support from the German Research Foundation (DFG),
+the Heinz Nixdorf Institute (HNI).
+
+<table border="0">
+<tr>
+<td><img src="https://soot-oss.github.io/soot/images/dfg_logo_englisch_blau_en.jpg" width="250" > </td>
+<td><img src="https://soot-oss.github.io/soot/images/Heinz_Nixdorf_Institut_Logo_CMYK.jpg" width="250" ></td>
+</tr>
+</table>
+
+[Become a sponsor!](https://github.com/sponsors/soot-oss)

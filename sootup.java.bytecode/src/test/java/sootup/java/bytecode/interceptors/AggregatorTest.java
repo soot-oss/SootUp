@@ -2,7 +2,6 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +9,6 @@ import org.junit.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -33,11 +31,12 @@ public class AggregatorTest {
    */
   @Test
   public void testAggregation() {
-    Body.BodyBuilder testBuilder = createBody(true);
+    Body.BodyBuilder testBuilder = createBodyBuilder(true);
     Body testBody = testBuilder.build();
+    List<Stmt> originalStmts = testBody.getStmts();
+
     new Aggregator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
 
     assertEquals(originalStmts.size() - 1, processedStmts.size());
@@ -54,7 +53,7 @@ public class AggregatorTest {
    */
   @Test
   public void testNoAggregation() {
-    Body.BodyBuilder testBuilder = createBody(false);
+    Body.BodyBuilder testBuilder = createBodyBuilder(false);
     Body testBody = testBuilder.build();
     new Aggregator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
@@ -67,7 +66,7 @@ public class AggregatorTest {
     }
   }
 
-  private static Body.BodyBuilder createBody(boolean withAggregation) {
+  private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
@@ -85,8 +84,6 @@ public class AggregatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(intToA);
     builder.setMethodSignature(
@@ -96,7 +93,6 @@ public class AggregatorTest {
     builder.addFlow(intToA, intToB);
     builder.addFlow(intToB, ret);
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

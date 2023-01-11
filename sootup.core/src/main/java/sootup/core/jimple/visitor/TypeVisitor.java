@@ -22,6 +22,7 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
+import javax.annotation.Nonnull;
 import sootup.core.types.*;
 
 public interface TypeVisitor extends Visitor {
@@ -44,7 +45,7 @@ public interface TypeVisitor extends Visitor {
 
   void caseArrayType();
 
-  void caseClassType();
+  void caseClassType(@Nonnull ClassType classType);
 
   void caseNullType();
 

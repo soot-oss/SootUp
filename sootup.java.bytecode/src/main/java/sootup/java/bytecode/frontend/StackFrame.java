@@ -33,8 +33,8 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /**
- * Frame of stack for an instruction. (see
- * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6 )
+ * Frame of stack for an instruction. (see <a
+ * href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6">...</a> )
  *
  * @author Aaloan Miftah
  */

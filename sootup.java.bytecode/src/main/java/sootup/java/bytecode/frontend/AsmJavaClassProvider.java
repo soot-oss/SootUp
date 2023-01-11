@@ -39,6 +39,7 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
@@ -64,10 +65,10 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     }
 
     JavaClassType klassType = (JavaClassType) classType;
-    if (klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
+    if (klassType instanceof ModuleJavaClassType
+        && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       throw new ResolveException(
           "Can not create ClassSource from a module info descriptor!", sourcePath);
-      // FIXME: [ms] in <java9 that could be a usual class..
     } else {
       if (klassType instanceof AnnotationType) {
         return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);
