@@ -127,6 +127,78 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testConcreteCall() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvc.Class"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClass() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcsc.SuperClass"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClassWithDefaultInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscwi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscwi.SuperClass"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvci.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvci.Interface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSubInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcsi.SubInterface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClassSubInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscsi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscsi.SubInterface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
   public void testNonVirtualCall1() {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc1.Class");
     MethodSignature targetMethod =
