@@ -7,9 +7,12 @@ import javax.annotation.Nonnull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
+/**
+ * Cache that stores any class that has been resolved.
+ */
 public class FullCache<S extends SootClass<?>> implements Cache<S> {
 
-  @Nonnull protected final Map<ClassType, S> cache = new HashMap<>();
+  protected final Map<ClassType, S> cache = new HashMap<>();
 
   @Override
   public synchronized S getClass(ClassType classType) {
@@ -22,13 +25,11 @@ public class FullCache<S extends SootClass<?>> implements Cache<S> {
     return cache.values();
   }
 
-  @Nonnull
   @Override
   public void putClass(ClassType classType, S sootClass) {
     cache.putIfAbsent(classType, sootClass);
   }
 
-  @Nonnull
   @Override
   public boolean hasClass(ClassType classType) {
     return cache.containsKey(classType);

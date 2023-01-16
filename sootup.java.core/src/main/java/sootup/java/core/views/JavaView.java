@@ -27,9 +27,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
 import sootup.core.cache.Cache;
+import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.CacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
@@ -61,13 +63,11 @@ public class JavaView extends AbstractView<JavaSootClass> {
   protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
       classLoadingOptionsSpecifier;
 
-  @Nonnull
   public JavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
     this(project, new FullCacheProvider<>());
   }
 
   /** Creates a new instance of the {@link JavaView} class. */
-  @Nonnull
   public JavaView(
       @Nonnull Project<JavaSootClass, ? extends JavaView> project,
       @Nonnull CacheProvider<JavaSootClass> cacheProvider) {
@@ -120,8 +120,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Override
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
-    resolveAll();
-    return cache.getClasses();
+    return resolveAll();
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
@@ -177,14 +176,24 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return Optional.of(theClass);
   }
 
-  protected synchronized void resolveAll() {
-    if (isFullyResolved) {
-      return;
+  @Nonnull
+  protected synchronized Collection<JavaSootClass> resolveAll() {
+    if (isFullyResolved && cache instanceof FullCache) {
+      return cache.getClasses();
     }
 
-    getProject().getInputLocations().stream()
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts = getProject().getInputLocations().stream()
         .flatMap(location -> location.getClassSources(this).stream())
-        .forEach(this::buildClassFrom);
+        .map(this::buildClassFrom)
+            .collect(Collectors.toList());
+
+    Collection<JavaSootClass> resolvedClasses = resolvedClassesOpts.stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
     isFullyResolved = true;
+
+    return resolvedClasses;
   }
 }

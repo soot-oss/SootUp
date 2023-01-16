@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
+import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
@@ -449,18 +450,32 @@ public class JavaModuleView extends JavaView {
   }
 
   @Override
-  protected synchronized void resolveAll() {
-    if (isFullyResolved) {
-      return;
+  @Nonnull
+  protected synchronized Collection<JavaSootClass> resolveAll() {
+    if (isFullyResolved && cache instanceof FullCache) {
+      return cache.getClasses();
     }
 
-    getProject().getInputLocations().stream()
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts = getProject().getInputLocations().stream()
         .flatMap(location -> location.getClassSources(this).stream())
-        .forEach(this::buildClassFrom);
+        .map(this::buildClassFrom)
+                .collect(Collectors.toList());
 
-    getProject().getModuleInfoAnalysisInputLocation().stream()
+    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts = getProject().getModuleInfoAnalysisInputLocation().stream()
         .flatMap(location -> location.getClassSources(this).stream())
-        .forEach(this::buildClassFrom);
+        .map(this::buildClassFrom)
+            .collect(Collectors.toList());
+
+    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts = Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
+            .collect(Collectors.toList());
+
+    Collection<JavaSootClass> resolvedClasses = combinedResolvedClassesOpts.stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
     isFullyResolved = true;
+
+    return resolvedClasses;
   }
 }
