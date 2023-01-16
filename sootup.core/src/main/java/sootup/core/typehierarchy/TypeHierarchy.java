@@ -20,6 +20,7 @@ package sootup.core.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -141,17 +142,21 @@ public interface TypeHierarchy {
         return false;
       }
     } else if (supertype instanceof ClassType) {
+      String supertypeName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
-        // First condition is a fast path
-        return supertype.equals(superClassOf((ClassType) potentialSubtype))
+        String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
+        // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
+        // superClassOf() check is a fast path
+        return (supertypeName.equals("java.lang.Object")
+                && !potentialSubtypeName.equals("java.lang.Object"))
+            || supertype.equals(superClassOf((ClassType) potentialSubtype))
             || superClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
-        return fullyQualifiedName.equals("java.lang.Object")
-            || fullyQualifiedName.equals("java.io.Serializable")
-            || fullyQualifiedName.equals("java.lang.Cloneable");
+        return supertypeName.equals("java.lang.Object")
+            || supertypeName.equals("java.io.Serializable")
+            || supertypeName.equals("java.lang.Cloneable");
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }

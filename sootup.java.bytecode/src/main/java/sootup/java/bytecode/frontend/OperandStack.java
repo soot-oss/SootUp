@@ -36,15 +36,15 @@ import sootup.core.types.Type;
 
 /**
  * This class resembles the stack which the bytecode fills. It is used to convert to jimple with
- * Locals. (stack-machine -> "register" machine model)
+ * Locals. (stack-machine -&gt; "register" machine model)
  */
 public class OperandStack {
 
-  private final AsmMethodSource methodSource;
+  @Nonnull private final AsmMethodSource methodSource;
   private List<Operand> stack;
-  public Map<AbstractInsnNode, StackFrame> frames;
+  @Nonnull public Map<AbstractInsnNode, StackFrame> frames;
 
-  public OperandStack(AsmMethodSource methodSource, int nrInsn) {
+  public OperandStack(@Nonnull AsmMethodSource methodSource, int nrInsn) {
     this.methodSource = methodSource;
     frames = new LinkedHashMap<>(nrInsn);
   }
@@ -59,20 +59,24 @@ public class OperandStack {
     return frame;
   }
 
-  public void push(Operand opr) {
+  public void push(@Nonnull Operand opr) {
     stack.add(opr);
   }
 
-  public void pushDual(Operand opr) {
+  public void pushDual(@Nonnull Operand opr) {
     stack.add(Operand.DWORD_DUMMY);
     stack.add(opr);
   }
 
+  @Nonnull
   public Operand peek() {
+    if (stack.isEmpty()) {
+      throw new RuntimeException("Stack underrun");
+    }
     return stack.get(stack.size() - 1);
   }
 
-  public void push(Type t, Operand opr) {
+  public void push(@Nonnull Type t, @Nonnull Operand opr) {
     if (AsmUtil.isDWord(t)) {
       pushDual(opr);
     } else {
@@ -80,6 +84,7 @@ public class OperandStack {
     }
   }
 
+  @Nonnull
   public Operand pop() {
     if (stack.isEmpty()) {
       throw new RuntimeException("Stack underrun");
@@ -87,6 +92,7 @@ public class OperandStack {
     return stack.remove(stack.size() - 1);
   }
 
+  @Nonnull
   public Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();
@@ -177,11 +183,12 @@ public class OperandStack {
     return popStackConst(popDual());
   }
 
+  @Nonnull
   public List<Operand> getStack() {
     return stack;
   }
 
-  public void setOperandStack(List<Operand> stack) {
+  public void setOperandStack(@Nonnull List<Operand> stack) {
     this.stack = stack;
   }
 }

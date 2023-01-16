@@ -15,18 +15,23 @@ on:
       - synchronize
       - ready_for_review
 
-jobs:
+#cancel a running workflow if something new is pushed for the branch (to save calculation time budget)
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   # Code coverage (i.e. jacoco) needs the same classes for its test otherwise its classids can possibly not match
   Compilation:
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          distribution: 'zulu'
+          java-version: '8'
 
       - name: cache maven dependencies
         uses: actions/cache@v3
@@ -45,7 +50,7 @@ jobs:
           key: cache-compilation-${{ github.sha }}
 
       - name: Build with JDK8
-        run: mvn compile -B -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   JDK8:
     needs: Compilation
@@ -69,13 +74,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: Test (JDK8)
-        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava8 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -83,7 +89,6 @@ jobs:
           name: coverage-exec
           path: |
                   */target/coverage-reports/jacoco-ut-jdk8.exec
-                  !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -91,7 +96,6 @@ jobs:
           name: test-reports-jdk8
           path: |
                   */target/surefire-reports
-                  !sootup.tests/
 
 
   JDK9:
@@ -108,9 +112,6 @@ jobs:
                 **/target/
           key: cache-compilation-${{ github.sha }}
 
-      - name: debug info
-        run: tree **/target
-
       - name: cache maven dependencies
         uses: actions/cache@v3
         with:
@@ -119,13 +120,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up JDK 1.9
-        uses: actions/setup-java@v1
+      - name: Set up JDK 9
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.9
+          java-version: '9'
+          distribution: 'zulu'
 
       - name: Test (JDK9)
-        run: mvn -pl '!sootup.tests' -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -X
+        run: mvn -B -am verify -Dfmt.skip -Dmaven.main.skip=true -PJava9 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -133,7 +135,6 @@ jobs:
           name: coverage-exec
           path: |
             */target/coverage-reports/jacoco-ut-jdk9.exec
-            !sootup.tests/
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -141,14 +142,11 @@ jobs:
           name: test-reports-jdk9
           path: |
             */target/surefire-reports
-            !sootup.tests/
 
       # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
       - name: Check Format
-        run: mvn com.coveo:fmt-maven-plugin:check -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    
-    
-    
+        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      
 
     # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
@@ -158,10 +156,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: get cached compilation
         id: cache-compilation
@@ -179,7 +178,7 @@ jobs:
             ${{ runner.os }}-maven-    
 
       - name: Test (IntegrationTest)
-        run: mvn -pl sootup.tests -am verify -B -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+        run: mvn -B -pl sootup.tests -am verify -Dfmt.skip -Dmaven.main.skip=true -PIntegrationTest -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - uses: actions/upload-artifact@v3
         if: ${{ always() }}
@@ -199,14 +198,14 @@ jobs:
 
   CoverageReport:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
     needs: [ JDK9, JDK8, IntegrationTest]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: cache maven dependencies
         uses: actions/cache@v3
@@ -239,27 +238,30 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: aggregated-coverage-report
-          path: ${{ github.workspace }}/report/target/jacoco-aggregate/
+          path: sootup.report/target/jacoco-aggregate/
 
       - name: jacoco-badge-generator
         id: jacoco
-        uses: cicirello/jacoco-badge-generator@v2.6.1
+        uses: cicirello/jacoco-badge-generator@v2.8.1
         with:
           jacoco-csv-file: sootup.report/target/jacoco-aggregate/jacoco.csv
 
-      - name: Comment Coverage info
-        uses: marocchino/sticky-pull-request-comment@v2
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
         with:
-          header: coverage-pr-message
-          recreate: true
-          message: |
-            ***Test Coverage***
-            Total coverage ${{ steps.jacoco.outputs.coverage }}
-            Amount of covered (bytecode-)branches ${{ steps.jacoco.outputs.branches }}
+          files: sootup.report/target/jacoco-aggregate/jacoco.xml
 
-      - name: Commit the badge (if it changed)
-        uses: EndBug/add-and-commit@v7
+
+
+  publish-javadoc:
+    needs: Compilation
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy JavaDoc 🚀
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.4
         with:
-          default_author: github_actions
-          message: 'commit badge'
-          add: '**/badges/jacoco.svg'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-branch: gh-pages
+          java-version: 17
+          target-folder: apidocs 

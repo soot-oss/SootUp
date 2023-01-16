@@ -56,8 +56,6 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
    *     given path has to exist and requires to be handled by this {@link ClassProvider}.
    *     Implementations might double check this if wanted.
    * @param classSignature the signature that has been used to resolve this class
-   * @return A not yet resolved {@link SootClassSource}, backed up by the given file A not yet
-   *     resolved {@link SootClassSource}, backed up by the given file
    */
   public SootClassSource(
       @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,

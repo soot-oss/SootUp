@@ -84,6 +84,9 @@ public abstract class JimpleTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    assertEquals(expectedStmts, actualStmts);
+    if (!expectedStmts.equals(actualStmts)) {
+      System.out.println(Utils.printJimpleStmtsForTest(actualStmts));
+      assertEquals(expectedStmts, actualStmts);
+    }
   }
 }

@@ -35,7 +35,10 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-/** Represents the deprecated JVM <code>ret</code> statement */
+/**
+ * Represents the deprecated JVM <code>ret</code> statement - which is used in JSR Context - which
+ * is deprecated as well
+ */
 public final class JRetStmt extends Stmt implements Copyable {
 
   @Nonnull private final Value stmtAddress;

@@ -18,7 +18,7 @@ import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -28,14 +28,14 @@ import sootup.java.core.language.JavaLanguage;
  * @author Markus Schmidt
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
-public class PrinterTest {
+public class JimplePrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
 
   @Test
   public void testPrintedExample() {
 
-    Printer p = new Printer(Printer.Option.UseImports);
+    JimplePrinter p = new JimplePrinter(JimplePrinter.Option.UseImports);
     final StringWriter writer = new StringWriter();
     p.printTo(buildClass(), new PrintWriter(writer));
 

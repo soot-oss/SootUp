@@ -23,11 +23,11 @@ package sootup.core.util.printer;
  */
 
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
@@ -36,11 +36,11 @@ import sootup.core.types.Type;
 
 /** Interface for different methods of printing out a Stmt. */
 public abstract class StmtPrinter {
-  protected Body body = null;
+  protected StmtGraph<?> graph = null;
 
   @Nonnull
-  public Body getBody() {
-    return body;
+  public StmtGraph<?> getGraph() {
+    return graph;
   }
 
   public abstract void startStmt(Stmt u);

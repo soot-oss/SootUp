@@ -6,11 +6,10 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.graph.ImmutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -41,10 +40,10 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(builder);
     Body processedBody = builder.build();
 
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
+    assertEquals(inputStmtGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
 
   /**
@@ -88,8 +87,6 @@ public class NopEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
@@ -107,7 +104,6 @@ public class NopEliminatorTest {
       builder.addFlow(nop, ret);
     }
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

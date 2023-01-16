@@ -24,7 +24,6 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -38,6 +37,8 @@ import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
  * @author Marcus Nachtigall, Zun Wang
  */
 public class BodyUtils {
+
+  // TODO: [ms] please refactor into respective classes or at least rename to.. StmtUtils?
 
   /**
    * Collects all defining statements of a Local from a list of statements
@@ -87,12 +88,12 @@ public class BodyUtils {
     return allUses;
   }
 
-  public static List<Stmt> getDefsOfLocal(Local local, List<Stmt> defs) {
-    List<Stmt> localDefs = new ArrayList<>();
+  public static List<AbstractDefinitionStmt> getDefsOfLocal(Local local, List<Stmt> defs) {
+    List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt
           && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(local)) {
-        localDefs.add(stmt);
+        localDefs.add((AbstractDefinitionStmt) stmt);
       }
     }
     return localDefs;
@@ -105,7 +106,7 @@ public class BodyUtils {
    * @param use a local that is used by the given stmt.
    * @param stmt a stmt which uses the given local.
    */
-  public static List<Stmt> getDefsForLocalUse(StmtGraph graph, Local use, Stmt stmt) {
+  public static List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Local use, Stmt stmt) {
     if (!stmt.getUses().contains(use)) {
       throw new RuntimeException(stmt + " doesn't use the local " + use.toString());
     }
@@ -156,38 +157,10 @@ public class BodyUtils {
   @Nonnull
   public static Stmt withNewDef(@Nonnull Stmt oldStmt, @Nonnull Local newDef) {
     if (oldStmt instanceof JAssignStmt) {
-      return ((JAssignStmt) oldStmt).withVariable(newDef);
+      return ((JAssignStmt<?, ?>) oldStmt).withVariable(newDef);
     } else if (oldStmt instanceof JIdentityStmt) {
-      return ((JIdentityStmt) oldStmt).withLocal(newDef);
+      return ((JIdentityStmt<?>) oldStmt).withLocal(newDef);
     }
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
-  }
-
-  /** Replace corresponding oldStmt with newStmt in BodyBuilder */
-  public static void replaceStmtInBuilder(Body.BodyBuilder builder, Stmt oldStmt, Stmt newStmt) {
-    builder.replaceStmt(oldStmt, newStmt);
-    adaptTraps(builder, oldStmt, newStmt);
-  }
-  /**
-   * Fit the modified stmt in Traps
-   *
-   * @param builder a bodybuilder, use it to modify Trap
-   * @param oldStmt a Stmt which maybe a beginStmt or endStmt in a Trap
-   * @param newStmt a modified stmt to replace the oldStmt.
-   */
-  public static void adaptTraps(
-      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-    List<Trap> traps = new ArrayList<>(builder.getStmtGraph().getTraps());
-    for (ListIterator<Trap> iterator = traps.listIterator(); iterator.hasNext(); ) {
-      Trap trap = iterator.next();
-      if (oldStmt.equivTo(trap.getBeginStmt())) {
-        Trap newTrap = trap.withBeginStmt(newStmt);
-        iterator.set(newTrap);
-      } else if (oldStmt.equivTo(trap.getEndStmt())) {
-        Trap newTrap = trap.withEndStmt(newStmt);
-        iterator.set(newTrap);
-      }
-    }
-    builder.setTraps(traps);
   }
 }

@@ -22,7 +22,6 @@ package sootup.java.bytecode.frontend;
  */
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -37,16 +36,18 @@ import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
  *
  * @author Aaloan Miftah
  */
-final class Operand {
+class Operand {
 
-  public static final Operand DWORD_DUMMY = new Operand(null, null, null);
+  @SuppressWarnings("ConstantConditions")
+  static final Operand DWORD_DUMMY = new Operand(null, null, null);
+
   @Nonnull protected final AbstractInsnNode insn;
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
 
-  @Nonnull private final List<Stmt> stmtUsages = new ArrayList<>();
-  @Nonnull private final List<Expr> exprUsages = new ArrayList<>();
+  @Nonnull private final List<Stmt> usedByStmts = new ArrayList<>();
+  @Nonnull private final List<Expr> usedByExpr = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -67,7 +68,7 @@ final class Operand {
    * @param stmt the usage
    */
   void addUsageInStmt(@Nonnull Stmt stmt) {
-    stmtUsages.add(stmt);
+    usedByStmts.add(stmt);
   }
 
   /**
@@ -76,19 +77,18 @@ final class Operand {
    * @param expr the usage
    */
   void addUsageInExpr(@Nonnull Expr expr) {
-    exprUsages.add(expr);
+    usedByExpr.add(expr);
   }
 
   /** Updates all statements and expressions that use this Operand. */
   void updateUsages() {
 
-    for (Expr exprUsage : exprUsages) {
+    for (Expr exprUsage : usedByExpr) {
       methodSource
           .getStmtsThatUse(exprUsage)
           .map(methodSource::getLatestVersionOfStmt)
-          .filter(Objects::nonNull)
-          .filter(stmt -> !stmtUsages.contains(stmt))
-          .forEach(stmtUsages::add);
+          .filter(stmt -> !usedByStmts.contains(stmt))
+          .forEach(usedByStmts::add);
     }
 
     if (value == stackOrValue()) return;
@@ -97,26 +97,21 @@ final class Operand {
 
     List<Stmt> stmtsToDelete = new ArrayList<>();
 
-    for (int i = 0; i < stmtUsages.size(); i++) {
-      Stmt oldUsage = stmtUsages.get(i);
+    for (int i = 0; i < usedByStmts.size(); i++) {
+      Stmt oldUsage = usedByStmts.get(i);
 
       // resolve stmt in method source, it might not exist anymore!
       oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
 
-      if (oldUsage == null) {
-        stmtsToDelete.add(oldUsage);
-      } else {
-        oldUsage.accept(replaceStmtVisitor);
-        Stmt newUsage = replaceStmtVisitor.getResult();
+      oldUsage.accept(replaceStmtVisitor);
+      Stmt newUsage = replaceStmtVisitor.getResult();
 
-        if (oldUsage != newUsage) {
-          methodSource.replaceStmt(oldUsage, newUsage);
-          stmtUsages.set(i, newUsage);
-        }
+      if (oldUsage != newUsage) {
+        methodSource.replaceStmt(oldUsage, newUsage);
+        usedByStmts.set(i, newUsage);
       }
     }
-
-    stmtUsages.removeAll(stmtsToDelete);
+    usedByStmts.removeAll(stmtsToDelete);
   }
 
   /** @return either the stack local allocated for this operand, or its value. */
@@ -135,7 +130,7 @@ final class Operand {
     // care for DWORD comparison, as stackOrValue is null, which would result in a
     // NullPointerException
     return (this == other)
-        || ((this == DWORD_DUMMY) == (other == DWORD_DUMMY)
+        || ((this == Operand.DWORD_DUMMY) == (other == Operand.DWORD_DUMMY)
             && stackOrValue().equivTo(other.stackOrValue()));
   }
 

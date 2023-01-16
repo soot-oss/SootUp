@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
@@ -21,7 +21,7 @@ public class AnnotationLibraryTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void testAnnotationDeclaration() {
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    Printer p = new Printer(Printer.Option.LegacyMode);
+    JimplePrinter p = new JimplePrinter(JimplePrinter.Option.LegacyMode);
     StringWriter out = new StringWriter();
     p.printTo(sootClass, new PrintWriter(out));
     assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));

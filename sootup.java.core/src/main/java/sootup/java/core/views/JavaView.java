@@ -45,7 +45,8 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
 
 /**
- * The Class JavaView manages the Java classes of the application being analyzed.
+ * The Class JavaView manages the Java classes of the application being analyzed. This view cannot
+ * be altered after its creation.
  *
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
@@ -115,6 +116,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return Collections.emptyList();
   }
 
+  /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
@@ -122,6 +124,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return cache.getClasses();
   }
 
+  /** Resolves the class matching the provided {@link ClassType ClassType}. */
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {

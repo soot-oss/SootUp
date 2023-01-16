@@ -94,7 +94,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    final List<Value> uses = key.getUses();
+    final List<Value> uses = getKey().getUses();
     List<Value> list = new ArrayList<>(uses.size() + 1);
     list.addAll(uses);
     list.add(getKey());
@@ -104,11 +104,6 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Override
   public boolean fallsThrough() {
     return false;
-  }
-
-  @Override
-  public boolean branches() {
-    return true;
   }
 
   @Override
@@ -137,7 +132,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return getValueCount();
   }
 
@@ -185,7 +180,7 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
     stmtPrinter.literal("{");
     stmtPrinter.newline();
 
-    final Iterable<Stmt> targets = stmtPrinter.getBody().getBranchTargetsOf(this);
+    final Iterable<Stmt> targets = stmtPrinter.getGraph().getBranchTargetsOf(this);
     Iterator<Stmt> targetIt = targets.iterator();
     for (IntConstant value : values) {
       stmtPrinter.handleIndent();

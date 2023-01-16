@@ -36,7 +36,6 @@ import sootup.core.types.ClassType;
  */
 public interface ClassProvider<T extends AbstractClass<? extends AbstractClassSource<T>>> {
 
-  // TODO: [ms] check necessity for AnalysisInputLocation AND Path?
   AbstractClassSource<T> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,

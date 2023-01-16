@@ -38,6 +38,7 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarFile;
@@ -336,13 +337,14 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     if (exclusionFile.isFile()) {
       FileOfClasses classes;
       try {
-        classes = new FileOfClasses(new FileInputStream(exclusionFile));
+        classes = new FileOfClasses(Files.newInputStream(exclusionFile.toPath()));
         scope.setExclusions(classes);
       } catch (IOException e) {
         e.printStackTrace();
       }
     } else {
-      throw new ResolveException("the given path to the exclusion file does not point to a file.");
+      throw new ResolveException(
+          "the given path to the exclusion file does not point to a file.", exclusionFile.toPath());
     }
   }
 

@@ -63,7 +63,7 @@ public final class JReturnVoidStmt extends Stmt implements Copyable {
   }
 
   @Override
-  public int getSuccessorCount() {
+  public int getExpectedSuccessorCount() {
     return 0;
   }
 

@@ -21,7 +21,7 @@ import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
-import sootup.core.util.printer.Printer;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -96,7 +96,7 @@ public class LegacyJimplePrinterTest {
       SootClass tableClass = buildClass(builder);
 
       StringWriter sw = new StringWriter();
-      new Printer(Printer.Option.LegacyMode)
+      new JimplePrinter(JimplePrinter.Option.LegacyMode)
           .printTo(tableClass, new PrintWriter(new EscapedWriter(sw)));
 
       assertEquals(
@@ -131,7 +131,7 @@ public class LegacyJimplePrinterTest {
       SootClass lookupClass = buildClass(builder);
 
       StringWriter sw2 = new StringWriter();
-      new Printer(Printer.Option.LegacyMode)
+      new JimplePrinter(JimplePrinter.Option.LegacyMode)
           .printTo(lookupClass, new PrintWriter(new EscapedWriter(sw2)));
 
       assertEquals(
@@ -153,7 +153,8 @@ public class LegacyJimplePrinterTest {
 
   @Test(expected = RuntimeException.class)
   public void testValidOptions() {
-    Printer p = new Printer(Printer.Option.UseImports, Printer.Option.LegacyMode);
+    JimplePrinter p =
+        new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.LegacyMode);
     p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
   }
 }

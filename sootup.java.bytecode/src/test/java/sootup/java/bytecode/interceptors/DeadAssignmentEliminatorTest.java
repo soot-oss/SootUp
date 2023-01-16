@@ -4,11 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import org.junit.Test;
-import sootup.core.graph.ImmutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -26,8 +25,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
   }
@@ -38,8 +37,8 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
     new DeadAssignmentEliminator().interceptBody(testBuilder);
     Body processedBody = testBuilder.build();
-    ImmutableStmtGraph expectedGraph = testBody.getStmtGraph();
-    ImmutableStmtGraph actualGraph = processedBody.getStmtGraph();
+    StmtGraph<?> expectedGraph = testBody.getStmtGraph();
+    StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
     assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
   }
@@ -60,8 +59,6 @@ public class DeadAssignmentEliminatorTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
 
-    List<Trap> traps = new ArrayList<>();
-
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(strToA);
     builder.setMethodSignature(
@@ -78,7 +75,6 @@ public class DeadAssignmentEliminatorTest {
       builder.addFlow(intToC, ret);
     }
     builder.setLocals(locals);
-    builder.setTraps(traps);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;

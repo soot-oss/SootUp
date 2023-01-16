@@ -24,7 +24,7 @@ package sootup.core.jimple.basic;
 
 import java.util.Iterator;
 import java.util.List;
-import sootup.core.graph.Block;
+import sootup.core.graph.BasicBlock;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.*;
@@ -93,11 +93,11 @@ public class JimpleComparator {
     return obj.getName().equals(local.getName()) && obj.getType().equals(local.getType());
   }
 
-  public boolean caseBlock(Block block, Object o) {
-    if (!(o instanceof Block)) {
+  public boolean caseBlock(BasicBlock<?> block, Object o) {
+    if (!(o instanceof BasicBlock<?>)) {
       return false;
     }
-    Block obj = (Block) o;
+    BasicBlock<?> obj = (BasicBlock<?>) o;
     return caseStmt(block.getHead(), obj.getHead()) && caseStmt(block.getTail(), obj.getTail());
   }
 
@@ -382,8 +382,8 @@ public class JimpleComparator {
         return false;
       }
     }
-    List<Block> blocksV = v.getBlocks();
-    List<Block> blocksAe = ae.getBlocks();
+    List<BasicBlock<?>> blocksV = v.getBlocks();
+    List<BasicBlock<?>> blocksAe = ae.getBlocks();
     for (int i = 0; i < v.getArgsSize(); i++) {
       if (!caseBlock(blocksV.get(i), blocksAe.get(i))) {
         return false;

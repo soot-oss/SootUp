@@ -76,7 +76,6 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
@@ -1171,24 +1170,25 @@ public class InstructionConverter {
   }
 
   /**
-   * @param
+   * This methods adds stmts with all branch stmts to builder ({@link JIfStmt}, {@link JGotoStmt},
+   * {@link JSwitchStmt}) having set up their target stmts.
+   *
    * @param stmt2iIndex
-   * @param builder
    * @return This methods returns a list of stmts with all branch stmts ({@link JIfStmt}, {@link
    *     JGotoStmt}, {@link JSwitchStmt}) having set up their target stmts.
    */
-  protected void setUpTargets(HashMap<Integer, Stmt> stmt2iIndex, Body.BodyBuilder builder) {
-
+  protected Map<BranchingStmt, List<Stmt>> setUpTargets(HashMap<Integer, Stmt> stmt2iIndex) {
+    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
     for (Map.Entry<JIfStmt, Integer> ifStmt : branchingTargetsOfIfStmts.entrySet()) {
       final JIfStmt key = ifStmt.getKey();
       final Integer value = ifStmt.getValue();
-      builder.addFlow(key, stmt2iIndex.get(value));
+      branchingMap.put(key, Collections.singletonList(stmt2iIndex.get(value)));
     }
 
     for (Map.Entry<JGotoStmt, Integer> gotoStmt : branchingTargetsOfGotoStmts.entrySet()) {
       final JGotoStmt key = gotoStmt.getKey();
       final Integer value = gotoStmt.getValue();
-      builder.addFlow(key, stmt2iIndex.get(value));
+      branchingMap.put(key, Collections.singletonList(stmt2iIndex.get(value)));
     }
 
     for (Map.Entry<JSwitchStmt, List<Integer>> item :
@@ -1196,12 +1196,15 @@ public class InstructionConverter {
       final JSwitchStmt switchStmt = item.getKey();
       final List<Integer> targetIdxList = item.getValue();
 
+      List<Stmt> targets = new ArrayList<>(targetIdxList.size());
       // assign target for every idx in targetIdxList of switchStmt
       for (Integer targetIdx : targetIdxList) {
         // search for matching index/stmt
-        builder.addFlow(switchStmt, stmt2iIndex.get(targetIdx));
+        targets.add(stmt2iIndex.get(targetIdx));
       }
+      branchingMap.put(switchStmt, targets);
     }
+    return branchingMap;
   }
 
   /**

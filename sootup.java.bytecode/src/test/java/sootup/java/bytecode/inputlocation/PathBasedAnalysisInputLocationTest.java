@@ -374,7 +374,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                               }
 
                               @Override
-                              public Object resolveDefaultValue() {
+                              public Object resolveAnnotationsDefaultValue() {
                                 return null;
                               }
 

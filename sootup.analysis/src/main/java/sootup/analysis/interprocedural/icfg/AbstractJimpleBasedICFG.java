@@ -28,13 +28,12 @@ import heros.DontSynchronize;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import java.util.*;
-import sootup.core.graph.ExceptionalStmtGraph;
-import sootup.core.graph.ForwardingStmtGraph;
-import sootup.core.graph.MutableExceptionalStmtGraph;
+import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
@@ -42,17 +41,17 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   protected final boolean enableExceptions;
 
-  protected View view;
+  protected View<? extends SootClass<?>> view;
 
   @DontSynchronize("written by single thread; read afterwards")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
 
   @SynchronizedBy("by use of synchronized LoadingCache class")
-  protected LoadingCache<Body, StmtGraph> bodyToStmtGraph =
+  protected LoadingCache<Body, StmtGraph<?>> bodyToStmtGraph =
       IDESolver.DEFAULT_CACHE_BUILDER.build(
-          new CacheLoader<Body, StmtGraph>() {
+          new CacheLoader<Body, StmtGraph<?>>() {
             @Override
-            public StmtGraph load(Body body) throws Exception {
+            public StmtGraph<?> load(@Nonnull Body body) {
               return makeGraph(body);
             }
           });
@@ -62,7 +61,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, List<Value>>() {
             @Override
-            public List<Value> load(SootMethod m) throws Exception {
+            public List<Value> load(@Nonnull SootMethod m) {
               return new ArrayList<>(m.getBody().getParameterLocals());
             }
           });
@@ -72,7 +71,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
       IDESolver.DEFAULT_CACHE_BUILDER.build(
           new CacheLoader<SootMethod, Set<Stmt>>() {
             @Override
-            public Set<Stmt> load(SootMethod m) throws Exception {
+            public Set<Stmt> load(@Nonnull SootMethod m) {
               return getCallsFromWithinMethod(m);
             }
           });
@@ -89,45 +88,43 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     this.enableExceptions = enableExceptions;
   }
 
-  public Body getBodyOf(Stmt u) {
-    assert stmtToOwner.containsKey(u) : "Statement " + u + " not in unit-to-owner mapping";
-    return stmtToOwner.get(u);
+  public Body getBodyOf(Stmt stmt) {
+    assert stmtToOwner.containsKey(stmt) : "Statement " + stmt + " not in Stmt-to-owner mapping";
+    return stmtToOwner.get(stmt);
   }
 
   @Override
-  public SootMethod getMethodOf(Stmt u) {
-    Body b = getBodyOf(u);
-    return b == null ? null : (SootMethod) view.getMethod(b.getMethodSignature()).orElse(null);
+  public SootMethod getMethodOf(Stmt stmt) {
+    Body b = getBodyOf(stmt);
+    return b == null ? null : view.getMethod(b.getMethodSignature()).orElse(null);
   }
 
   @Override
-  public List<Stmt> getSuccsOf(Stmt u) {
-    Body body = getBodyOf(u);
+  public List<Stmt> getSuccsOf(Stmt stmt) {
+    Body body = getBodyOf(stmt);
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.successors(u);
+    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
+    return unitGraph.successors(stmt);
   }
 
   @Override
-  public StmtGraph getOrCreateStmtGraph(SootMethod m) {
-    return getOrCreateStmtGraph(m.getBody());
+  public StmtGraph<?> getOrCreateStmtGraph(SootMethod method) {
+    return getOrCreateStmtGraph(method.getBody());
   }
 
-  public StmtGraph getOrCreateStmtGraph(Body body) {
+  public StmtGraph<?> getOrCreateStmtGraph(Body body) {
     return bodyToStmtGraph.getUnchecked(body);
   }
 
-  protected StmtGraph makeGraph(Body body) {
-    return enableExceptions
-        ? new ExceptionalStmtGraph(new MutableExceptionalStmtGraph())
-        : new ForwardingStmtGraph(body.getStmtGraph());
+  protected StmtGraph<?> makeGraph(Body body) {
+    return body.getStmtGraph();
   }
 
-  protected Set<Stmt> getCallsFromWithinMethod(SootMethod m) {
+  protected Set<Stmt> getCallsFromWithinMethod(SootMethod method) {
     Set<Stmt> res = null;
-    for (Stmt u : m.getBody().getStmts()) {
+    for (Stmt u : method.getBody().getStmts()) {
       if (isCallStmt(u)) {
         if (res == null) {
           res = new LinkedHashSet<>();
@@ -139,27 +136,27 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   }
 
   @Override
-  public boolean isExitStmt(Stmt u) {
-    Body body = getBodyOf(u);
-    StmtGraph unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.getTails().contains(u);
+  public boolean isExitStmt(Stmt stmt) {
+    Body body = getBodyOf(stmt);
+    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
+    return unitGraph.getTails().contains(stmt);
   }
 
   @Override
-  public boolean isStartPoint(Stmt u) {
-    Body body = getBodyOf(u);
-    StmtGraph unitGraph = getOrCreateStmtGraph(body);
-    return unitGraph.getEntrypoints().contains(u);
+  public boolean isStartPoint(Stmt stmt) {
+    Body body = getBodyOf(stmt);
+    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
+    return unitGraph.getEntrypoints().contains(stmt);
   }
 
   @Override
-  public boolean isFallThroughSuccessor(Stmt u, Stmt succ) {
-    assert getSuccsOf(u).contains(succ);
-    if (!u.fallsThrough()) {
+  public boolean isFallThroughSuccessor(Stmt stmt, Stmt successorCandidate) {
+    assert getSuccsOf(stmt).contains(successorCandidate);
+    if (!stmt.fallsThrough()) {
       return false;
     }
-    Body body = getBodyOf(u);
-    return body.getStmtGraph().successors(u) == succ;
+    Body body = getBodyOf(stmt);
+    return body.getStmtGraph().successors(stmt).get(0) == successorCandidate;
   }
 
   @Override
@@ -177,7 +174,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   public Collection<Stmt> getStartPointsOf(SootMethod m) {
     if (m.hasBody()) {
       Body body = m.getBody();
-      StmtGraph unitGraph = getOrCreateStmtGraph(body);
+      StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
       return unitGraph.getEntrypoints();
     }
     return Collections.emptySet();
@@ -195,24 +192,14 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   @Override
   public Set<Stmt> allNonCallStartNodes() {
     Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
-    for (Iterator<Stmt> iter = res.iterator(); iter.hasNext(); ) {
-      Stmt u = iter.next();
-      if (isStartPoint(u) || isCallStmt(u)) {
-        iter.remove();
-      }
-    }
+    res.removeIf(u -> isStartPoint(u) || isCallStmt(u));
     return res;
   }
 
   @Override
   public Set<Stmt> allNonCallEndNodes() {
     Set<Stmt> res = new LinkedHashSet<>(stmtToOwner.keySet());
-    for (Iterator<Stmt> iter = res.iterator(); iter.hasNext(); ) {
-      Stmt u = iter.next();
-      if (isExitStmt(u) || isCallStmt(u)) {
-        iter.remove();
-      }
-    }
+    res.removeIf(u -> isExitStmt(u) || isCallStmt(u));
     return res;
   }
 
@@ -242,7 +229,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
     if (body == null) {
       return Collections.emptyList();
     }
-    StmtGraph unitGraph = getOrCreateStmtGraph(body);
+    StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
     return unitGraph.predecessors(u);
   }
 
@@ -250,7 +237,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   public Collection<Stmt> getEndPointsOf(SootMethod m) {
     if (m.hasBody()) {
       Body body = m.getBody();
-      StmtGraph unitGraph = getOrCreateStmtGraph(body);
+      StmtGraph<?> unitGraph = getOrCreateStmtGraph(body);
       return unitGraph.getTails();
     }
     return Collections.emptySet();

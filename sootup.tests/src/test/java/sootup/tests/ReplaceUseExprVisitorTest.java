@@ -6,7 +6,8 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.graph.Block;
+import sootup.core.graph.BasicBlock;
+import sootup.core.graph.MutableBasicBlock;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -51,10 +52,11 @@ public class ReplaceUseExprVisitorTest {
   Stmt stmt3 = Jimple.newAssignStmt(arg3, IntConstant.getInstance(0), noStmtPositionInfo);
   Stmt stmtPhi = Jimple.newAssignStmt(newArg, IntConstant.getInstance(0), noStmtPositionInfo);
 
-  Block newBlock = new Block(stmtPhi, stmtPhi);
-  Block block1 = new Block(stmt1, stmt1);
-  Block block2 = new Block(stmt2, stmt2);
-  Block block3 = new Block(stmt3, stmt3);
+  BasicBlock<?> newBlock =
+      new MutableBasicBlock(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
+  BasicBlock<?> block1 = new MutableBasicBlock(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
+  BasicBlock<?> block2 = new MutableBasicBlock(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
+  BasicBlock<?> block3 = new MutableBasicBlock(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
 
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
@@ -227,7 +229,7 @@ public class ReplaceUseExprVisitorTest {
 
     Set<Local> argsSet = ImmutableUtils.immutableSet(arg1, arg2, arg3);
     List<Local> args = new ArrayList<>(argsSet);
-    Map<Local, Block> argToBlock = new HashMap<>();
+    Map<Local, BasicBlock<?>> argToBlock = new HashMap<>();
 
     argToBlock.put(arg1, block1);
     argToBlock.put(arg2, block2);
@@ -238,7 +240,7 @@ public class ReplaceUseExprVisitorTest {
     JPhiExpr newExpr = (JPhiExpr) visitor.getResult();
 
     List<Local> expectedArgs = ImmutableUtils.immutableList(arg1, newArg, arg3);
-    List<Block> expectedBlocks = ImmutableUtils.immutableList(block1, newBlock, block3);
+    List<BasicBlock<?>> expectedBlocks = ImmutableUtils.immutableList(block1, newBlock, block3);
 
     assertListsEquiv(expectedArgs, new ArrayList<>(newExpr.getArgs()));
     assertListsEquiv(expectedBlocks, new ArrayList<>(newExpr.getBlocks()));
