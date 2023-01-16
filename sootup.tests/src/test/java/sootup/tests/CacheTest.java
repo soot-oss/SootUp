@@ -37,7 +37,7 @@ public class CacheTest {
   /** Test the {@link sootup.core.cache.FullCache} class */
   @Test
   public void fullCacheTest() {
-    JavaView view = new JavaView(p, new FullCacheProvider<>());
+    JavaView view = p.createView(new FullCacheProvider<>());
     assertEquals(0, view.getAmountOfStoredClasses());
 
     ClassType miniAppClassType = p.getIdentifierFactory().getClassType("MiniApp");
@@ -55,7 +55,7 @@ public class CacheTest {
   /** Test the {@link sootup.core.cache.LRUCache} class */
   @Test
   public void lruCacheTest() {
-    JavaView view = new JavaView(p, new LRUCacheProvider<>(1));
+    JavaView view = p.createView(new LRUCacheProvider<>(1));
     assertEquals(0, view.getAmountOfStoredClasses());
 
     ClassType miniAppClassType = p.getIdentifierFactory().getClassType("MiniApp");
