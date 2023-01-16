@@ -208,6 +208,25 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testClinitCallProcessed() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccp.Class");
+    MethodSignature sourceMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccp.Class"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccp.Class"),
+            "method",
+            "int",
+            Collections.emptyList());
+    System.out.println(cg);
+    assertTrue(cg.containsCall(sourceMethod, targetMethod));
+  }
+
+  @Test
   public void testClinitCallConstructor() {
     CallGraph cg = loadCallGraph("ClinitCall", "ccc.Class");
     MethodSignature targetMethod =
