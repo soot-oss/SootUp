@@ -218,11 +218,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             Collections.emptyList());
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("ccp.Class"),
-            "method",
-            "int",
-            Collections.emptyList());
-    System.out.println(cg);
+            identifierFactory.getClassType("ccp.Class"), "method", "int", Collections.emptyList());
     assertTrue(cg.containsCall(sourceMethod, targetMethod));
   }
 
@@ -238,24 +234,24 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
-//  @Test
-//  public void testClinitCallSuperConstructor() {
-//    CallGraph cg = loadCallGraph("ClinitCall", "ccsc.Class");
-//    MethodSignature targetMethod =
-//        identifierFactory.getMethodSignature(
-//            identifierFactory.getClassType("ccsc.Clinit"),
-//            "<clinit>",
-//            "void",
-//            Collections.emptyList());
-//    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
-//    MethodSignature targetMethod2 =
-//        identifierFactory.getMethodSignature(
-//            identifierFactory.getClassType("ccsc.SuperClinit"),
-//            "<clinit>",
-//            "void",
-//            Collections.emptyList());
-//    assertTrue(cg.containsCall(mainMethodSignature, targetMethod2));
-//  }
+  //  @Test
+  //  public void testClinitCallSuperConstructor() {
+  //    CallGraph cg = loadCallGraph("ClinitCall", "ccsc.Class");
+  //    MethodSignature targetMethod =
+  //        identifierFactory.getMethodSignature(
+  //            identifierFactory.getClassType("ccsc.Clinit"),
+  //            "<clinit>",
+  //            "void",
+  //            Collections.emptyList());
+  //    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  //    MethodSignature targetMethod2 =
+  //        identifierFactory.getMethodSignature(
+  //            identifierFactory.getClassType("ccsc.SuperClinit"),
+  //            "<clinit>",
+  //            "void",
+  //            Collections.emptyList());
+  //    assertTrue(cg.containsCall(mainMethodSignature, targetMethod2));
+  //  }
 
   @Test
   public void testClinitStaticMethodCall() {
