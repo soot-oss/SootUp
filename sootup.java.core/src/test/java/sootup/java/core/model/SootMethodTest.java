@@ -43,7 +43,7 @@ public class SootMethodTest {
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(new EagerInputLocation<>())
             .build();
-    View<?> view = project.createOnDemandView();
+    View<?> view = project.createView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
@@ -66,7 +66,6 @@ public class SootMethodTest {
             .addFlow(firstStmt, returnVoidStmt)
             .setMethodSignature(methodSignature)
             .setLocals(generator.getLocals())
-            .setTraps(Collections.emptyList())
             .build();
     assertEquals(1, body.getLocalCount());
 
