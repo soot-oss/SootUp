@@ -28,9 +28,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
@@ -39,10 +44,13 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -193,10 +201,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       View<? extends SootClass<?>> view, SootMethod sourceMethod) {
     if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
-    // collect all clinit calls
-    Stream<MethodSignature> clinitStream =
-        resolveAllClinitCallsFromSourceMethod(view, sourceMethod);
-    return clinitStream;
+    // collect all static initializer calls
+    Stream<MethodSignature> staticInitializerStream =
+        resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
+    return staticInitializerStream;
   }
 
   /**
@@ -207,11 +215,14 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return a stream containing all method signatures of targets of implicit calls.
    */
   @Nonnull
-  Stream<MethodSignature> resolveAllClinitCallsFromSourceMethod(
+  Stream<MethodSignature> resolveAllStaticInitializerCallsFromSourceMethod(
       View<? extends SootClass<?>> view, SootMethod sourceMethod) {
     if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
-    HashSet<ClassType> targetsToClinit = new HashSet<>();
+    HashSet<ClassType> targetsToStaticInitializer = new HashSet<>();
+
+    if (sourceMethod instanceof JavaSootMethod
+        && ((JavaSootMethod) sourceMethod).isStaticInitializer()) {}
 
     sourceMethod
         .getBody()
@@ -220,27 +231,55 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             stmt -> {
               // static field usage
               if (stmt.containsFieldRef() && stmt.getFieldRef() instanceof JStaticFieldRef) {
-                targetsToClinit.add(stmt.getFieldRef().getFieldSignature().getDeclClassType());
+                targetsToStaticInitializer.add(
+                    stmt.getFieldRef().getFieldSignature().getDeclClassType());
               }
 
-              if (!stmt.containsInvokeExpr()) return;
-
-              MethodSignature callTarget = stmt.getInvokeExpr().getMethodSignature();
               // constructor calls
-              if (callTarget.isConstructorSignature()) {
-                targetsToClinit.add(callTarget.getDeclClassType());
+              if (stmt instanceof JAssignStmt) {
+                Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+                if (rightOp instanceof JNewExpr) {
+                  Type type = rightOp.getType();
+                  if (type instanceof ClassType) {
+                    targetsToStaticInitializer.add((ClassType) type);
+                  }
+                } else if (rightOp instanceof JNewArrayExpr) {
+                  ClassType classType =
+                      findClassTypeInType(((JNewArrayExpr) rightOp).getBaseType());
+                  if (classType != null) {
+                    targetsToStaticInitializer.add(classType);
+                  }
+                } else if (rightOp instanceof JNewMultiArrayExpr) {
+                  ClassType classType =
+                      findClassTypeInType(((JNewMultiArrayExpr) rightOp).getBaseType());
+                  if (classType != null) {
+                    targetsToStaticInitializer.add(findClassTypeInType(classType));
+                  }
+                }
               }
+
               // static method calls
-              if (stmt.getInvokeExpr() instanceof JStaticInvokeExpr) {
-                targetsToClinit.add(callTarget.getDeclClassType());
+              if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof JStaticInvokeExpr) {
+                targetsToStaticInitializer.add(
+                    stmt.getInvokeExpr().getMethodSignature().getDeclClassType());
               }
             });
 
-    return targetsToClinit.stream()
+    return targetsToStaticInitializer.stream()
         .map(classType -> findClinitMethodOfClassType(view, classType))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(SootClassMember::getSignature);
+  }
+
+  private ClassType findClassTypeInType(Type type) {
+    if (type instanceof ArrayType) {
+      return findClassTypeInType(((ArrayType) type).getBaseType());
+    }
+    if (type instanceof ClassType) {
+      return (ClassType) type;
+    }
+    return null;
   }
 
   /**
