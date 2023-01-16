@@ -141,6 +141,11 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return buildClassFrom(abstractClass.get());
   }
 
+  /** Returns the amount of classes that are currently stored in the cache. */
+  public int getAmountOfStoredClasses() {
+    return cache.size();
+  }
+
   @Nonnull
   protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
       @Nonnull ClassType type) {
@@ -182,12 +187,14 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return cache.getClasses();
     }
 
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts = getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(this).stream())
-        .map(this::buildClassFrom)
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+        getProject().getInputLocations().stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
             .collect(Collectors.toList());
 
-    Collection<JavaSootClass> resolvedClasses = resolvedClassesOpts.stream()
+    Collection<JavaSootClass> resolvedClasses =
+        resolvedClassesOpts.stream()
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());

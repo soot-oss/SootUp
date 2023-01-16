@@ -7,9 +7,7 @@ import javax.annotation.Nonnull;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
-/**
- * Cache that stores any class that has been resolved.
- */
+/** Cache that stores any class that has been resolved. */
 public class FullCache<S extends SootClass<?>> implements Cache<S> {
 
   protected final Map<ClassType, S> cache = new HashMap<>();
@@ -33,5 +31,10 @@ public class FullCache<S extends SootClass<?>> implements Cache<S> {
   @Override
   public boolean hasClass(ClassType classType) {
     return cache.containsKey(classType);
+  }
+
+  @Override
+  public int size() {
+    return cache.size();
   }
 }

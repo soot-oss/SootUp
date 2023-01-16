@@ -6,8 +6,8 @@ import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /**
- * Cache that implements a least recently used strategy.
- * If the amount of stores classes exceeds a specified amount, the lest recently used class will be overwritten.
+ * Cache that implements a least recently used strategy. If the amount of stored classes exceeds a
+ * specified amount, the lest recently used class will be overwritten.
  */
 public class LRUCache<S extends SootClass<?>> implements Cache<S> {
   private final int cacheSize;
@@ -49,5 +49,10 @@ public class LRUCache<S extends SootClass<?>> implements Cache<S> {
   @Override
   public boolean hasClass(ClassType classType) {
     return cache.containsKey(classType);
+  }
+
+  @Override
+  public int size() {
+    return cache.size();
   }
 }

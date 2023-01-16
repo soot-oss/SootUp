@@ -456,20 +456,24 @@ public class JavaModuleView extends JavaView {
       return cache.getClasses();
     }
 
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts = getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(this).stream())
-        .map(this::buildClassFrom)
-                .collect(Collectors.toList());
-
-    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts = getProject().getModuleInfoAnalysisInputLocation().stream()
-        .flatMap(location -> location.getClassSources(this).stream())
-        .map(this::buildClassFrom)
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+        getProject().getInputLocations().stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
             .collect(Collectors.toList());
 
-    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts = Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
+    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts =
+        getProject().getModuleInfoAnalysisInputLocation().stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
             .collect(Collectors.toList());
 
-    Collection<JavaSootClass> resolvedClasses = combinedResolvedClassesOpts.stream()
+    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts =
+        Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
+            .collect(Collectors.toList());
+
+    Collection<JavaSootClass> resolvedClasses =
+        combinedResolvedClassesOpts.stream()
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
