@@ -221,8 +221,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     HashSet<ClassType> targetsToStaticInitializer = new HashSet<>();
 
-    if (sourceMethod instanceof JavaSootMethod
-        && ((JavaSootMethod) sourceMethod).isStaticInitializer()) {}
 
     sourceMethod
         .getBody()
@@ -253,7 +251,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType classType =
                       findClassTypeInType(((JNewMultiArrayExpr) rightOp).getBaseType());
                   if (classType != null) {
-                    targetsToStaticInitializer.add(findClassTypeInType(classType));
+                    targetsToStaticInitializer.add(classType);
                   }
                 }
               }

@@ -7,7 +7,7 @@ class Class {
     DirectType a=new DirectType();
     int[] b= new int[5];
     ArrayType[] c =new ArrayType[5];
-    ArrayDimType[][][][] d= new ArrayDimType[2][5];
+    ArrayDimType[][] d= new ArrayDimType[2][4];
   }
 }
 
