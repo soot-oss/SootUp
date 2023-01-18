@@ -456,17 +456,27 @@ public class JavaModuleView extends JavaView {
       return cache.getClasses();
     }
 
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+            getProject().getInputLocations().stream()
+                    .flatMap(location -> location.getClassSources(this).stream())
+                    .map(this::buildClassFrom)
+                    .collect(Collectors.toList());
+
+    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts =
+            getProject().getModuleInfoAnalysisInputLocation().stream()
+                    .flatMap(location -> location.getClassSources(this).stream())
+                    .map(this::buildClassFrom)
+                    .collect(Collectors.toList());
+
+    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts =
+            Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
+                    .collect(Collectors.toList());
+
     Collection<JavaSootClass> resolvedClasses =
-        Stream.concat(
-                getProject().getInputLocations().stream()
-                    .flatMap(location -> location.getClassSources(this).stream())
-                    .map(this::buildClassFrom),
-                getProject().getModuleInfoAnalysisInputLocation().stream()
-                    .flatMap(location -> location.getClassSources(this).stream())
-                    .map(this::buildClassFrom))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
+            combinedResolvedClassesOpts.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
 
     isFullyResolved = true;
 
