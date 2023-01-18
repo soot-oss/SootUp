@@ -29,7 +29,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
 import sootup.core.SourceTypeSpecifier;
-import sootup.core.cache.provider.ClassCacheProvider;
+import sootup.core.cache.provider.CacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
@@ -68,7 +68,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   @Nonnull
   @Override
   public JavaView createView(
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull CacheProvider<JavaSootClass> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -76,7 +76,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   @Nonnull
-  public JavaView createView(@Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
+  public JavaView createView(@Nonnull CacheProvider<JavaSootClass> cacheProvider) {
     return new JavaView(this, cacheProvider);
   }
 

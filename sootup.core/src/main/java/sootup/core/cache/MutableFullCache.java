@@ -8,7 +8,7 @@ import sootup.core.types.ClassType;
  * classes.
  */
 public class MutableFullCache<S extends SootClass<?>> extends FullCache<S>
-    implements MutableClassCache<S> {
+    implements MutableCache<S> {
 
   @Override
   public S removeClass(ClassType classType) {

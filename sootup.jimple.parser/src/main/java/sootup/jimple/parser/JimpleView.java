@@ -8,8 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
-import sootup.core.cache.ClassCache;
-import sootup.core.cache.provider.ClassCacheProvider;
+import sootup.core.cache.Cache;
+import sootup.core.cache.provider.CacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
@@ -33,7 +33,7 @@ import sootup.java.core.views.JavaView;
 // for View if we really need different views in the future?
 public class JimpleView extends AbstractView<SootClass<?>> {
 
-  @Nonnull private final ClassCache<SootClass<?>> cache;
+  @Nonnull private final Cache<SootClass<?>> cache;
 
   private volatile boolean isFullyResolved = false;
 
@@ -47,7 +47,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   public JimpleView(
-      @Nonnull JimpleProject project, @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
+      @Nonnull JimpleProject project, @Nonnull CacheProvider<SootClass<?>> cacheProvider) {
     this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -68,7 +68,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   public JimpleView(
       @Nonnull Project project,
-      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
+      @Nonnull CacheProvider<SootClass<?>> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.Project;
 import sootup.core.ViewChangeListener;
-import sootup.core.cache.MutableClassCache;
+import sootup.core.cache.MutableCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
@@ -46,8 +46,7 @@ public class MutableJavaView extends JavaView implements MutableView {
    * Removes the class that matches the provided {@link ClassType ClassType} from the mutable view.
    */
   public void removeClass(ClassType classType) {
-    JavaSootClass removedClass =
-        ((MutableClassCache<JavaSootClass>) this.cache).removeClass(classType);
+    JavaSootClass removedClass = ((MutableCache<JavaSootClass>) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 
