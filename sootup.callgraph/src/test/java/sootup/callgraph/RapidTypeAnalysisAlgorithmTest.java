@@ -137,6 +137,13 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.singletonList("java.lang.Object"));
 
+    MethodSignature clinitObject =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("java.lang.Object"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+
     assertFalse(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
     assertTrue(cg.containsCall(mainMethodSignature, constructorC));
@@ -155,7 +162,9 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD));
     assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE));
 
-    assertEquals(7, cg.callsFrom(mainMethodSignature).size());
+    assertTrue(cg.containsCall(mainMethodSignature, clinitObject));
+
+    assertEquals(8, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
