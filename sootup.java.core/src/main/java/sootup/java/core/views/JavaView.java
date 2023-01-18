@@ -30,9 +30,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
-import sootup.core.cache.Cache;
+import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
-import sootup.core.cache.provider.CacheProvider;
+import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -55,7 +55,7 @@ import sootup.java.core.types.AnnotationType;
  */
 public class JavaView extends AbstractView<JavaSootClass> {
 
-  @Nonnull protected final Cache<JavaSootClass> cache;
+  @Nonnull protected final ClassCache<JavaSootClass> cache;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -70,7 +70,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(
       @Nonnull Project<JavaSootClass, ? extends JavaView> project,
-      @Nonnull CacheProvider<JavaSootClass> cacheProvider) {
+      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
     this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
@@ -91,7 +91,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   public JavaView(
       @Nonnull Project<JavaSootClass, ? extends JavaView> project,
-      @Nonnull CacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -187,14 +187,10 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return cache.getClasses();
     }
 
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+    Collection<JavaSootClass> resolvedClasses =
         getProject().getInputLocations().stream()
             .flatMap(location -> location.getClassSources(this).stream())
             .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<JavaSootClass> resolvedClasses =
-        resolvedClassesOpts.stream()
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.SourceTypeSpecifier;
-import sootup.core.cache.provider.CacheProvider;
+import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
@@ -47,14 +47,14 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
   @Nonnull
   @Override
-  public JimpleView createView(@Nonnull CacheProvider<SootClass<?>> cacheProvider) {
+  public JimpleView createView(@Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
     return new JimpleView(this, cacheProvider);
   }
 
   @Nonnull
   @Override
   public JimpleView createView(
-      @Nonnull CacheProvider<SootClass<?>> cacheProvider,
+      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {

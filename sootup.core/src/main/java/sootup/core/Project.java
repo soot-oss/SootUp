@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
-import sootup.core.cache.provider.CacheProvider;
+import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SootClass;
@@ -133,7 +133,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
    * @return A view on the provided code
    */
   @Nonnull
-  public abstract V createView(@Nonnull CacheProvider<S> cacheProvider);
+  public abstract V createView(@Nonnull ClassCacheProvider<S> cacheProvider);
 
   /**
    * Creates an on-demand View that uses the default {@link ClassLoadingOptions} of each frontend.
@@ -142,7 +142,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   /** Creates a View with custom {@link ClassLoadingOptions}. */
   @Nonnull
   public abstract V createView(
-      @Nonnull CacheProvider<S> cacheProvider,
+      @Nonnull ClassCacheProvider<S> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);
