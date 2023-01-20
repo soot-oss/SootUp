@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>(,3.15)</version>
+			<version>(,3.14)</version>
 			<scope>runtime</scope>
 			<exclusions>
 				<exclusion>
@@ -135,10 +135,10 @@
 					<groupId>org.eclipse.core</groupId>
 					<artifactId>org.eclipse.core.contenttype</artifactId>
 				</exclusion>
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.equinox.common</artifactId>-->
-<!--				</exclusion>-->
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
 <!--				<exclusion>-->
 <!--					<groupId>org.eclipse.platform</groupId>-->
 <!--					<artifactId>org.eclipse.osgi</artifactId>-->
@@ -148,7 +148,7 @@
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>(,3.15)</version>
+			<version>(,3.14)</version>
 			<scope>runtime</scope>
 			<exclusions>
 				<exclusion>
@@ -180,11 +180,6 @@
 			<artifactId>org.eclipse.core.contenttype</artifactId>
 			<version>(,3.8)</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.equinox.common</artifactId>
-			<version>3.15.0</version>
 		</dependency>
 
 		<dependency>
