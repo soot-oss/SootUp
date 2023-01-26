@@ -31,7 +31,7 @@ Depending on your needs you can import only the modules you need. See [Modules](
 
 ### 1. Maven
 
- Add the following dependency in the ```pom.xml``` file of your project.
+ Add the following dependency in the ```pom.xml``` file of your project to include all SootUp modules into your project.
  
 ```
 <dependencies>
@@ -59,6 +59,7 @@ Depending on your needs you can import only the modules you need. See [Modules](
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.jimple.parser</artifactId>
   <version>1.0.0</version>
+ </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.callgraph</artifactId>
@@ -73,7 +74,7 @@ Depending on your needs you can import only the modules you need. See [Modules](
 ```
 ### 2. Gradle
 
-Add the following dependency in the ```build.gradle``` file of your project.
+Add the following dependency in the ```build.gradle``` file of your project to include all SootUp modules into your project.
 
 ```
 compile "org.soot-oss:sootup.core:1.0.0"
