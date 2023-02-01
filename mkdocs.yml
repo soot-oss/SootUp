@@ -7,13 +7,14 @@ nav:
     - Home: index.md
     - Installation: installation.md
     - Getting started: getting-started.md
-    - Call Graph Construction: call-graph-construction.md
+    - Design Decisions: whatsnew.md
     - Jimple: jimple.md
+    - Call Graph Construction: call-graph-construction.md
     - Advanced Topics: advanced-topics.md
-    - Javadocs: /SootUp/apidocs
+    - Javadoc: /SootUp/apidocs
+    - FAQ: faq.md
+#    - Used by: tools.md
 #    - Analyses: analyses.md
-
-#  - About: about.md
 
 theme:
   name: material

@@ -1,8 +1,7 @@
-# Getting Started
-
+# General Usage of SootUp
 This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
-## Core Data Structures
+## The core datastructures
 Before you get started with the SootUp library, it helps to learn about the following core data structures: 
 
 - `Project`: defines the outlines of an analysis. SootUp users should first create a `Project` instance. It is the starting point for all operations. 
