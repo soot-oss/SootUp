@@ -20,7 +20,8 @@ Soot can do many things. It is a library and a stand-alone command-line applicat
 
 ### Modular Architecture
 
-SootUp has a modular architecture, which enables its clients to include only the necessary functionality to their applications.
+SootUp has a modular architecture, which enables its clients to include only the necessary functionality to their applications. 
+
 - [core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module. 
 - [java.core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core) contains parts that are essential for analyzing Java code.
 - [java.bytecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
