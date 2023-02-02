@@ -5,20 +5,24 @@ edit_uri: edit/develop/docs/
 
 nav:
     - Home: index.md
-    - Installation: installation.md
-    - Getting started: getting-started.md
-    - Design Decisions: whatsnew.md
-    - Jimple: jimple.md
-    - Call Graph Construction: call-graph-construction.md
-    - Advanced Topics: advanced-topics.md
-    - Javadoc: /SootUp/apidocs
-    - FAQ: faq.md
+    - How to Start:
+      - Installation: installation.md
+      - Getting started: getting-started.md
+    - General information:
+      - Design Decisions: whatsnew.md
+      - Jimple: jimple.md
+      - Call Graph Construction: call-graph-construction.md
+      - Advanced Topics: advanced-topics.md
+    - More information:
+      - Javadoc: /SootUp/apidocs
+      - FAQ: faq.md
 #    - Used by: tools.md
 #    - Analyses: analyses.md
 
 theme:
   name: material
-
+  features:
+    - navigation.sections
 
 plugins:
   - tooltips
