@@ -131,15 +131,19 @@ public class Body implements Copyable {
   }
 
   /** Verifies that a Value is not used in more than one place. */
-  // TODO: #535 implement validator public void validateValues() {   runValidation(new ValuesValidator());}
+  // TODO: #535 implement validator public void validateValues() {   runValidation(new
+  // ValuesValidator());}
 
   /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
-  // TODO: #535 implement validator  public void validateLocals() {runValidation(new LocalsValidator());}
+  // TODO: #535 implement validator  public void validateLocals() {runValidation(new
+  // LocalsValidator());}
 
   /** Verifies that each use in this Body has a def. */
-  // TODO: #535 implement validator public void validateUses() {  runValidation(new UsesValidator()); }
-  private void checkInit() {   runValidation(new CheckInitValidator()); }
-
+  // TODO: #535 implement validator public void validateUses() {  runValidation(new
+  // UsesValidator()); }
+  private void checkInit() {
+    runValidation(new CheckInitValidator());
+  }
 
   /** Returns a backed chain of the locals declared in this Body. */
   public Set<Local> getLocals() {
@@ -249,7 +253,6 @@ public class Body implements Copyable {
   public StmtGraph<?> getStmtGraph() {
     return graph;
   }
-
 
   /** {@inheritDoc} */
   @Override

@@ -24,36 +24,36 @@ package sootup.core.validation;
 
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
 import sootup.core.model.Body;
 
 public class LocalsValidator implements BodyValidator {
 
   /** Verifies that each Local of getUses() and getDefs() belongs to this body's locals. */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public void validate(@Nonnull Body body, @Nonnull List<ValidationException> exception) {
     final Set<Local> locals = body.getLocals();
 
-    for (Value value : body.getUses()) {
-      if (value instanceof Local) {
-        if (!locals.contains(value)) {
-          exception.add(
-              new ValidationException(
-                  value, "Local not in chain : " + value + " in " + body.getMethodSignature()));
-        }
-      }
-    }
+    body.getUses()
+        .parallelStream()
+        .filter(value -> value instanceof Local && !locals.contains(value))
+        .forEach(
+            value ->
+                exception.add(
+                    new ValidationException(
+                        value,
+                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
 
-    for (Value value : body.getDefs()) {
-      if (value instanceof Local) {
-        if (!locals.contains(value)) {
-          exception.add(
-              new ValidationException(
-                  value, "Local not in chain : " + value + " in " + body.getMethodSignature()));
-        }
-      }
-    }
+    body.getDefs()
+        .parallelStream()
+        .filter(value -> value instanceof Local && !locals.contains(value))
+        .forEach(
+            value ->
+                exception.add(
+                    new ValidationException(
+                        value,
+                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
   }
 
   @Override
