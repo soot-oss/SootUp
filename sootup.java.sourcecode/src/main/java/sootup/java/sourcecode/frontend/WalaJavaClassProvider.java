@@ -69,7 +69,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   private List<SootClassSource<JavaSootClass>> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
-  private final File walaPropertiesFile = new File("target/classes/wala.properties");
+  private final File walaPropertiesFile = new File("wala.properties");
 
   public WalaJavaClassProvider(@Nonnull String sourceDirPath) {
     this(sourceDirPath, null);
