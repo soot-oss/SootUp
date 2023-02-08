@@ -32,6 +32,7 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * Statically evaluates the conditional expression of Jimple if statements. If the condition is
@@ -44,7 +45,7 @@ import sootup.core.transform.BodyInterceptor;
 public class ConditionalBranchFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 

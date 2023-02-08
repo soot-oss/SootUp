@@ -1,10 +1,9 @@
-package sootup.core.transform;
-
+package sootup.java.bytecode.interceptors.typeresolving.types;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 2019-2022 Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,18 +22,27 @@ package sootup.core.transform;
  */
 
 import javax.annotation.Nonnull;
-import sootup.core.model.Body;
-import sootup.core.views.View;
+import sootup.core.jimple.visitor.TypeVisitor;
+import sootup.core.types.Type;
 
-/** @see #interceptBody(Body.BodyBuilder, View) */
-public interface BodyInterceptor {
+/**
+ * This type is imaginary type, and used for Type Inference
+ *
+ * @author Zun Wang
+ */
+public class BottomType extends Type {
 
-  /**
-   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
-   * variables.
-   *
-   * @param builder
-   * @param view
-   */
-  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view);
+  @Nonnull private static final BottomType INSTANCE = new BottomType();
+
+  @Nonnull
+  public static BottomType getInstance() {
+    return INSTANCE;
+  }
+
+  private BottomType() {}
+
+  @Override
+  public void accept(@Nonnull TypeVisitor v) {
+    // todo: add bottom type case
+  }
 }

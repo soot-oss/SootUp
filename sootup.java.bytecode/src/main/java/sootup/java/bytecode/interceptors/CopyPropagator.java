@@ -24,7 +24,6 @@ package sootup.java.bytecode.interceptors;
 import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -40,12 +39,13 @@ import sootup.core.model.Body;
 import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 /** @author Zun Wang */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     final StmtGraph<?> stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {

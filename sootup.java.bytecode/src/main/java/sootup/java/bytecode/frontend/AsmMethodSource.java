@@ -88,6 +88,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
@@ -132,7 +133,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final List<BodyInterceptor>
       bodyInterceptors; // TODO: [ms] show them their place i.e. move them inside a View (same for
   // sourcecodefrontend)
-  private View view;
+  private View<?> view;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();

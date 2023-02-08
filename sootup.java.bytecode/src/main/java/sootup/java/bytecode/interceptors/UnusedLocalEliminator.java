@@ -24,12 +24,12 @@ package sootup.java.bytecode.interceptors;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * A BodyTransformer that removes all unused local variables from a given Body.
@@ -45,7 +45,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     Set<Local> locals = new LinkedHashSet<>();
 

@@ -22,11 +22,11 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
@@ -36,7 +36,7 @@ import sootup.core.transform.BodyInterceptor;
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     StmtGraph<?> graph = builder.getStmtGraph();
 

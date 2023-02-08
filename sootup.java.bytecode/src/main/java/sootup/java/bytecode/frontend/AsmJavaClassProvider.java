@@ -33,6 +33,7 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
@@ -42,9 +43,9 @@ import sootup.java.core.types.ModuleJavaClassType;
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
-  @Nonnull private final View view;
+  @Nonnull private final View<?> view;
 
-  public AsmJavaClassProvider(@Nonnull View view) {
+  public AsmJavaClassProvider(@Nonnull View<?> view) {
     this.view = view;
   }
 

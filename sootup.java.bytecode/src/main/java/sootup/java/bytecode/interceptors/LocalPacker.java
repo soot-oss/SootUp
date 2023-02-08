@@ -22,7 +22,6 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -32,12 +31,13 @@ import sootup.core.model.Body;
 import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 /** @author Zun Wang * */
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local

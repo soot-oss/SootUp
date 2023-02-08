@@ -21,7 +21,6 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -29,6 +28,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * Removes empty switch statements which always take the default action from a method body, i.e.
@@ -40,7 +40,7 @@ import sootup.core.transform.BodyInterceptor;
 public class EmptySwitchEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     // Iterate all stmts in the body
 
     for (Stmt stmt : builder.getStmtGraph()) {

@@ -44,6 +44,15 @@ public class JimpleView extends AbstractView<SootClass<?>> {
     classLoadingOptionsSpecifier = analysisInputLocation -> null;
   }
 
+  public JimpleView(
+      @Nonnull JimpleProject project,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    super(project);
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+  }
+
   /**
    * Creates a new instance of the {@link JavaView} class.
    *

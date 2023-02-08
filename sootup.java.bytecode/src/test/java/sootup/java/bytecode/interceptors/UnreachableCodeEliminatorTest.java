@@ -98,7 +98,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder);
+    eliminator.interceptBody(builder, null);
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
@@ -131,7 +131,7 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    new UnreachableCodeEliminator().interceptBody(builder);
+    new UnreachableCodeEliminator().interceptBody(builder, null);
 
     assertEquals(0, builder.getTraps().size());
 
@@ -167,7 +167,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setStartingStmt(startingStmt);
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder);
+    eliminator.interceptBody(builder, null);
 
     assertEquals(0, builder.getTraps().size());
 
@@ -200,7 +200,7 @@ public class UnreachableCodeEliminatorTest {
     graph.setStartingStmt(startingStmt);
 
     MutableStmtGraph inputGraph = new MutableBlockStmtGraph(builder.getStmtGraph());
-    new UnreachableCodeEliminator().interceptBody(builder);
+    new UnreachableCodeEliminator().interceptBody(builder, null);
 
     assertEquals(inputGraph, builder.getStmtGraph());
   }

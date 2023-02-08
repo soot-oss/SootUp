@@ -183,32 +183,7 @@ public class BodyUtils {
           newStmt = withNewDef(stmt, newLocal);
         }
         if (newStmt != null) {
-          replaceStmtInBuilder(builder, stmt, newStmt);
-        }
-      }
-    }
-  }
-
-  public static void replaceLocalInBuilder(
-      Body.BodyBuilder builder, Local oldLocal, Local newLocal) {
-    LinkedHashSet<Local> locals = new LinkedHashSet<>(builder.getLocals());
-    if (!locals.contains(oldLocal)) {
-      throw new RuntimeException(
-          "The given old local: " + oldLocal.toString() + " is not in the body!");
-    } else {
-      locals.remove(oldLocal);
-      locals.add(newLocal);
-      builder.setLocals(locals);
-      List<Stmt> stmts = new ArrayList<>(builder.getStmts());
-      for (Stmt stmt : stmts) {
-        Stmt newStmt = null;
-        if (stmt.getUses().contains(oldLocal)) {
-          newStmt = withNewUse(stmt, oldLocal, newLocal);
-        } else if (stmt.getDefs().contains(oldLocal)) {
-          newStmt = withNewDef(stmt, newLocal);
-        }
-        if (newStmt != null) {
-          replaceStmtInBuilder(builder, stmt, newStmt);
+          builder.replaceStmt(stmt, newStmt);
         }
       }
     }

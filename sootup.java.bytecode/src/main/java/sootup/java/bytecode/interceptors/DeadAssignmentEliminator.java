@@ -22,7 +22,6 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
@@ -41,6 +40,7 @@ import sootup.core.model.BodyUtils;
 import sootup.core.model.Modifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
+import sootup.core.views.View;
 
 /**
  * This interceptor eliminates assignment statements to locals whose values are not subsequently
@@ -67,7 +67,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   Map<Local, List<Stmt>> allUses = new HashMap<>();
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     StmtGraph<MutableBasicBlock> stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());

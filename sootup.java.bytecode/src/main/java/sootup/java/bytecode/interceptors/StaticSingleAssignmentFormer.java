@@ -24,7 +24,6 @@ package sootup.java.bytecode.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
@@ -38,6 +37,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * In Static Single Assignment Form, each variable be assigned exactly once, and every variable be
@@ -50,7 +50,7 @@ import sootup.core.transform.BodyInterceptor;
 public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;

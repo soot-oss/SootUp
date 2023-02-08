@@ -58,6 +58,15 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   }
 
   @Nonnull
+  @Override
+  public JavaView createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaView(this, classLoadingOptionsSpecifier);
+  }
+
+  @Nonnull
   public MutableJavaView createMutableOnDemandView() {
     return new MutableJavaView(this);
   }
@@ -74,16 +83,6 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   public MutableJavaView createMutableFullView() {
     final MutableJavaView view = createMutableOnDemandView();
     view.getClasses();
-    return view;
-  }
-
-  @Nonnull
-  @Override
-  public JavaView configBodyInterceptors(
-      JavaView view,
-      Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-          classLoadingOptionsSpecifier) {
-    view.configBodyInterceptors(classLoadingOptionsSpecifier);
     return view;
   }
 

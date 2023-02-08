@@ -43,7 +43,7 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Type op1t = op1.getType();
     Type op2t = op2.getType();
 
-    if (TypeUtils.isIntLikeType(op1t) && TypeUtils.isIntLikeType(op2t)) {
+    if (Type.isIntLikeType(op1t) && Type.isIntLikeType(op2t)) {
       return PrimitiveType.getInt();
     } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();

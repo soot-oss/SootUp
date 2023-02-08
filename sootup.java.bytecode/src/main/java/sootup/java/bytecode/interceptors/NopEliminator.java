@@ -23,12 +23,12 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * This class removes {@link JNopStmt}s from a given {@link Body}.
@@ -45,7 +45,7 @@ public class NopEliminator implements BodyInterceptor {
    * @param builder The current body before interception.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();

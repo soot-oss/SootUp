@@ -138,11 +138,4 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
       @Nonnull
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);
-
-  /** Configure a View with custom {@link ClassLoadingOptions}. */
-  @Nonnull
-  public abstract V configBodyInterceptors(
-      V view,
-      Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
-          classLoadingOptionsSpecifier);
 }

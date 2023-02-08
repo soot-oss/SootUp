@@ -1,10 +1,13 @@
-package sootup.core.transform;
+package sootup.java.bytecode.interceptors.typeresolving;
+
+import java.util.Collection;
+import sootup.core.types.Type;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 2019-2022 Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,20 +24,9 @@ package sootup.core.transform;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+public interface IHierarchy {
 
-import javax.annotation.Nonnull;
-import sootup.core.model.Body;
-import sootup.core.views.View;
+  Collection<Type> getLeastCommonAncestor(Type a, Type b);
 
-/** @see #interceptBody(Body.BodyBuilder, View) */
-public interface BodyInterceptor {
-
-  /**
-   * Takes a BodyBuilder and may apply a transformation to it, for example removing unused local
-   * variables.
-   *
-   * @param builder
-   * @param view
-   */
-  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view);
+  boolean isAncestor(Type ancestor, Type child);
 }

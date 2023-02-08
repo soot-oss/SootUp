@@ -24,6 +24,9 @@ package sootup.java.bytecode.interceptors;
 import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
+import sootup.java.bytecode.interceptors.typeresolving.TypeResolver;
+import sootup.java.core.views.JavaView;
 
 /**
  * This transformer assigns types to local variables.
@@ -40,7 +43,8 @@ public class TypeAssigner implements BodyInterceptor {
       // Todo: use another type resolver solution!
       return;
     }
+    // TODO: [ms] Its nice but shouldnt we give that flexibly to the user
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder, null);
+    standardizer.interceptBody(builder, view);
   }
 }

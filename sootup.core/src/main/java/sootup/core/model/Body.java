@@ -456,9 +456,12 @@ public class Body implements Copyable {
       return this;
     }
 
+    /*
+     * Note: if there is a stmt branching to successor this is not updated to the new stmt
+     * */
     @Nonnull
-    public BodyBuilder insertStmt(@Nonnull Stmt stmt, Stmt successor) {
-      graph.insertNode(stmt, successor);
+    public BodyBuilder insertBefore(@Nonnull Stmt newstmt, Stmt successor) {
+      graph.insertBefore(newstmt, successor);
       return this;
     }
 

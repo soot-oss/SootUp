@@ -1,9 +1,5 @@
 package sootup.jimple.parser;
 
-import java.util.List;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
-import sootup.core.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.SourceTypeSpecifier;
@@ -11,6 +7,10 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.model.SootClass;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.function.Function;
 
 public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
@@ -60,15 +60,5 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
     return new JimpleView(this, classLoadingOptionsSpecifier);
-  }
-
-  @Nonnull
-  @Override
-  public JimpleView configBodyInterceptors(
-      JimpleView view,
-      Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-          classLoadingOptionsSpecifier) {
-    view.configBodyInterceptors(classLoadingOptionsSpecifier);
-    return view;
   }
 }

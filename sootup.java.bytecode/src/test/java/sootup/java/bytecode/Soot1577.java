@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -23,9 +22,6 @@ public class Soot1577 {
         JavaProject.builder(new JavaLanguage(7)).addInputLocation(inputLocation).build();
 
     JavaView view = project.createOnDemandView();
-    view =
-        project.configBodyInterceptors(
-            view, analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     Assert.assertEquals(1, view.getClasses().size());
 

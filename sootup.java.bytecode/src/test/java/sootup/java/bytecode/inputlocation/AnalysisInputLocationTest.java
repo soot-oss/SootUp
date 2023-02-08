@@ -6,6 +6,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
+import sootup.core.IdentifierFactory;
+import sootup.core.frontend.AbstractClassSource;
+import sootup.core.frontend.ClassProvider;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.types.ClassType;
+import sootup.java.bytecode.frontend.AsmJavaClassProvider;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 /*-
  * #%L

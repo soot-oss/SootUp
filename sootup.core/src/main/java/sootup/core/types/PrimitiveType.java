@@ -111,7 +111,7 @@ public abstract class PrimitiveType extends Type {
     return Integer32767Type.getInstance();
   }
 
-  public static class ByteType extends PrimitiveType implements IntegerType {
+  public static class ByteType extends PrimitiveType.IntType {
     private static final ByteType INSTANCE = new ByteType();
 
     private ByteType() {
@@ -128,7 +128,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class ShortType extends PrimitiveType implements IntegerType {
+  public static class ShortType extends PrimitiveType.IntType {
     private static final ShortType INSTANCE = new ShortType();
 
     private ShortType() {
@@ -145,11 +145,15 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class IntType extends PrimitiveType implements IntegerType {
+  public static class IntType extends PrimitiveType {
     private static final IntType INSTANCE = new IntType();
 
     public IntType() {
       super("int");
+    }
+
+    protected IntType(@Nonnull String name) {
+      super(name);
     }
 
     public static IntType getInstance() {
@@ -213,7 +217,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class CharType extends PrimitiveType implements IntegerType {
+  public static class CharType extends PrimitiveType.IntType {
     private static final CharType INSTANCE = new CharType();
 
     private CharType() {
@@ -230,7 +234,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class BooleanType extends PrimitiveType implements IntegerType {
+  public static class BooleanType extends PrimitiveType.IntType {
     private static final BooleanType INSTANCE = new BooleanType();
 
     private BooleanType() {
@@ -251,7 +255,7 @@ public abstract class PrimitiveType extends Type {
    * This type is intermediate type and used for determining the ancestor of an integer type. see:
    * AugmentHierarchy;
    */
-  public static class Integer1Type extends PrimitiveType implements IntegerType {
+  public static class Integer1Type extends PrimitiveType.IntType {
     private static final Integer1Type INSTANCE = new Integer1Type();
 
     private Integer1Type() {
@@ -269,7 +273,7 @@ public abstract class PrimitiveType extends Type {
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
-  public static class Integer127Type extends PrimitiveType implements IntegerType {
+  public static class Integer127Type extends PrimitiveType.IntType {
     private static final Integer127Type INSTANCE = new Integer127Type();
 
     private Integer127Type() {
@@ -287,7 +291,7 @@ public abstract class PrimitiveType extends Type {
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
-  public static class Integer32767Type extends PrimitiveType implements IntegerType {
+  public static class Integer32767Type extends PrimitiveType.IntType {
     private static final Integer32767Type INSTANCE = new Integer32767Type();
 
     private Integer32767Type() {

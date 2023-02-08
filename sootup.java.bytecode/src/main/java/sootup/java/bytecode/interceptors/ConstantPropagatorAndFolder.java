@@ -39,6 +39,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * Does constant propagation and folding. Constant folding is the compile-time evaluation of
@@ -49,7 +50,7 @@ import sootup.core.transform.BodyInterceptor;
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     List<Stmt> defs = new ArrayList<>();
 
     // Perform a constant/local propagation pass

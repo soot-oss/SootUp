@@ -22,7 +22,6 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -34,6 +33,7 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
+import sootup.core.views.View;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/LocalNameStandardizer.java
 
@@ -43,7 +43,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
   // TODO: ms: why not reuse LocalGenerator to dry?
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nullable View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
