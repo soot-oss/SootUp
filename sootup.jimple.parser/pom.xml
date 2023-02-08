@@ -73,6 +73,7 @@
             <version>4.7.2</version>
         </dependency>
 
+
     </dependencies>
 
     <dependencyManagement>
@@ -83,6 +84,12 @@
                 <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.platform</groupId>
+                <artifactId>org.eclipse.equinox.common</artifactId>
+                <version>3.14.0</version>
+                <scope>runtime</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
