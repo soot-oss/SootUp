@@ -1,4 +1,4 @@
-package de.upb.soot.basic.lambdaExpressions;
+package de.upb.sootup.basic.lambdaExpressions;
 
 // There is an present while generating a jimple output for LambdaExpressions, refer here: https://mailman.cs.mcgill.ca/pipermail/soot-list/2016-November/008612.html
 abstract class LambdaExpressions {

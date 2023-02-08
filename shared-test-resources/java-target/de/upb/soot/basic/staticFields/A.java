@@ -1,4 +1,4 @@
-package de.upb.soot.basic.staticFields;
+package de.upb.sootup.basic.staticFields;
 
 class A {
   public static int a = 10;

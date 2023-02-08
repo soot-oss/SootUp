@@ -1,0 +1,41 @@
+public class de.upb.sootup.concrete.generics.A extends java.lang.Object
+{
+    java.lang.Object t;
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.generics.A r0;
+
+        r0 := @this: de.upb.sootup.concrete.generics.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void setT(java.lang.Object)
+    {
+        de.upb.sootup.concrete.generics.A r0;
+        java.lang.Object r1;
+
+        r0 := @this: de.upb.sootup.concrete.generics.A;
+
+        r1 := @parameter0: java.lang.Object;
+
+        r0.<de.upb.sootup.concrete.generics.A: java.lang.Object t> = r1;
+
+        return;
+    }
+
+    java.lang.Object getT()
+    {
+        de.upb.sootup.concrete.generics.A r0;
+        java.lang.Object $r1;
+
+        r0 := @this: de.upb.sootup.concrete.generics.A;
+
+        $r1 = r0.<de.upb.sootup.concrete.generics.A: java.lang.Object t>;
+
+        return $r1;
+    }
+}

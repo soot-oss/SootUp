@@ -1,0 +1,77 @@
+public class de.upb.sootup.concrete.operators.BooleanOps extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.operators.BooleanOps r0;
+
+        r0 := @this: de.upb.sootup.concrete.operators.BooleanOps;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void logicalOr()
+    {
+        de.upb.sootup.concrete.operators.BooleanOps r0;
+        java.io.PrintStream $r1;
+        boolean $z3;
+
+        r0 := @this: de.upb.sootup.concrete.operators.BooleanOps;
+
+        goto label1;
+
+     label1:
+        $z3 = 1;
+
+        goto label2;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+
+        return;
+    }
+
+    public void logicalAnd()
+    {
+        de.upb.sootup.concrete.operators.BooleanOps r0;
+        boolean $z3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.concrete.operators.BooleanOps;
+
+        $z3 = 1;
+
+        goto label1;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+
+        return;
+    }
+
+    public void logicalNot()
+    {
+        de.upb.sootup.concrete.operators.BooleanOps r0;
+        java.io.PrintStream $r1;
+        boolean $z2;
+
+        r0 := @this: de.upb.sootup.concrete.operators.BooleanOps;
+
+        $z2 = 1;
+
+        goto label1;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z2);
+
+        return;
+    }
+}

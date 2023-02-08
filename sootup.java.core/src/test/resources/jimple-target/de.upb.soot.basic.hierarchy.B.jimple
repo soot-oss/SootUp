@@ -1,0 +1,47 @@
+class de.upb.sootup.basic.hierarchy.B extends de.upb.sootup.basic.hierarchy.C
+{
+
+    void <init>()
+    {
+        de.upb.sootup.basic.hierarchy.B r0;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.B;
+
+        specialinvoke r0.<de.upb.sootup.basic.hierarchy.C: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String methodB()
+    {
+        de.upb.sootup.basic.hierarchy.B r0, $r2;
+        java.lang.StringBuilder $r3, $r5, $r6;
+        java.io.PrintStream $r4;
+        int $i0;
+        java.lang.String $r7;
+
+        r0 := @this: de.upb.sootup.basic.hierarchy.B;
+
+        $r2 = new de.upb.sootup.basic.hierarchy.B;
+
+        specialinvoke $r2.<de.upb.sootup.basic.hierarchy.B: void <init>()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = new java.lang.StringBuilder;
+
+        specialinvoke $r3.<java.lang.StringBuilder: void <init>()>();
+
+        $r5 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("method of Class B ");
+
+        $i0 = virtualinvoke $r2.<de.upb.sootup.basic.hierarchy.B: int methodC()>();
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+        return "method of Class B";
+    }
+}

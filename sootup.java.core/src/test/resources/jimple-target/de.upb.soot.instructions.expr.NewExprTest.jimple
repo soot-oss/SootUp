@@ -1,0 +1,42 @@
+public class de.upb.sootup.instructions.expr.NewExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.NewExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void sth()
+    {
+        de.upb.sootup.instructions.expr.NewExprTest r0;
+        java.lang.Integer $r3;
+        java.io.PrintStream $r4, $r6;
+        java.lang.Boolean $r5;
+
+        r0 := @this: de.upb.sootup.instructions.expr.NewExprTest;
+
+        $r3 = new java.lang.Integer;
+
+        specialinvoke $r3.<java.lang.Integer: void <init>(int)>(42);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.Object)>($r3);
+
+        $r5 = new java.lang.Boolean;
+
+        specialinvoke $r5.<java.lang.Boolean: void <init>(boolean)>(1);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.Object)>($r5);
+
+        return;
+    }
+}

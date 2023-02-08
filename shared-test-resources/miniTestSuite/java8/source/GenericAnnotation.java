@@ -4,14 +4,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
 
-public class GenericAnnotation<@AnnotationData.FutureSootAnnotation T> {
-    List<@FutureSootAnnotation String> stringList;
-    List<@FutureSootAnnotation T> genericList;
-    List<@FutureSootAnnotation ? extends Number> genericExtendedList;
-    List<@FutureSootAnnotation ? super T> genericSuperList;
-    List<@FutureSootAnnotation ?> genericWildcardList1;
+public class GenericAnnotation<@AnnotationData.SootUpAnnotation T> {
+    List<@SootUpAnnotation String> stringList;
+    List<@SootUpAnnotation T> genericList;
+    List<@SootUpAnnotation ? extends Number> genericExtendedList;
+    List<@SootUpAnnotation ? super T> genericSuperList;
+    List<@SootUpAnnotation ?> genericWildcardList1;
 
     @Target({ElementType.TYPE_USE,ElementType.TYPE_PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface FutureSootAnnotation{}
+    public @interface SootUpAnnotation{}
 }

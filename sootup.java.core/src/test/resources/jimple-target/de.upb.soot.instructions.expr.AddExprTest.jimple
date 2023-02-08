@@ -1,0 +1,54 @@
+public class de.upb.sootup.instructions.expr.AddExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.AddExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.AddExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void addition(int, int)
+    {
+        de.upb.sootup.instructions.expr.AddExprTest r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.AddExprTest;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i0 + i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+
+    public void addAssignmentOperator(int)
+    {
+        de.upb.sootup.instructions.expr.AddExprTest r0;
+        int i0, i2;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.AddExprTest;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 + i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+}

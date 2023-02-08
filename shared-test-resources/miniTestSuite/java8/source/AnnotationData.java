@@ -5,18 +5,18 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 public class AnnotationData {
-    private @FutureSootAnnotation
+    private @SootUpAnnotation
     String str;
-    private @FutureSootAnnotation
+    private @SootUpAnnotation
     List<String> stringlist;
-    private @FutureSootAnnotation
+    private @SootUpAnnotation
     char[] charArray; //on char
-    private @FutureSootAnnotation
+    private @SootUpAnnotation
     char[][] charArray2D;//on char
-    private char @FutureSootAnnotation [] charArr;//on char array, char[]
-    private char[] @FutureSootAnnotation [] charArrNew; //on char array, char[] which is component of char[][]
+    private char @SootUpAnnotation [] charArr;//on char array, char[]
+    private char[] @SootUpAnnotation [] charArrNew; //on char array, char[] which is component of char[][]
 
     @Target({ElementType.TYPE_USE,ElementType.TYPE_PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface FutureSootAnnotation{}
+    public @interface SootUpAnnotation{}
 }

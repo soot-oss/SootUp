@@ -1,4 +1,4 @@
-package de.upb.soot.basic.hierarchy;
+package de.upb.sootup.basic.hierarchy;
 
 class C {
   public int methodC() {

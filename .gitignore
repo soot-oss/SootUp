@@ -3,6 +3,7 @@
 # Compiled class file
 *.class
 !shared-test-resources/miniTestSuite/**/*.class
+!sootup.analysis/src/test/resources/taint/binary/*.class
 
 # Log file
 *.log
@@ -16,6 +17,7 @@
 # Package Files #
 *.jar
 *.war
+!sootup.java.bytecode/lib/dex-tools-2.2-SNAPSHOT.jar
 !shared-test-resources/java-miniapps/MiniApp.jar
 !shared-test-resources/java-warApp/dummyWarApp.war
 !shared-test-resources/multi-release-jar/mrjar.jar

@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.expr;
+package de.upb.sootup.instructions.expr;
 
 public class StaticInvokeExprTest {
 

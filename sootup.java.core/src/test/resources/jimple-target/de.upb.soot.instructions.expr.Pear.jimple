@@ -1,0 +1,23 @@
+class de.upb.sootup.instructions.expr.Pear extends java.lang.Object implements de.upb.sootup.instructions.expr.IThing
+{
+
+    void <init>()
+    {
+        de.upb.sootup.instructions.expr.Pear r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.Pear;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int getId()
+    {
+        de.upb.sootup.instructions.expr.Pear r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.Pear;
+
+        return 42;
+    }
+}

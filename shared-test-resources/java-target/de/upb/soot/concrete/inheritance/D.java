@@ -1,4 +1,4 @@
-package de.upb.soot.concrete.inheritance;
+package de.upb.sootup.concrete.inheritance;
 
 /**
  * @author Manuel Benz created on 19.07.18

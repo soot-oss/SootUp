@@ -1,0 +1,28 @@
+public class de.upb.sootup.instructions.stmt.ThrowStmt extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.stmt.ThrowStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ThrowStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void throwsth() throws java.lang.Exception
+    {
+        de.upb.sootup.instructions.stmt.ThrowStmt r0;
+        java.lang.Exception $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.ThrowStmt;
+
+        $r1 = new java.lang.Exception;
+
+        specialinvoke $r1.<java.lang.Exception: void <init>(java.lang.String)>("Banana");
+
+        throw $r1;
+    }
+}

@@ -1,0 +1,212 @@
+public class de.upb.sootup.instructions.expr.CmpExpr extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void cmpOperatorNotEqual(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorEqual(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLower(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLowerEqual(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreater(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreaterEqual(long, long)
+    {
+        de.upb.sootup.instructions.expr.CmpExpr r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmpExpr;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

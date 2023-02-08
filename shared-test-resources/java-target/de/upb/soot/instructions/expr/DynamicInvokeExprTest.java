@@ -1,4 +1,4 @@
-package de.upb.soot.instructions.expr;
+package de.upb.sootup.instructions.expr;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

@@ -1,11 +1,10 @@
-# Getting Started
+# General Usage of SootUp
+This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
-This page walks you through the core data structures, as well as shows how to get started with FutureSoot.
+## The core datastructures
+Before you get started with the SootUp library, it helps to learn about the following core data structures: 
 
-## Core Data Structures
-Before you get started with the FutureSoot library, it helps to learn about the following core data structures: 
-
-- `Project`: defines the outlines of an analysis. Soot users should first create a `Project` instance. It is the starting point for all operations. 
+- `Project`: defines the outlines of an analysis. SootUp users should first create a `Project` instance. It is the starting point for all operations. 
   You can define multiple instances of `Project` at the same time and there are no information shared between them. All caches are always at the project level.
 
 - `Language`: represents the programming language of the analyzed code. 
@@ -182,7 +181,7 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 
 ## Retrieving the Control-Flow Graph of a Method
 
-Each `SootMethod` contains a Control-Flow Graph (CFG), or as we name here a `StmtGraph`, that is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `StmtGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
 
 !!! example "Retrieving the CFG of a SootMethod"
 
@@ -191,17 +190,16 @@ Each `SootMethod` contains a Control-Flow Graph (CFG), or as we name here a `Stm
     ```
 
 
-You can view all the code used until this point below:
 
-!!! info "All the code used above"
+!!! info "Access or Download all of the code used above"
 
-    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/examples/src/test/java/de/upb/swt/soot/examples/basicSetup/BasicSetup.java)
+    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
 
-## FutureSoot vs Soot
+## SootUp vs Soot
 
-Below we show a comparison of the code so far with the same functionality in Soot.
+Below we show a comparison of the code so far with the same functionality in sootup.
 
-=== "FutureSoot"
+=== "SootUp"
 
     ``` java
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");

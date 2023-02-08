@@ -1,4 +1,4 @@
-package de.upb.soot.basic.abstractClasses;
+package de.upb.sootup.basic.abstractClasses;
 
 public abstract class AbstractClasses {
   public static void abstractClasses() {

@@ -1,4 +1,4 @@
-package de.upb.swt.multirelease;
+package multirelease;
 
 public class Utility {
 

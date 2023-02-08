@@ -1,0 +1,146 @@
+public class de.upb.sootup.instructions.expr.CmplExpr extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.CmplExpr r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmplExpr;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void cmplOperatorNotEqual(float, float)
+    {
+        de.upb.sootup.instructions.expr.CmplExpr r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmplExpr;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorEqual(float, float)
+    {
+        de.upb.sootup.instructions.expr.CmplExpr r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmplExpr;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreater(float, float)
+    {
+        de.upb.sootup.instructions.expr.CmplExpr r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmplExpr;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreaterEqual(float, float)
+    {
+        de.upb.sootup.instructions.expr.CmplExpr r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.sootup.instructions.expr.CmplExpr;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

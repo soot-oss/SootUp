@@ -1,0 +1,311 @@
+public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void tableSwitch(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        tableswitch(i0)
+        {
+            case 0: goto label1;
+            case 1: goto label2;
+            case 2: goto label3;
+            case 3: goto label4;
+            case 4: goto label5;
+            default: goto label6;
+        };
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("two");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("three");
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("four");
+
+     label6:
+        return;
+    }
+
+    public void tableSwitchWithDefault(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        tableswitch(i0)
+        {
+            case 0: goto label1;
+            case 1: goto label2;
+            case 2: goto label3;
+            case 3: goto label4;
+            case 4: goto label5;
+            default: goto label6;
+        };
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("two");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("three");
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("four");
+
+     label6:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+
+        return;
+    }
+
+    public void tableSwitchWithBreakEveryOtherCase(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        tableswitch(i0)
+        {
+            case 0: goto label1;
+            case 1: goto label2;
+            case 2: goto label3;
+            case 3: goto label4;
+            case 4: goto label5;
+            default: goto label6;
+        };
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+
+     label2:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+        goto label6;
+
+     label3:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("two");
+
+     label4:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("three");
+
+        goto label6;
+
+     label5:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("four");
+
+     label6:
+        return;
+    }
+
+    public void lookupSwitch(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label1;
+            case 10: goto label2;
+            case 1000: goto label3;
+            case 10000000: goto label4;
+            default: goto label5;
+        };
+
+     label1:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+
+     label5:
+        return;
+    }
+
+    public void lookupSwitchWithDefault(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label1;
+            case 10: goto label2;
+            case 1000: goto label3;
+            case 10000000: goto label4;
+            default: goto label5;
+        };
+
+     label1:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
+
+     label3:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+
+     label4:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+
+        return;
+    }
+
+    public void lookupSwitchWithBreakEveryOtherCase(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts r0;
+        int i0;
+        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmts;
+
+        i0 := @parameter0: int;
+
+        lookupswitch(i0)
+        {
+            case 1: goto label1;
+            case 10: goto label2;
+            case 1000: goto label3;
+            case 10000000: goto label4;
+            default: goto label5;
+        };
+
+     label1:
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("one");
+
+     label2:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("ten");
+
+        goto label6;
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+
+     label4:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+
+        goto label6;
+
+     label5:
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+
+     label6:
+        return;
+    }
+}

@@ -1,0 +1,199 @@
+public class de.upb.sootup.instructions.stmt.AssignStmtTest extends java.lang.Object
+{
+    int field;
+    de.upb.sootup.basic.expr.Dummy fieldObj;
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.stmt.AssignStmtTest r0;
+        de.upb.sootup.basic.expr.Dummy $r1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.AssignStmtTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field> = 123;
+
+        $r1 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r1.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: de.upb.sootup.basic.expr.Dummy fieldObj> = $r1;
+
+        return;
+    }
+
+    public void rvalue()
+    {
+        de.upb.sootup.instructions.stmt.AssignStmtTest r0;
+        int[] r2;
+        int i0, i1, i2, i3, $i6;
+        de.upb.sootup.basic.expr.Dummy $r3;
+        java.io.PrintStream $r4, $r5, $r6, $r7, $r8, $r9, $r10, $r11;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.AssignStmtTest;
+
+        $r3 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r3.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        r2 = newarray (int)[123];
+
+        i0 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field>;
+
+        i1 = $r3.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        i2 = r2[42];
+
+        $i6 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field>;
+
+        i3 = r2[$i6];
+
+        staticinvoke <java.lang.Math: int abs(int)>(-1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.Object)>($r3);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(i0);
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(i1);
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(i2);
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(i3);
+
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(int)>(42);
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(int)>(3);
+
+        return;
+    }
+
+    public void imm()
+    {
+        de.upb.sootup.instructions.stmt.AssignStmtTest r0;
+        de.upb.sootup.basic.expr.Dummy $r2;
+        java.io.PrintStream $r3, $r4, $r5;
+        int $i1, $i2;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.AssignStmtTest;
+
+        r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field> = 42;
+
+        $r2 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r2.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        $r2.<de.upb.sootup.basic.expr.Dummy: int field> = 2;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(2);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i1);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i2 = $r2.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i2);
+
+        return;
+    }
+
+    public void property()
+    {
+        de.upb.sootup.instructions.stmt.AssignStmtTest r0;
+        de.upb.sootup.basic.expr.Dummy $r3, $r4, $r5, $r8;
+        int $i0, $i1, $i2, $i3;
+        java.io.PrintStream $r6, $r7, $r9;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.AssignStmtTest;
+
+        $r3 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r3.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        $r3.<de.upb.sootup.basic.expr.Dummy: int field> = 666;
+
+        $r4 = new de.upb.sootup.basic.expr.Dummy;
+
+        specialinvoke $r4.<de.upb.sootup.basic.expr.Dummy: void <init>()>();
+
+        $i0 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field>;
+
+        $r4.<de.upb.sootup.basic.expr.Dummy: int field> = $i0;
+
+        $r5 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: de.upb.sootup.basic.expr.Dummy fieldObj>;
+
+        $r5.<de.upb.sootup.basic.expr.Dummy: int field> = 42;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = $r3.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i1);
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $i2 = $r4.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>($i2);
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: de.upb.sootup.basic.expr.Dummy fieldObj>;
+
+        $i3 = $r8.<de.upb.sootup.basic.expr.Dummy: int field>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>($i3);
+
+        return;
+    }
+
+    public void array_field()
+    {
+        de.upb.sootup.instructions.stmt.AssignStmtTest r0;
+        int[] r1;
+        int $i0, $i1;
+
+        r0 := @this: de.upb.sootup.instructions.stmt.AssignStmtTest;
+
+        r1 = newarray (int)[123];
+
+        r1[0] = 1;
+
+        r1[42] = 43;
+
+        $i0 = staticinvoke <java.lang.Math: int abs(int)>(-1);
+
+        r1[$i0] = -2;
+
+        $i1 = r0.<de.upb.sootup.instructions.stmt.AssignStmtTest: int field>;
+
+        r1[$i1] = 0;
+
+        return;
+    }
+}

@@ -1,13 +1,13 @@
 # Call Graph Construction
 A call graph shows the method calling relationship of a program. It is a directed graph, whose nodes represent different **methods**, and edges represent **caller -> callee** relationship.
 
-FutureSoot contains several call graph construction algorithms. Below, we show how you can use each of these.
+SootUp contains several call graph construction algorithms. Below, we show how you can use each of these.
 
 ## Creating the Type Hierarchy
 All the call graph construction algorithms require a type hierarchy for resolving method calls based of sub typing relationship.
 Below, we show how to create a type hierarchy:
 
-=== "FutureSoot"
+=== "SootUp"
 
     ```java
     AnalysisInputLocation<JavaSootClass> inputLocation =
@@ -55,7 +55,7 @@ Below, we show how to create a type hierarchy:
 ## Defining an Entry Method
 All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
 
-=== "FutureSoot"
+=== "SootUp"
 
     ```java
     ClassType classTypeA = project.getIdentifierFactory().getClassType("A");
@@ -72,14 +72,15 @@ All the call graph construction algorithms require an entry method to start with
 === "Soot"
 
     ```java
-   SootMethod src = Scene.v().getSootClass(targetTestClassName).getMethodByName("doStuff");  
+    SootMethod src = Scene.v().getSootClass(targetTestClassName).getMethodByName("doStuff");     
+   
     ```
 
 ## Class Hierarchy Analysis
-Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in FutureSoot. It soundly includes all implementers of an interface, when resolving a method call on an interface.
+Class Hierarchy Analysis (CHA) algorithm is the most sound call graph construction algorithm available in SootUp. It soundly includes all implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with CHA as follows:
 
-=== "FutureSoot"
+=== "SootUp"
 
     ```java
     CallGraphAlgorithm cha = 
@@ -108,7 +109,7 @@ You can construct a call graph with CHA as follows:
 Rapid Type Analysis (RTA) algorithm constructs a rather precise version of the call graph that the CHA constructs. It refines CHA by considering only the instantiated implementers of an interface, when resolving a method call on an interface.
 You can construct a call graph with RTA as follows:
 
-=== "FutureSoot"
+=== "SootUp"
 
     ```java
     CallGraphAlgorithm rta = 
@@ -145,10 +146,11 @@ When considering assignments, we usually need to consider **pointer** (points-to
 !!! info
 
     VTA algorithm was implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
+    A reimplementation of Spark in SootUp is currently under development.
 
 Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:
 
-=== "FutureSoot"
+=== "SootUp"
 
     ```java
     Spark spark = new Spark.Builder(view, callGraph).vta(true).build();

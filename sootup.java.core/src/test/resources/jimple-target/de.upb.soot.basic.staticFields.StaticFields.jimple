@@ -1,0 +1,44 @@
+public class de.upb.sootup.basic.staticFields.StaticFields extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.staticFields.StaticFields r0;
+
+        r0 := @this: de.upb.sootup.basic.staticFields.StaticFields;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void staticFields()
+    {
+        java.lang.StringBuilder $r0, $r2, $r4;
+        java.io.PrintStream $r1;
+        int $i0;
+        java.lang.String $r3, $r5;
+
+        staticinvoke <de.upb.sootup.basic.staticFields.A: void methodA()>();
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $r0 = new java.lang.StringBuilder;
+
+        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
+
+        $i0 = <de.upb.sootup.basic.staticFields.A: int a>;
+
+        $r2 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+
+        $r3 = <de.upb.sootup.basic.staticFields.A: java.lang.String b>;
+
+        $r4 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r3);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        return;
+    }
+}

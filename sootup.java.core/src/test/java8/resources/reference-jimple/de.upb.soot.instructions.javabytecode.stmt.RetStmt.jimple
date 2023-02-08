@@ -1,0 +1,61 @@
+public class de.upb.sootup.instructions.javabytecode.stmt.RetStmt extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.RetStmt r0;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int returnInt(int)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.RetStmt r0;
+        int i0;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        i0 := @parameter0: int;
+
+        return i0;
+    }
+
+    double returnDouble(double)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.RetStmt r0;
+        double d0;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        d0 := @parameter0: double;
+
+        return d0;
+    }
+
+    java.lang.String returnString(java.lang.String)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.RetStmt r0;
+        java.lang.String r1;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        r1 := @parameter0: java.lang.String;
+
+        return r1;
+    }
+
+    de.upb.sootup.instructions.javabytecode.stmt.RetStmt returnNonPrimitive(de.upb.sootup.instructions.javabytecode.stmt.RetStmt)
+    {
+        de.upb.sootup.instructions.javabytecode.stmt.RetStmt r0, r1;
+
+        r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        r1 := @parameter0: de.upb.sootup.instructions.javabytecode.stmt.RetStmt;
+
+        return r1;
+    }
+}

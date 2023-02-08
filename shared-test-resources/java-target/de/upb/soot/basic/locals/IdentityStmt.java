@@ -1,4 +1,4 @@
-package de.upb.soot.basic.locals;
+package de.upb.sootup.basic.locals;
 
 public class IdentityStmt {
 

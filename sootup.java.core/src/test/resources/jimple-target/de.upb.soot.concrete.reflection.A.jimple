@@ -1,0 +1,25 @@
+public class de.upb.sootup.concrete.reflection.A extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.reflection.A r0;
+
+        r0 := @this: de.upb.sootup.concrete.reflection.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void staticFoo()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("foo");
+
+        return;
+    }
+}

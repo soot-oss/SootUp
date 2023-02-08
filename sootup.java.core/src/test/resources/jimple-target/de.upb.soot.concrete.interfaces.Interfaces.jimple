@@ -1,0 +1,118 @@
+public class de.upb.sootup.concrete.interfaces.Interfaces extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void singleInterface()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.B $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.B;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.B: void <init>()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.B: void printI1()>();
+
+        return;
+    }
+
+    public void singleInterfaceDynDispatch()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.B $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.B;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.B: void <init>()>();
+
+        interfaceinvoke $r2.<de.upb.sootup.concrete.interfaces.I1: void printI1()>();
+
+        return;
+    }
+
+    public void multipleInterface()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.C $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.C;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.C: void <init>()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.C: void printI1()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.C: void printI2()>();
+
+        return;
+    }
+
+    public void inheritanceAndInterface()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.A $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.A;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.A: void <init>()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.A: void printI2()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.A: void printI1()>();
+
+        return;
+    }
+
+    public void overwriteInterfaceMethod()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.D $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.D;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.D: void <init>()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.D: void printI2()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.D: void printI1()>();
+
+        virtualinvoke $r2.<de.upb.sootup.concrete.interfaces.C: void printI2()>();
+
+        return;
+    }
+
+    public void anonymousImpl()
+    {
+        de.upb.sootup.concrete.interfaces.Interfaces r0;
+        de.upb.sootup.concrete.interfaces.Interfaces$1 $r2;
+
+        r0 := @this: de.upb.sootup.concrete.interfaces.Interfaces;
+
+        $r2 = new de.upb.sootup.concrete.interfaces.Interfaces$1;
+
+        specialinvoke $r2.<de.upb.sootup.concrete.interfaces.Interfaces$1: void <init>(de.upb.sootup.concrete.interfaces.Interfaces)>(r0);
+
+        interfaceinvoke $r2.<de.upb.sootup.concrete.interfaces.I2: void printI2()>();
+
+        return;
+    }
+}

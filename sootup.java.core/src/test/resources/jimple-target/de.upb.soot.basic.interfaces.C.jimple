@@ -1,0 +1,42 @@
+public class de.upb.sootup.basic.interfaces.C extends java.lang.Object implements de.upb.sootup.basic.interfaces.A1, de.upb.sootup.basic.interfaces.A2
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.basic.interfaces.C r0;
+
+        r0 := @this: de.upb.sootup.basic.interfaces.C;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void printA1()
+    {
+        de.upb.sootup.basic.interfaces.C r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.interfaces.C;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
+
+        return;
+    }
+
+    public void printA2()
+    {
+        de.upb.sootup.basic.interfaces.C r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: de.upb.sootup.basic.interfaces.C;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A2");
+
+        return;
+    }
+}

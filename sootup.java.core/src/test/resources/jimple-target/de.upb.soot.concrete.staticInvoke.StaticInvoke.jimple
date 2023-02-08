@@ -1,0 +1,32 @@
+public class de.upb.sootup.concrete.staticInvoke.StaticInvoke extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.concrete.staticInvoke.StaticInvoke r0;
+
+        r0 := @this: de.upb.sootup.concrete.staticInvoke.StaticInvoke;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void staticInvoke()
+    {
+        staticinvoke <de.upb.sootup.concrete.staticInvoke.StaticInvoke: void callee()>();
+
+        return;
+    }
+
+    private static void callee()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("foo");
+
+        return;
+    }
+}

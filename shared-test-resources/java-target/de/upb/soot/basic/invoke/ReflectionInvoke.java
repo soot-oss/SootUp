@@ -1,4 +1,4 @@
-package de.upb.soot.basic.invoke;
+package de.upb.sootup.basic.invoke;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

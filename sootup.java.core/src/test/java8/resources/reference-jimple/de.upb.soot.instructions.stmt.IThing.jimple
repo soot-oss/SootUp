@@ -1,0 +1,5 @@
+interface  de.upb.sootup.instructions.stmt.IThing extends java.lang.Object
+{
+
+    public abstract void printId();
+}

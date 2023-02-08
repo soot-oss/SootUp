@@ -1,0 +1,64 @@
+public class de.upb.sootup.instructions.expr.DynamicInvokeExprTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        de.upb.sootup.instructions.expr.DynamicInvokeExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.DynamicInvokeExprTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    java.lang.String sth()
+    {
+        de.upb.sootup.instructions.expr.DynamicInvokeExprTest r0;
+
+        r0 := @this: de.upb.sootup.instructions.expr.DynamicInvokeExprTest;
+
+        return "something";
+    }
+
+    void invoke() throws java.lang.Throwable
+    {
+        de.upb.sootup.instructions.expr.DynamicInvokeExprTest r0, $r5;
+        java.lang.invoke.MethodHandles$Lookup r1;
+        java.lang.invoke.MethodType r2;
+        java.lang.invoke.MethodHandle r3;
+        java.lang.String r4, $r10;
+        java.lang.StringBuilder $r6, $r8, $r9;
+        java.io.PrintStream $r7;
+
+        r0 := @this: de.upb.sootup.instructions.expr.DynamicInvokeExprTest;
+
+        r1 = staticinvoke <java.lang.invoke.MethodHandles: java.lang.invoke.MethodHandles$Lookup lookup()>();
+
+        r2 = staticinvoke <java.lang.invoke.MethodType: java.lang.invoke.MethodType methodType(java.lang.Class)>(class "Ljava/lang/String;");
+
+        r3 = virtualinvoke r1.<java.lang.invoke.MethodHandles$Lookup: java.lang.invoke.MethodHandle findVirtual(java.lang.Class,java.lang.String,java.lang.invoke.MethodType)>(class "Lde/upb/soot/instructions/expr/DynamicInvokeExprTest;", "sth", r2);
+
+        $r5 = new de.upb.sootup.instructions.expr.DynamicInvokeExprTest;
+
+        specialinvoke $r5.<de.upb.sootup.instructions.expr.DynamicInvokeExprTest: void <init>()>();
+
+        r4 = virtualinvoke r3.<java.lang.invoke.MethodHandle: java.lang.String invokeExact(de.upb.sootup.instructions.expr.DynamicInvokeExprTest)>($r5);
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $r6 = new java.lang.StringBuilder;
+
+        specialinvoke $r6.<java.lang.StringBuilder: void <init>()>();
+
+        $r8 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("dynamic invoked method returned: ");
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r4);
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r10);
+
+        return;
+    }
+}
