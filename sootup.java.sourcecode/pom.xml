@@ -96,24 +96,6 @@
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
 			<version>${wala.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.core.runtime</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.jdt</groupId>
-					<artifactId>org.eclipse.jdt.core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.osgi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.core.jobs</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- Override runtime imports for wala.cast.java.ecj to ensure java8 compatability -->
@@ -128,16 +110,6 @@
 			<artifactId>org.eclipse.jdt.core</artifactId>
 			<version>(,3.15)</version>
 			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.equinox.preferences</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.core.runtime</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
@@ -169,6 +141,7 @@
 			<version>(,3.8)</version>
 			<scope>runtime</scope>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
