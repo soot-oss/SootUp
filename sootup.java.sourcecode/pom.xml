@@ -133,6 +133,10 @@
 					<groupId>org.eclipse.platform</groupId>
 					<artifactId>org.eclipse.equinox.preferences</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.core.runtime</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
