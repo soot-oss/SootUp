@@ -1,7 +1,6 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
 import categories.Java8Test;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +24,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void", Collections.emptyList());
+    setMethodBody("invokeStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
     List<String> actualStmts = Utils.bodyStmtsAsStrings(builder.build());
 
@@ -47,7 +46,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void", Collections.emptyList());
+    setMethodBody("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
 
     final Body build = builder.build();

@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.jimple.basic.Local;
@@ -33,7 +34,7 @@ import sootup.core.types.Type;
 
 public class TypePromotionVisitor extends TypeChecker {
 
-  private boolean fail = false;
+  private boolean failed = false;
   private boolean typingChanged = true;
 
   private static final Logger logger = LoggerFactory.getLogger(TypePromotionVisitor.class);
@@ -45,20 +46,20 @@ public class TypePromotionVisitor extends TypeChecker {
 
   public Typing getPromotedTyping(Typing typing) {
     setTyping(typing);
-    this.fail = false;
-    while (typingChanged && !fail) {
+    this.failed = false;
+    while (typingChanged && !failed) {
       this.typingChanged = false;
       for (Stmt stmt : getBody().getStmts()) {
         stmt.accept(this);
       }
     }
-    if (fail) {
+    if (failed) {
       return null;
     }
     return getTyping();
   }
 
-  public void visit(Value value, Type stdType, Stmt stmt) {
+  public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();
     Body body = getBody();
@@ -70,12 +71,12 @@ public class TypePromotionVisitor extends TypeChecker {
     if (!hierarchy.isAncestor(stdType, evaType)) {
       logger.error(
           stdType
-              + " is not compatible with the value "
+              + " is not compatible with the value '"
               + value
-              + " in the statement: "
+              + "' in the statement: '"
               + stmt
-              + "!");
-      this.fail = true;
+              + "' !");
+      this.failed = true;
     } else if (value instanceof Local && Type.isIntermediateType(evaType)) {
       Local local = (Local) value;
       Type promotedType = promote(evaType, stdType);

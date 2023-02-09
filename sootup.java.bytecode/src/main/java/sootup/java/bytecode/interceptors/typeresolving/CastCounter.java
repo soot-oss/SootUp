@@ -74,7 +74,7 @@ public class CastCounter extends TypeChecker {
     }
   }
 
-  /** This method is used to check wether a value in a stmt needs a cast. */
+  /** This method is used to check whether a value in a stmt needs a cast. */
   public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();

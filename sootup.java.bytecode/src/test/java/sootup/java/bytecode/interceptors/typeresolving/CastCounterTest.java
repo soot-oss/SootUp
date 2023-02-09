@@ -35,7 +35,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void", Collections.emptyList());
+    setMethodBody("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -66,7 +66,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void", Collections.emptyList());
+    setMethodBody("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", Type.makeArrayType(super1, 1));
@@ -85,7 +85,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmtWithNewCasts() {
-    setMethodBody("invokeStmt", "void", Collections.emptyList());
+    setMethodBody("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -120,7 +120,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmtWithNewCasts() {
-    setMethodBody("assignStmt", "void", Collections.emptyList());
+    setMethodBody("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", object);

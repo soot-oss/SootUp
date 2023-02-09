@@ -23,7 +23,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void", Collections.emptyList());
+    setMethodBody("invokeStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolveBuilder(builder);
     Body newbody = builder.build();
@@ -49,7 +49,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void", Collections.emptyList());
+    setMethodBody("assignStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolveBuilder(builder);
     Body newbody = builder.build();

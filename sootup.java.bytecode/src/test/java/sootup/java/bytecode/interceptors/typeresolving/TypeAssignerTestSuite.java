@@ -1,7 +1,6 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import sootup.core.jimple.basic.Local;
@@ -42,12 +41,11 @@ public class TypeAssignerTestSuite {
     clazz = view.getClass(classType).get();
   }
 
-  public void setMethodBody(String methodName, String returnType, List<Type> paras) {
+  public void setMethodBody(String methodName, String returnType) {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             classType, methodName, returnType, Collections.emptyList());
-    Optional<JavaSootMethod> methodOptional =
-        (Optional<JavaSootMethod>) clazz.getMethod(methodSignature.getSubSignature());
+    Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
     body = method.getBody();
     builder = Body.builder(body, Collections.emptySet());
@@ -56,7 +54,7 @@ public class TypeAssignerTestSuite {
   public Typing createTyping(Map<String, Type> map) {
     Typing typing = new Typing(body.getLocals());
     for (Local l : typing.getLocals()) {
-      // todo: [problem] body contains null local!!! (shift)
+      // FIXME: [ZW] body contains null local!!! (shift)
       if (l == null) {
         continue;
       }

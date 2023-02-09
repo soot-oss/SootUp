@@ -69,7 +69,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
     this.hierarchy = hierarchy;
   }
 
-  public abstract void visit(Value value, Type stdType, Stmt stmt);
+  public abstract void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt);
 
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {

@@ -36,7 +36,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type actual, expected;
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("constant", "void", Collections.emptyList());
+    setMethodBody("constant", "void");
     for (Stmt s : body.getStmts()) {
       String sn = s.toString();
       switch (sn) {
@@ -78,7 +78,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         default:
       }
     }
-    setMethodBody("reflection", "void", Collections.emptyList());
+    setMethodBody("reflection", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
         value = s.getUses().get(0);
@@ -97,7 +97,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type expected = PrimitiveType.getBoolean();
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("condition", "void", Collections.emptyList());
+    setMethodBody("condition", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("if l1 >= l2")) {
         for (Value use : s.getUses()) {
@@ -111,7 +111,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("shift", "void", Collections.emptyList());
+    setMethodBody("shift", "void");
     Map map = new HashMap();
     map.put("l1", PrimitiveType.getByte());
     map.put("l2", PrimitiveType.getLong());
@@ -143,7 +143,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    setMethodBody("xor", "void", Collections.emptyList());
+    setMethodBody("xor", "void");
     map.clear();
     map.put("l1", PrimitiveType.getBoolean());
     map.put("l2", PrimitiveType.getBoolean());
@@ -194,7 +194,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    setMethodBody("add", "void", Collections.emptyList());
+    setMethodBody("add", "void");
     map.clear();
     map.put("l1", PrimitiveType.getInteger1());
     map.put("l2", PrimitiveType.getFloat());
@@ -226,7 +226,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    setMethodBody("length", "void", Collections.emptyList());
+    setMethodBody("length", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l2 = lengthof l1")) {
         for (Value use : s.getUses()) {
@@ -241,7 +241,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("instanceOf", "boolean", Collections.emptyList());
+    setMethodBody("instanceOf", "boolean");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack3 = l1 instanceof A")) {
         for (Value use : s.getUses()) {
@@ -256,7 +256,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("newArrayExpr", "void", Collections.emptyList());
+    setMethodBody("newArrayExpr", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
         for (Value use : s.getUses()) {
@@ -271,7 +271,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("invokeExpr", "void", Collections.emptyList());
+    setMethodBody("invokeExpr", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
         for (Value use : s.getUses()) {
@@ -303,7 +303,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type expected = identifierFactory.getClassType("java.lang.ArithmeticException");
     Stmt stmt = null;
     Value value = null;
-    setMethodBody("caughtException1", "void", Collections.emptyList());
+    setMethodBody("caughtException1", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -317,7 +317,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("caughtException2", "void", Collections.emptyList());
+    setMethodBody("caughtException2", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -332,7 +332,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, body);
     Assert.assertEquals(expected, actual);
 
-    setMethodBody("fieldRef", "void", Collections.emptyList());
+    setMethodBody("fieldRef", "void");
     for (Stmt s : body.getStmts()) {
       if (s.toString().equals("l1 = l0.<ByteCodeTypeTest: A field>")) {
         for (Value use : s.getUses()) {
