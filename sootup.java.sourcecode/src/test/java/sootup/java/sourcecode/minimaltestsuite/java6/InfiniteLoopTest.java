@@ -41,7 +41,7 @@ public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    Utils.printJimpleForTest(method);
+    Utils.generateJimpleForTest(method);
     assertJimpleStmts(method, expectedBodyStmts());
   }
 }

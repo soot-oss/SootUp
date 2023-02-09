@@ -1,6 +1,7 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.Collection;
+import javax.annotation.Nonnull;
 import sootup.core.types.Type;
 
 /*-
@@ -26,7 +27,8 @@ import sootup.core.types.Type;
  */
 public interface IHierarchy {
 
-  Collection<Type> getLeastCommonAncestor(Type a, Type b);
+  @Nonnull
+  Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b);
 
-  boolean isAncestor(Type ancestor, Type child);
+  boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child);
 }

@@ -24,6 +24,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
@@ -51,12 +52,12 @@ import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
-  private AugEvalFunction evalFunction;
-  private BytecodeHierarchy hierarchy;
+  private final AugEvalFunction evalFunction;
+  private final BytecodeHierarchy hierarchy;
   private Typing typing;
-  private Body.BodyBuilder bodyBuilder;
+  private final Body.BodyBuilder bodyBuilder;
   private Body body;
-  private IdentifierFactory factory = JavaIdentifierFactory.getInstance();
+  private final IdentifierFactory factory = JavaIdentifierFactory.getInstance();
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
@@ -76,7 +77,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
     Value lhs = stmt.getLeftOp();
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
@@ -102,7 +103,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             if (defStmts != null) {
               for (Stmt defStmt : defStmts) {
                 if (defStmt instanceof JAssignStmt) {
-                  Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
+                  Value arrExpr = ((JAssignStmt<?, ?>) defStmt).getRightOp();
                   if (arrExpr instanceof JNewArrayExpr) {
                     arrayType = (ArrayType) arrExpr.getType();
                     findDef = true;
@@ -161,7 +162,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             List<Stmt> stmts = defs.get(pair.getLocal());
             for (Stmt s : stmts) {
               if (s instanceof JAssignStmt) {
-                Value value = ((JAssignStmt) s).getRightOp();
+                Value value = ((JAssignStmt<?, ?>) s).getRightOp();
                 if (value instanceof JNewArrayExpr) {
                   sel = selectType(sel, ((JNewArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof JNewMultiArrayExpr) {
@@ -180,10 +181,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           arrayType = Type.makeArrayType(sel, 1);
         }
       }
-      Type type_rhs = arrayType.getElementType();
-      visit(base, arrayType, stmt);
-      visit(rhs, type_rhs, stmt);
-      visit(rhs, type_lhs, stmt);
+      if (arrayType != null) {
+        Type type_rhs = arrayType.getElementType();
+        visit(base, arrayType, stmt);
+        visit(rhs, type_rhs, stmt);
+        visit(rhs, type_lhs, stmt);
+      }
     } else if (rhs instanceof JInstanceFieldRef) {
       visit(
           ((JInstanceFieldRef) rhs).getBase(),
@@ -318,7 +321,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   // select the type with bigger bit size
-  public Type selectType(Type preType, Type newType, Stmt stmt) {
+  public Type selectType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
     if (preType == null || preType.equals(newType)) {
       return newType;
     }

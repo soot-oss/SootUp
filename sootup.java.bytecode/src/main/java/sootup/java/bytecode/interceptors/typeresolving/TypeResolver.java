@@ -21,6 +21,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 import java.util.*;
+import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -41,13 +42,13 @@ import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
 public class TypeResolver {
-  private Map<Integer, AbstractDefinitionStmt> id2assignments = new HashMap<>();
+  private final Map<Integer, AbstractDefinitionStmt<?, ?>> id2assignments = new HashMap<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
   private int castCount;
   private boolean isFail = false;
 
-  public TypeResolver(JavaView view) {
+  public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
   }
 
@@ -103,7 +104,7 @@ public class TypeResolver {
     int assignID = 0;
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof AbstractDefinitionStmt) {
-        AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
+        AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) stmt;
         Value lhs = defStmt.getLeftOp();
         if (lhs instanceof Local || lhs instanceof JArrayRef) {
           this.id2assignments.put(assignID, defStmt);
@@ -175,7 +176,7 @@ public class TypeResolver {
         workQueue.removeFirst();
       } else {
         actualSL.clear(stmtId);
-        AbstractDefinitionStmt defStmt = this.id2assignments.get(stmtId);
+        AbstractDefinitionStmt<?, ?> defStmt = this.id2assignments.get(stmtId);
         Value lhs = defStmt.getLeftOp();
         Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
         Type t_old = actualTyping.getType(local);

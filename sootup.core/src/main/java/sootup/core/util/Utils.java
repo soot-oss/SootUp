@@ -168,18 +168,22 @@ public class Utils {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public static void printJimpleForTest(SootMethod m) {
-    System.out.println(printedJimpleToArrayRepresentation(m.getBody()));
+  public static void generateJimpleForTest(@Nonnull SootMethod m) {
+    System.out.println(generateJimpleToArrayRepresentation(m.getBody()));
   }
 
   /** Helper for writing tests . */
-  public static String printedJimpleToArrayRepresentation(Body b) {
+  public static String generateJimpleToArrayRepresentation(@Nonnull Body b) {
     ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());
-    return printJimpleStmtsForTest(arr);
+    return generateJimpleStmtsForTest(arr);
   }
 
-  public static String printJimpleStmtsForTest(List<String> stmts) {
+  public static String generateJimpleStmtsForTest(@Nonnull List<String> stmts) {
     StringBuilder sb = new StringBuilder();
+
+    sb.append(
+        "List<String> actualStmts = Utils.bodyStmtsAsStrings( body );\nAssert.assertEquals(\nStream.of(\n");
+
     stmts.forEach(
         item ->
             sb.append('"')
@@ -188,8 +192,11 @@ public class Utils {
                 .append(',')
                 .append("\n"));
     if (stmts.size() > 0) {
-      sb.setLength(sb.length() - 1);
+      sb.setCharAt(sb.length() - 2, '\n');
     }
+
+    sb.append(").collect(Collectors.toList()), actualStmts);");
+
     return sb.toString();
   }
 }

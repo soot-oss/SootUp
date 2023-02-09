@@ -24,6 +24,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 /** @author Zun Wang */
 import java.util.Collection;
 import java.util.Collections;
+import javax.annotation.Nonnull;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -37,8 +38,9 @@ public class PrimitiveHierarchy implements IHierarchy {
    * of a and b; If there are c = a and c = b, but there's no b = a or a = b ==> c is the least
    * common ancestor of a and b;
    */
+  @Nonnull
   @Override
-  public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
+  public Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
     if (a.equals(b)) {
       return Collections.singleton(a);
     } else if (arePrimitives(a, b)) {
@@ -80,7 +82,7 @@ public class PrimitiveHierarchy implements IHierarchy {
    * child.
    */
   @Override
-  public boolean isAncestor(Type ancestor, Type child) {
+  public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
 
     if (ancestor.equals(child)) {
       return true;
@@ -125,9 +127,7 @@ public class PrimitiveHierarchy implements IHierarchy {
           return childBase instanceof PrimitiveType.Integer127Type
               || childBase instanceof PrimitiveType.Integer1Type
               || childBase instanceof BottomType;
-        } else if (ancestorBase instanceof PrimitiveType.CharType
-            || ancestorBase instanceof PrimitiveType.ShortType
-            || ancestorBase instanceof PrimitiveType.IntType) {
+        } else if (ancestorBase instanceof PrimitiveType.IntType) {
           return childBase instanceof PrimitiveType.Integer32767Type
               || childBase instanceof PrimitiveType.Integer127Type
               || childBase instanceof PrimitiveType.Integer1Type
@@ -146,11 +146,7 @@ public class PrimitiveHierarchy implements IHierarchy {
   /** Check whether the two given types are primitives or BottomType */
   public boolean arePrimitives(Type a, Type b) {
     if (a instanceof PrimitiveType || a instanceof BottomType) {
-      if (b instanceof PrimitiveType || b instanceof BottomType) {
-        return true;
-      } else {
-        return false;
-      }
+      return b instanceof PrimitiveType || b instanceof BottomType;
     } else {
       return false;
     }
