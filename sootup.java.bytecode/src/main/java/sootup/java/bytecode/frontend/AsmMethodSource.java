@@ -47,6 +47,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
@@ -130,11 +131,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nullable private JavaClassType declaringClass;
 
-  @Nonnull
-  private final List<BodyInterceptor>
-      bodyInterceptors; // TODO: [ms] show them their place i.e. move them inside a View (same for
-  // sourcecodefrontend)
-  private View<?> view;
+  private final View<?> view;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
@@ -159,10 +156,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      @Nonnull View view) {
+      @Nonnull View<?> view) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.view = view;
-    this.bodyInterceptors = view.getBodyInterceptors();
   }
 
   @Override
@@ -236,7 +232,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     bodyBuilder.setMethodSignature(lazyMethodSignature.get());
 
-    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+    for (BodyInterceptor bodyInterceptor : view.getBodyInterceptors()) {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
       } catch (Exception e) {
@@ -432,8 +428,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         Operand base = operandStack.popLocal();
         ref = javaIdentifierFactory.getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef((Local) base.stackOrValue(), ref);
-        val = ifr;
+        val = Jimple.newInstanceFieldRef((Local) base.stackOrValue(), ref);
         frame.setIn(rvalue, base);
       }
       opr = new Operand(insn, val, this);
