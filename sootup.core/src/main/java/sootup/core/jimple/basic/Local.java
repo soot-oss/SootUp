@@ -60,8 +60,6 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     this.position = position;
   }
 
-  // Can be safely suppressed, JimpleComparator performs this check
-  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof Local)) {

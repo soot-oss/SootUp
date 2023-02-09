@@ -396,7 +396,7 @@ public class JimpleConverter {
         @Override
         @Nonnull
         public Stmt visitStmt(JimpleParser.StmtContext ctx) {
-          StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine());
+          StmtPositionInfo pos = new SimpleStmtPositionInfo(ctx.start.getLine());
 
           if (ctx.BREAKPOINT() != null) {
             return Jimple.newBreakpointStmt(pos);

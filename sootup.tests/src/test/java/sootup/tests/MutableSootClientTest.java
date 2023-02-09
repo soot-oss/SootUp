@@ -78,7 +78,7 @@ public class MutableSootClientTest {
             null,
             Collections.emptySet(),
             Collections.emptySet(),
-            new Position(0, 0, 0, 0),
+            new FullPosition(0, 0, 0, 0),
             EnumSet.noneOf(Modifier.class),
             Collections.emptySet(),
             Collections.emptySet(),
