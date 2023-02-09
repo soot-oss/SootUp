@@ -1,11 +1,18 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
+import categories.Java8Test;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import sootup.core.model.Body;
 import sootup.core.types.*;
+import sootup.core.util.Utils;
 
+@Category(Java8Test.class)
 public class CastCounterTest extends TypeAssignerTestSuite {
 
   AugEvalFunction function;
@@ -88,46 +95,27 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("$stack5", sub2);
     Typing typing = createTyping(map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
-    Assert.assertTrue(counter.getCastCount(typing) == 3);
+    Assert.assertEquals(3, counter.getCastCount(typing));
     counter.insertCastStmts(typing);
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(builder.build());
     Assert.assertEquals(
-        builder.build().toString(),
-        "{\n"
-            + "    unknown l0, l1, l2, l3, $stack4, $stack5;\n"
-            + "    integer1 #l0;\n"
-            + "    long #l1;\n"
-            + "    int #l2;\n"
-            + "    Sub2 #l3;\n"
-            + "\n"
-            + "\n"
-            + "    l0 := @this: CastCounterDemos;\n"
-            + "\n"
-            + "    $stack4 = new Sub1;\n"
-            + "\n"
-            + "    specialinvoke $stack4.<Sub1: void <init>()>();\n"
-            + "\n"
-            + "    l1 = $stack4;\n"
-            + "\n"
-            + "    #l0 = 1;\n"
-            + "\n"
-            + "    #l1 = (long) #l0;\n"
-            + "\n"
-            + "    l2 = #l1;\n"
-            + "\n"
-            + "    $stack5 = new Sub2;\n"
-            + "\n"
-            + "    specialinvoke $stack5.<Sub2: void <init>()>();\n"
-            + "\n"
-            + "    l3 = $stack5;\n"
-            + "\n"
-            + "    #l2 = (int) l2;\n"
-            + "\n"
-            + "    #l3 = (Sub2) l3;\n"
-            + "\n"
-            + "    virtualinvoke l1.<Super1: void m(int,Sub2)>(#l2, #l3);\n"
-            + "\n"
-            + "    return;\n"
-            + "}\n");
+        Stream.of(
+                "l0 := @this: CastCounterDemos",
+                "$stack4 = new Sub1",
+                "specialinvoke $stack4.<Sub1: void <init>()>()",
+                "l1 = $stack4",
+                "#l0 = 1",
+                "#l1 = (long) #l0",
+                "l2 = #l1",
+                "$stack5 = new Sub2",
+                "specialinvoke $stack5.<Sub2: void <init>()>()",
+                "l3 = $stack5",
+                "#l2 = (int) l2",
+                "#l3 = (Sub2) l3",
+                "virtualinvoke l1.<Super1: void m(int,Sub2)>(#l2, #l3)",
+                "return")
+            .collect(Collectors.toList()),
+        actualStmts);
   }
 
   @Test
@@ -138,12 +126,18 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("l1", object);
     map.put("l2", super1);
     map.put("$stack3", sub1);
+
+    final Body body1 = builder.build();
+
     Typing typing = createTyping(map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     counter.insertCastStmts(typing);
-    Assert.assertTrue(counter.getCastCount() == 2);
+    Assert.assertEquals(2, counter.getCastCount());
+
+    System.out.println(Utils.generateJimpleForTest(body1));
+
     Assert.assertEquals(
-        builder.build().toString(),
+        body1.toString(),
         "{\n"
             + "    unknown l0, l1, l2, $stack3;\n"
             + "    Super1[] #l0, #l1;\n"

@@ -14,7 +14,7 @@ import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Markus Schmidt */
 @Category(Java8Test.class)
-// FIXME: [ms] rename test (and in bytecodefrontend too)
+// FIXME: [ms] rename test (and in bytecodefrontend too) as it is not an infinite loop!
 public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {

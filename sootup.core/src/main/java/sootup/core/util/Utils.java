@@ -169,16 +169,16 @@ public class Utils {
   }
 
   public static void generateJimpleForTest(@Nonnull SootMethod m) {
-    System.out.println(generateJimpleToArrayRepresentation(m.getBody()));
+    System.out.println(generateJimpleForTest(m.getBody()));
   }
 
   /** Helper for writing tests . */
-  public static String generateJimpleToArrayRepresentation(@Nonnull Body b) {
+  public static String generateJimpleForTest(@Nonnull Body b) {
     ArrayList<String> arr = filterJimple(Utils.bodyStmtsAsStrings(b).stream());
-    return generateJimpleStmtsForTest(arr);
+    return generateJimpleTest(arr);
   }
 
-  public static String generateJimpleStmtsForTest(@Nonnull List<String> stmts) {
+  public static String generateJimpleTest(@Nonnull List<String> stmts) {
     StringBuilder sb = new StringBuilder();
 
     sb.append(

@@ -28,7 +28,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     resolver.resolveBuilder(builder);
     Body newbody = builder.build();
 
-    System.out.println(Utils.generateJimpleToArrayRepresentation(newbody));
+    System.out.println(Utils.generateJimpleForTest(newbody));
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(newbody);
     Assert.assertEquals(

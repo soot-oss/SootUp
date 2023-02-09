@@ -34,7 +34,6 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 public class BytecodeHierarchy implements IHierarchy {
 
   private final ViewTypeHierarchy typeHierarchy;
-  private final IdentifierFactory factory;
   private final ClassType object;
   private final ClassType serializable;
   private final ClassType cloneable;
@@ -42,7 +41,7 @@ public class BytecodeHierarchy implements IHierarchy {
 
   public BytecodeHierarchy(View<? extends SootClass<?>> view) {
     this.typeHierarchy = new ViewTypeHierarchy(view);
-    factory = view.getIdentifierFactory();
+    IdentifierFactory factory = view.getIdentifierFactory();
     object = factory.getClassType("java.lang.Object");
     serializable = factory.getClassType("java.io.Serializable");
     cloneable = factory.getClassType("java.lang.Cloneable");

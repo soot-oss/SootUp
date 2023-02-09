@@ -214,6 +214,8 @@ public class AugEvalFunction {
    */
   private Set<ClassType> getExceptionType(Stmt handleStmt, Body body) {
     Set<ClassType> exceptionTypes = new HashSet<>();
+    // TODO: [ms] getTraps is expensive - as the order is not necessary -> use blocks and iterate
+    // over its exceptions
     for (Trap trap : body.getTraps()) {
       if (trap.getHandlerStmt() == handleStmt) {
         exceptionTypes.add(trap.getExceptionType());

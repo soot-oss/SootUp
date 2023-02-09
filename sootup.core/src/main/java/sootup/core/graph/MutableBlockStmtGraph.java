@@ -814,10 +814,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /**
+   * @param beforeStmt the Stmt which succeeds the inserted Stmts (its NOT preceeding as this
+   *     simplifies the handling of BranchingStmts)
    * @param stmts can only allow fallsthrough Stmts except for the last Stmt in the List there is a
    *     single BranchingStmt allowed!
-   * @param beforeStmt the Stmt which succeeds the inserted Stmts (its not preceeding as this
-   *     simplifies the handling of BranchingStmts)
    */
   public void insertBefore(
       @Nonnull Stmt beforeStmt,
@@ -827,6 +827,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return;
     }
     final MutableBasicBlock block = stmtToBlock.get(beforeStmt);
+    if (block == null) {
+      throw new IllegalArgumentException(
+          "beforeStmt '" + beforeStmt + "' does not exists in this StmtGraph.");
+    }
     if (block.getHead() == beforeStmt) {
       // insert before a Stmt that is at the beginning of a Block? -> new block, reconnect, try to
       // merge blocks - performance hint: if exceptionMap equals the current blocks exception and

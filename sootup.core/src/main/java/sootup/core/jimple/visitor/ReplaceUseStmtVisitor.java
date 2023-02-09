@@ -70,13 +70,17 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
-    Value rValue = stmt.getRightOp();
+    Value lValue = stmt.getRightOp();
+    if (lValue == oldUse) {
+      setResult(stmt.withVariable(newUse));
+      return;
+    }
 
+    Value rValue = stmt.getRightOp();
     if (rValue instanceof Immediate) {
       if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));
       }
-
     } else if (rValue instanceof Ref) {
       if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));

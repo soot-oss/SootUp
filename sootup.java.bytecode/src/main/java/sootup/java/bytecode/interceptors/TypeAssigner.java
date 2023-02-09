@@ -36,14 +36,14 @@ import sootup.java.core.views.JavaView;
 public class TypeAssigner implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     TypeResolver resolver = new TypeResolver((JavaView) view);
     resolver.resolveBuilder(builder);
     if (resolver.isFail()) {
-      // Todo: use another type resolver solution!
+      // e.g. use another type resolver
       return;
     }
-    // TODO: [ms] Its nice but shouldnt we give that flexibly to the user
+    // TODO: [ms] Its nice but shouldnt we give that flexibly to the user?
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
     standardizer.interceptBody(builder, view);
   }
