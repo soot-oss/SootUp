@@ -348,6 +348,7 @@
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>-Xmx4096M ${surefireArgLine}</argLine>
                     <groups>${testcase.groups}</groups>
+                    <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
             <plugin>
