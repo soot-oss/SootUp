@@ -150,8 +150,8 @@ public class CastCounter extends TypeChecker {
     }
     map.put(oldValue, newValue);
     if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
-      Value leftOp = ((JAssignStmt) stmt).getLeftOp();
-      Value rightOp = ((JAssignStmt) stmt).getRightOp();
+      Value leftOp = ((JAssignStmt<?, ?>) stmt).getLeftOp();
+      Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
       if (leftOp instanceof JArrayRef) {
         if (oldValue == leftOp) {
           Local base = ((JArrayRef) oldValue).getBase();

@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
@@ -37,6 +38,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Stmt stmt = null;
     Value value = null;
     setMethodBody("constant", "void");
+    final StmtGraph<?> graph = body.getStmtGraph();
     for (Stmt s : body.getStmts()) {
       String sn = s.toString();
       switch (sn) {
@@ -44,35 +46,35 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getInteger127();
-          actual = evalFunction.evaluate(typing, value, stmt, body);
+          actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         case "l1 = 32111":
           value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getInteger32767();
-          actual = evalFunction.evaluate(typing, value, stmt, body);
+          actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         case "l1 = -129":
           value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getShort();
-          actual = evalFunction.evaluate(typing, value, stmt, body);
+          actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         case "l2 = 1.0":
           value = s.getUses().get(0);
           stmt = s;
           expected = PrimitiveType.getDouble();
-          actual = evalFunction.evaluate(typing, value, stmt, body);
+          actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         case "l4 = \"example\"":
           value = s.getUses().get(0);
           stmt = s;
           expected = identifierFactory.getClassType("java.lang.String");
-          actual = evalFunction.evaluate(typing, value, stmt, body);
+          actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         default:
@@ -87,12 +89,13 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
     expected = identifierFactory.getClassType("java.lang.Class");
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
   }
 
   @Test
   public void testExpr() {
+    final StmtGraph<?> graph = body.getStmtGraph();
     Type actual;
     Type expected = PrimitiveType.getBoolean();
     Stmt stmt = null;
@@ -108,7 +111,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         }
       }
     }
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("shift", "void");
@@ -126,7 +129,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getLong();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
 
@@ -138,7 +141,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getInt();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
     }
@@ -158,7 +161,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getBoolean();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
 
@@ -170,7 +173,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getLong();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
     }
@@ -189,7 +192,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getByte();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
     }
@@ -209,7 +212,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getFloat();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
 
@@ -221,7 +224,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
           }
         }
         expected = PrimitiveType.getInt();
-        actual = evalFunction.evaluate(specTyping, value, stmt, body);
+        actual = evalFunction.evaluate(specTyping, value, stmt, graph);
         Assert.assertEquals(expected, actual);
       }
     }
@@ -238,7 +241,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
     expected = PrimitiveType.getInt();
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("instanceOf", "boolean");
@@ -253,7 +256,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
     expected = PrimitiveType.getBoolean();
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("newArrayExpr", "void");
@@ -268,7 +271,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
     expected = identifierFactory.getArrayType(identifierFactory.getClassType("A"), 2);
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("invokeExpr", "void");
@@ -279,7 +282,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             value = use;
             stmt = s;
             expected = VoidType.getInstance();
-            actual = evalFunction.evaluate(typing, value, stmt, body);
+            actual = evalFunction.evaluate(typing, value, stmt, graph);
             Assert.assertEquals(expected, actual);
           }
         }
@@ -289,7 +292,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             value = use;
             stmt = s;
             expected = identifierFactory.getClassType("B");
-            actual = evalFunction.evaluate(typing, value, stmt, body);
+            actual = evalFunction.evaluate(typing, value, stmt, graph);
             Assert.assertEquals(expected, actual);
           }
         }
@@ -299,6 +302,8 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
   @Test
   public void testRef() {
+    final StmtGraph<?> graph = body.getStmtGraph();
+
     Type actual;
     Type expected = identifierFactory.getClassType("java.lang.ArithmeticException");
     Stmt stmt = null;
@@ -314,7 +319,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         }
       }
     }
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("caughtException2", "void");
@@ -329,7 +334,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
     expected = identifierFactory.getClassType("java.lang.RuntimeException");
-    actual = evalFunction.evaluate(typing, value, stmt, body);
+    actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
     setMethodBody("fieldRef", "void");
@@ -340,7 +345,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             value = use;
             stmt = s;
             expected = identifierFactory.getClassType("A");
-            actual = evalFunction.evaluate(typing, value, stmt, body);
+            actual = evalFunction.evaluate(typing, value, stmt, graph);
             Assert.assertEquals(expected, actual);
           }
         }
@@ -350,7 +355,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             value = use;
             stmt = s;
             expected = identifierFactory.getClassType("ByteCodeTypeTest");
-            actual = evalFunction.evaluate(typing, value, stmt, body);
+            actual = evalFunction.evaluate(typing, value, stmt, graph);
             Assert.assertEquals(expected, actual);
           }
         }

@@ -24,15 +24,14 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ArrayType;
@@ -58,7 +57,10 @@ public class AugEvalFunction {
    * belongs to.
    */
   public Type evaluate(
-      @Nonnull Typing typing, @Nonnull Value value, @Nonnull Stmt stmt, @Nonnull Body body) {
+      @Nonnull Typing typing,
+      @Nonnull Value value,
+      @Nonnull Stmt stmt,
+      @Nonnull StmtGraph<?> graph) {
     if (value instanceof Immediate) {
       if (value instanceof Local) {
         return typing.getType((Local) value);
@@ -101,8 +103,8 @@ public class AugEvalFunction {
       }
     } else if (value instanceof Expr) {
       if (value instanceof AbstractBinopExpr) {
-        Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, body);
-        Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, body);
+        Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, graph);
+        Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, graph);
         if (value instanceof AbstractIntBinopExpr) {
           if (value instanceof AbstractConditionExpr) {
             return PrimitiveType.getBoolean();
@@ -139,7 +141,7 @@ public class AugEvalFunction {
         if (value instanceof JLengthExpr) {
           return PrimitiveType.getInt();
         } else {
-          Type opt = evaluate(typing, ((AbstractUnopExpr) value).getOp(), stmt, body);
+          Type opt = evaluate(typing, ((AbstractUnopExpr) value).getOp(), stmt, graph);
           return (opt instanceof PrimitiveType.IntType) ? PrimitiveType.getInt() : opt;
         }
       } else {
@@ -147,7 +149,7 @@ public class AugEvalFunction {
       }
     } else if (value instanceof Ref) {
       if (value instanceof JCaughtExceptionRef) {
-        Set<ClassType> exceptionTypes = getExceptionType(stmt, body);
+        Set<ClassType> exceptionTypes = getExceptionType(stmt, graph);
         ClassType throwable = factory.getClassType("java.lang.Throwable");
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
@@ -212,15 +214,21 @@ public class AugEvalFunction {
    * This function is used to get all exception types for the traps handled by the given handle
    * statement in body.
    */
-  private Set<ClassType> getExceptionType(Stmt handleStmt, Body body) {
+  private Set<ClassType> getExceptionType(@Nonnull Stmt handlerStmt, @Nonnull StmtGraph<?> graph) {
     Set<ClassType> exceptionTypes = new HashSet<>();
-    // TODO: [ms] getTraps is expensive - as the order is not necessary -> use blocks and iterate
-    // over its exceptions
-    for (Trap trap : body.getTraps()) {
-      if (trap.getHandlerStmt() == handleStmt) {
-        exceptionTypes.add(trap.getExceptionType());
-      }
-    }
+    graph
+        .getBlockOf(handlerStmt)
+        .getExceptionalPredecessors()
+        .forEach(
+            (pb) -> {
+              pb.getExceptionalSuccessors()
+                  .forEach(
+                      (exceptionType, handlerBlock) -> {
+                        if (handlerStmt == handlerBlock.getHead()) {
+                          exceptionTypes.add(exceptionType);
+                        }
+                      });
+            });
     return exceptionTypes;
   }
 
@@ -228,7 +236,7 @@ public class AugEvalFunction {
    * This function is used to retrieve the path from the type "Throwable" to the given exception
    * type
    */
-  private Deque<ClassType> getExceptionPath(ClassType exceptionType) {
+  private Deque<ClassType> getExceptionPath(@Nonnull ClassType exceptionType) {
     ViewTypeHierarchy hierarchy = new ViewTypeHierarchy(view);
     ClassType throwable = factory.getClassType("java.lang.Throwable");
     Deque<ClassType> path = new ArrayDeque<>();
@@ -253,7 +261,7 @@ public class AugEvalFunction {
    * @param a an exception type
    * @param b an exception type
    */
-  private ClassType getLeastCommonExceptionType(ClassType a, ClassType b) {
+  private ClassType getLeastCommonExceptionType(@Nonnull ClassType a, @Nonnull ClassType b) {
     if (a.equals(b)) {
       return a;
     }
