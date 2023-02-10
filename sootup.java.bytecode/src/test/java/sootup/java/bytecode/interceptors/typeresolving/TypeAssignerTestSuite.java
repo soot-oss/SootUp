@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
@@ -23,7 +24,6 @@ public class TypeAssignerTestSuite {
   JavaView view;
   ClassType classType;
   JavaSootClass clazz;
-  Body body;
   Body.BodyBuilder builder;
 
   public void buildView(String baseDir, String className) {
@@ -42,19 +42,20 @@ public class TypeAssignerTestSuite {
     clazz = view.getClass(classType).get();
   }
 
-  public StmtGraph<?> setMethodBody(String methodName, String returnType) {
+  public StmtGraph<?> getMethod(String methodName, String returnType) {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             classType, methodName, returnType, Collections.emptyList());
     Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
-    body = method.getBody();
+    Body body = method.getBody();
     builder = Body.builder(body, Collections.emptySet());
     return builder.getStmtGraph();
   }
 
   public Typing createTyping(Map<String, Type> map) {
-    Typing typing = new Typing(body.getLocals());
+    final Set<Local> locals = builder.getLocals();
+    Typing typing = new Typing(locals);
     for (Local l : typing.getLocals()) {
       // FIXME: [ZW] body contains null local!!! (shift)
       if (l == null) {

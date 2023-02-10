@@ -66,7 +66,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
     StmtGraph<?> originalGraph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(originalGraph.nodes())) {
+    for (Stmt stmt : Lists.newArrayList(originalGraph.getNodes())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }

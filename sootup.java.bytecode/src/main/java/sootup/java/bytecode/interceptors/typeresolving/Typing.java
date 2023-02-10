@@ -39,7 +39,7 @@ public class Typing {
     stmtsIDList = new BitSet();
   }
 
-  public Typing(@Nonnull Typing typing, BitSet stmtsIDList) {
+  public Typing(@Nonnull Typing typing, @Nonnull BitSet stmtsIDList) {
     this.local2Type = new HashMap<>(typing.local2Type);
     this.stmtsIDList = stmtsIDList;
   }

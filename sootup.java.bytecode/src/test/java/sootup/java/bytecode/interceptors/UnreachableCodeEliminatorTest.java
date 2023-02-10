@@ -101,7 +101,7 @@ public class UnreachableCodeEliminatorTest {
     eliminator.interceptBody(builder, null);
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
   }
 
   /**
@@ -136,7 +136,7 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
   }
 
   /**
@@ -172,8 +172,8 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().nodes());
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().nodes());
+    Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
   }
 
   @Test

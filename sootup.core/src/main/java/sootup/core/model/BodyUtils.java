@@ -20,6 +20,7 @@ package sootup.core.model;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
@@ -174,8 +175,7 @@ public class BodyUtils {
       locals.remove(oldLocal);
       locals.add(newLocal);
       builder.setLocals(locals);
-      List<Stmt> stmts = new ArrayList<>(builder.getStmts());
-      for (Stmt stmt : stmts) {
+      for (Stmt stmt : Lists.newArrayList(builder.getStmtGraph().getNodes())) {
         Stmt newStmt = null;
         if (stmt.getUses().contains(oldLocal)) {
           newStmt = withNewUse(stmt, oldLocal, newLocal);

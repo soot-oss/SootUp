@@ -24,7 +24,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void");
+    getMethod("invokeStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
     List<String> actualStmts = Utils.bodyStmtsAsStrings(builder.build());
 
@@ -46,7 +46,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void");
+    getMethod("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
 
     final Body build = builder.build();

@@ -49,7 +49,7 @@ public class NopEliminator implements BodyInterceptor {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       if (stmt instanceof JNopStmt) {
         q.add(stmt);
       }

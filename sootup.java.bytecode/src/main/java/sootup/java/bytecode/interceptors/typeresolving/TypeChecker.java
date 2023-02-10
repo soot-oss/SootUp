@@ -77,7 +77,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseInvokeStmt(@Nonnull JInvokeStmt stmt) {
-    this.handleInvokeExpr(stmt.getInvokeExpr(), stmt);
+    handleInvokeExpr(stmt.getInvokeExpr(), stmt);
   }
 
   @Override
@@ -86,17 +86,17 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
     if (lhs instanceof Local) {
-      type_lhs = this.typing.getType((Local) lhs);
+      type_lhs = typing.getType((Local) lhs);
     } else if (lhs instanceof JArrayRef) {
       visit(((JArrayRef) lhs).getIndex(), PrimitiveType.getInt(), stmt);
       ArrayType arrayType = null;
       Local base = ((JArrayRef) lhs).getBase();
-      Type type_base = this.typing.getType(base);
+      Type type_base = typing.getType(base);
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {
         if (rhs instanceof Local) {
-          Type type_rhs = this.typing.getType((Local) rhs);
+          Type type_rhs = typing.getType((Local) rhs);
           // if base type of lhs is an object-like-type, retrieve its base type from array
           // allocation site.
           if (Type.isObjectLikeType(type_base)
@@ -198,9 +198,9 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           stmt);
       visit(rhs, type_lhs, stmt);
     } else if (rhs instanceof AbstractBinopExpr) {
-      this.handleBinopExpr((AbstractBinopExpr) rhs, type_lhs, stmt);
+      handleBinopExpr((AbstractBinopExpr) rhs, type_lhs, stmt);
     } else if (rhs instanceof AbstractInvokeExpr) {
-      this.handleInvokeExpr((AbstractInvokeExpr) rhs, stmt);
+      handleInvokeExpr((AbstractInvokeExpr) rhs, stmt);
       visit(rhs, type_lhs, stmt);
     } else if (rhs instanceof JCastExpr) {
       visit(rhs, type_lhs, stmt);
@@ -259,15 +259,15 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   public AugEvalFunction getFuntion() {
-    return this.evalFunction;
+    return evalFunction;
   }
 
   public BytecodeHierarchy getHierarchy() {
-    return this.hierarchy;
+    return hierarchy;
   }
 
   public Typing getTyping() {
-    return this.typing;
+    return typing;
   }
 
   public void setTyping(Typing typing) {

@@ -141,7 +141,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (currentMethodCandidate == null) return Stream.empty();
 
     if (currentMethodCandidate.hasBody()) {
-      return currentMethodCandidate.getBody().getStmtGraph().nodes().stream()
+      return currentMethodCandidate.getBody().getStmtGraph().getNodes().stream()
           .filter(Stmt::containsInvokeExpr)
           .flatMap(s -> resolveCall(currentMethodCandidate, s.getInvokeExpr()));
     } else {

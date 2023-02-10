@@ -211,7 +211,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
-    if (graph.nodes().size() > 0) {
+    if (graph.getNodes().size() > 0) {
       Position firstStmtPos = graph.getStartingStmt().getPositionInfo().getStmtPosition();
       bodyBuilder.setPosition(
           new FullPosition(

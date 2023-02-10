@@ -66,9 +66,10 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   @Override
   @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(leftOp.getUses());
+    final List<Value> uses = rightOp.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
     list.add(rightOp);
-    list.addAll(rightOp.getUses());
+    list.addAll(uses);
     return list;
   }
 

@@ -46,7 +46,7 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<Stmt> nodes() {
+  public List<Stmt> getNodes() {
     int size = 0;
     for (ImmutableBasicBlock block : blocks) {
       size += block.getStmtCount();

@@ -1101,7 +1101,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public Set<Stmt> nodes() {
+  public Set<Stmt> getNodes() {
     return stmtToBlock.keySet();
   }
 

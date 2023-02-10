@@ -28,7 +28,7 @@ public class DeadAssignmentEliminatorTest {
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
+    assertEquals(expectedGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
 
   @Test
@@ -40,7 +40,7 @@ public class DeadAssignmentEliminatorTest {
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
+    assertEquals(expectedGraph.getNodes().size(), actualGraph.getNodes().size());
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {

@@ -45,8 +45,8 @@ public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
   @Nonnull
   @Override
-  public Collection<Stmt> nodes() {
-    return Collections.unmodifiableCollection(backingGraph.nodes());
+  public Collection<Stmt> getNodes() {
+    return Collections.unmodifiableCollection(backingGraph.getNodes());
   }
 
   @Override

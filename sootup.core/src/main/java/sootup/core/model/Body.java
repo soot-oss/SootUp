@@ -97,7 +97,7 @@ public class Body implements Copyable {
    * @return The this local
    */
   public static Local getThisLocal(StmtGraph<?> stmtGraph) {
-    for (Stmt stmt : stmtGraph.nodes()) {
+    for (Stmt stmt : stmtGraph.getNodes()) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
         return (Local) ((JIdentityStmt) stmt).getLeftOp();
@@ -215,7 +215,7 @@ public class Body implements Copyable {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
-    for (Stmt u : graph.nodes()) {
+    for (Stmt u : graph.getNodes()) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt<?> idStmt = (JIdentityStmt<?>) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
@@ -240,7 +240,7 @@ public class Body implements Copyable {
    */
   @Nonnull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.nodes().size());
+    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
     for (Stmt stmt : graph) {
       stmts.add(stmt);
     }
@@ -311,7 +311,7 @@ public class Body implements Copyable {
   public Collection<Value> getUses() {
     ArrayList<Value> useList = new ArrayList<>();
 
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       useList.addAll(stmt.getUses());
     }
     return useList;
@@ -326,7 +326,7 @@ public class Body implements Copyable {
   public Collection<Value> getDefs() {
     ArrayList<Value> defList = new ArrayList<>();
 
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       defList.addAll(stmt.getDefs());
     }
     return defList;
@@ -399,6 +399,7 @@ public class Body implements Copyable {
       return graph;
     }
 
+    /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
     public List<Stmt> getStmts() {
       cachedLinearizedStmts = graph.getStmts();
@@ -516,7 +517,7 @@ public class Body implements Copyable {
       }
 
       final Stmt startingStmt = graph.getStartingStmt();
-      final Collection<Stmt> nodes = graph.nodes();
+      final Collection<Stmt> nodes = graph.getNodes();
       if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
         // TODO: already handled in MutableBlockStmtGraph.. check the others as well
         throw new IllegalStateException(

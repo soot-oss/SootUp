@@ -79,7 +79,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     boolean containsInvoke = false;
     Local thisLocal = null;
 
-    for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext(); ) {
+    for (Iterator<Stmt> iterator = stmtGraph.getNodes().iterator(); iterator.hasNext(); ) {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
 

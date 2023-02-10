@@ -35,7 +35,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void");
+    getMethod("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -66,7 +66,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void");
+    getMethod("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", Type.makeArrayType(super1, 1));
@@ -85,7 +85,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmtWithNewCasts() {
-    setMethodBody("invokeStmt", "void");
+    getMethod("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -120,7 +120,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmtWithNewCasts() {
-    setMethodBody("assignStmt", "void");
+    getMethod("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", object);
@@ -137,7 +137,6 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     System.out.println(Utils.generateJimpleForTest(body1));
 
     Assert.assertEquals(
-        body1.toString(),
         "{\n"
             + "    unknown l0, l1, l2, $stack3;\n"
             + "    Super1[] #l0, #l1;\n"
@@ -160,6 +159,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
             + "    l2 = #l1[2];\n"
             + "\n"
             + "    return;\n"
-            + "}\n");
+            + "}\n",
+        body1.toString());
   }
 }

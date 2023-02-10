@@ -54,7 +54,6 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = true;
     setTyping(typing);
-    // TODO:[ms] check if we really need a copy of the stms in getStmts or if we can just iterate..
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
@@ -69,7 +68,6 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = false;
     setTyping(typing);
-    // TODO:[ms] check if we really need a copy of the stms in getStmts or if we can just iterate..
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }

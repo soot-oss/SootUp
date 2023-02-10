@@ -49,7 +49,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(stmtGraph.nodes())) {
+    for (Stmt stmt : Lists.newArrayList(stmtGraph.getNodes())) {
       if (!(stmt instanceof JIfStmt)) {
         continue;
       }

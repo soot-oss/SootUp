@@ -23,12 +23,10 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    setMethodBody("invokeStmt", "void");
+    getMethod("invokeStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolveBuilder(builder);
     Body newbody = builder.build();
-
-    System.out.println(Utils.generateJimpleForTest(newbody));
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(newbody);
     Assert.assertEquals(
@@ -49,7 +47,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    setMethodBody("assignStmt", "void");
+    getMethod("assignStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolveBuilder(builder);
     Body newbody = builder.build();

@@ -57,7 +57,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     // remove unreachable stmts from StmtGraph
     Queue<Stmt> removeQ = new ArrayDeque<>();
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       if (!reachableStmts.contains(stmt)) {
         removeQ.add(stmt);
       }
