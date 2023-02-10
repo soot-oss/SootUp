@@ -96,89 +96,31 @@
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
 			<version>${wala.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.core.runtime</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.jdt</groupId>
-					<artifactId>org.eclipse.jdt.core</artifactId>
-				</exclusion>
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.osgi</artifactId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.core.jobs</artifactId>-->
-<!--				</exclusion>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.equinox.common</artifactId>-->
-<!--				</exclusion>-->
-			</exclusions>
 		</dependency>
 
 		<!-- Override runtime imports for wala.cast.java.ecj to ensure java8 compatability -->
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>(,3.14)</version>
-			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.core.jobs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.core</groupId>
-					<artifactId>org.eclipse.core.contenttype</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.equinox.common</artifactId>
-				</exclusion>
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.osgi</artifactId>-->
-<!--				</exclusion>-->
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jdt</groupId>
-			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>(,3.14)</version>
-			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse.platform</groupId>
-					<artifactId>org.eclipse.equinox.preferences</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.equinox.preferences</artifactId>
-			<version>(,3.10)</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>(,3.15)</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.jobs</artifactId>
-			<version>(,3.10)</version>
+			<version>3.11.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.contenttype</artifactId>
-			<version>(,3.8)</version>
+			<version>3.7.1000</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.equinox.preferences</artifactId>
+			<version>3.9.100</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.18.0</version>
 			<scope>runtime</scope>
 		</dependency>
 
