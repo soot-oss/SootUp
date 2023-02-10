@@ -44,6 +44,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1877,7 +1878,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
     }
 
-    Set<Local> bodyLocals = new LinkedHashSet<>(locals);
+    Set<Local> bodyLocals =
+        locals.stream()
+            .filter(Objects::nonNull)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     bodyBuilder.setLocals(bodyLocals);
     return preambleBlock;
   }

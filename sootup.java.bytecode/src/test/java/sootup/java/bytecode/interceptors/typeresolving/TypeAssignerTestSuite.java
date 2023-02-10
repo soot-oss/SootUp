@@ -57,10 +57,6 @@ public class TypeAssignerTestSuite {
     final Set<Local> locals = builder.getLocals();
     Typing typing = new Typing(locals);
     for (Local l : typing.getLocals()) {
-      // FIXME: [ZW] body contains null local!!! (shift)
-      if (l == null) {
-        continue;
-      }
       if (map.containsKey(l.getName())) {
         typing.set(l, map.get(l.getName()));
       }
