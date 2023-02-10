@@ -69,7 +69,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   private List<SootClassSource<JavaSootClass>> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
-  private final File walaPropertiesFile = new File("target/classes/wala.properties");
+  private final File walaPropertiesFile = new File("wala.properties");
 
   public WalaJavaClassProvider(@Nonnull String sourceDirPath) {
     this(sourceDirPath, null);
@@ -179,10 +179,11 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   /** Create wala.properties to class path */
-  private void createWalaproperties() {
+  private void createWalaProperties() {
     if (!walaPropertiesFile.exists()) {
       PrintWriter pw;
       try {
+        walaPropertiesFile.getParentFile().mkdirs();
         pw = new PrintWriter(walaPropertiesFile);
         String jdkPath = System.getProperty("java.home");
         pw.println("java_runtime_dir = " + new File(jdkPath).toString().replace("\\", "/"));
@@ -194,7 +195,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   private void addScopesForJava() {
-    createWalaproperties();
+    createWalaProperties();
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
     scope = new JavaSourceAnalysisScope();
