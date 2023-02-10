@@ -49,31 +49,18 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
     getMethod("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
 
-    final Body build = builder.build();
-    System.out.println(Utils.generateJimpleForTest(build));
-
+    final Body body = builder.build();
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     Assert.assertEquals(
-        "{\n"
-            + "    CastCounterDemos r0;\n"
-            + "    Sub1 $r1;\n"
-            + "    Super1 r2;\n"
-            + "    Super1[] r3;\n"
-            + "\n"
-            + "\n"
-            + "    r0 := @this: CastCounterDemos;\n"
-            + "\n"
-            + "    r3 = newarray (Super1)[10];\n"
-            + "\n"
-            + "    $r1 = new Sub1;\n"
-            + "\n"
-            + "    specialinvoke $r1.<Sub1: void <init>()>();\n"
-            + "\n"
-            + "    r3[0] = $r1;\n"
-            + "\n"
-            + "    r2 = r3[2];\n"
-            + "\n"
-            + "    return;\n"
-            + "}\n",
-        build.toString());
+        Stream.of(
+                "r0 := @this: CastCounterDemos",
+                "r3 = newarray (Super1)[10]",
+                "$r1 = new Sub1",
+                "specialinvoke $r1.<Sub1: void <init>()>()",
+                "r3[0] = $r1",
+                "r2 = r3[2]",
+                "return")
+            .collect(Collectors.toList()),
+        actualStmts);
   }
 }
