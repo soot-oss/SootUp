@@ -25,9 +25,9 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
@@ -134,12 +134,12 @@ public class LocalNameStandardizer implements BodyInterceptor {
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
         Local def = (Local) stmt.getDefs().get(0);
         Local newLocal = localToNewLocal.get(def);
-        newStmt = BodyUtils.withNewDef(newStmt, newLocal);
+        newStmt = ((AbstractDefinitionStmt<?, ?>) newStmt).withNewDef(newLocal);
       }
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           Local newLocal = localToNewLocal.get(use);
-          newStmt = BodyUtils.withNewUse(newStmt, use, newLocal);
+          newStmt = newStmt.withNewUse(use, newLocal);
         }
       }
       if (!stmt.equals(newStmt)) {

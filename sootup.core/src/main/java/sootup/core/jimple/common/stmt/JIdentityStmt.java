@@ -80,4 +80,14 @@ public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefiniti
   public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
+  /**
+   * Use newDef to replace the definition in oldStmt.
+   *
+   * @param newDef a Local to replace definition Local of oldStmt.
+   * @return a new Stmt with newDef
+   */
+  @Nonnull
+  public Stmt withNewDef(@Nonnull Local newDef) {
+    return withLocal(newDef);
+  }
 }

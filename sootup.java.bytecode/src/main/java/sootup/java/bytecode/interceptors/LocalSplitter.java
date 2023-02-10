@@ -29,11 +29,11 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Body.BodyBuilder;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -111,7 +111,7 @@ public class LocalSplitter implements BodyInterceptor {
         localIndex++;
 
         // create newStmt whose definition is replaced with the newLocal,
-        Stmt newStmt = BodyUtils.withNewDef(currentStmt, newLocal);
+        Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) currentStmt).withNewDef(newLocal);
         // replace corresponding oldStmt with newStmt in builder
         replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
 
@@ -131,7 +131,7 @@ public class LocalSplitter implements BodyInterceptor {
           // 1.case: if useList of head contains oriLocal, then replace the oriLocal with
           // newLocal.
           if (head.getUses().contains(oriLocal)) {
-            Stmt newHead = BodyUtils.withNewUse(head, oriLocal, newLocal);
+            Stmt newHead = head.withNewUse(oriLocal, newLocal);
             replaceStmtInBuilder(builder, stmts, head, newHead);
 
             // if head doesn't define the the oriLocal again, then add all successors which are
@@ -175,7 +175,8 @@ public class LocalSplitter implements BodyInterceptor {
                 // remove the corresponding Local(definition of backStmt) from the set: newLocals
                 if (hasModifiedDef(backStmt, oriLocal)) {
                   if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
-                    Stmt newBackStmt = BodyUtils.withNewDef(backStmt, modifiedLocal);
+                    Stmt newBackStmt =
+                        ((AbstractDefinitionStmt<?, ?>) backStmt).withNewDef(modifiedLocal);
                     replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
                     newLocals.remove(newLocal);
                   }
@@ -187,7 +188,7 @@ public class LocalSplitter implements BodyInterceptor {
                 else if (hasModifiedUse(backStmt, oriLocal)) {
                   Local modifiedUse = getModifiedUse(backStmt, oriLocal);
                   if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
-                    Stmt newBackStmt = BodyUtils.withNewUse(backStmt, modifiedUse, modifiedLocal);
+                    Stmt newBackStmt = backStmt.withNewUse(modifiedUse, modifiedLocal);
                     replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
                     backwardsQueue.addAll(graph.predecessors(newBackStmt));
                   }
@@ -254,7 +255,7 @@ public class LocalSplitter implements BodyInterceptor {
             }
             // 4.step:
             if (lastChange != null) {
-              Stmt newStmt = BodyUtils.withNewUse(currentStmt, oriLocal, lastChange);
+              Stmt newStmt = currentStmt.withNewUse(oriLocal, lastChange);
               replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
             }
           }

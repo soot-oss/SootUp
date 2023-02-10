@@ -33,6 +33,7 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.Acceptor;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
@@ -135,5 +136,20 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
+  }
+
+  /**
+   * Use newUse to replace the oldUse in oldStmt.
+   *
+   * @param oldStmt a Stmt that has oldUse.
+   * @param oldUse a Value in the useList of oldStmt.
+   * @param newUse a Value is to replace oldUse
+   * @return a new Stmt with newUse
+   */
+  @Nonnull
+  public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
+    ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
+    accept(visitor);
+    return visitor.getResult();
   }
 }

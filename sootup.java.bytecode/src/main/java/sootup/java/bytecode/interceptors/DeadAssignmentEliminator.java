@@ -36,7 +36,6 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.model.Modifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
@@ -178,7 +177,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     if (containsInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
-      allDefs = BodyUtils.collectDefs(builder.getStmts());
+      allDefs = Body.collectDefs(builder.getStmts());
 
       if (!allEssential) {
         Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
@@ -206,7 +205,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if (containsInvoke) {
-        allUses = BodyUtils.collectUses(builder.getStmts());
+        allUses = Body.collectUses(builder.getStmts());
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt<?, ?>> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {

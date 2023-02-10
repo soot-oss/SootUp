@@ -37,7 +37,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
@@ -70,9 +69,9 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
-            List<AbstractDefinitionStmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
+            List<AbstractDefinitionStmt<Local, ?>> defsOfUse = ((Local) value).getDefsOfLocal(defs);
             if (defsOfUse.size() == 1) {
-              AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
+              AbstractDefinitionStmt<?, ?> definitionStmt = defsOfUse.get(0);
               Value rhs = definitionStmt.getRightOp();
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant

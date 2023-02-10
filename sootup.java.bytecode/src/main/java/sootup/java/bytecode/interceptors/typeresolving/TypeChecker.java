@@ -43,7 +43,6 @@ import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.NullType;
@@ -101,7 +100,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (Type.isObjectLikeType(type_base)
               || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(builder.getStmts());
+            Map<Local, List<Stmt>> defs = Body.collectDefs(builder.getStmts());
             List<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
@@ -153,7 +152,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(builder.getStmts());
+          Map<Local, List<Stmt>> defs = Body.collectDefs(builder.getStmts());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));

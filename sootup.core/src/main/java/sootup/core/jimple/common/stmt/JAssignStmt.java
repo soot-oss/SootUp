@@ -210,4 +210,15 @@ public final class JAssignStmt<L extends Value, R extends Value>
   public JAssignStmt<L, R> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
+
+  /**
+   * Use newDef to replace the definition in oldStmt.
+   *
+   * @param newDef a Local to replace definition Local of oldStmt.
+   * @return a new Stmt with newDef
+   */
+  @Nonnull
+  public Stmt withNewDef(@Nonnull Local newDef) {
+    return withVariable(newDef);
+  }
 }

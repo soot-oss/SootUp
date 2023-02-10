@@ -28,10 +28,10 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
 
@@ -127,9 +127,9 @@ public class CastCounter extends TypeChecker {
 
       Stmt newStmt;
       if (stmt.getUses().contains(value)) {
-        newStmt = BodyUtils.withNewUse(stmt, value, new_local);
+        newStmt = stmt.withNewUse(value, new_local);
       } else {
-        newStmt = BodyUtils.withNewDef(stmt, new_local);
+        newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(new_local);
       }
       builder.replaceStmt(stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);

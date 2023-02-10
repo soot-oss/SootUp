@@ -25,10 +25,10 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.Type;
 import sootup.core.views.View;
@@ -98,7 +98,7 @@ public class LocalPacker implements BodyInterceptor {
               localToNewLocal.put(ori, newLocal);
             }
           }
-          newStmt = BodyUtils.withNewUse(newStmt, use, newLocal);
+          newStmt = newStmt.withNewUse(use, newLocal);
         }
       }
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
@@ -115,7 +115,7 @@ public class LocalPacker implements BodyInterceptor {
             localToNewLocal.put(ori, newLocal);
           }
         }
-        newStmt = BodyUtils.withNewDef(newStmt, newLocal);
+        newStmt = ((AbstractDefinitionStmt<?, ?>) newStmt).withNewDef(newLocal);
       }
       if (!stmt.equals(newStmt)) {
         builder.replaceStmt(stmt, newStmt);

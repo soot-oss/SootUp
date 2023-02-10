@@ -32,10 +32,10 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JPhiExpr;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
@@ -117,7 +117,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           for (Value use : uses) {
             if (use instanceof Local) {
               Local newUse = localToNameStack.get(use).peek();
-              Stmt newStmt = BodyUtils.withNewUse(stmt, use, newUse);
+              Stmt newStmt = stmt.withNewUse(use, newUse);
               stmtGraph.replaceNode(stmt, newStmt);
               stmt = newStmt;
             }
@@ -131,7 +131,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           newLocals.add(newDef);
           nextFreeIdx++;
           localToNameStack.get(def).push(newDef);
-          Stmt newStmt = BodyUtils.withNewDef(stmt, newDef);
+          Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newDef);
           stmtGraph.replaceNode(stmt, newStmt);
           if (constainsPhiExpr(newStmt)) {
             newPhiStmts.add(newStmt);

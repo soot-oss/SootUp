@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.types.Type;
@@ -72,6 +73,15 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
     list.addAll(uses);
     return list;
   }
+
+  /**
+   * Use newDef to replace the definition in oldStmt.
+   *
+   * @param newDef a Local to replace definition Local of oldStmt.
+   * @return a new Stmt with newDef
+   */
+  @Nonnull
+  public abstract Stmt withNewDef(@Nonnull Local newDef);
 
   @Override
   public boolean fallsThrough() {

@@ -447,9 +447,9 @@ public class Body implements Copyable {
         for (Stmt stmt : Lists.newArrayList(getStmtGraph().getNodes())) {
           Stmt newStmt = null;
           if (stmt.getUses().contains(oldLocal)) {
-            newStmt = BodyUtils.withNewUse(stmt, oldLocal, newLocal);
+            newStmt = stmt.withNewUse(oldLocal, newLocal);
           } else if (stmt.getDefs().contains(oldLocal)) {
-            newStmt = BodyUtils.withNewDef(stmt, newLocal);
+            newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
           }
           if (newStmt != null) {
             replaceStmt(stmt, newStmt);
@@ -572,5 +572,53 @@ public class Body implements Copyable {
         return super.toString();
       }
     }
+  }
+
+  /**
+   * Collects all defining statements of a Local from a list of statements
+   *
+   * @param stmts The searched list of statements
+   * @return A map of Locals and their using statements
+   */
+  public static Map<Local, List<Stmt>> collectDefs(List<Stmt> stmts) {
+    Map<Local, List<Stmt>> allDefs = new HashMap<>();
+    for (Stmt stmt : stmts) {
+      List<Value> defs = stmt.getDefs();
+      for (Value value : defs) {
+        if (value instanceof Local) {
+          List<Stmt> localDefs = allDefs.get(value);
+          if (localDefs == null) {
+            localDefs = new ArrayList<>();
+          }
+          localDefs.add(stmt);
+          allDefs.put((Local) value, localDefs);
+        }
+      }
+    }
+    return allDefs;
+  }
+
+  /**
+   * Collects all using statements of a Local from a list of statements
+   *
+   * @param stmts The searched list of statements
+   * @return A map of Locals and their using statements
+   */
+  public static Map<Local, List<Stmt>> collectUses(List<Stmt> stmts) {
+    Map<Local, List<Stmt>> allUses = new HashMap<>();
+    for (Stmt stmt : stmts) {
+      List<Value> uses = stmt.getUses();
+      for (Value value : uses) {
+        if (value instanceof Local) {
+          List<Stmt> localUses = allUses.get(value);
+          if (localUses == null) {
+            localUses = new ArrayList<>();
+          }
+          localUses.add(stmt);
+          allUses.put((Local) value, localUses);
+        }
+      }
+    }
+    return allUses;
   }
 }
