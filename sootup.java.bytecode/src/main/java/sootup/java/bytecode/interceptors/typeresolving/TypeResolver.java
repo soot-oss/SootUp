@@ -20,6 +20,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
@@ -56,7 +57,8 @@ public class TypeResolver {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
-    Typing iniTyping = new Typing(builder.getLocals());
+    final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
+    Typing iniTyping = new Typing(locals);
     Collection<Typing> typings =
         applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
@@ -75,7 +77,7 @@ public class TypeResolver {
       isFail = true;
       return;
     } else {
-      for (Local local : builder.getLocals()) {
+      for (Local local : locals) {
         Type convertedType = convertType(promotedTyping.getType(local));
         if (convertedType != null) {
           promotedTyping.set(local, convertedType);
@@ -83,7 +85,7 @@ public class TypeResolver {
       }
     }
 
-    for (Local local : builder.getLocals()) {
+    for (Local local : locals) {
       Type oldType = local.getType();
       Type newType = promotedTyping.getType(local);
       if (oldType.equals(newType)) {

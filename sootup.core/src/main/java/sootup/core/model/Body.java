@@ -437,7 +437,6 @@ public class Body implements Copyable {
     }
 
     public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      Set<Local> locals = getLocals();
       if (!locals.contains(oldLocal)) {
         throw new RuntimeException(
             "The given old local: " + oldLocal.toString() + " is not in the body!");
