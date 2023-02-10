@@ -26,10 +26,14 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     getMethod("invokeStmt", "void");
     new TypeAssigner().interceptBody(builder, this.view);
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(builder.build());
+    List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos r0",
+                "Sub1 $r1, r2",
+                "Sub2 $r3, r4",
+                "byte b0",
                 "r0 := @this: CastCounterDemos",
                 "$r1 = new Sub1",
                 "specialinvoke $r1.<Sub1: void <init>()>()",
@@ -50,9 +54,13 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
     new TypeAssigner().interceptBody(builder, this.view);
 
     final Body body = builder.build();
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> actualStmts = Utils.filterJimple(body.toString());
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos r0",
+                "Sub1 $r1",
+                "Super1 r2",
+                "Super1[] r3",
                 "r0 := @this: CastCounterDemos",
                 "r3 = newarray (Super1)[10]",
                 "$r1 = new Sub1",

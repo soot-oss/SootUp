@@ -97,9 +97,14 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     Assert.assertEquals(3, counter.getCastCount(typing));
     counter.insertCastStmts(typing);
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(builder.build());
+    List<String> actualStmts = Utils.filterJimple(builder.build().toString());
     Assert.assertEquals(
         Stream.of(
+                "unknown l0, l1, l2, l3, $stack4, $stack5",
+                "integer1 #l0",
+                "long #l1",
+                "int #l2",
+                "Sub2 #l3",
                 "l0 := @this: CastCounterDemos",
                 "$stack4 = new Sub1",
                 "specialinvoke $stack4.<Sub1: void <init>()>()",
@@ -127,39 +132,27 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("l2", super1);
     map.put("$stack3", sub1);
 
-    final Body body1 = builder.build();
-
     Typing typing = createTyping(map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     counter.insertCastStmts(typing);
     Assert.assertEquals(2, counter.getCastCount());
 
-    System.out.println(Utils.generateJimpleForTest(body1));
-
+    final Body body = builder.build();
+    List<String> actualStmts = Utils.filterJimple(body.toString());
     Assert.assertEquals(
-        "{\n"
-            + "    unknown l0, l1, l2, $stack3;\n"
-            + "    Super1[] #l0, #l1;\n"
-            + "\n"
-            + "\n"
-            + "    l0 := @this: CastCounterDemos;\n"
-            + "\n"
-            + "    l1 = newarray (Super1)[10];\n"
-            + "\n"
-            + "    $stack3 = new Sub1;\n"
-            + "\n"
-            + "    specialinvoke $stack3.<Sub1: void <init>()>();\n"
-            + "\n"
-            + "    #l0 = (Super1[]) l1;\n"
-            + "\n"
-            + "    #l0[0] = $stack3;\n"
-            + "\n"
-            + "    #l1 = (Super1[]) l1;\n"
-            + "\n"
-            + "    l2 = #l1[2];\n"
-            + "\n"
-            + "    return;\n"
-            + "}\n",
-        body1.toString());
+        Stream.of(
+                "unknown l0, l1, l2, $stack3",
+                "Super1[] #l0, #l1",
+                "l0 := @this: CastCounterDemos",
+                "l1 = newarray (Super1)[10]",
+                "$stack3 = new Sub1",
+                "specialinvoke $stack3.<Sub1: void <init>()>()",
+                "#l0 = (Super1[]) l1",
+                "#l0[0] = $stack3",
+                "#l1 = (Super1[]) l1",
+                "l2 = #l1[2]",
+                "return")
+            .collect(Collectors.toList()),
+        actualStmts);
   }
 }
