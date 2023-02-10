@@ -22,6 +22,7 @@ package sootup.core.model;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -433,6 +434,28 @@ public class Body implements Copyable {
     public BodyBuilder addLocal(@Nonnull Local local) {
       locals.add(local);
       return this;
+    }
+
+    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
+      Set<Local> locals = getLocals();
+      if (!locals.contains(oldLocal)) {
+        throw new RuntimeException(
+            "The given old local: " + oldLocal.toString() + " is not in the body!");
+      } else {
+        locals.remove(oldLocal);
+        locals.add(newLocal);
+        for (Stmt stmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+          Stmt newStmt = null;
+          if (stmt.getUses().contains(oldLocal)) {
+            newStmt = BodyUtils.withNewUse(stmt, oldLocal, newLocal);
+          } else if (stmt.getDefs().contains(oldLocal)) {
+            newStmt = BodyUtils.withNewDef(stmt, newLocal);
+          }
+          if (newStmt != null) {
+            replaceStmt(stmt, newStmt);
+          }
+        }
+      }
     }
 
     /** replace the oldStmt with newStmt in stmtGraph and branches */

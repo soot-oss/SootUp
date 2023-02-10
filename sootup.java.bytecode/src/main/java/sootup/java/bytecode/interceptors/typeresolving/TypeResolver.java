@@ -34,7 +34,6 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
@@ -91,7 +90,7 @@ public class TypeResolver {
         continue;
       }
       Local newLocal = local.withType(newType);
-      BodyUtils.replaceLocalInBuilder(builder, local, newLocal);
+      builder.replaceLocal(local, newLocal);
     }
   }
 

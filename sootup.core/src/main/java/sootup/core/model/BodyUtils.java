@@ -20,7 +20,6 @@ package sootup.core.model;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
@@ -163,29 +162,5 @@ public class BodyUtils {
       return ((JIdentityStmt<?>) oldStmt).withLocal(newDef);
     }
     throw new RuntimeException("The given stmt must be JAssignStmt or JIdentityStmt!");
-  }
-
-  public static void replaceLocalInBuilder(
-      Body.BodyBuilder builder, Local oldLocal, Local newLocal) {
-    LinkedHashSet<Local> locals = new LinkedHashSet<>(builder.getLocals());
-    if (!locals.contains(oldLocal)) {
-      throw new RuntimeException(
-          "The given old local: " + oldLocal.toString() + " is not in the body!");
-    } else {
-      locals.remove(oldLocal);
-      locals.add(newLocal);
-      builder.setLocals(locals);
-      for (Stmt stmt : Lists.newArrayList(builder.getStmtGraph().getNodes())) {
-        Stmt newStmt = null;
-        if (stmt.getUses().contains(oldLocal)) {
-          newStmt = withNewUse(stmt, oldLocal, newLocal);
-        } else if (stmt.getDefs().contains(oldLocal)) {
-          newStmt = withNewDef(stmt, newLocal);
-        }
-        if (newStmt != null) {
-          builder.replaceStmt(stmt, newStmt);
-        }
-      }
-    }
   }
 }
