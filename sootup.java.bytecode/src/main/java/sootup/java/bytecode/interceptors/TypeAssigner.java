@@ -35,10 +35,10 @@ import sootup.java.core.views.JavaView;
  */
 public class TypeAssigner implements BodyInterceptor {
 
-  private final boolean autoStandardizeNames;
+  private final boolean standardizeNames;
 
   public TypeAssigner() {
-    autoStandardizeNames = true;
+    standardizeNames = true;
   }
 
   /**
@@ -46,18 +46,12 @@ public class TypeAssigner implements BodyInterceptor {
    *     type assignment
    */
   public TypeAssigner(boolean autoStandardizeNames) {
-    this.autoStandardizeNames = autoStandardizeNames;
+    this.standardizeNames = autoStandardizeNames;
   }
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    TypeResolver resolver = new TypeResolver((JavaView) view);
-    resolver.resolveBuilder(builder);
-    if (resolver.failed()) {
-      // e.g. use another type resolver
-      return;
-    }
-    if (autoStandardizeNames) {
+    if (new TypeResolver((JavaView) view).resolve(builder) && standardizeNames) {
       LocalNameStandardizer standardizer = new LocalNameStandardizer();
       standardizer.interceptBody(builder, view);
     }

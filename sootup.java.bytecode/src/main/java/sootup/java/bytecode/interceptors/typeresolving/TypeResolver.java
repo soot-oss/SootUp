@@ -47,13 +47,12 @@ public class TypeResolver {
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
   private int castCount;
-  private boolean isFail = false;
 
   public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
   }
 
-  public void resolveBuilder(Body.BodyBuilder builder) {
+  public boolean resolve(@Nonnull Body.BodyBuilder builder) {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
@@ -62,8 +61,7 @@ public class TypeResolver {
     Collection<Typing> typings =
         applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
-      isFail = true;
-      return;
+      return false;
     }
     Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
     if (this.castCount != 0) {
@@ -74,8 +72,7 @@ public class TypeResolver {
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
     Typing promotedTyping = promotionVisitor.getPromotedTyping(minCastsTyping);
     if (promotedTyping == null) {
-      isFail = true;
-      return;
+      return false;
     } else {
       for (Local local : locals) {
         Type convertedType = convertType(promotedTyping.getType(local));
@@ -94,10 +91,7 @@ public class TypeResolver {
       Local newLocal = local.withType(newType);
       builder.replaceLocal(local, newLocal);
     }
-  }
-
-  public boolean failed() {
-    return isFail;
+    return true;
   }
 
   /** observe all definition assignments, add all locals at right-hand-side into the map depends */
@@ -221,7 +215,7 @@ public class TypeResolver {
   }
 
   /** This method is used to remove the more general typings. */
-  private void minimize(List<Typing> typings, BytecodeHierarchy hierarchy) {
+  private void minimize(@Nonnull List<Typing> typings, @Nonnull BytecodeHierarchy hierarchy) {
     Set<Type> objectLikeTypes = new HashSet<>();
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType obj = factory.getClassType("java.lang.Object");
@@ -251,7 +245,7 @@ public class TypeResolver {
     }
   }
 
-  private Map<Local, Set<Type>> getLocal2Types(List<Typing> typings) {
+  private Map<Local, Set<Type>> getLocal2Types(@Nonnull List<Typing> typings) {
     Map<Local, Set<Type>> map = new HashMap<>();
     for (Typing typing : typings) {
       for (Local local : typing.getLocals()) {
@@ -265,10 +259,10 @@ public class TypeResolver {
   }
 
   private Typing getMinCastsTyping(
-      Body.BodyBuilder builder,
-      Collection<Typing> typings,
-      AugEvalFunction evalFunction,
-      BytecodeHierarchy hierarchy) {
+      @Nonnull Body.BodyBuilder builder,
+      @Nonnull Collection<Typing> typings,
+      @Nonnull AugEvalFunction evalFunction,
+      @Nonnull BytecodeHierarchy hierarchy) {
     CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
     Iterator<Typing> typingIterator = typings.iterator();
     Typing ret = null;
