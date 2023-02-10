@@ -40,7 +40,9 @@ public class TypePromotionVisitor extends TypeChecker {
   private static final Logger logger = LoggerFactory.getLogger(TypePromotionVisitor.class);
 
   public TypePromotionVisitor(
-      Body.BodyBuilder builder, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+      @Nonnull Body.BodyBuilder builder,
+      @Nonnull AugEvalFunction evalFunction,
+      @Nonnull BytecodeHierarchy hierarchy) {
     super(builder, evalFunction, hierarchy);
   }
 
@@ -49,7 +51,8 @@ public class TypePromotionVisitor extends TypeChecker {
     this.failed = false;
     while (typingChanged && !failed) {
       this.typingChanged = false;
-      for (Stmt stmt : getBody().getStmts()) {
+      // TODO:  [ms] check if we need the copy of getStmts()
+      for (Stmt stmt : builder.getStmts()) {
         stmt.accept(this);
       }
     }
@@ -62,9 +65,8 @@ public class TypePromotionVisitor extends TypeChecker {
   public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();
-    Body body = getBody();
     Typing typing = getTyping();
-    Type evaType = evalFunction.evaluate(typing, value, stmt, body);
+    Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
     if (evaType.equals(stdType)) {
       return;
     }

@@ -149,7 +149,7 @@ public class AugEvalFunction {
       }
     } else if (value instanceof Ref) {
       if (value instanceof JCaughtExceptionRef) {
-        Set<ClassType> exceptionTypes = getExceptionType(stmt, graph);
+        Set<ClassType> exceptionTypes = getExceptionTypeCandidates(stmt, graph);
         ClassType throwable = factory.getClassType("java.lang.Throwable");
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
@@ -214,22 +214,9 @@ public class AugEvalFunction {
    * This function is used to get all exception types for the traps handled by the given handle
    * statement in body.
    */
-  private Set<ClassType> getExceptionType(@Nonnull Stmt handlerStmt, @Nonnull StmtGraph<?> graph) {
-    Set<ClassType> exceptionTypes = new HashSet<>();
-    graph
-        .getBlockOf(handlerStmt)
-        .getExceptionalPredecessors()
-        .forEach(
-            (pb) -> {
-              pb.getExceptionalSuccessors()
-                  .forEach(
-                      (exceptionType, handlerBlock) -> {
-                        if (handlerStmt == handlerBlock.getHead()) {
-                          exceptionTypes.add(exceptionType);
-                        }
-                      });
-            });
-    return exceptionTypes;
+  private Set<ClassType> getExceptionTypeCandidates(
+      @Nonnull Stmt handlerStmt, @Nonnull StmtGraph<?> graph) {
+    return graph.getBlockOf(handlerStmt).getExceptionalPredecessors().keySet();
   }
 
   /**

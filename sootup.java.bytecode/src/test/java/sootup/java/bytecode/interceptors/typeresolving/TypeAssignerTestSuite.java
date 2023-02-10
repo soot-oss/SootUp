@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -41,7 +42,7 @@ public class TypeAssignerTestSuite {
     clazz = view.getClass(classType).get();
   }
 
-  public void setMethodBody(String methodName, String returnType) {
+  public StmtGraph<?> setMethodBody(String methodName, String returnType) {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             classType, methodName, returnType, Collections.emptyList());
@@ -49,6 +50,7 @@ public class TypeAssignerTestSuite {
     JavaSootMethod method = methodOptional.get();
     body = method.getBody();
     builder = Body.builder(body, Collections.emptySet());
+    return builder.getStmtGraph();
   }
 
   public Typing createTyping(Map<String, Type> map) {

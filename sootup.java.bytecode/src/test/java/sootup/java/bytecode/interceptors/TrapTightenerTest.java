@@ -121,7 +121,7 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    List<Trap> actual = builder.getTraps();
+    List<Trap> actual = builder.getStmtGraph().getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
   /**
@@ -161,7 +161,7 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    List<Trap> actual = builder.getTraps();
+    List<Trap> actual = builder.getStmtGraph().getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 

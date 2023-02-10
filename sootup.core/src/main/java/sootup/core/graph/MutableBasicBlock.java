@@ -128,8 +128,20 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   @Override
-  public List<MutableBasicBlock> getExceptionalPredecessors() {
-    throw new UnsupportedOperationException("not implemented.");
+  public Map<ClassType, MutableBasicBlock> getExceptionalPredecessors() {
+    final HashMap<ClassType, MutableBasicBlock> excPreds = new HashMap<>();
+    getPredecessors()
+        .forEach(
+            (pb) -> {
+              pb.getExceptionalSuccessors()
+                  .forEach(
+                      (exceptionType, handlerBlock) -> {
+                        if (this == handlerBlock) {
+                          excPreds.put(exceptionType, pb);
+                        }
+                      });
+            });
+    return excPreds;
   }
 
   @Nonnull

@@ -22,7 +22,6 @@ package sootup.core.model;
  * #L%
  */
 
-import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -402,7 +401,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = Lists.newArrayList(graph);
+      cachedLinearizedStmts = graph.getStmts();
       return cachedLinearizedStmts;
     }
 
@@ -496,7 +495,11 @@ public class Body implements Copyable {
       return this;
     }
 
-    public BodyBuilder setMethodSignature(MethodSignature methodSig) {
+    public MethodSignature getMethodSignature() {
+      return methodSig;
+    }
+
+    public BodyBuilder setMethodSignature(@Nonnull MethodSignature methodSig) {
       this.methodSig = methodSig;
       return this;
     }

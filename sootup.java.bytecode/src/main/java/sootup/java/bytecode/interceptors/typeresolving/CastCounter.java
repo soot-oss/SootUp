@@ -22,7 +22,8 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -53,7 +54,8 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = true;
     setTyping(typing);
-    for (Stmt stmt : getBuilder().getStmts()) {
+    // TODO:[ms] check if we really need a copy of the stms in getStmts or if we can just iterate..
+    for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
     return this.castCount;
@@ -67,9 +69,8 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = false;
     setTyping(typing);
-    List<Stmt> stmts = new ArrayList<>(getBuilder().getStmts());
-    int size = stmts.size();
-    for (Stmt stmt : stmts) {
+    // TODO:[ms] check if we really need a copy of the stms in getStmts or if we can just iterate..
+    for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
   }
@@ -78,10 +79,9 @@ public class CastCounter extends TypeChecker {
   public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();
-    Body body = getBody();
     Typing typing = getTyping();
     if (countOnly) {
-      Type evaType = evalFunction.evaluate(typing, value, stmt, body);
+      Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
       if (hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
@@ -100,7 +100,7 @@ public class CastCounter extends TypeChecker {
           value = updatedValue;
         }
       }
-      Type evaType = evalFunction.evaluate(typing, value, stmt, body);
+      Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
       if (hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
@@ -108,7 +108,6 @@ public class CastCounter extends TypeChecker {
       // TODO: modifiers later must be added
 
       Local old_local;
-      final Body.BodyBuilder builder = getBuilder();
       if (value instanceof Local) {
         old_local = (Local) value;
       } else {
@@ -136,7 +135,6 @@ public class CastCounter extends TypeChecker {
       }
       builder.replaceStmt(stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);
-      setBody(builder.build());
     }
   }
 

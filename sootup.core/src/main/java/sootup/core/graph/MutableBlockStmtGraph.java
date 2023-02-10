@@ -1075,7 +1075,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   @Nullable
   public BasicBlock<?> getBlockOf(@Nonnull Stmt stmt) {
-    return new ForwardingBasicBlock<>(stmtToBlock.get(stmt));
+    final MutableBasicBlock mutableBasicBlock = stmtToBlock.get(stmt);
+    if (mutableBasicBlock == null) {
+      throw new IllegalArgumentException("stmt '" + stmt + "' does not exist in this StmtGraph!");
+    }
+    return new ForwardingBasicBlock<>(mutableBasicBlock);
   }
 
   @Nonnull

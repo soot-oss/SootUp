@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;
@@ -55,16 +56,19 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   private final AugEvalFunction evalFunction;
   private final BytecodeHierarchy hierarchy;
   private Typing typing;
-  private final Body.BodyBuilder bodyBuilder;
-  private Body body;
+  protected final Body.BodyBuilder builder;
+
+  protected final StmtGraph<?> graph;
   private final IdentifierFactory factory = JavaIdentifierFactory.getInstance();
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
   public TypeChecker(
-      Body.BodyBuilder builder, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
-    this.bodyBuilder = builder;
-    this.body = builder.build();
+      @Nonnull Body.BodyBuilder builder,
+      @Nonnull AugEvalFunction evalFunction,
+      @Nonnull BytecodeHierarchy hierarchy) {
+    this.builder = builder;
+    this.graph = builder.getStmtGraph();
     this.evalFunction = evalFunction;
     this.hierarchy = hierarchy;
   }
@@ -97,7 +101,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (Type.isObjectLikeType(type_base)
               || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(bodyBuilder.getStmts());
+            Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(builder.getStmts());
             List<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
@@ -149,7 +153,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(bodyBuilder.getStmts());
+          Map<Local, List<Stmt>> defs = BodyUtils.collectDefs(builder.getStmts());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
@@ -246,24 +250,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-    visit(stmt.getOp(), body.getMethodSignature().getType(), stmt);
+    visit(stmt.getOp(), builder.getMethodSignature().getType(), stmt);
   }
 
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
     visit(stmt.getOp(), factory.getType("java.lang.Throwable"), stmt);
-  }
-
-  public Body.BodyBuilder getBuilder() {
-    return this.bodyBuilder;
-  }
-
-  public Body getBody() {
-    return this.body;
-  }
-
-  public void setBody(Body body) {
-    this.body = body;
   }
 
   public AugEvalFunction getFuntion() {
@@ -295,8 +287,8 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   private void handleBinopExpr(AbstractBinopExpr expr, Type type, Stmt stmt) {
     Value op1 = expr.getOp1();
     Value op2 = expr.getOp2();
-    Type t1 = evalFunction.evaluate(typing, op1, stmt, body);
-    Type t2 = evalFunction.evaluate(typing, op2, stmt, body);
+    Type t1 = evalFunction.evaluate(typing, op1, stmt, graph);
+    Type t2 = evalFunction.evaluate(typing, op2, stmt, graph);
     if (expr instanceof AbstractConditionExpr
         || expr instanceof AbstractFloatBinopExpr
         || expr instanceof JShlExpr
@@ -335,7 +327,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         "Conflicting array types at "
             + stmt
             + " in "
-            + body.getMethodSignature()
+            + builder.getMethodSignature()
             + ". Its base type may be "
             + preType
             + " or "

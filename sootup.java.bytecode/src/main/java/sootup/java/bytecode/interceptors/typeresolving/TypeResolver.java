@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -57,9 +58,8 @@ public class TypeResolver {
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
     Typing iniTyping = new Typing(builder.getLocals());
-    Body body = builder.build();
     Collection<Typing> typings =
-        applyAssignmentConstraint(body, iniTyping, evalFunction, hierarchy);
+        applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
       isFail = true;
       return;
@@ -153,7 +153,10 @@ public class TypeResolver {
   }
 
   private Collection<Typing> applyAssignmentConstraint(
-      Body body, Typing typing, AugEvalFunction evalFunction, BytecodeHierarchy hierarchy) {
+      @Nonnull StmtGraph<?> graph,
+      @Nonnull Typing typing,
+      @Nonnull AugEvalFunction evalFunction,
+      @Nonnull BytecodeHierarchy hierarchy) {
     int numOfAssigns = this.id2assignments.size();
     if (numOfAssigns == 0) {
       return Collections.emptyList();
@@ -180,7 +183,7 @@ public class TypeResolver {
         Value lhs = defStmt.getLeftOp();
         Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
         Type t_old = actualTyping.getType(local);
-        Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, body);
+        Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
         if (lhs instanceof JArrayRef) {
           t_right = Type.makeArrayType(t_right, 1);
         }

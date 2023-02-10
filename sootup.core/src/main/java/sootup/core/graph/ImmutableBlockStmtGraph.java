@@ -178,8 +178,9 @@ public class ImmutableBlockStmtGraph
     }
 
     @Override
-    public List<ImmutableBasicBlock> getExceptionalPredecessors() {
-      return null;
+    @Nonnull
+    public Map<ClassType, ImmutableBasicBlock> getExceptionalPredecessors() {
+      throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Nonnull
