@@ -183,7 +183,6 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     if (!walaPropertiesFile.exists()) {
       PrintWriter pw;
       try {
-        walaPropertiesFile.getParentFile().mkdirs();
         pw = new PrintWriter(walaPropertiesFile);
         String jdkPath = System.getProperty("java.home");
         pw.println("java_runtime_dir = " + new File(jdkPath).toString().replace("\\", "/"));
