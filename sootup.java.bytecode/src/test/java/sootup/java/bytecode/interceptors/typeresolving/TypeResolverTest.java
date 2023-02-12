@@ -23,14 +23,18 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    getMethod("invokeStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolve(builder);
     Body newbody = builder.build();
 
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(newbody);
+    List<String> actualStmts = Utils.filterJimple(newbody.toString());
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos l0",
+                "Sub1 l1, $stack4",
+                "byte l2",
+                "Sub2 l3, $stack5",
                 "l0 := @this: CastCounterDemos",
                 "$stack4 = new Sub1",
                 "specialinvoke $stack4.<Sub1: void <init>()>()",
@@ -47,14 +51,18 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmt() {
-    getMethod("assignStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
     resolver.resolve(builder);
     Body newbody = builder.build();
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(newbody);
+    List<String> actualStmts = Utils.filterJimple(newbody.toString());
 
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos l0",
+                "Super1[] l1",
+                "Super1 l2",
+                "Sub1 $stack3",
                 "l0 := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",

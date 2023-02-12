@@ -13,6 +13,7 @@ import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -37,7 +38,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type actual, expected;
     Stmt stmt = null;
     Value value = null;
-    final StmtGraph<?> graph = getMethod("constant", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("constant", "void");
+    StmtGraph<?> graph = builder.getStmtGraph();
+
     for (Stmt s : graph.getStmts()) {
       String sn = s.toString();
       switch (sn) {
@@ -79,7 +82,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         default:
       }
     }
-    final StmtGraph<?> graph2 = getMethod("reflection", "void");
+    final Body.BodyBuilder builder2 = createMethodsBuilder("reflection", "void");
+    StmtGraph<?> graph2 = builder2.getStmtGraph();
+
     for (Stmt s : graph2.getStmts()) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
         value = s.getUses().get(0);
@@ -98,7 +103,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type expected = PrimitiveType.getBoolean();
     Stmt stmt = null;
     Value value = null;
-    final StmtGraph<?> graph = getMethod("condition", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("condition", "void");
+    StmtGraph<?> graph = builder.getStmtGraph();
+
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("if l1 >= l2")) {
         for (Value use : s.getUses()) {
@@ -112,11 +119,13 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph2 = getMethod("shift", "void");
+    final Body.BodyBuilder builder2 = createMethodsBuilder("shift", "void");
+    StmtGraph<?> graph2 = builder2.getStmtGraph();
+
     Map<String, Type> map = new HashMap<>();
     map.put("l1", PrimitiveType.getByte());
     map.put("l2", PrimitiveType.getLong());
-    Typing specTyping = createTyping(map);
+    Typing specTyping = createTyping(builder2.getLocals(), map);
 
     for (Stmt s : graph2.getStmts()) {
       if (s.toString().equals("l4 = l2 << l1")) {
@@ -144,12 +153,14 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    final StmtGraph<?> graph3 = getMethod("xor", "void");
+    final Body.BodyBuilder builder3 = createMethodsBuilder("xor", "void");
+    StmtGraph<?> graph3 = builder3.getStmtGraph();
+
     map.clear();
     map.put("l1", PrimitiveType.getBoolean());
     map.put("l2", PrimitiveType.getBoolean());
     map.put("l4", PrimitiveType.getLong());
-    specTyping = createTyping(map);
+    specTyping = createTyping(builder3.getLocals(), map);
     for (Stmt s : graph3.getStmts()) {
       if (s.toString().equals("l3 = l2 ^ l1")) {
         for (Value use : s.getUses()) {
@@ -179,7 +190,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.clear();
     map.put("l1", PrimitiveType.getInteger1());
     map.put("l2", PrimitiveType.getByte());
-    specTyping = createTyping(map);
+    specTyping = createTyping(builder.getLocals(), map);
 
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("l3 = l2 ^ l1")) {
@@ -195,11 +206,13 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    final StmtGraph<?> graph4 = getMethod("add", "void");
+    final Body.BodyBuilder builder4 = createMethodsBuilder("add", "void");
+    StmtGraph<?> graph4 = builder4.getStmtGraph();
+
     map.clear();
     map.put("l1", PrimitiveType.getInteger1());
     map.put("l2", PrimitiveType.getFloat());
-    specTyping = createTyping(map);
+    specTyping = createTyping(builder4.getLocals(), map);
 
     for (Stmt s : graph4.getStmts()) {
       if (s.toString().equals("l3 = l2 + $stack4")) {
@@ -227,7 +240,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
       }
     }
 
-    final StmtGraph<?> graph5 = getMethod("length", "void");
+    final Body.BodyBuilder builder5 = createMethodsBuilder("length", "void");
+    StmtGraph<?> graph5 = builder5.getStmtGraph();
+
     for (Stmt s : graph5.getStmts()) {
       if (s.toString().equals("l2 = lengthof l1")) {
         for (Value use : s.getUses()) {
@@ -242,7 +257,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph6 = getMethod("instanceOf", "boolean");
+    final Body.BodyBuilder builder6 = createMethodsBuilder("instanceOf", "boolean");
+    StmtGraph<?> graph6 = builder6.getStmtGraph();
+
     for (Stmt s : graph6.getStmts()) {
       if (s.toString().equals("$stack3 = l1 instanceof A")) {
         for (Value use : s.getUses()) {
@@ -257,7 +274,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph7 = getMethod("newArrayExpr", "void");
+    final Body.BodyBuilder builder7 = createMethodsBuilder("newArrayExpr", "void");
+    StmtGraph<?> graph7 = builder7.getStmtGraph();
+
     for (Stmt s : graph7.getStmts()) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
         for (Value use : s.getUses()) {
@@ -272,7 +291,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph8 = getMethod("invokeExpr", "void");
+    final Body.BodyBuilder builder8 = createMethodsBuilder("invokeExpr", "void");
+    StmtGraph<?> graph8 = builder8.getStmtGraph();
+
     for (Stmt s : graph8.getStmts()) {
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
         for (Value use : s.getUses()) {
@@ -305,7 +326,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     Type expected = identifierFactory.getClassType("java.lang.ArithmeticException");
     Stmt stmt = null;
     Value value = null;
-    final StmtGraph<?> graph = getMethod("caughtException1", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("caughtException1", "void");
+    StmtGraph<?> graph = builder.getStmtGraph();
+
     for (Stmt s : graph.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -319,7 +342,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph2 = getMethod("caughtException2", "void");
+    final Body.BodyBuilder builder2 = createMethodsBuilder("caughtException2", "void");
+    StmtGraph<?> graph2 = builder2.getStmtGraph();
+
     for (Stmt s : graph2.getStmts()) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Value use : s.getUses()) {
@@ -334,7 +359,9 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     actual = evalFunction.evaluate(typing, value, stmt, graph2);
     Assert.assertEquals(expected, actual);
 
-    final StmtGraph<?> graph3 = getMethod("fieldRef", "void");
+    final Body.BodyBuilder builder3 = createMethodsBuilder("fieldRef", "void");
+    StmtGraph<?> graph3 = builder3.getStmtGraph();
+
     for (Stmt s : graph3.getStmts()) {
       if (s.toString().equals("l1 = l0.<ByteCodeTypeTest: A field>")) {
         for (Value use : s.getUses()) {

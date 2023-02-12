@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -24,7 +23,6 @@ public class TypeAssignerTestSuite {
   JavaView view;
   ClassType classType;
   JavaSootClass clazz;
-  Body.BodyBuilder builder;
 
   public void buildView(String baseDir, String className) {
 
@@ -42,19 +40,17 @@ public class TypeAssignerTestSuite {
     clazz = view.getClass(classType).get();
   }
 
-  public StmtGraph<?> getMethod(String methodName, String returnType) {
+  public Body.BodyBuilder createMethodsBuilder(String methodName, String returnType) {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature(
             classType, methodName, returnType, Collections.emptyList());
     Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
     Body body = method.getBody();
-    builder = Body.builder(body, Collections.emptySet());
-    return builder.getStmtGraph();
+    return Body.builder(body, Collections.emptySet());
   }
 
-  public Typing createTyping(Map<String, Type> map) {
-    final Set<Local> locals = builder.getLocals();
+  public Typing createTyping(Set<Local> locals, Map<String, Type> map) {
     Typing typing = new Typing(locals);
     for (Local l : typing.getLocals()) {
       if (map.containsKey(l.getName())) {

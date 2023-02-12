@@ -35,7 +35,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testInvokeStmt() {
-    getMethod("invokeStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -43,49 +43,49 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("l3", sub2);
     map.put("$stack4", sub1);
     map.put("$stack5", sub2);
-    Typing typing = createTyping(map);
+    Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     int count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 0);
+    Assert.assertEquals(0, count);
 
     map.replace("l3", super2);
-    typing = createTyping(map);
+    typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 1);
+    Assert.assertEquals(1, count);
 
     map.replace("l2", PrimitiveType.getLong());
-    typing = createTyping(map);
+    typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 3);
+    Assert.assertEquals(3, count);
 
     map.replace("l2", PrimitiveType.getInteger127());
-    typing = createTyping(map);
+    typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 1);
+    Assert.assertEquals(1, count);
   }
 
   @Test
   public void testAssignStmt() {
-    getMethod("assignStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", Type.makeArrayType(super1, 1));
     map.put("l2", super1);
     map.put("$stack3", sub1);
-    Typing typing = createTyping(map);
+    Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     int count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 0);
+    Assert.assertEquals(0, count);
 
     map.replace("l1", object);
-    typing = createTyping(map);
+    typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertTrue(count == 5);
+    Assert.assertEquals(5, count);
   }
 
   @Test
   public void testInvokeStmtWithNewCasts() {
-    getMethod("invokeStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", super1);
@@ -93,7 +93,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("l3", super2);
     map.put("$stack4", sub1);
     map.put("$stack5", sub2);
-    Typing typing = createTyping(map);
+    Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     Assert.assertEquals(3, counter.getCastCount(typing));
     counter.insertCastStmts(typing);
@@ -125,14 +125,14 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
   @Test
   public void testAssignStmtWithNewCasts() {
-    getMethod("assignStmt", "void");
+    final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
     map.put("l1", object);
     map.put("l2", super1);
     map.put("$stack3", sub1);
 
-    Typing typing = createTyping(map);
+    Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     counter.insertCastStmts(typing);
     Assert.assertEquals(2, counter.getCastCount());
