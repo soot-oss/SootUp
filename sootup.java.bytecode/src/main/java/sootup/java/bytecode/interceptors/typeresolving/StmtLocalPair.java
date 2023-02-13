@@ -41,4 +41,9 @@ public class StmtLocalPair {
   public Local getLocal() {
     return this.local;
   }
+
+  @Override
+  public String toString() {
+    return "(" + stmt + "," + local + ")";
+  }
 }

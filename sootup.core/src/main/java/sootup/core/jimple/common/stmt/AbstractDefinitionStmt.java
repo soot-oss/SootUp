@@ -23,7 +23,6 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
@@ -61,7 +60,10 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   @Override
   @Nonnull
   public List<Value> getDefs() {
-    return Collections.singletonList(leftOp);
+    final List<Value> defs = new ArrayList<>();
+    defs.add(leftOp);
+    defs.addAll(leftOp.getUses()); // e.g. see JArrayRef
+    return defs;
   }
 
   @Override

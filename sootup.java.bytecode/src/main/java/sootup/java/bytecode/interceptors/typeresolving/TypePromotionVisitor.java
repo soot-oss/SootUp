@@ -51,8 +51,7 @@ public class TypePromotionVisitor extends TypeChecker {
     this.failed = false;
     while (typingChanged && !failed) {
       this.typingChanged = false;
-      // TODO:  [ms] check if we need the copy of getStmts()
-      for (Stmt stmt : builder.getStmts()) {
+      for (Stmt stmt : builder.getStmtGraph().getNodes()) {
         stmt.accept(this);
       }
     }
