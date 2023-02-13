@@ -139,9 +139,12 @@ public class LocalNameStandardizer implements BodyInterceptor {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
           Local newLocal = localToNewLocal.get(use);
-          newStmt = newStmt.withNewUse(use, newLocal);
+          if (newLocal != null) {
+            newStmt = newStmt.withNewUse(use, newLocal);
+          }
         }
       }
+      // TODO: couldnt this be != ?
       if (!stmt.equals(newStmt)) {
         stmtGraph.replaceNode(stmt, newStmt);
       }

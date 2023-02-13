@@ -51,7 +51,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   @Test
   public void testAssignStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
-    System.out.println(builder.build().toString());
+    System.out.println(builder.build());
 
     new TypeAssigner().interceptBody(builder, this.view);
 

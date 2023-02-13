@@ -45,7 +45,7 @@ public class Typing {
   }
 
   public Type getType(Local local) {
-    return this.local2Type.get(local);
+    return local2Type.get(local);
   }
 
   public void set(@Nonnull Local local, @Nonnull Type type) {

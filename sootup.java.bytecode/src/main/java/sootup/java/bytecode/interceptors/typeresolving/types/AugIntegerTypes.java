@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.PrimitiveType;
 
-public abstract class AugmentIntegerTypes {
+public abstract class AugIntegerTypes {
 
   @Nonnull
   public static Integer1Type getInteger1() {

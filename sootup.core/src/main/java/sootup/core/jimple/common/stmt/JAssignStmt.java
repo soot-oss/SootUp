@@ -29,6 +29,7 @@ import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
@@ -211,14 +212,24 @@ public final class JAssignStmt<L extends Value, R extends Value>
     return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
 
-  /**
-   * Use newDef to replace the definition in oldStmt.
-   *
-   * @param newDef a Local to replace definition Local of oldStmt.
-   * @return a new Stmt with newDef
-   */
-  @Nonnull
-  public Stmt withNewDef(@Nonnull Local newDef) {
-    return withVariable(newDef);
+  @Override
+  public Stmt withNewDef(@Nonnull Local newLocal) {
+    // "ReplaceDefVisitor"
+    final Value leftOp = getLeftOp();
+    Value newVal;
+    if (leftOp instanceof ConcreteRef) {
+      if (leftOp instanceof JArrayRef) {
+        newVal = ((JArrayRef) leftOp).withBase(newLocal);
+      } else if (leftOp instanceof JInstanceFieldRef) {
+        newVal = ((JInstanceFieldRef) leftOp).withBase(newLocal);
+      } else {
+        // JStaticFieldRef -> do nothing
+        return this;
+      }
+    } else {
+      // its a Local..
+      newVal = newLocal;
+    }
+    return withVariable(newVal);
   }
 }

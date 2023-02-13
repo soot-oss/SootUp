@@ -50,11 +50,11 @@ public class CastCounter extends TypeChecker {
     super(builder, evalFunction, hierarchy);
   }
 
-  public int getCastCount(Typing typing) {
+  public int getCastCount(@Nonnull Typing typing) {
     this.castCount = 0;
     this.countOnly = true;
     setTyping(typing);
-    for (Stmt stmt : builder.getStmts()) {
+    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
       stmt.accept(this);
     }
     return this.castCount;

@@ -141,7 +141,6 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   /**
    * Use newUse to replace the oldUse in oldStmt.
    *
-   * @param oldStmt a Stmt that has oldUse.
    * @param oldUse a Value in the useList of oldStmt.
    * @param newUse a Value is to replace oldUse
    * @return a new Stmt with newUse

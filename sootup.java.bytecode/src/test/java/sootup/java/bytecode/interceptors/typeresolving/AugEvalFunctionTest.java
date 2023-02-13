@@ -17,7 +17,7 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -48,14 +48,14 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         case "l1 = 127":
           value = s.getUses().get(0);
           stmt = s;
-          expected = AugmentIntegerTypes.getInteger127();
+          expected = AugIntegerTypes.getInteger127();
           actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
         case "l1 = 32111":
           value = s.getUses().get(0);
           stmt = s;
-          expected = AugmentIntegerTypes.getInteger32767();
+          expected = AugIntegerTypes.getInteger32767();
           actual = evalFunction.evaluate(typing, value, stmt, graph);
           Assert.assertEquals(expected, actual);
           break;
@@ -189,7 +189,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     }
 
     map.clear();
-    map.put("l1", AugmentIntegerTypes.getInteger1());
+    map.put("l1", AugIntegerTypes.getInteger1());
     map.put("l2", PrimitiveType.getByte());
     specTyping = createTyping(builder.getLocals(), map);
 
@@ -211,7 +211,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     StmtGraph<?> graph4 = builder4.getStmtGraph();
 
     map.clear();
-    map.put("l1", AugmentIntegerTypes.getInteger1());
+    map.put("l1", AugIntegerTypes.getInteger1());
     map.put("l2", PrimitiveType.getFloat());
     specTyping = createTyping(builder4.getLocals(), map);
 

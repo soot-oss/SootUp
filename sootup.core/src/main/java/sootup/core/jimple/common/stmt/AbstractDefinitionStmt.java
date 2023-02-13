@@ -76,15 +76,6 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
     return list;
   }
 
-  /**
-   * Use newDef to replace the definition in oldStmt.
-   *
-   * @param newDef a Local to replace definition Local of oldStmt.
-   * @return a new Stmt with newDef
-   */
-  @Nonnull
-  public abstract Stmt withNewDef(@Nonnull Local newDef);
-
   @Override
   public boolean fallsThrough() {
     return true;
@@ -94,4 +85,6 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   public boolean branches() {
     return false;
   }
+
+  public abstract Stmt withNewDef(@Nonnull Local newLocal);
 }

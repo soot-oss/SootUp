@@ -30,8 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.graph.*;
 import sootup.core.jimple.basic.*;
-import sootup.core.jimple.common.ref.JParameterRef;
-import sootup.core.jimple.common.ref.JThisRef;
+import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
@@ -438,21 +437,21 @@ public class Body implements Copyable {
 
     public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
       if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: " + oldLocal + " is not in the body!");
+        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
       } else {
-        locals.remove(oldLocal);
-        locals.add(newLocal);
         for (Stmt stmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          Stmt newStmt = null;
           if (stmt.getUses().contains(oldLocal)) {
-            newStmt = stmt.withNewUse(oldLocal, newLocal);
+            Stmt newStmt = stmt.withNewUse(oldLocal, newLocal);
+            getStmtGraph().replaceNode(stmt, newStmt);
           } else if (stmt.getDefs().contains(oldLocal)) {
-            newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
-          }
-          if (newStmt != null) {
-            replaceStmt(stmt, newStmt);
+            if (stmt instanceof AbstractDefinitionStmt<?, ?>) {
+              final Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
+              getStmtGraph().replaceNode(stmt, newStmt);
+            }
           }
         }
+        locals.remove(oldLocal);
+        locals.add(newLocal);
       }
     }
 
