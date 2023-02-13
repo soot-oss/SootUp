@@ -39,6 +39,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -280,11 +281,11 @@ public class TypeResolver {
   }
 
   private Type convertType(Type type) {
-    if (type instanceof PrimitiveType.Integer1Type) {
+    if (type instanceof AugmentIntegerTypes.Integer1Type) {
       return PrimitiveType.getBoolean();
-    } else if (type instanceof PrimitiveType.Integer127Type) {
+    } else if (type instanceof AugmentIntegerTypes.Integer127Type) {
       return PrimitiveType.getByte();
-    } else if (type instanceof PrimitiveType.Integer32767Type) {
+    } else if (type instanceof AugmentIntegerTypes.Integer32767Type) {
       return PrimitiveType.getShort();
     } else if (type instanceof ArrayType) {
       Type eleType = convertType(((ArrayType) type).getElementType());

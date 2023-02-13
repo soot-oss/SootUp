@@ -21,15 +21,16 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
-/** @author Zun Wang */
 import java.util.Collection;
 import java.util.Collections;
 import javax.annotation.Nonnull;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
+/** @author Zun Wang */
 public class PrimitiveHierarchy implements IHierarchy {
 
   /**
@@ -51,7 +52,7 @@ public class PrimitiveHierarchy implements IHierarchy {
       } else if (a instanceof PrimitiveType.ByteType) {
         if (b instanceof PrimitiveType.ShortType
             || b instanceof PrimitiveType.CharType
-            || b instanceof PrimitiveType.Integer32767Type) {
+            || b instanceof AugmentIntegerTypes.Integer32767Type) {
           return Collections.singleton(PrimitiveType.getInt());
         } else {
           return Collections.emptySet();
@@ -87,21 +88,21 @@ public class PrimitiveHierarchy implements IHierarchy {
     if (ancestor.equals(child)) {
       return true;
     } else if (arePrimitives(ancestor, child)) {
-      if (ancestor instanceof PrimitiveType.Integer1Type) {
+      if (ancestor instanceof AugmentIntegerTypes.Integer1Type) {
         return child instanceof BottomType;
       } else if (ancestor instanceof PrimitiveType.BooleanType
-          || ancestor instanceof PrimitiveType.Integer127Type) {
-        return child instanceof PrimitiveType.Integer1Type || child instanceof BottomType;
+          || ancestor instanceof AugmentIntegerTypes.Integer127Type) {
+        return child instanceof AugmentIntegerTypes.Integer1Type || child instanceof BottomType;
       } else if (ancestor instanceof PrimitiveType.ByteType
-          || ancestor instanceof PrimitiveType.Integer32767Type) {
-        return child instanceof PrimitiveType.Integer127Type
-            || child instanceof PrimitiveType.Integer1Type
+          || ancestor instanceof AugmentIntegerTypes.Integer32767Type) {
+        return child instanceof AugmentIntegerTypes.Integer127Type
+            || child instanceof AugmentIntegerTypes.Integer1Type
             || child instanceof BottomType;
       } else if (ancestor instanceof PrimitiveType.CharType
           || ancestor instanceof PrimitiveType.ShortType) {
-        return child instanceof PrimitiveType.Integer32767Type
-            || child instanceof PrimitiveType.Integer127Type
-            || child instanceof PrimitiveType.Integer1Type
+        return child instanceof AugmentIntegerTypes.Integer32767Type
+            || child instanceof AugmentIntegerTypes.Integer127Type
+            || child instanceof AugmentIntegerTypes.Integer1Type
             || child instanceof BottomType;
       } else if (ancestor instanceof PrimitiveType.IntType) {
         return (!(child instanceof PrimitiveType.BooleanType)
@@ -117,20 +118,21 @@ public class PrimitiveHierarchy implements IHierarchy {
       int childDim = ((ArrayType) child).getDimension();
 
       if (ancestorDim == childDim && arePrimitives(ancestorBase, childBase)) {
-        if (ancestorBase instanceof PrimitiveType.Integer1Type) {
+        if (ancestorBase instanceof AugmentIntegerTypes.Integer1Type) {
           return childBase instanceof BottomType;
         } else if (ancestorBase instanceof PrimitiveType.BooleanType
-            || ancestorBase instanceof PrimitiveType.Integer127Type) {
-          return childBase instanceof PrimitiveType.Integer1Type || childBase instanceof BottomType;
+            || ancestorBase instanceof AugmentIntegerTypes.Integer127Type) {
+          return childBase instanceof AugmentIntegerTypes.Integer1Type
+              || childBase instanceof BottomType;
         } else if (ancestorBase instanceof PrimitiveType.ByteType
-            || ancestorBase instanceof PrimitiveType.Integer32767Type) {
-          return childBase instanceof PrimitiveType.Integer127Type
-              || childBase instanceof PrimitiveType.Integer1Type
+            || ancestorBase instanceof AugmentIntegerTypes.Integer32767Type) {
+          return childBase instanceof AugmentIntegerTypes.Integer127Type
+              || childBase instanceof AugmentIntegerTypes.Integer1Type
               || childBase instanceof BottomType;
         } else if (ancestorBase instanceof PrimitiveType.IntType) {
-          return childBase instanceof PrimitiveType.Integer32767Type
-              || childBase instanceof PrimitiveType.Integer127Type
-              || childBase instanceof PrimitiveType.Integer1Type
+          return childBase instanceof AugmentIntegerTypes.Integer32767Type
+              || childBase instanceof AugmentIntegerTypes.Integer127Type
+              || childBase instanceof AugmentIntegerTypes.Integer1Type
               || childBase instanceof BottomType;
         } else {
           return childBase instanceof BottomType;

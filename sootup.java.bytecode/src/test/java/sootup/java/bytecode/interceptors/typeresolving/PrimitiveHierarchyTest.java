@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
@@ -18,9 +19,9 @@ public class PrimitiveHierarchyTest {
   private Type bt2 = BottomType.getInstance();
   private Type boo = PrimitiveType.getBoolean();
   private Type i = PrimitiveType.getInt();
-  private Type i1 = PrimitiveType.getInteger1();
-  private Type i127 = PrimitiveType.getInteger127();
-  private Type i32767 = PrimitiveType.getInteger32767();
+  private Type i1 = AugmentIntegerTypes.getInteger1();
+  private Type i127 = AugmentIntegerTypes.getInteger127();
+  private Type i32767 = AugmentIntegerTypes.getInteger32767();
   private Type by = PrimitiveType.getByte();
   private Type s = PrimitiveType.getShort();
   private Type c = PrimitiveType.getChar();
