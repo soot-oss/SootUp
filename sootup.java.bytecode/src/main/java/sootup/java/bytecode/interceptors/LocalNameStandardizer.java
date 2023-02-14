@@ -131,10 +131,12 @@ public class LocalNameStandardizer implements BodyInterceptor {
     // modify locals in stmtGraph with new locals
     for (Stmt stmt : stmtGraph) {
       Stmt newStmt = stmt;
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-        Local def = (Local) stmt.getDefs().get(0);
-        Local newLocal = localToNewLocal.get(def);
-        newStmt = ((AbstractDefinitionStmt<?, ?>) newStmt).withNewDef(newLocal);
+      final List<Value> defs = stmt.getDefs();
+      for (Value def : defs) {
+        if (def instanceof Local) {
+          Local newLocal = localToNewLocal.get(def);
+          newStmt = ((AbstractDefinitionStmt<?, ?>) newStmt).withNewDef(newLocal);
+        }
       }
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
@@ -144,7 +146,6 @@ public class LocalNameStandardizer implements BodyInterceptor {
           }
         }
       }
-      // TODO: couldnt this be != ?
       if (!stmt.equals(newStmt)) {
         stmtGraph.replaceNode(stmt, newStmt);
       }

@@ -32,6 +32,7 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -95,13 +96,13 @@ public class TypeResolver {
     return true;
   }
 
-  /** observe all definition assignments, add all locals at right-hand-side into the map depends */
+  /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmts()) {
+    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
       if (stmt instanceof AbstractDefinitionStmt) {
         AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) stmt;
         Value lhs = defStmt.getLeftOp();
-        if (lhs instanceof Local || lhs instanceof JArrayRef) {
+        if (lhs instanceof Local || lhs instanceof JArrayRef || lhs instanceof JInstanceFieldRef) {
           final int id = assignments.size();
           this.assignments.add(defStmt);
           addDependsForRHS(defStmt.getRightOp(), id);
@@ -112,37 +113,37 @@ public class TypeResolver {
 
   private void addDependsForRHS(Value rhs, int id) {
     if (rhs instanceof Local) {
-      addDepend((Local) rhs, id);
+      addDependency((Local) rhs, id);
     } else if (rhs instanceof AbstractBinopExpr) {
       Immediate op1 = ((AbstractBinopExpr) rhs).getOp1();
       Immediate op2 = ((AbstractBinopExpr) rhs).getOp2();
       if (op1 instanceof Local) {
-        addDepend((Local) op1, id);
+        addDependency((Local) op1, id);
       }
       if (op2 instanceof Local) {
-        addDepend((Local) op2, id);
+        addDependency((Local) op2, id);
       }
     } else if (rhs instanceof JNegExpr) {
       Immediate op = ((JNegExpr) rhs).getOp();
       if (op instanceof Local) {
-        addDepend((Local) op, id);
+        addDependency((Local) op, id);
       }
     } else if (rhs instanceof JCastExpr) {
       Immediate op = ((JCastExpr) rhs).getOp();
       if (op instanceof Local) {
-        addDepend((Local) op, id);
+        addDependency((Local) op, id);
       }
     } else if (rhs instanceof JArrayRef) {
       Local base = ((JArrayRef) rhs).getBase();
-      addDepend(base, id);
+      addDependency(base, id);
     }
   }
 
-  private void addDepend(Local local, int id) {
-    BitSet bitSet = this.depends.get(local);
+  private void addDependency(@Nonnull Local local, int id) {
+    BitSet bitSet = depends.get(local);
     if (bitSet == null) {
       bitSet = new BitSet();
-      this.depends.put(local, bitSet);
+      depends.put(local, bitSet);
     }
     bitSet.set(id);
   }
@@ -250,10 +251,8 @@ public class TypeResolver {
     Map<Local, Set<Type>> map = new HashMap<>();
     for (Typing typing : typings) {
       for (Local local : typing.getLocals()) {
-        if (!map.containsKey(local)) {
-          map.put(local, new HashSet<>());
-        }
-        map.get(local).add(typing.getType(local));
+        Set<Type> types = map.computeIfAbsent(local, k -> new HashSet<>());
+        types.add(typing.getType(local));
       }
     }
     return map;
@@ -280,7 +279,7 @@ public class TypeResolver {
     return ret;
   }
 
-  private Type convertType(Type type) {
+  private Type convertType(@Nonnull Type type) {
     if (type instanceof AugIntegerTypes.Integer1Type) {
       return PrimitiveType.getBoolean();
     } else if (type instanceof AugIntegerTypes.Integer127Type) {
