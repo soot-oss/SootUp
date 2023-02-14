@@ -577,13 +577,13 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Local, List<Stmt>> collectDefs(List<Stmt> stmts) {
-    Map<Local, List<Stmt>> allDefs = new HashMap<>();
+  public static Map<Local, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
+    Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
       List<Value> defs = stmt.getDefs();
       for (Value value : defs) {
         if (value instanceof Local) {
-          List<Stmt> localDefs = allDefs.get(value);
+          Collection<Stmt> localDefs = allDefs.get(value);
           if (localDefs == null) {
             localDefs = new ArrayList<>();
           }
@@ -601,13 +601,13 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Local, List<Stmt>> collectUses(List<Stmt> stmts) {
-    Map<Local, List<Stmt>> allUses = new HashMap<>();
+  public static Map<Local, Collection<Stmt>> collectUses(List<Stmt> stmts) {
+    Map<Local, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<Value> uses = stmt.getUses();
+      Collection<Value> uses = stmt.getUses();
       for (Value value : uses) {
         if (value instanceof Local) {
-          List<Stmt> localUses = allUses.get(value);
+          Collection<Stmt> localUses = allUses.get(value);
           if (localUses == null) {
             localUses = new ArrayList<>();
           }

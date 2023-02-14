@@ -62,8 +62,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<Local, List<Stmt>> allDefs = new HashMap<>();
-  Map<Local, List<Stmt>> allUses = new HashMap<>();
+  Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
+  Map<Local, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
@@ -187,7 +187,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             for (Value value : stmt.getUses()) {
               if (value instanceof Local) {
                 Local local = (Local) value;
-                List<Stmt> defs = allDefs.get(local);
+                Collection<Stmt> defs = allDefs.get(local);
                 if (defs != null) {
                   deque.addAll(defs);
                 }

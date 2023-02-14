@@ -52,7 +52,7 @@ public class TypePromotionVisitor extends TypeChecker {
     this.failed = false;
     while (typingChanged && !failed) {
       this.typingChanged = false;
-      for (Stmt stmt : builder.getStmtGraph().getNodes()) {
+      for (Stmt stmt : builder.getStmts()) {
         stmt.accept(this);
       }
     }

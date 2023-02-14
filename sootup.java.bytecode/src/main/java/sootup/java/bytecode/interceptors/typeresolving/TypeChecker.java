@@ -100,8 +100,8 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (Type.isObjectLikeType(type_base)
               || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<Local, List<Stmt>> defs = Body.collectDefs(builder.getStmts());
-            List<Stmt> defStmts = defs.get(base);
+            Map<Local, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
+            Collection<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
               for (Stmt defStmt : defStmts) {
@@ -152,7 +152,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<Local, List<Stmt>> defs = Body.collectDefs(builder.getStmts());
+          Map<Local, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
@@ -162,7 +162,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             if (!visited.add(pair)) {
               continue;
             }
-            List<Stmt> stmts = defs.get(pair.getLocal());
+            Collection<Stmt> stmts = defs.get(pair.getLocal());
             for (Stmt s : stmts) {
               if (s instanceof JAssignStmt) {
                 Value value = ((JAssignStmt<?, ?>) s).getRightOp();

@@ -98,7 +98,7 @@ public class TypeResolver {
 
   /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
+    for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof AbstractDefinitionStmt) {
         AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) stmt;
         Value lhs = defStmt.getLeftOp();

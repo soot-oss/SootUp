@@ -54,7 +54,7 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = true;
     setTyping(typing);
-    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
+    for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
     return this.castCount;
