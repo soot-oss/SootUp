@@ -854,10 +854,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /**
-   * Adds stmtB to StmtA and if B is not already in the StmtGraph assumes stmtB has the same
-   * exceptional flows as stmtA.
-   */
   @Override
   public void putEdge(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
     MutableBasicBlock blockA = stmtToBlock.get(stmtA);
