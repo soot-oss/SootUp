@@ -61,6 +61,11 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     this.position = position;
   }
 
+  /** Hint: the naming is just an indicator! */
+  public boolean isFieldLocal() {
+    return getName().charAt(0) != '$';
+  }
+
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof Local)) {
