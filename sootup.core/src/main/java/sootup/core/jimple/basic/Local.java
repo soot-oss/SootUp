@@ -67,7 +67,7 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public final boolean equals(Object o) {
     if (!(o instanceof Local)) {
       return false;
     }
@@ -75,7 +75,7 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     return Objects.hashCode(name);
   }
 

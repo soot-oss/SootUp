@@ -84,6 +84,7 @@ public class TypeResolver {
       }
     }
 
+    // TODO: use  LocalNameStandardizer.getLocalIterator() to rename directly if applicable
     for (Local local : locals) {
       Type oldType = local.getType();
       Type newType = promotedTyping.getType(local);

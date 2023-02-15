@@ -419,7 +419,7 @@ public class WalaIRToJimpleConverter {
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      LocalGenerator localGenerator = new LocalGenerator(new LinkedHashSet<>());
+      LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {

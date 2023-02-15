@@ -439,20 +439,21 @@ public class Body implements Copyable {
       if (!locals.contains(oldLocal)) {
         throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
       } else {
-        for (Stmt stmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          if (stmt.getUses().contains(oldLocal)) {
-            Stmt newStmt = stmt.withNewUse(oldLocal, newLocal);
-            getStmtGraph().replaceNode(stmt, newStmt);
-          } else {
-            final List<Value> defs = stmt.getDefs();
-            for (Value def : defs) {
-              if (def == oldLocal || def.getUses().contains(oldLocal)) {
-                if (stmt instanceof AbstractDefinitionStmt) {
-                  final Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
-                  getStmtGraph().replaceNode(stmt, newStmt);
-                }
+        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+          final Stmt stmt = currStmt;
+          if (currStmt.getUses().contains(oldLocal)) {
+            currStmt = currStmt.withNewUse(oldLocal, newLocal);
+          }
+          final List<Value> defs = currStmt.getDefs();
+          for (Value def : defs) {
+            if (def == oldLocal || def.getUses().contains(oldLocal)) {
+              if (currStmt instanceof AbstractDefinitionStmt) {
+                currStmt = ((AbstractDefinitionStmt<?, ?>) currStmt).withNewDef(newLocal);
               }
             }
+          }
+          if (stmt != currStmt) {
+            getStmtGraph().replaceNode(stmt, currStmt);
           }
         }
         locals.remove(oldLocal);

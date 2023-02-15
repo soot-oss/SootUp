@@ -38,25 +38,9 @@ public class LocalNameStandardizer implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
-    // Get the order of all Locals' occurrences and store them into a map
-    Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
-    int defsCount = 0;
-    for (Stmt stmt : builder.getStmtGraph()) {
-      final List<Value> defs = stmt.getDefs();
-      for (Value def : defs) {
-        if (def instanceof Local) {
-          final Local localDef = (Local) def;
-          localToFirstOccurrence.putIfAbsent(localDef, defsCount);
-          localToFirstOccurrence.put(localDef, defsCount++);
-        }
-      }
-    }
-    // Sort all locals
+    final Iterator<Local> iterator = getLocalIterator(builder);
+
     LocalGenerator lgen = new LocalGenerator(new HashSet<>());
-    final Iterator<Local> iterator =
-        localToFirstOccurrence.keySet().stream()
-            .sorted(new LocalComparator(localToFirstOccurrence))
-            .iterator();
     while (iterator.hasNext()) {
       Local local = iterator.next();
       Local newLocal;
@@ -69,7 +53,28 @@ public class LocalNameStandardizer implements BodyInterceptor {
     }
   }
 
-  private static class LocalComparator implements Comparator<Local> {
+  @Nonnull
+  public static Iterator<Local> getLocalIterator(@Nonnull Body.BodyBuilder builder) {
+    // Get the order of all Locals' occurrences and store them into a map
+    Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
+    int defsCount = 0;
+    for (Stmt stmt : builder.getStmtGraph()) {
+      final List<Value> defs = stmt.getDefs();
+      for (Value def : defs) {
+        if (def instanceof Local) {
+          final Local localDef = (Local) def;
+          localToFirstOccurrence.putIfAbsent(localDef, defsCount);
+          defsCount++;
+        }
+      }
+    }
+    // Sort all locals
+    return localToFirstOccurrence.keySet().stream()
+        .sorted(new LocalComparator(localToFirstOccurrence))
+        .iterator();
+  }
+
+  public static class LocalComparator implements Comparator<Local> {
 
     Map<Local, Integer> localToFirstOccurence;
 
