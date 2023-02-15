@@ -7,7 +7,6 @@ import categories.Java8Test;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.Project;

@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
