@@ -443,10 +443,15 @@ public class Body implements Copyable {
           if (stmt.getUses().contains(oldLocal)) {
             Stmt newStmt = stmt.withNewUse(oldLocal, newLocal);
             getStmtGraph().replaceNode(stmt, newStmt);
-          } else if (stmt.getDefs().contains(oldLocal)) {
-            if (stmt instanceof AbstractDefinitionStmt<?, ?>) {
-              final Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
-              getStmtGraph().replaceNode(stmt, newStmt);
+          } else {
+            final List<Value> defs = stmt.getDefs();
+            for (Value def : defs) {
+              if (def == oldLocal || def.getUses().contains(oldLocal)) {
+                if (stmt instanceof AbstractDefinitionStmt) {
+                  final Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newLocal);
+                  getStmtGraph().replaceNode(stmt, newStmt);
+                }
+              }
             }
           }
         }

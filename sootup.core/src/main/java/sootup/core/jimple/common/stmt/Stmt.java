@@ -55,8 +55,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Values defined in this Stmt. */
-  // TODO: [ms] naming/signature its just a single Def..always.
+  /** Returns a list of Values defined in this Stmt. There are languages which allow multiple return types/assignments so we return a List */
   @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();

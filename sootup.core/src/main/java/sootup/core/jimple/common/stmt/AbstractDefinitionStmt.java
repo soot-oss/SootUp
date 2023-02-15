@@ -62,7 +62,6 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   public List<Value> getDefs() {
     final List<Value> defs = new ArrayList<>();
     defs.add(leftOp);
-    defs.addAll(leftOp.getUses()); // e.g. see JArrayRef
     return defs;
   }
 
