@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.Value;
@@ -38,7 +39,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
-    final Iterator<Local> iterator = getLocalIterator(builder);
+    final Iterator<Local> iterator = getLocalIterator(builder.getStmtGraph());
 
     LocalGenerator lgen = new LocalGenerator(new HashSet<>());
     while (iterator.hasNext()) {
@@ -54,11 +55,11 @@ public class LocalNameStandardizer implements BodyInterceptor {
   }
 
   @Nonnull
-  public static Iterator<Local> getLocalIterator(@Nonnull Body.BodyBuilder builder) {
+  public static Iterator<Local> getLocalIterator(@Nonnull StmtGraph<?> graph) {
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
-    for (Stmt stmt : builder.getStmtGraph()) {
+    for (Stmt stmt : graph) {
       final List<Value> defs = stmt.getDefs();
       for (Value def : defs) {
         if (def instanceof Local) {

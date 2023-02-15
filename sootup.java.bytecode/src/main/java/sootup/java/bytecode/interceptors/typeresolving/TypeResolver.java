@@ -27,6 +27,7 @@ import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
@@ -40,6 +41,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.java.bytecode.interceptors.LocalNameStandardizer;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
 import sootup.java.core.views.JavaView;
 
@@ -54,7 +56,7 @@ public class TypeResolver {
     this.view = view;
   }
 
-  public boolean resolve(@Nonnull Body.BodyBuilder builder) {
+  public boolean resolve(@Nonnull Body.BodyBuilder builder, boolean renameLocals) {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
@@ -84,15 +86,31 @@ public class TypeResolver {
       }
     }
 
-    // TODO: use  LocalNameStandardizer.getLocalIterator() to rename directly if applicable
-    for (Local local : locals) {
-      Type oldType = local.getType();
-      Type newType = promotedTyping.getType(local);
-      if (oldType.equals(newType)) {
-        continue;
+    if (renameLocals) {
+      final Iterator<Local> iterator =
+          LocalNameStandardizer.getLocalIterator(builder.getStmtGraph());
+      LocalGenerator lgen = new LocalGenerator(new HashSet<>());
+      while (iterator.hasNext()) {
+        Local local = iterator.next();
+        Local newLocal;
+        if (local.isFieldLocal()) {
+          newLocal = lgen.generateFieldLocal(local.getType());
+        } else {
+          newLocal = lgen.generateLocal(local.getType());
+        }
+        builder.replaceLocal(local, newLocal);
       }
-      Local newLocal = local.withType(newType);
-      builder.replaceLocal(local, newLocal);
+
+    } else {
+      for (Local local : locals) {
+        Type oldType = local.getType();
+        Type newType = promotedTyping.getType(local);
+        if (oldType.equals(newType)) {
+          continue;
+        }
+        Local newLocal = local.withType(newType);
+        builder.replaceLocal(local, newLocal);
+      }
     }
     return true;
   }

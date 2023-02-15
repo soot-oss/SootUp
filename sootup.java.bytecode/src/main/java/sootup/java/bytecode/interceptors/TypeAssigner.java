@@ -51,9 +51,6 @@ public class TypeAssigner implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    if (new TypeResolver((JavaView) view).resolve(builder) && standardizeNames) {
-      LocalNameStandardizer standardizer = new LocalNameStandardizer();
-      standardizer.interceptBody(builder, view);
-    }
+    new TypeResolver((JavaView) view).resolve(builder, standardizeNames);
   }
 }
