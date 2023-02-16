@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -147,7 +148,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
    * @param newUse a Value is to replace oldUse
    * @return a new Stmt with newUse
    */
-  @Nonnull
+  @Nullable
   public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
     accept(visitor);

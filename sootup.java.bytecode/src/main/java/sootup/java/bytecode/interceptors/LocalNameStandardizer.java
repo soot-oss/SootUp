@@ -39,7 +39,25 @@ public class LocalNameStandardizer implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
-    final Iterator<Local> iterator = getLocalIterator(builder.getStmtGraph());
+    StmtGraph<?> graph = builder.getStmtGraph();
+    // Get the order of all Locals' occurrences and store them into a map
+    Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
+    int defsCount = 0;
+    for (Stmt stmt : graph) {
+      final List<Value> defs = stmt.getDefs();
+      for (Value def : defs) {
+        if (def instanceof Local) {
+          final Local localDef = (Local) def;
+          localToFirstOccurrence.putIfAbsent(localDef, defsCount);
+          defsCount++;
+        }
+      }
+    }
+
+    final Iterator<Local> iterator =
+        localToFirstOccurrence.keySet().stream()
+            .sorted(new LocalComparator(localToFirstOccurrence))
+            .iterator();
 
     LocalGenerator lgen = new LocalGenerator(new HashSet<>());
     while (iterator.hasNext()) {
@@ -54,27 +72,6 @@ public class LocalNameStandardizer implements BodyInterceptor {
     }
   }
 
-  @Nonnull
-  public static Iterator<Local> getLocalIterator(@Nonnull StmtGraph<?> graph) {
-    // Get the order of all Locals' occurrences and store them into a map
-    Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
-    int defsCount = 0;
-    for (Stmt stmt : graph) {
-      final List<Value> defs = stmt.getDefs();
-      for (Value def : defs) {
-        if (def instanceof Local) {
-          final Local localDef = (Local) def;
-          localToFirstOccurrence.putIfAbsent(localDef, defsCount);
-          defsCount++;
-        }
-      }
-    }
-    // Sort all locals
-    return localToFirstOccurrence.keySet().stream()
-        .sorted(new LocalComparator(localToFirstOccurrence))
-        .iterator();
-  }
-
   public static class LocalComparator implements Comparator<Local> {
 
     Map<Local, Integer> localToFirstOccurence;
@@ -84,11 +81,11 @@ public class LocalNameStandardizer implements BodyInterceptor {
     }
 
     @Override
-    public int compare(Local local1, Local local2) {
-      int result = local1.getType().toString().compareTo(local2.getType().toString());
+    public int compare(Local localA, Local localB) {
+      int result = localA.getType().toString().compareTo(localB.getType().toString());
       if (result == 0) {
         result =
-            Integer.compare(localToFirstOccurence.get(local1), localToFirstOccurence.get(local2));
+            Integer.compare(localToFirstOccurence.get(localA), localToFirstOccurence.get(localB));
       }
       return result;
     }

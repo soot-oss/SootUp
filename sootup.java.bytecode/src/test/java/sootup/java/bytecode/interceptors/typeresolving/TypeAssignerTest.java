@@ -53,8 +53,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, view);
 
-    final Body body = builder.build();
-    List<String> actualStmts = Utils.filterJimple(body.toString());
+    List<String> actualStmts = Utils.filterJimple(builder.build().toString());
     Assert.assertEquals(
         Stream.of(
                 "CastCounterDemos r0",

@@ -25,7 +25,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     TypeResolver resolver = new TypeResolver(view);
-    resolver.resolve(builder, true);
+    resolver.resolve(builder);
     Body newbody = builder.build();
 
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
@@ -54,7 +54,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
 
     TypeResolver resolver = new TypeResolver(view);
-    resolver.resolve(builder, true);
+    resolver.resolve(builder);
     Body newbody = builder.build();
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
 

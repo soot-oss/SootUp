@@ -442,7 +442,10 @@ public class Body implements Copyable {
         for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
           final Stmt stmt = currStmt;
           if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
+            final Stmt newStmt = currStmt.withNewUse(oldLocal, newLocal);
+            if (newStmt != null) {
+              currStmt = newStmt;
+            }
           }
           final List<Value> defs = currStmt.getDefs();
           for (Value def : defs) {
