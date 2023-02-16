@@ -236,20 +236,20 @@ public class SwitchConversionTest {
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "$r1 := @parameter0: java.lang.String",
                 "$i0 = \"foo\"",
-                "if $r1 == $i0 goto label3",
+                "if $r1 == $i0 goto label1",
                 "$i1 = \"bar\"",
-                "if $r1 == $i1 goto label1",
-                "goto label2",
+                "if $r1 == $i1 goto label2",
+                "goto label3",
                 "label1:",
+                "$r2 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+                "label2:",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "label2:",
+                "label3:",
                 "$r4 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "return",
-                "label3:",
-                "$r2 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)")
+                "return")
             .collect(Collectors.toList()),
         actualStmts);
   }
@@ -292,20 +292,20 @@ public class SwitchConversionTest {
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "$r1 := @parameter0: java.lang.String",
                 "$i0 = \"foo\"",
-                "if $r1 == $i0 goto label3",
+                "if $r1 == $i0 goto label1",
                 "$i1 = \"bar\"",
-                "if $r1 == $i1 goto label1",
-                "goto label2",
+                "if $r1 == $i1 goto label2",
+                "goto label3",
                 "label1:",
+                "$r2 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+                "label2:",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "label2:",
+                "label3:",
                 "$r4 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "return",
-                "label3:",
-                "$r2 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)")
+                "return")
             .collect(Collectors.toList()),
         actualStmts);
   }
@@ -347,23 +347,20 @@ public class SwitchConversionTest {
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "$r1 := @parameter0: java.lang.String",
                 "$i0 = \"foo\"",
-                "if $r1 == $i0 goto label3",
+                "if $r1 == $i0 goto label1",
                 "$i1 = \"bar\"",
-                "if $r1 == $i1 goto label1",
-                "goto label2",
+                "if $r1 == $i1 goto label2",
+                "goto label3",
                 "label1:",
+                "$r2 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)",
+                "label2:",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "label2:",
+                "label3:",
                 "$r4 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r1)",
-                "return",
-                "label3:",
-                "$r2 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r1)"
-                // FIXME: [ms] StmtGraphIterator has a ordering problem!! println should have a
-                // successor.. i.e. at the should be an return..
-                )
+                "return")
             .collect(Collectors.toList()),
         actualStmts);
   }

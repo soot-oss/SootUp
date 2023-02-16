@@ -531,6 +531,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           if (iteratedBlocks.size() < blocks.size()) {
             // graph is not connected! iterate/append all not connected blocks at the end in no
             // particular order.
+            System.out.println("StmtGraph is not connected!");
             for (BasicBlock<?> block : blocks) {
               if (!iteratedBlocks.contains(block)) {
                 nestedBlocks.addLast(block);
@@ -592,10 +593,19 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           while (true) {
             final List<? extends BasicBlock<?>> itPreds =
                 leaderOfFallsthroughBlocks.getPredecessors();
-            if (itPreds.size() != 1) {
+
+            BasicBlock<?> finalLeaderOfFallsthroughBlocks = leaderOfFallsthroughBlocks;
+            final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
+                itPreds.stream()
+                    .filter(
+                        b ->
+                            b.getTail().fallsThrough()
+                                && b.getSuccessors().get(0) == finalLeaderOfFallsthroughBlocks)
+                    .findAny();
+            if (!fallsthroughPredOpt.isPresent()) {
               break;
             }
-            BasicBlock<?> predecessorBlock = itPreds.get(0);
+            BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
             if (predecessorBlock.getTail().fallsThrough()
                 && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
               leaderOfFallsthroughBlocks = predecessorBlock;
