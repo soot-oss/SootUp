@@ -22,6 +22,7 @@ package sootup.core.jimple.visitor;
  * #L%
  */
 
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
@@ -68,35 +69,58 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     }
   }
 
-  @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
-    Value rValue = stmt.getRightOp();
-
-    if (rValue instanceof Immediate) {
-      if (rValue == oldUse) {
-        setResult(stmt.withRValue(newUse));
+  private void caseAssignRVStmtHelper(
+      @Nonnull JAssignStmt<?, ?> stmt, Value value, Function<Value, Stmt> setV) {
+    if (value instanceof Immediate) {
+      if (value == oldUse) {
+        setResult(setV.apply(newUse));
       }
 
-    } else if (rValue instanceof Ref) {
-      if (rValue == oldUse) {
-        setResult(stmt.withRValue(newUse));
+    } else if (value instanceof Ref) {
+      if (value == oldUse) {
+        setResult(setV.apply(newUse));
       } else {
         refVisitor.init(oldUse, newUse);
-        ((Ref) rValue).accept(refVisitor);
-        if (refVisitor.getResult() != rValue) {
-          setResult(stmt.withRValue(refVisitor.getResult()));
+        ((Ref) value).accept(refVisitor);
+        if (refVisitor.getResult() != value) {
+          setResult(setV.apply(refVisitor.getResult()));
         }
       }
 
-    } else if (rValue instanceof Expr) {
+    } else if (value instanceof Expr) {
 
       exprVisitor.init(oldUse, newUse);
-      ((Expr) rValue).accept(exprVisitor);
-      if (exprVisitor.getResult() != rValue) {
-        setResult(stmt.withRValue(exprVisitor.getResult()));
+      ((Expr) value).accept(exprVisitor);
+      if (exprVisitor.getResult() != value) {
+        setResult(setV.apply(exprVisitor.getResult()));
       }
     } else {
       errorHandler(stmt);
+    }
+  }
+
+  @Override
+  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+    // Note that the "uses" of a stmt are defined as BOTH left AND right uses.
+    int exCount = 0;
+    // We count the number of exceptions because the substitutions fail (intentionally) when there's
+    // nothing to substitute.
+    // However, it may be the case that something needs to get replaced on the LHS but not on the
+    // RHS, or vice-versa.
+    // We still want to mantain the invariant "if nothing is replaced, that's bad"
+    //   but it's fine if there was only a replace on the left or the right.
+    try {
+      caseAssignRVStmtHelper(stmt, stmt.getRightOp(), stmt::withRValue);
+    } catch (IllegalArgumentException ex) {
+      exCount += 1;
+    }
+    try {
+      caseAssignRVStmtHelper(stmt, stmt.getLeftOp(), stmt::withVariable);
+    } catch (IllegalArgumentException ex) {
+      exCount += 1;
+      if (exCount == 2) {
+        throw ex;
+      }
     }
   }
 

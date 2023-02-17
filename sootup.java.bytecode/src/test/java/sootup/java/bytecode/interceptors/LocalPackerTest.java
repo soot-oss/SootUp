@@ -14,9 +14,11 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -43,6 +45,20 @@ public class LocalPackerTest {
   IdentityRef identityRef0 = JavaJimple.newParameterRef(intType, 0);
   IdentityRef identityRef1 = JavaJimple.newParameterRef(intType, 1);
   IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
+
+  Local l5 = JavaJimple.newLocal("l5", classType);
+
+  Local l6 = JavaJimple.newLocal("l6", classType);
+
+  Stmt assignL5This = JavaJimple.newIdentityStmt(l5, identityRef, noStmtPositionInfo);
+
+  Stmt assignL6This = JavaJimple.newIdentityStmt(l6, identityRef, noStmtPositionInfo);
+
+  FieldSignature f0Sig = new FieldSignature(classType, "f0", intType);
+
+  FieldSignature f1Sig = new FieldSignature(classType, "f1", intType);
+  JInstanceFieldRef fieldRef0 = JavaJimple.newInstanceFieldRef(l5, f0Sig);
+  JInstanceFieldRef fieldRef1 = JavaJimple.newInstanceFieldRef(l6, f1Sig);
 
   // build locals
   Local l0 = JavaJimple.newLocal("l0", classType);
@@ -71,6 +87,15 @@ public class LocalPackerTest {
       JavaJimple.newAssignStmt(
           l1hash5, JavaJimple.newAddExpr(l1hash5, IntConstant.getInstance(1)), noStmtPositionInfo);
   Stmt stmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l1hash5, l3), noStmtPositionInfo);
+
+  Stmt fieldStmt1 = JavaJimple.newAssignStmt(fieldRef0, l1hash1, noStmtPositionInfo);
+
+  Stmt fieldStmt2 = JavaJimple.newAssignStmt(fieldRef1, l2hash2, noStmtPositionInfo);
+
+  JInstanceFieldRef efieldRef0 = JavaJimple.newInstanceFieldRef(l0, f0Sig);
+
+  JInstanceFieldRef efieldRef1 = JavaJimple.newInstanceFieldRef(l0, f1Sig);
+
   Stmt gt = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   Stmt trapHandler = JavaJimple.newIdentityStmt(l4, caughtExceptionRef, noStmtPositionInfo);
@@ -88,6 +113,11 @@ public class LocalPackerTest {
       JavaJimple.newAssignStmt(
           l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
   Stmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
+
+  Stmt efieldStmt1 = JavaJimple.newAssignStmt(efieldRef0, l1, noStmtPositionInfo);
+
+  Stmt efieldStmt2 = JavaJimple.newAssignStmt(efieldRef1, l2, noStmtPositionInfo);
+
   Stmt etrapHandler = JavaJimple.newIdentityStmt(el4, caughtExceptionRef, noStmtPositionInfo);
   Stmt ethrowStmt = JavaJimple.newThrowStmt(el4, noStmtPositionInfo);
 
@@ -147,6 +177,16 @@ public class LocalPackerTest {
     AssertUtils.assertStmtGraphEquiv(expectedBody, body);
   }
 
+  @Test
+  public void testLocalPackerWithFieldAccess() {
+    Body.BodyBuilder builder = createFieldAccessBodyBuilder();
+    new LocalPacker().interceptBody(builder);
+    Body body = builder.build();
+
+    Body expectedBody = createFieldAccessExpectedBody();
+    AssertUtils.assertStmtGraphEquiv(expectedBody, body);
+    AssertUtils.assertLocalsEquiv(expectedBody, body);
+  }
   /**
    *
    *
@@ -284,6 +324,70 @@ public class LocalPackerTest {
     graph.putEdge(estmt6, gt);
     graph.putEdge(gt, estmt5);
     graph.putEdge(estmt6, ret);
+
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    return builder.build();
+  }
+
+  private Body.BodyBuilder createFieldAccessBodyBuilder() {
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
+
+    List<Type> parameters = new ArrayList<>();
+    parameters.add(intType);
+    // parameters.add(doubleType);
+    MethodSignature methodSignature =
+        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1hash1, l2hash2, l5, l6);
+    builder.setLocals(locals);
+
+    // build stmtGraph
+    graph.putEdge(startingStmt, identityStmt0);
+    graph.putEdge(identityStmt0, identityStmt1);
+    graph.putEdge(identityStmt1, assignL5This);
+    graph.putEdge(assignL5This, assignL6This);
+    graph.putEdge(assignL6This, fieldStmt1);
+    graph.putEdge(fieldStmt1, fieldStmt2);
+    graph.putEdge(fieldStmt2, ret);
+
+    builder.setStartingStmt(startingStmt);
+
+    // build position
+    Position position = NoPositionInformation.getInstance();
+    builder.setPosition(position);
+
+    return builder;
+  }
+
+  private Body createFieldAccessExpectedBody() {
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder builder = Body.builder(graph);
+
+    List<Type> parameters = new ArrayList<>();
+    parameters.add(intType);
+    // parameters.add(doubleType);
+    MethodSignature methodSignature =
+        new MethodSignature(classType, "test", parameters, VoidType.getInstance());
+    builder.setMethodSignature(methodSignature);
+
+    // build set locals
+    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+    builder.setLocals(locals);
+
+    // build stmtGraph
+    graph.putEdge(startingStmt, eidentityStmt0);
+    graph.putEdge(eidentityStmt0, eidentityStmt1);
+    graph.putEdge(eidentityStmt1, efieldStmt1);
+    graph.putEdge(efieldStmt1, efieldStmt2);
+    graph.putEdge(efieldStmt2, ret);
 
     builder.setStartingStmt(startingStmt);
 

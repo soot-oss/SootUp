@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -81,6 +83,7 @@ public class LocalPacker implements BodyInterceptor {
     // store all new locals with reasonable name, if a local is not in newLoals, means that it
     // doesn't has reasonable name
     Set<Local> newLocals = new LinkedHashSet<>();
+    boolean alreadyHasThisStmt = false;
     for (Stmt stmt : builder.getStmts()) {
       Stmt newStmt = stmt;
       for (Value use : stmt.getUses()) {
@@ -119,8 +122,21 @@ public class LocalPacker implements BodyInterceptor {
       if (!stmt.equals(newStmt)) {
         builder.replaceStmt(stmt, newStmt);
       }
+      if (stmtIsThisAssignment(newStmt)) {
+        if (alreadyHasThisStmt) {
+          builder.removeStmt(newStmt);
+        } else {
+          alreadyHasThisStmt = true;
+        }
+      }
     }
     builder.setLocals(newLocals);
+  }
+
+  private boolean stmtIsThisAssignment(Stmt stmt) {
+    return (stmt instanceof JIdentityStmt)
+        && (((JIdentityStmt<?>) stmt).getLeftOp() instanceof Local)
+        && ((JIdentityStmt<?>) stmt).getRightOp() instanceof JThisRef;
   }
 
   /**
@@ -140,16 +156,28 @@ public class LocalPacker implements BodyInterceptor {
         typeToColorCount.put(type, 0);
       }
     }
-    // assign each parameter local a color (local from IdentityStmt)
+    // assign each parameter local a color (local from IdentityStmt) and each "this" reference the
+    // same color.
+    int thisColor = -1;
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof JIdentityStmt) {
         if (((JIdentityStmt<?>) stmt).getLeftOp() instanceof Local) {
           Local l = (Local) ((JIdentityStmt<?>) stmt).getLeftOp();
           Type type = l.getType();
-          int count = typeToColorCount.get(type);
-          localToColor.put(l, count);
-          count++;
-          typeToColorCount.put(type, count);
+          if (((JIdentityStmt<?>) stmt).getRightOp() instanceof JParameterRef) {
+            int count = typeToColorCount.get(type);
+            localToColor.put(l, count);
+            count++;
+            typeToColorCount.put(type, count);
+          } else if (this.stmtIsThisAssignment(stmt)) {
+            if (thisColor == -1) {
+              // We haven't assigned the single "this" color yet.
+              int count = typeToColorCount.get(type);
+              thisColor = count;
+              typeToColorCount.put(type, thisColor + 1);
+            }
+            localToColor.put(l, thisColor);
+          }
         }
       }
     }
