@@ -13,7 +13,7 @@
 	</parent>
 
 	<properties>
-		<wala.version>1.5.7</wala.version>
+		<wala.version>1.5.9</wala.version>
 	</properties>
 
 	<!-- import managed dependencies from wala to ensure java8 compliant class files -->
@@ -92,6 +92,51 @@
 			<artifactId>com.ibm.wala.cast.java</artifactId>
 			<version>${wala.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>3.14.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.equinox.common</artifactId>
+			<version>3.14.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+			<version>3.14.0</version>
+			<exclusions>
+			<exclusion>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.equinox.common</artifactId>
+			</exclusion>
+		</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.resources</artifactId>
+			<version>3.12.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.eclipse.platform</groupId>-->
+<!--			<artifactId>org.eclipse.core.runtime</artifactId>-->
+<!--			<version>3.23.0</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
@@ -103,12 +148,24 @@
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.jobs</artifactId>
 			<version>3.11.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.contenttype</artifactId>
 			<version>3.7.1000</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.platform</groupId>
+					<artifactId>org.eclipse.equinox.common</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -116,11 +173,17 @@
 			<artifactId>org.eclipse.equinox.preferences</artifactId>
 			<version>3.9.100</version>
 			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.equinox.common</artifactId>
+			</exclusion>
+		</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.18.0</version>
+			<version>3.17.0</version>
 			<scope>runtime</scope>
 		</dependency>
 
