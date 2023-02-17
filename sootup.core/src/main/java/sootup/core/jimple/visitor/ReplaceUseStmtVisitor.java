@@ -69,21 +69,21 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     }
   }
 
-  private void caseAssignRVStmtHelper(
-      @Nonnull JAssignStmt<?, ?> stmt, Value value, Function<Value, Stmt> setV) {
+  private JAssignStmt<?, ?> caseAssignRVStmtHelper(
+      @Nonnull JAssignStmt<?, ?> stmt, Value value, Function<Value, JAssignStmt<?, ?>> setV) {
     if (value instanceof Immediate) {
       if (value == oldUse) {
-        setResult(setV.apply(newUse));
+        return (setV.apply(newUse));
       }
 
     } else if (value instanceof Ref) {
       if (value == oldUse) {
-        setResult(setV.apply(newUse));
+        return (setV.apply(newUse));
       } else {
         refVisitor.init(oldUse, newUse);
         ((Ref) value).accept(refVisitor);
         if (refVisitor.getResult() != value) {
-          setResult(setV.apply(refVisitor.getResult()));
+          return (setV.apply(refVisitor.getResult()));
         }
       }
 
@@ -92,11 +92,12 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       exprVisitor.init(oldUse, newUse);
       ((Expr) value).accept(exprVisitor);
       if (exprVisitor.getResult() != value) {
-        setResult(setV.apply(exprVisitor.getResult()));
+        return (setV.apply(exprVisitor.getResult()));
       }
     } else {
       errorHandler(stmt);
     }
+    return stmt;
   }
 
   @Override
@@ -109,19 +110,21 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     // RHS, or vice-versa.
     // We still want to mantain the invariant "if nothing is replaced, that's bad"
     //   but it's fine if there was only a replace on the left or the right.
+    JAssignStmt<?, ?> newStmt = stmt;
     try {
-      caseAssignRVStmtHelper(stmt, stmt.getRightOp(), stmt::withRValue);
+      newStmt = caseAssignRVStmtHelper(newStmt, newStmt.getRightOp(), newStmt::withRValue);
     } catch (IllegalArgumentException ex) {
       exCount += 1;
     }
     try {
-      caseAssignRVStmtHelper(stmt, stmt.getLeftOp(), stmt::withVariable);
+      newStmt = caseAssignRVStmtHelper(newStmt, newStmt.getLeftOp(), newStmt::withVariable);
     } catch (IllegalArgumentException ex) {
       exCount += 1;
       if (exCount == 2) {
         throw ex;
       }
     }
+    setResult(newStmt);
   }
 
   @Override
