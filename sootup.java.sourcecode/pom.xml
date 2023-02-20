@@ -147,12 +147,12 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.18.200</version>
+			<version>3.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.equinox.common</artifactId>
-			<version>3.17.0</version>
+			<version>3.14.100</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.jobs</artifactId>
-			<version>3.13.200</version>
+			<version>3.9.3</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
@@ -189,7 +189,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.equinox.preferences</artifactId>
-			<version>3.10.100</version>
+			<version>3.9.100</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
@@ -217,11 +217,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.18.200</version>
-		</dependency>
-		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.annotation</artifactId>
 			<version>8.0.1</version>
@@ -229,7 +224,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.contenttype</artifactId>
-			<version>3.8.200</version>
+			<version>3.7.1000</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
@@ -268,7 +263,7 @@
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>3.21.0</version>
+			<version>3.14.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
@@ -363,7 +358,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.commands</artifactId>
-			<version>3.10.300</version>
+			<version>3.9.700</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.eclipse.platform</groupId>
