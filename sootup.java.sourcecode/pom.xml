@@ -367,47 +367,7 @@
 			</exclusions>
 		</dependency>
 <!--		<dependency>-->
-<!--			<groupId>org.eclipse.platform</groupId>-->
-<!--			<artifactId>org.eclipse.core.jobs</artifactId>-->
-<!--			<version>3.11.0</version>-->
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.equinox.common</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
-<!--			<scope>runtime</scope>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.eclipse.platform</groupId>-->
-<!--			<artifactId>org.eclipse.core.contenttype</artifactId>-->
-<!--			<version>3.7.1000</version>-->
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.eclipse.platform</groupId>-->
-<!--					<artifactId>org.eclipse.equinox.common</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
-<!--			<scope>runtime</scope>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.eclipse.platform</groupId>-->
-<!--			<artifactId>org.eclipse.equinox.preferences</artifactId>-->
-<!--			<version>3.9.100</version>-->
-<!--			<scope>runtime</scope>-->
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--				<groupId>org.eclipse.platform</groupId>-->
-<!--				<artifactId>org.eclipse.equinox.common</artifactId>-->
-<!--			</exclusion>-->
-<!--		</exclusions>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.eclipse.platform</groupId>-->
-<!--			<artifactId>org.eclipse.osgi</artifactId>-->
-<!--			<version>3.17.0</version>-->
-<!--			<scope>runtime</scope>-->
-<!--		</dependency>-->
+
 
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
