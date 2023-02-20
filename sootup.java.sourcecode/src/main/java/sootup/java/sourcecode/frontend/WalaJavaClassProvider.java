@@ -36,7 +36,6 @@ import com.ibm.wala.properties.WalaProperties;
 import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
-import com.ibm.wala.util.warnings.Warnings;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -183,7 +182,6 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     if (!walaPropertiesFile.exists()) {
       PrintWriter pw;
       try {
-        walaPropertiesFile.getParentFile().mkdirs();
         pw = new PrintWriter(walaPropertiesFile);
         String jdkPath = System.getProperty("java.home");
         pw.println("java_runtime_dir = " + new File(jdkPath).toString().replace("\\", "/"));
@@ -215,7 +213,6 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   private void buildClassHierachy() {
     try {
       this.classHierarchy = ClassHierarchyFactory.make(scope, factory);
-      Warnings.clear();
     } catch (ClassHierarchyException e) {
       e.printStackTrace();
     }
