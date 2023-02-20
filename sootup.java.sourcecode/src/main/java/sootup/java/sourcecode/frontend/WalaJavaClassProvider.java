@@ -36,7 +36,6 @@ import com.ibm.wala.properties.WalaProperties;
 import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
-import com.ibm.wala.util.warnings.Warnings;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,7 +68,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   private List<SootClassSource<JavaSootClass>> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
-  private final File walaPropertiesFile = new File("target/classes/wala.properties");
+  private final File walaPropertiesFile = new File("wala.properties");
 
   public WalaJavaClassProvider(@Nonnull String sourceDirPath) {
     this(sourceDirPath, null);
@@ -179,7 +178,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   /** Create wala.properties to class path */
-  private void createWalaproperties() {
+  private void createWalaProperties() {
     if (!walaPropertiesFile.exists()) {
       PrintWriter pw;
       try {
@@ -194,7 +193,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   private void addScopesForJava() {
-    createWalaproperties();
+    createWalaProperties();
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
     scope = new JavaSourceAnalysisScope();
@@ -214,7 +213,6 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   private void buildClassHierachy() {
     try {
       this.classHierarchy = ClassHierarchyFactory.make(scope, factory);
-      Warnings.clear();
     } catch (ClassHierarchyException e) {
       e.printStackTrace();
     }
