@@ -12,6 +12,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.util.DotExporter;
 
 /** @author Zun Wang */
 public class AssertUtils {
@@ -51,6 +52,10 @@ public class AssertUtils {
       for (Stmt s : actual_SG) {
         System.out.println(s + " => " + actual_SG.successors(s));
       }
+
+      System.out.println("expected Graph: " + DotExporter.createUrlToWebeditor(expected_SG));
+      System.out.println("actual Graph: " + DotExporter.createUrlToWebeditor(actual_SG));
+
       assertEquals(expectedStr, actualStr);
     }
   }

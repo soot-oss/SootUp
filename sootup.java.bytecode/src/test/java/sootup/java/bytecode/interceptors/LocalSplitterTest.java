@@ -2,7 +2,6 @@ package sootup.java.bytecode.interceptors;
 
 import categories.Java8Test;
 import java.util.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -25,7 +24,6 @@ import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
-@Ignore("FIXME: does currently not work")
 public class LocalSplitterTest {
 
   // Preparation
@@ -380,17 +378,6 @@ public class LocalSplitterTest {
         Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4, ret), Collections.emptyMap());
     graph.setStartingStmt(startingStmt);
 
-    /* set graph
-        builder.addFlow(startingStmt, stmt1);
-        builder.addFlow(stmt1, stmt2);
-        builder.addFlow(stmt2, stmt3);
-        builder.addFlow(stmt3, stmt4);
-        builder.addFlow(stmt4, ret);
-
-        // set first stmt
-        builder.setStartingStmt(startingStmt);
-    */
-
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
@@ -482,22 +469,6 @@ public class LocalSplitterTest {
 
     graph.setStartingStmt(startingStmt);
 
-    /* set graph
-      builder.addFlow(startingStmt, stmt1);
-      builder.addFlow(stmt1, stmt2);
-      builder.addFlow(stmt2, stmt3);
-      builder.addFlow(stmt3, stmt4);
-      builder.addFlow(stmt4, stmt5);
-      builder.addFlow(stmt4, ret);
-      builder.addFlow(stmt5, stmt6);
-      builder.addFlow(stmt6, stmt7);
-      builder.addFlow(stmt7, stmt8);
-      builder.addFlow(stmt8, stmt2);
-
-      // build startingStmt
-      builder.setStartingStmt(startingStmt);
-    */
-
     // build position
     Position position = NoPositionInformation.getInstance();
     builder.setPosition(position);
@@ -542,19 +513,6 @@ public class LocalSplitterTest {
     graph.putEdge(stmt8, stmt2);
 
     graph.setStartingStmt(startingStmt);
-
-    /* set graph
-        builder.addFlow(startingStmt, stmt1);
-        builder.addFlow(stmt1, stmt2);
-        builder.addFlow(stmt2, stmt3);
-        builder.addFlow(stmt3, stmt4);
-        builder.addFlow(stmt4, stmt5);
-        builder.addFlow(stmt4, ret);
-        builder.addFlow(stmt5, stmt6);
-        builder.addFlow(stmt6, stmt7);
-        builder.addFlow(stmt7, stmt8);
-        builder.addFlow(stmt8, stmt2);
-    */
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
@@ -611,20 +569,27 @@ public class LocalSplitterTest {
 
     builder.setLocals(locals);
 
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 = JavaJimple.newAssignStmt(l1hash2, IntConstant.getInstance(1), noStmtPositionInfo);
-    Stmt stmt3 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-    Stmt stmt4 = JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
-    Stmt stmt5 = JavaJimple.newAssignStmt(l3, l1hash2, noStmtPositionInfo);
-    Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    Stmt l1hash1assign0Stmt =
+        JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
+    Stmt l1hash2assign1Stmt =
+        JavaJimple.newAssignStmt(l1hash2, IntConstant.getInstance(1), noStmtPositionInfo);
+    Stmt l2assign2Stmt =
+        JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
+    Stmt exceptionCatchStmt =
+        JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
+    Stmt l3assignl1hash2Stmt = JavaJimple.newAssignStmt(l3, l1hash2, noStmtPositionInfo);
+    Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     graph.addBlock(
-        Arrays.asList(startingStmt, stmt1, stmt2), Collections.singletonMap(exception, stmt4));
-    graph.addBlock(Arrays.asList(stmt4, stmt5, stmt6), Collections.emptyMap());
-    graph.putEdge(stmt2, stmt3);
-    graph.putEdge(stmt3, ret);
-    graph.putEdge(stmt6, ret);
+        Arrays.asList(startingStmt, l1hash1assign0Stmt, l1hash2assign1Stmt),
+        Collections.singletonMap(exception, exceptionCatchStmt));
+    graph.addBlock(
+        Arrays.asList(exceptionCatchStmt, l3assignl1hash2Stmt, gotoStmt), Collections.emptyMap());
+    graph.addNode(l2assign2Stmt);
+    graph.putEdge(l1hash2assign1Stmt, l2assign2Stmt);
+    graph.putEdge(l2assign2Stmt, ret);
+    graph.putEdge(gotoStmt, ret);
 
     graph.setStartingStmt(startingStmt);
 

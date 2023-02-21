@@ -101,11 +101,10 @@ public class LocalSplitter implements BodyInterceptor {
     while (!stmts.isEmpty()) {
       Stmt currentStmt = stmts.remove(0);
       // At first Check the definition(left side) of the currentStmt is a local which must be split:
-      if (!currentStmt.getDefs().isEmpty()
-          && currentStmt.getDefs().get(0) instanceof Local
-          && toSplitLocals.contains(currentStmt.getDefs().get(0))) {
+      final List<Value> defs = currentStmt.getDefs();
+      if (!defs.isEmpty() && defs.get(0) instanceof Local && toSplitLocals.contains(defs.get(0))) {
         // then assign a new name to the oriLocal to get a new local which is called newLocal
-        Local oriLocal = (Local) currentStmt.getDefs().get(0);
+        Local oriLocal = (Local) defs.get(0);
         Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
         newLocals.add(newLocal);
         localIndex++;
@@ -205,7 +204,8 @@ public class LocalSplitter implements BodyInterceptor {
           // then add all successors of head which are not in forwardsQueue and visitedStmts,
           // into the forwardsQueue.
           else {
-            if (head.getDefs().isEmpty() || !head.getDefs().get(0).equivTo(oriLocal)) {
+            final List<Value> headDefs = head.getDefs();
+            if (headDefs.isEmpty() || !headDefs.get(0).equivTo(oriLocal)) {
               for (Stmt succ : graph.successors(head)) {
                 if (!visitedStmts.contains(succ) && !forwardsQueue.contains(succ)) {
                   forwardsQueue.addLast(succ);
@@ -298,10 +298,8 @@ public class LocalSplitter implements BodyInterceptor {
    * @return if so, return true, else return false
    */
   private boolean hasModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    if (!stmt.getUses().isEmpty()) {
-      for (Value use : stmt.getUses()) {
-        return isLocalFromSameOrigin(oriLocal, use);
-      }
+    for (Value use : stmt.getUses()) {
+      return isLocalFromSameOrigin(oriLocal, use);
     }
     return false;
   }
@@ -317,11 +315,9 @@ public class LocalSplitter implements BodyInterceptor {
   private Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
     if (hasModifiedUse(stmt, oriLocal)) {
       List<Value> useList = stmt.getUses();
-      if (!useList.isEmpty()) {
-        for (Value use : useList) {
-          if (isLocalFromSameOrigin(oriLocal, use)) {
-            return (Local) use;
-          }
+      for (Value use : useList) {
+        if (isLocalFromSameOrigin(oriLocal, use)) {
+          return (Local) use;
         }
       }
     }
