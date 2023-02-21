@@ -80,12 +80,9 @@ public class ReplaceUseRefVisitorTest {
     expectedUses.clear();
 
     // no matched use
-    try {
-      ref = javaJimple.newArrayRef(base, conIndex);
-      ref.accept(visitor);
-      fail("not allowed!");
-    } catch (Exception ignore) {
-    }
+    ref = javaJimple.newArrayRef(base, conIndex);
+    ref.accept(visitor);
+    assertEquals(visitor.getResult(), ref);
   }
 
   /** Test use replacing in case JInstanceFieldRef. */
@@ -106,11 +103,8 @@ public class ReplaceUseRefVisitorTest {
     assertEquals(newRef.getUses(), expectedUses);
 
     // no matched use
-    try {
-      ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
-      ref.accept(visitor);
-      fail("not allowed!");
-    } catch (Exception ignore) {
-    }
+    ref = JavaJimple.newInstanceFieldRef(localIndex, fieldSignature);
+    ref.accept(visitor);
+    assertEquals(visitor.getResult(), ref);
   }
 }
