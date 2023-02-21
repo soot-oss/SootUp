@@ -28,7 +28,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
-import sootup.core.jimple.common.ref.Ref;
+import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.*;
 
@@ -71,6 +71,17 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
 
+    // uses on the def side..
+    final Value leftOp = stmt.getLeftOp();
+    if (leftOp instanceof Ref) {
+      refVisitor.init(oldUse, newUse);
+      ((Ref) leftOp).accept(refVisitor);
+      if (refVisitor.getResult() != leftOp) {
+        setResult(stmt.withVariable(refVisitor.getResult()));
+      }
+    }
+
+    // rhs
     Value rValue = stmt.getRightOp();
     if (rValue instanceof Immediate) {
       if (rValue == oldUse) {
