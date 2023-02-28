@@ -42,14 +42,17 @@ public class AbstractDispatchTest extends MethodDispatchBase {
             identifierFactory.getMethodSignature(
                 sootClassTypeA, "method", "void", Collections.emptyList()));
     assertFalse(candidatesAbstract.contains(sootMethodAbstract));
+    assertFalse(candidatesAbstract.contains(sootMethodA));
     assertFalse(candidatesAbstract.contains(sootMethodB));
-    assertTrue(candidatesAbstract.contains(sootMethodC));
+    assertFalse(candidatesAbstract.contains(sootMethodC));
 
     Set<MethodSignature> candidatesSuper =
         MethodDispatchResolver.resolveAbstractDispatch(
             customTestWatcher.getView(),
             identifierFactory.getMethodSignature(
                 sootClassTypeAbstract, "method", "void", Collections.emptyList()));
+    assertFalse(candidatesSuper.contains(sootMethodAbstract));
+    assertFalse(candidatesSuper.contains(sootMethodA));
     assertFalse(candidatesSuper.contains(sootMethodB));
     assertTrue(candidatesSuper.contains(sootMethodC));
   }
