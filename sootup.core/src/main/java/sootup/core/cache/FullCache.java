@@ -8,7 +8,7 @@ import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /** Cache that stores any class that has been resolved. */
-public class FullCache<S extends SootClass<?>> implements Cache<S> {
+public class FullCache<S extends SootClass<?>> implements ClassCache<S> {
 
   protected final Map<ClassType, S> cache = new HashMap<>();
 
