@@ -11,7 +11,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -23,7 +22,6 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private T algorithm;
-  protected String testDirectory, className;
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
@@ -68,9 +66,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     algorithm = createAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
+    assertNotNull(cg);
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
-    assertNotNull(cg);
     return cg;
   }
 
@@ -531,20 +529,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-
-    assertTrue(cg.containsCall(mainMethodSignature, method));
-  }
-
-  /** Ignored because takes too long to analyze whole rt.jar */
-  @Ignore
-  public void testHelloWorld() {
-    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
-
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
-
-    MethodSignature method =
-        identifierFactory.getMethodSignature(
-            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
