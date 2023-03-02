@@ -198,8 +198,13 @@ public final class MethodDispatchResolver {
 
       SootMethod concreteMethod =
           findConcreteMethodInSootClass(superClass, m, hierarchy).orElse(null);
-      if (concreteMethod != null && !concreteMethod.isAbstract()) {
-        // method found and it is not abstract
+      if (concreteMethod != null) {
+        if (concreteMethod.isAbstract()) {
+          // found method is abstract
+          throw new ResolveException(
+              "Could not find concrete method for " + m + " because the method is abstract");
+        }
+        // found method is not abstract
         return concreteMethod.getSignature();
       }
 
