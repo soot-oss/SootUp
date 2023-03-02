@@ -532,4 +532,55 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
+
+  @Test
+  public void testAbstractMethod() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am1.Main");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am1.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am1.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+  }
+
+  @Test
+  public void testAbstractMethodInSubClass() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am2.Main");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+    MethodSignature superMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.SuperClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+
+    if (this instanceof ClassHierarchyAnalysisAlgorithmTest) {
+      assertTrue(cg.containsCall(mainMethodSignature, superMethod));
+    }
+    if (this instanceof RapidTypeAnalysisAlgorithmTest) {
+      assertFalse(cg.containsCall(mainMethodSignature, superMethod));
+    }
+  }
 }
