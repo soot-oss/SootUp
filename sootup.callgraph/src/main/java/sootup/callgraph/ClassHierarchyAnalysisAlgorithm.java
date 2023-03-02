@@ -96,12 +96,20 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
+      if (targetMethod.isAbstract()) {
+        return resolveAllSubClassCallTargets(targetMethodSignature);
+      }
       return Stream.concat(
           Stream.of(MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)),
-          MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
-              .map(
-                  methodSignature ->
-                      MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature)));
+          resolveAllSubClassCallTargets(targetMethodSignature));
     }
+  }
+
+  private Stream<MethodSignature> resolveAllSubClassCallTargets(
+      MethodSignature targetMethodSignature) {
+    return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
+        .map(
+            methodSignature ->
+                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature));
   }
 }
