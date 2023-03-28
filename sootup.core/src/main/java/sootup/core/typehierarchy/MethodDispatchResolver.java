@@ -85,7 +85,7 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m, hierarchy))
+        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -111,7 +111,7 @@ public final class MethodDispatchResolver {
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .filter(c -> classes.contains(c.getType()))
-        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m, hierarchy))
+        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -197,7 +197,7 @@ public final class MethodDispatchResolver {
       classesInHierachyOrder.add(superClass);
 
       SootMethod concreteMethod =
-          findConcreteMethodInSootClass(superClass, m, hierarchy).orElse(null);
+          findConcreteMethodInSootClass(superClass, m).orElse(null);
       if (concreteMethod != null) {
         if (concreteMethod.isAbstract()) {
           // found method is abstract
@@ -228,7 +228,7 @@ public final class MethodDispatchResolver {
 
       // add found default method to possibleDefaultMethods
       Optional<? extends SootMethod> concreteMethod =
-          findConcreteMethodInSootClass(currentInterface, m, hierarchy);
+          findConcreteMethodInSootClass(currentInterface, m);
       concreteMethod.ifPresent(possibleDefaultMethods::add);
 
       // if no default message is found search the default message in super interfaces
@@ -287,16 +287,14 @@ public final class MethodDispatchResolver {
    *
    * @param sootClass The method is searched in this SootClass
    * @param methodSignature the signature of the searched method
-   * @param hierarchy the hierarchy is used to resolve the dispatch of a method signature since the
-   *     return type has to be equal or a subclass of the return type of the method signature
    * @return an Optional Object that can contain the found concrete method in the given SootClass
    */
   private static Optional<? extends SootMethod> findConcreteMethodInSootClass(
-      SootClass<?> sootClass, MethodSignature methodSignature, TypeHierarchy hierarchy) {
+      SootClass<?> sootClass, MethodSignature methodSignature) {
     return sootClass.getMethods().stream()
         .filter(
             potentialTarget ->
-                canDispatch(methodSignature, potentialTarget.getSignature(), hierarchy))
+                methodSignature.getSubSignature().equals(potentialTarget.getSignature().getSubSignature()))
         .findAny();
   }
 

@@ -62,7 +62,7 @@ public class MethodDispatchResolverTest {
     MethodSignature setSize = factory.parseMethodSignature("java.util.HashSet#size(): int");
     MethodSignature listSize = factory.parseMethodSignature("java.util.ArrayList#size(): int");
     MethodSignature enumSetClone =
-        factory.parseMethodSignature("java.util.EnumSet#clone(): java.util.EnumSet");
+        factory.parseMethodSignature("java.util.EnumSet#clone(): java.lang.Object");
     MethodSignature objectClone =
         factory.parseMethodSignature("java.lang.Object#clone(): java.lang.Object");
     MethodSignature arrayDequeueClone =
