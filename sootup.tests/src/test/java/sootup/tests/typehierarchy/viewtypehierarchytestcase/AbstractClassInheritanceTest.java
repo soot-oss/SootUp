@@ -1,6 +1,7 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
@@ -21,15 +22,16 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
     SootClass<?> sootClass =
         customTestWatcher
             .getView()
-            .getClass(
-                customTestWatcher
-                    .getView()
-                    .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
-            .get();
+            .getClass(identifierFactory.getClassType(customTestWatcher.getClassName()))
+            .orElse(null);
+    assertNotNull(sootClass);
     assertTrue(sootClass.hasSuperclass());
+
+    ClassType superClassType=sootClass.getSuperclass().orElse(null);
+    assertNotNull(superClassType);
     SootClass<?> superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+        customTestWatcher.getView().getClass(superClassType).orElse(null);
+    assertNotNull(superClass);
     assertTrue(superClass.isAbstract());
 
     ViewTypeHierarchy typeHierarchy =

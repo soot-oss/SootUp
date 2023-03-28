@@ -98,16 +98,17 @@ public class MethodDispatchResolverTest {
     IdentifierFactory factory = view.getIdentifierFactory();
     MethodSignature strToStringSig =
         factory.parseMethodSignature("java.lang.String#toString(): java.lang.String");
+
     assertEquals(
         "String.toString() should resolve to itself",
         strToStringSig,
         MethodDispatchResolver.resolveConcreteDispatch(view, strToStringSig));
+
     assertEquals(
-        "AbstractDataStructure.toString() should resolve to Object.toString()",
-        factory.parseMethodSignature("java.lang.Object#toString(): java.lang.String"),
+        "ds.AbstractDataStrcture.hashCode() should resolve to java.lang.Object.hashCode()",
+        factory.parseMethodSignature("java.lang.Object#hashCode(): int"),
         MethodDispatchResolver.resolveConcreteDispatch(
-            view,
-            factory.parseMethodSignature("ds.AbstractDataStrcture#toString(): java.lang.String")));
+            view, factory.parseMethodSignature("ds.AbstractDataStrcture#hashCode(): int")));
   }
 
   @Test

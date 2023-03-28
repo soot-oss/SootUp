@@ -196,8 +196,7 @@ public final class MethodDispatchResolver {
 
       classesInHierachyOrder.add(superClass);
 
-      SootMethod concreteMethod =
-          findConcreteMethodInSootClass(superClass, m).orElse(null);
+      SootMethod concreteMethod = findConcreteMethodInSootClass(superClass, m).orElse(null);
       if (concreteMethod != null) {
         if (concreteMethod.isAbstract()) {
           // found method is abstract
@@ -294,7 +293,9 @@ public final class MethodDispatchResolver {
     return sootClass.getMethods().stream()
         .filter(
             potentialTarget ->
-                methodSignature.getSubSignature().equals(potentialTarget.getSignature().getSubSignature()))
+                methodSignature
+                    .getSubSignature()
+                    .equals(potentialTarget.getSignature().getSubSignature()))
         .findAny();
   }
 
