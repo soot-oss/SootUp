@@ -208,7 +208,7 @@ public class BytecodeHierarchy implements IHierarchy {
             AncestryPath superNode = new AncestryPath(superInterface, node);
             pathNodes.add(superNode);
           }
-          ClassType superClass = typeHierarchy.directlySuperClassOf(node.type);
+          ClassType superClass = typeHierarchy.directSuperClassOf(node.type);
           AncestryPath superNode = new AncestryPath(superClass, node);
           pathNodes.add(superNode);
         }

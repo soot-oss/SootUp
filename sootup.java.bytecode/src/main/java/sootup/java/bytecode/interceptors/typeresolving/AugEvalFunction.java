@@ -231,7 +231,7 @@ public class AugEvalFunction {
     path.push(exceptionType);
 
     while (!exceptionType.equals(throwable)) {
-      ClassType superType = hierarchy.directlySuperClassOf(exceptionType);
+      ClassType superType = hierarchy.directSuperClassOf(exceptionType);
       if (superType != null) {
         path.push(superType);
         exceptionType = superType;

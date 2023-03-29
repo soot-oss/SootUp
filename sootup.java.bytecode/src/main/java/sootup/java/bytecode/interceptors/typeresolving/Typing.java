@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.types.Type;
@@ -56,7 +57,7 @@ public class Typing {
     return local2Type.keySet();
   }
 
-  public HashMap<Local, Type> getMap() {
+  public Map<Local, Type> getMap() {
     return this.local2Type;
   }
 

@@ -25,6 +25,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
@@ -33,7 +34,6 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
-import sootup.java.core.language.JavaJimple;
 
 public class CastCounter extends TypeChecker {
 
@@ -113,7 +113,7 @@ public class CastCounter extends TypeChecker {
         builder.addLocal(old_local);
         typing.set(old_local, evaType);
         JAssignStmt<?, ?> newAssign =
-            JavaJimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
+            Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
         builder.insertBefore(stmt, newAssign);
       }
       Local new_local = generateTempLocal(stdType);
@@ -121,8 +121,8 @@ public class CastCounter extends TypeChecker {
       typing.set(new_local, stdType);
       addUpdatedValue(oriValue, new_local, oriStmt);
       JAssignStmt<?, ?> newCast =
-          JavaJimple.newAssignStmt(
-              new_local, JavaJimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
+          Jimple.newAssignStmt(
+              new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
       builder.insertBefore(stmt, newCast);
 
       Stmt newStmt;
@@ -172,6 +172,6 @@ public class CastCounter extends TypeChecker {
 
   private Local generateTempLocal(@Nonnull Type type) {
     String name = "#l" + newLocalsCount++;
-    return JavaJimple.newLocal(name, type);
+    return Jimple.newLocal(name, type);
   }
 }
