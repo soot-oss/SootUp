@@ -134,7 +134,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final View<?> view;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
-  @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
+
+  @Nonnull
+  private final Map<LabelNode, AbstractDefinitionStmt<Local, JCaughtExceptionRef>>
+      inlineExceptionHandlers = new HashMap<>();
 
   @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
 
@@ -305,9 +308,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   void mergeStmts(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
-    Stmt prev = insnToStmt.put(insn, stmt);
-    if (prev != null) {
-      Stmt merged = StmtContainer.create(prev, stmt);
+    Stmt initiallyAssignedStmt = insnToStmt.put(insn, stmt);
+    if (initiallyAssignedStmt != null) {
+      Stmt merged = StmtContainer.getOrCreate(initiallyAssignedStmt, stmt);
       insnToStmt.put(insn, merged);
     }
   }
@@ -435,7 +438,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       frame.setOut(opr);
       JAssignStmt<JFieldRef, ?> as =
           Jimple.newAssignStmt(
-              val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+              val, rvalue.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
       setStmt(insn, as);
       rvalue.addUsageInStmt(as);
     } else {
@@ -546,7 +549,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
               .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
       JAssignStmt<JArrayRef, ?> as =
           Jimple.newAssignStmt(
-              ar, valueOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+              ar, valueOp.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
       frame.setIn(valueOp, indexOp, baseOp);
       setStmt(insn, as);
       valueOp.addUsageInStmt(as);
@@ -1697,7 +1700,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
         AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-            Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
+            Jimple.newIdentityStmt(local, ref, new SimpleStmtPositionInfo(currentLineNumber));
 
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
@@ -1840,17 +1843,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     List<Stmt> preambleBlock = new ArrayList<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
+    final SimpleStmtPositionInfo methodPosInfo =
+        new SimpleStmtPositionInfo(bodyBuilder.getPosition());
 
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
       Local l = getOrCreateLocal(localIdx++);
       final JIdentityStmt<JThisRef> stmt =
-          Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newIdentityStmt(l, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
-
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
@@ -1864,10 +1867,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       locals.set(localIdx, local);
 
       final JIdentityStmt<JParameterRef> stmt =
-          Jimple.newIdentityStmt(
-              local,
-              Jimple.newParameterRef(parameterType, i),
-              StmtPositionInfo.createNoStmtPositionInfo());
+          Jimple.newIdentityStmt(local, Jimple.newParameterRef(parameterType, i), methodPosInfo);
       preambleBlock.add(stmt);
 
       // see https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6.1
@@ -1994,14 +1994,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
-    for (LabelNode ln : inlineExceptionHandlers.keySet()) {
+    // FIXME:[ms] the following code seems odd.. we need a testcase to test inlineexceptionhandling!
+    for (Entry<LabelNode, AbstractDefinitionStmt<Local, JCaughtExceptionRef>> entry :
+        inlineExceptionHandlers.entrySet()) {
 
-      Stmt handlerStmt = inlineExceptionHandlers.get(ln);
+      AbstractDefinitionStmt<Local, JCaughtExceptionRef> handlerStmt = entry.getValue();
       emitStmt(handlerStmt, stmtList);
-      trapHandler.put(ln, handlerStmt);
+      trapHandler.put(entry.getKey(), handlerStmt);
+      // TODO: update handlerStmts positioninfo!
 
       // jump back to the original implementation
-      JGotoStmt gotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
       stmtList.add(gotoStmt);
 
       // add stmtList to graph
@@ -2009,7 +2012,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       stmtList.clear();
 
       // connect tail of stmtList with its target
-      Stmt targetStmt = insnToStmt.get(ln);
+      Stmt targetStmt = insnToStmt.get(entry.getKey());
       graph.putEdge(gotoStmt, targetStmt);
     }
   }

@@ -519,6 +519,11 @@ public class Body implements Copyable {
       return this;
     }
 
+    @Nullable
+    public Position getPosition() {
+      return position;
+    }
+
     @Nonnull
     public BodyBuilder setPosition(@Nonnull Position position) {
       this.position = position;

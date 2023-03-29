@@ -34,6 +34,9 @@ import sootup.core.util.printer.StmtPrinter;
 /**
  * A psuedo stmt containing different stmts.
  *
+ * <p>basically its used to map more than one Stmt to a single AbstractInsNode - used in a Map of
+ * AsmMethodSource
+ *
  * @author Aaloan Miftah
  * @author Markus Schmidt
  */
@@ -41,19 +44,19 @@ class StmtContainer extends Stmt {
 
   @Nonnull private final List<Stmt> stmts = new LinkedList<>();
 
-  private StmtContainer() {
-    super(StmtPositionInfo.createNoStmtPositionInfo());
+  private StmtContainer(@Nonnull Stmt firstStmt) {
+    super(firstStmt.getPositionInfo());
+    stmts.add(firstStmt);
   }
 
-  static Stmt create(Stmt prevStmt, Stmt nextStmt) {
+  static Stmt getOrCreate(@Nonnull Stmt firstStmt, @Nonnull Stmt anotherStmt) {
     StmtContainer container;
-    if (prevStmt instanceof StmtContainer) {
-      container = (StmtContainer) prevStmt;
+    if (firstStmt instanceof StmtContainer) {
+      container = (StmtContainer) firstStmt;
     } else {
-      container = new StmtContainer();
-      container.stmts.add(prevStmt);
+      container = new StmtContainer(firstStmt);
     }
-    container.stmts.add(nextStmt);
+    container.stmts.add(anotherStmt);
     return container;
   }
 
