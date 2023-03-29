@@ -123,12 +123,12 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     return position;
   }
 
-  public List<AbstractDefinitionStmt<Local, ?>> getDefsOfLocal(List<Stmt> defs) {
-    List<AbstractDefinitionStmt<Local, ?>> localDefs = new ArrayList<>();
+  public List<AbstractDefinitionStmt<Local, Value>> getDefsOfLocal(List<Stmt> defs) {
+    List<AbstractDefinitionStmt<Local, Value>> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt<?, ?>) stmt).getLeftOp().equals(this)) {
-        localDefs.add((AbstractDefinitionStmt<Local, ?>) stmt);
+          && ((AbstractDefinitionStmt<Local, Value>) stmt).getLeftOp().equals(this)) {
+        localDefs.add((AbstractDefinitionStmt<Local, Value>) stmt);
       }
     }
     return localDefs;

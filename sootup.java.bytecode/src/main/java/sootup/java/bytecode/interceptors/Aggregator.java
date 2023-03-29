@@ -76,7 +76,7 @@ public class Aggregator implements BodyInterceptor {
           }
           for (Value val : assignStmt.getUses()) {
             if (val instanceof Local) {
-              List<AbstractDefinitionStmt<Local, ?>> defs = ((Local) val).getDefsOfLocal(stmts);
+              List<AbstractDefinitionStmt<Local, Value>> defs = ((Local) val).getDefsOfLocal(stmts);
               if (defs.size() == 1) {
                 Stmt relevantDef = defs.get(0);
                 List<Stmt> path = graph.getExtendedBasicBlockPathBetween(relevantDef, stmt);

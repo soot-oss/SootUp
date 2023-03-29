@@ -77,10 +77,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.Modifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
@@ -1838,13 +1835,40 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
   }
 
+  public static LineNumberNode findLineInfo(
+      @Nonnull InsnList insnList, @Nonnull AbstractInsnNode insnNode) {
+    int idx = insnList.indexOf(insnNode);
+    if (idx < 0) {
+      return null;
+    }
+
+    // Get index of labels and insnNode within method
+    ListIterator<AbstractInsnNode> insnIt = insnList.iterator(idx);
+    while (insnIt.hasPrevious()) {
+      AbstractInsnNode node = insnIt.previous();
+
+      if (node instanceof LineNumberNode) {
+        return (LineNumberNode) node;
+      }
+    }
+    return null;
+  }
+
+  private StmtPositionInfo getFirstLineOfMethod() {
+    for (AbstractInsnNode node : instructions) {
+      if (node instanceof LineNumberNode) {
+        return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
+      }
+    }
+    return StmtPositionInfo.createNoStmtPositionInfo();
+  }
+
   @Nonnull
   private List<Stmt> buildPreambleLocals(Body.BodyBuilder bodyBuilder) {
 
     List<Stmt> preambleBlock = new ArrayList<>();
     MethodSignature methodSignature = lazyMethodSignature.get();
-    final SimpleStmtPositionInfo methodPosInfo =
-        new SimpleStmtPositionInfo(bodyBuilder.getPosition());
+    final StmtPositionInfo methodPosInfo = getFirstLineOfMethod();
 
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
