@@ -2,11 +2,9 @@ package sootup.callgraph;
 
 import static junit.framework.TestCase.*;
 
-import categories.Java8Test;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -25,7 +23,6 @@ import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleProject;
 import sootup.jimple.parser.JimpleView;
 
-@Category(Java8Test.class)
 public class DefaultEntryPointTest {
 
   /** Method to check java version. */
