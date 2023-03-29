@@ -85,7 +85,7 @@
         <jacoco-badge-phase>verify</jacoco-badge-phase>
         <slf4j.version>1.7.25</slf4j.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
-        <guava.version>25.1-jre</guava.version>
+        <guava.version>31.1-jre</guava.version>
         <apache-commons.version>3.5</apache-commons.version>
         <apache-commons-io.version>2.7</apache-commons-io.version>
         <junit.version>4.13.1</junit.version>
