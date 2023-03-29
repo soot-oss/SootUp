@@ -27,10 +27,9 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
     assertNotNull(sootClass);
     assertTrue(sootClass.hasSuperclass());
 
-    ClassType superClassType=sootClass.getSuperclass().orElse(null);
+    ClassType superClassType = sootClass.getSuperclass().orElse(null);
     assertNotNull(superClassType);
-    SootClass<?> superClass =
-        customTestWatcher.getView().getClass(superClassType).orElse(null);
+    SootClass<?> superClass = customTestWatcher.getView().getClass(superClassType).orElse(null);
     assertNotNull(superClass);
     assertTrue(superClass.isAbstract());
 
