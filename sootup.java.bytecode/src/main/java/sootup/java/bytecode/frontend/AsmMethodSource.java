@@ -401,7 +401,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       opr = out[0];
       type = ((JFieldRef) opr.value).getFieldSignature().getType();
       if (insn.getOpcode() == GETFIELD) {
-        frame.mergeIn(operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop());
       }
     }
     operandStack.push(type, opr);
@@ -444,10 +444,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       rvalue = operandStack.pop(type);
       if (notInstance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
-        frame.mergeIn(rvalue);
+        frame.mergeIn(currentLineNumber, rvalue);
       } else {
         /* PUTFIELD has a rvalue and a base */
-        frame.mergeIn(rvalue, operandStack.pop());
+        frame.mergeIn(currentLineNumber, rvalue, operandStack.pop());
       }
     }
     /*
@@ -523,7 +523,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       frame.setOut(opr);
     } else {
       opr = out[0];
-      frame.mergeIn(operandStack.pop(), operandStack.pop());
+      frame.mergeIn(currentLineNumber, operandStack.pop(), operandStack.pop());
     }
     int op = insn.getOpcode();
     if (op == DALOAD || op == LALOAD) {
@@ -553,6 +553,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     } else {
       frame.mergeIn(
+          currentLineNumber,
           dword ? operandStack.popDual() : operandStack.pop(),
           operandStack.pop(),
           operandStack.pop());
@@ -719,12 +720,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (dword) {
         if (op != LSHL && op != LSHR && op != LUSHR) {
 
-          frame.mergeIn(operandStack.popDual(), operandStack.popDual());
+          frame.mergeIn(currentLineNumber, operandStack.popDual(), operandStack.popDual());
         } else {
-          frame.mergeIn(operandStack.pop(), operandStack.popDual());
+          frame.mergeIn(currentLineNumber, operandStack.pop(), operandStack.popDual());
         }
       } else {
-        frame.mergeIn(operandStack.pop(), operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop(), operandStack.pop());
       }
     }
     if (dword && op < LCMP) {
@@ -757,7 +758,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       frame.setOut(opr);
     } else {
       opr = out[0];
-      frame.mergeIn(dword ? operandStack.popDual() : operandStack.pop());
+      frame.mergeIn(currentLineNumber, dword ? operandStack.popDual() : operandStack.pop());
     }
     if (dword) {
       operandStack.pushDual(opr);
@@ -816,7 +817,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       frame.setOut(opr);
     } else {
       opr = out[0];
-      frame.mergeIn(fromd ? operandStack.popDual() : operandStack.pop());
+      frame.mergeIn(currentLineNumber, fromd ? operandStack.popDual() : operandStack.pop());
     }
     if (tod) {
       operandStack.pushDual(opr);
@@ -839,7 +840,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       val.addUsageInStmt(ret);
     } else {
       final Operand operand = dword ? operandStack.popDual() : operandStack.pop();
-      frame.mergeIn(operand);
+      frame.mergeIn(currentLineNumber, operand);
     }
   }
 
@@ -902,7 +903,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         opr.addUsageInStmt(ts);
       } else {
         opr = operandStack.pop();
-        frame.mergeIn(opr);
+        frame.mergeIn(currentLineNumber, opr);
       }
       operandStack.push(opr);
     } else if (op == MONITORENTER || op == MONITOREXIT) {
@@ -919,7 +920,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         setStmt(insn, ts);
         opr.addUsageInStmt(ts);
       } else {
-        frame.mergeIn(operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop());
       }
     } else {
       throw new UnsupportedOperationException("Unknown insn op: " + op);
@@ -978,7 +979,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       opr = out[0];
       if (op == NEWARRAY) {
-        frame.mergeIn(operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop());
       }
     }
     operandStack.push(opr);
@@ -1076,9 +1077,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       val.addUsageInStmt(ifStmt);
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
-        frame.mergeIn(operandStack.pop(), operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop(), operandStack.pop());
       } else {
-        frame.mergeIn(operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop());
       }
     }
   }
@@ -1172,7 +1173,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
     StackFrame frame = operandStack.getOrCreateStackframe(insn);
     if (insnToStmt.containsKey(insn)) {
-      frame.mergeIn(operandStack.pop());
+      frame.mergeIn(currentLineNumber, operandStack.pop());
       return;
     }
     Operand key = operandStack.popImmediate();
@@ -1289,7 +1290,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           oprs[oprs.length - 1] = operandStack.pop();
         }
 
-        frame.mergeIn(oprs);
+        frame.mergeIn(currentLineNumber, oprs);
       }
       returnType = expr.getMethodSignature().getType();
     }
@@ -1381,7 +1382,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         if (!isStaticInvokeExpr) {
           oprs[oprs.length - 1] = operandStack.pop();
         }
-        frame.mergeIn(oprs);
+        frame.mergeIn(currentLineNumber, oprs);
       }
       returnType = expr.getType();
     }
@@ -1455,7 +1456,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       while (dims-- != 0) {
         sizes[dims] = operandStack.pop();
       }
-      frame.mergeIn(sizes);
+      frame.mergeIn(currentLineNumber, sizes);
     }
     operandStack.push(opr);
   }
@@ -1463,7 +1464,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private void convertTableSwitchInsn(@Nonnull TableSwitchInsnNode insn) {
     StackFrame frame = operandStack.getOrCreateStackframe(insn);
     if (insnToStmt.containsKey(insn)) {
-      frame.mergeIn(operandStack.pop());
+      frame.mergeIn(currentLineNumber, operandStack.pop());
       return;
     }
     Operand key = operandStack.popImmediate();
@@ -1529,7 +1530,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       opr = out[0];
       if (op != NEW) {
-        frame.mergeIn(operandStack.pop());
+        frame.mergeIn(currentLineNumber, operandStack.pop());
       }
     }
     operandStack.push(opr);
@@ -1568,7 +1569,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       setStmt(insn, as);
       opr.addUsageInStmt(as);
     } else {
-      frame.mergeIn(opr);
+      frame.mergeIn(currentLineNumber, opr);
     }
     addReadOperandAssignments(local);
   }
