@@ -276,5 +276,8 @@ public abstract class AbstractValueVisitor<V> extends AbstractVisitor<V> impleme
   }
 
   @Override
+  public void casePhiExpr(JPhiExpr expr) {defaultCaseValue(expr);}
+
+  @Override
   public void defaultCaseValue(@Nonnull Value v) {}
 }
