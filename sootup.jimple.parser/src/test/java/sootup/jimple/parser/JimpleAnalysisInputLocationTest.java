@@ -91,11 +91,6 @@ public class JimpleAnalysisInputLocationTest {
     assertTrue(classSource4.isPresent());
   }
 
-
-
-
-
-
   /**
    * Test for JimpleAnalysisInputLocation. Specifying jimple file with source type as Library.
    * Expected - All input classes are of source type Library.

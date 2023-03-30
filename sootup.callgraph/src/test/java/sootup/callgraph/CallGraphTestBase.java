@@ -601,7 +601,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertNotNull(cg);
   }
 
-
   /**
    * Test uses initialize() method to create call graph, but multiple main methods are present in
    * input java source files. Expected result is RuntimeException.
@@ -611,7 +610,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc");
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm =createAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
     try {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when multiple main methods are defined.");
@@ -630,8 +629,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
 
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm =
-        createAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
     try {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when no main methods are defined.");
