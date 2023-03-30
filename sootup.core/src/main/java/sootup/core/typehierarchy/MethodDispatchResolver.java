@@ -177,14 +177,14 @@ public final class MethodDispatchResolver {
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
    */
-  @Nonnull
   public static MethodSignature resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
+    ClassType superClassType = m.getDeclClassType();
+    SootClass<?> startClass = view.getClass(superClassType).orElse(null);
+    ArrayList<SootClass<?>> classesInHierachyOrder = new ArrayList<>();
 
     // search concrete method in the class itself and its super classes
-    ArrayList<SootClass<?>> classesInHierachyOrder = new ArrayList<>();
-    ClassType superClassType = m.getDeclClassType();
     do {
       ClassType finalSuperClassType = superClassType;
       SootClass<?> superClass =
@@ -197,14 +197,17 @@ public final class MethodDispatchResolver {
       classesInHierachyOrder.add(superClass);
 
       SootMethod concreteMethod = findConcreteMethodInSootClass(superClass, m).orElse(null);
-      if (concreteMethod != null) {
-        if (concreteMethod.isAbstract()) {
-          // found method is abstract
-          throw new ResolveException(
-              "Could not find concrete method for " + m + " because the method is abstract");
-        }
+      if (concreteMethod != null && !concreteMethod.isAbstract()) {
         // found method is not abstract
         return concreteMethod.getSignature();
+      }
+      if (concreteMethod != null && concreteMethod.isAbstract()) {
+        if (startClass.isAbstract()) {
+          return null;
+        }
+        // found method is abstract and the startclass is not abstract
+        throw new ResolveException(
+            "Could not find concrete method for " + m + " because the method is abstract");
       }
 
       superClassType = hierarchy.superClassOf(superClassType);
@@ -303,7 +306,6 @@ public final class MethodDispatchResolver {
    * Resolves the actual method called by the <code>specialInvokeExpr</code> that is contained by
    * <code>container</code>.
    */
-  @Nonnull
   public static MethodSignature resolveSpecialDispatch(
       View<? extends SootClass<?>> view,
       JSpecialInvokeExpr specialInvokeExpr,

@@ -585,6 +585,25 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testAbstractMethodMissingMethodInSuperclass() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am3.Main");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am3.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am3.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+  }
+
+  @Test
   public void testWithoutEntryMethod() {
     JavaView view = createViewForClassPath("src/test/resources/callgraph/DefaultEntryPoint");
 

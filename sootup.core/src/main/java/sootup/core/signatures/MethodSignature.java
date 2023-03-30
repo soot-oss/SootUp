@@ -56,5 +56,4 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
   public List<Type> getParameterTypes() {
     return this.getSubSignature().getParameterTypes();
   }
-
 }

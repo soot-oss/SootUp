@@ -99,9 +99,13 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       if (targetMethod.isAbstract()) {
         return resolveAllSubClassCallTargets(targetMethodSignature);
       }
+      MethodSignature concreteTargetMethod =
+          MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature);
+      if (concreteTargetMethod == null) {
+        return resolveAllSubClassCallTargets(targetMethodSignature);
+      }
       return Stream.concat(
-          Stream.of(MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)),
-          resolveAllSubClassCallTargets(targetMethodSignature));
+          Stream.of(concreteTargetMethod), resolveAllSubClassCallTargets(targetMethodSignature));
     }
   }
 
@@ -110,6 +114,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
     return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
         .map(
             methodSignature ->
-                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature));
+                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+        .filter(Objects::nonNull);
   }
 }
