@@ -30,9 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -44,9 +41,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
-import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
-import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
@@ -217,6 +212,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     Stream.Builder<ClassType> targetsToStaticInitializer = Stream.builder();
 
+    InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
+
     sourceMethod
         .getBody()
         .getStmts()
@@ -231,17 +228,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               // constructor calls
               if (stmt instanceof JAssignStmt) {
                 Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
-                ClassType classType = null;
-                if (rightOp instanceof JNewExpr) {
-                  Type type = rightOp.getType();
-                  if (type instanceof ClassType) {
-                    classType = (ClassType) type;
-                  }
-                } else if (rightOp instanceof JNewArrayExpr) {
-                  classType = findClassTypeInType(((JNewArrayExpr) rightOp).getBaseType());
-                } else if (rightOp instanceof JNewMultiArrayExpr) {
-                  classType = findClassTypeInType(((JNewMultiArrayExpr) rightOp).getBaseType());
-                }
+                instantiateVisitor.init();
+                rightOp.accept(instantiateVisitor);
+                ClassType classType = instantiateVisitor.getResult();
                 if (classType != null) {
                   targetsToStaticInitializer.add(classType);
                 }
@@ -265,16 +254,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(SootClassMember::getSignature);
-  }
-
-  private ClassType findClassTypeInType(Type type) {
-    if (type instanceof ArrayType) {
-      return findClassTypeInType(((ArrayType) type).getBaseType());
-    }
-    if (type instanceof ClassType) {
-      return (ClassType) type;
-    }
-    return null;
   }
 
   /**
