@@ -57,13 +57,4 @@ public class MethodSignature extends SootClassMemberSignature<MethodSubSignature
     return this.getSubSignature().getParameterTypes();
   }
 
-  /**
-   * It checks if the method signature is the signature of a constructor. All constructor have the
-   * method name &lt;init&gt;
-   *
-   * @return true if the method name is &lt;init&gt; otherwise false
-   */
-  public boolean isConstructorSignature() {
-    return this.getName().equals("<init>");
-  }
 }
