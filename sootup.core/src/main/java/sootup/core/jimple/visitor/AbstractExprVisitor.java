@@ -188,7 +188,9 @@ public abstract class AbstractExprVisitor<V> extends AbstractVisitor<V> implemen
   }
 
   @Override
-  public void casePhiExpr(@Nonnull JPhiExpr expr) {defaultCaseExpr(expr);}
+  public void casePhiExpr(@Nonnull JPhiExpr expr) {
+    defaultCaseExpr(expr);
+  }
 
   @Override
   public void defaultCaseExpr(@Nonnull Expr expr) {}
