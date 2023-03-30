@@ -22,8 +22,11 @@ package sootup.core.types;
  * #L%
  */
 
+import java.util.Collections;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.TypeVisitor;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.signatures.Signature;
 
@@ -55,6 +58,12 @@ public abstract class ClassType extends ReferenceType implements Signature {
       return false;
     }
     return getFullyQualifiedName().equals(((ClassType) o).getFullyQualifiedName());
+  }
+
+  public MethodSignature getStaticInitializer(){
+    return new MethodSignature(
+        this,
+        new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance()));
   }
 
   @Override
