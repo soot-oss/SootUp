@@ -47,7 +47,6 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
@@ -91,7 +90,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // implicit edge from entry point to clinit
     entryPoints.forEach(
         methodSignature -> {
-          SootMethod clintMethod =view.getMethod(methodSignature.getDeclClassType().getStaticInitializer()).orElse(null);
+          SootMethod clintMethod =
+              view.getMethod(methodSignature.getDeclClassType().getStaticInitializer())
+                  .orElse(null);
           if (clintMethod == null) return;
           MethodSignature clinitSig = clintMethod.getSignature();
           if (!cg.containsMethod(methodSignature)) cg.addMethod(methodSignature);
@@ -141,8 +142,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               .orElse(null);
 
       // get all call targets of invocations in the method body
-      Stream<MethodSignature> invocationTargets =
-          resolveAllCallsFromSourceMethod(view, currentMethod);
+      Stream<MethodSignature> invocationTargets = resolveAllCallsFromSourceMethod(currentMethod);
 
       // get all call targets of implicit edges in the method body
       Stream<MethodSignature> implicitTargets =
@@ -172,14 +172,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * invoke statement in the body of the source method that is implemented in the corresponding call
    * graph algorithm.
    *
-   * @param view it contains all classes.
    * @param sourceMethod this signature is used to access the statements contained method body of
    *     the specified method
    * @return a stream containing all resolved callable method signatures by the given source method
    */
   @Nonnull
-  Stream<MethodSignature> resolveAllCallsFromSourceMethod(
-      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+  Stream<MethodSignature> resolveAllCallsFromSourceMethod(SootMethod sourceMethod) {
     if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
     return sourceMethod.getBody().getStmtGraph().nodes().stream()

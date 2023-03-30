@@ -60,10 +60,9 @@ public abstract class ClassType extends ReferenceType implements Signature {
     return getFullyQualifiedName().equals(((ClassType) o).getFullyQualifiedName());
   }
 
-  public MethodSignature getStaticInitializer(){
+  public MethodSignature getStaticInitializer() {
     return new MethodSignature(
-        this,
-        new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance()));
+        this, new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance()));
   }
 
   @Override
