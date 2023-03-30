@@ -583,4 +583,63 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       assertFalse(cg.containsCall(mainMethodSignature, superMethod));
     }
   }
+
+  @Test
+  public void testWithoutEntryMethod() {
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/DefaultEntryPoint");
+
+    JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
+    MethodSignature mainMethodSignature =
+        identifierFactory.getMethodSignature(
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    CallGraph cg = algorithm.initialize();
+    assertTrue(
+        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+    assertNotNull(cg);
+  }
+
+
+  /**
+   * Test uses initialize() method to create call graph, but multiple main methods are present in
+   * input java source files. Expected result is RuntimeException.
+   */
+  @Test
+  public void testMultipleMainMethod() {
+
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc");
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm =createAlgorithm(view, typeHierarchy);
+    try {
+      algorithm.initialize();
+      fail("Runtime Exception not thrown, when multiple main methods are defined.");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().startsWith("There are more than 1 main method present"));
+    }
+  }
+
+  /**
+   * Test uses initialize() method to create call graph, but no main method is present in input java
+   * source files. Expected result is RuntimeException.
+   */
+  @Test
+  public void testNoMainMethod() {
+
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
+
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm =
+        createAlgorithm(view, typeHierarchy);
+    try {
+      algorithm.initialize();
+      fail("Runtime Exception not thrown, when no main methods are defined.");
+    } catch (RuntimeException e) {
+      System.out.println(e.getMessage());
+      assertEquals(
+          e.getMessage(),
+          "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
+    }
+  }
 }

@@ -22,6 +22,7 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -31,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import javax.annotation.Nonnull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -430,5 +432,32 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     runtimeContains(v, "HashMap", "java.util");
     runtimeContains(v, "Collection", "java.util");
     runtimeContains(v, "Comparator", "java.util");
+  }
+
+  /**
+   * Test for JavaClassPathAnalysisInputLocation. Specifying jar file with source type as Library.
+   * Expected - All input classes are of source type Library.
+   */
+  @Test
+  public void testInputLocationLibraryMode() {
+
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .build();
+    JavaView view = javaProject.createOnDemandView();
+
+    Collection<SootClass<JavaSootClassSource>> classes =
+        new HashSet<>(); // Set to track the classes to check
+
+    for (SootClass<JavaSootClassSource> aClass : view.getClasses()) {
+      if (!aClass.isLibraryClass()) {
+        classes.add(aClass);
+      }
+    }
+
+    assertEquals("User Defined class found, expected none", 0, classes.size());
   }
 }
