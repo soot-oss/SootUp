@@ -177,7 +177,8 @@ public final class MethodDispatchResolver {
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
    */
-  public static MethodSignature resolveConcreteDispatch(
+  @Nonnull
+  public static Optional<MethodSignature> resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
     ClassType superClassType = m.getDeclClassType();
@@ -199,11 +200,13 @@ public final class MethodDispatchResolver {
       SootMethod concreteMethod = findConcreteMethodInSootClass(superClass, m).orElse(null);
       if (concreteMethod != null && !concreteMethod.isAbstract()) {
         // found method is not abstract
-        return concreteMethod.getSignature();
+        return Optional.of(concreteMethod.getSignature());
       }
       if (concreteMethod != null && concreteMethod.isAbstract()) {
-        if (startClass.isAbstract()) {
-          return null;
+        if (startClass.isAbstract()
+            && !startClass.getType().equals(concreteMethod.getDeclaringClassType())) {
+          // A not implemented method of an abstract class results into an abstract method
+          return Optional.empty();
         }
         // found method is abstract and the startclass is not abstract
         throw new ResolveException(
@@ -254,7 +257,7 @@ public final class MethodDispatchResolver {
             return 0;
           });
       // return the lowest element in the hierarchy
-      return possibleDefaultMethods.get(0).getSignature();
+      return Optional.of(possibleDefaultMethods.get(0).getSignature());
     }
     throw new ResolveException("Could not find concrete method for " + m);
   }
@@ -325,7 +328,7 @@ public final class MethodDispatchResolver {
 
     if (view.getTypeHierarchy()
         .isSubtype(container.getDeclClassType(), specialMethodSig.getDeclClassType())) {
-      return resolveConcreteDispatch(view, specialMethodSig);
+      return resolveConcreteDispatch(view, specialMethodSig).orElse(null);
     }
 
     return specialMethodSig;

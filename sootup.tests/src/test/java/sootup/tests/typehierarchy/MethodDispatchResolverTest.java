@@ -2,12 +2,14 @@ package sootup.tests.typehierarchy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Before;
@@ -93,22 +95,44 @@ public class MethodDispatchResolverTest {
         view, factory.parseMethodSignature("java.util.Collection#size(): int"));
   }
 
+  @Test(expected = ResolveException.class)
+  public void invalidResolveConcreteDispatchOfAbstractMethod() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    MethodDispatchResolver.resolveConcreteDispatch(
+        view, factory.parseMethodSignature("java.util.AbstractList#get(int): java.lang.Object"));
+  }
+
+  @Test
+  public void testResolveOfANotImplementedMethodInAbstractClass() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    Optional<MethodSignature> emptySig =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            view,
+            factory.parseMethodSignature(
+                "com.sun.java.util.jar.pack.ConstantPool$LiteralEntry#equals(java.lang.Object): boolean"));
+    assertFalse(emptySig.isPresent());
+  }
+
   @Test
   public void resolveConcreteDispatch() {
     IdentifierFactory factory = view.getIdentifierFactory();
     MethodSignature strToStringSig =
         factory.parseMethodSignature("java.lang.String#toString(): java.lang.String");
 
-    assertEquals(
-        "String.toString() should resolve to itself",
-        strToStringSig,
-        MethodDispatchResolver.resolveConcreteDispatch(view, strToStringSig));
+    MethodSignature concreteMethodSig =
+        MethodDispatchResolver.resolveConcreteDispatch(view, strToStringSig).orElse(null);
+    assertNotNull(concreteMethodSig);
+    assertEquals("String.toString() should resolve to itself", strToStringSig, concreteMethodSig);
 
+    MethodSignature concreteMethodSig2 =
+        MethodDispatchResolver.resolveConcreteDispatch(
+                view, factory.parseMethodSignature("ds.AbstractDataStrcture#hashCode(): int"))
+            .orElse(null);
+    assertNotNull(concreteMethodSig2);
     assertEquals(
         "ds.AbstractDataStrcture.hashCode() should resolve to java.lang.Object.hashCode()",
         factory.parseMethodSignature("java.lang.Object#hashCode(): int"),
-        MethodDispatchResolver.resolveConcreteDispatch(
-            view, factory.parseMethodSignature("ds.AbstractDataStrcture#hashCode(): int")));
+        concreteMethodSig2);
   }
 
   @Test

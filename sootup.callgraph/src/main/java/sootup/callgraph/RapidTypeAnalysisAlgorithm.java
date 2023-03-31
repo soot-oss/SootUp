@@ -167,16 +167,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
               .map(
                   methodSignature ->
                       MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
-              .filter(Objects::nonNull)
+              .filter(Optional::isPresent)
+              .map(Optional::get)
               .collect(Collectors.toSet());
 
       // the class of the actual method call is instantiated
       if (instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
-        MethodSignature concreteTargetMethod =
-            MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature);
-        if (concreteTargetMethod != null) {
-          concreteCallTargets.add(concreteTargetMethod);
-        }
+        MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
+            .ifPresent(concreteCallTargets::add);
       }
 
       return concreteCallTargets.stream();
@@ -233,7 +231,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             newEdges.forEach(
                 call -> {
                   MethodSignature concreteTarget =
-                      MethodDispatchResolver.resolveConcreteDispatch(view, call.target);
+                      MethodDispatchResolver.resolveConcreteDispatch(view, call.target)
+                          .orElse(null);
                   if (concreteTarget == null) {
                     return;
                   }
