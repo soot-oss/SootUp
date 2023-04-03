@@ -39,10 +39,7 @@ public class InstantiateClassValueVisitor extends AbstractValueVisitor<ClassType
 
   @Override
   public void caseNewExpr(@Nonnull JNewExpr expr) {
-    Type type = expr.getType();
-    if (type instanceof ClassType) {
-      setResult((ClassType) type);
-    }
+    setResult(expr.getType());
   }
 
   @Override
