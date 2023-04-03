@@ -101,7 +101,7 @@ public class InstantiateClassValueVisitorTest {
     }
 
     assertFalse(foundClassTypes.isEmpty());
-    assertEquals(foundClassTypes.size(),5);
+    assertEquals(foundClassTypes.size(), 5);
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Object")));
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Boolean")));
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Byte")));
