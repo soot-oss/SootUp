@@ -5,15 +5,17 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 
 ## What is SootUp
 - Transforms JVM bytecode (and other inputs!) to the intermediate representation Jimple.
-- ClassHierarchy generation
+- Provides ClassHierarchy generation
 - CallGraph generation with different algorithms/precisions
-- Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros))
+- Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
 - Applies/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
 ## Getting started
 [Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
 Check the [Javadocs](https://soot-oss.github.io/SootUp/apidocs).
+Do you have questions? Feel free to start a [Discussion](https://github.com/soot-oss/SootUp/discussions).
+
 
 ## SootUp improvements 
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
@@ -41,7 +43,7 @@ You want to collaborate? Please read our [coding guidelines and the contributors
 
 
 ## Supporters
-The development of SootUp is financed by generous support from the German Research Foundation (DFG),
+The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
 <table border="0">
