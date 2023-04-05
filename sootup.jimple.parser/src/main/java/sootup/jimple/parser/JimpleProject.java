@@ -68,4 +68,27 @@ public class JimpleProject extends Project<SootClass<?>, JimpleView> {
               classLoadingOptionsSpecifier) {
     return new JimpleView(this, classLoadingOptionsSpecifier);
   }
+
+  @Deprecated
+  @Nonnull
+  public JimpleView createFullView() {
+    final JimpleView jimpleView = new JimpleView(this);
+    jimpleView.getClasses();
+    return jimpleView;
+  }
+
+  @Deprecated
+  @Nonnull
+  public JimpleView createOnDemandView() {
+    return new JimpleView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JimpleView createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JimpleView(this, classLoadingOptionsSpecifier);
+  }
 }

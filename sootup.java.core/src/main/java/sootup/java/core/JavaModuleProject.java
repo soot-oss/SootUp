@@ -54,4 +54,19 @@ public class JavaModuleProject extends JavaProject {
               classLoadingOptionsSpecifier) {
     return new JavaModuleView(this, classLoadingOptionsSpecifier);
   }
+
+  @Deprecated
+  @Nonnull
+  public JavaModuleView createOnDemandView() {
+    return new JavaModuleView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaModuleView createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaModuleView(this, classLoadingOptionsSpecifier);
+  }
 }

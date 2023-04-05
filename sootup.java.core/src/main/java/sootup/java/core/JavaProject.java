@@ -85,6 +85,43 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
     return new JavaView(this);
   }
 
+  @Deprecated
+  @Nonnull
+  public JavaView createOnDemandView() {
+    return new JavaView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public MutableJavaView createMutableOnDemandView() {
+    return new MutableJavaView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaView createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaView(this, classLoadingOptionsSpecifier);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaView createFullView() {
+    final JavaView view = createOnDemandView();
+    view.getClasses();
+    return view;
+  }
+
+  @Deprecated
+  @Nonnull
+  public MutableJavaView createMutableFullView() {
+    final MutableJavaView view = createMutableOnDemandView();
+    view.getClasses();
+    return view;
+  }
+
   /**
    * Creates a {@link JavaProject} builder.
    *
