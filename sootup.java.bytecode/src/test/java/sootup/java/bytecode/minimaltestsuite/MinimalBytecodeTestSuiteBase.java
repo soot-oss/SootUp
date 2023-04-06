@@ -65,7 +65,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + File.separator))
                 .build();
         javaView =
-            project.createOnDemandView(
+            project.createView(
                 analysisInputLocation ->
                     new ClassLoadingOptions() {
                       @Nonnull

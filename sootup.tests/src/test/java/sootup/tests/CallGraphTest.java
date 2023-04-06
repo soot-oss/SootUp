@@ -50,7 +50,7 @@ public class CallGraphTest {
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
-    return javaProject.createOnDemandView();
+    return javaProject.createView();
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {

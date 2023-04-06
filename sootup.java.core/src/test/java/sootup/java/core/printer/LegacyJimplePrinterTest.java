@@ -32,7 +32,7 @@ public class LegacyJimplePrinterTest {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()

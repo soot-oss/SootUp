@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
+import sootup.core.cache.FullCache;
+import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -72,7 +74,7 @@ public class JavaModuleView extends JavaView {
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
-    super(project);
+    super(project, new FullCacheProvider<>());
     this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
@@ -448,18 +450,36 @@ public class JavaModuleView extends JavaView {
   }
 
   @Override
-  protected synchronized void resolveAll() {
-    if (isFullyResolved) {
-      return;
+  @Nonnull
+  protected synchronized Collection<JavaSootClass> resolveAll() {
+    if (isFullyResolved && cache instanceof FullCache) {
+      return cache.getClasses();
     }
 
-    getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(this).stream())
-        .forEach(this::buildClassFrom);
+    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+        getProject().getInputLocations().stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
+            .collect(Collectors.toList());
 
-    getProject().getModuleInfoAnalysisInputLocation().stream()
-        .flatMap(location -> location.getClassSources(this).stream())
-        .forEach(this::buildClassFrom);
+    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts =
+        getProject().getModuleInfoAnalysisInputLocation().stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
+            .collect(Collectors.toList());
+
+    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts =
+        Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
+            .collect(Collectors.toList());
+
+    Collection<JavaSootClass> resolvedClasses =
+        combinedResolvedClassesOpts.stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
     isFullyResolved = true;
+
+    return resolvedClasses;
   }
 }

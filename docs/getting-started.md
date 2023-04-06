@@ -88,13 +88,20 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 
 ## Creating a View
 
-It is possible to create different views based on your needs. You can prefer creating a full view, when you are interested in the whole program including all the application code, and the library code; or you can create an on-demand view, when you want to limit your analysis' scope.
-You can call different view creation methods on the `project` object.
+
+To create an analysis view, you can call the `createView()` method on the `project` object:
 
 ```java
-project.createFullView();
+JavaView view = project.createView();
 ```
 
+By default, whenever a class is retrieved, it will be permanently stored in a cache.
+If you do not want retrieved classes to be stored indefinetly, you can instead provide a different `CacheProvider` to the created view.
+To for example use an `LRUCache` instead, which stores at most 50 classes, and always replaces the least recently used class by a newly retrieved one, use the following call:
+
+```java
+JavaView view = project.createView(new LRUCacheProvider(50));
+```
 
 ## Retrieving a Class
 
@@ -222,7 +229,7 @@ Below we show a comparison of the code so far with the same functionality in soo
                 "main", classType, "void",
                 Collections.singletonList("java.lang.String[]"));
 
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     SootClass<JavaSootClassSource> sootClass =
         (SootClass<JavaSootClassSource>) view.getClass(classType).get();
@@ -296,7 +303,7 @@ Below we show a comparison of the code so far with the same functionality in soo
 ## Creating Different Views
 1. Create a full view of all classes found in given analysis input location. 
 ~~~java
-  project.createFullView();
+  project.createView();
 ~~~  
 2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
 

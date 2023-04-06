@@ -29,7 +29,7 @@ public class JavaModulePathAnalysisInputLocationTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -50,7 +50,7 @@ public class JavaModulePathAnalysisInputLocationTest {
                     testPath + "uses-provides/exploded_module/"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
@@ -70,7 +70,7 @@ public class JavaModulePathAnalysisInputLocationTest {
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
 
-    JavaModuleView view = (JavaModuleView) p.createOnDemandView();
+    JavaModuleView view = (JavaModuleView) p.createView();
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -98,7 +98,7 @@ public class JavaModulePathAnalysisInputLocationTest {
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createOnDemandView();
+    JavaModuleView view = project.createView();
 
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
@@ -123,7 +123,7 @@ public class JavaModulePathAnalysisInputLocationTest {
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createOnDemandView();
+    JavaModuleView view = project.createView();
 
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(view);
@@ -140,7 +140,7 @@ public class JavaModulePathAnalysisInputLocationTest {
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createOnDemandView();
+    JavaModuleView view = project.createView();
     Collection<ModuleSignature> modules = inputLocation.getModules(view);
     assertEquals(3, modules.size());
 

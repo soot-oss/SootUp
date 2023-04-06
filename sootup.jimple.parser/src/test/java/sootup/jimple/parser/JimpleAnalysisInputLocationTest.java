@@ -65,7 +65,7 @@ public class JimpleAnalysisInputLocationTest {
     // files direct in dir
     final JimpleAnalysisInputLocation inputLocation1 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir + "/jimple/"));
-    JimpleView jv1 = new JimpleProject(inputLocation1).createOnDemandView();
+    JimpleView jv1 = new JimpleProject(inputLocation1).createView();
     final Optional<SootClass<?>> classSource1 = jv1.getClass(onlyClassNameType);
     assertTrue(classSource1.isPresent());
     final Optional<SootClass<?>> classSource2 = jv1.getClass(classType);
@@ -74,7 +74,7 @@ public class JimpleAnalysisInputLocationTest {
     // files in subdir structure
     final JimpleAnalysisInputLocation inputLocation2 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-    JimpleView jv2 = new JimpleProject(inputLocation2).createOnDemandView();
+    JimpleView jv2 = new JimpleProject(inputLocation2).createView();
     final Optional<SootClass<?>> classSource3 = jv2.getClass(onlyClassNameType);
     assertFalse(classSource3.isPresent());
 

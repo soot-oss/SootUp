@@ -44,7 +44,7 @@ public class MutableSootClientTest {
   /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
-    mv = p.createMutableFullView();
+    mv = p.createMutableView();
   }
 
   /**

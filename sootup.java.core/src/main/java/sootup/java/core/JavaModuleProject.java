@@ -43,12 +43,26 @@ public class JavaModuleProject extends JavaProject {
 
   @Nonnull
   @Override
-  public JavaModuleView createOnDemandView() {
+  public JavaModuleView createView() {
     return new JavaModuleView(this);
   }
 
   @Nonnull
-  @Override
+  public JavaModuleView createView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaModuleView(this, classLoadingOptionsSpecifier);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaModuleView createOnDemandView() {
+    return new JavaModuleView(this);
+  }
+
+  @Deprecated
+  @Nonnull
   public JavaModuleView createOnDemandView(
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
