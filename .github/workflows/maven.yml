@@ -22,7 +22,23 @@ concurrency:
 
 jobs:
   # Code coverage (i.e. jacoco) needs the same classes for its test otherwise its classids can possibly not match
+
+  FormatCheck:
+    runs-one: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+
+      - name: Check Format
+        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
   Compilation:
+    needs: FormatCheck
     runs-on: ubuntu-latest
     
     steps:
@@ -142,10 +158,6 @@ jobs:
           name: test-reports-jdk9
           path: |
             */target/surefire-reports
-
-      # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
-      - name: Check Format
-        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       
 
     # takes a long time to run - so just run them when PR is not draft anymore
