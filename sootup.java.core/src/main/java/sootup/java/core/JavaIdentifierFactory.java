@@ -22,6 +22,8 @@ package sootup.java.core;
  * #L%
  */
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import java.nio.file.Path;
 import java.util.*;
@@ -57,10 +59,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  @Nonnull protected final Map<String, PackageName> packages = new HashMap<>();
+  @Nonnull protected final Cache<String, PackageName> packages = CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches annotation types */
-  @Nonnull protected final Map<String, AnnotationType> annotationTypes = new HashMap<>();
+  @Nonnull protected final Cache<String, AnnotationType> annotationTypes = CacheBuilder.newBuilder().weakValues().build();
 
   @Nonnull
   protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
@@ -210,7 +212,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
 
-    return annotationTypes.computeIfAbsent(
+    return annotationTypes.asMap().computeIfAbsent(
         className + packageName, (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
@@ -251,7 +253,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@Nonnull final String packageName) {
-    return packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
+    return packages.asMap().computeIfAbsent(packageName, PackageName::new);
   }
 
   /**
