@@ -39,7 +39,7 @@ public class JFieldRefTest {
   public void setUp() {
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    view = project.createOnDemandView();
+    view = project.createView();
   }
 
   @Ignore

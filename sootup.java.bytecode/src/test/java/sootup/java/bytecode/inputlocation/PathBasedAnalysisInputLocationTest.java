@@ -72,31 +72,31 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
             .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
-    final JavaView view_min = project_min.createOnDemandView();
+    final JavaView view_min = project_min.createView();
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
-    final JavaView view_8 = project_8.createOnDemandView();
+    final JavaView view_8 = project_8.createView();
 
     final JavaProject project_9 =
         JavaProject.builder(new JavaLanguage(9))
             .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
-    final JavaView view_9 = project_9.createOnDemandView();
+    final JavaView view_9 = project_9.createView();
 
     final JavaProject project_10 =
         JavaProject.builder(new JavaLanguage(10))
             .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
-    final JavaView view_10 = project_10.createOnDemandView();
+    final JavaView view_10 = project_10.createView();
 
     final JavaProject project_max =
         JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
             .addInputLocation(new PathBasedAnalysisInputLocation(mrj, null))
             .build();
-    final JavaView view_max = project_max.createOnDemandView();
+    final JavaView view_max = project_max.createView();
 
     // for java10
     Assert.assertEquals(
@@ -186,7 +186,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(new PathBasedAnalysisInputLocation(mmrj, null))
             .build();
-    final JavaView view_8 = project_8.createOnDemandView();
+    final JavaView view_8 = project_8.createView();
 
     final JavaModuleProject project_9 =
         (JavaModuleProject)
@@ -198,7 +198,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                             .getPathBasedAnalysisInputLocationObj())
                 .build();
 
-    final JavaModuleView view_9 = project_9.createOnDemandView();
+    final JavaModuleView view_9 = project_9.createView();
 
     ModuleSignature moduleSignature =
         JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
@@ -311,7 +311,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
             .build();
 
     // Get the view
-    JavaView view = p.createOnDemandView();
+    JavaView view = p.createView();
 
     assertEquals(19, view.getClasses().size());
 
@@ -420,7 +420,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(pathBasedNamespace)
             .build()
-            .createOnDemandView();
+            .createView();
 
     final Collection<? extends AbstractClassSource> classSources =
         pathBasedNamespace.getClassSources(v);

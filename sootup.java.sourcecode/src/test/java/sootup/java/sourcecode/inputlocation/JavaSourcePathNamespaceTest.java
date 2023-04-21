@@ -44,7 +44,7 @@ public class JavaSourcePathNamespaceTest {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
-    final JavaView view = project.createOnDemandView();
+    final JavaView view = project.createView();
 
     Optional<JavaSootClass> clazz = view.getClass(type);
     assertTrue(clazz.isPresent());
@@ -71,7 +71,7 @@ public class JavaSourcePathNamespaceTest {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
-    final JavaView view = project.createOnDemandView();
+    final JavaView view = project.createView();
 
     Collection<? extends AbstractClassSource> classSources =
         view.getClasses().stream().map(jsc -> jsc.getClassSource()).collect(Collectors.toList());

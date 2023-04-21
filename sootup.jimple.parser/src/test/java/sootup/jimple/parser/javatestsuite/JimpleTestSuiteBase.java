@@ -29,9 +29,7 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    view =
-        new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir)))
-            .createOnDemandView();
+    view = new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir))).createView();
   }
 
   /**

@@ -42,7 +42,7 @@ public class MethodDispatchBase {
                     new JavaClassPathAnalysisInputLocation(
                         System.getProperty("java.home") + "/lib/rt.jar"))
                 .build();
-        setView(project.createFullView());
+        setView(project.createView());
       }
     }
 

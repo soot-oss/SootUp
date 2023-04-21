@@ -2297,7 +2297,6 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 === "Jimple"
 
     ```jimple
-    
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()

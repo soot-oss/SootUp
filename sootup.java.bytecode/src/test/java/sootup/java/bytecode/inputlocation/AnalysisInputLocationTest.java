@@ -70,7 +70,7 @@ public abstract class AnalysisInputLocationTest {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
-    final JavaView view = project.createOnDemandView();
+    final JavaView view = project.createView();
 
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
         ns.getClassSource(sig, view);
