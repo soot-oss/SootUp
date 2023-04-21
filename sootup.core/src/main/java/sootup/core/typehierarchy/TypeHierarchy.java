@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sootup.core.frontend.ResolveException;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -37,6 +40,8 @@ import sootup.core.views.View;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
+
+  Logger logger = LoggerFactory.getLogger(TypeHierarchy.class);
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
@@ -176,6 +181,29 @@ public interface TypeHierarchy {
     while (currentSuperClass != null) {
       superClasses.add(currentSuperClass);
       currentSuperClass = superClassOf(currentSuperClass);
+    }
+    return superClasses;
+  }
+  /**
+   * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
+   * will be the last entry in the list, or till one of the superclasses is not contained in view.
+   */
+  @Nonnull
+  default List<ClassType> incompleteSuperClassesOf(@Nonnull ClassType classType) {
+    List<ClassType> superClasses = new ArrayList<>();
+    ClassType currentSuperClass = null;
+    try {
+      currentSuperClass = superClassOf(classType);
+      while (currentSuperClass != null) {
+        superClasses.add(currentSuperClass);
+        currentSuperClass = superClassOf(currentSuperClass);
+      }
+    } catch (ResolveException ex) {
+      logger.warn(
+          "Could not find "
+              + (currentSuperClass != null ? currentSuperClass : classType)
+              + " and stopped there the resolve of superclasses of "
+              + classType);
     }
     return superClasses;
   }
