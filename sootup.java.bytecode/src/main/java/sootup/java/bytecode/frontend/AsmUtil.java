@@ -3,7 +3,7 @@ package sootup.java.bytecode.frontend;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
+ * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -154,53 +154,23 @@ public final class AsmUtil {
 
   @Nonnull
   public static Type toJimpleType(@Nonnull String desc) {
-    int idx = desc.lastIndexOf('[');
-    int nrDims = idx + 1;
+    int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
-      if (desc.charAt(0) != '[') {
-        throw new AssertionError("Invalid array descriptor: " + desc);
-      }
-      desc = desc.substring(idx + 1);
+      desc = desc.substring(nrDims);
     }
-    Type baseType;
-    switch (desc.charAt(0)) {
-      case 'Z':
-        baseType = PrimitiveType.getBoolean();
-        break;
-      case 'B':
-        baseType = PrimitiveType.getByte();
-        break;
-      case 'C':
-        baseType = PrimitiveType.getChar();
-        break;
-      case 'S':
-        baseType = PrimitiveType.getShort();
-        break;
-      case 'I':
-        baseType = PrimitiveType.getInt();
-        break;
-      case 'F':
-        baseType = PrimitiveType.getFloat();
-        break;
-      case 'J':
-        baseType = PrimitiveType.getLong();
-        break;
-      case 'D':
-        baseType = PrimitiveType.getDouble();
-        break;
-      case 'V':
-        baseType = VoidType.getInstance();
-        break;
-      case 'L':
-        if (desc.charAt(desc.length() - 1) != ';') {
-          throw new AssertionError("Invalid reference descriptor: " + desc);
-        }
-        String name = desc.substring(1, desc.length() - 1);
-        name = toQualifiedName(name);
-        baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
-        break;
-      default:
-        throw new AssertionError("Unknown descriptor: " + desc);
+
+    Type baseType = toPrimitiveOrVoidType(desc).orElse(null);
+    if (baseType == null && desc.charAt(0) != 'L') {
+      throw new AssertionError("Unknown descriptor: " + desc);
+    }
+
+    if (baseType == null && desc.charAt(0) == 'L') {
+      if (desc.charAt(desc.length() - 1) != ';') {
+        throw new AssertionError("Invalid reference descriptor: " + desc);
+      }
+      String name = desc.substring(1, desc.length() - 1);
+      name = toQualifiedName(name);
+      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
     }
     if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
@@ -208,6 +178,72 @@ public final class AsmUtil {
     return nrDims > 0
         ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
         : baseType;
+  }
+
+  @Nonnull
+  public static Type ArrayTypetoJimpleType(@Nonnull String desc) {
+    int nrDims = countArrayDim(desc);
+    if (nrDims > 0) {
+      desc = desc.substring(nrDims);
+    }
+
+    Type baseType = toPrimitiveOrVoidType(desc).orElse(null);
+
+    if (baseType == null) {
+      // Objects can be either Ljava/lang/Object; or java/lang/Object
+      String name = desc;
+      if (desc.charAt(0) == 'L' && desc.charAt(desc.length() - 1) != ';') {
+        name = desc.substring(1, desc.length() - 1);
+      }
+      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
+    }
+
+    return nrDims > 0
+        ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
+        : baseType;
+  }
+
+  /** returns the amount of dimensions of a description. */
+  private static int countArrayDim(@Nonnull String desc) {
+    int nrDims = desc.lastIndexOf('[') + 1;
+    for (int index = 0; index < nrDims; index++) {
+      if (desc.charAt(index) != '[') {
+        throw new AssertionError("Invalid array descriptor: " + desc);
+      }
+    }
+    return nrDims;
+  }
+
+  /**
+   * Converts a description to a primitive type or the void type. If the description does not match
+   * it will return an empty Optional
+   */
+  private static Optional<Type> toPrimitiveOrVoidType(@Nonnull String desc) {
+    if (desc.length() > 1) {
+      return Optional.empty();
+    }
+    switch (desc.charAt(0)) {
+      case 'Z':
+        return Optional.of(PrimitiveType.getBoolean());
+      case 'B':
+        return Optional.of(PrimitiveType.getByte());
+      case 'C':
+        return Optional.of(PrimitiveType.getChar());
+      case 'S':
+        return Optional.of(PrimitiveType.getShort());
+      case 'I':
+        return Optional.of(PrimitiveType.getInt());
+      case 'F':
+        return Optional.of(PrimitiveType.getFloat());
+      case 'J':
+        return Optional.of(PrimitiveType.getLong());
+      case 'D':
+        return Optional.of(PrimitiveType.getDouble());
+      case 'V':
+        return Optional.of(VoidType.getInstance());
+      default:
+    }
+    return Optional.empty();
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
