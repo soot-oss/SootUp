@@ -36,7 +36,8 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static final String MODULE_INFO_FILE = "module-info";
 
-  private static final Cache<String, ModuleSignature> modules = CacheBuilder.newBuilder().weakValues().build();
+  private static final Cache<String, ModuleSignature> modules =
+      CacheBuilder.newBuilder().weakValues().build();
 
   private static final JavaModuleIdentifierFactory INSTANCE = new JavaModuleIdentifierFactory();
 
@@ -52,8 +53,9 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       moduleIdentifierFactoryWrapper = CacheBuilder.newBuilder().weakValues().build();
 
   public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
-    return moduleIdentifierFactoryWrapper.asMap().computeIfAbsent(
-            moduleSignature, JavaModuleIdentifierFactoryWrapper::new);
+    return moduleIdentifierFactoryWrapper
+        .asMap()
+        .computeIfAbsent(moduleSignature, JavaModuleIdentifierFactoryWrapper::new);
   }
 
   static {
@@ -160,15 +162,20 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   public ModulePackageName getPackageName(
       @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
-    return (ModulePackageName) packages.asMap().computeIfAbsent(
-            fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
+    return (ModulePackageName)
+        packages
+            .asMap()
+            .computeIfAbsent(
+                fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
   }
 
   public ModulePackageName getPackageName(
       @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
     String fqId = moduleSignature.getModuleName() + "." + packageName;
-    return (ModulePackageName) packages.asMap().computeIfAbsent(
-            fqId, key -> new ModulePackageName(packageName, moduleSignature));
+    return (ModulePackageName)
+        packages
+            .asMap()
+            .computeIfAbsent(fqId, key -> new ModulePackageName(packageName, moduleSignature));
   }
 
   /** Wrapper which refers to a given ModuleSignature when building stuff */

@@ -59,10 +59,14 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  @Nonnull protected final Cache<String, PackageName> packages = CacheBuilder.newBuilder().weakValues().build();
+  @Nonnull
+  protected final Cache<String, PackageName> packages =
+      CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches annotation types */
-  @Nonnull protected final Cache<String, AnnotationType> annotationTypes = CacheBuilder.newBuilder().weakValues().build();
+  @Nonnull
+  protected final Cache<String, AnnotationType> annotationTypes =
+      CacheBuilder.newBuilder().weakValues().build();
 
   @Nonnull
   protected final Map<String, PrimitiveType> primitiveTypeMap = Maps.newHashMapWithExpectedSize(8);
@@ -212,8 +216,11 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
 
-    return annotationTypes.asMap().computeIfAbsent(
-        className + packageName, (k) -> new AnnotationType(className, getPackageName(packageName)));
+    return annotationTypes
+        .asMap()
+        .computeIfAbsent(
+            className + packageName,
+            (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
   @Override
