@@ -149,7 +149,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSuperClass() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsc.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcsc.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcsc.SuperClass"),
