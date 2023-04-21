@@ -31,17 +31,29 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
-    JavaProject javaProject =
+    return createViewForClassPath(classPath, true);
+  }
+
+  private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
+    JavaProject.JavaProjectBuilder javaProjectBuilder =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    return javaProject.createView();
+                    System.getProperty("java.home") + "/lib/rt.jar"));
+    if (useSourceCodeFrontend) {
+      javaProjectBuilder.addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath));
+    } else {
+      javaProjectBuilder.addInputLocation(new JavaClassPathAnalysisInputLocation(classPath));
+    }
+
+    return javaProjectBuilder.build().createView();
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {
+    return loadCallGraph(testDirectory, true, className);
+  }
+
+  CallGraph loadCallGraph(String testDirectory, boolean useSourceCodeFrontend, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
@@ -50,7 +62,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     String classPath = "src/test/resources/callgraph/" + testDirectory;
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    JavaView view = createViewForClassPath(classPath);
+    JavaView view = createViewForClassPath(classPath, useSourceCodeFrontend);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
