@@ -24,7 +24,7 @@ theme:
     primary: white
   name: material
   logo: ./SootUpLogo.svg
-  icon: ./icon.svg
+  favicon: ./icon.svg
   features:
     - navigation.sections
 
