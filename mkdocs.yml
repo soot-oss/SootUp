@@ -21,7 +21,7 @@ nav:
 
 theme:
   name: material
-  logo: SootUpLogo.svg
+  logo: ./SootUpLogo.svg
   features:
     - navigation.sections
 
