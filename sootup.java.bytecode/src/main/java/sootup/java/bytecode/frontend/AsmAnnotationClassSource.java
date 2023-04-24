@@ -186,7 +186,10 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
 
   @Nonnull
   public Optional<? extends ClassType> resolveOuterClass() {
-    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.outerClass));
+    if (classNode.outerClass == null) {
+      return Optional.empty();
+    }
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.outerClass));
   }
 
   @Nonnull
