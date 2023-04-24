@@ -21,8 +21,7 @@ nav:
 
 theme:
   name: material
-  palette:
-    accent: orange
+  logo: SootUpLogo.svg
   features:
     - navigation.sections
 
