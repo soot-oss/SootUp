@@ -20,6 +20,8 @@ nav:
 #    - Analyses: analyses.md
 
 theme:
+  palette:
+    primary: white
   name: material
   logo: ./SootUpLogo.svg
   features:
