@@ -1,5 +1,5 @@
 <p align="center">
-<img width="300px" src="https://github.com/soot-oss/SootUp/blob/develop/SootUpLogo.svg">
+<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/SootUpLogo.svg">
 </p> 
 
 # SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp)
