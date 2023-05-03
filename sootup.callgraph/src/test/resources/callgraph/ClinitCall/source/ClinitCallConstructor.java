@@ -8,7 +8,7 @@ class Class {
     int[] b= new int[5];
     ArrayType[] c =new ArrayType[5];
     ArrayDimType[][] d= new ArrayDimType[2][4];
-    ArrayInArrayType[][] d= new ArrayInArrayType[2][];
+    ArrayInArrayType[][] e= new ArrayInArrayType[2][];
   }
 }
 
