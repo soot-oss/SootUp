@@ -58,7 +58,11 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    String classPath = "src/test/resources/callgraph/" + testDirectory;
+    String classPath =
+        "src/test/resources/callgraph/"
+            + testDirectory
+            + "/"
+            + (useSourceCodeFrontend ? "source" : "binary");
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     JavaView view = createViewForClassPath(classPath, useSourceCodeFrontend);
