@@ -4,7 +4,6 @@ import static junit.framework.TestCase.*;
 
 import java.util.Collections;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -508,10 +507,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, compute));
   }
 
-  @Ignore
-  // TODO: WALA can't handle this case?
+  @Test
   public void testDynamicInterfaceMethod6() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim6.Demo");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim6.Demo");
 
     MethodSignature combinedInterfaceMethod =
         identifierFactory.getMethodSignature(
