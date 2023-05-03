@@ -1499,7 +1499,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             {
               JNewArrayExpr expr =
                   JavaJimple.getInstance()
-                      .newNewArrayExpr(AsmUtil.ArrayTypetoJimpleType(insn.desc), (Immediate) v1);
+                      .newNewArrayExpr(AsmUtil.arrayTypetoJimpleType(insn.desc), (Immediate) v1);
               val = expr;
               op1.addUsageInExpr(expr);
               break;

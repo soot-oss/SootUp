@@ -181,26 +181,11 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static Type ArrayTypetoJimpleType(@Nonnull String desc) {
-    int nrDims = countArrayDim(desc);
-    if (nrDims > 0) {
-      desc = desc.substring(nrDims);
+  public static Type arrayTypetoJimpleType(@Nonnull String desc) {
+    if (desc.startsWith("[")) {
+      return toJimpleType(desc);
     }
-
-    Type baseType = toPrimitiveOrVoidType(desc).orElse(null);
-
-    if (baseType == null) {
-      // Objects can be either Ljava/lang/Object; or java/lang/Object
-      String name = desc;
-      if (desc.charAt(0) == 'L' && desc.charAt(desc.length() - 1) != ';') {
-        name = desc.substring(1, desc.length() - 1);
-      }
-      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
-    }
-
-    return nrDims > 0
-        ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
-        : baseType;
+    return toJimpleClassType(desc);
   }
 
   /** returns the amount of dimensions of a description. */
