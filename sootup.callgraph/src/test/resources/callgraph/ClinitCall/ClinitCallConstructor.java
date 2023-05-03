@@ -8,6 +8,7 @@ class Class {
     int[] b= new int[5];
     ArrayType[] c =new ArrayType[5];
     ArrayDimType[][] d= new ArrayDimType[2][4];
+    ArrayInArrayType[][] d= new ArrayInArrayType[2][];
   }
 }
 
@@ -20,5 +21,8 @@ class ArrayType {
 }
 
 class ArrayDimType {
+  static int a=3;
+}
+class ArrayInArrayType {
   static int a=3;
 }

@@ -258,6 +258,13 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, arrayDimMethod));
+    MethodSignature arrayInArrayMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccc.ArrayInArrayType"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, arrayInArrayMethod));
   }
 
   @Test
