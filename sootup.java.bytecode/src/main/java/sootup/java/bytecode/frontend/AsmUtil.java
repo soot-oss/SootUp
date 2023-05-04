@@ -160,19 +160,17 @@ public final class AsmUtil {
     }
 
     Type baseType = toPrimitiveOrVoidType(desc).orElse(null);
-    if (baseType == null && desc.charAt(0) != 'L') {
-      throw new AssertionError("Unknown descriptor: " + desc);
-    }
-
-    if (baseType == null && desc.charAt(0) == 'L') {
+    if (baseType == null) {
+      if (desc.charAt(0) != 'L') {
+        throw new AssertionError("Unknown descriptor: " + desc);
+      }
       if (desc.charAt(desc.length() - 1) != ';') {
         throw new AssertionError("Invalid reference descriptor: " + desc);
       }
       String name = desc.substring(1, desc.length() - 1);
-      name = toQualifiedName(name);
       baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
     }
-    if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
+    if ((baseType instanceof PrimitiveType || baseType instanceof VoidType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
     return nrDims > 0
