@@ -120,14 +120,20 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   @Override
-  public void postProcessingMethod(View<? extends SootClass<?>> view, MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList, @Nonnull MutableCallGraph cg) {
-    //do nothing
+  public void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
   }
 
   @Override
-  public void preProcessingMethod(View<? extends SootClass<?>> view, MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList, @Nonnull MutableCallGraph cg) {
-    //do nothing
+  public void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
   }
 }
