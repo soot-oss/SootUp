@@ -136,6 +136,7 @@ public class AsmUtilTest {
   public void testToJimpleTypeInvalidPrimitiveDescriptor() {
     AsmUtil.toJimpleType("II");
   }
+
   @Test(expected = AssertionError.class)
   public void testToJimpleTypeInvalidVoidDescriptor() {
     AsmUtil.toJimpleType("VI");
