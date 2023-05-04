@@ -118,4 +118,16 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         .filter(Optional::isPresent)
         .map(Optional::get);
   }
+
+  @Override
+  public void postProcessingMethod(View<? extends SootClass<?>> view, MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList, @Nonnull MutableCallGraph cg) {
+    //do nothing
+  }
+
+  @Override
+  public void preProcessingMethod(View<? extends SootClass<?>> view, MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList, @Nonnull MutableCallGraph cg) {
+    //do nothing
+  }
 }
