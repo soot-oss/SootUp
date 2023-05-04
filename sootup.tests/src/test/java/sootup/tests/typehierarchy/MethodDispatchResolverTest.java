@@ -9,6 +9,7 @@ import categories.Java8Test;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.MethodDispatchResolver;
+import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
@@ -86,6 +88,60 @@ public class MethodDispatchResolverTest {
         arrayDequeueClone + " cannot resolve to " + enumSetClone,
         MethodDispatchResolver.resolveAbstractDispatch(view, arrayDequeueClone)
             .contains(enumSetClone));
+  }
+
+  @Test
+  public void testResolveAllDispatchesInClasses() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    MethodSignature collectionSize =
+        factory.parseMethodSignature("java.util.Collection#size(): int");
+    MethodSignature abstractListSize =
+        factory.parseMethodSignature("java.util.AbstractList#size(): int");
+    MethodSignature setSize = factory.parseMethodSignature("java.util.HashSet#size(): int");
+    MethodSignature listSize = factory.parseMethodSignature("java.util.ArrayList#size(): int");
+
+    Set<ClassType> classes = new HashSet<>();
+    classes.add(factory.getClassType("java.util.HashSet"));
+    classes.add(factory.getClassType("java.util.ArrayList"));
+    Set<MethodSignature> candidates =
+        MethodDispatchResolver.resolveAllDispatchesInClasses(view, collectionSize, classes);
+    assertTrue(collectionSize + " can resolve to " + setSize, candidates.contains(setSize));
+    assertTrue(collectionSize + " can resolve to " + listSize, candidates.contains(listSize));
+    assertFalse(
+        collectionSize + " can resolve to " + abstractListSize,
+        candidates.contains(abstractListSize));
+  }
+
+  @Test
+  public void testCanDispatch() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    MethodSignature collectionSize =
+        factory.parseMethodSignature("java.util.Collection#size(): int");
+    MethodSignature setSize = factory.parseMethodSignature("java.util.HashSet#size(): int");
+    assertTrue(
+        MethodDispatchResolver.canDispatch(collectionSize, setSize, view.getTypeHierarchy()));
+
+    MethodSignature objectClone =
+        factory.parseMethodSignature("java.lang.Object#clone(): java.lang.Object");
+    MethodSignature arrayDequeueClone =
+        factory.parseMethodSignature("java.util.ArrayDeque#clone(): java.util.ArrayDequeue");
+    assertTrue(
+        MethodDispatchResolver.canDispatch(
+            objectClone, arrayDequeueClone, view.getTypeHierarchy()));
+
+    MethodSignature collectionHashCode =
+        factory.parseMethodSignature("java.util.Collection#hasCode(): int");
+    assertFalse(
+        MethodDispatchResolver.canDispatch(
+            collectionSize, collectionHashCode, view.getTypeHierarchy()));
+
+    MethodSignature objectWait1Param =
+        factory.parseMethodSignature("java.lang.Object#wait(long): void");
+    MethodSignature objectWait2Param =
+        factory.parseMethodSignature("java.util.Collection#hasCode(long,int): int");
+    assertFalse(
+        MethodDispatchResolver.canDispatch(
+            objectWait1Param, objectWait2Param, view.getTypeHierarchy()));
   }
 
   @Test(expected = ResolveException.class)
