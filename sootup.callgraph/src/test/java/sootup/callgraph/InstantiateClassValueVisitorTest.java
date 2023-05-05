@@ -83,7 +83,7 @@ public class InstantiateClassValueVisitorTest {
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .build();
-    View<JavaSootClass> view = javaProject.createOnDemandView();
+    View<JavaSootClass> view = javaProject.createView();
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -215,8 +215,7 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(new JNegExpr(stringConstant));
     listWithAllValues.add(new JStaticFieldRef(stringField));
     listWithAllValues.add(new JInstanceFieldRef(new Local("a", StringClass), stringField));
-    listWithAllValues.add(
-        new JArrayRef(new Local("a", StringClass), stringConstant, identifierFactory));
+    listWithAllValues.add(new JArrayRef(new Local("a", StringClass), stringConstant));
     listWithAllValues.add(new JParameterRef(StringClass, 3));
     listWithAllValues.add(new JCaughtExceptionRef(StringClass));
     listWithAllValues.add(new JThisRef(StringClass));

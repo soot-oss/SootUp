@@ -175,7 +175,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(SootMethod sourceMethod) {
     if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
-    return sourceMethod.getBody().getStmtGraph().nodes().stream()
+    return sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::containsInvokeExpr)
         .flatMap(s -> resolveCall(sourceMethod, s.getInvokeExpr()));
   }

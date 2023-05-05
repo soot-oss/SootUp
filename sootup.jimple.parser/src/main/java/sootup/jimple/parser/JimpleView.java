@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.Project;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -51,7 +50,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
-    this(project, new FullCacheProvider<>(),classLoadingOptionsSpecifier);
+    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
   }
 
   public JimpleView(
@@ -171,9 +170,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
     getProject().getInputLocations().stream()
         .flatMap(
-            location -> {
-              return location.getClassSources(this).stream();
-            })
+            location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }

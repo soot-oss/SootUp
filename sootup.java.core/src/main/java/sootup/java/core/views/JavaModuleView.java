@@ -70,7 +70,7 @@ public class JavaModuleView extends JavaView {
    *     options.
    */
   public JavaModuleView(
-      @Nonnull Project<? extends JavaSootClass, ? extends JavaView> project,
+      @Nonnull Project<JavaSootClass, ? extends JavaView> project,
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -180,6 +180,7 @@ public class JavaModuleView extends JavaView {
       // find type in all exported packages of modules on module path first
       final List<AbstractClassSource<JavaSootClass>> foundClassSources =
           getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
+              .filter(Optional::isPresent)
               .limit(1)
               .map(Optional::get)
               .collect(Collectors.toList());
@@ -206,6 +207,7 @@ public class JavaModuleView extends JavaView {
         // find the class in exported packages of modules
         final List<AbstractClassSource<JavaSootClass>> foundClassSources =
             getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
+                .filter(Optional::isPresent)
                 .limit(1)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -226,6 +228,7 @@ public class JavaModuleView extends JavaView {
 
         final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
             getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
+                .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(
                     sc -> {
@@ -252,11 +255,7 @@ public class JavaModuleView extends JavaView {
                     })
                 .findAny();
 
-        if (foundClassSources.isPresent()) {
-          return buildClassFrom(foundClassSources.get());
-        } else {
-          return Optional.empty();
-        }
+        return foundClassSources.flatMap(this::buildClassFrom);
       }
     }
 
