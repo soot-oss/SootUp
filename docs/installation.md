@@ -4,7 +4,7 @@ SootUp is available in maven central, you can include it in your project as foll
 
 Below we only show how you can add the SootUp modules to your project. It is not necessary to add all the modules as dependency. 
 Depending on your needs you can import only the modules you need.
-Take a look at the [Modules](/whatsnew/#modular-architecture) to learn more about which modules you might need.
+Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more about which modules you might need.
 
 ### Maven
 

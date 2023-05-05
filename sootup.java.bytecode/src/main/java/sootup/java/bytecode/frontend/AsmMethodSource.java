@@ -197,7 +197,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     try {
       convert();
     } catch (Exception e) {
-      instructions.iterator().forEachRemaining(item -> System.out.println(AsmUtil.toString(item)));
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
@@ -1490,31 +1489,34 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
-      ClassType t = AsmUtil.toJimpleClassType(insn.desc);
       Expr val;
       if (op == NEW) {
-        val = Jimple.newNewExpr(t);
+        val = Jimple.newNewExpr(AsmUtil.toJimpleClassType(insn.desc));
       } else {
         Operand op1 = operandStack.popImmediate();
         Value v1 = op1.stackOrValue();
         switch (op) {
           case ANEWARRAY:
             {
-              JNewArrayExpr expr = JavaJimple.getInstance().newNewArrayExpr(t, (Immediate) v1);
+              JNewArrayExpr expr =
+                  JavaJimple.getInstance()
+                      .newNewArrayExpr(AsmUtil.arrayTypetoJimpleType(insn.desc), (Immediate) v1);
               val = expr;
               op1.addUsageInExpr(expr);
               break;
             }
           case CHECKCAST:
             {
-              JCastExpr expr = Jimple.newCastExpr((Immediate) v1, t);
+              JCastExpr expr =
+                  Jimple.newCastExpr((Immediate) v1, AsmUtil.toJimpleClassType(insn.desc));
               val = expr;
               op1.addUsageInExpr(expr);
               break;
             }
           case INSTANCEOF:
             {
-              JInstanceOfExpr expr = Jimple.newInstanceOfExpr((Immediate) v1, t);
+              JInstanceOfExpr expr =
+                  Jimple.newInstanceOfExpr((Immediate) v1, AsmUtil.toJimpleClassType(insn.desc));
               val = expr;
               op1.addUsageInExpr(expr);
               break;

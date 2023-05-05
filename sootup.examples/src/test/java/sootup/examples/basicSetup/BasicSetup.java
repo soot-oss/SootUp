@@ -78,7 +78,7 @@ public class BasicSetup {
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
 
     // Create a view for project, which allows us to retrieve classes
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

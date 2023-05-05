@@ -4,7 +4,6 @@ import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
 import java.util.Collections;
-import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
@@ -16,7 +15,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -50,7 +48,7 @@ public class CallGraphTest {
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
-    return javaProject.createOnDemandView();
+    return javaProject.createView();
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {
@@ -69,46 +67,164 @@ public class CallGraphTest {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m =
-        (Optional<SootMethod>) sc.getMethod(mainMethodSignature.getSubSignature());
-    assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
+    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
+    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(mainMethodSignature + " not found in classloader", m);
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     algorithm = createAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
+    assertNotNull(cg);
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
-    assertNotNull(cg);
     return cg;
   }
 
   @Test
   public void testRTA() {
     algorithmName = "RTA";
-    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
+    CallGraph cg = loadCallGraph("Misc", "Main");
 
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
-
-    MethodSignature method =
+    MethodSignature methodAbstract =
         identifierFactory.getMethodSignature(
-            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
+            identifierFactory.getClassType("AbstractClass"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodMethodImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("MethodImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodMethodImplementedInstantiatedInSubClass =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("MethodImplementedInstantiatedInSubClass"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodSubClassMethodImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("SubClassMethodImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodSubClassMethodNotImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("SubClassMethodNotImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, methodAbstract));
+    assertFalse(cg.containsCall(mainMethodSignature, methodMethodImplemented));
+    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplementedInstantiatedInSubClass));
+    assertFalse(cg.containsCall(mainMethodSignature, methodSubClassMethodNotImplemented));
+    assertTrue(cg.containsCall(mainMethodSignature, methodSubClassMethodImplemented));
+
+    MethodSignature methodInterface =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("Interface"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceNoImplementation =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceNoImplementation"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceImplementation =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceImplementation"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceImplementationNotInstatiated =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceImplementationNotInstatiated"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, methodInterface));
+    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementation));
+    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
+    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
   }
 
   @Test
   public void testCHA() {
     algorithmName = "CHA";
-    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
+    CallGraph cg = loadCallGraph("Misc", "Main");
 
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
-
-    MethodSignature method =
+    MethodSignature methodAbstract =
         identifierFactory.getMethodSignature(
-            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
+            identifierFactory.getClassType("AbstractClass"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodMethodImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("MethodImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodMethodImplementedInstantiatedInSubClass =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("MethodImplementedInstantiatedInSubClass"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodSubClassMethodImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("SubClassMethodImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodSubClassMethodNotImplemented =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("SubClassMethodNotImplemented"),
+            "method",
+            "int",
+            Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, methodAbstract));
+    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplemented));
+    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplementedInstantiatedInSubClass));
+    assertFalse(cg.containsCall(mainMethodSignature, methodSubClassMethodNotImplemented));
+    assertTrue(cg.containsCall(mainMethodSignature, methodSubClassMethodImplemented));
+
+    MethodSignature methodInterface =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("Interface"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceNoImplementation =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceNoImplementation"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceImplementation =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceImplementation"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+    MethodSignature methodInterfaceImplementationNotInstatiated =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("InterfaceImplementationNotInstatiated"),
+            "defaultMethod",
+            "int",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, methodInterface));
+    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementation));
+    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
+    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
   }
 }

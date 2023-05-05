@@ -36,7 +36,7 @@ public class AsmMethodSourceTest {
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .build();
 
-    JavaView view = javaProject.createOnDemandView();
+    JavaView view = javaProject.createView();
 
     JavaClassType mainClassSignature =
         JavaIdentifierFactory.getInstance()

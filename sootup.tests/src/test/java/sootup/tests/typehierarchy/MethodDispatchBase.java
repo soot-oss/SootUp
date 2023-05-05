@@ -6,7 +6,7 @@ import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -26,20 +26,23 @@ public class MethodDispatchBase {
 
   public static class CustomTestWatcher extends TestWatcher {
     private String className = MethodDispatchBase.class.getSimpleName();
-    private AnalysisInputLocation srcCode;
     private JavaView view;
-    private JavaProject project;
 
     @Override
     protected void starting(Description description) {
       String prevClassName = getClassName();
       setClassName(extractClassName(description.getClassName()));
       if (!prevClassName.equals(getClassName())) {
-        srcCode =
-            new JavaSourcePathAnalysisInputLocation(
-                Collections.singleton(baseDir + "/" + getClassName()));
-        project = JavaProject.builder(new JavaLanguage(8)).addInputLocation(this.srcCode).build();
-        setView(project.createFullView());
+        JavaProject project =
+            JavaProject.builder(new JavaLanguage(8))
+                .addInputLocation(
+                    new JavaSourcePathAnalysisInputLocation(
+                        Collections.singleton(baseDir + "/" + getClassName())))
+                .addInputLocation(
+                    new JavaClassPathAnalysisInputLocation(
+                        System.getProperty("java.home") + "/lib/rt.jar"))
+                .build();
+        setView(project.createView());
       }
     }
 

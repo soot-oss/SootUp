@@ -20,7 +20,11 @@ nav:
 #    - Analyses: analyses.md
 
 theme:
+  palette:
+    primary: white
   name: material
+  logo: ./SootUpLogo.svg
+  favicon: ./icon.svg
   features:
     - navigation.sections
 

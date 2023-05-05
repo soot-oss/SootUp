@@ -1,4 +1,4 @@
-package example1;
+package example2;
 
 class Example {
 
@@ -19,9 +19,5 @@ class B extends A {
 }
 
 class C extends B {
-  public void print(Object o) { }
-}
-
-class D extends A {
   public void print(Object o) { }
 }

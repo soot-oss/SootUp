@@ -60,7 +60,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + "binary"
                             + File.separator))
                 .build();
-        javaView = project.createOnDemandView();
+        javaView = project.createView();
       }
     }
 
