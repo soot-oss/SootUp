@@ -169,8 +169,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
     }
 
     getProject().getInputLocations().stream()
-        .flatMap(
-            location -> location.getClassSources(this).stream())
+        .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }

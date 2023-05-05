@@ -115,7 +115,6 @@ public class AsmUtilTest {
     assertTrue(classType instanceof ArrayType);
     assertTrue(((ArrayType) classType).getBaseType() instanceof ClassType);
     assertEquals(((ArrayType) classType).getDimension(), 1);
-
   }
 
   @Test(expected = AssertionError.class)
@@ -213,6 +212,5 @@ public class AsmUtilTest {
     assertTrue(classTypeArray instanceof ArrayType);
     assertTrue(((ArrayType) classTypeArray).getBaseType() instanceof ClassType);
     assertEquals(((ArrayType) classTypeArray).getDimension(), 1);
-
   }
 }
