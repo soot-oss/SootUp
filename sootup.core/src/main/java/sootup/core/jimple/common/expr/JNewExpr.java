@@ -30,7 +30,6 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ClassType;
-import sootup.core.types.ReferenceType;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -56,7 +55,7 @@ public final class JNewExpr implements Expr, Copyable {
 
   @Override
   public String toString() {
-    return Jimple.NEW + " " + type.toString();
+    return Jimple.NEW + " " + type;
   }
 
   @Override
@@ -68,7 +67,7 @@ public final class JNewExpr implements Expr, Copyable {
 
   @Nonnull
   @Override
-  public ReferenceType getType() {
+  public ClassType getType() {
     return type;
   }
 

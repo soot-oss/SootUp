@@ -489,7 +489,7 @@ public class ReplaceUseExprVisitor extends AbstractExprVisitor<Expr> {
   }
 
   @Override
-  public void casePhiExpr(JPhiExpr v) {
+  public void casePhiExpr(@Nonnull JPhiExpr v) {
     if (this.phiBlock != null
         && newUse instanceof Local
         && v.getArgs().contains(oldUse)

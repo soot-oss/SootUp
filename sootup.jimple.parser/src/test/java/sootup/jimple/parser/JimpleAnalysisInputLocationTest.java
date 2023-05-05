@@ -1,14 +1,23 @@
 package sootup.jimple.parser;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.java.core.JavaSootClass;
+import sootup.jimple.parser.categories.Java8Test;
 
+@Category(Java8Test.class)
 public class JimpleAnalysisInputLocationTest {
 
   @Test
@@ -80,5 +89,27 @@ public class JimpleAnalysisInputLocationTest {
 
     final Optional<SootClass<?>> classSource4 = jv2.getClass(classType);
     assertTrue(classSource4.isPresent());
+  }
+
+  /**
+   * Test for JimpleAnalysisInputLocation. Specifying jimple file with source type as Library.
+   * Expected - All input classes are of source type Library.
+   */
+  @Test
+  public void specifyBuiltInInputJimplePath() {
+    String classPath = "src/test/java/resources/jimple";
+    AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
+        new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Library);
+    JimpleView view = new JimpleProject(jimpleInputLocation).createOnDemandView();
+
+    Collection<SootClass<?>> classes = new HashSet<>(); // Set to track the classes to check
+
+    for (SootClass<?> aClass : view.getClasses()) {
+      if (!aClass.isLibraryClass()) {
+        classes.add(aClass);
+      }
+    }
+
+    assertEquals("User Defined class found, expected none", 0, classes.size());
   }
 }

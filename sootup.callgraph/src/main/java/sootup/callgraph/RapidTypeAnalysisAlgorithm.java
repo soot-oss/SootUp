@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -63,9 +65,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     }
   }
 
-  @Nonnull private Set<ClassType> instantiatedClasses = new HashSet<>();
-  @Nonnull private HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
-  @Nonnull private CallGraph chaGraph;
+  @Nonnull private final Set<ClassType> instantiatedClasses = new HashSet<>();
+  @Nonnull private final HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
 
   /**
    * The constructor of the RTA algorithm.
@@ -73,24 +74,21 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param view it contains the data of the classes and methods
    * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
    */
-  public RapidTypeAnalysisAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy typeHierarchy) {
+  public RapidTypeAnalysisAlgorithm(
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
     super(view, typeHierarchy);
   }
 
   @Nonnull
   @Override
   public CallGraph initialize() {
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
     List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
-    chaGraph = cha.initialize(entryPoints);
     return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    ClassHierarchyAnalysisAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    chaGraph = cha.initialize(entryPoints);
     return constructCompleteCallGraph(view, entryPoints);
   }
 
@@ -101,22 +99,20 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param method this object contains the method body which is inspected.
    */
   private void collectInstantiatedClassesInMethod(SootMethod method) {
+    if (method == null || method.isAbstract() || method.isNative()) {
+      return;
+    }
+
     Set<ClassType> instantiated =
-        chaGraph.callsFrom(method.getSignature()).stream()
-            .filter(s -> s.getSubSignature().getName().equals("<init>"))
-            .map(s -> s.getDeclClassType())
+        method.getBody().getStmts().stream()
+            .filter(stmt -> stmt instanceof JAssignStmt)
+            .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
+            .filter(value -> value instanceof JNewExpr)
+            .map(value -> ((JNewExpr) value).getType())
+            .filter(referenceType -> referenceType instanceof ClassType)
+            .map(referenceType -> (ClassType) referenceType)
             .collect(Collectors.toSet());
     instantiatedClasses.addAll(instantiated);
-
-    // add also found classes' super classes
-    instantiated.stream()
-        .map(s -> view.getClass(s))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .map(s -> s.getSuperclass())
-        .filter(s -> s.isPresent())
-        .map(s -> s.get())
-        .forEach(instantiatedClasses::add);
   }
 
   /**
@@ -136,11 +132,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(targetMethodSignature);
 
-    if (!chaGraph.containsMethod(method.getSignature())) {
-      return result;
-    }
-    collectInstantiatedClassesInMethod(method);
-
     SootMethod targetMethod =
         view.getClass(targetMethodSignature.getDeclClassType())
             .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
@@ -153,23 +144,67 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     } else {
       Set<MethodSignature> notInstantiatedCallTargets = Sets.newHashSet();
       Set<MethodSignature> implAndOverrides =
-          MethodDispatchResolver.resolveAbstractDispatchInClasses(
+          MethodDispatchResolver.resolveAllDispatchesInClasses(
               view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
 
+      // save filtered calls to include them later when their class is instantiated
       notInstantiatedCallTargets.forEach(
           ignoredMethodSignature -> {
-            List<Call> calls = ignoredCalls.get(ignoredMethodSignature.getDeclClassType());
+            ClassType notInstantiatedClass = ignoredMethodSignature.getDeclClassType();
+            List<Call> calls = ignoredCalls.get(notInstantiatedClass);
             if (calls == null) {
               calls = new ArrayList<>();
               calls.add(new Call(method.getSignature(), ignoredMethodSignature));
-              ignoredCalls.put(ignoredMethodSignature.getDeclClassType(), calls);
+              ignoredCalls.put(notInstantiatedClass, calls);
             } else {
               calls.add(new Call(method.getSignature(), ignoredMethodSignature));
             }
           });
 
-      return Stream.concat(result, implAndOverrides.stream());
+      // find the concrete dispatch of all possible dispatches
+      Set<MethodSignature> concreteCallTargets =
+          implAndOverrides.stream()
+              .map(
+                  methodSignature ->
+                      MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .collect(Collectors.toSet());
+
+      // the class of the actual method call is instantiated
+      if (instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
+        MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
+            .ifPresent(concreteCallTargets::add);
+      }
+
+      return concreteCallTargets.stream();
     }
+  }
+
+  /**
+   * Pre-processing of a method in the RTA call graph algorithm
+   *
+   * <p>Before processing the method, all instantiated types are collected inside the body of the
+   * sourceMethod.
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist
+   * @param cg the current cg
+   */
+  @Override
+  public void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    SootMethod method =
+        view.getClass(sourceMethod.getDeclClassType())
+            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
+            .orElse(null);
+    if (method == null) return;
+
+    collectInstantiatedClassesInMethod(method);
   }
 
   /**
@@ -195,14 +230,20 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
           if (newEdges != null) {
             newEdges.forEach(
                 call -> {
-                  if (cg.containsMethod(call.target)) {
+                  MethodSignature concreteTarget =
+                      MethodDispatchResolver.resolveConcreteDispatch(view, call.target)
+                          .orElse(null);
+                  if (concreteTarget == null) {
+                    return;
+                  }
+                  if (cg.containsMethod(concreteTarget)) {
                     // method is already analyzed or is in the work list, simply add the call
-                    cg.addCall(call.source, call.target);
+                    cg.addCall(call.source, concreteTarget);
                   } else {
                     // new target method found that has to be analyzed
-                    cg.addMethod(call.target);
-                    cg.addCall(call.source, call.target);
-                    workList.push(call.target);
+                    cg.addMethod(concreteTarget);
+                    cg.addCall(call.source, concreteTarget);
+                    workList.push(concreteTarget);
                   }
                 });
             // can be removed because the instantiated class will be considered in future resolves

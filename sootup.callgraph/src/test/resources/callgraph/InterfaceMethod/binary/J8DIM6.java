@@ -30,8 +30,7 @@ interface CombinedInterface extends SomeInterface, AnotherInterface {
           @DirectCall(name = "method", line = 33, resolvedTargets = "Lj8dim/AnotherInterface;")
   })*/
   default void method() {
-    // TODO: WALA can't handle the following lines
-   // SomeInterface.super.method();
-   // AnotherInterface.super.method();
+    SomeInterface.super.method();
+    AnotherInterface.super.method();
   }
 }
