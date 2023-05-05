@@ -93,14 +93,4 @@ public interface CallGraph {
    */
   @Nonnull
   MutableCallGraph copy();
-
-  /**
-   * This method exports the call graph in a human-readable string. The String lists all nodes in
-   * the call graph. For each node it also lists the outgoing and incoming edges. An outgoing edge
-   * is marked by a "To" and an incoming edge by a "From" The nodes, incoming edges, and outgoing
-   * edges are sorted in order by the classname, method name, parameter list
-   *
-   * @return a string containing all nodes and edges of the call graph.
-   */
-  String toStringSorted();
 }

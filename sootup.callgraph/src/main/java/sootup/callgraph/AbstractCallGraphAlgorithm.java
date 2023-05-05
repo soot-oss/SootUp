@@ -4,7 +4,7 @@ package sootup.callgraph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann, Ben Hermann, Markus Schmidt and others
+ * Copyright (C) 2019-2022 Christian Brüggemann, Ben Hermann, Markus Schmidt, Jonas Klauke and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,10 +28,15 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -77,6 +82,22 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();
 
+    // implicit edge from entry point to clinit
+    entryPoints.forEach(
+        methodSignature -> {
+          SootMethod clintMethod =
+              view.getMethod(methodSignature.getDeclClassType().getStaticInitializer())
+                  .orElse(null);
+          if (clintMethod == null) return;
+          MethodSignature clinitSig = clintMethod.getSignature();
+          if (!cg.containsMethod(methodSignature)) cg.addMethod(methodSignature);
+          if (!cg.containsMethod(clinitSig)) cg.addMethod(clinitSig);
+          if (!cg.containsCall(methodSignature, clinitSig)) {
+            cg.addCall(methodSignature, clinitSig);
+            workList.push(clinitSig);
+          }
+        });
+
     processWorkList(view, workList, processed, cg);
     return cg;
   }
@@ -100,23 +121,43 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       MutableCallGraph cg) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
+      // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
+      // perform pre-processing if needed
+      preProcessingMethod(view, currentMethodSignature, workList, cg);
+
+      // process the method
       if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
 
-      Stream<MethodSignature> invocationTargets =
-          resolveAllCallsFromSourceMethod(view, currentMethodSignature);
+      // transform the method signature to the actual SootMethod
+      SootMethod currentMethod =
+          view.getClass(currentMethodSignature.getDeclClassType())
+              .flatMap(c -> c.getMethod(currentMethodSignature.getSubSignature()))
+              .orElse(null);
 
-      invocationTargets.forEach(
-          t -> {
-            if (!cg.containsMethod(t)) cg.addMethod(t);
-            if (!cg.containsCall(currentMethodSignature, t)) {
-              cg.addCall(currentMethodSignature, t);
-              workList.push(t);
-            }
-          });
+      // get all call targets of invocations in the method body
+      Stream<MethodSignature> invocationTargets = resolveAllCallsFromSourceMethod(currentMethod);
+
+      // get all call targets of implicit edges in the method body
+      Stream<MethodSignature> implicitTargets =
+          resolveAllImplicitCallsFromSourceMethod(view, currentMethod);
+
+      // save calls in the call graphs
+      Stream.concat(invocationTargets, implicitTargets)
+          .forEach(
+              t -> {
+                if (!cg.containsMethod(t)) cg.addMethod(t);
+                if (!cg.containsCall(currentMethodSignature, t)) {
+                  cg.addCall(currentMethodSignature, t);
+                  workList.push(t);
+                }
+              });
+
+      // set method as processed
       processed.add(currentMethodSignature);
 
+      // perform post-processing if needed
       postProcessingMethod(view, currentMethodSignature, workList, cg);
     }
   }
@@ -126,27 +167,94 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * invoke statement in the body of the source method that is implemented in the corresponding call
    * graph algorithm.
    *
-   * @param view it contains all classes.
    * @param sourceMethod this signature is used to access the statements contained method body of
    *     the specified method
    * @return a stream containing all resolved callable method signatures by the given source method
    */
   @Nonnull
-  Stream<MethodSignature> resolveAllCallsFromSourceMethod(
-      View<? extends SootClass<?>> view, MethodSignature sourceMethod) {
-    SootMethod currentMethodCandidate =
-        view.getClass(sourceMethod.getDeclClassType())
-            .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
-            .orElse(null);
-    if (currentMethodCandidate == null) return Stream.empty();
+  Stream<MethodSignature> resolveAllCallsFromSourceMethod(SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
-    if (currentMethodCandidate.hasBody()) {
-      return currentMethodCandidate.getBody().getStmtGraph().nodes().stream()
-          .filter(Stmt::containsInvokeExpr)
-          .flatMap(s -> resolveCall(currentMethodCandidate, s.getInvokeExpr()));
-    } else {
-      return Stream.empty();
-    }
+    return sourceMethod.getBody().getStmtGraph().nodes().stream()
+        .filter(Stmt::containsInvokeExpr)
+        .flatMap(s -> resolveCall(sourceMethod, s.getInvokeExpr()));
+  }
+
+  /**
+   * It resolves all implicit calls caused by the given source method
+   *
+   * @param view it contains the class data
+   * @param sourceMethod the inspected source method
+   * @return a stream containing all method signatures of targets of implicit calls.
+   */
+  @Nonnull
+  Stream<MethodSignature> resolveAllImplicitCallsFromSourceMethod(
+      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+
+    // collect all static initializer calls
+    Stream<MethodSignature> staticInitializerStream =
+        resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
+    return staticInitializerStream;
+  }
+
+  /**
+   * It resolves all clinit calls caused by the given source method
+   *
+   * @param view it contains the class data
+   * @param sourceMethod the inspected source method
+   * @return a stream containing all method signatures of targets of implicit calls.
+   */
+  @Nonnull
+  Stream<MethodSignature> resolveAllStaticInitializerCallsFromSourceMethod(
+      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+
+    Stream.Builder<ClassType> targetsToStaticInitializer = Stream.builder();
+
+    InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
+
+    sourceMethod
+        .getBody()
+        .getStmts()
+        .forEach(
+            stmt -> {
+              // static field usage
+              if (stmt.containsFieldRef() && stmt.getFieldRef() instanceof JStaticFieldRef) {
+                targetsToStaticInitializer.add(
+                    stmt.getFieldRef().getFieldSignature().getDeclClassType());
+              }
+
+              // constructor calls
+              if (stmt instanceof JAssignStmt) {
+                Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+                instantiateVisitor.init();
+                rightOp.accept(instantiateVisitor);
+                ClassType classType = instantiateVisitor.getResult();
+                if (classType != null) {
+                  targetsToStaticInitializer.add(classType);
+                }
+              }
+
+              // static method calls
+              if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof JStaticInvokeExpr) {
+                targetsToStaticInitializer.add(
+                    stmt.getInvokeExpr().getMethodSignature().getDeclClassType());
+              }
+            });
+
+    return targetsToStaticInitializer
+        .build()
+        .flatMap(
+            classType ->
+                Stream.concat(
+                    Stream.of(classType),
+                    typeHierarchy.incompleteSuperClassesOf(classType).stream()))
+        .filter(Objects::nonNull)
+        .map(classType -> view.getMethod(classType.getStaticInitializer()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .map(SootClassMember::getSignature);
   }
 
   /**
@@ -191,20 +299,32 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * This method enables optional post processing of a method in the call graph algorithm
+   * This method enables optional pre-processing of a method in the call graph algorithm
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that might be extended
+   * @param cg the current cg that might be extended
+   */
+  public abstract void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg);
+
+  /**
+   * This method enables optional post-processing of a method in the call graph algorithm
    *
    * @param view it contains classes and the type hierarchy.
    * @param sourceMethod the processed method
    * @param workList the current worklist that might be extended
    * @param cg the current cg that might be extended
    */
-  public void postProcessingMethod(
+  public abstract void postProcessingMethod(
       View<? extends SootClass<?>> view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
-    // is only implemented if it is needed in the call graph algorithm
-  }
+      @Nonnull MutableCallGraph cg);
 
   @Nonnull
   @Override
