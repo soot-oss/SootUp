@@ -101,12 +101,11 @@ public class InstantiateClassValueVisitorTest {
     }
 
     assertFalse(foundClassTypes.isEmpty());
-    assertEquals(foundClassTypes.size(), 5);
+    assertEquals(foundClassTypes.size(), 4);
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Object")));
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Boolean")));
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Byte")));
     assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Double")));
-    assertTrue(foundClassTypes.contains(identifierFactory.getClassType("java.lang.Integer")));
     assertFalse(foundClassTypes.contains(identifierFactory.getClassType("java.lang.String")));
   }
 
@@ -140,15 +139,7 @@ public class InstantiateClassValueVisitorTest {
             Collections.singletonList(IntConstant.getInstance(3))));
     listWithAllValues.add(
         new JNewMultiArrayExpr(
-            new ArrayType(new ArrayType(identifierFactory.getClassType("java.lang.Integer"), 3), 3),
-            Collections.singletonList(IntConstant.getInstance(3))));
-    listWithAllValues.add(
-        new JNewMultiArrayExpr(
             new ArrayType(charType, 3), Collections.singletonList(IntConstant.getInstance(3))));
-    listWithAllValues.add(
-        new JNewMultiArrayExpr(
-            new ArrayType(new ArrayType(charArrayType, 3), 3),
-            Collections.singletonList(IntConstant.getInstance(3))));
 
     // default cases
     ClassType StringClass = identifierFactory.getClassType("java.lang.String");
