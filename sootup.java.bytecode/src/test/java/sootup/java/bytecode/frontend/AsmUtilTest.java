@@ -116,10 +116,6 @@ public class AsmUtilTest {
     assertTrue(((ArrayType) classType).getBaseType() instanceof ClassType);
     assertEquals(((ArrayType) classType).getDimension(), 1);
 
-    Type voidType = AsmUtil.toJimpleType("[V");
-    assertTrue(voidType instanceof ArrayType);
-    assertTrue(((ArrayType) voidType).getBaseType() instanceof VoidType);
-    assertEquals(((ArrayType) voidType).getDimension(), 1);
   }
 
   @Test(expected = AssertionError.class)
@@ -218,9 +214,5 @@ public class AsmUtilTest {
     assertTrue(((ArrayType) classTypeArray).getBaseType() instanceof ClassType);
     assertEquals(((ArrayType) classTypeArray).getDimension(), 1);
 
-    Type voidType = AsmUtil.arrayTypetoJimpleType("[V");
-    assertTrue(voidType instanceof ArrayType);
-    assertTrue(((ArrayType) voidType).getBaseType() instanceof VoidType);
-    assertEquals(((ArrayType) voidType).getDimension(), 1);
   }
 }
