@@ -110,7 +110,7 @@ public class TypePromotionVisitor extends TypeChecker {
           || highClass == AugIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high+ "!");
+        logger.error(low + " cannot be promoted with the supertype " + high + "!");
         return null;
       }
     } else if (lowClass == AugIntegerTypes.Integer127Type.class) {
@@ -137,7 +137,7 @@ public class TypePromotionVisitor extends TypeChecker {
         return null;
       }
     } else {
-      logger.error(low + " cannot be promoted with the supertype " + high+ "!");
+      logger.error(low + " cannot be promoted with the supertype " + high + "!");
       return null;
     }
   }
