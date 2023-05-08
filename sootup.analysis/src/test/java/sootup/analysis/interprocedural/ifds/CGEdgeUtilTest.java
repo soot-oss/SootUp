@@ -239,25 +239,25 @@ public class CGEdgeUtilTest {
 
   @Test
   public void testCallGraphEdgeType() {
-    CallGraphEdgeType invalidEnum=CallGraphEdgeType.INVALID;
-    CallGraphEdgeType staticEnum=CallGraphEdgeType.STATIC;
-    CallGraphEdgeType virtualEnum=CallGraphEdgeType.VIRTUAL;
-    CallGraphEdgeType interfaceEnum=CallGraphEdgeType.INTERFACE;
-    CallGraphEdgeType specialEnum=CallGraphEdgeType.SPECIAL;
-    CallGraphEdgeType dynamicEnum=CallGraphEdgeType.DYNAMIC;
-    CallGraphEdgeType clinitEnum=CallGraphEdgeType.CLINIT;
-    CallGraphEdgeType genericFakeEnum=CallGraphEdgeType.GENERIC_FAKE;
-    CallGraphEdgeType threadEnum=CallGraphEdgeType.THREAD;
-    CallGraphEdgeType executorEnum=CallGraphEdgeType.EXECUTOR;
-    CallGraphEdgeType asynctaskEnum=CallGraphEdgeType.ASYNCTASK;
-    CallGraphEdgeType finalizeEnum=CallGraphEdgeType.FINALIZE;
-    CallGraphEdgeType handlerEnum=CallGraphEdgeType.HANDLER;
-    CallGraphEdgeType invokeFinalizeEnum=CallGraphEdgeType.INVOKE_FINALIZE;
-    CallGraphEdgeType privilegedEnum=CallGraphEdgeType.PRIVILEGED;
-    CallGraphEdgeType reflInvokeEnum=CallGraphEdgeType.REFL_INVOKE;
-    CallGraphEdgeType newinstanceEnum=CallGraphEdgeType.NEWINSTANCE;
-    CallGraphEdgeType refConstrNewinstanceEnum=CallGraphEdgeType.REFL_CONSTR_NEWINSTANCE;
-    CallGraphEdgeType refClassNewinstanceEnum=CallGraphEdgeType.REFL_CLASS_NEWINSTANCE;
+    CallGraphEdgeType invalidEnum = CallGraphEdgeType.INVALID;
+    CallGraphEdgeType staticEnum = CallGraphEdgeType.STATIC;
+    CallGraphEdgeType virtualEnum = CallGraphEdgeType.VIRTUAL;
+    CallGraphEdgeType interfaceEnum = CallGraphEdgeType.INTERFACE;
+    CallGraphEdgeType specialEnum = CallGraphEdgeType.SPECIAL;
+    CallGraphEdgeType dynamicEnum = CallGraphEdgeType.DYNAMIC;
+    CallGraphEdgeType clinitEnum = CallGraphEdgeType.CLINIT;
+    CallGraphEdgeType genericFakeEnum = CallGraphEdgeType.GENERIC_FAKE;
+    CallGraphEdgeType threadEnum = CallGraphEdgeType.THREAD;
+    CallGraphEdgeType executorEnum = CallGraphEdgeType.EXECUTOR;
+    CallGraphEdgeType asynctaskEnum = CallGraphEdgeType.ASYNCTASK;
+    CallGraphEdgeType finalizeEnum = CallGraphEdgeType.FINALIZE;
+    CallGraphEdgeType handlerEnum = CallGraphEdgeType.HANDLER;
+    CallGraphEdgeType invokeFinalizeEnum = CallGraphEdgeType.INVOKE_FINALIZE;
+    CallGraphEdgeType privilegedEnum = CallGraphEdgeType.PRIVILEGED;
+    CallGraphEdgeType reflInvokeEnum = CallGraphEdgeType.REFL_INVOKE;
+    CallGraphEdgeType newinstanceEnum = CallGraphEdgeType.NEWINSTANCE;
+    CallGraphEdgeType refConstrNewinstanceEnum = CallGraphEdgeType.REFL_CONSTR_NEWINSTANCE;
+    CallGraphEdgeType refClassNewinstanceEnum = CallGraphEdgeType.REFL_CLASS_NEWINSTANCE;
 
     assertFalse(invalidEnum.isAsyncTask());
     assertFalse(staticEnum.isAsyncTask());
@@ -558,6 +558,5 @@ public class CGEdgeUtilTest {
     assertFalse(newinstanceEnum.isReflInvoke());
     assertFalse(refConstrNewinstanceEnum.isReflInvoke());
     assertFalse(refClassNewinstanceEnum.isReflInvoke());
-
   }
 }
