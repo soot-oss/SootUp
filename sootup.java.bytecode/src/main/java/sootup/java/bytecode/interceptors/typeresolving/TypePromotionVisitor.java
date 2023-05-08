@@ -96,42 +96,48 @@ public class TypePromotionVisitor extends TypeChecker {
   }
 
   private Type promote(Type low, Type high) {
-    if (low instanceof AugIntegerTypes.Integer1Type) {
-      if (high instanceof PrimitiveType.IntType) {
+    Class<?> lowClass = low.getClass();
+    Class<?> highClass = high.getClass();
+    if (lowClass == AugIntegerTypes.Integer1Type.class) {
+      if (highClass == PrimitiveType.IntType.class) {
         return AugIntegerTypes.getInteger127();
-      } else if (high instanceof PrimitiveType.ShortType) {
+      } else if (highClass == PrimitiveType.ShortType.class) {
         return PrimitiveType.getByte();
-      } else if (high instanceof PrimitiveType.IntType) {
+      } else if (highClass == PrimitiveType.BooleanType.class
+          || highClass == PrimitiveType.ByteType.class
+          || highClass == PrimitiveType.CharType.class
+          || highClass == AugIntegerTypes.Integer127Type.class
+          || highClass == AugIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high.toString() + "!");
+        logger.error(low + " cannot be promoted with the supertype " + high+ "!");
         return null;
       }
-    } else if (low instanceof AugIntegerTypes.Integer127Type) {
-      if (high instanceof PrimitiveType.ShortType) {
+    } else if (lowClass == AugIntegerTypes.Integer127Type.class) {
+      if (highClass == PrimitiveType.ShortType.class) {
         return PrimitiveType.getByte();
-      } else if (high instanceof PrimitiveType.IntType) {
+      } else if (highClass == PrimitiveType.IntType.class) {
         return AugIntegerTypes.getInteger127();
-      } else if (high instanceof PrimitiveType.ByteType
-          || high instanceof PrimitiveType.CharType
-          || high instanceof AugIntegerTypes.Integer32767Type) {
+      } else if (highClass == PrimitiveType.ByteType.class
+          || highClass == PrimitiveType.CharType.class
+          || highClass == AugIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high.toString() + "!");
+        logger.error(low + " cannot be promoted with the supertype " + high + "!");
         return null;
       }
-    } else if (low instanceof AugIntegerTypes.Integer32767Type) {
-      if (high instanceof PrimitiveType.IntType) {
+    } else if (lowClass == AugIntegerTypes.Integer32767Type.class) {
+      if (highClass == PrimitiveType.IntType.class) {
         return AugIntegerTypes.getInteger32767();
-      } else if (high instanceof PrimitiveType.ShortType
-          || high instanceof PrimitiveType.CharType) {
+      } else if (highClass == PrimitiveType.ShortType.class
+          || highClass == PrimitiveType.CharType.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high.toString() + "!");
+        logger.error(low + " cannot be promoted with the supertype " + high + "!");
         return null;
       }
     } else {
-      logger.error(low + " cannot be promoted with the supertype " + high.toString() + "!");
+      logger.error(low + " cannot be promoted with the supertype " + high+ "!");
       return null;
     }
   }
