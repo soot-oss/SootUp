@@ -313,7 +313,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
 
   @Test
   public void testInstantiatedClassInClinit() {
-    CallGraph cg = loadCallGraph("ClinitCall", "cic.Class");
+    CallGraph cg = loadCallGraph("RTA", false, "cic.Class");
     MethodSignature instantiatedClassMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cic.SubClass"),
@@ -329,5 +329,17 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod));
     assertFalse(cg.containsCall(mainMethodSignature, nonInstantiatedClassMethod));
+  }
+
+  @Test
+  public void testLaterInstantiatedClass() {
+    CallGraph cg = loadCallGraph("RTA", false, "lic.Class");
+    MethodSignature instantiatedClassMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("lic.InstantiatedClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod));
   }
 }
