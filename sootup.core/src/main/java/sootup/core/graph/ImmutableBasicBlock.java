@@ -22,7 +22,8 @@ public class ImmutableBasicBlock implements BasicBlock<ImmutableBasicBlock> {
   }
 
   @Override
-  public List<ImmutableBasicBlock> getExceptionalPredecessors() {
+  @Nonnull
+  public Map<ClassType, ImmutableBasicBlock> getExceptionalPredecessors() {
     throw new UnsupportedOperationException("not implemented");
   }
 

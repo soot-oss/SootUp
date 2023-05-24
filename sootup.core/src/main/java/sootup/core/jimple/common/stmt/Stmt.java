@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -33,6 +34,7 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.Acceptor;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
@@ -54,8 +56,10 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
     return Collections.emptyList();
   }
 
-  /** Returns a list of Values defined in this Stmt. */
-  // TODO: [ms] naming/signature its just a single Def..always.
+  /**
+   * Returns a list of Values defined in this Stmt. There are languages which allow multiple return
+   * types/assignments so we return a List
+   */
   @Nonnull
   public List<Value> getDefs() {
     return Collections.emptyList();
@@ -135,5 +139,19 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   public StmtPositionInfo getPositionInfo() {
     return positionInfo;
+  }
+
+  /**
+   * Use newUse to replace the oldUse in oldStmt.
+   *
+   * @param oldUse a Value in the useList of oldStmt.
+   * @param newUse a Value is to replace oldUse
+   * @return a new Stmt with newUse
+   */
+  @Nullable
+  public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
+    ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
+    accept(visitor);
+    return visitor.getResult();
   }
 }

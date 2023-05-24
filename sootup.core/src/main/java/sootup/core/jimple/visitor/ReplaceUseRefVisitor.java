@@ -52,7 +52,7 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     if (ref.getBase() == oldUse) {
       setResult(ref.withBase((Local) newUse));
     } else {
-      errorHandler(ref);
+      setResult(ref);
     }
   }
 
@@ -63,17 +63,12 @@ public class ReplaceUseRefVisitor extends AbstractRefVisitor<Ref> {
     } else if (ref.getIndex() == oldUse) {
       setResult(ref.withIndex((Immediate) newUse));
     } else {
-      errorHandler(ref);
+      setResult(ref);
     }
   }
 
   @Override
   public void defaultCaseRef(@Nonnull Ref ref) {
     setResult(ref);
-  }
-
-  public void errorHandler(@Nonnull Ref ref) {
-    throw new IllegalArgumentException(
-        "The given oldUse which should be replaced is not a current use of " + ref + "!");
   }
 }

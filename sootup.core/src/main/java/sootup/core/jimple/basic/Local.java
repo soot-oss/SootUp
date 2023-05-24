@@ -22,11 +22,12 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
@@ -60,10 +61,13 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     this.position = position;
   }
 
-  // Can be safely suppressed, JimpleComparator performs this check
-  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+  /** Hint: the naming is just an indicator! */
+  public boolean isFieldLocal() {
+    return getName().charAt(0) != '$';
+  }
+
   @Override
-  public boolean equals(Object o) {
+  public final boolean equals(Object o) {
     if (!(o instanceof Local)) {
       return false;
     }
@@ -71,7 +75,7 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     return Objects.hashCode(name);
   }
 
@@ -117,6 +121,46 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   @Nonnull
   public Position getPosition() {
     return position;
+  }
+
+  public List<AbstractDefinitionStmt<Local, Value>> getDefsOfLocal(List<Stmt> defs) {
+    List<AbstractDefinitionStmt<Local, Value>> localDefs = new ArrayList<>();
+    for (Stmt stmt : defs) {
+      if (stmt instanceof AbstractDefinitionStmt
+          && ((AbstractDefinitionStmt<Local, Value>) stmt).getLeftOp().equals(this)) {
+        localDefs.add((AbstractDefinitionStmt<Local, Value>) stmt);
+      }
+    }
+    return localDefs;
+  }
+
+  /**
+   * Get all definition-stmts which define the given local used by the given stmt.
+   *
+   * @param graph a stmt graph which contains the given stmts.
+   * @param stmt a stmt which uses the given local.
+   */
+  public List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Stmt stmt) {
+    if (!stmt.getUses().contains(this)) {
+      throw new RuntimeException(stmt + " doesn't use the local " + this);
+    }
+    List<Stmt> defStmts = new ArrayList<>();
+    Set<Stmt> visited = new HashSet<>();
+
+    Deque<Stmt> queue = new ArrayDeque<>();
+    queue.add(stmt);
+    while (!queue.isEmpty()) {
+      Stmt s = queue.removeFirst();
+      if (!visited.contains(s)) {
+        visited.add(s);
+        if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(this)) {
+          defStmts.add(s);
+        } else {
+          queue.addAll(graph.predecessors(s));
+        }
+      }
+    }
+    return defStmts;
   }
 
   @Override

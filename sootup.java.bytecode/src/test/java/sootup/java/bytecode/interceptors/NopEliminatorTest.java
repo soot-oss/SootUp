@@ -37,13 +37,13 @@ public class NopEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body testBody = builder.build();
 
-    new NopEliminator().interceptBody(builder);
+    new NopEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(inputStmtGraph.nodes().size() - 1, actualGraph.nodes().size());
+    assertEquals(inputStmtGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
 
   /**
@@ -57,10 +57,10 @@ public class NopEliminatorTest {
   public void testNoJNops() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new NopEliminator().interceptBody(testBuilder);
+    new NopEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getStmtGraph().nodes(), processedBody.getStmtGraph().nodes());
+    assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
   }
 
   /**

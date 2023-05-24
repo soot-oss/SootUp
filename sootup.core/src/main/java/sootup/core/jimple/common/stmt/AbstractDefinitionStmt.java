@@ -23,9 +23,9 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.types.Type;
@@ -60,15 +60,20 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   @Override
   @Nonnull
   public List<Value> getDefs() {
-    return Collections.singletonList(leftOp);
+    final List<Value> defs = new ArrayList<>();
+    defs.add(leftOp);
+    return defs;
   }
 
   @Override
   @Nonnull
   public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(leftOp.getUses());
+    final List<Value> defsuses = leftOp.getUses();
+    final List<Value> uses = rightOp.getUses();
+    List<Value> list = new ArrayList<>(defsuses.size() + uses.size() + 1);
+    list.addAll(defsuses);
     list.add(rightOp);
-    list.addAll(rightOp.getUses());
+    list.addAll(uses);
     return list;
   }
 
@@ -81,4 +86,6 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   public boolean branches() {
     return false;
   }
+
+  public abstract Stmt withNewDef(@Nonnull Local newLocal);
 }

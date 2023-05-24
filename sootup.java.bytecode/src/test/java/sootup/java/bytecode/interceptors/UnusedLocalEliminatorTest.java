@@ -25,7 +25,7 @@ public class UnusedLocalEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body originalBody = builder.build();
 
-    new UnusedLocalEliminator().interceptBody(builder);
+    new UnusedLocalEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     Set<Local> originalLocals = originalBody.getLocals();
@@ -44,7 +44,7 @@ public class UnusedLocalEliminatorTest {
   public void testRemoveNothing() {
     Body.BodyBuilder builder = createBody(false);
     Body originalBody = builder.build();
-    new UnusedLocalEliminator().interceptBody(builder);
+    new UnusedLocalEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 
     assertArrayEquals(originalBody.getStmts().toArray(), processedBody.getStmts().toArray());

@@ -26,6 +26,7 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * A BodyInterceptor that removes all unreachable stmts from the given Body.
@@ -35,7 +36,7 @@ import sootup.core.transform.BodyInterceptor;
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     StmtGraph<?> graph = builder.getStmtGraph();
 
@@ -56,7 +57,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     // remove unreachable stmts from StmtGraph
     Queue<Stmt> removeQ = new ArrayDeque<>();
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       if (!reachableStmts.contains(stmt)) {
         removeQ.add(stmt);
       }

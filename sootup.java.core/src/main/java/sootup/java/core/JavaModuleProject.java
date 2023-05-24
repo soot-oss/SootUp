@@ -63,10 +63,11 @@ public class JavaModuleProject extends JavaProject {
 
   @Deprecated
   @Nonnull
-  public JavaModuleView createOnDemandView(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    return new JavaModuleView(this, classLoadingOptionsSpecifier);
+  public JavaModuleView configBodyInterceptors(
+      JavaModuleView view,
+      Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+          classLoadingOptionsSpecifier) {
+    view.configBodyInterceptors(classLoadingOptionsSpecifier);
+    return view;
   }
 }

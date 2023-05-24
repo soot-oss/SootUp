@@ -54,7 +54,7 @@ public class LocalNameStandardizerTest {
   Local r0 = JavaJimple.newLocal("r0", otherRefType);
   Local r1 = JavaJimple.newLocal("r1", otherRefType);
   Local r2 = JavaJimple.newLocal("r2", refType);
-  Local e0 = JavaJimple.newLocal("e0", UnknownType.getInstance());
+  Local e0 = JavaJimple.newLocal("u0", UnknownType.getInstance());
 
   Set<Local> expectedLocals = ImmutableUtils.immutableSet(z0, d0, i0, i1, r0, r1, r2, e0);
 
@@ -88,7 +88,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder);
+    standardizer.interceptBody(builder, null);
 
     Body expectedBody = createExpectedBody();
 

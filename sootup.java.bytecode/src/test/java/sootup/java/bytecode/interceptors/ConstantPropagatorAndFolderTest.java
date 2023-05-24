@@ -37,7 +37,7 @@ public class ConstantPropagatorAndFolderTest {
   public void testModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder);
+    new ConstantPropagatorAndFolder().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -61,7 +61,7 @@ public class ConstantPropagatorAndFolderTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder);
+    new ConstantPropagatorAndFolder().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();

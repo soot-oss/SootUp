@@ -81,8 +81,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
-        <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
-        <jacoco-badge-phase>verify</jacoco-badge-phase>
         <slf4j.version>2.0.5</slf4j.version>
         <slf4j-simple.version>2.0.5</slf4j-simple.version>
         <guava.version>31.1-jre</guava.version>
@@ -139,9 +137,6 @@
                     <value>!false</value>
                 </property>
             </activation>
-            <properties>
-                <jacoco-badge-phase>none</jacoco-badge-phase>
-            </properties>
         </profile>
         <profile>
             <id>deploy</id>

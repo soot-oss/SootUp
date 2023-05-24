@@ -80,4 +80,9 @@ public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefiniti
   public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
   }
+
+  @Override
+  public Stmt withNewDef(@Nonnull Local newLocal) {
+    return withLocal(newLocal);
+  }
 }

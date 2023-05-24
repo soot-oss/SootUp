@@ -30,6 +30,7 @@ import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * Transformers that inlines returns that cast and return an object. We take
@@ -61,11 +62,11 @@ import sootup.core.transform.BodyInterceptor;
 public class CastAndReturnInliner implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     StmtGraph<?> originalGraph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(originalGraph.nodes())) {
+    for (Stmt stmt : Lists.newArrayList(originalGraph.getNodes())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }

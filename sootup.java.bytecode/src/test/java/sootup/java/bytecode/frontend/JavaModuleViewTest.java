@@ -91,9 +91,10 @@ public class JavaModuleViewTest {
 
     Collection<JavaSootClass> classes =
         view.getModuleClasses(JavaModuleInfo.getUnnamedModuleInfo().getModuleSignature());
-    assertTrue(
-        classes.size() > 110
-            && classes.size() < 150); // ~amount of files/testcases in the refered directory
+
+    // ~amount of files/testcases in the referred directory
+    assertTrue(classes.size() > 110);
+    assertTrue(classes.size() < 150);
   }
 
   @Test

@@ -34,6 +34,7 @@ import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 /**
  * @author Zun Wang
@@ -50,7 +51,7 @@ import sootup.core.types.ClassType;
 public class TrapTightener implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
     // #486

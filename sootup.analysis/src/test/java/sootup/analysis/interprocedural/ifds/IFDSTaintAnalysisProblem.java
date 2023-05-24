@@ -112,13 +112,13 @@ public class IFDSTaintAnalysisProblem
         public Set<Value> computeTargets(Value source) {
           // source = {v.f*} some local and all its fields
           // Kill T = ...
-          if (source.equivTo(leftOp)) {
+          if (source == leftOp) {
             return Collections.emptySet();
           }
           Set<Value> res = new HashSet<Value>();
           res.add(source);
           // x = T
-          if (source.equivTo(rightOp)) {
+          if (source == rightOp) {
             res.add(leftOp);
           }
           return res;
@@ -206,11 +206,11 @@ public class IFDSTaintAnalysisProblem
       return new FlowFunction<Value>() {
         @Override
         public Set<Value> computeTargets(Value source) {
-          Set<Value> ret = new HashSet<Value>();
+          Set<Value> ret = new HashSet<>();
           if (source instanceof JStaticFieldRef) {
             ret.add(source);
           }
-          if (callSite instanceof AbstractDefinitionStmt && source.equivTo(retOp)) {
+          if (callSite instanceof AbstractDefinitionStmt && source == retOp) {
             AbstractDefinitionStmt defnStmt = (AbstractDefinitionStmt) callSite;
             ret.add(defnStmt.getLeftOp());
           }
@@ -273,7 +273,7 @@ public class IFDSTaintAnalysisProblem
           Set<Value> ret = new HashSet<Value>();
           ret.add(source);
           // taint leftOp if base is tainted
-          if (baseF != null && leftOpF != null && source.equivTo(baseF)) {
+          if (baseF != null && leftOpF != null && source == baseF) {
             ret.add(leftOpF);
           }
           // taint leftOp if one of the args is tainted

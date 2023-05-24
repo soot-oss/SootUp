@@ -59,8 +59,8 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
   @Nonnull
   @Override
-  public Collection<Stmt> nodes() {
-    return backingGraph.nodes();
+  public Collection<Stmt> getNodes() {
+    return backingGraph.getNodes();
   }
 
   @Nonnull

@@ -116,6 +116,13 @@ public class JavaView extends AbstractView<JavaSootClass> {
     return Collections.emptyList();
   }
 
+  public void configBodyInterceptors(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+  }
+
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @Nonnull

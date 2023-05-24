@@ -9,12 +9,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Utils;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Markus Schmidt */
 @Category(Java8Test.class)
-// FIXME: [ms] rename test (and in bytecodefrontend too)
+// FIXME: [ms] rename test (and in bytecodefrontend too) as it is not an infinite loop!
 public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -41,7 +40,6 @@ public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    Utils.printJimpleForTest(method);
     assertJimpleStmts(method, expectedBodyStmts());
   }
 }

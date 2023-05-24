@@ -1,4 +1,4 @@
-package sootup.core.graph.iterator;
+package sootup.core.graph;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -24,9 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Trap;
-import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
@@ -58,7 +56,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, @Nonnull List<Trap> traps) {
     this.graph = graph;
-    returnedNodes = new HashSet<>(graph.nodes().size(), 1);
+    returnedNodes = new HashSet<>(graph.getNodes().size(), 1);
     Stmt startingStmt = graph.getStartingStmt();
     if (startingStmt != null) {
       returnedNodes.add(startingStmt);
@@ -180,10 +178,10 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   public boolean hasNext() {
     final boolean hasIteratorMoreElements = cachedNextStmt != null;
     final int returnedSize = returnedNodes.size();
-    final int actualSize = graph.nodes().size();
+    final int actualSize = graph.getNodes().size();
     if (!hasIteratorMoreElements && returnedSize != actualSize) {
       String info =
-          graph.nodes().stream()
+          graph.getNodes().stream()
               .filter(n -> !returnedNodes.contains(n))
               .collect(Collectors.toList())
               .toString();

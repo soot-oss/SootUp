@@ -1,6 +1,7 @@
 package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
 import java.util.Collection;
@@ -16,21 +17,17 @@ import sootup.core.util.DotExporter;
 /** @author Zun Wang */
 public class AssertUtils {
 
-  // assert whether two bodys have the same locals
+  // assert whether two bodies have the same locals
   public static void assertLocalsEquiv(Body expected, Body actual) {
     Set<Local> expected_locals = expected.getLocals();
     Set<Local> actual_locals = actual.getLocals();
     assertNotNull(expected_locals);
     assertNotNull(actual_locals);
     assertEquals(expected_locals.size(), actual_locals.size());
-    boolean isEqual = true;
     for (Local local : actual_locals) {
-      if (!expected_locals.contains(local)) {
-        isEqual = false;
-        break;
-      }
+      assertTrue(expected_locals.contains(local));
+      break;
     }
-    assertTrue(isEqual);
   }
 
   // assert whether two bodys have the same stmtGraphs
