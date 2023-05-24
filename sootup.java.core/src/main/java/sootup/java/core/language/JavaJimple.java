@@ -22,6 +22,7 @@ package sootup.java.core.language;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
@@ -99,5 +100,10 @@ public class JavaJimple extends Jimple {
     return new MethodType(
         getIdentifierFactory().getMethodSubSignature("__METHODTYPE__", returnType, parameterTypes),
         getIdentifierFactory().getClassType("java.lang.invoke.MethodType"));
+  }
+
+  /** Constructs a Local with the given name and type. */
+  public static JavaLocal newLocal(String name, Type t) {
+    return new JavaLocal(name, t, Collections.emptyList());
   }
 }

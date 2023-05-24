@@ -193,6 +193,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       trapHandler.put(tc.handler, null);
     }
 
+    /* build body (add stmts, locals, traps, etc.) */
+    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    Body.BodyBuilder bodyBuilder = Body.builder(graph);
+    final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+
     /* convert instructions */
     try {
       convert();
@@ -200,13 +205,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
-    /* build body (add stmts, locals, traps, etc.) */
-    final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder bodyBuilder = Body.builder(graph);
+    Set<Local> bodyLocals =
+        locals.stream()
+            .filter(
+                Objects
+                    ::nonNull) // [ms] find out why some Local indices are not assigned(null): guess
+                               // because of dword values i.e. +=2 ?
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    bodyBuilder.setLocals(bodyLocals);
 
     bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
     try {
-      arrangeStmts(graph, bodyBuilder);
+      arrangeStmts(graph, preambleStmts, bodyBuilder);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -1857,6 +1867,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return null;
   }
 
+  @Nonnull
   private StmtPositionInfo getFirstLineOfMethod() {
     for (AbstractInsnNode node : instructions) {
       if (node instanceof LineNumberNode) {
@@ -1876,15 +1887,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
-      Local l = getOrCreateLocal(localIdx++);
+      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
+      locals.set(localIdx++, thisLocal);
       final JIdentityStmt<JThisRef> stmt =
-          Jimple.newIdentityStmt(l, Jimple.newThisRef(declaringClass), methodPosInfo);
+          Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
-      // [BH] assumption: parameterlocals do not exist yet -> create with annotation
+      // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
               determineLocalName(localIdx),
@@ -1905,11 +1917,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
     }
 
-    Set<Local> bodyLocals =
-        locals.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-    bodyBuilder.setLocals(bodyLocals);
     return preambleBlock;
   }
 
@@ -1942,7 +1949,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
-  private void arrangeStmts(MutableBlockStmtGraph graph, Body.BodyBuilder builder) {
+  private void arrangeStmts(
+      MutableBlockStmtGraph graph, List<Stmt> stmtList, Body.BodyBuilder builder) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
@@ -1951,9 +1959,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // (n, n+1) := (from, to)
     // List<Stmt> connectBlocks = new ArrayList<>();
-
     // every LabelNode denotes a border of a Block
-    List<Stmt> stmtList = buildPreambleLocals(builder);
 
     do {
 

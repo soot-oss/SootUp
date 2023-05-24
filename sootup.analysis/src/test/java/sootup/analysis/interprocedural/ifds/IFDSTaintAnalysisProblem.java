@@ -206,7 +206,7 @@ public class IFDSTaintAnalysisProblem
       return new FlowFunction<Value>() {
         @Override
         public Set<Value> computeTargets(Value source) {
-          Set<Value> ret = new HashSet<Value>();
+          Set<Value> ret = new HashSet<>();
           if (source instanceof JStaticFieldRef) {
             ret.add(source);
           }
