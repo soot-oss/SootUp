@@ -101,11 +101,12 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos l0",
                 "Sub2 #l3",
                 "int #l2",
                 "integer1 #l0",
                 "long #l1",
-                "unknown $stack4, $stack5, l0, l1, l2, l3",
+                "unknown $stack4, $stack5, l1, l2, l3",
                 "l0 := @this: CastCounterDemos",
                 "$stack4 = new Sub1",
                 "specialinvoke $stack4.<Sub1: void <init>()>()",
@@ -142,8 +143,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     List<String> actualStmts = Utils.filterJimple(body.toString());
     Assert.assertEquals(
         Stream.of(
+                "CastCounterDemos l0",
                 "Super1[] #l0, #l1",
-                "unknown $stack3, l0, l1, l2",
+                "unknown $stack3, l1, l2",
                 "l0 := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
