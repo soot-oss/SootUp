@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Utils;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Markus Schmidt */
@@ -41,7 +40,6 @@ public class InfiniteLoopTest extends MinimalSourceTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    Utils.generateJimpleForTest(method);
     assertJimpleStmts(method, expectedBodyStmts());
   }
 }
