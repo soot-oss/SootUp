@@ -196,6 +196,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /* build body (add stmts, locals, traps, etc.) */
     final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
+    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
+
     final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
     /* convert instructions */
@@ -205,22 +207,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
+    // collect used Locals
     Set<Local> bodyLocals =
         locals.stream()
-            .filter(
-                Objects
-                    ::nonNull) // [ms] find out why some Local indices are not assigned(null): guess
-                               // because of dword values i.e. +=2 ?
+            .filter(Objects::nonNull)
+            // [ms] find out why some Local indices are not assigned(null)
+            // ms -> guess because of dword values i.e. +=2 ?
             .collect(Collectors.toCollection(LinkedHashSet::new));
     bodyBuilder.setLocals(bodyLocals);
 
-    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
+    // add converted insn as stmts into the graph
     try {
       arrangeStmts(graph, preambleStmts, bodyBuilder);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
+    // propagate position information
     if (graph.getNodes().size() > 0) {
       Position firstStmtPos = graph.getStartingStmt().getPositionInfo().getStmtPosition();
       bodyBuilder.setPosition(
