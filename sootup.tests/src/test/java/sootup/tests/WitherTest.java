@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class WitherTest {
   @Test
   public void testWithers() {
 
-    LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
+    LocalGenerator generator = new LocalGenerator(new HashSet<>());
     Optional<SootClassSource<JavaSootClass>> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
     JavaSootClass sootClass =

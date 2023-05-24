@@ -22,7 +22,6 @@ package sootup.java.bytecode.frontend;
  */
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
@@ -33,8 +32,8 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.SootClass;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
@@ -44,10 +43,10 @@ import sootup.java.core.types.ModuleJavaClassType;
 /** A {@link ClassProvider} capable of handling Java bytecode */
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
-  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+  @Nonnull private final View<?> view;
 
-  public AsmJavaClassProvider(@Nonnull List<BodyInterceptor> bodyInterceptors) {
-    this.bodyInterceptors = bodyInterceptors;
+  public AsmJavaClassProvider(@Nonnull View<?> view) {
+    this.view = view;
   }
 
   @Override
@@ -99,8 +98,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
         @Nonnull String signature,
         @Nonnull String[] exceptions) {
 
-      AsmMethodSource mn =
-          new AsmMethodSource(access, name, desc, signature, exceptions, bodyInterceptors);
+      AsmMethodSource mn = new AsmMethodSource(access, name, desc, signature, exceptions, view);
       methods.add(mn);
       return mn;
     }

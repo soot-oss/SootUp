@@ -4,7 +4,7 @@ package sootup.core.jimple.basic;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Linghui Luo and others
+ * Copyright (C) 2019-2023 Linghui Luo, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,48 +23,56 @@ package sootup.core.jimple.basic;
  */
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
-import sootup.core.util.Copyable;
 
 /**
  * This class stores position information stored for a statement.
  *
- * @author Linghui Luo
+ * @author Linghui Luo, Markus Schmidt
  */
-// TODO: [ms] please redesign it more memory efficient! -> there are a lot of Stmts without any of
-// this information available!
-public final class StmtPositionInfo implements Copyable {
-  private final Position stmtPosition;
-  private final Position[] operandPositions;
+public abstract class StmtPositionInfo {
+
+  protected static final StmtPositionInfo noPosition =
+      new StmtPositionInfo() {
+        @Nonnull
+        @Override
+        public Position getStmtPosition() {
+          return NoPositionInformation.getInstance();
+        }
+
+        @Override
+        public Position getOperandPosition(int index) {
+          return NoPositionInformation.getInstance();
+        }
+
+        @Override
+        public String toString() {
+          return "No StmtPositionnfo";
+        }
+
+        @Nonnull
+        @Override
+        public StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition) {
+          return this;
+        }
+
+        @Nonnull
+        @Override
+        public StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions) {
+          return this;
+        }
+      };
 
   /**
    * Create an instance with no position information.
    *
    * @return an instance with no position information.
    */
+  @Nonnull
   public static StmtPositionInfo createNoStmtPositionInfo() {
-    return new StmtPositionInfo(null, null);
-  }
-
-  /**
-   * Create an instance only from line number, this is usually the case from byte code front-end.
-   *
-   * @param lineNumber the line number of the statement.
-   */
-  public StmtPositionInfo(int lineNumber) {
-    this.stmtPosition = new Position(lineNumber, -1, lineNumber, -1);
-    this.operandPositions = null;
-  }
-
-  /**
-   * Create an instance from given statement position and operand positions.
-   *
-   * @param stmtPosition the position of the statement
-   * @param operandPositions the operand positions
-   */
-  public StmtPositionInfo(Position stmtPosition, Position[] operandPositions) {
-    this.stmtPosition = stmtPosition;
-    this.operandPositions = operandPositions;
+    return noPosition;
   }
 
   /**
@@ -72,13 +80,8 @@ public final class StmtPositionInfo implements Copyable {
    *
    * @return the position of the statement
    */
-  public Position getStmtPosition() {
-    if (this.stmtPosition != null) {
-      return this.stmtPosition;
-    } else {
-      return NoPositionInformation.getInstance();
-    }
-  }
+  @Nonnull
+  public abstract Position getStmtPosition();
 
   /**
    * Return the precise position of the given operand in the statement.
@@ -86,37 +89,15 @@ public final class StmtPositionInfo implements Copyable {
    * @param index the operand index
    * @return the position of the given operand
    */
-  public Position getOperandPosition(int index) {
-    if (this.operandPositions != null && index >= 0 && index < this.operandPositions.length) {
-      return this.operandPositions[index];
-    } else {
-      return NoPositionInformation.getInstance();
-    }
-  }
+  @Nullable
+  public abstract Position getOperandPosition(int index);
 
   @Override
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append("stmtPosition: ").append(getStmtPosition().toString()).append("\n");
-    s.append("operandPositions: ");
-    if (operandPositions != null) {
-      s.append("\n");
-      for (int i = 0; i < operandPositions.length; i++) {
-        s.append(i).append(": ").append(operandPositions[i]).append(" ");
-      }
-    } else {
-      s.append("No position info");
-    }
-    return s.toString();
-  }
+  public abstract String toString();
 
   @Nonnull
-  public StmtPositionInfo withStmtPosition(Position stmtPosition) {
-    return new StmtPositionInfo(stmtPosition, operandPositions);
-  }
+  public abstract StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition);
 
   @Nonnull
-  public StmtPositionInfo withOperandPositions(Position[] operandPositions) {
-    return new StmtPositionInfo(stmtPosition, operandPositions);
-  }
+  public abstract StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions);
 }

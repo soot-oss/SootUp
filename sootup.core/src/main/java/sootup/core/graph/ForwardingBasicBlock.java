@@ -30,7 +30,7 @@ import sootup.core.types.ClassType;
  */
 
 public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock<V> {
-  private final V backingBlock;
+  @Nonnull private final V backingBlock;
 
   ForwardingBasicBlock(@Nonnull V block) {
     backingBlock = block;
@@ -48,8 +48,9 @@ public class ForwardingBasicBlock<V extends BasicBlock<V>> implements BasicBlock
     return backingBlock.getSuccessors();
   }
 
+  @Nonnull
   @Override
-  public List<V> getExceptionalPredecessors() {
+  public Map<ClassType, V> getExceptionalPredecessors() {
     return backingBlock.getExceptionalPredecessors();
   }
 

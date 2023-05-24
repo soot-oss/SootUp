@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.Project;
@@ -46,7 +46,7 @@ public class SootMethodTest {
     View<?> view = project.createView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
-    LocalGenerator generator = new LocalGenerator(new LinkedHashSet<>());
+    LocalGenerator generator = new LocalGenerator(new HashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());

@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.Project;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -47,6 +46,14 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   public JimpleView(
+      @Nonnull JimpleProject project,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
+  }
+
+  public JimpleView(
       @Nonnull JimpleProject project, @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
     this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
@@ -59,15 +66,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
    *     options.
    */
   public JimpleView(
-      @Nonnull Project project,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
-  }
-
-  public JimpleView(
-      @Nonnull Project project,
+      @Nonnull JimpleProject project,
       @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
@@ -89,6 +88,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   @Nonnull
   public List<BodyInterceptor> getBodyInterceptors() {
     return Collections.emptyList();
+  }
+
+  public void configBodyInterceptors(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override
@@ -163,10 +169,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
     }
 
     getProject().getInputLocations().stream()
-        .flatMap(
-            location -> {
-              return location.getClassSources(this).stream();
-            })
+        .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;
   }

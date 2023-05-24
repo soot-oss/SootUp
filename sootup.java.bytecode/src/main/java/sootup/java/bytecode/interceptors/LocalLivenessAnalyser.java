@@ -42,7 +42,7 @@ public class LocalLivenessAnalyser {
   public LocalLivenessAnalyser(@Nonnull StmtGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       liveIn.put(stmt, Collections.emptySet());
       liveOut.put(stmt, Collections.emptySet());
       if (graph.successors(stmt).isEmpty() && graph.exceptionalSuccessors(stmt).isEmpty()) {

@@ -37,9 +37,7 @@ import javax.annotation.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.util.PathUtils;
-import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.JavaSootClass;
@@ -66,10 +64,6 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
-
-  @Nonnull
-  private final AsmJavaClassProvider classProvider =
-      new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();

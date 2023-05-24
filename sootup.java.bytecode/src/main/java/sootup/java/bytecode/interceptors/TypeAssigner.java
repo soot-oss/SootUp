@@ -24,21 +24,36 @@ package sootup.java.bytecode.interceptors;
 import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
-
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/typing/TypeAssigner.java
+import sootup.core.views.View;
+import sootup.java.bytecode.interceptors.typeresolving.TypeResolver;
+import sootup.java.core.views.JavaView;
 
 /**
  * This transformer assigns types to local variables.
  *
- * @author Etienne Gagnon
- * @author Ben Bellamy
- * @author Eric Bodden
+ * @author Zun Wang
  */
 public class TypeAssigner implements BodyInterceptor {
 
-  @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
-    // TODO Implement
+  private final boolean standardizeNames;
 
+  public TypeAssigner() {
+    standardizeNames = true;
+  }
+
+  /**
+   * @param autoStandardizeNames controls whether the LocalNameStandardizer should execute after the
+   *     type assignment
+   */
+  public TypeAssigner(boolean autoStandardizeNames) {
+    this.standardizeNames = autoStandardizeNames;
+  }
+
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+    if (new TypeResolver((JavaView) view).resolve(builder) && standardizeNames) {
+      LocalNameStandardizer standardizer = new LocalNameStandardizer();
+      standardizer.interceptBody(builder, view);
+    }
   }
 }

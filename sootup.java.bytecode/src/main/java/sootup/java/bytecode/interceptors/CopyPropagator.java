@@ -36,23 +36,23 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ReferenceType;
+import sootup.core.views.View;
 
 /** @author Zun Wang */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     final StmtGraph<?> stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
-          List<Stmt> defsOfUse = BodyUtils.getDefsForLocalUse(stmtGraph, (Local) use, stmt);
+          List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
 
           if (isPropagable(defsOfUse)) {
-            AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
+            AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) defsOfUse.get(0);
             Value rhs = defStmt.getRightOp();
             // if rhs is a constant, then replace use, if it is possible
             if (rhs instanceof Constant) {
@@ -79,7 +79,7 @@ public class CopyPropagator implements BodyInterceptor {
 
   private void replaceUse(
       @Nonnull Body.BodyBuilder builder, @Nonnull Stmt stmt, Value use, Value rhs) {
-    Stmt newStmt = BodyUtils.withNewUse(stmt, use, rhs);
+    Stmt newStmt = stmt.withNewUse(use, rhs);
     // TODO: [ms] check if the following check could be obsolete as checks are already done?
     if (!stmt.equivTo(newStmt)) {
       builder.replaceStmt(stmt, newStmt);

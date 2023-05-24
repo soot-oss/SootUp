@@ -184,7 +184,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       if (methodOpt.isPresent()) {
         final SootMethod method = methodOpt.get();
         if (method.hasBody()) {
-          for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+          for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
             if (s.containsInvokeExpr()) {
               CalleeMethodSignature callee =
                   new CalleeMethodSignature(

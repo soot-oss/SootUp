@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.*;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.Jimple;
+import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -72,7 +73,7 @@ public class JimpleConverterUtil {
 
     int endCharLength = tokenstr.length() - lastLineBreakIdx;
 
-    return new Position(
+    return new FullPosition(
         ctx.start.getLine() - 1,
         ctx.start.getCharPositionInLine(),
         ctx.stop.getLine() + lineCount,
@@ -208,7 +209,7 @@ public class JimpleConverterUtil {
             throw new ResolveException(
                 "Jimple SyntaxError: " + msg,
                 path,
-                new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE));
+                new FullPosition(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE));
           }
         });
 
@@ -232,7 +233,7 @@ public class JimpleConverterUtil {
               if (e.getCause() instanceof NoViableAltException) {
                 Token start = ((NoViableAltException) e.getCause()).getStartToken();
                 position =
-                    new Position(
+                    new FullPosition(
                         start.getLine() - 1,
                         start.getCharPositionInLine(),
                         charPositionInLine - 1,
@@ -241,10 +242,11 @@ public class JimpleConverterUtil {
                 // hint: not precise if erroneous input spans across multiple lines!
                 int sizeOfBad = e.getCtx().getText().length();
                 int firstCol = Math.max(charPositionInLine - sizeOfBad, 0);
-                position = new Position(line - 1, firstCol, line - 1, Integer.MAX_VALUE);
+                position = new FullPosition(line - 1, firstCol, line - 1, Integer.MAX_VALUE);
               }
             } else {
-              position = new Position(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE);
+              position =
+                  new FullPosition(line - 1, charPositionInLine, line - 1, Integer.MAX_VALUE);
             }
 
             throw new ResolveException("Jimple SyntaxError: " + msg, path, position);
