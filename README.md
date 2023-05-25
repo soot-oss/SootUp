@@ -28,7 +28,7 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - [x] Enables lazyloading of classes (no interleaved loading of used/dependend classes anymore)
 - [x] Fail early strategy - input validation while constructing/building objects
 - [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend
-- [x] Full Java 17 Support for Bytecode
+- [x] Full Java 21 Support for Bytecode
 - [x] Multiple Views (Scenes)
 - [ ] Full-Diff Support for Classes (across different View instances)
 - [x] Immutable Jimple IR Objects and Graphs
