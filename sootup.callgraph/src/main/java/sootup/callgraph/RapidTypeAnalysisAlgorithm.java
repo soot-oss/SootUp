@@ -65,8 +65,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     }
   }
 
-  @Nonnull private  Set<ClassType> instantiatedClasses=Collections.emptySet();
-  @Nonnull private Map<ClassType, List<Call>> ignoredCalls=Collections.emptyMap();
+  @Nonnull private Set<ClassType> instantiatedClasses = Collections.emptySet();
+  @Nonnull private Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
 
   /**
    * The constructor of the RTA algorithm.
@@ -89,11 +89,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    instantiatedClasses=new HashSet<>();
-    ignoredCalls=new HashMap<>();
-    CallGraph cg=constructCompleteCallGraph(view, entryPoints);
-    instantiatedClasses=Collections.emptySet();
-    ignoredCalls=Collections.emptyMap();
+    instantiatedClasses = new HashSet<>();
+    ignoredCalls = new HashMap<>();
+    CallGraph cg = constructCompleteCallGraph(view, entryPoints);
+    instantiatedClasses = Collections.emptySet();
+    ignoredCalls = Collections.emptyMap();
     return cg;
   }
 
