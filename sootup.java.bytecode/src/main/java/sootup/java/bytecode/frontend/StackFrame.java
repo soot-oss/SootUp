@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -87,10 +88,18 @@ final class StackFrame {
    * @throws IllegalArgumentException if the number of new operands is not equal to the number of
    *     old operands.
    */
-  void mergeIn(@Nonnull Operand... oprs) {
+  void mergeIn(int lineNumber, @Nonnull Operand... oprs) {
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
+
+    StmtPositionInfo positionInfo;
+    if (lineNumber > 0) {
+      positionInfo = new SimpleStmtPositionInfo(lineNumber);
+    } else {
+      positionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    }
+
     final int nrIn = in.size();
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
@@ -100,16 +109,14 @@ final class StackFrame {
       if (stack != null) {
         if (newOp.stackLocal == null) {
           newOp.stackLocal = stack;
-          JAssignStmt<?, ?> as =
-              Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
+          JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
           src.setStmt(newOp.insn, as);
           newOp.updateUsages();
         } else {
           final Value rvalue = newOp.stackOrValue();
           // check for self/identity assignments and ignore them
           if (stack != rvalue) {
-            JAssignStmt<?, ?> as =
-                Jimple.newAssignStmt(stack, rvalue, StmtPositionInfo.createNoStmtPositionInfo());
+            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
             src.mergeStmts(newOp.insn, as);
           }
         }
@@ -134,9 +141,7 @@ final class StackFrame {
           }
           if (prevOp.stackLocal == null) {
             prevOp.stackLocal = stack;
-            JAssignStmt<?, ?> as =
-                Jimple.newAssignStmt(
-                    stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
+            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, prevOp.value, positionInfo);
             src.setStmt(prevOp.insn, as);
           } else {
             Stmt u = src.getStmt(prevOp.insn);
@@ -152,9 +157,7 @@ final class StackFrame {
         if (newOp.stackLocal != stack) {
           if (newOp.stackLocal == null) {
             newOp.stackLocal = stack;
-            JAssignStmt<?, ?> as =
-                Jimple.newAssignStmt(
-                    stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
+            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
             src.setStmt(newOp.insn, as);
           } else {
             Stmt u = src.getStmt(newOp.insn);

@@ -44,7 +44,7 @@ public class MutableSootClientTest {
   /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
-    mv = p.createMutableFullView();
+    mv = p.createMutableView();
   }
 
   /**
@@ -78,7 +78,7 @@ public class MutableSootClientTest {
             null,
             Collections.emptySet(),
             Collections.emptySet(),
-            new Position(0, 0, 0, 0),
+            new FullPosition(0, 0, 0, 0),
             EnumSet.noneOf(Modifier.class),
             Collections.emptySet(),
             Collections.emptySet(),

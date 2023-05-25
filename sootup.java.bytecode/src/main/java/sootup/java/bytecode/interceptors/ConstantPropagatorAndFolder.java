@@ -37,8 +37,8 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * Does constant propagation and folding. Constant folding is the compile-time evaluation of
@@ -49,7 +49,7 @@ import sootup.core.transform.BodyInterceptor;
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     List<Stmt> defs = new ArrayList<>();
 
     // Perform a constant/local propagation pass
@@ -69,9 +69,10 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
-            List<AbstractDefinitionStmt> defsOfUse = BodyUtils.getDefsOfLocal((Local) value, defs);
+            List<AbstractDefinitionStmt<Local, Value>> defsOfUse =
+                ((Local) value).getDefsOfLocal(defs);
             if (defsOfUse.size() == 1) {
-              AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
+              AbstractDefinitionStmt<?, ?> definitionStmt = defsOfUse.get(0);
               Value rhs = definitionStmt.getRightOp();
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant

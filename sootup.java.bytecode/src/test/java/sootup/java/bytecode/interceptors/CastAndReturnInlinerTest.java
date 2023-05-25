@@ -69,7 +69,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
     Body processedBody = bodyBuilder.build();
 
     List<Stmt> expected = new ArrayList<>();
@@ -122,7 +122,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
     Body processedBody = bodyBuilder.build();
 
     assertStmtsEquiv(testBody.getStmts(), processedBody.getStmts());

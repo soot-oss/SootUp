@@ -1,3 +1,5 @@
+## Release Announcement
+
 We would like to announce [Soot](https://github.com/soot-oss/soot)’s successor, SootUp. 
 
 Over more than 20 years, Soot has become one of the world’s most popular academic tool for Java and Android analysis and instrumentation. We thank all of you who have used and contributed to it over the years! It was your feedback and your contributions that helped it grow into such a versatile tool!

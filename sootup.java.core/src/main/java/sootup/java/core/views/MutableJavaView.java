@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.Project;
 import sootup.core.ViewChangeListener;
+import sootup.core.cache.MutableClassCache;
+import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
@@ -23,7 +25,7 @@ public class MutableJavaView extends JavaView implements MutableView {
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
   public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
-    super(project);
+    super(project, new MutableFullCacheProvider<>());
   }
 
   /**
@@ -32,11 +34,11 @@ public class MutableJavaView extends JavaView implements MutableView {
    */
   public void addClass(JavaSootClass clazz) {
     ClassType classType = clazz.getClassSource().getClassType();
-    if (this.cache.containsKey(classType)) {
+    if (this.cache.hasClass(classType)) {
       logger.warn("Class " + classType + " already exists in view.");
       return;
     }
-    this.cache.putIfAbsent(classType, clazz);
+    this.cache.putClass(classType, clazz);
     this.fireAddition(clazz);
   }
 
@@ -44,7 +46,8 @@ public class MutableJavaView extends JavaView implements MutableView {
    * Removes the class that matches the provided {@link ClassType ClassType} from the mutable view.
    */
   public void removeClass(ClassType classType) {
-    JavaSootClass removedClass = this.cache.remove(classType);
+    JavaSootClass removedClass =
+        ((MutableClassCache<JavaSootClass>) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 
@@ -67,7 +70,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     ClassType classType = method.getDeclaringClassType();
     MethodSubSignature mss = method.getSignature().getSubSignature();
 
-    JavaSootClass clazz = this.cache.get(classType);
+    JavaSootClass clazz = this.cache.getClass(classType);
     if (clazz == null) return;
 
     Set<? extends JavaSootMethod> methods = clazz.getMethods();
@@ -85,7 +88,7 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void addMethod(JavaSootMethod method) {
     ClassType classType = method.getDeclaringClassType();
 
-    JavaSootClass clazz = this.cache.get(classType);
+    JavaSootClass clazz = this.cache.getClass(classType);
     if (clazz == null) return;
 
     Set<? extends JavaSootMethod> methods = clazz.getMethods();

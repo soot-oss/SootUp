@@ -23,24 +23,24 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size() - 1, actualGraph.nodes().size());
+    assertEquals(expectedGraph.getNodes().size() - 1, actualGraph.getNodes().size());
   }
 
   @Test
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(expectedGraph.nodes().size(), actualGraph.nodes().size());
+    assertEquals(expectedGraph.getNodes().size(), actualGraph.getNodes().size());
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {

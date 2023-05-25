@@ -59,7 +59,7 @@ public abstract class MinimalSourceTestSuiteBase {
                             + "source"
                             + File.separator))
                 .build();
-        javaView = project.createOnDemandView();
+        javaView = project.createView();
         setJavaView(javaView);
       }
     }
@@ -140,7 +140,7 @@ public abstract class MinimalSourceTestSuiteBase {
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     if (!expectedStmts.equals(actualStmts)) {
-      System.out.println(Utils.printJimpleStmtsForTest(Utils.filterJimple(actualStmts.stream())));
+      System.out.println(Utils.generateJimpleTest(Utils.filterJimple(actualStmts.stream())));
       assertEquals(expectedStmts, actualStmts);
     }
   }

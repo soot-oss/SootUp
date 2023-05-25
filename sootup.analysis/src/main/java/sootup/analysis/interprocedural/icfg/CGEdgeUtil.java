@@ -59,7 +59,7 @@ public class CGEdgeUtil {
     for (MethodSignature caller : methodSigs) {
       SootMethod method = view.getMethod(caller).orElse(null);
       if (method != null && method.hasBody()) {
-        for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+        for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
           if (s.containsInvokeExpr()) {
             CalleeMethodSignature callee =
                 new CalleeMethodSignature(

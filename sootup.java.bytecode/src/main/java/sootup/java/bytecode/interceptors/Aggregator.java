@@ -36,8 +36,8 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 public class Aggregator implements BodyInterceptor {
 
@@ -60,7 +60,7 @@ public class Aggregator implements BodyInterceptor {
    * <p>option: only-stack-locals; if this is true, only aggregate variables starting with $
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     StmtGraph<?> graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
@@ -76,7 +76,7 @@ public class Aggregator implements BodyInterceptor {
           }
           for (Value val : assignStmt.getUses()) {
             if (val instanceof Local) {
-              List<AbstractDefinitionStmt> defs = BodyUtils.getDefsOfLocal((Local) val, stmts);
+              List<AbstractDefinitionStmt<Local, Value>> defs = ((Local) val).getDefsOfLocal(stmts);
               if (defs.size() == 1) {
                 Stmt relevantDef = defs.get(0);
                 List<Stmt> path = graph.getExtendedBasicBlockPathBetween(relevantDef, stmt);

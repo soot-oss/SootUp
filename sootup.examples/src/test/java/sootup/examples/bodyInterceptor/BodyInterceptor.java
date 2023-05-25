@@ -55,16 +55,16 @@ public class BodyInterceptor {
 
     // Create a view for project, which allows us to retrieve classes
     // add class loading options, which can specify body interceptors
-    JavaView view =
-        project.createOnDemandView(
-            analysisInputLocation ->
-                new ClassLoadingOptions() {
-                  @Nonnull
-                  @Override
-                  public List<sootup.core.transform.BodyInterceptor> getBodyInterceptors() {
-                    return Collections.singletonList(new DeadAssignmentEliminator());
-                  }
-                });
+    JavaView view = project.createView();
+    view.configBodyInterceptors(
+        analysisInputLocation ->
+            new ClassLoadingOptions() {
+              @Nonnull
+              @Override
+              public List<sootup.core.transform.BodyInterceptor> getBodyInterceptors() {
+                return Collections.singletonList(new DeadAssignmentEliminator());
+              }
+            });
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

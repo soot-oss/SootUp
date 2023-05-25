@@ -1,3 +1,7 @@
+<p align="center">
+<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/SootUpLogo.svg">
+</p> 
+
 # SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp)
 
 This is the home of the **SootUp** project.
@@ -5,9 +9,9 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 
 ## What is SootUp
 - Transforms JVM bytecode (and other inputs!) to the intermediate representation Jimple.
-- ClassHierarchy generation
+- Provides ClassHierarchy generation
 - CallGraph generation with different algorithms/precisions
-- Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros))
+- Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
 - Applies/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
@@ -43,7 +47,7 @@ You want to collaborate? Please read our [coding guidelines and the contributors
 
 
 ## Supporters
-The development of SootUp is financed by generous support from the German Research Foundation (DFG),
+The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
 
 <table border="0">

@@ -69,7 +69,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    * linearized, ordered manner use iterator() or getStmts.
    */
   @Nonnull
-  public abstract Collection<Stmt> nodes();
+  public abstract Collection<Stmt> getNodes();
 
   public List<Stmt> getStmts() {
     final ArrayList<Stmt> res = new ArrayList<>();
@@ -153,7 +153,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   @Nonnull
   public List<Stmt> getTails() {
-    return nodes().stream()
+    return getNodes().stream()
         .filter(stmt -> stmt.getExpectedSuccessorCount() == 0)
         .collect(Collectors.toList());
   }
@@ -176,7 +176,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public void validateStmtConnectionsInGraph() {
     try {
 
-      for (Stmt stmt : nodes()) {
+      for (Stmt stmt : getNodes()) {
         final List<Stmt> successors = successors(stmt);
         final int successorCount = successors.size();
 
@@ -322,8 +322,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return false;
     }
 
-    Collection<Stmt> nodes = nodes();
-    final Collection<Stmt> otherNodes = otherGraph.nodes();
+    Collection<Stmt> nodes = getNodes();
+    final Collection<Stmt> otherNodes = otherGraph.getNodes();
     if (nodes.size() != otherNodes.size()) {
       return false;
     }
@@ -592,10 +592,19 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           while (true) {
             final List<? extends BasicBlock<?>> itPreds =
                 leaderOfFallsthroughBlocks.getPredecessors();
-            if (itPreds.size() != 1) {
+
+            BasicBlock<?> finalLeaderOfFallsthroughBlocks = leaderOfFallsthroughBlocks;
+            final Optional<? extends BasicBlock<?>> fallsthroughPredOpt =
+                itPreds.stream()
+                    .filter(
+                        b ->
+                            b.getTail().fallsThrough()
+                                && b.getSuccessors().get(0) == finalLeaderOfFallsthroughBlocks)
+                    .findAny();
+            if (!fallsthroughPredOpt.isPresent()) {
               break;
             }
-            BasicBlock<?> predecessorBlock = itPreds.get(0);
+            BasicBlock<?> predecessorBlock = fallsthroughPredOpt.get();
             if (predecessorBlock.getTail().fallsThrough()
                 && predecessorBlock.getSuccessors().get(0) == leaderOfFallsthroughBlocks) {
               leaderOfFallsthroughBlocks = predecessorBlock;
@@ -612,7 +621,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           // remember branching successors
           if (tailStmt instanceof JGotoStmt) {
             if (isReturnBlock) {
-              nestedBlocks.removeFirstOccurrence(currentBlock.getHead());
+              nestedBlocks.removeFirstOccurrence(currentBlock);
               otherBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
               otherBlocks.addFirst(leaderOfFallsthroughBlocks);
@@ -679,7 +688,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   @Nonnull
   public Collection<Stmt> getLabeledStmts() {
     Set<Stmt> stmtList = new HashSet<>();
-    for (Stmt stmt : nodes()) {
+    for (Stmt stmt : getNodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
           // [ms] bounds are validated in Body

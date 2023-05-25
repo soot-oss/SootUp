@@ -24,6 +24,7 @@ package sootup.core.util.printer;
 
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
@@ -404,25 +405,19 @@ public class JimplePrinter {
     // group locals by type
     {
       for (Local local : body.getLocals()) {
-        List<Local> localList;
-
-        Type t = local.getType();
-
-        if (typeToLocals.containsKey(t)) {
-          localList = typeToLocals.get(t);
-        } else {
-          localList = new ArrayList<>();
-          typeToLocals.put(t, localList);
-        }
-
-        localList.add(local);
+        typeToLocals.computeIfAbsent(local.getType(), k -> new ArrayList<>()).add(local);
       }
     }
 
     // Print locals
     {
-      for (Type type : typeToLocals.keySet()) {
+      final Collection<Type> types =
+          typeToLocals.keySet().stream()
+              .sorted(Comparator.comparing(Object::toString))
+              .collect(Collectors.toList());
+      for (Type type : types) {
         List<Local> localList = new ArrayList<>(typeToLocals.get(type));
+        localList.sort(Comparator.comparing(Local::getName));
         up.typeSignature(type);
         up.literal(" ");
 

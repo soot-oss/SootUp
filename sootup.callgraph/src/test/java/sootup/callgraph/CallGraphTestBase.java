@@ -3,16 +3,13 @@ package sootup.callgraph;
 import static junit.framework.TestCase.*;
 
 import java.util.Collections;
-import java.util.Optional;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
-import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -24,7 +21,6 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private T algorithm;
-  protected String testDirectory, className;
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
@@ -34,44 +30,60 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
   private JavaView createViewForClassPath(String classPath) {
-    JavaProject javaProject =
+    return createViewForClassPath(classPath, true);
+  }
+
+  private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
+    JavaProject.JavaProjectBuilder javaProjectBuilder =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    return javaProject.createOnDemandView();
+                    System.getProperty("java.home") + "/lib/rt.jar"));
+    if (useSourceCodeFrontend) {
+      javaProjectBuilder.addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath));
+    } else {
+      javaProjectBuilder.addInputLocation(new JavaClassPathAnalysisInputLocation(classPath));
+    }
+
+    return javaProjectBuilder.build().createView();
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {
+    return loadCallGraph(testDirectory, true, className);
+  }
+
+  CallGraph loadCallGraph(String testDirectory, boolean useSourceCodeFrontend, String className) {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    String classPath = "src/test/resources/callgraph/" + testDirectory;
+    String classPath =
+        "src/test/resources/callgraph/"
+            + testDirectory
+            + "/"
+            + (useSourceCodeFrontend ? "source" : "binary");
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    JavaView view = createViewForClassPath(classPath);
+    JavaView view = createViewForClassPath(classPath, useSourceCodeFrontend);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
-    Optional<SootMethod> m =
-        (Optional<SootMethod>) sc.getMethod(mainMethodSignature.getSubSignature());
-    assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
+    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    assertNotNull(sc);
+    SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
+    assertNotNull(mainMethodSignature + " not found in classloader", m);
 
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     algorithm = createAlgorithm(view, typeHierarchy);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
+    assertNotNull(cg);
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
-    assertNotNull(cg);
     return cg;
   }
 
@@ -120,11 +132,185 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(method));
     assertFalse(cg.containsMethod(uncalledMethod));
-    TestCase.assertEquals(2, cg.getMethodSignatures().size());
+    // 2 methods + Object::clinit + Object::registerNatives
+    TestCase.assertEquals(4, cg.getMethodSignatures().size());
 
     assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
     assertTrue(cg.containsCall(mainMethodSignature, method));
-    TestCase.assertEquals(2, cg.callsFrom(mainMethodSignature).size());
+    // 2 calls +1 clinit calls
+    TestCase.assertEquals(3, cg.callsFrom(mainMethodSignature).size());
+  }
+
+  @Test
+  public void testConcreteCall() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvc.Class"), "target", "void", Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClass() {
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcsc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcsc.SuperClass"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClassWithDefaultInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscwi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscwi.SuperClass"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvci.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvci.Interface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSubInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcsi.SubInterface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testConcreteCallInSuperClassSubInterface() {
+    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscsi.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscsi.SubInterface"),
+            "target",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testClinitCallEntryPoint() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccep.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccep.Class"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testClinitCallProcessed() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccp.Class");
+    MethodSignature sourceMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccp.Class"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccp.Class"), "method", "int", Collections.emptyList());
+    assertTrue(cg.containsCall(sourceMethod, targetMethod));
+  }
+
+  @Test
+  public void testClinitCallConstructor() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccc.DirectType"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    MethodSignature arrayMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccc.ArrayType"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, arrayMethod));
+    MethodSignature arrayDimMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccc.ArrayDimType"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, arrayDimMethod));
+    MethodSignature arrayInArrayMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccc.ArrayInArrayType"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, arrayInArrayMethod));
+  }
+
+  @Test
+  public void testClinitCallSuperConstructor() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccsc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccsc.Clinit"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    MethodSignature targetMethod2 =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccsc.SuperClinit"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod2));
+  }
+
+  @Test
+  public void testClinitStaticMethodCall() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccsmc.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccsmc.Clinit"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+  }
+
+  @Test
+  public void testClinitStaticField() {
+    CallGraph cg = loadCallGraph("ClinitCall", "ccsf.Class");
+    MethodSignature targetMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("ccsf.Clinit"),
+            "<clinit>",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
   @Test
@@ -220,7 +406,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("vc2.Class"), "method", "void", Collections.emptyList());
+            subClassSig, "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
   }
 
@@ -255,10 +441,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     // more precise its: declareClassSig
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("vc4.Interface"),
-            "method",
-            "void",
-            Collections.emptyList());
+            identifierFactory.getClassType("vc4.Class"), "method", "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -280,7 +463,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("j8dim2.Interface"),
+            identifierFactory.getClassType("j8dim2.SuperClass"),
             "method",
             "void",
             Collections.emptyList());
@@ -328,10 +511,9 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, compute));
   }
 
-  @Ignore
-  // TODO: WALA can't handle this case?
+  @Test
   public void testDynamicInterfaceMethod6() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim6.Demo");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim6.Demo");
 
     MethodSignature combinedInterfaceMethod =
         identifierFactory.getMethodSignature(
@@ -372,17 +554,130 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
 
-  /** Ignored because takes too long to analyze whole rt.jar */
-  @Ignore
-  public void testHelloWorld() {
-    CallGraph cg = loadCallGraph("Misc", "HelloWorld");
-
-    ClassType clazzType = JavaIdentifierFactory.getInstance().getClassType("java.io.PrintStream");
+  @Test
+  public void testAbstractMethod() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am1.Main");
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            clazzType, "println", "void", Collections.singletonList("java.lang.String"));
+            identifierFactory.getClassType("am1.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am1.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
 
     assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+  }
+
+  @Test
+  public void testAbstractMethodInSubClass() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am2.Main");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+    MethodSignature superMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am2.SuperClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+
+    if (this instanceof ClassHierarchyAnalysisAlgorithmTest) {
+      assertTrue(cg.containsCall(mainMethodSignature, superMethod));
+    }
+    if (this instanceof RapidTypeAnalysisAlgorithmTest) {
+      assertFalse(cg.containsCall(mainMethodSignature, superMethod));
+    }
+  }
+
+  @Test
+  public void testAbstractMethodMissingMethodInSuperclass() {
+    CallGraph cg = loadCallGraph("AbstractMethod", "am3.Main");
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am3.Class"), "method", "void", Collections.emptyList());
+
+    MethodSignature abstractMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("am3.AbstractClass"),
+            "method",
+            "void",
+            Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+  }
+
+  @Test
+  public void testWithoutEntryMethod() {
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/DefaultEntryPoint");
+
+    JavaClassType mainClassSignature = identifierFactory.getClassType("example2.Example");
+    MethodSignature mainMethodSignature =
+        identifierFactory.getMethodSignature(
+            mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
+
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    CallGraph cg = algorithm.initialize();
+    assertTrue(
+        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+    assertNotNull(cg);
+  }
+
+  /**
+   * Test uses initialize() method to create call graph, but multiple main methods are present in
+   * input java source files. Expected result is RuntimeException.
+   */
+  @Test
+  public void testMultipleMainMethod() {
+
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc");
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    try {
+      algorithm.initialize();
+      fail("Runtime Exception not thrown, when multiple main methods are defined.");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().startsWith("There are more than 1 main method present"));
+    }
+  }
+
+  /**
+   * Test uses initialize() method to create call graph, but no main method is present in input java
+   * source files. Expected result is RuntimeException.
+   */
+  @Test
+  public void testNoMainMethod() {
+
+    JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
+
+    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    try {
+      algorithm.initialize();
+      fail("Runtime Exception not thrown, when no main methods are defined.");
+    } catch (RuntimeException e) {
+      System.out.println(e.getMessage());
+      assertEquals(
+          e.getMessage(),
+          "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
+    }
   }
 }

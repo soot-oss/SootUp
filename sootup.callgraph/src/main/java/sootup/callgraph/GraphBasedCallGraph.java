@@ -152,39 +152,23 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     return methodVertex;
   }
 
+  /**
+   * This method exports the call graph in a human-readable string. The String lists all nodes in
+   * the call graph. For each node it also lists the outgoing and incoming edges. An outgoing edge
+   * is marked by a "To" and an incoming edge by a "From" The nodes, incoming edges, and outgoing
+   * edges are sorted in order by the classname, method name, parameter list
+   *
+   * @return a string containing all nodes and edges of the call graph.
+   */
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("GraphBasedCallGraph(" + callCount() + ")");
-    if (signatureToVertex.keySet().isEmpty()) {
-      sb.append(" is empty");
-    } else {
-      sb.append(":\n");
-      for (MethodSignature method : signatureToVertex.keySet()) {
-        sb.append(method.toString()).append(":\n");
-        callsFrom(method)
-            .forEach(
-                (m) -> {
-                  sb.append("\tto ").append(m).append("\n");
-                });
-        callsTo(method)
-            .forEach(
-                (m) -> {
-                  sb.append("\tfrom   ").append(m).append("\n");
-                });
-        sb.append("\n");
-      }
-    }
-    return sb.toString();
-  }
-
-  @Override
-  public String toStringSorted() {
     StringBuilder stringBuilder = new StringBuilder("GraphBasedCallGraph(" + callCount() + ")");
-    if (signatureToVertex.keySet().isEmpty()) {
+    Set<MethodSignature> signatures = signatureToVertex.keySet();
+    if (signatures.isEmpty()) {
       stringBuilder.append(" is empty");
     } else {
       stringBuilder.append(":\n");
-      signatureToVertex.keySet().stream()
+      signatures.stream()
           .sorted(
               Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
                   .thenComparing(SootClassMemberSignature::getName)

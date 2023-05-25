@@ -216,7 +216,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
   public void initializeStmtToOwner(SootMethod m) {
     if (m.hasBody()) {
       Body b = m.getBody();
-      for (Stmt node : b.getStmtGraph().nodes()) {
+      for (Stmt node : b.getStmtGraph().getNodes()) {
         stmtToOwner.put(node, b);
       }
     }

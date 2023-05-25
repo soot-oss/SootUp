@@ -22,7 +22,6 @@ package sootup.java.core.jimple.basic;
  * #L%
  */
 
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.types.Type;
@@ -50,16 +49,6 @@ public class JavaLocal extends Local {
   @Nonnull
   public Iterable<AnnotationUsage> getAnnotations() {
     return annotations;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return equivTo(o) && ((JavaLocal) o).getAnnotations().equals(getAnnotations());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getName(), getType(), getAnnotations());
   }
 
   @Nonnull

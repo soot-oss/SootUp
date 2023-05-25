@@ -242,20 +242,14 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull View<?> view) {
-      return walkDirectory(
-          path,
-          view.getIdentifierFactory(),
-          new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+      return walkDirectory(path, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     }
 
     @Override
     @Nonnull
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
-      return getClassSourceInternal(
-          (JavaClassType) type,
-          path,
-          new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+      return getClassSourceInternal((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
   }
 
@@ -593,9 +587,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(
-            (JavaClassType) type,
-            archiveRoot,
-            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+            (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -610,9 +602,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
-            archiveRoot,
-            view.getProject().getIdentifierFactory(),
-            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+            archiveRoot, view.getProject().getIdentifierFactory(), new AsmJavaClassProvider(view));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

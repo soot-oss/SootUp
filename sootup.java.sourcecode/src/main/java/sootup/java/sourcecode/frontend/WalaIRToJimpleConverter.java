@@ -30,8 +30,8 @@ import com.ibm.wala.cfg.IBasicBlock;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.shrikeCT.ClassConstants;
-import com.ibm.wala.shrikeCT.InvalidClassFileException;
+import com.ibm.wala.shrike.shrikeCT.ClassConstants;
+import com.ibm.wala.shrike.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
@@ -50,12 +50,7 @@ import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.Modifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -424,7 +419,7 @@ public class WalaIRToJimpleConverter {
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      LocalGenerator localGenerator = new LocalGenerator(new LinkedHashSet<>());
+      LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {
@@ -638,7 +633,7 @@ public class WalaIRToJimpleConverter {
    *   converts Wala Position to Soots Position
    * */
   public static sootup.core.model.Position convertPosition(Position instructionPosition) {
-    return new sootup.core.model.Position(
+    return new FullPosition(
         instructionPosition.getFirstLine(),
         instructionPosition.getFirstCol(),
         instructionPosition.getLastLine(),
@@ -649,21 +644,21 @@ public class WalaIRToJimpleConverter {
       Position instructionPosition, Position[] operandPosition) {
 
     if (operandPosition == null) {
-      return new StmtPositionInfo(convertPosition(instructionPosition), null);
+      return new FullStmtPositionInfo(convertPosition(instructionPosition), null);
     }
-    sootup.core.model.Position[] operandPos =
+    FullPosition[] operandPos =
         Arrays.stream(operandPosition)
             .map(
                 instrPos ->
                     instrPos == null
                         ? null
-                        : new sootup.core.model.Position(
+                        : new FullPosition(
                             instrPos.getFirstLine(),
                             instrPos.getFirstCol(),
                             instrPos.getLastLine(),
                             instrPos.getLastCol()))
-            .toArray(sootup.core.model.Position[]::new);
+            .toArray(sootup.core.model.FullPosition[]::new);
 
-    return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);
+    return new FullStmtPositionInfo(convertPosition(instructionPosition), operandPos);
   }
 }

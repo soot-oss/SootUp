@@ -96,9 +96,44 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      return Stream.concat(
-          result,
-          MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
+      if (targetMethod.isAbstract()) {
+        return resolveAllSubClassCallTargets(targetMethodSignature);
+      }
+      return MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
+          .map(
+              methodSignature ->
+                  Stream.concat(
+                      Stream.of(methodSignature),
+                      resolveAllSubClassCallTargets(targetMethodSignature)))
+          .orElseGet(() -> resolveAllSubClassCallTargets(targetMethodSignature));
     }
+  }
+
+  private Stream<MethodSignature> resolveAllSubClassCallTargets(
+      MethodSignature targetMethodSignature) {
+    return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
+        .map(
+            methodSignature ->
+                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+  }
+
+  @Override
+  public void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
+  }
+
+  @Override
+  public void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
   }
 }

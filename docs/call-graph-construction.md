@@ -24,7 +24,7 @@ Below, we show how to create a type hierarchy:
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .build();
 
-    JavaView view = project.createFullView();
+    JavaView view = project.createView();
     
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);    
     ```

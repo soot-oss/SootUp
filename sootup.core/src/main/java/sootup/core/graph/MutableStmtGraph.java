@@ -20,6 +20,7 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -37,21 +38,27 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void setStartingStmt(@Nonnull Stmt firstStmt);
 
-  public void addNode(@Nonnull Stmt node) {
-    addNode(node, Collections.emptyMap());
+  /** inserts a "stmt" into the StmtGraph */
+  public void addNode(@Nonnull Stmt stmt) {
+    addNode(stmt, Collections.emptyMap());
   }
 
-  public abstract void addNode(@Nonnull Stmt node, @Nonnull Map<ClassType, Stmt> traps);
+  /** inserts a "stmt" with exceptional flows "traps" into the StmtGraph */
+  public abstract void addNode(@Nonnull Stmt stmt, @Nonnull Map<ClassType, Stmt> traps);
 
-  // maybe refactor addBlock into MutableBlockStmtGraph..
+  /** creates a whole BasicBlock with the details from the parameters */
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
+  /**
+   * creates a whole BasicBlock which contains the sequence of (n-1)*fallsthrough()-stmt + optional
+   * a non-fallsthrough() stmt at the end of the list
+   */
   public void addBlock(@Nonnull List<Stmt> stmts) {
     addBlock(stmts, Collections.emptyMap());
   }
 
   /**
-   * Modification of nodes (without manipulating any flows; possible assigned exceptional flows stay
+   * Modification of stmts (without manipulating any flows; possible assigned exceptional flows stay
    * the same as well)
    */
   public abstract void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt);
@@ -61,28 +68,47 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
       @Nonnull List<Stmt> stmts,
       @Nonnull Map<ClassType, Stmt> exceptionMap);
 
-  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull Stmt stmt) {
-    insertBefore(beforeStmt, Collections.singletonList(stmt), Collections.emptyMap());
+  /**
+   * inserts the "newStmt" before the position of "beforeStmt" i.e.
+   * newStmt.successors().contains(beforeStmt) will be true
+   */
+  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull Stmt newStmt) {
+    insertBefore(beforeStmt, Collections.singletonList(newStmt), Collections.emptyMap());
   }
 
-  public abstract void removeNode(@Nonnull Stmt node);
+  /** removes "stmt" from the StmtGraph */
+  public abstract void removeNode(@Nonnull Stmt stmt);
 
-  /** Modifications of unexceptional flows */
+  /**
+   * Modifications of unexceptional flows
+   *
+   * <p>Adds a flow "from" to "to". if at least one of the parameter Stmts is not already in the
+   * StmtGraph it will be added. if "to" needs to be added to the StmtGraph i.e. "to" is not already
+   * in the StmtGraph the method assumes "to" has the same exceptional flows as "from".
+   */
   public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
+  /** replaces the current outgoing flows of "from" to "targets" */
   public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
 
+  /** replaces the current outgoing flows of "from" to each target of "targets" */
   public void setEdges(@Nonnull Stmt from, @Nonnull Stmt... targets) {
     setEdges(from, Arrays.asList(targets));
   }
 
+  /** removes the current outgoing flows of "from" to "targets" */
   public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
-  /** Modifications of exceptional flows */
-  public abstract void clearExceptionalEdges(@Nonnull Stmt node);
+  /** Modifications of exceptional flows removes all exceptional flows from "stmt" */
+  public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);
 
+  /**
+   * Adds an exceptional flow with the type "exception" to a "stmt" which will reach
+   * "traphandlerStmt"
+   */
   public abstract void addExceptionalEdge(
       @Nonnull Stmt stmt, @Nonnull ClassType exception, @Nonnull Stmt traphandlerStmt);
 
-  public abstract void removeExceptionalEdge(@Nonnull Stmt node, @Nonnull ClassType exception);
+  /** removes an exceptional flow of the type "exception" flow from "stmt" */
+  public abstract void removeExceptionalEdge(@Nonnull Stmt stmt, @Nonnull ClassType exception);
 }

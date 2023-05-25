@@ -29,13 +29,14 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Body.BodyBuilder;
-import sootup.core.model.BodyUtils;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 /**
  * A BodyInterceptor that attempts to identify and separate uses of a local variable (definition)
@@ -70,7 +71,7 @@ public class LocalSplitter implements BodyInterceptor {
   // TODO: [ms] check equivTo()'s - I guess they can be equals()'s - or even: '=='s
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split
@@ -100,17 +101,16 @@ public class LocalSplitter implements BodyInterceptor {
     while (!stmts.isEmpty()) {
       Stmt currentStmt = stmts.remove(0);
       // At first Check the definition(left side) of the currentStmt is a local which must be split:
-      if (!currentStmt.getDefs().isEmpty()
-          && currentStmt.getDefs().get(0) instanceof Local
-          && toSplitLocals.contains(currentStmt.getDefs().get(0))) {
+      final List<Value> defs = currentStmt.getDefs();
+      if (!defs.isEmpty() && defs.get(0) instanceof Local && toSplitLocals.contains(defs.get(0))) {
         // then assign a new name to the oriLocal to get a new local which is called newLocal
-        Local oriLocal = (Local) currentStmt.getDefs().get(0);
+        Local oriLocal = (Local) defs.get(0);
         Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
         newLocals.add(newLocal);
         localIndex++;
 
         // create newStmt whose definition is replaced with the newLocal,
-        Stmt newStmt = BodyUtils.withNewDef(currentStmt, newLocal);
+        Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) currentStmt).withNewDef(newLocal);
         // replace corresponding oldStmt with newStmt in builder
         replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
 
@@ -130,7 +130,7 @@ public class LocalSplitter implements BodyInterceptor {
           // 1.case: if useList of head contains oriLocal, then replace the oriLocal with
           // newLocal.
           if (head.getUses().contains(oriLocal)) {
-            Stmt newHead = BodyUtils.withNewUse(head, oriLocal, newLocal);
+            Stmt newHead = head.withNewUse(oriLocal, newLocal);
             replaceStmtInBuilder(builder, stmts, head, newHead);
 
             // if head doesn't define the the oriLocal again, then add all successors which are
@@ -174,7 +174,8 @@ public class LocalSplitter implements BodyInterceptor {
                 // remove the corresponding Local(definition of backStmt) from the set: newLocals
                 if (hasModifiedDef(backStmt, oriLocal)) {
                   if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
-                    Stmt newBackStmt = BodyUtils.withNewDef(backStmt, modifiedLocal);
+                    Stmt newBackStmt =
+                        ((AbstractDefinitionStmt<?, ?>) backStmt).withNewDef(modifiedLocal);
                     replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
                     newLocals.remove(newLocal);
                   }
@@ -186,7 +187,7 @@ public class LocalSplitter implements BodyInterceptor {
                 else if (hasModifiedUse(backStmt, oriLocal)) {
                   Local modifiedUse = getModifiedUse(backStmt, oriLocal);
                   if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
-                    Stmt newBackStmt = BodyUtils.withNewUse(backStmt, modifiedUse, modifiedLocal);
+                    Stmt newBackStmt = backStmt.withNewUse(modifiedUse, modifiedLocal);
                     replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
                     backwardsQueue.addAll(graph.predecessors(newBackStmt));
                   }
@@ -203,7 +204,8 @@ public class LocalSplitter implements BodyInterceptor {
           // then add all successors of head which are not in forwardsQueue and visitedStmts,
           // into the forwardsQueue.
           else {
-            if (head.getDefs().isEmpty() || !head.getDefs().get(0).equivTo(oriLocal)) {
+            final List<Value> headDefs = head.getDefs();
+            if (headDefs.isEmpty() || !headDefs.get(0).equivTo(oriLocal)) {
               for (Stmt succ : graph.successors(head)) {
                 if (!visitedStmts.contains(succ) && !forwardsQueue.contains(succ)) {
                   forwardsQueue.addLast(succ);
@@ -253,7 +255,7 @@ public class LocalSplitter implements BodyInterceptor {
             }
             // 4.step:
             if (lastChange != null) {
-              Stmt newStmt = BodyUtils.withNewUse(currentStmt, oriLocal, lastChange);
+              Stmt newStmt = currentStmt.withNewUse(oriLocal, lastChange);
               replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
             }
           }
@@ -296,10 +298,8 @@ public class LocalSplitter implements BodyInterceptor {
    * @return if so, return true, else return false
    */
   private boolean hasModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    if (!stmt.getUses().isEmpty()) {
-      for (Value use : stmt.getUses()) {
-        return isLocalFromSameOrigin(oriLocal, use);
-      }
+    for (Value use : stmt.getUses()) {
+      return isLocalFromSameOrigin(oriLocal, use);
     }
     return false;
   }
@@ -315,11 +315,9 @@ public class LocalSplitter implements BodyInterceptor {
   private Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
     if (hasModifiedUse(stmt, oriLocal)) {
       List<Value> useList = stmt.getUses();
-      if (!useList.isEmpty()) {
-        for (Value use : useList) {
-          if (isLocalFromSameOrigin(oriLocal, use)) {
-            return (Local) use;
-          }
+      for (Value use : useList) {
+        if (isLocalFromSameOrigin(oriLocal, use)) {
+          return (Local) use;
         }
       }
     }

@@ -80,7 +80,7 @@ public class IFDSTaintTestSetUp {
                 new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"))
             .build();
 
-    view = javaProject.createOnDemandView();
+    view = javaProject.createView();
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
