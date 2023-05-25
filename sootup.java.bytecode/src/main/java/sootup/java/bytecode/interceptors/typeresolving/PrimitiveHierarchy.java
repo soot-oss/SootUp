@@ -34,9 +34,9 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 public class PrimitiveHierarchy implements IHierarchy {
 
   /**
-   * Calculate the least common ancestor of two types(primitive or BottomType). If there's a = b ==>
-   * a is the least common ancestor of a and b; If there's b = a ==> b is the least common ancestor
-   * of a and b; If there are c = a and c = b, but there's no b = a or a = b ==> c is the least
+   * Calculate the least common ancestor of two types(primitive or BottomType). If there's a = b then
+   * a is the least common ancestor of a and b; If there's b = a then b is the least common ancestor
+   * of a and b; If there are c = a and c = b, but there's no b = a or a = b then c is the least
    * common ancestor of a and b;
    */
   @Nonnull
