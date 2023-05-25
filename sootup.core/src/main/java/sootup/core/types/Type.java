@@ -47,8 +47,8 @@ public abstract class Type implements Acceptor<TypeVisitor> {
   }
 
   /**
-   * This method is used to make an array type for the given <c>type</c>. If the given <c>type</c>
-   * is an array type, then increase its dimension with given <c>dim</c>
+   * This method is used to make an array type for the given type. If the given type is an array
+   * type, then increase its dimension with given dim
    */
   public static ArrayType makeArrayType(Type type, int dim) {
     if (type instanceof ArrayType) {
