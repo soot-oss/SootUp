@@ -111,7 +111,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           return res;
         }
 
-
         @Nullable
         private Stmt filterEdgeAndGetCallerStmt(@Nonnull MethodSignature methodSignature) {
           Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
