@@ -30,7 +30,8 @@ public class CheckInitValidator implements BodyValidator {
   @Override
   public void validate(Body body, List<ValidationException> exception) {
 
-    // TODO: check code copied from old soot
+    // TODO: #535 implement validator
+    //  check code copied from old soot
     /*
      * ExceptionalUnitGraph g = new ExceptionalUnitGraph(body, ThrowAnalysisFactory.checkInitThrowAnalysis(), false);
      *
