@@ -65,8 +65,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     }
   }
 
-  @Nonnull private final Set<ClassType> instantiatedClasses = new HashSet<>();
-  @Nonnull private final HashMap<ClassType, List<Call>> ignoredCalls = new HashMap<>();
+  @Nonnull private Set<ClassType> instantiatedClasses = Collections.emptySet();
+  @Nonnull private Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
 
   /**
    * The constructor of the RTA algorithm.
@@ -83,13 +83,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Override
   public CallGraph initialize() {
     List<MethodSignature> entryPoints = Collections.singletonList(findMainMethod());
-    return constructCompleteCallGraph(view, entryPoints);
+    return initialize(entryPoints);
   }
 
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
-    return constructCompleteCallGraph(view, entryPoints);
+    instantiatedClasses = new HashSet<>();
+    ignoredCalls = new HashMap<>();
+    CallGraph cg = constructCompleteCallGraph(view, entryPoints);
+    instantiatedClasses = Collections.emptySet();
+    ignoredCalls = Collections.emptyMap();
+    return cg;
   }
 
   /**
@@ -109,8 +114,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
-            .filter(referenceType -> referenceType instanceof ClassType)
-            .map(referenceType -> (ClassType) referenceType)
             .collect(Collectors.toSet());
     instantiatedClasses.addAll(instantiated);
   }
@@ -147,6 +150,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
           MethodDispatchResolver.resolveAllDispatchesInClasses(
               view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
 
+      // the class of the actual method call is instantiated
+      boolean targetMethodClassIsInstantiated =
+          instantiatedClasses.contains(targetMethodSignature.getDeclClassType());
+
+      // add the targetMethod to the ignoredCalls
+      if (!targetMethodClassIsInstantiated) {
+        notInstantiatedCallTargets.add(targetMethodSignature);
+      }
+
       // save filtered calls to include them later when their class is instantiated
       notInstantiatedCallTargets.forEach(
           ignoredMethodSignature -> {
@@ -171,8 +183,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
               .map(Optional::get)
               .collect(Collectors.toSet());
 
-      // the class of the actual method call is instantiated
-      if (instantiatedClasses.contains(targetMethodSignature.getDeclClassType())) {
+      // add the concrete of the targetMethod if the class is instantiated
+      if (targetMethodClassIsInstantiated) {
         MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
             .ifPresent(concreteCallTargets::add);
       }
