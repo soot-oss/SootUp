@@ -8,8 +8,6 @@ import org.junit.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.TypeHierarchy;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -25,7 +23,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
 
-  protected abstract T createAlgorithm(JavaView view, TypeHierarchy typeHierarchy);
+  protected abstract T createAlgorithm(JavaView view);
 
   // private static Map<String, JavaView> viewToClassPath = new HashMap<>();
 
@@ -77,8 +75,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);
 
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    algorithm = createAlgorithm(view, typeHierarchy);
+    algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
@@ -633,8 +630,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize();
     assertTrue(
         mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
@@ -649,8 +645,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testMultipleMainMethod() {
 
     JavaView view = createViewForClassPath("src/test/resources/callgraph/Misc");
-    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+
+    CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when multiple main methods are defined.");
@@ -668,8 +664,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     JavaView view = createViewForClassPath("src/test/resources/callgraph/NoMainMethod");
 
-    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm algorithm = createAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm algorithm = createAlgorithm(view);
     try {
       algorithm.initialize();
       fail("Runtime Exception not thrown, when no main methods are defined.");

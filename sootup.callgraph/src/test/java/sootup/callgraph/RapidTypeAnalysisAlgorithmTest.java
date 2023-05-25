@@ -7,7 +7,6 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.java.core.views.JavaView;
 
 /** @author Kadiray Karakaya, Jonas Klauke */
@@ -15,8 +14,8 @@ import sootup.java.core.views.JavaView;
 public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeAnalysisAlgorithm> {
 
   @Override
-  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
-    return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+  protected RapidTypeAnalysisAlgorithm createAlgorithm(JavaView view) {
+    return new RapidTypeAnalysisAlgorithm(view);
   }
 
   /**

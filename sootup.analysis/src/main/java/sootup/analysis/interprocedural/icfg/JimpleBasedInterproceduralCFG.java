@@ -43,7 +43,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
@@ -60,7 +59,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
-  private MethodSignature mainMethodSignature;
+  private final MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls;
 
@@ -69,6 +68,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
       new CacheLoader<Stmt, Collection<SootMethod>>() {
+        @Nonnull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
@@ -94,8 +94,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
       new CacheLoader<SootMethod, Collection<Stmt>>() {
+        @Nonnull
         @Override
-        public Collection<Stmt> load(SootMethod method) throws Exception {
+        public Collection<Stmt> load(SootMethod method) {
           ArrayList<Stmt> res = new ArrayList<>();
           // only retain callers that are explicit call sites or
           // Thread.start()
@@ -110,11 +111,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           return res;
         }
 
-        /**
-         * returns SootMethod if accepted, null otherwise
-         *
-         * @param methodSignature
-         */
+
         @Nullable
         private Stmt filterEdgeAndGetCallerStmt(@Nonnull MethodSignature methodSignature) {
           Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
@@ -153,8 +150,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   private CallGraph initCallGraph() {
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view);
     return cga.initialize(Collections.singletonList(mainMethodSignature));
   }
 

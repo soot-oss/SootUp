@@ -36,7 +36,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.MethodDispatchResolver;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -59,7 +58,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     @Nonnull final MethodSignature source;
     @Nonnull final MethodSignature target;
 
-    private Call(@Nonnull MethodSignature source, MethodSignature target) {
+    private Call(@Nonnull MethodSignature source, @Nonnull MethodSignature target) {
       this.source = source;
       this.target = target;
     }
@@ -72,11 +71,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * The constructor of the RTA algorithm.
    *
    * @param view it contains the data of the classes and methods
-   * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
    */
-  public RapidTypeAnalysisAlgorithm(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
-    super(view, typeHierarchy);
+  public RapidTypeAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+    super(view);
   }
 
   @Nonnull

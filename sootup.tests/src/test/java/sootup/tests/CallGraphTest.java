@@ -13,8 +13,6 @@ import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.TypeHierarchy;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -29,14 +27,13 @@ public class CallGraphTest {
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
-  private AbstractCallGraphAlgorithm algorithm;
   private String algorithmName;
 
-  protected AbstractCallGraphAlgorithm createAlgorithm(JavaView view, TypeHierarchy typeHierarchy) {
+  protected AbstractCallGraphAlgorithm createAlgorithm(JavaView view) {
     if (algorithmName.equals("RTA")) {
-      return new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+      return new RapidTypeAnalysisAlgorithm(view);
     } else {
-      return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+      return new ClassHierarchyAnalysisAlgorithm(view);
     }
   }
 
@@ -51,18 +48,18 @@ public class CallGraphTest {
     return javaProject.createView();
   }
 
-  CallGraph loadCallGraph(String testDirectory, String className) {
+  CallGraph loadCallGraph() {
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
     if (version > 1.8) {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    String classPath = "src/test/resources/callgraph/" + testDirectory;
+    String classPath = "src/test/resources/callgraph/" + "Misc";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     JavaView view = createViewForClassPath(classPath);
 
-    mainClassSignature = identifierFactory.getClassType(className);
+    mainClassSignature = identifierFactory.getClassType("Main");
     mainMethodSignature =
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
@@ -72,8 +69,7 @@ public class CallGraphTest {
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);
 
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    algorithm = createAlgorithm(view, typeHierarchy);
+    AbstractCallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
@@ -85,7 +81,7 @@ public class CallGraphTest {
   @Test
   public void testRTA() {
     algorithmName = "RTA";
-    CallGraph cg = loadCallGraph("Misc", "Main");
+    CallGraph cg = loadCallGraph();
 
     MethodSignature methodAbstract =
         identifierFactory.getMethodSignature(
@@ -158,7 +154,7 @@ public class CallGraphTest {
   @Test
   public void testCHA() {
     algorithmName = "CHA";
-    CallGraph cg = loadCallGraph("Misc", "Main");
+    CallGraph cg = loadCallGraph();
 
     MethodSignature methodAbstract =
         identifierFactory.getMethodSignature(
