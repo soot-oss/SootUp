@@ -36,8 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
@@ -55,14 +53,12 @@ import sootup.core.views.View;
  */
 public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
-  private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
-
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
 
-  @Nonnull private final View<? extends SootClass> view;
+  @Nonnull private final View<? extends SootClass<?>> view;
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
-  public ViewTypeHierarchy(@Nonnull View<? extends SootClass> view) {
+  public ViewTypeHierarchy(@Nonnull View<? extends SootClass<?>> view) {
     this.view = view;
   }
 
@@ -354,13 +350,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * <p>In the graph structure, a type is only connected to its direct subtypes.
    */
   private ScanResult scanView() {
-    long startNanos = System.nanoTime();
     Map<ClassType, Vertex> typeToVertex = new HashMap<>();
     Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
     view.getClasses().forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
-    double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
-    log.info("Type hierarchy scan took " + runtimeMs + " ms");
     return new ScanResult(typeToVertex, graph);
   }
 
@@ -419,7 +412,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Override
-  public void addType(@Nonnull SootClass sootClass) {
+  public void addType(@Nonnull SootClass<?> sootClass) {
     ScanResult scanResult = lazyScanResult.get();
     addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
   }

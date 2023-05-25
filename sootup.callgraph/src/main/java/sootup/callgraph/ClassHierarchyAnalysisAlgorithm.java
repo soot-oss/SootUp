@@ -33,7 +33,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.MethodDispatchResolver;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.views.View;
 
 /**
@@ -47,11 +46,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    * The constructor of the CHA algorithm.
    *
    * @param view it contains the data of the classes and methods
-   * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
    */
-  public ClassHierarchyAnalysisAlgorithm(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
-    super(view, typeHierarchy);
+  public ClassHierarchyAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+    super(view);
   }
 
   @Nonnull

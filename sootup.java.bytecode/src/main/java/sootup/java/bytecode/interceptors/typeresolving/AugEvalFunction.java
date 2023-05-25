@@ -46,10 +46,10 @@ import sootup.java.core.JavaIdentifierFactory;
 /** @author Zun Wang */
 public class AugEvalFunction {
   IdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  View<?> view;
+  View<? extends SootClass<?>> view;
   PrimitiveHierarchy primitiveHierarchy = new PrimitiveHierarchy();
 
-  public AugEvalFunction(View<?> view) {
+  public AugEvalFunction(View<? extends SootClass<?>> view) {
     this.view = view;
   }
 

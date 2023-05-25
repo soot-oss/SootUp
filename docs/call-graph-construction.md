@@ -4,7 +4,7 @@ A call graph shows the method calling relationship of a program. It is a directe
 SootUp contains several call graph construction algorithms. Below, we show how you can use each of these.
 
 ## Creating the Type Hierarchy
-All the call graph construction algorithms require a type hierarchy for resolving method calls based of sub typing relationship.
+All the call graph construction algorithms require the view to access the type hierarchy for resolving method calls based of sub typing relationship.
 Below, we show how to create a type hierarchy:
 
 === "SootUp"
@@ -25,8 +25,6 @@ Below, we show how to create a type hierarchy:
             .build();
 
     JavaView view = project.createView();
-    
-    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);    
     ```
     
 === "Soot"
@@ -84,12 +82,12 @@ You can construct a call graph with CHA as follows:
 
     ```java
     CallGraphAlgorithm cha = 
-            new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+            new ClassHierarchyAnalysisAlgorithm(view);
     
     CallGraph cg = 
             cha.initialize(Collections.singletonList(entryMethodSignature));
 
-    cg.callsFrom(entryMethodSignature).forEach(System.out::println);
+    System.out.println(cg);
     ```
     
 === "Soot"
@@ -113,12 +111,12 @@ You can construct a call graph with RTA as follows:
 
     ```java
     CallGraphAlgorithm rta = 
-            new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+            new RapidTypeAnalysisAlgorithm(view);
     
     CallGraph cg = 
             rta.initialize(Collections.singletonList(entryMethodSignature));
 
-    cg.callsFrom(entryMethodSignature).forEach(System.out::println);
+    System.out.println(cg);
     ```
     
 === "Soot"

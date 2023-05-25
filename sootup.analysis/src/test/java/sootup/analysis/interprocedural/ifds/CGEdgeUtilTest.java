@@ -38,7 +38,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
@@ -157,8 +156,7 @@ public class CGEdgeUtilTest {
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);
 
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    AbstractCallGraphAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+    AbstractCallGraphAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);

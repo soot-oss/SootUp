@@ -40,7 +40,6 @@ import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
@@ -57,12 +56,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
   @Nonnull protected final View<? extends SootClass<?>> view;
-  @Nonnull protected final TypeHierarchy typeHierarchy;
 
-  protected AbstractCallGraphAlgorithm(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
+  protected AbstractCallGraphAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
     this.view = view;
-    this.typeHierarchy = typeHierarchy;
   }
 
   /**
@@ -249,7 +245,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             classType ->
                 Stream.concat(
                     Stream.of(classType),
-                    typeHierarchy.incompleteSuperClassesOf(classType).stream()))
+                    view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream()))
         .filter(Objects::nonNull)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)
@@ -272,8 +268,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (optSc.isPresent()) {
       SootClass<?> sc = optSc.get();
 
-      List<ClassType> superClasses = typeHierarchy.superClassesOf(sc.getType());
-      Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sc.getType());
+      List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(sc.getType());
+      Set<ClassType> interfaces = view.getTypeHierarchy().implementedInterfacesOf(sc.getType());
       superClasses.addAll(interfaces);
 
       for (ClassType superClassType : superClasses) {
@@ -345,8 +341,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     processWorkList(view, workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
-    List<ClassType> superClasses = typeHierarchy.superClassesOf(classType);
-    Set<ClassType> implementedInterfaces = typeHierarchy.implementedInterfacesOf(classType);
+    List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
+    Set<ClassType> implementedInterfaces =
+        view.getTypeHierarchy().implementedInterfacesOf(classType);
     Stream<ClassType> superTypes =
         Stream.concat(superClasses.stream(), implementedInterfaces.stream());
 

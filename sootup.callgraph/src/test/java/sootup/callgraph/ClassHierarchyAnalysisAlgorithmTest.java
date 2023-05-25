@@ -7,11 +7,10 @@ import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.java.core.views.JavaView;
 
 /**
- * Input source examples taken from https://bitbucket.org/delors/jcg/src/master/
+ * Input source examples taken from <a href="https://bitbucket.org/delors/cats/src/master/">cats</a>
  *
  * @author Markus Schmidt
  */
@@ -22,9 +21,8 @@ public class ClassHierarchyAnalysisAlgorithmTest
   // TODO: StaticInitializers, Lambdas ?
 
   @Override
-  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(
-      JavaView view, TypeHierarchy typeHierarchy) {
-    return new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+  protected ClassHierarchyAnalysisAlgorithm createAlgorithm(JavaView view) {
+    return new ClassHierarchyAnalysisAlgorithm(view);
   }
 
   /**
