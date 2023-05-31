@@ -541,7 +541,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-      new Dex2jarCmd().doMain("-f", apkPath, "-o", outputFile);
+      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }
