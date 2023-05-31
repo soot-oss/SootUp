@@ -21,25 +21,12 @@ package sootup.java.bytecode.frontend;
  * #L%
  */
 
-import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
-import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
-import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
-import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.*;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Table;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
@@ -53,40 +40,22 @@ import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
 import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
-import sootup.core.jimple.common.constant.DoubleConstant;
-import sootup.core.jimple.common.constant.FloatConstant;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.constant.LongConstant;
-import sootup.core.jimple.common.constant.MethodHandle;
-import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.expr.AbstractBinopExpr;
-import sootup.core.jimple.common.expr.AbstractConditionExpr;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractUnopExpr;
-import sootup.core.jimple.common.expr.Expr;
-import sootup.core.jimple.common.expr.JAddExpr;
-import sootup.core.jimple.common.expr.JCastExpr;
-import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
-import sootup.core.jimple.common.expr.JInstanceOfExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.constant.*;
+import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.*;
+import sootup.core.model.Body;
+import sootup.core.model.FullPosition;
+import sootup.core.model.Modifier;
+import sootup.core.model.Position;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
-import sootup.core.types.VoidType;
+import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
@@ -243,15 +212,25 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     operandStack = null;
 
     bodyBuilder.setMethodSignature(lazyMethodSignature.get());
-
-    for (BodyInterceptor bodyInterceptor : view.getBodyInterceptors()) {
-      try {
-        bodyInterceptor.interceptBody(bodyBuilder, view);
-      } catch (Exception e) {
-        throw new IllegalStateException(
-            "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
+    List<AnalysisInputLocation> inputLocations = view.getProject().getInputLocations();
+    Optional<AnalysisInputLocation> containingInputLocation =
+        inputLocations.stream()
+            .filter(i -> i.getClassSource(this.declaringClass, view).isPresent())
+            .findFirst();
+    // we expect the class to come from a single input location
+    if (containingInputLocation.isPresent()) {
+      List<BodyInterceptor> bodyInterceptors =
+          view.getBodyInterceptors(containingInputLocation.get());
+      for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+        try {
+          bodyInterceptor.interceptBody(bodyBuilder, view);
+        } catch (Exception e) {
+          throw new IllegalStateException(
+              "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
+        }
       }
     }
+
     return bodyBuilder.build();
   }
 
