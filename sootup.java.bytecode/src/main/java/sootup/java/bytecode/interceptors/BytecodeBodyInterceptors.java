@@ -29,19 +29,20 @@ import sootup.core.transform.BodyInterceptor;
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {
   Default(
-  //      new CastAndReturnInliner(),
-  //      new DuplicateCatchAllTrapRemover(),
-  //      new UnreachableCodeEliminator(),
-  //      // new LocalSplitter(),
-  //      new Aggregator(),
-  //      //new UnusedLocalEliminator(),
-  //      new TypeAssigner(),
-  //      new LocalNameStandardizer(),
-  //      new CopyPropagator(),
-  //      new DeadAssignmentEliminator(),
-  //      new NopEliminator(),
-  //      new ConditionalBranchFolder(),
-  //      new EmptySwitchEliminator());
+  /*
+          new CastAndReturnInliner(),
+          new UnreachableCodeEliminator(),
+    //      // new LocalSplitter(),
+    //      new Aggregator(),
+          new TypeAssigner(),
+    //      new LocalNameStandardizer(),
+          new CopyPropagator(),
+          new DeadAssignmentEliminator(),
+          new ConditionalBranchFolder(),
+          new EmptySwitchEliminator(),
+            new NopEliminator(),
+            new UnusedLocalEliminator()
+  */
   );
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;

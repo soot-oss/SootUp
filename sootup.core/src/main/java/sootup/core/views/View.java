@@ -54,10 +54,7 @@ public interface View<T extends SootClass> {
   Project getProject();
 
   @Nonnull
-  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<T> inputLocation);
-
-  @Nonnull
-  List<BodyInterceptor> getBodyInterceptors();
+  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation);
 
   /** Return all classes in the view. */
   @Nonnull

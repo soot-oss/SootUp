@@ -23,7 +23,6 @@ package sootup.java.core.views;
  */
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -102,18 +101,8 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
   @Nonnull
   @Override
-  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<JavaSootClass> clazz) {
-    return this.classLoadingOptionsSpecifier.apply(clazz) != null
-        ? this.classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors()
-        : getBodyInterceptors();
-  }
-
-  @Nonnull
-  @Override
-  public List<BodyInterceptor> getBodyInterceptors() {
-    // TODO add default interceptors from
-    // sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
-    return Collections.emptyList();
+  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation clazz) {
+    return this.classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors();
   }
 
   public void configBodyInterceptors(

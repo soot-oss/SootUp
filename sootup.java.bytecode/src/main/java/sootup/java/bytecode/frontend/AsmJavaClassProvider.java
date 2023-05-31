@@ -51,10 +51,10 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   @Override
   public AbstractClassSource<JavaSootClass> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation,
       Path sourcePath,
       ClassType classType) {
-    SootClassNode classNode = new SootClassNode();
+    SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
     try {
       AsmUtil.initAsmClassSource(sourcePath, classNode);
@@ -70,10 +70,11 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
           "Can not create ClassSource from a module info descriptor!", sourcePath);
     } else {
       if (klassType instanceof AnnotationType) {
-        return new AsmAnnotationClassSource(srcNamespace, sourcePath, klassType, classNode);
+        return new AsmAnnotationClassSource(
+            analysisInputLocation, sourcePath, klassType, classNode);
       }
 
-      return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
+      return new AsmClassSource(analysisInputLocation, sourcePath, klassType, classNode);
     }
   }
 
@@ -85,8 +86,11 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   class SootClassNode extends ClassNode {
 
-    SootClassNode() {
+    private final AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation;
+
+    SootClassNode(AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation) {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
+      this.analysisInputLocation = analysisInputLocation;
     }
 
     @Override
@@ -98,7 +102,15 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
         @Nonnull String signature,
         @Nonnull String[] exceptions) {
 
-      AsmMethodSource mn = new AsmMethodSource(access, name, desc, signature, exceptions, view);
+      AsmMethodSource mn =
+          new AsmMethodSource(
+              access,
+              name,
+              desc,
+              signature,
+              exceptions,
+              view,
+              view.getBodyInterceptors(analysisInputLocation));
       methods.add(mn);
       return mn;
     }
