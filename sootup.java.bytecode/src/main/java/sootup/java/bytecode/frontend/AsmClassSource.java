@@ -128,11 +128,11 @@ class AsmClassSource extends JavaSootClassSource {
                   identifierFactory.getMethodSignature(
                       classSignature, methodName, retType, sigTypes);
 
-                List<AnnotationNode> annotations = new ArrayList<>();
-                if(methodSource.visibleAnnotations != null)
-                    annotations.addAll(methodSource.visibleAnnotations);
-                if(methodSource.invisibleAnnotations != null)
-                    annotations.addAll(methodSource.invisibleAnnotations);
+              List<AnnotationNode> annotations = new ArrayList<>();
+              if (methodSource.visibleAnnotations != null)
+                annotations.addAll(methodSource.visibleAnnotations);
+              if (methodSource.invisibleAnnotations != null)
+                annotations.addAll(methodSource.invisibleAnnotations);
 
               // TODO: position/line numbers if possible
               return new JavaSootMethod(
