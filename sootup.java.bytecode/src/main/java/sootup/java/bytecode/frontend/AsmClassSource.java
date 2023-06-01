@@ -116,8 +116,8 @@ class AsmClassSource extends JavaSootClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(classSignature);
 
-              List<ClassType> exceptions = new ArrayList<>();
-              exceptions.addAll(AsmUtil.asmIdToSignature(methodSource.exceptions));
+              List<ClassType> exceptions =
+                  new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
               String methodName = methodSource.name;
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);

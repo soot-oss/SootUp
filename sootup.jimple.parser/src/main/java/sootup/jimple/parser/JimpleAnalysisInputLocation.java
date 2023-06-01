@@ -98,7 +98,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Nonnull
   public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
     return walkDirectory(
-        path, view.getIdentifierFactory(), new JimpleClassProvider(view.getBodyInterceptors()));
+        path, view.getIdentifierFactory(), new JimpleClassProvider(view.getBodyInterceptors(this)));
   }
 
   @Override
@@ -106,7 +106,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
     final JimpleClassProvider<T> classProvider =
-        new JimpleClassProvider<>(view.getBodyInterceptors());
+        new JimpleClassProvider<>(view.getBodyInterceptors(this));
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 

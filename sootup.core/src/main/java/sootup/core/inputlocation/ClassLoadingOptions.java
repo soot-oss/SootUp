@@ -36,11 +36,6 @@ import sootup.core.transform.BodyInterceptor;
  */
 public interface ClassLoadingOptions {
 
-  /** To get the stored Value */
-  default <T> T getValue(ClassLoadingOptionKey key) {
-    return null;
-  }
-
   /**
    * The interceptors are executed in order on each loaded method body, allowing it to be inspected
    * and manipulated.

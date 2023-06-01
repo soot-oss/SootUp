@@ -42,7 +42,10 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JimpleView(@Nonnull JimpleProject project) {
-    this(project, new FullCacheProvider<>(), analysisInputLocation -> null);
+    this(
+        project,
+        new FullCacheProvider<>(),
+        analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
   public JimpleView(
@@ -78,15 +81,12 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Nonnull
   @Override
-  public List<BodyInterceptor> getBodyInterceptors(
-      AnalysisInputLocation<SootClass<?>> inputLocation) {
-    return classLoadingOptionsSpecifier.apply(inputLocation) != null
-        ? classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors()
-        : getBodyInterceptors();
+  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation) {
+    return classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors();
   }
 
   @Nonnull
-  public List<BodyInterceptor> getBodyInterceptors() {
+  private List<BodyInterceptor> getBodyInterceptors() {
     return Collections.emptyList();
   }
 
