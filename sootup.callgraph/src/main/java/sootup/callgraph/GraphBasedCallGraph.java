@@ -23,13 +23,18 @@ package sootup.callgraph;
  */
 
 import com.google.common.base.Preconditions;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.java.core.types.JavaClassType;
@@ -127,6 +132,76 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public int callCount() {
     return graph.edgeSet().size();
+  }
+
+  @Override
+  public void convertToDotFormatAndFileWrite(String filePath) {
+    StringBuilder dotFormatBuilder = new StringBuilder();
+
+    for (Edge edge : graph.edgeSet()) {
+      Vertex sourceVertex = graph.getEdgeSource(edge);
+      Vertex targetVertex = graph.getEdgeTarget(edge);
+      dotFormatBuilder.append("\t").append(sourceVertex.methodSignature).append(" -> ").append(targetVertex.methodSignature).append(";\n");
+    }
+    // Sort the callGraph
+    String sortedCallGraph = sortCallGraph(dotFormatBuilder.toString());
+
+    // Using only one string builder, so deleting everything and adding the sorted callgraph
+    dotFormatBuilder.delete(0, dotFormatBuilder.capacity());
+
+    dotFormatBuilder.append("strict digraph ObjectGraph {\n");
+    dotFormatBuilder.append(sortedCallGraph);
+    dotFormatBuilder.append("}");
+
+    // Write the callGraph to the file
+    writeToFile(dotFormatBuilder.toString(),filePath);
+  }
+
+  /**
+   * Unlike toString method in the same file, the comparison is done manually by comparing two strings,
+   * because the details of className, MethodSignature is not present in the data at hand.
+   * @param dotOutput
+   * @return
+   */
+  public String sortCallGraph(String dotOutput){
+    List<String> lines = Arrays.asList(dotOutput.split("\n"));
+    List<String> sortedLines = new ArrayList<>(lines);
+
+    Collections.sort(sortedLines, new Comparator<String>() {
+      @Override
+      public int compare(String line1, String line2) {
+        String className1 = extractClassName(line1);
+        String className2 = extractClassName(line2);
+
+        if (className1.equals(className2)) {
+          String methodName1 = extractMethodName(line1);
+          String methodName2 = extractMethodName(line2);
+          return methodName1.compareTo(methodName2);
+        } else {
+          return className1.compareTo(className2);
+        }
+      }
+
+      private String extractClassName(String line) {
+        return line.trim().split(" ")[0];
+      }
+
+      private String extractMethodName(String line) {
+        String[] parts = line.trim().split("->");
+        return parts[1].trim().split(";")[0];
+      }
+    });
+
+    return String.join("\n", sortedLines);
+  }
+
+  public void writeToFile(String content, String fileName){
+    File file = new File(fileName);
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      writer.write(content);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)

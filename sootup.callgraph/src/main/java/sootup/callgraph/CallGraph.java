@@ -86,6 +86,13 @@ public interface CallGraph {
    */
   int callCount();
 
+
+  /**
+   * This method converts the call graph object into dot format and write it to a string file.
+   */
+
+  void convertToDotFormatAndFileWrite(String filePath);
+
   /**
    * This method copies a call graph.
    *
