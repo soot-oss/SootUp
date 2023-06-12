@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.soot-oss</groupId>
 		<artifactId>sootup</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
+		<version>1.1.2-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -69,12 +69,12 @@
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.core</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.core</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.1.2-SNAPSHOT</version>
 		</dependency>
 		<!-- wala java source code front-end dependences -->
 		<dependency>
