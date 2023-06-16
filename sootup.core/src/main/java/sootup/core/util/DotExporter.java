@@ -10,6 +10,8 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.model.Method;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
 /**
@@ -19,7 +21,7 @@ import sootup.core.types.ClassType;
  */
 public class DotExporter {
 
-  public static String buildGraph(@Nonnull StmtGraph<?> graph) {
+  public static String buildGraph(@Nonnull StmtGraph<?> graph, boolean isICFG, Map<Integer, MethodSignature> calls, MethodSignature methodSignature) {
 
     // TODO: hint: use edge weight to have a better top->down code like linear layouting with
     // starting stmt at the top;
@@ -27,14 +29,12 @@ public class DotExporter {
     // blocks
 
     StringBuilder sb = new StringBuilder();
-    sb.append("digraph G {\n")
-        .append("\tcompound=true\n")
-        .append("\tlabelloc=b\n")
-        .append("\tstyle=filled\n")
-        .append("\tcolor=gray90\n")
-        .append("\tnode [shape=box,style=filled,color=white]\n")
-        .append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n")
-        .append("\tfontsize=10\n\n");
+
+    boolean isAdded = false;
+
+    if(!isICFG) {
+      buildDiGraphObject(sb);
+    }
 
     /* entrypoint */
     Stmt startingStmt = graph.getStartingStmt();
@@ -86,6 +86,16 @@ public class DotExporter {
       if (stmts.size() > 1) {
         sb.append("\n\t\t");
         for (Stmt stmt : stmts) {
+          if(methodSignature != null && calls != null){
+            for (Map.Entry<Integer, MethodSignature> entry : calls.entrySet()) {
+              int key = entry.getKey();
+              MethodSignature value = entry.getValue();
+              if(methodSignature == value && !isAdded){
+                sb.append(key).append(" -> ");
+                isAdded = true;
+              }
+            }
+          }
           sb.append(stmt.hashCode()).append(" -> ");
         }
         sb.delete(sb.length() - 4, sb.length());
@@ -158,7 +168,10 @@ public class DotExporter {
       sb.append("\n");
     }
 
+    if(!isICFG)
     return sb.append("}").toString();
+    else
+      return sb.toString();
   }
 
   private static String escape(String str) {
@@ -166,10 +179,22 @@ public class DotExporter {
     return StringEscapeUtils.escapeXml10(str);
   }
 
+  public static StringBuilder buildDiGraphObject(StringBuilder sb){
+    sb.append("digraph G {\n")
+            .append("\tcompound=true\n")
+            .append("\tlabelloc=b\n")
+            .append("\tstyle=filled\n")
+            .append("\tcolor=gray90\n")
+            .append("\tnode [shape=box,style=filled,color=white]\n")
+            .append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n")
+            .append("\tfontsize=10\n\n");
+    return sb;
+  }
+
   public static String createUrlToWebeditor(@Nonnull StmtGraph<?> graph) {
     try {
       return "http://magjac.com/graphviz-visual-editor/?dot="
-          + URLEncoder.encode(buildGraph(graph), "UTF-8");
+          + URLEncoder.encode(buildGraph(graph, false, null, null), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
