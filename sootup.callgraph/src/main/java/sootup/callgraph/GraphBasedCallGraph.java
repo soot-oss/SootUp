@@ -23,11 +23,14 @@ package sootup.callgraph;
  */
 
 import com.google.common.base.Preconditions;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -131,19 +134,26 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public void convertToDotFormatAndFileWrite(String filePath) {
+  public String exportAsDot() {
     StringBuilder dotFormatBuilder = new StringBuilder();
 
-    for (Edge edge : graph.edgeSet()) {
-      Vertex sourceVertex = graph.getEdgeSource(edge);
-      Vertex targetVertex = graph.getEdgeTarget(edge);
-      dotFormatBuilder
-          .append("\t")
-          .append(sourceVertex.methodSignature)
-          .append(" -> ")
-          .append(targetVertex.methodSignature)
-          .append(";\n");
-    }
+    graph.edgeSet().stream()
+        .sorted(
+            Comparator.comparing(
+                    (Edge edge) -> graph.getEdgeSource(edge).toString(), Comparator.naturalOrder())
+                .thenComparing(
+                    (Edge edge) -> graph.getEdgeTarget(edge).toString(), Comparator.naturalOrder()))
+        .forEach(
+            edge -> {
+              Vertex sourceVertex = graph.getEdgeSource(edge);
+              Vertex targetVertex = graph.getEdgeTarget(edge);
+              dotFormatBuilder
+                  .append("\t")
+                  .append("\"" + sourceVertex.methodSignature + "\"")
+                  .append(" -> ")
+                  .append("\"" + targetVertex.methodSignature + "\"")
+                  .append(";\n");
+            });
     // Sort the callGraph
     String sortedCallGraph = sortCallGraph(dotFormatBuilder.toString());
 
@@ -154,8 +164,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     dotFormatBuilder.append(sortedCallGraph);
     dotFormatBuilder.append("}");
 
-    // Write the callGraph to the file
-    writeToFile(dotFormatBuilder.toString(), filePath);
+    return dotFormatBuilder.toString();
   }
 
   /**
@@ -180,7 +189,14 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
             if (className1.equals(className2)) {
               String methodName1 = extractMethodName(line1);
               String methodName2 = extractMethodName(line2);
-              return methodName1.compareTo(methodName2);
+              int methodNameComparison = methodName1.compareTo(methodName2);
+              if (methodNameComparison != 0) {
+                return methodNameComparison;
+              } else {
+                String parameter1 = extractParameter(line1);
+                String parameter2 = extractParameter(line2);
+                return parameter1.compareTo(parameter2);
+              }
             } else {
               return className1.compareTo(className2);
             }
@@ -194,18 +210,14 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
             String[] parts = line.trim().split("->");
             return parts[1].trim().split(";")[0];
           }
+
+          private String extractParameter(String line) {
+            String[] parts = line.trim().split("->");
+            return parts[1].trim().split(";")[1];
+          }
         });
 
     return String.join("\n", sortedLines);
-  }
-
-  public void writeToFile(String content, String fileName) {
-    File file = new File(fileName);
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.write(content);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
