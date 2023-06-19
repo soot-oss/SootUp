@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Set;
+
 import org.antlr.v4.runtime.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -12,7 +14,9 @@ import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.VoidType;
@@ -783,5 +787,22 @@ public class JimpleConverterTest {
 
     JimpleLexer lexer = new JimpleLexer(cs);
     assertEquals(60, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testQuotedTypeParsing() {
+    String quotedTypeUsage = "public class TypeUsage { \n" +
+            "static void <clinit>() { \n" +
+            "java.util.HashSet v0; \n" +
+            "specialinvoke v0.<java.util.HashSet: void <init>()>(); \n" +
+            "interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>(\"org.example.InvokerTransformer\"); \n" +
+            "return; \n" +
+            "}}";
+
+    SootClass<?> clazz = parseJimpleClass(CharStreams.fromString(quotedTypeUsage));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    Body body = method.getBody();
+    assertEquals(1, body.getLocalCount());
   }
 }
