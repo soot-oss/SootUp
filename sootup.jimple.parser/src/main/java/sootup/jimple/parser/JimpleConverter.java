@@ -640,7 +640,7 @@ public class JimpleConverter {
                 identifierFactory.getMethodSignature(
                     identifierFactory.getClassType(
                         JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME),
-                    ctx.unnamed_method_name.getText(),
+                    ctx.STRING_CONSTANT().getText().replace("\"", ""),
                     util.getType(ctx.name.getText()),
                     bootstrapMethodRefParams);
 
@@ -675,7 +675,7 @@ public class JimpleConverter {
             }
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
-            final String text = Jimple.unescape(ctx.identifier().getText());
+            final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
             return JavaJimple.getInstance().newClassConstant(text);
           } else if (ctx.STRING_CONSTANT() != null) {
             final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());

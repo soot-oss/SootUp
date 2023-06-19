@@ -104,8 +104,10 @@ grammar Jimple;
   // escapes and any char except \ (92) or " (34) and '.
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"' | '\'') ;
 
+  QUOTE : '\'';
+
   IDENTIFIER:
-    (([\p{L}$_] | ESCAPE_CHAR) ( (ESCAPE_CHAR | [\p{L}0-9$_] | STRING_CONSTANT) | '.' (ESCAPE_CHAR | [\p{L}0-9$_] | STRING_CONSTANT) )*);
+    (([\p{L}$_] | ESCAPE_CHAR | QUOTE) ( (ESCAPE_CHAR | [\p{L}0-9$_] | QUOTE) | '.' (ESCAPE_CHAR | [\p{L}0-9$_] | QUOTE) )*);
 
   BLANK :
     [ \t\r\n] ->skip;
@@ -116,7 +118,7 @@ grammar Jimple;
   * Parser Rules
   */
   identifier:
-    STRING_CONSTANT | STRING_CONSTANT . IDENTIFIER | IDENTIFIER ;
+    IDENTIFIER ;
 
   integer_constant :
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
@@ -235,7 +237,7 @@ grammar Jimple;
   invoke_expr :
     /*nonstatic*/ nonstaticinvoke=NONSTATIC_INVOKE local_name=identifier DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    staticinvoke=STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
-    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=identifier CMPLT name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
+    /*dynamic*/   dynamicinvoke=DYNAMICINVOKE unnamed_method_name=STRING_CONSTANT CMPLT name=type L_PAREN parameter_list=type_list? R_PAREN CMPGT L_PAREN dyn_args=arg_list? R_PAREN
                                                                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :
@@ -275,7 +277,7 @@ grammar Jimple;
     /*integer*/ integer_constant |
     /*float*/   FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
-    /*clazz*/   CLASS identifier |
+    /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL |
                 methodhandle='handle:' method_signature |
                 methodtype='methodtype:' method_subsignature ;

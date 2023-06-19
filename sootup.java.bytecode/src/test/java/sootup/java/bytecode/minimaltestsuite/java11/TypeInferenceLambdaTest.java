@@ -33,7 +33,7 @@ public class TypeInferenceLambdaTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: TypeInferenceLambda",
-            "l1 = dynamicinvoke apply <java.util.function.BinaryOperator ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: java.lang.Object __METHODTYPE__(java.lang.Object,java.lang.Object), handle: <TypeInferenceLambda: java.lang.Integer lambda$lambda$0(java.lang.Integer,java.lang.Integer)>, methodtype: java.lang.Integer __METHODTYPE__(java.lang.Integer,java.lang.Integer))",
+            "l1 = dynamicinvoke \"apply\" <java.util.function.BinaryOperator ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: java.lang.Object __METHODTYPE__(java.lang.Object,java.lang.Object), handle: <TypeInferenceLambda: java.lang.Integer lambda$lambda$0(java.lang.Integer,java.lang.Integer)>, methodtype: java.lang.Integer __METHODTYPE__(java.lang.Integer,java.lang.Integer))",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
             "$stack3 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3)",
             "$stack5 = interfaceinvoke l1.<java.util.function.BinaryOperator: java.lang.Object apply(java.lang.Object,java.lang.Object)>($stack4, $stack3)",
