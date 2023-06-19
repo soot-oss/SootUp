@@ -90,7 +90,7 @@ public class DotExporter {
             for (Map.Entry<Integer, MethodSignature> entry : calls.entrySet()) {
               int key = entry.getKey();
               MethodSignature value = entry.getValue();
-              if(methodSignature == value && !isAdded){
+              if(methodSignature.equals(value) && !isAdded){
                 sb.append(key).append(" -> ");
                 isAdded = true;
               }

@@ -1,6 +1,5 @@
 package sootup.core.util;
 
-import org.slf4j.event.KeyValuePair;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -14,6 +13,23 @@ public class ICFGDotExporter {
     public static String buildICFGGraph(ArrayList<StmtGraph> stmtGraphSet, LinkedHashSet<MethodSignature> sortedMethodSignature){
         DotExporter.buildDiGraphObject(sb);
         int i = 0;
+        Map<Integer,MethodSignature> calls;
+        for(StmtGraph stmtGraph : stmtGraphSet){
+            calls = computeCalls(stmtGraphSet);
+            List<MethodSignature> list = new ArrayList<>(sortedMethodSignature);
+            String graph = DotExporter.buildGraph(stmtGraph, true, calls,list.get(i));
+            sb.append(graph + "\n");
+            i++;
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * This method finds out all the calls made in the given StmtGraphs, so it can be edged to
+     * other methods.
+     * */
+    private static Map<Integer,MethodSignature> computeCalls(ArrayList<StmtGraph> stmtGraphSet){
         Map<Integer,MethodSignature> calls = new HashMap<>();
         for(StmtGraph stmtGraph : stmtGraphSet){
             Collection<? extends BasicBlock<?>> blocks;
@@ -32,13 +48,8 @@ public class ICFGDotExporter {
                     }
                 }
             }
-            List<MethodSignature> list = new ArrayList<>(sortedMethodSignature);
-            String graph = DotExporter.buildGraph(stmtGraph, true, calls,list.get(i));
-            sb.append(graph + "\n");
-            i++;
         }
-        sb.append("}");
-        return sb.toString();
+        return calls;
     }
 
 }
