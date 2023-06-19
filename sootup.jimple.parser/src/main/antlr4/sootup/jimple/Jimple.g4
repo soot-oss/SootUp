@@ -7,7 +7,7 @@ grammar Jimple;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)*? '/' -> skip;
 
-  STRING_CONSTANT : '"' STRING_CHAR* '"' |  '\'' STRING_CHAR* '\'';
+  STRING_CONSTANT : '"' STRING_CHAR* '"';
 
   CLASS : 'class';
   EXTENDS : 'extends';
@@ -79,6 +79,7 @@ grammar Jimple;
   MINUS : '-';
   MULT : '*';
   DIV : '/';
+  QUOTE : '\'';
 
 
   BOOL_CONSTANT :
@@ -104,8 +105,6 @@ grammar Jimple;
   // escapes and any char except \ (92) or " (34) and '.
   fragment STRING_CHAR :  ESCAPE_CHAR | ~('\\' | '"' | '\'') ;
 
-  QUOTE : '\'';
-
   IDENTIFIER:
     (([\p{L}$_] | ESCAPE_CHAR | QUOTE) ( (ESCAPE_CHAR | [\p{L}0-9$_] | QUOTE) | '.' (ESCAPE_CHAR | [\p{L}0-9$_] | QUOTE) )*);
 
@@ -124,7 +123,7 @@ grammar Jimple;
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
-    importItem* modifier* file_type classname=identifier extends_clause? implements_clause? L_BRACE member* R_BRACE EOF;
+    importItem* modifier* file_type classname=IDENTIFIER extends_clause? implements_clause? L_BRACE member* R_BRACE EOF;
 
   importItem:
     'import' location=identifier SEMICOLON;
