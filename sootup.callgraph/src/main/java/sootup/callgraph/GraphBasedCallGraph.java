@@ -23,12 +23,8 @@ package sootup.callgraph;
  */
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -136,13 +132,41 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public String exportAsDot() {
     StringBuilder dotFormatBuilder = new StringBuilder();
-
+    // The edgeSet is first sorted with the sourceMethod first and then targetMethod. It is sorted
+    // by className, then the method name
+    // and then the parameters.
     graph.edgeSet().stream()
         .sorted(
             Comparator.comparing(
-                    (Edge edge) -> graph.getEdgeSource(edge).toString(), Comparator.naturalOrder())
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getDeclClassType().getClassName();
+                    })
                 .thenComparing(
-                    (Edge edge) -> graph.getEdgeTarget(edge).toString(), Comparator.naturalOrder()))
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getParameterTypes().toString();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getDeclClassType().getClassName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getParameterTypes().toString();
+                    }))
         .forEach(
             edge -> {
               Vertex sourceVertex = graph.getEdgeSource(edge);
@@ -154,70 +178,8 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
                   .append("\"" + targetVertex.methodSignature + "\"")
                   .append(";\n");
             });
-    // Sort the callGraph
-    String sortedCallGraph = sortCallGraph(dotFormatBuilder.toString());
 
-    // Using only one string builder, so deleting everything and adding the sorted callgraph
-    dotFormatBuilder.delete(0, dotFormatBuilder.capacity());
-
-    dotFormatBuilder.append("strict digraph ObjectGraph {\n");
-    dotFormatBuilder.append(sortedCallGraph);
-    dotFormatBuilder.append("}");
-
-    return dotFormatBuilder.toString();
-  }
-
-  /**
-   * Unlike toString method in the same file, the comparison is done manually by comparing two
-   * strings, because the details of className, MethodSignature is not present in the data at hand.
-   *
-   * @param dotOutput
-   * @return
-   */
-  public String sortCallGraph(String dotOutput) {
-    List<String> lines = Arrays.asList(dotOutput.split("\n"));
-    List<String> sortedLines = new ArrayList<>(lines);
-
-    Collections.sort(
-        sortedLines,
-        new Comparator<String>() {
-          @Override
-          public int compare(String line1, String line2) {
-            String className1 = extractClassName(line1);
-            String className2 = extractClassName(line2);
-
-            if (className1.equals(className2)) {
-              String methodName1 = extractMethodName(line1);
-              String methodName2 = extractMethodName(line2);
-              int methodNameComparison = methodName1.compareTo(methodName2);
-              if (methodNameComparison != 0) {
-                return methodNameComparison;
-              } else {
-                String parameter1 = extractParameter(line1);
-                String parameter2 = extractParameter(line2);
-                return parameter1.compareTo(parameter2);
-              }
-            } else {
-              return className1.compareTo(className2);
-            }
-          }
-
-          private String extractClassName(String line) {
-            return line.trim().split(" ")[0];
-          }
-
-          private String extractMethodName(String line) {
-            String[] parts = line.trim().split("->");
-            return parts[1].trim().split(";")[0];
-          }
-
-          private String extractParameter(String line) {
-            String[] parts = line.trim().split("->");
-            return parts[1].trim().split(";")[1];
-          }
-        });
-
-    return String.join("\n", sortedLines);
+    return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
   }
 
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
