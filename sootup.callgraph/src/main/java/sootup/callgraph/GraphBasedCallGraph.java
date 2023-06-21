@@ -137,6 +137,59 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return graph.edgeSet().size();
   }
 
+  @Override
+  public String exportAsDot() {
+    StringBuilder dotFormatBuilder = new StringBuilder();
+    // The edgeSet is first sorted with the sourceMethod first and then targetMethod. It is sorted
+    // by className, then the method name
+    // and then the parameters.
+    graph.edgeSet().stream()
+        .sorted(
+            Comparator.comparing(
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getDeclClassType().getClassName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeSource = graph.getEdgeSource(edge);
+                      return edgeSource.methodSignature.getParameterTypes().toString();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getDeclClassType().getClassName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getName();
+                    })
+                .thenComparing(
+                    (Edge edge) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                      return edgeTarget.methodSignature.getParameterTypes().toString();
+                    }))
+        .forEach(
+            edge -> {
+              Vertex sourceVertex = graph.getEdgeSource(edge);
+              Vertex targetVertex = graph.getEdgeTarget(edge);
+              dotFormatBuilder
+                  .append("\t")
+                  .append("\"" + sourceVertex.methodSignature + "\"")
+                  .append(" -> ")
+                  .append("\"" + targetVertex.methodSignature + "\"")
+                  .append(";\n");
+            });
+
+    return "strict digraph ObjectGraph {\n" + dotFormatBuilder + "}";
+  }
+
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @Nonnull
   @Override
