@@ -165,3 +165,4 @@ fabric.properties
 .vscode/settings.json
 =======
 .vscode/
+.DS_Store
