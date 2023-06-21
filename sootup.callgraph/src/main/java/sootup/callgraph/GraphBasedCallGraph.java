@@ -168,6 +168,11 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return signatureToVertex;
   }
 
+  @Nonnull
+  protected MethodSignature vertex2MethodSignature(@Nonnull Vertex vertex) {
+    return vertex.getMethodSignature();
+  }
+
   /**
    * This method exports the call graph in a human-readable string. The String lists all nodes in
    * the call graph. For each node it also lists the outgoing and incoming edges. An outgoing edge
