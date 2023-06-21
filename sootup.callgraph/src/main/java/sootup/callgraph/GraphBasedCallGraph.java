@@ -35,13 +35,13 @@ import sootup.core.signatures.SootClassMemberSignature;
 import sootup.java.core.types.JavaClassType;
 
 /** This class implements a mutable call graph as a graph. */
-public final class GraphBasedCallGraph implements MutableCallGraph {
+public class GraphBasedCallGraph implements MutableCallGraph {
 
   /**
    * This internal class is used to describe a vertex in the graph. The vertex is defined by a
    * method signature that describes the method.
    */
-  private static class Vertex {
+  protected static class Vertex {
     @Nonnull final MethodSignature methodSignature;
 
     private Vertex(@Nonnull MethodSignature methodSignature) {
@@ -50,7 +50,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   /** This internal class is used to describe the edge in the graph. */
-  private static class Edge {}
+  protected static class Edge {}
 
   @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
   @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;

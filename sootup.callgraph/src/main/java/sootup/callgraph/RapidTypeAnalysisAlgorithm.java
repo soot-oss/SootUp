@@ -100,7 +100,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param method this object contains the method body which is inspected.
    */
-  private void collectInstantiatedClassesInMethod(SootMethod method) {
+  protected void collectInstantiatedClassesInMethod(SootMethod method) {
     if (method == null || method.isAbstract() || method.isNative()) {
       return;
     }
@@ -191,18 +191,18 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   /**
-   * Pre-processing of a method in the RTA call graph algorithm
+   * Preprocessing of a method in the RTA call graph algorithm
    *
    * <p>Before processing the method, all instantiated types are collected inside the body of the
    * sourceMethod.
    *
    * @param view view
    * @param sourceMethod the processed method
-   * @param workList the current worklist
+   * @param workList the current work list
    * @param cg the current cg
    */
   @Override
-  public void preProcessingMethod(
+  protected void preProcessingMethod(
       View<? extends SootClass<?>> view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
@@ -217,7 +217,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   /**
-   * Post processing of a method in the RTA call graph algorithm
+   * Postprocessing of a method in the RTA call graph algorithm
    *
    * <p>RTA has to add previously ignored calls because a found instantiation of a class could
    * enable a call to a ignored method at a later time.
@@ -228,7 +228,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param cg the current cg is extended by new call targets and calls
    */
   @Override
-  public void postProcessingMethod(
+  protected void postProcessingMethod(
       View<? extends SootClass<?>> view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,

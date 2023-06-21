@@ -117,7 +117,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   @Override
-  public void postProcessingMethod(
+  protected void postProcessingMethod(
       View<? extends SootClass<?>> view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
@@ -126,7 +126,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
   }
 
   @Override
-  public void preProcessingMethod(
+  protected void preProcessingMethod(
       View<? extends SootClass<?>> view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
