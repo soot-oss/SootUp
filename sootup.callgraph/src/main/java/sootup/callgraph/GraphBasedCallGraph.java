@@ -46,6 +46,10 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     protected Vertex(@Nonnull MethodSignature methodSignature) {
       this.methodSignature = methodSignature;
     }
+    @Nonnull
+    protected MethodSignature getMethodSignature(){
+      return methodSignature;
+    }
   }
 
   /** This internal class is used to describe the edge in the graph. */
