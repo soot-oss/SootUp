@@ -333,11 +333,11 @@ public final class AsmUtil {
                 (ArrayList<AnnotationNode>) annotationValue;
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
-          }
-          else if(annotationValue instanceof AnnotationNode){
-            paramMap.put(annotationName,createAnnotationUsage(Collections.singletonList((AnnotationNode) annotationValue)));
-          }
-          else {
+          } else if (annotationValue instanceof AnnotationNode) {
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(Collections.singletonList((AnnotationNode) annotationValue)));
+          } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(
                   annotationName,
