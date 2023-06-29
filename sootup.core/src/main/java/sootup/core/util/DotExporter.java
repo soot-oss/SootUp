@@ -10,7 +10,6 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Method;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 
@@ -21,7 +20,11 @@ import sootup.core.types.ClassType;
  */
 public class DotExporter {
 
-  public static String buildGraph(@Nonnull StmtGraph<?> graph, boolean isICFG, Map<Integer, MethodSignature> calls, MethodSignature methodSignature) {
+  public static String buildGraph(
+      @Nonnull StmtGraph<?> graph,
+      boolean isICFG,
+      Map<Integer, MethodSignature> calls,
+      MethodSignature methodSignature) {
 
     // TODO: hint: use edge weight to have a better top->down code like linear layouting with
     // starting stmt at the top;
@@ -32,7 +35,7 @@ public class DotExporter {
 
     boolean isAdded = false;
 
-    if(!isICFG) {
+    if (!isICFG) {
       buildDiGraphObject(sb);
     }
 
@@ -86,11 +89,11 @@ public class DotExporter {
       if (stmts.size() > 1) {
         sb.append("\n\t\t");
         for (Stmt stmt : stmts) {
-          if(methodSignature != null && calls != null){
+          if (methodSignature != null && calls != null) {
             for (Map.Entry<Integer, MethodSignature> entry : calls.entrySet()) {
               int key = entry.getKey();
               MethodSignature value = entry.getValue();
-              if(methodSignature.equals(value) && !isAdded){
+              if (methodSignature.equals(value) && !isAdded) {
                 sb.append(key).append(" -> ");
                 isAdded = true;
               }
@@ -168,10 +171,8 @@ public class DotExporter {
       sb.append("\n");
     }
 
-    if(!isICFG)
-    return sb.append("}").toString();
-    else
-      return sb.toString();
+    if (!isICFG) return sb.append("}").toString();
+    else return sb.toString();
   }
 
   private static String escape(String str) {
@@ -179,15 +180,15 @@ public class DotExporter {
     return StringEscapeUtils.escapeXml10(str);
   }
 
-  public static StringBuilder buildDiGraphObject(StringBuilder sb){
+  public static StringBuilder buildDiGraphObject(StringBuilder sb) {
     sb.append("digraph G {\n")
-            .append("\tcompound=true\n")
-            .append("\tlabelloc=b\n")
-            .append("\tstyle=filled\n")
-            .append("\tcolor=gray90\n")
-            .append("\tnode [shape=box,style=filled,color=white]\n")
-            .append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n")
-            .append("\tfontsize=10\n\n");
+        .append("\tcompound=true\n")
+        .append("\tlabelloc=b\n")
+        .append("\tstyle=filled\n")
+        .append("\tcolor=gray90\n")
+        .append("\tnode [shape=box,style=filled,color=white]\n")
+        .append("\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n")
+        .append("\tfontsize=10\n\n");
     return sb;
   }
 

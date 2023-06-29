@@ -150,13 +150,13 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     initializeStmtToOwner();
   }
 
-  public String buildICFGGraph(){
+  public String buildICFGGraph() {
     ArrayList<StmtGraph> stmtGraphSet = new ArrayList<>();
     // To Sort the methodSignature set with entrypoint as the first element.
     Set<MethodSignature> methodSignatures = cg.getMethodSignatures();
     methodSignatures.remove(mainMethodSignature);
     List<MethodSignature> list = new ArrayList<>(methodSignatures);
-    list.add(0,mainMethodSignature);
+    list.add(0, mainMethodSignature);
     LinkedHashSet<MethodSignature> sortedMethodSignature = new LinkedHashSet<>(list);
     for (MethodSignature methodSignature : sortedMethodSignature) {
       final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
