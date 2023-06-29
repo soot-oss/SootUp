@@ -143,7 +143,8 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
     final MethodSubSignature mSubSig = methodSignature.getSubSignature();
     // dont print methodname from methodsubsignature in the usual way
-    up.literal(" " + Jimple.escape(mSubSig.getName()) + " <" + getNamelessSubSig(mSubSig) + ">(");
+    up.literal(
+        " \"" + Jimple.escape(mSubSig.getName()) + "\" <" + getNamelessSubSig(mSubSig) + ">(");
     argsToPrinter(up);
 
     up.literal(") ");

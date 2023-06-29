@@ -30,7 +30,7 @@ public class MethodAcceptingLamExprTest extends JimpleTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: MethodAcceptingLamExpr",
-            "$stack2 = dynamicinvoke calcPercentage <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), handle: <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double))",
+            "$stack2 = dynamicinvoke \"calcPercentage\" <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), handle: <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double))",
             "l1 = $stack2",
             "$stack4 = <java.lang.System: java.io.PrintStream out>",
             "$stack3 = new java.lang.StringBuilder",
