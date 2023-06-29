@@ -1,0 +1,86 @@
+public class com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator extends java.lang.Object
+{
+    protected static final java.util.Set DEFAULT_NO_DESER_CLASS_NAMES;
+    private static final com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator instance;
+
+    static void <clinit>()
+    {
+        java.util.HashSet v0;
+        java.util.Set v1;
+        com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator v2;
+
+        v0 = new java.util.HashSet;
+
+        specialinvoke v0.<java.util.HashSet: void <init>()>();
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.commons.collections.functors.InvokerTransformer");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.commons.collections.functors.InstantiateTransformer");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.commons.collections4.functors.InvokerTransformer");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.commons.collections4.functors.InstantiateTransformer");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.codehaus.groovy.runtime.ConvertedClosure");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.codehaus.groovy.runtime.MethodClosure");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.springframework.beans.factory.ObjectFactory");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.xalan.xsltc.trax.TemplatesImpl");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("com.sun.rowset.JdbcRowSetImpl");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("java.util.logging.FileHandler");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("java.rmi.server.UnicastRemoteObject");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.springframework.beans.factory.config.PropertyPathFactoryBean");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("com.sun.org.apache.bcel.internal.util.ClassLoader");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.ibatis.parsing.XPathParser");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("jodd.db.connection.DataSourceConnectionProvider");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("oracle.jdbc.connector.OracleManagedConnectionFactory");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("oracle.jdbc.rowset.OracleJDBCRowSet");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.hibernate.jmx.StatisticsService");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.ibatis.datasource.jndi.JndiDataSourceFactory");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.slf4j.ext.EventData");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("flex.messaging.util.concurrent.AsynchBeansWorkManagerExecutor");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("com.sun.deploy.security.ruleset.DRSHelper");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.axis2.jaxws.spi.handler.HandlerResolverImpl");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.jboss.util.propertyeditor.DocumentEditor");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.openjpa.ee.RegistryManagedRuntime");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.openjpa.ee.JNDIManagedRuntime");
+
+        interfaceinvoke v0.<java.util.Set: boolean add(java.lang.Object)>("org.apache.axis2.transport.jms.JMSOutTransportInfo");
+
+        v1 = staticinvoke <java.util.Collections: java.util.Set unmodifiableSet(java.util.Set)>(v0);
+
+        <com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator: java.util.Set DEFAULT_NO_DESER_CLASS_NAMES> = v1;
+
+        v2 = new com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator;
+
+        specialinvoke v2.<com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator: void <init>()>();
+
+        <com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator: com.fasterxml.jackson.databind.jsontype.impl.SubTypeValidator instance> = v2;
+
+        return;
+    }
+}

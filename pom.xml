@@ -83,7 +83,7 @@
         <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
         <slf4j.version>2.0.5</slf4j.version>
         <slf4j-simple.version>2.0.5</slf4j-simple.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.0.1-jre</guava.version>
         <apache-commons.version>3.12.0</apache-commons.version>
         <apache-commons-io.version>2.11.0</apache-commons-io.version>
         <junit.version>4.13.2</junit.version>

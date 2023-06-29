@@ -223,4 +223,32 @@ public class CallGraphTest {
     assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
     assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
   }
+
+  @Test
+  public void checkCallGraphDotExporter() {
+    algorithmName = "RTA";
+    CallGraph cg = loadCallGraph();
+    String actualContent = cg.exportAsDot();
+    String expectedContent =
+        "strict digraph ObjectGraph {\n"
+            + "\t\"<AbstractClass: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
+            + "\t\"<InterfaceImplementation: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
+            + "\t\"<InterfaceNoImplementation: void <init>()>\" -> \"<java.lang.Object: void <init>()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<Interface: int defaultMethod()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceImplementation: void <init>()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceImplementation: int defaultMethod()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<InterfaceNoImplementation: void <init>()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<MethodImplementedInstantiatedInSubClass: int method()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<java.lang.Object: void <clinit>()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodImplemented: void <init>()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodImplemented: int method()>\";\n"
+            + "\t\"<Main: void main(java.lang.String[])>\" -> \"<SubClassMethodNotImplemented: void <init>()>\";\n"
+            + "\t\"<MethodImplemented: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
+            + "\t\"<MethodImplementedInstantiatedInSubClass: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
+            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void <clinit>()>\";\n"
+            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void registerNatives()>\";\n"
+            + "\t\"<SubClassMethodImplemented: void <init>()>\" -> \"<MethodImplemented: void <init>()>\";\n"
+            + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n}";
+    assertEquals(actualContent, expectedContent);
+  }
 }
