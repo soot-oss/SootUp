@@ -11,7 +11,7 @@ public class ICFGDotExporter {
   static final StringBuilder sb = new StringBuilder();
 
   public static String buildICFGGraph(
-      ArrayList<StmtGraph> stmtGraphSet, LinkedHashSet<MethodSignature> sortedMethodSignature) {
+      ArrayList<StmtGraph> stmtGraphSet, Set<MethodSignature> sortedMethodSignature) {
     DotExporter.buildDiGraphObject(sb);
     int i = 0;
     Map<Integer, MethodSignature> calls;
