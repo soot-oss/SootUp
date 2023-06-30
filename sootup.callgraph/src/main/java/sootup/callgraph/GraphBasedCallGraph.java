@@ -140,7 +140,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
             Comparator.comparing(
                     (Edge edge) -> {
                       Vertex edgeSource = graph.getEdgeSource(edge);
-                      return edgeSource.methodSignature.getDeclClassType().toString();
+                      return edgeSource.methodSignature.getDeclClassType().getFullyQualifiedName();
                     })
                 .thenComparing(
                     (Edge edge) -> {
