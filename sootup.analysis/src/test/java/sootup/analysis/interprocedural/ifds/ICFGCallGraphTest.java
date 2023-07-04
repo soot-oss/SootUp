@@ -1,6 +1,5 @@
 package sootup.analysis.interprocedural.ifds;
 
-import static junit.framework.TestCase.assertEquals;
 
 import org.junit.Test;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
@@ -108,6 +107,6 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
             + "\n"
             + "}";
     String callGraph = icfg.buildICFGGraph();
-//    assertEquals(expectedCallGraph, icfg.buildICFGGraph());
+    //    assertEquals(expectedCallGraph, icfg.buildICFGGraph());
   }
 }
