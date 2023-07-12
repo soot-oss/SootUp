@@ -151,21 +151,23 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public String buildICFGGraph() {
     ArrayList<StmtGraph> stmtGraphSet = new ArrayList<>();
-    Set<MethodSignature> methodSignatures =
-        computeAllCalls(mainMethodSignature, new LinkedHashSet<>());
-    for (MethodSignature methodSignature : methodSignatures) {
-      final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-      methodOpt.ifPresent(sootMethod -> stmtGraphSet.add(sootMethod.getBody().getStmtGraph()));
-    }
-    return ICFGDotExporter.buildICFGGraph(stmtGraphSet, methodSignatures);
+    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    computeAllCalls(mainMethodSignature, signatureToStmtGraph);
+    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph);
   }
 
-  private Set<MethodSignature> computeAllCalls(
-      MethodSignature methodSignature, Set<MethodSignature> methodSignatureSet) {
-    methodSignatureSet.add(methodSignature);
+  private void computeAllCalls(
+      MethodSignature methodSignature, Map<MethodSignature, StmtGraph> signatureToStmtGraph) {
+    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+    if(methodOpt.isPresent()){
+      SootMethod sootMethod = methodOpt.get();
+      if(sootMethod.hasBody()){
+        StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
+        signatureToStmtGraph.put(methodSignature, stmtGraph);
+      }
+    }
     cg.callsFrom(methodSignature)
-        .forEach(nextMethodSignature -> computeAllCalls(nextMethodSignature, methodSignatureSet));
-    return methodSignatureSet;
+        .forEach(nextMethodSignature -> computeAllCalls(nextMethodSignature, signatureToStmtGraph));
   }
 
   private CallGraph initCallGraph() {
