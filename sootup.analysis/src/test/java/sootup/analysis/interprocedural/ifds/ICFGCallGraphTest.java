@@ -1,6 +1,5 @@
 package sootup.analysis.interprocedural.ifds;
 
-
 import org.junit.Test;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import sootup.core.model.SootClass;
