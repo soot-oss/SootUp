@@ -36,7 +36,7 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
 
     JimpleBasedInterproceduralCFG icfg =
         new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
-    String expectedCallGraph =
+    String actualCallGraph =
         "digraph G {\n"
             + "\tcompound=true\n"
             + "\tlabelloc=b\n"
@@ -106,7 +106,34 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
             + "\n"
             + "\n"
             + "}";
-    String callGraph = icfg.buildICFGGraph();
+    String expectedCallGraph = icfg.buildICFGGraph();
     //    assertEquals(expectedCallGraph, icfg.buildICFGGraph());
+  }
+
+  @Test
+  public void ICFGDotExportTest2() {
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"))
+            .build();
+
+    view = javaProject.createView();
+
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample2");
+
+    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    entryMethod =
+        sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
+
+    entryMethodSignature = entryMethod.getSignature();
+
+    JimpleBasedInterproceduralCFG icfg =
+        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+    String callGraph = icfg.buildICFGGraph();
   }
 }

@@ -1,10 +1,11 @@
-package sootup.core.util;
+package sootup.analysis.interprocedural.icfg;
 
 import java.util.*;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.util.DotExporter;
 
 public class ICFGDotExporter {
 
@@ -15,8 +16,8 @@ public class ICFGDotExporter {
     DotExporter.buildDiGraphObject(sb);
     int i = 0;
     Map<Integer, MethodSignature> calls;
+    calls = computeCalls(stmtGraphSet);
     for (StmtGraph stmtGraph : stmtGraphSet) {
-      calls = computeCalls(stmtGraphSet);
       List<MethodSignature> list = new ArrayList<>(sortedMethodSignature);
       String graph = DotExporter.buildGraph(stmtGraph, true, calls, list.get(i));
       sb.append(graph + "\n");

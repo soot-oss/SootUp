@@ -44,7 +44,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.ICFGDotExporter;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
@@ -152,17 +151,21 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   public String buildICFGGraph() {
     ArrayList<StmtGraph> stmtGraphSet = new ArrayList<>();
-    // To Sort the methodSignature set with entrypoint as the first element.
-    Set<MethodSignature> methodSignatures = cg.getMethodSignatures();
-    methodSignatures.remove(mainMethodSignature);
-    Set<MethodSignature> modifiedMethodSignatures = new LinkedHashSet<>();
-    modifiedMethodSignatures.add(mainMethodSignature);
-    modifiedMethodSignatures.addAll(methodSignatures);
-    for (MethodSignature methodSignature : modifiedMethodSignatures) {
+    Set<MethodSignature> methodSignatures =
+        computeAllCalls(mainMethodSignature, new LinkedHashSet<>());
+    for (MethodSignature methodSignature : methodSignatures) {
       final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
       methodOpt.ifPresent(sootMethod -> stmtGraphSet.add(sootMethod.getBody().getStmtGraph()));
     }
-    return ICFGDotExporter.buildICFGGraph(stmtGraphSet, modifiedMethodSignatures);
+    return ICFGDotExporter.buildICFGGraph(stmtGraphSet, methodSignatures);
+  }
+
+  private Set<MethodSignature> computeAllCalls(
+      MethodSignature methodSignature, Set<MethodSignature> methodSignatureSet) {
+    methodSignatureSet.add(methodSignature);
+    cg.callsFrom(methodSignature)
+        .forEach(nextMethodSignature -> computeAllCalls(nextMethodSignature, methodSignatureSet));
+    return methodSignatureSet;
   }
 
   private CallGraph initCallGraph() {
