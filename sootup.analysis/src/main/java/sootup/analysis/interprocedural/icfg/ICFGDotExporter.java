@@ -12,8 +12,7 @@ import sootup.core.util.DotExporter;
 
 public class ICFGDotExporter {
 
-  public static String buildICFGGraph(
-          Map<MethodSignature, StmtGraph> signatureToStmtGraph) {
+  public static String buildICFGGraph(Map<MethodSignature, StmtGraph> signatureToStmtGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;

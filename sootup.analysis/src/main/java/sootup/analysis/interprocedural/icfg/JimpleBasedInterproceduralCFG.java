@@ -159,9 +159,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   private void computeAllCalls(
       MethodSignature methodSignature, Map<MethodSignature, StmtGraph> signatureToStmtGraph) {
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
-    if(methodOpt.isPresent()){
+    if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();
-      if(sootMethod.hasBody()){
+      if (sootMethod.hasBody()) {
         StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
         signatureToStmtGraph.put(methodSignature, stmtGraph);
       }
