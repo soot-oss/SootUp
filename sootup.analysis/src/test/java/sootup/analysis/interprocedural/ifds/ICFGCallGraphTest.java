@@ -1,15 +1,39 @@
 package sootup.analysis.interprocedural.ifds;
 
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+
+import java.util.*;
+import org.junit.Assert;
 import org.junit.Test;
+import sootup.analysis.interprocedural.icfg.ICFGDotExporter;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
+
+  public CallGraph loadCallGraph(JavaView view) {
+    CallGraph cg =
+        new ClassHierarchyAnalysisAlgorithm(view)
+            .initialize(Collections.singletonList(entryMethodSignature));
+    assertNotNull(cg);
+    assertTrue(
+        entryMethodSignature + " is not found in CallGraph",
+        cg.containsMethod(entryMethodSignature));
+    return cg;
+  }
 
   @Test
   public void ICFGDotExportTest() {
@@ -19,7 +43,7 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"))
+                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();
 
     view = javaProject.createView();
@@ -35,78 +59,20 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
 
     JimpleBasedInterproceduralCFG icfg =
         new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
-    String actualCallGraph =
-        "digraph G {\n"
-            + "\tcompound=true\n"
-            + "\tlabelloc=b\n"
-            + "\tstyle=filled\n"
-            + "\tcolor=gray90\n"
-            + "\tnode [shape=box,style=filled,color=white]\n"
-            + "\tedge [fontsize=10,arrowsize=1.5,fontcolor=grey40]\n"
-            + "\tfontsize=10\n"
-            + "\n"
-            + "//  lines [23: 26] \n"
-            + "\tsubgraph cluster_1320677379 { \n"
-            + "\t\tlabel = \"Block #1\"\n"
-            + "\t\t171497379[label=\"l0 := @this: ICFGExample\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\t\t1665404403[label=\"l1 = &quot;SECRET&quot;\"]\n"
-            + "\t\t988458918[label=\"l2 = virtualinvoke l0.&lt;ICFGExample: java.lang.String id(java.lang.String)&gt;(l1)\"]\n"
-            + "\t\t1990451863[label=\"virtualinvoke l0.&lt;ICFGExample: void sink(java.lang.String)&gt;(l2)\"]\n"
-            + "\t\t1295083508[label=\"return\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\n"
-            + "\t\t171497379 -> 1665404403 -> 988458918 -> 1990451863 -> 1295083508\n"
-            + "\t}\n"
-            + "\n"
-            + "\n"
-            + "//  lines [11: 12] \n"
-            + "\tsubgraph cluster_2137366542 { \n"
-            + "\t\tlabel = \"Block #1\"\n"
-            + "\t\t2018981974[label=\"l0 := @this: ICFGExample\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\t\t905009026[label=\"l1 := @parameter0: java.lang.String\"]\n"
-            + "\t\t602908276[label=\"virtualinvoke l0.&lt;ICFGExample: void secondMethod(java.lang.String)&gt;(l1)\"]\n"
-            + "\t\t1648078807[label=\"return\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\n"
-            + "\t\t1990451863 -> 2018981974 -> 905009026 -> 602908276 -> 1648078807\n"
-            + "\t}\n"
-            + "\n"
-            + "\n"
-            + "//  lines [7: 7] \n"
-            + "\tsubgraph cluster_603702962 { \n"
-            + "\t\tlabel = \"Block #1\"\n"
-            + "\t\t1698148964[label=\"l0 := @this: ICFGExample\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\t\t1288983035[label=\"l1 := @parameter0: java.lang.String\"]\n"
-            + "\t\t2064117540[label=\"return l1\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\n"
-            + "\t\t988458918 -> 1698148964 -> 1288983035 -> 2064117540\n"
-            + "\t}\n"
-            + "\n"
-            + "\n"
-            + "//  lines [15: 16] \n"
-            + "\tsubgraph cluster_2116251487 { \n"
-            + "\t\tlabel = \"Block #1\"\n"
-            + "\t\t329293111[label=\"l0 := @this: ICFGExample\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\t\t1770804671[label=\"l1 := @parameter0: java.lang.String\"]\n"
-            + "\t\t1172514862[label=\"$stack2 = virtualinvoke l0.&lt;ICFGExample: java.lang.String thirdMethod(java.lang.String)&gt;(l1)\"]\n"
-            + "\t\t1388137600[label=\"return\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\n"
-            + "\t\t602908276 -> 329293111 -> 1770804671 -> 1172514862 -> 1388137600\n"
-            + "\t}\n"
-            + "\n"
-            + "\n"
-            + "//  lines [19: 19] \n"
-            + "\tsubgraph cluster_1780885275 { \n"
-            + "\t\tlabel = \"Block #1\"\n"
-            + "\t\t2058348472[label=\"l0 := @this: ICFGExample\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\t\t2126618194[label=\"l1 := @parameter0: java.lang.String\"]\n"
-            + "\t\t1865523042[label=\"return l1\",shape=Mdiamond,color=grey50,fillcolor=white]\n"
-            + "\n"
-            + "\t\t1172514862 -> 2058348472 -> 2126618194 -> 1865523042\n"
-            + "\t}\n"
-            + "\n"
-            + "\n"
-            + "}";
-    String expectedCallGraph = icfg.buildICFGGraph();
-    //    assertEquals(expectedCallGraph, icfg.buildICFGGraph());
+    CallGraph callGraph = loadCallGraph(view);
+    String expectedCallGraph = icfg.buildICFGGraph(callGraph);
+    Digraph digraph = parseDigraph(expectedCallGraph);
+    Assert.assertEquals(digraph.blocks.length, 5);
+    // As per the example code, the first block has no invoke calls, so the number of statements and
+    // edges should be same
+    Assert.assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
+    // As per the example code, the second block has an invoke call, so the number of edges should
+    // be same one more than the statements, as one edge is for the invoke call
+    Assert.assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
+    // compute the edges from the callGraph and compare the edges with the ICFGCallGraph created
+    Assert.assertEquals(
+        edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
+        String.join(" -> ", digraph.blocks[0].edges));
   }
 
   @Test
@@ -117,7 +83,7 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
             .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"))
+                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();
 
     view = javaProject.createView();
@@ -133,6 +99,142 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
 
     JimpleBasedInterproceduralCFG icfg =
         new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
-    String callGraph = icfg.buildICFGGraph();
+    CallGraph callGraph = loadCallGraph(view);
+    String expectedCallGraph = icfg.buildICFGGraph(callGraph);
+    Digraph digraph = parseDigraph(expectedCallGraph);
+    Assert.assertEquals(digraph.blocks.length, 7);
+    // As per the example code, the first block has no invoke calls, so the number of statements and
+    // edges should be same
+    Assert.assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
+    // As per the example code, the second block has an invoke call, so the number of edges should
+    // be same one more than the statements, as one edge is for the invoke call
+    Assert.assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
+    // compute the edges from the callGraph and compare the edges with the ICFGCallGraph created
+    Assert.assertEquals(
+        edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
+        String.join(" -> ", digraph.blocks[0].edges));
+  }
+
+  /** Compute the Edges of the given methodSignature from the provided callGraph */
+  public String edgesFromCallGraph(
+      MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
+    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
+    Map<Integer, MethodSignature> calls;
+    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph.values());
+    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+    if (methodOpt.isPresent()) {
+      SootMethod sootMethod = methodOpt.get();
+      if (sootMethod.hasBody()) {
+        String edges = connectEdges(sootMethod.getBody().getStmts(), methodSignature, calls);
+        return edges;
+      }
+    }
+    return "";
+  }
+
+  /**
+   * Compute the possible edges which includes the hashcodes of each flowing statement from the
+   * given statements
+   *
+   * @param stmts
+   * @param methodSignature
+   * @param calls
+   * @return
+   */
+  public String connectEdges(
+      List<Stmt> stmts, MethodSignature methodSignature, Map<Integer, MethodSignature> calls) {
+    StringBuilder sb = new StringBuilder();
+    boolean isAdded = false;
+    for (Stmt stmt : stmts) {
+      if (methodSignature != null && calls != null) {
+        for (Map.Entry<Integer, MethodSignature> entry : calls.entrySet()) {
+          int key = entry.getKey();
+          MethodSignature value = entry.getValue();
+          if (methodSignature.equals(value) && !isAdded) {
+            sb.append(key).append(" -> ");
+            isAdded = true;
+          }
+        }
+      }
+      sb.append(stmt.hashCode()).append(" -> ");
+    }
+    sb.delete(sb.length() - 4, sb.length());
+    return sb.toString();
+  }
+
+  /** A POJO class to convert the dot-exported string into java object */
+  class Block {
+    String label;
+    String[] statements;
+
+    List<String> edges;
+
+    public Block() {
+      edges = new ArrayList<>();
+    }
+  }
+
+  class Digraph {
+    Block[] blocks;
+  }
+
+  public Digraph parseDigraph(String digraphString) {
+    Digraph digraph = new Digraph();
+    Block currentBlock = null;
+
+    String[] lines = digraphString.split("\n");
+    for (String line : lines) {
+      line = line.trim();
+      if (line.startsWith("subgraph cluster_")) {
+        String label = line.split("subgraph cluster_")[1].trim();
+        currentBlock = new Block();
+        currentBlock.label = label;
+        digraph.blocks = addBlock(digraph.blocks, currentBlock);
+      } else if (currentBlock != null && line.contains("label=")) {
+        String[] splitArray = line.split("=");
+        String[] newArray = new String[splitArray.length - 1];
+        System.arraycopy(splitArray, 1, newArray, 0, splitArray.length - 1);
+        String join = String.join("", newArray);
+        String statement = line.split("=")[1].replace("\"", "").trim();
+        currentBlock.statements = addStatement(currentBlock.statements, join);
+      } else if (line.contains("->")) {
+        String[] arrows = line.split("->");
+        for (String arrow : arrows) {
+          String trimmedArrow = arrow.trim();
+          if (!trimmedArrow.isEmpty()) {
+            currentBlock.edges.add(trimmedArrow);
+          }
+        }
+      }
+    }
+
+    return digraph;
+  }
+
+  public static Block[] addBlock(Block[] blocks, Block block) {
+    if (blocks == null) {
+      blocks = new Block[1];
+      blocks[0] = block;
+    } else {
+      Block[] temp = new Block[blocks.length + 1];
+      System.arraycopy(blocks, 0, temp, 0, blocks.length);
+      temp[blocks.length] = block;
+      blocks = temp;
+    }
+    return blocks;
+  }
+
+  public static String[] addStatement(String[] statements, String statement) {
+    if (statements == null) {
+      statements = new String[1];
+      statements[0] = statement;
+    } else {
+      String[] temp = new String[statements.length + 1];
+      System.arraycopy(statements, 0, temp, 0, statements.length);
+      temp[statements.length] = statement;
+      statements = temp;
+    }
+    return statements;
   }
 }

@@ -10,13 +10,13 @@ public class ICFGExample2{
 
 class ICFGSuperClass {
     public void m() {
-        System.out.println("Superclass method");
+
     }
 }
 
 class ICFGSubClass extends ICFGSuperClass {
     @Override
     public void m() {
-        System.out.println("Subclass method");
+
     }
 }

@@ -29,7 +29,7 @@ public class ICFGDotExporter {
    * This method finds out all the calls made in the given StmtGraphs, so it can be edged to other
    * methods.
    */
-  private static Map<Integer, MethodSignature> computeCalls(Collection<StmtGraph> stmtGraphSet) {
+  public static Map<Integer, MethodSignature> computeCalls(Collection<StmtGraph> stmtGraphSet) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
     for (StmtGraph stmtGraph : stmtGraphSet) {
       Collection<? extends BasicBlock<?>> blocks;
