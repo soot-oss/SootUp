@@ -22,8 +22,14 @@ package sootup.core.util.printer;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
+import sootup.core.util.StringTools;
 
 /**
  * StmtPrinter implementation for normal (full) Jimple for OldSoot
@@ -35,8 +41,18 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
  */
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
+  // FIXME: add keywords from (old) soot!
+  Set<String> soot_jimple_keywords = ImmutableSet.of("class", "exception", "...");
+
   public LegacyJimplePrinter() {
     super();
+  }
+
+  String sootEscape(String str) {
+    if (str.length() == 0) {
+      return "\"\"";
+    }
+    return StringTools.getQuotedStringOf(str, soot_jimple_keywords.contains(str));
   }
 
   @Override
@@ -44,6 +60,27 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
     if (enable) {
       throw new RuntimeException(
           "Imports are not supported in Legacy Jimple: don't enable UseImports");
+    }
+  }
+
+  @Override
+  public void typeSignature(@Nonnull Type type) {
+    handleIndent();
+    if (type instanceof ClassType) {
+      ClassType ctype = (ClassType) type;
+      final String[] splits = ctype.getPackageName().getPackageName().split("\\.");
+      for (int i = 1; i < splits.length; i++) {
+        if (splits[i].length() == 0) {
+          continue;
+        }
+        output.append(sootEscape(splits[i]));
+        output.append(".");
+      }
+      output.append(sootEscape(ctype.getClassName()));
+
+    } else {
+      // primitivetypes
+      output.append(type);
     }
   }
 

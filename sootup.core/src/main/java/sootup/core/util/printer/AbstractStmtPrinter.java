@@ -128,7 +128,7 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
         ((ArrayType) type).toString(this);
       } else {
         // primitive types: there should be no need to escape sth
-        output.append(type.toString());
+        output.append(type);
       }
     } else {
       output.append(Jimple.escape(type.toString()));
