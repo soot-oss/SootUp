@@ -41,8 +41,70 @@ import sootup.core.util.StringTools;
  */
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
-  // FIXME: add keywords from (old) soot!
-  Set<String> soot_jimple_keywords = ImmutableSet.of("class", "exception", "...");
+  // source:
+  // https://github.com/soot-oss/soot/blob/1ad74494974165e8b5f2286c90f218a00eadc243/eclipse/ca.mcgill.sable.soot/src/ca/mcgill/sable/soot/editors/JimpleScanner.java
+  Set<String> soot_jimple_keywords =
+      ImmutableSet.of(
+          "ignored",
+          "abstract",
+          "final",
+          "native",
+          "public",
+          "protected",
+          "private",
+          "static",
+          "synchronized",
+          "transient",
+          "volatile",
+          "class",
+          "interface",
+          "void",
+          "boolean",
+          "byte",
+          "short",
+          "char",
+          "int",
+          "long",
+          "float",
+          "double",
+          "null_type",
+          "unknown",
+          "extends",
+          "implements",
+          "breakpoint",
+          "case",
+          "catch",
+          "cmp",
+          "cmpg",
+          "cmpl",
+          "default",
+          "entermonitor",
+          "exitmonitor",
+          "goto",
+          "if",
+          "instanceof",
+          "interfaceinvoke",
+          "lengthof",
+          "lookupswitch",
+          "neg",
+          "new",
+          "newarray",
+          "newmultiarray",
+          "nop",
+          "ret",
+          "return",
+          "specialinvoke",
+          "staticinvoke",
+          "tableswitch",
+          "throw",
+          "throws",
+          "virtualinvoke",
+          "null",
+          "from",
+          "to",
+          "with",
+          "annotation",
+          "enum");
 
   public LegacyJimplePrinter() {
     super();
