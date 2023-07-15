@@ -194,8 +194,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 .enableModules()
                 .addInputLocation(
                     (ModuleInfoAnalysisInputLocation)
-                        new PathBasedAnalysisInputLocation(mmrj, null)
-                            .getPathBasedAnalysisInputLocationObj())
+                        new PathBasedAnalysisInputLocation(mmrj, null).getInputLocation())
                 .build();
 
     final JavaModuleView view_9 = project_9.createView();

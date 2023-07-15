@@ -79,38 +79,30 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
   protected Path path;
 
   /**
-   * Variable to track if user has specified the SourceType. By default, it will be set to false.
-   */
-  private SourceType srcType = null;
-
-  /**
    * Variable to store AnalysisInputLocation, which can be DirectoryBasedAnalysisInputLocation,
    * WarArchiveAnalysisInputLocation, MultiReleaseJarAnalysisInputLocation,
    * ArchiveBasedAnalysisInputLocation
    */
-  PathBasedAnalysisInputLocation pathBasedAnalysisInputLocationObj;
-
-  public PathBasedAnalysisInputLocation getPathBasedAnalysisInputLocationObj() {
-    return pathBasedAnalysisInputLocationObj;
-  }
+  PathBasedAnalysisInputLocation inputLocation;
 
   public PathBasedAnalysisInputLocation(@Nonnull Path path) {
-    this.path = path;
+    this(path, SourceType.Application);
   }
 
   public PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    this.path = path;
     if (Files.isDirectory(path)) {
-      pathBasedAnalysisInputLocationObj = new DirectoryBasedAnalysisInputLocation(path, srcType);
+      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
 
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        pathBasedAnalysisInputLocationObj = new WarArchiveAnalysisInputLocation(path, srcType);
+        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
-        pathBasedAnalysisInputLocationObj = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+        inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
-        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
+        inputLocation = new ApkAnalysisInputLocation(path, srcType);
       } else {
-        pathBasedAnalysisInputLocationObj = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
     } else {
       throw new IllegalArgumentException(
@@ -120,13 +112,8 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
     }
   }
 
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nonnull SourceType srcType) {
-    this.srcType = srcType;
+  public PathBasedAnalysisInputLocation getInputLocation() {
+    return inputLocation;
   }
 
   /**
@@ -140,7 +127,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
   @Override
   public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
-    return pathBasedAnalysisInputLocationObj.getClassSource(type, view);
+    return inputLocation.getClassSource(type, view);
   }
 
   /**
@@ -153,12 +140,12 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
   @Override
   public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
       @Nonnull View<?> view) {
-    return pathBasedAnalysisInputLocationObj.getClassSources(view);
+    return inputLocation.getClassSources(view);
   }
 
   @Override
   public SourceType getSourceType() {
-    return srcType;
+    return inputLocation.getSourceType();
   }
 
   private static boolean isMultiReleaseJar(Path path) {
@@ -234,8 +221,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path);
-      super.setSpecifiedAsBuiltInByUser(srcType);
+      super(path, srcType);
     }
 
     @Override
@@ -575,8 +561,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                     }));
 
     private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path);
-      super.setSpecifiedAsBuiltInByUser(srcType);
+      super(path, srcType);
     }
 
     @Override
