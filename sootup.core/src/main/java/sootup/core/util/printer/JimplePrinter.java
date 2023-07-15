@@ -238,17 +238,19 @@ public class JimplePrinter {
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
 
+        printer.handleIndent();
+        method.toString(printer);
+
         if (method.hasBody()) {
           Body body = method.getBody();
           // print method's full signature information
-          method.toString(printer);
           printer.newline();
+          incJimpleLnNum();
           printBody(body, printer);
 
         } else {
-          printer.handleIndent();
-          method.toString(printer);
           printer.literal(";");
+          printer.newline();
           incJimpleLnNum();
         }
 
