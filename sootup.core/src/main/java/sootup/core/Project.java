@@ -43,8 +43,6 @@ import sootup.core.views.View;
  */
 public abstract class Project<S extends SootClass<?>, V extends View<? extends SootClass<?>>> {
 
-  @Nonnull private final IdentifierFactory identifierFactory;
-
   @Nonnull private final List<AnalysisInputLocation<? extends S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
@@ -59,11 +57,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
       @Nonnull Language language,
       @Nonnull AnalysisInputLocation<? extends S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(
-        language,
-        Collections.singletonList(inputLocation),
-        language.getIdentifierFactory(),
-        sourceTypeSpecifier);
+    this(language, Collections.singletonList(inputLocation), sourceTypeSpecifier);
   }
 
   /**
@@ -71,13 +65,11 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
    *
    * @param language the language
    * @param inputLocations the input locations
-   * @param identifierFactory the identifier factory
    * @param sourceTypeSpecifier the source type specifier
    */
   public Project(
       @Nonnull Language language,
       @Nonnull List<AnalysisInputLocation<? extends S>> inputLocations,
-      @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
     List<AnalysisInputLocation<? extends S>> unmodifiableInputLocations =
@@ -85,7 +77,6 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
 
     this.sourceTypeSpecifier = sourceTypeSpecifier;
     this.inputLocations = unmodifiableInputLocations;
-    this.identifierFactory = identifierFactory;
   }
 
   public void validate() {
@@ -106,7 +97,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
 
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {
-    return this.identifierFactory;
+    return language.getIdentifierFactory();
   }
 
   @Nonnull
