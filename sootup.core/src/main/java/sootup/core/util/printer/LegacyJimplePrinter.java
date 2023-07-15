@@ -131,11 +131,11 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
     if (type instanceof ClassType) {
       ClassType ctype = (ClassType) type;
       final String[] splits = ctype.getPackageName().getPackageName().split("\\.");
-      for (int i = 1; i < splits.length; i++) {
-        if (splits[i].length() == 0) {
+      for (String split : splits) {
+        if (split.length() == 0) {
           continue;
         }
-        output.append(sootEscape(splits[i]));
+        output.append(sootEscape(split));
         output.append(".");
       }
       output.append(sootEscape(ctype.getClassName()));
