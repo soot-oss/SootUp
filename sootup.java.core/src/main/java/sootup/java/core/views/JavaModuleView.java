@@ -426,8 +426,8 @@ public class JavaModuleView extends JavaView {
 
     for (JavaModuleInfo.InterfaceReference provides : moduleInfo.provides()) {
       JavaClassType interfaceType = provides.getInterfaceType();
-      String packageName1 = interfaceType.getPackageName().getPackageName();
-      String packageName2 = type.getPackageName().getPackageName();
+      String packageName1 = interfaceType.getPackageName().getName();
+      String packageName2 = type.getPackageName().getName();
       if (packageName1.equals(packageName2)) {
         if (interfaceType.getClassName().equals(type.getClassName())) {
           return true;

@@ -77,7 +77,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   JavaIdentifierFactory() {
     /* Represents the default package. */
-    packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
+    packages.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
 
     // initialize primitive map
     primitiveTypeMap.put(
