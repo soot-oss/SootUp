@@ -144,6 +144,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
   }
 
   @Override
+  @Nonnull
   public SourceType getSourceType() {
     return inputLocation.getSourceType();
   }
@@ -317,7 +318,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                   ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
                   JavaModulePathAnalysisInputLocation inputLocation =
                       new JavaModulePathAnalysisInputLocation(
-                          versionRoot.toString(), versionRoot.getFileSystem());
+                          versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
                   inputLocations.get(availableVersions[i]).add(inputLocation);
                   moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
@@ -331,7 +332,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                     ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
                     JavaModulePathAnalysisInputLocation inputLocation =
                         new JavaModulePathAnalysisInputLocation(
-                            versionRoot.toString(), versionRoot.getFileSystem());
+                            versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
                     inputLocations.get(availableVersions[i]).add(inputLocation);
                     moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
