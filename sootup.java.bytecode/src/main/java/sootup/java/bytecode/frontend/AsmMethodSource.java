@@ -1345,7 +1345,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       // Generate parameters & returnType & parameterTypes
       List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
-      int nrArgs = types.size() - 1;  // don't handle the return type here
+      int nrArgs = types.size() - 1; // don't handle the return type here
       List<Type> parameterTypes = new ArrayList<>(nrArgs);
       List<Immediate> methodArgs = new ArrayList<>(nrArgs);
 
@@ -1353,8 +1353,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // Beware: Call stack is FIFO, Jimple is linear
 
       for (int i = nrArgs - 1; i >= 0; i--) {
-        parameterTypes.add(types.get(i));
-        args[i] = operandStack.popImmediate(types.get(i));
+        final Type type = types.get(i);
+        parameterTypes.add(type);
+        args[i] = operandStack.popImmediate(type);
         methodArgs.add((Immediate) args[i].stackOrValue());
       }
       if (methodArgs.size() > 1) {
@@ -1417,32 +1418,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
      */
     addReadOperandAssignments();
   }
-
-  // private @Nonnull MethodRef toSootMethodRef(@Nonnull Handle methodHandle) {
-  // String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-  // JavaClassType bsmCls = view.getIdentifierFactory().getClassSignature(bsmClsName);
-  // List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view);
-  // Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-  // MethodSignature methodSignature =
-  // view.getIdentifierFactory().getMethodSignature(methodHandle.getName(), bsmCls,
-  // returnType, bsmSigTypes);
-  // boolean isStatic = methodHandle.getTag() == MethodHandle.Kind.REF_INVOKE_STATIC.getValue();
-  // return Jimple.createSymbolicMethodRef(methodSignature, isStatic);
-  // }
-  //
-  // private JFieldRef toSootFieldRef(Handle methodHandle) {
-  // String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-  // JavaClassType bsmCls = view.getIdentifierFactory().getClassSignature(bsmClsName);
-  //
-  // Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view).get(0);
-  // int kind = methodHandle.getTag();
-  // boolean isStatic = kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
-  // || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue();
-  //
-  // FieldSignature fieldSignature =
-  // view.getIdentifierFactory().getFieldSignature(methodHandle.getName(), bsmCls, t);
-  // return Jimple.createSymbolicFieldRef(fieldSignature, isStatic);
-  // }
 
   private void convertMultiANewArrayInsn(@Nonnull MultiANewArrayInsnNode insn) {
     StackFrame frame = operandStack.getOrCreateStackframe(insn);
