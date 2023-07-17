@@ -29,6 +29,10 @@ import sootup.java.core.language.JavaLanguage;
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
+    return buildClass(builder, "dummyMain", "main");
+  }
+
+  SootClass buildClass(Body.BodyBuilder builder, String className, String methodName) {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
@@ -36,7 +40,7 @@ public class LegacyJimplePrinterTest {
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+            .getMethodSignature(methodName, className, "void", Collections.emptyList());
     Body body =
         builder
             .setMethodSignature(methodSignature)
@@ -63,7 +67,7 @@ public class LegacyJimplePrinterTest {
             null,
             null,
             null,
-            view.getIdentifierFactory().getClassType("dummyMain"),
+            view.getIdentifierFactory().getClassType(className),
             new EagerInputLocation()),
         SourceType.Application);
   }
@@ -157,4 +161,17 @@ public class LegacyJimplePrinterTest {
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.LegacyMode);
     p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
   }
+
+  @Test
+  public void testLegacyEscaping() {
+    StringWriter out = new StringWriter();
+    PrintWriter writer = new PrintWriter(out);
+    JimplePrinter printer = new JimplePrinter(JimplePrinter.Option.LegacyMode);
+
+    SootClass clazz = buildClass(Body.builder(), "dummyMain", "from");
+    printer.printTo(clazz, writer);
+    String jimple = out.toString();
+    assertEquals("public class dummyMain\n{\n    public static void \'from\'()\n    {\n    }\n}\n\r\n", jimple);
+  }
+
 }

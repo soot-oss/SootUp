@@ -325,6 +325,7 @@ public class JimplePrinter {
 
     final Map<Stmt, String> labels = printer.getLabels();
     for (Stmt currentStmt : linearizedStmtGraph) {
+      if (currentStmt == null) continue;
       previousStmt = currentStmt;
 
       // Print appropriate header.
