@@ -112,7 +112,7 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
 
   String sootEscape(String str) {
     if (str.length() == 0) {
-      return "''";
+      return "\"\"";
     }
     return StringTools.getQuotedStringOf(str, soot_jimple_keywords.contains(str));
   }
@@ -120,7 +120,7 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
   @Override
   void enableImports(boolean enable) {
     if (enable) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Imports are not supported in Legacy Jimple: don't enable UseImports");
     }
   }
@@ -136,7 +136,7 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
           continue;
         }
         output.append(sootEscape(split));
-        output.append(".");
+        output.append('.');
       }
       output.append(sootEscape(ctype.getClassName()));
 

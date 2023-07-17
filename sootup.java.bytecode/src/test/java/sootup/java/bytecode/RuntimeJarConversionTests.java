@@ -3,6 +3,7 @@ package sootup.java.bytecode;
 import java.nio.file.Paths;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
@@ -15,7 +16,7 @@ import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
 
-  private static void execute(String methodSignature1) {
+  private static Body execute(String methodSignature1) {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new PathBasedAnalysisInputLocation(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
@@ -29,7 +30,7 @@ public class RuntimeJarConversionTests {
         project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     final SootMethod sootMethod = view.getMethod(methodSignature).get();
-    sootMethod.getBody();
+    return sootMethod.getBody();
   }
 
   @Test
@@ -72,5 +73,12 @@ public class RuntimeJarConversionTests {
   @Test
   public void testFileDescriptorCloseAll() {
     execute("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
+  }
+
+  @Test
+  public void testAbstractCollection_contains() {
+    // https://github.com/soot-oss/SootUp/issues/631 but for kotlin...
+    final Body body = execute("<java.util.AbstractCollection: boolean contains(java.lang.Object)>");
+    System.out.println(body);
   }
 }

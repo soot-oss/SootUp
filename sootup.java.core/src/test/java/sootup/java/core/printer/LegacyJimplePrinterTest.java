@@ -171,7 +171,8 @@ public class LegacyJimplePrinterTest {
     SootClass clazz = buildClass(Body.builder(), "dummyMain", "from");
     printer.printTo(clazz, writer);
     String jimple = out.toString();
-    assertEquals("public class dummyMain\n{\n    public static void \'from\'()\n    {\n    }\n}\n\r\n", jimple);
+    assertEquals(
+        "public class dummyMain\n{\n    public static void \"from\"()\n    {\n    }\n}\n\r\n",
+        jimple);
   }
-
 }
