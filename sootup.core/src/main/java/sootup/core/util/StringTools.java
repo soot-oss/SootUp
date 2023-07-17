@@ -30,20 +30,15 @@ public class StringTools {
 
   /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
   public static String getEscapedStringOf(String fromString) {
-    // TODO: [ms] possible performance+ maybe(!) work on .charAt(..) instead of .toCharArray)(..)
     char[] fromStringArray = fromString.toCharArray();
 
-    // TODO: [ms] this makes the exported jimple platform dependent? improve!
-    char cr = lineSeparator.charAt(0);
-    char lf = lineSeparator.length() == 2 ? lineSeparator.charAt(1) : cr;
-
-    // find if there is (find the first) a need to escape
+    // find the first char that has to be escaped
     int firstNonAlphaPos = -1;
     final int size = fromStringArray.length;
     for (int j = 0; j < size; j++) {
       char ch = fromStringArray[j];
       final boolean isPrintableAscii = (ch >= 32 && ch <= 126);
-      if (!((isPrintableAscii || ch == cr || ch == lf) && ch != '\\')) {
+      if (!((isPrintableAscii || ch == '\r' || ch == '\n') && ch != '\\')) {
         firstNonAlphaPos = j;
         break;
       }
@@ -65,7 +60,7 @@ public class StringTools {
         j < fromStringArrayLength;
         j++) {
       char ch = fromStringArray[j];
-      if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
+      if (((ch >= 32 && ch <= 126) || ch == '\r' || ch == '\n') && ch != '\\') {
         sb.append(ch);
       } else {
         sb.append(getUnicodeStringFromChar(ch));
@@ -74,9 +69,6 @@ public class StringTools {
 
     return sb.toString();
   }
-
-  /** Convenience field storing the system line separator. */
-  public static final String lineSeparator = System.getProperty("line.separator");
 
   /**
    * Returns fromString, but with certain characters printed as if they were in a Java string
