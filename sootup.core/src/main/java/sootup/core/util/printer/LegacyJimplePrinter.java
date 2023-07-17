@@ -112,7 +112,7 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
 
   String sootEscape(String str) {
     if (str.length() == 0) {
-      return "\"\"";
+      return "''";
     }
     return StringTools.getQuotedStringOf(str, soot_jimple_keywords.contains(str));
   }
