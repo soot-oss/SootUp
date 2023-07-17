@@ -22,8 +22,6 @@ package sootup.core.views;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,8 +44,6 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
 
   @Nonnull private final Project<T, ? extends View<T>> project;
-
-  @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
   @Nullable private TypeHierarchy typeHierarchy;
 
@@ -103,18 +99,6 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
       return Optional.empty();
     }
     return aClass.get().getField(signature.getSubSignature());
-  }
-
-  @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData
-  @Override
-  @Nullable
-  public <K> K getModuleData(@Nonnull ModuleDataKey<K> key) {
-    return (K) moduleData.get(key);
-  }
-
-  @Override
-  public <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value) {
-    moduleData.put(key, value);
   }
 
   @Override
