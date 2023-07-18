@@ -214,8 +214,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)
-          .getClassType(
-              sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
+          .getClassType(sig.getClassName(), sig.getPackageName().getName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, then trim the module from the path
