@@ -174,6 +174,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     this.declaringClass = (JavaClassType) declaringClass;
   }
 
+  int getCurrentLineNumber() {
+    return currentLineNumber;
+  }
+
   @Override
   @Nonnull
   public Body resolveBody(@Nonnull Iterable<Modifier> modifierIt) {
@@ -1291,6 +1295,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
+      // TODO: check equivalent to isInstance?
       boolean isInstanceMethod = expr instanceof AbstractInstanceInvokeExpr;
       if (!isInstanceMethod) {
         oprs = nrArgs == 0 ? null : new Operand[nrArgs];
@@ -1311,7 +1316,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     if (AsmUtil.isDWord(returnType)) {
       operandStack.pushDual(opr);
-    } else if (!(returnType == VoidType.getInstance())) {
+    } else if (returnType != VoidType.getInstance()) {
       operandStack.push(opr);
     } else if (!insnToStmt.containsKey(insn)) {
       JInvokeStmt stmt =

@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.types.Type;
@@ -114,7 +114,9 @@ public class OperandStack {
     if (l == null && !(v instanceof Local)) {
       l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
-          o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+          o.insn,
+          Jimple.newAssignStmt(
+              l, v, new SimpleStmtPositionInfo(methodSource.getCurrentLineNumber())));
       o.updateUsages();
     }
     return o;
@@ -127,7 +129,9 @@ public class OperandStack {
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
       l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
-          o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+          o.insn,
+          Jimple.newAssignStmt(
+              l, v, new SimpleStmtPositionInfo(methodSource.getCurrentLineNumber())));
       o.updateUsages();
     }
     return o;
@@ -140,7 +144,9 @@ public class OperandStack {
     if (l == null && !(v instanceof Constant)) {
       l = o.stackLocal = methodSource.newStackLocal();
       methodSource.setStmt(
-          o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+          o.insn,
+          Jimple.newAssignStmt(
+              l, v, new SimpleStmtPositionInfo(methodSource.getCurrentLineNumber())));
       o.updateUsages();
     }
     return o;
