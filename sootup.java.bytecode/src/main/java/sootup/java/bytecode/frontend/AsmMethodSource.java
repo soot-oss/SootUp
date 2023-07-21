@@ -174,8 +174,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     this.declaringClass = (JavaClassType) declaringClass;
   }
 
-  int getCurrentLineNumber() {
-    return currentLineNumber;
+  StmtPositionInfo getStmtPositionInfo() {
+    return currentLineNumber > 0
+        ? new SimpleStmtPositionInfo(currentLineNumber)
+        : StmtPositionInfo.createNoStmtPositionInfo();
   }
 
   @Override
@@ -387,7 +389,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Local stackLocal = newStackLocal();
       operand.stackLocal = stackLocal;
       JAssignStmt<Local, ?> asssignStmt =
-          Jimple.newAssignStmt(stackLocal, opValue, new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(stackLocal, opValue, getStmtPositionInfo());
 
       setStmt(operand.insn, asssignStmt);
       operand.updateUsages();
@@ -453,8 +455,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       opr = new Operand(insn, val, this);
       frame.setOut(opr);
       JAssignStmt<JFieldRef, ?> as =
-          Jimple.newAssignStmt(
-              val, rvalue.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(val, rvalue.stackOrValue(), getStmtPositionInfo());
       setStmt(insn, as);
       rvalue.addUsageInStmt(as);
     } else {
@@ -490,8 +491,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     addReadOperandAssignments(local);
     if (!insnToStmt.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
-      setStmt(
-          insn, Jimple.newAssignStmt(local, add, new SimpleStmtPositionInfo(currentLineNumber)));
+      setStmt(insn, Jimple.newAssignStmt(local, add, getStmtPositionInfo()));
     }
   }
 
@@ -564,8 +564,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           JavaJimple.getInstance()
               .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
       JAssignStmt<JArrayRef, ?> as =
-          Jimple.newAssignStmt(
-              ar, valueOp.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(ar, valueOp.stackOrValue(), getStmtPositionInfo());
       frame.setIn(valueOp, indexOp, baseOp);
       setStmt(insn, as);
       valueOp.addUsageInStmt(as);
@@ -851,9 +850,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     StackFrame frame = operandStack.getOrCreateStackframe(insn);
     if (!insnToStmt.containsKey(insn)) {
       Operand val = dword ? operandStack.popImmediateDual() : operandStack.popImmediate();
-      JReturnStmt ret =
-          Jimple.newReturnStmt(
-              (Immediate) val.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+      JReturnStmt ret = Jimple.newReturnStmt((Immediate) val.stackOrValue(), getStmtPositionInfo());
       frame.setIn(val);
       setStmt(insn, ret);
       val.addUsageInStmt(ret);
@@ -870,7 +867,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
        * We can ignore NOP instructions, but for completeness, we handle them
        */
       if (!insnToStmt.containsKey(insn)) {
-        insnToStmt.put(insn, Jimple.newNopStmt(new SimpleStmtPositionInfo(currentLineNumber)));
+        insnToStmt.put(insn, Jimple.newNopStmt(getStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
@@ -906,16 +903,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       convertReturnInsn(insn);
     } else if (op == RETURN) {
       if (!insnToStmt.containsKey(insn)) {
-        setStmt(insn, Jimple.newReturnVoidStmt(new SimpleStmtPositionInfo(currentLineNumber)));
+        setStmt(insn, Jimple.newReturnVoidStmt(getStmtPositionInfo()));
       }
     } else if (op == ATHROW) {
       StackFrame frame = operandStack.getOrCreateStackframe(insn);
       Operand opr;
       if (!insnToStmt.containsKey(insn)) {
         opr = operandStack.popImmediate();
-        JThrowStmt ts =
-            Jimple.newThrowStmt(
-                (Immediate) opr.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+        JThrowStmt ts = Jimple.newThrowStmt((Immediate) opr.stackOrValue(), getStmtPositionInfo());
         frame.setIn(opr);
         frame.setOut(opr);
         setStmt(insn, ts);
@@ -931,10 +926,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         Operand opr = operandStack.popStackConst();
         AbstractOpStmt ts =
             op == MONITORENTER
-                ? Jimple.newEnterMonitorStmt(
-                    (Immediate) opr.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber))
-                : Jimple.newExitMonitorStmt(
-                    (Immediate) opr.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+                ? Jimple.newEnterMonitorStmt((Immediate) opr.stackOrValue(), getStmtPositionInfo())
+                : Jimple.newExitMonitorStmt((Immediate) opr.stackOrValue(), getStmtPositionInfo());
         frame.setIn(opr);
         setStmt(insn, ts);
         opr.addUsageInStmt(ts);
@@ -1008,7 +1001,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int op = insn.getOpcode();
     if (op == GOTO) {
       if (!insnToStmt.containsKey(insn)) {
-        BranchingStmt gotoStmt = Jimple.newGotoStmt(new SimpleStmtPositionInfo(currentLineNumber));
+        BranchingStmt gotoStmt = Jimple.newGotoStmt(getStmtPositionInfo());
         stmtsThatBranchToLabel.put(gotoStmt, insn.label);
         setStmt(insn, gotoStmt);
       }
@@ -1086,7 +1079,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         val.addUsageInExpr(cond);
         frame.setIn(val);
       }
-      BranchingStmt ifStmt = Jimple.newIfStmt(cond, new SimpleStmtPositionInfo(currentLineNumber));
+      BranchingStmt ifStmt = Jimple.newIfStmt(cond, getStmtPositionInfo());
       stmtsThatBranchToLabel.put(ifStmt, insn.label);
       setStmt(insn, ifStmt);
       if (isCmp) {
@@ -1202,8 +1195,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       keys.add(IntConstant.getInstance(i));
     }
     JSwitchStmt lookupSwitchStmt =
-        Jimple.newLookupSwitchStmt(
-            (Immediate) key.stackOrValue(), keys, new SimpleStmtPositionInfo(currentLineNumber));
+        Jimple.newLookupSwitchStmt((Immediate) key.stackOrValue(), keys, getStmtPositionInfo());
 
     // uphold insertion order!
     stmtsThatBranchToLabel.putAll(lookupSwitchStmt, insn.labels);
@@ -1320,8 +1312,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.push(opr);
     } else if (!insnToStmt.containsKey(insn)) {
       JInvokeStmt stmt =
-          Jimple.newInvokeStmt(
-              (AbstractInvokeExpr) opr.value, new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newInvokeStmt((AbstractInvokeExpr) opr.value, getStmtPositionInfo());
       setStmt(insn, stmt);
       opr.addUsageInStmt(stmt);
     }
@@ -1412,8 +1403,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       operandStack.push(opr);
     } else if (!insnToStmt.containsKey(insn)) {
       JInvokeStmt stmt =
-          Jimple.newInvokeStmt(
-              (AbstractInvokeExpr) opr.value, new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newInvokeStmt((AbstractInvokeExpr) opr.value, getStmtPositionInfo());
       setStmt(insn, stmt);
       opr.addUsageInStmt(stmt);
     }
@@ -1490,10 +1480,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand key = operandStack.popImmediate();
     JSwitchStmt tableSwitchStmt =
         Jimple.newTableSwitchStmt(
-            (Immediate) key.stackOrValue(),
-            insn.min,
-            insn.max,
-            new SimpleStmtPositionInfo(currentLineNumber));
+            (Immediate) key.stackOrValue(), insn.min, insn.max, getStmtPositionInfo());
 
     // uphold insertion order!
     stmtsThatBranchToLabel.putAll(tableSwitchStmt, insn.labels);
@@ -1586,8 +1573,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Local local = getOrCreateLocal(insn.var);
     if (!insnToStmt.containsKey(insn)) {
       AbstractDefinitionStmt<Local, ?> as =
-          Jimple.newAssignStmt(
-              local, opr.stackOrValue(), new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newAssignStmt(local, opr.stackOrValue(), getStmtPositionInfo());
       frame.setIn(opr);
       setStmt(insn, as);
       opr.addUsageInStmt(as);
@@ -1606,10 +1592,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else if (op == RET) {
       /* we handle it, even though it should be removed */
       if (!insnToStmt.containsKey(insn)) {
-        setStmt(
-            insn,
-            Jimple.newRetStmt(
-                getOrCreateLocal(insn.var), new SimpleStmtPositionInfo(currentLineNumber)));
+        setStmt(insn, Jimple.newRetStmt(getOrCreateLocal(insn.var), getStmtPositionInfo()));
       }
     } else {
       throw new UnsupportedOperationException("Unknown var op: " + op);
@@ -1627,7 +1610,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // code
     if (inlineExceptionLabels.contains(ln)) {
       if (!insnToStmt.containsKey(ln)) {
-        JNopStmt nop = Jimple.newNopStmt(new SimpleStmtPositionInfo(currentLineNumber));
+        JNopStmt nop = Jimple.newNopStmt(getStmtPositionInfo());
         setStmt(ln, nop);
       }
       return;
@@ -1640,7 +1623,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
       AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-          Jimple.newIdentityStmt(stack, ref, new SimpleStmtPositionInfo(currentLineNumber));
+          Jimple.newIdentityStmt(stack, ref, getStmtPositionInfo());
       opr = new Operand(ln, ref, this);
       opr.stackLocal = stack;
       frame.setOut(opr);
@@ -1721,7 +1704,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
         AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-            Jimple.newIdentityStmt(local, ref, new SimpleStmtPositionInfo(currentLineNumber));
+            Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
 
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
