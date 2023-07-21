@@ -33,11 +33,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
@@ -61,6 +63,16 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;
+
+  private final SourceType sourceType;
+
+  public JrtFileSystemAnalysisInputLocation() {
+    this(SourceType.Library);
+  }
+
+  public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
+  }
 
   @Override
   @Nonnull
@@ -238,6 +250,12 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
       discoverModules();
     }
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
+  }
+
+  @Nullable
+  @Override
+  public SourceType getSourceType() {
+    return null;
   }
 
   @Override

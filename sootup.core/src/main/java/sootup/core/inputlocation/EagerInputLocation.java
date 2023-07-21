@@ -70,7 +70,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
     return map.values();
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourceType;
