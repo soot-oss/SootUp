@@ -78,7 +78,7 @@ public class StringTools {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
     StringBuilder builder = new StringBuilder(fromString.length() + 20);
-    builder.append('"');
+    builder.append('\'');
     for (int i = 0; i < fromString.length(); i++) {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
@@ -118,7 +118,7 @@ public class StringTools {
     }
 
     return neededQuotes
-        ? builder.append('"').toString()
+        ? builder.append('\'').toString()
         : builder.subSequence(1, builder.length()).toString();
   }
 

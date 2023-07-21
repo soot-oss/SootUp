@@ -172,7 +172,13 @@ public class LegacyJimplePrinterTest {
     printer.printTo(clazz, writer);
     String jimple = out.toString();
     assertEquals(
-        "public class dummyMain\n{\n    public static void \"from\"()\n    {\n    }\n}\n\r\n",
+        "public class dummyMain\n"
+            + "{\n"
+            + "    public static void 'from'()\n"
+            + "    {\n"
+            + "    }\n"
+            + "}\n"
+            + "\n",
         jimple);
   }
 }
