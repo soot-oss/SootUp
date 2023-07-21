@@ -115,13 +115,77 @@ public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
         String.join(" -> ", digraph.blocks[0].edges));
   }
 
+  @Test
+  public void ICFGArrayListDotExport() {
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
+            .build();
+
+    view = javaProject.createView();
+
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGArrayListExample");
+
+    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    entryMethod =
+        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
+
+    entryMethodSignature = entryMethod.getSignature();
+
+    JimpleBasedInterproceduralCFG icfg =
+        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+    CallGraph callGraph = loadCallGraph(view);
+    String expectedCallGraph = icfg.buildICFGGraph(callGraph);
+    Digraph digraph = parseDigraph(expectedCallGraph);
+    Assert.assertEquals(
+        edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
+        String.join(" -> ", digraph.blocks[0].edges));
+  }
+
+  @Test
+  public void ICFGInterfaceDotExport() {
+    JavaProject javaProject =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
+            .build();
+
+    view = javaProject.createView();
+
+    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+    JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGInterfaceExample");
+
+    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    entryMethod =
+        sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
+
+    entryMethodSignature = entryMethod.getSignature();
+
+    JimpleBasedInterproceduralCFG icfg =
+        new JimpleBasedInterproceduralCFG(view, entryMethodSignature, false, false);
+    CallGraph callGraph = loadCallGraph(view);
+    String expectedCallGraph = icfg.buildICFGGraph(callGraph);
+    Digraph digraph = parseDigraph(expectedCallGraph);
+    Assert.assertEquals(
+        edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
+        String.join(" -> ", digraph.blocks[0].edges));
+  }
+
   /** Compute the Edges of the given methodSignature from the provided callGraph */
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
     Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
     icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
     Map<Integer, MethodSignature> calls;
-    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph.values());
+    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();

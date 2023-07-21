@@ -152,7 +152,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   public String buildICFGGraph(CallGraph callGraph) {
     Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
     computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
-    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph);
+    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view);
   }
 
   public void computeAllCalls(
