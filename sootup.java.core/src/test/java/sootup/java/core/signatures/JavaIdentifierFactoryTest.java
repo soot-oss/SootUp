@@ -152,7 +152,7 @@ public class JavaIdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("java.lang.System");
     ClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
+    assertSame(classSignature1, classSignature2);
   }
 
   @Test
