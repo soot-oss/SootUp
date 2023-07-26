@@ -215,8 +215,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         .collect(Collectors.toSet());
   }
 
-  /** method exists for completeness - SootClass.getSuperClass() should be more performant. */
+  /**
+   * method exists for completeness - superClassOf() / which is basically SootClass.getSuperClass()
+   * should be more performant.
+   */
   @Nullable
+  @Deprecated
   public ClassType directSuperClassOf(@Nonnull ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
     if (vertex == null) {

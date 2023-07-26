@@ -53,7 +53,6 @@ public class AugEvalFunction {
   private final ClassType throwableClassType;
 
   View<? extends SootClass<?>> view;
-  PrimitiveHierarchy primitiveHierarchy = new PrimitiveHierarchy();
 
   public AugEvalFunction(View<? extends SootClass<?>> view) {
     this.view = view;
@@ -150,12 +149,12 @@ public class AugEvalFunction {
               } else if (tr.getClass() == PrimitiveType.BooleanType.class) {
                 return tl;
               } else {
-                Collection<Type> set = primitiveHierarchy.getLeastCommonAncestor(tl, tr);
-                if (set.isEmpty()) {
+                Collection<Type> lca = PrimitiveHierarchy.getLeastCommonAncestor(tl, tr);
+                if (lca.isEmpty()) {
                   throw new RuntimeException(
                       "Invaluable expression by using AugEvalFunction '" + value + "'.");
                 }
-                return set.iterator().next();
+                return lca.iterator().next();
               }
             } else {
               return (tl.getClass() == PrimitiveType.LongType.class) ? PrimitiveType.getLong() : tr;
@@ -211,7 +210,7 @@ public class AugEvalFunction {
         }
       } else if (value.getClass() == JThisRef.class
           || value.getClass() == JParameterRef.class
-          || value.getClass() == JFieldRef.class) {
+          || value instanceof JFieldRef) {
         return value.getType();
       } else {
         throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");

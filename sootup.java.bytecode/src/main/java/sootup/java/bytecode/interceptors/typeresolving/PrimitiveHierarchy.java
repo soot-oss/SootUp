@@ -31,7 +31,7 @@ import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
-public class PrimitiveHierarchy implements IHierarchy {
+public class PrimitiveHierarchy {
 
   /**
    * Calculate the least common ancestor of two types(primitive or BottomType). If there's a = b
@@ -40,43 +40,43 @@ public class PrimitiveHierarchy implements IHierarchy {
    * least common ancestor of a and b;
    */
   @Nonnull
-  @Override
-  public Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
-    if (a.equals(b)) {
+  public static Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
+    if (a == b) {
       return Collections.singleton(a);
-    } else if (arePrimitives(a, b)) {
+    }
+
+    if (arePrimitives(a, b)) {
       if (isAncestor(a, b)) {
         return Collections.singleton(a);
-      } else if (isAncestor(b, a)) {
+      }
+      if (isAncestor(b, a)) {
         return Collections.singleton(b);
-      } else if (a.getClass() == PrimitiveType.ByteType.class) {
+      }
+      if (a.getClass() == PrimitiveType.ByteType.class) {
         if (b.getClass() == PrimitiveType.ShortType.class
             || b.getClass() == PrimitiveType.CharType.class
             || b.getClass() == AugIntegerTypes.Integer32767Type.class) {
           return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
         }
-      } else if (a.getClass() == PrimitiveType.ShortType.class) {
+        return Collections.emptySet();
+      }
+      if (a.getClass() == PrimitiveType.ShortType.class) {
         if (b.getClass() == PrimitiveType.ByteType.class
             || b.getClass() == PrimitiveType.CharType.class) {
           return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
         }
-      } else if (a.getClass() == PrimitiveType.CharType.class) {
+        return Collections.emptySet();
+      }
+      if (a.getClass() == PrimitiveType.CharType.class) {
         if (b.getClass() == PrimitiveType.ByteType.class
             || b.getClass() == PrimitiveType.ShortType.class) {
           return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
         }
-      } else {
         return Collections.emptySet();
       }
-    } else {
       return Collections.emptySet();
     }
+    return Collections.emptySet();
   }
 
   /**
@@ -84,8 +84,7 @@ public class PrimitiveHierarchy implements IHierarchy {
    * child</code>, namely, whether child can be assigned to ancestor directly to obtain: ancestor =
    * child.
    */
-  @Override
-  public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
+  public static boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
 
     if (ancestor == child) {
       return true;
@@ -94,28 +93,31 @@ public class PrimitiveHierarchy implements IHierarchy {
     if (arePrimitives(ancestor, child)) {
       if (ancestor.getClass() == AugIntegerTypes.Integer1Type.class) {
         return child.getClass() == BottomType.class;
-      } else if (ancestor.getClass() == PrimitiveType.BooleanType.class
+      }
+      if (ancestor.getClass() == PrimitiveType.BooleanType.class
           || ancestor.getClass() == AugIntegerTypes.Integer127Type.class) {
         return child.getClass() == AugIntegerTypes.Integer1Type.class
             || child.getClass() == BottomType.class;
-      } else if (ancestor.getClass() == PrimitiveType.ByteType.class
+      }
+      if (ancestor.getClass() == PrimitiveType.ByteType.class
           || ancestor.getClass() == AugIntegerTypes.Integer32767Type.class) {
         return child.getClass() == AugIntegerTypes.Integer127Type.class
             || child.getClass() == AugIntegerTypes.Integer1Type.class
             || child.getClass() == BottomType.class;
-      } else if (ancestor.getClass() == PrimitiveType.CharType.class
+      }
+      if (ancestor.getClass() == PrimitiveType.CharType.class
           || ancestor.getClass() == PrimitiveType.ShortType.class) {
         return child.getClass() == AugIntegerTypes.Integer32767Type.class
             || child.getClass() == AugIntegerTypes.Integer127Type.class
             || child.getClass() == AugIntegerTypes.Integer1Type.class
             || child.getClass() == BottomType.class;
-      } else if (ancestor instanceof PrimitiveType.IntType) {
+      }
+      if (ancestor instanceof PrimitiveType.IntType) {
         return (!(child.getClass() == PrimitiveType.BooleanType.class)
                 && (child instanceof PrimitiveType.IntType))
             || child.getClass() == BottomType.class;
-      } else {
-        return child.getClass() == BottomType.class;
       }
+      return child.getClass() == BottomType.class;
     }
 
     if (ancestor instanceof ArrayType && child instanceof ArrayType) {
@@ -129,35 +131,35 @@ public class PrimitiveHierarchy implements IHierarchy {
         // structure?
         if (ancestorBase.getClass() == AugIntegerTypes.Integer1Type.class) {
           return childBase.getClass() == BottomType.class;
-        } else if (ancestorBase.getClass() == PrimitiveType.BooleanType.class
+        }
+        if (ancestorBase.getClass() == PrimitiveType.BooleanType.class
             || ancestorBase.getClass() == AugIntegerTypes.Integer127Type.class) {
           return childBase.getClass() == AugIntegerTypes.Integer1Type.class
               || childBase.getClass() == BottomType.class;
-        } else if (ancestorBase.getClass() == PrimitiveType.ByteType.class
+        }
+        if (ancestorBase.getClass() == PrimitiveType.ByteType.class
             || ancestorBase.getClass() == AugIntegerTypes.Integer32767Type.class) {
           return childBase.getClass() == AugIntegerTypes.Integer127Type.class
               || childBase.getClass() == AugIntegerTypes.Integer1Type.class
               || childBase.getClass() == BottomType.class;
-        } else if (ancestorBase.getClass() == PrimitiveType.CharType.class
+        }
+        if (ancestorBase.getClass() == PrimitiveType.CharType.class
             || ancestorBase.getClass() == PrimitiveType.ShortType.class
             || ancestorBase instanceof PrimitiveType.IntType) {
           return childBase.getClass() == AugIntegerTypes.Integer32767Type.class
               || childBase.getClass() == AugIntegerTypes.Integer127Type.class
               || childBase.getClass() == AugIntegerTypes.Integer1Type.class
               || childBase.getClass() == BottomType.class;
-        } else {
-          return childBase.getClass() == BottomType.class;
         }
-      } else {
-        return childBase.getClass() == BottomType.class;
       }
+      return childBase.getClass() == BottomType.class;
     }
 
     return child.getClass() == BottomType.class;
   }
 
   /** Check whether the two given types are primitives or BottomType */
-  public boolean arePrimitives(Type a, Type b) {
+  public static boolean arePrimitives(Type a, Type b) {
     if (a instanceof PrimitiveType || a.getClass() == BottomType.class) {
       return b instanceof PrimitiveType || b.getClass() == BottomType.class;
     } else {
