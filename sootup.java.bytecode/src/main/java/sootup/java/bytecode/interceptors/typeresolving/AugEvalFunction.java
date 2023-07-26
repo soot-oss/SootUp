@@ -21,8 +21,10 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSet;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -43,7 +45,7 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 /** @author Zun Wang */
 public class AugEvalFunction {
 
-  private final Set<ClassType> evalClassTypes = new HashSet<>();
+  private final ImmutableSet<ClassType> evalClassTypes;
   private final ClassType stringClassType;
   private final ClassType classClassType;
   private final ClassType methodHandleClassType;
@@ -57,15 +59,18 @@ public class AugEvalFunction {
     this.view = view;
 
     // one time setup
-    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.lang.Object"));
-    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.lang.Cloneable"));
-    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.io.Serializable"));
+    final IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    evalClassTypes =
+        ImmutableSet.of(
+            identifierFactory.getClassType("java.lang.Object"),
+            identifierFactory.getClassType("java.lang.Cloneable"),
+            identifierFactory.getClassType("java.io.Serializable"));
 
-    stringClassType = view.getIdentifierFactory().getClassType("java.lang.String");
-    classClassType = view.getIdentifierFactory().getClassType("java.lang.Class");
-    methodHandleClassType = view.getIdentifierFactory().getClassType("java.lang.MethodHandle");
-    methodTypeClassType = view.getIdentifierFactory().getClassType("java.lang.MethodType");
-    throwableClassType = view.getIdentifierFactory().getClassType("java.lang.Throwable");
+    stringClassType = identifierFactory.getClassType("java.lang.String");
+    classClassType = identifierFactory.getClassType("java.lang.Class");
+    methodHandleClassType = identifierFactory.getClassType("java.lang.MethodHandle");
+    methodTypeClassType = identifierFactory.getClassType("java.lang.MethodType");
+    throwableClassType = identifierFactory.getClassType("java.lang.Throwable");
   }
 
   /**
