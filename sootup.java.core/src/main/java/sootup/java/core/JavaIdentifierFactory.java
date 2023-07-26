@@ -60,12 +60,17 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
-  protected final Cache<String, PackageName> packages =
+  protected final Cache<String, PackageName> packageCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches annotation types */
   @Nonnull
-  protected final Cache<String, AnnotationType> annotationTypes =
+  protected final Cache<String, AnnotationType> annotationTypeCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches class types */
+  @Nonnull
+  protected final Cache<String, JavaClassType> classTypeCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   @Nonnull
@@ -77,7 +82,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   JavaIdentifierFactory() {
     /* Represents the default package. */
-    packages.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
+    packageCache.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
 
     // initialize primitive map
     primitiveTypeMap.put(
@@ -112,7 +117,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
     PackageName packageIdentifier = getPackageName(packageName);
-    return new JavaClassType(className, packageIdentifier);
+    return classTypeCache
+        .asMap()
+        .computeIfAbsent(
+            className + packageName, (k) -> new JavaClassType(className, packageIdentifier));
   }
 
   /**
@@ -216,7 +224,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
 
-    return annotationTypes
+    return annotationTypeCache
         .asMap()
         .computeIfAbsent(
             className + packageName,
@@ -260,7 +268,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@Nonnull final String packageName) {
-    return packages.asMap().computeIfAbsent(packageName, PackageName::new);
+    return packageCache.asMap().computeIfAbsent(packageName, PackageName::new);
   }
 
   /**

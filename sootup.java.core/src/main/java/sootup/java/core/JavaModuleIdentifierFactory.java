@@ -163,7 +163,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
     return (ModulePackageName)
-        packages
+        packageCache
             .asMap()
             .computeIfAbsent(
                 fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
@@ -173,7 +173,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
     String fqId = moduleSignature.getModuleName() + "." + packageName;
     return (ModulePackageName)
-        packages
+        packageCache
             .asMap()
             .computeIfAbsent(fqId, key -> new ModulePackageName(packageName, moduleSignature));
   }

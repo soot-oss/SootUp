@@ -181,7 +181,6 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         .map(graph::getEdgeTarget);
   }
 
-  /** for completeness - You could use Sootclass.getSuperclass() directly */
   public Stream<Vertex> directSuperClassOf(@Nonnull Vertex classVertex) {
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     return graph.outgoingEdgesOf(classVertex).stream()

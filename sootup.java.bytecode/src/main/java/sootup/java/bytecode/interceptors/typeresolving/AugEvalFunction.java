@@ -82,12 +82,15 @@ public class AugEvalFunction {
       @Nonnull Value value,
       @Nonnull Stmt stmt,
       @Nonnull StmtGraph<?> graph) {
+
+    // TODO: [ms] make use of the ValueVisitor..
+
     if (value instanceof Immediate) {
       if (value instanceof Local) {
         return typing.getType((Local) value);
         // if value instanceof Constant
       } else {
-        if (value instanceof IntConstant) {
+        if (value.getClass() == IntConstant.class) {
           int val = ((IntConstant) value).getValue();
           if (val >= 0 && val < 2) {
             return AugIntegerTypes.getInteger1();
@@ -104,19 +107,19 @@ public class AugEvalFunction {
           } else {
             return PrimitiveType.getInt();
           }
-        } else if (value instanceof LongConstant
-            || value instanceof FloatConstant
-            || value instanceof DoubleConstant
-            || value instanceof NullConstant
-            || value instanceof EnumConstant) {
+        } else if (value.getClass() == LongConstant.class
+            || value.getClass() == FloatConstant.class
+            || value.getClass() == DoubleConstant.class
+            || value.getClass() == NullConstant.class
+            || value.getClass() == EnumConstant.class) {
           return value.getType();
-        } else if (value instanceof StringConstant) {
+        } else if (value.getClass() == StringConstant.class) {
           return stringClassType;
-        } else if (value instanceof ClassConstant) {
+        } else if (value.getClass() == ClassConstant.class) {
           return classClassType;
-        } else if (value instanceof MethodHandle) {
+        } else if (value.getClass() == MethodHandle.class) {
           return methodHandleClassType;
-        } else if (value instanceof MethodType) {
+        } else if (value.getClass() == MethodType.class) {
           return methodTypeClassType;
         } else {
           throw new RuntimeException("Invaluable constant in AugEvalFunction '" + value + "'.");
@@ -139,9 +142,12 @@ public class AugEvalFunction {
             return (tl instanceof PrimitiveType.IntType) ? PrimitiveType.getInt() : tl;
           } else {
             if (tl instanceof PrimitiveType.IntType && tr instanceof PrimitiveType.IntType) {
-              if (tl instanceof PrimitiveType.BooleanType) {
-                return (tr instanceof PrimitiveType.BooleanType) ? PrimitiveType.getBoolean() : tr;
-              } else if (tr instanceof PrimitiveType.BooleanType) {
+
+              if (tl.getClass() == PrimitiveType.BooleanType.class) {
+                return (tr.getClass() == PrimitiveType.BooleanType.class)
+                    ? PrimitiveType.getBoolean()
+                    : tr;
+              } else if (tr.getClass() == PrimitiveType.BooleanType.class) {
                 return tl;
               } else {
                 Collection<Type> set = primitiveHierarchy.getLeastCommonAncestor(tl, tr);
@@ -152,7 +158,7 @@ public class AugEvalFunction {
                 return set.iterator().next();
               }
             } else {
-              return (tl instanceof PrimitiveType.LongType) ? PrimitiveType.getLong() : tr;
+              return (tl.getClass() == PrimitiveType.LongType.class) ? PrimitiveType.getLong() : tr;
             }
           }
         } else if (value instanceof AbstractFloatBinopExpr) {
@@ -203,9 +209,9 @@ public class AugEvalFunction {
         } else {
           return BottomType.getInstance();
         }
-      } else if (value instanceof JThisRef
-          || value instanceof JParameterRef
-          || value instanceof JFieldRef) {
+      } else if (value.getClass() == JThisRef.class
+          || value.getClass() == JParameterRef.class
+          || value.getClass() == JFieldRef.class) {
         return value.getType();
       } else {
         throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");
@@ -231,7 +237,7 @@ public class AugEvalFunction {
     Deque<ClassType> path = new ArrayDeque<>();
     path.push(exceptionType);
 
-    while (!exceptionType.equals(throwableClassType)) {
+    while (exceptionType != throwableClassType) {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
       if (!superclassOpt.isPresent()) {
@@ -259,7 +265,7 @@ public class AugEvalFunction {
     ClassType commonType = null;
     Deque<ClassType> pathA = getExceptionPath(a);
     Deque<ClassType> pathB = getExceptionPath(b);
-    while (!pathA.isEmpty() && !pathB.isEmpty() && pathA.getFirst().equals(pathB.getFirst())) {
+    while (!pathA.isEmpty() && !pathB.isEmpty() && pathA.peekFirst().equals(pathB.peekFirst())) {
       commonType = pathA.removeFirst();
       pathB.removeFirst();
     }
