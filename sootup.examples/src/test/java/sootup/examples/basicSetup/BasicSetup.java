@@ -57,7 +57,7 @@ public class BasicSetup {
     // from the directory
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(pathToBinary, null);
+        PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
     // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
     // where classes are loaded depending on the language level of the analysis

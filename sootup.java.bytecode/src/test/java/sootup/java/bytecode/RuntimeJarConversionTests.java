@@ -17,7 +17,7 @@ public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(
+        PathBasedAnalysisInputLocation.create(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();

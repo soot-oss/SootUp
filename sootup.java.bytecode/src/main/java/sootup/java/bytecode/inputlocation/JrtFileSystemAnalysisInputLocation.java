@@ -23,12 +23,7 @@ package sootup.java.bytecode.inputlocation;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,7 +59,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;
 
-  private final SourceType sourceType;
+  @Nonnull private final SourceType sourceType;
 
   public JrtFileSystemAnalysisInputLocation() {
     this(SourceType.Library);
@@ -255,7 +250,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   @Nullable
   @Override
   public SourceType getSourceType() {
-    return null;
+    return sourceType;
   }
 
   @Override

@@ -75,22 +75,26 @@ import sootup.java.core.types.ModuleJavaClassType;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public abstract class PathBasedAnalysisInputLocation
+    implements AnalysisInputLocation<JavaSootClass> {
+  private final SourceType sourceType;
   protected Path path;
 
-  /**
-   * Variable to store AnalysisInputLocation, which can be DirectoryBasedAnalysisInputLocation,
-   * WarArchiveAnalysisInputLocation, MultiReleaseJarAnalysisInputLocation,
-   * ArchiveBasedAnalysisInputLocation
-   */
-  PathBasedAnalysisInputLocation inputLocation;
-
-  public PathBasedAnalysisInputLocation(@Nonnull Path path) {
-    this(path, SourceType.Application);
+  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
+    this.path = path;
+    this.sourceType = srcType;
   }
 
-  public PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    this.path = path;
+  @Nullable
+  @Override
+  public SourceType getSourceType() {
+    return sourceType;
+  }
+
+  @Nonnull
+  public static PathBasedAnalysisInputLocation create(
+      @Nonnull Path path, @Nonnull SourceType srcType) {
+    final PathBasedAnalysisInputLocation inputLocation;
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
@@ -110,43 +114,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
               + path.toAbsolutePath()
               + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
     }
-  }
-
-  public PathBasedAnalysisInputLocation getInputLocation() {
     return inputLocation;
-  }
-
-  /**
-   * Create or find a class source for a given type.
-   *
-   * @param type The type of the class to be found.
-   * @param view
-   * @return The source entry for that class.
-   */
-  @Nonnull
-  @Override
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    return inputLocation.getClassSource(type, view);
-  }
-
-  /**
-   * Scan the input location and create ClassSources for every compilation / interpretation unit.
-   *
-   * @param view
-   * @return The source entries.
-   */
-  @Nonnull
-  @Override
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
-    return inputLocation.getClassSources(view);
-  }
-
-  @Override
-  @Nonnull
-  public SourceType getSourceType() {
-    return inputLocation.getSourceType();
   }
 
   private static boolean isMultiReleaseJar(Path path) {
@@ -291,7 +259,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-      baseInputLocations.add(new PathBasedAnalysisInputLocation(archiveRoot, srcType));
+      baseInputLocations.add(PathBasedAnalysisInputLocation.create(archiveRoot, srcType));
 
       String sep = archiveRoot.getFileSystem().getSeparator();
 
@@ -350,7 +318,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
           if (inputLocations.get(availableVersions[i]).size() == 0) {
             inputLocations
                 .get(availableVersions[i])
-                .add(new PathBasedAnalysisInputLocation(versionRoot, srcType));
+                .add(PathBasedAnalysisInputLocation.create(versionRoot, srcType));
           }
         }
       }
