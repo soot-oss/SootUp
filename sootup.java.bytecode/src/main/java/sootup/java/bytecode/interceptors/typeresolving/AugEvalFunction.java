@@ -259,7 +259,7 @@ public class AugEvalFunction {
    * @param b an exception type
    */
   private ClassType getLeastCommonExceptionType(@Nonnull ClassType a, @Nonnull ClassType b) {
-    if (a.equals(b)) {
+    if (a == b) {
       return a;
     }
     ClassType commonType = null;
