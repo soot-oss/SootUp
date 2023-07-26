@@ -159,11 +159,8 @@ public class PrimitiveHierarchy {
   }
 
   /** Check whether the two given types are primitives or BottomType */
-  public static boolean arePrimitives(Type a, Type b) {
-    if (a instanceof PrimitiveType || a.getClass() == BottomType.class) {
-      return b instanceof PrimitiveType || b.getClass() == BottomType.class;
-    } else {
-      return false;
-    }
+  public static boolean arePrimitives(@Nonnull Type a, @Nonnull Type b) {
+    return (a instanceof PrimitiveType || a.getClass() == BottomType.class)
+        && (b instanceof PrimitiveType || b.getClass() == BottomType.class);
   }
 }

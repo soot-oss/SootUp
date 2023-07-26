@@ -20,6 +20,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,55 +48,62 @@ public class BytecodeHierarchy {
   }
 
   public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
-    boolean isAncestor = PrimitiveHierarchy.isAncestor(ancestor, child);
-    if (!isAncestor && !(PrimitiveHierarchy.arePrimitives(ancestor, child))) {
-      if (ancestor.equals(child)) {
-        isAncestor = true;
-      } else if (child instanceof BottomType) {
-        isAncestor = true;
-      } else if (ancestor instanceof BottomType) {
+    if (PrimitiveHierarchy.isAncestor(ancestor, child)) {
+      return true;
+    }
+
+    if (!PrimitiveHierarchy.arePrimitives(ancestor, child)) {
+      if (ancestor == child) {
+        return true;
+      }
+      if (child.getClass() == BottomType.class) {
+        return true;
+      }
+      if (ancestor.getClass() == BottomType.class) {
         return false;
-      } else if (ancestor instanceof PrimitiveType || child instanceof PrimitiveType) {
+      }
+      if (ancestor instanceof PrimitiveType || child instanceof PrimitiveType) {
         return false;
-      } else if (child instanceof NullType) {
-        isAncestor = true;
-      } else if (ancestor instanceof NullType) {
+      }
+      if (child == NullType.getInstance()) {
+        return true;
+      }
+      if (ancestor == NullType.getInstance()) {
         return false;
-      } else if (child instanceof ClassType && ancestor instanceof ClassType) {
-
-        isAncestor = canStoreType((ClassType) ancestor, (ClassType) child);
-
-      } else if (child instanceof ArrayType && ancestor instanceof ClassType) {
-
-        isAncestor =
-            ancestor.equals(objectClassType)
-                || ancestor.equals(serializableClassType)
-                || ancestor.equals(cloneableClassType);
-
-      } else if (child instanceof ArrayType && ancestor instanceof ArrayType) {
+      }
+      if (child instanceof ClassType && ancestor instanceof ClassType) {
+        return canStoreType((ClassType) ancestor, (ClassType) child);
+      }
+      if (child instanceof ArrayType && ancestor instanceof ClassType) {
+        return ancestor == objectClassType
+            || ancestor == serializableClassType
+            || ancestor == cloneableClassType;
+      }
+      if (child instanceof ArrayType && ancestor instanceof ArrayType) {
         ArrayType ancestorArr = (ArrayType) ancestor;
         ArrayType childArr = (ArrayType) child;
-        Type anBase = ancestorArr.getBaseType();
-        Type chBase = childArr.getBaseType();
+        Type ancestorBase = ancestorArr.getBaseType();
+        Type childBase = childArr.getBaseType();
         if (ancestorArr.getDimension() == childArr.getDimension()) {
-          if (anBase.equals(chBase)) {
-            isAncestor = true;
-          } else if (anBase instanceof ClassType && chBase instanceof ClassType) {
-            isAncestor = canStoreType((ClassType) anBase, (ClassType) chBase);
+          if (ancestorBase == childBase) {
+            return true;
+          }
+          if (ancestorBase instanceof ClassType && childBase instanceof ClassType) {
+            return canStoreType((ClassType) ancestorBase, (ClassType) childBase);
           }
         } else if (ancestorArr.getDimension() < childArr.getDimension()) {
-          isAncestor =
-              anBase.equals(objectClassType)
-                  || anBase.equals(serializableClassType)
-                  || anBase.equals(cloneableClassType);
+          // TODO: [ms] check: the dimension condition check seems weird?
+          return ancestorBase == objectClassType
+              || ancestorBase == serializableClassType
+              || ancestorBase == cloneableClassType;
         }
       }
     }
-    return isAncestor;
+    return false;
   }
 
   public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
-    Collection<Type> ret = new HashSet<>();
+    Set<Type> ret = new HashSet<>();
     if (a instanceof BottomType) {
       return Collections.singleton(b);
     }
@@ -156,6 +164,9 @@ public class BytecodeHierarchy {
       // if a and b are both ClassType
       Set<AncestryPath> pathsA = buildAncestryPaths((ClassType) a);
       Set<AncestryPath> pathsB = buildAncestryPaths((ClassType) b);
+      // TODO: [ms] implement an algorithm with better wc runtime costs.. e.g.
+      // https://www.baeldung.com/cs/tree-lowest-common-ancestor /
+      // https://de.wikipedia.org/wiki/Range_Minimum_Query
       for (AncestryPath pathA : pathsA) {
         for (AncestryPath pathB : pathsB) {
           ClassType lcn = leastCommonNode(pathA, pathB);
@@ -227,7 +238,7 @@ public class BytecodeHierarchy {
   @Nullable
   private ClassType leastCommonNode(AncestryPath a, AncestryPath b) {
     ClassType lcn = null;
-    while (a != null && b != null && a.type.equals(b.type)) {
+    while (a != null && b != null && a.type == b.type) {
       lcn = a.type;
       a = a.next;
       b = b.next;
