@@ -23,7 +23,6 @@ package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -33,7 +32,6 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
@@ -41,16 +39,33 @@ import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
-import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Zun Wang */
 public class AugEvalFunction {
-  IdentifierFactory factory = JavaIdentifierFactory.getInstance();
+
+  private final Set<ClassType> evalClassTypes = new HashSet<>();
+  private final ClassType stringClassType;
+  private final ClassType classClassType;
+  private final ClassType methodHandleClassType;
+  private final ClassType methodTypeClassType;
+  private final ClassType throwableClassType;
+
   View<? extends SootClass<?>> view;
   PrimitiveHierarchy primitiveHierarchy = new PrimitiveHierarchy();
 
   public AugEvalFunction(View<? extends SootClass<?>> view) {
     this.view = view;
+
+    // one time setup
+    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.lang.Object"));
+    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.lang.Cloneable"));
+    evalClassTypes.add(view.getIdentifierFactory().getClassType("java.io.Serializable"));
+
+    stringClassType = view.getIdentifierFactory().getClassType("java.lang.String");
+    classClassType = view.getIdentifierFactory().getClassType("java.lang.Class");
+    methodHandleClassType = view.getIdentifierFactory().getClassType("java.lang.MethodHandle");
+    methodTypeClassType = view.getIdentifierFactory().getClassType("java.lang.MethodType");
+    throwableClassType = view.getIdentifierFactory().getClassType("java.lang.Throwable");
   }
 
   /**
@@ -91,15 +106,15 @@ public class AugEvalFunction {
             || value instanceof EnumConstant) {
           return value.getType();
         } else if (value instanceof StringConstant) {
-          return factory.getClassType("java.lang.String");
+          return stringClassType;
         } else if (value instanceof ClassConstant) {
-          return factory.getClassType("java.lang.Class");
+          return classClassType;
         } else if (value instanceof MethodHandle) {
-          return factory.getClassType("java.lang.MethodHandle");
+          return methodHandleClassType;
         } else if (value instanceof MethodType) {
-          return factory.getClassType("java.lang.MethodType");
+          return methodTypeClassType;
         } else {
-          throw new RuntimeException("Invaluable constant in AugEvalFunction: " + value);
+          throw new RuntimeException("Invaluable constant in AugEvalFunction '" + value + "'.");
         }
       }
     } else if (value instanceof Expr) {
@@ -127,7 +142,7 @@ public class AugEvalFunction {
                 Collection<Type> set = primitiveHierarchy.getLeastCommonAncestor(tl, tr);
                 if (set.isEmpty()) {
                   throw new RuntimeException(
-                      "Invaluable expression by using AugEvalFunction: " + value);
+                      "Invaluable expression by using AugEvalFunction '" + value + "'.");
                 }
                 return set.iterator().next();
               }
@@ -151,7 +166,6 @@ public class AugEvalFunction {
     } else if (value instanceof Ref) {
       if (value instanceof JCaughtExceptionRef) {
         Set<ClassType> exceptionTypes = getExceptionTypeCandidates(stmt, graph);
-        ClassType throwable = factory.getClassType("java.lang.Throwable");
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
           Optional<?> exceptionClassOp = view.getClass(exceptionType);
@@ -159,11 +173,10 @@ public class AugEvalFunction {
           if (exceptionClassOp.isPresent()) {
             exceptionClass = (SootClass<?>) exceptionClassOp.get();
           } else {
-            throw new RuntimeException(
-                "ExceptionType: \"" + exceptionType + "\" is not in the view");
+            throw new RuntimeException("ExceptionType '" + exceptionType + "' is not in the view");
           }
           if (exceptionClass.isPhantomClass()) {
-            return throwable;
+            return throwableClassType;
           } else if (type == null) {
             type = exceptionType;
           } else {
@@ -171,7 +184,7 @@ public class AugEvalFunction {
           }
         }
         if (type == null) {
-          throw new RuntimeException("Invaluable reference in AugEvalFunction: " + value);
+          throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");
         }
         return type;
       } else if (value instanceof JArrayRef) {
@@ -181,22 +194,7 @@ public class AugEvalFunction {
           // Because Object, Serializable and Cloneable are super types of any ArrayType, thus the
           // base type of ArrayRef could be one of this three types
         } else if (type instanceof ClassType) {
-          String name = ((ClassType) type).getFullyQualifiedName();
-          Type retType;
-          switch (name) {
-            case "java.lang.Object":
-              retType = factory.getClassType("java.lang.Object");
-              break;
-            case "java.lang.Cloneable":
-              retType = factory.getClassType("java.lang.Cloneable");
-              break;
-            case "java.io.Serializable":
-              retType = factory.getClassType("java.io.Serializable");
-              break;
-            default:
-              retType = BottomType.getInstance();
-          }
-          return retType;
+          return evalClassTypes.contains(type) ? type : BottomType.getInstance();
         } else {
           return BottomType.getInstance();
         }
@@ -205,7 +203,7 @@ public class AugEvalFunction {
           || value instanceof JFieldRef) {
         return value.getType();
       } else {
-        throw new RuntimeException("Invaluable reference in AugEvalFunction: " + value);
+        throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");
       }
     }
     return null;
@@ -225,20 +223,20 @@ public class AugEvalFunction {
    * type
    */
   private Deque<ClassType> getExceptionPath(@Nonnull ClassType exceptionType) {
-    ViewTypeHierarchy hierarchy = new ViewTypeHierarchy(view);
-    ClassType throwable = factory.getClassType("java.lang.Throwable");
     Deque<ClassType> path = new ArrayDeque<>();
     path.push(exceptionType);
 
-    while (!exceptionType.equals(throwable)) {
-      ClassType superType = hierarchy.directSuperClassOf(exceptionType);
-      if (superType != null) {
-        path.push(superType);
-        exceptionType = superType;
-      } else {
-        throw new RuntimeException(
-            "The path from " + exceptionType + " to java.lang.Throwable cannot be found!");
+    while (!exceptionType.equals(throwableClassType)) {
+      final Optional<? extends ClassType> superclassOpt =
+          view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
+      if (!superclassOpt.isPresent()) {
+        throw new IllegalStateException(
+            "The path from '" + exceptionType + "' to java.lang.Throwable cannot be found!");
       }
+
+      ClassType superType = superclassOpt.get();
+      path.push(superType);
+      exceptionType = superType;
     }
     return path;
   }

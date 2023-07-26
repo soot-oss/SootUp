@@ -216,6 +216,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         .collect(Collectors.toSet());
   }
 
+  /** method exists for completeness - SootClass.getSuperClass() should be more performant. */
   @Nullable
   public ClassType directSuperClassOf(@Nonnull ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
@@ -230,6 +231,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             .collect(Collectors.toList());
 
     if (list.isEmpty()) {
+      /* is java.lang.Object */
       return null;
     } else if (list.size() > 1) {
       throw new RuntimeException(classType + "cannot have multiple superclasses");
