@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
@@ -34,15 +34,17 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 /** @author Zun Wang */
 public class BytecodeHierarchy {
 
-  private final ViewTypeHierarchy typeHierarchy;
-  private final ClassType objectClassType;
+  private final TypeHierarchy typeHierarchy;
+  public final ClassType objectClassType;
+  public final ClassType throwableClassType;
   private final ClassType serializableClassType;
   private final ClassType cloneableClassType;
 
   public BytecodeHierarchy(View<? extends SootClass<?>> view) {
-    this.typeHierarchy = new ViewTypeHierarchy(view);
+    this.typeHierarchy = view.getTypeHierarchy();
     IdentifierFactory factory = view.getIdentifierFactory();
     objectClassType = factory.getClassType("java.lang.Object");
+    throwableClassType = factory.getClassType("java.lang.Throwable");
     serializableClassType = factory.getClassType("java.io.Serializable");
     cloneableClassType = factory.getClassType("java.lang.Cloneable");
   }
@@ -144,7 +146,7 @@ public class BytecodeHierarchy {
         ret.add(cloneableClassType);
       } else {
         for (Type type : temp) {
-          ret.add(Type.makeArrayType(type, 1));
+          ret.add(Type.createArrayType(type, 1));
         }
       }
     } else if (a instanceof ArrayType || b instanceof ArrayType) {

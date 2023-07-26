@@ -207,4 +207,10 @@ public interface TypeHierarchy {
     }
     return superClasses;
   }
+
+  Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+
+  boolean isInterface(@Nonnull ClassType type);
+
+  Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
 }
