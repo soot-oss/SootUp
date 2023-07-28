@@ -1,13 +1,15 @@
-package sootup.analysis.interprocedural.ifds;
+package sootup.analysis.interprocedural.icfg;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
 import java.util.*;
+
+import categories.Java8Test;
 import org.junit.Assert;
 import org.junit.Test;
-import sootup.analysis.interprocedural.icfg.ICFGDotExporter;
-import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
+import org.junit.experimental.categories.Category;
+import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
@@ -22,7 +24,8 @@ import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-public class ICFGCallGraphTest extends IFDSTaintTestSetUp {
+@Category(Java8Test.class)
+public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   public CallGraph loadCallGraph(JavaView view) {
     CallGraph cg =
