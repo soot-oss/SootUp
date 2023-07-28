@@ -3,9 +3,8 @@ package sootup.analysis.interprocedural.icfg;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
-import java.util.*;
-
 import categories.Java8Test;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
