@@ -14,11 +14,9 @@ import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.jimple.JimpleLexer;
@@ -790,5 +788,16 @@ public class JimpleConverterTest {
     SootMethod method = methods.iterator().next();
     Body body = method.getBody();
     assertEquals(3, body.getLocalCount());
+  }
+
+  @Test
+  public void testEdgeCaseDoubleParsing() throws IOException {
+    SootClass<?> clazz =
+            parseJimpleClass(
+                    CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
+    Set<? extends SootField> fields = clazz.getFields();
+    for (SootField field : fields) {
+      assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
+    }
   }
 }
