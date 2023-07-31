@@ -793,8 +793,8 @@ public class JimpleConverterTest {
   @Test
   public void testEdgeCaseDoubleParsing() throws IOException {
     SootClass<?> clazz =
-            parseJimpleClass(
-                    CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
     Set<? extends SootField> fields = clazz.getFields();
     for (SootField field : fields) {
       assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());

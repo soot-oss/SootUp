@@ -675,10 +675,13 @@ public class JimpleConverter {
             }
 
             if (floatStr.charAt(0) == '#') {
-              switch(floatStr.substring(1)) {
-                case "Infinity": return DoubleConstant.getInstance(Double.POSITIVE_INFINITY);
-                case "-Infinity": return DoubleConstant.getInstance(Double.NEGATIVE_INFINITY);
-                case "NaN": return DoubleConstant.getInstance(Double.NaN);
+              switch (floatStr.substring(1)) {
+                case "Infinity":
+                  return DoubleConstant.getInstance(Double.POSITIVE_INFINITY);
+                case "-Infinity":
+                  return DoubleConstant.getInstance(Double.NEGATIVE_INFINITY);
+                case "NaN":
+                  return DoubleConstant.getInstance(Double.NaN);
               }
             }
 
