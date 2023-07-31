@@ -336,9 +336,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertTrue(
         foundMethod.getParameterTypes().stream()
             .anyMatch(
-                type -> {
-                  return "int".equals(type.toString());
-                }));
+                type -> "int".equals(type.toString())));
 
     // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
@@ -362,7 +360,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                         .withSignature(
                             JavaIdentifierFactory.getInstance()
                                 .getFieldSignature(classSignature, nameFieldSubSignature))
-                        .withModifiers(Modifier.PUBLIC)
+                        .withModifiers(FieldModifier.PUBLIC)
                         .build()),
                 ImmutableUtils.immutableSet(
                     SootMethod.builder()
@@ -370,7 +368,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                             new BodySource() {
                               @Nonnull
                               @Override
-                              public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) {
+                              public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) {
                                 /* [ms] violating @Nonnull */
                                 return null;
                               }
@@ -392,10 +390,10 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                             JavaIdentifierFactory.getInstance()
                                 .getMethodSignature(
                                     classSignature, optionalToStreamMethodSubSignature))
-                        .withModifiers(Modifier.PUBLIC)
+                        .withModifiers(MethodModifier.PUBLIC)
                         .build()),
                 null,
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),

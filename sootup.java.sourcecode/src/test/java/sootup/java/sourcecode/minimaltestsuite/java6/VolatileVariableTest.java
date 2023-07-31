@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -31,7 +31,7 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
             .anyMatch(
                 sootField -> {
                   return sootField.getName().equals("counter")
-                      && sootField.getModifiers().contains(Modifier.VOLATILE);
+                      && sootField.getModifiers().contains(FieldModifier.VOLATILE);
                 }));
   }
 

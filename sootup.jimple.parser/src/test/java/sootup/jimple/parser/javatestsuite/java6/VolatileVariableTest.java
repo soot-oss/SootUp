@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -32,10 +32,8 @@ public class VolatileVariableTest extends JimpleTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getName().equals("counter")
-                      && sootField.getModifiers().contains(Modifier.VOLATILE);
-                }));
+                sootField -> sootField.getName().equals("counter")
+                    && sootField.getModifiers().contains(FieldModifier.VOLATILE)));
   }
 
   public List<String> expectedBodyStmts() {

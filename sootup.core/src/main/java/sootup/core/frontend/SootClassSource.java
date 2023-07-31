@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -78,7 +78,7 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
-  public abstract Set<Modifier> resolveModifiers();
+  public abstract Set<ClassModifier> resolveModifiers();
 
   /**
    * Reads from the source to retrieve its directly implemented interfaces. This may be an expensive

@@ -108,7 +108,7 @@ public class JimpleConverter {
     Set<ClassType> interfaces = null;
     ClassType outerclass = null; // currently not determined in Java etc -> heuristic will be used
     Position position = NoPositionInformation.getInstance();
-    EnumSet<Modifier> modifiers = null;
+    EnumSet<ClassModifier> modifiers = null;
 
     @Override
     @Nonnull
@@ -135,14 +135,14 @@ public class JimpleConverter {
             "Classname is not well formed.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
       }
 
-      modifiers = getModifiers(ctx.modifier());
+      modifiers = getClassModifiers(ctx.modifier());
       // file_type
       if (ctx.file_type() != null) {
         if (ctx.file_type().getText().equals("interface")) {
-          modifiers.add(Modifier.INTERFACE);
+          modifiers.add(ClassModifier.INTERFACE);
         }
         if (ctx.file_type().getText().equals("annotation")) {
-          modifiers.add(Modifier.ANNOTATION);
+          modifiers.add(ClassModifier.ANNOTATION);
         }
       }
 
@@ -177,7 +177,7 @@ public class JimpleConverter {
 
         } else {
           final JimpleParser.FieldContext fieldCtx = ctx.member(i).field();
-          EnumSet<Modifier> modifier = getModifiers(fieldCtx.modifier());
+          EnumSet<FieldModifier> modifier = getFieldModifiers(fieldCtx.modifier());
           final Position pos = JimpleConverterUtil.buildPositionFromCtx(fieldCtx);
           final String fieldName = Jimple.unescape(fieldCtx.identifier().getText());
           final SootField f =
@@ -196,12 +196,39 @@ public class JimpleConverter {
       return true;
     }
 
-    private EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
-      Set<Modifier> modifierSet =
+    private EnumSet<ClassModifier> getClassModifiers(List<JimpleParser.ModifierContext> modifier) {
+      Set<ClassModifier> modifierSet =
           modifier.stream()
-              .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
+              .map(
+                  modifierContext -> ClassModifier.valueOf(modifierContext.getText().toUpperCase()))
               .collect(Collectors.toSet());
-      return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
+      return modifierSet.isEmpty()
+          ? EnumSet.noneOf(ClassModifier.class)
+          : EnumSet.copyOf(modifierSet);
+    }
+
+    private EnumSet<MethodModifier> getMethodModifiers(
+        List<JimpleParser.ModifierContext> modifier) {
+      Set<MethodModifier> modifierSet =
+          modifier.stream()
+              .map(
+                  modifierContext ->
+                      MethodModifier.valueOf(modifierContext.getText().toUpperCase()))
+              .collect(Collectors.toSet());
+      return modifierSet.isEmpty()
+          ? EnumSet.noneOf(MethodModifier.class)
+          : EnumSet.copyOf(modifierSet);
+    }
+
+    private EnumSet<FieldModifier> getFieldModifiers(List<JimpleParser.ModifierContext> modifier) {
+      Set<FieldModifier> modifierSet =
+          modifier.stream()
+              .map(
+                  modifierContext -> FieldModifier.valueOf(modifierContext.getText().toUpperCase()))
+              .collect(Collectors.toSet());
+      return modifierSet.isEmpty()
+          ? EnumSet.noneOf(FieldModifier.class)
+          : EnumSet.copyOf(modifierSet);
     }
 
     private class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
@@ -219,8 +246,10 @@ public class JimpleConverter {
       @Nonnull
       public SootMethod visitMethod(@Nonnull JimpleParser.MethodContext ctx) {
 
-        EnumSet<Modifier> modifier =
-            ctx.modifier() == null ? EnumSet.noneOf(Modifier.class) : getModifiers(ctx.modifier());
+        EnumSet<MethodModifier> modifier =
+            ctx.modifier() == null
+                ? EnumSet.noneOf(MethodModifier.class)
+                : getMethodModifiers(ctx.modifier());
 
         final JimpleParser.Method_subsignatureContext method_subsignatureContext =
             ctx.method_subsignature();
@@ -359,7 +388,7 @@ public class JimpleConverter {
           graph.initializeWith(stmtList, branchingMap, traps);
           Body.BodyBuilder builder = Body.builder(graph);
 
-          builder.setModifiers(modifiers);
+          builder.setModifiers(modifier);
           builder.setMethodSignature(methodSignature);
           builder.setLocals(new HashSet<>(locals.values()));
           builder.setPosition(classPosition);
@@ -556,7 +585,7 @@ public class JimpleConverter {
 
             List<Immediate> sizes =
                 ctx.immediate().stream()
-                    .map(imm -> visitImmediate(imm))
+                    .map(this::visitImmediate)
                     .collect(Collectors.toList());
             if (sizes.size() < 1) {
               throw new ResolveException(

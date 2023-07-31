@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -24,7 +24,7 @@ public class AnnotationLibraryTest extends MinimalBytecodeTestSuiteBase {
     JimplePrinter p = new JimplePrinter(JimplePrinter.Option.LegacyMode);
     StringWriter out = new StringWriter();
     p.printTo(sootClass, new PrintWriter(out));
-    assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));
+    assertTrue(ClassModifier.isAnnotation(sootClass.getModifiers()));
   }
 
   // TODO: [ms] add test for more annotation declarations e.g. inheritance
