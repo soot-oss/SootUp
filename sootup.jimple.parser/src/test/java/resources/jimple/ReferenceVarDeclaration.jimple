@@ -1,4 +1,4 @@
-public synchronized class ReferenceVarDeclaration extends java.lang.Object
+public super class ReferenceVarDeclaration extends java.lang.Object
 {
     public void stringVariable()
     {

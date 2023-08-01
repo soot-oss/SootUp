@@ -1,4 +1,4 @@
-public synchronized class PublicClass extends java.lang.Object
+public super class PublicClass extends java.lang.Object
 {
     public void <init>()
     {

@@ -1,4 +1,4 @@
-public synchronized class InitializeArraysWhileDeclaration extends java.lang.Object
+public super class InitializeArraysWhileDeclaration extends java.lang.Object
 {
     public void intArrays()
     {

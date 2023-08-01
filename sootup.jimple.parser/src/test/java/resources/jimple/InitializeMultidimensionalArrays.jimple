@@ -1,4 +1,4 @@
-public synchronized class InitializeMultidimensionalArrays extends java.lang.Object
+public super class InitializeMultidimensionalArrays extends java.lang.Object
 {
     public void doubleArrays()
     {

@@ -1,4 +1,4 @@
-public synchronized class StaticVariable extends java.lang.Object
+public super class StaticVariable extends java.lang.Object
 {
     static int num;
 

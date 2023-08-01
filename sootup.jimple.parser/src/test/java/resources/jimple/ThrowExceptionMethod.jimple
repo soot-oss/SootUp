@@ -1,4 +1,4 @@
-synchronized class ThrowExceptionMethod extends java.lang.Object
+super class ThrowExceptionMethod extends java.lang.Object
 {
     public static void main(java.lang.String[])
     {

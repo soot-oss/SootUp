@@ -1,4 +1,4 @@
-public synchronized class AbstractClass extends A
+public super class AbstractClass extends A
 {
 
     void a()

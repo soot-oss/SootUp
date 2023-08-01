@@ -37,7 +37,6 @@ import javax.annotation.Nonnull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.BodySource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.model.*;

@@ -1,4 +1,4 @@
-public synchronized class CreateNewInstance extends java.lang.Object
+public super class CreateNewInstance extends java.lang.Object
 {
     public void createNewInstance()
     {

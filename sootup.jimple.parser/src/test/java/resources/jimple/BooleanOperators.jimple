@@ -1,4 +1,4 @@
-public synchronized class BooleanOperators extends java.lang.Object
+public super class BooleanOperators extends java.lang.Object
 {
     public void complementOp()
     {
