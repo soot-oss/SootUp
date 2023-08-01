@@ -16,6 +16,7 @@ import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
@@ -578,7 +579,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      parseJimpleClass(cs);
       fail("escaping is needed");
     } catch (Exception ignored) {
     }
@@ -616,7 +617,7 @@ public class JimpleConverterTest {
           CharStreams.fromString(
               "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
       try {
-        SootClass<?> sc = parseJimpleClass(cs);
+        parseJimpleClass(cs);
         fail("\" is not allowed in identifiers");
       } catch (Exception ignore) {
       }
@@ -638,7 +639,7 @@ public class JimpleConverterTest {
       try {
         CharStream cs =
             CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
-        SootClass<?> sc = parseJimpleClass(cs);
+        parseJimpleClass(cs);
         fail("start and end quote do not match.");
       } catch (Exception ignore) {
       }
