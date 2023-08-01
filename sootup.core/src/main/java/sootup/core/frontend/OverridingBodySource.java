@@ -24,7 +24,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 
 /** @author Hasitha Rajapakse */
@@ -68,7 +68,7 @@ public class OverridingBodySource implements BodySource {
 
   @Nonnull
   @Override
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws IOException {
+  public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) throws IOException {
     return body != null ? body : delegate.resolveBody(modifiers);
   }
 

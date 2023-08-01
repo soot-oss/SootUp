@@ -172,7 +172,7 @@ public interface TypeHierarchy {
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list.
+   * will be the last entry in the list. i.e. its ordered from bottom level to top level.
    */
   @Nonnull
   default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
@@ -207,4 +207,10 @@ public interface TypeHierarchy {
     }
     return superClasses;
   }
+
+  Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+
+  boolean isInterface(@Nonnull ClassType type);
+
+  Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
 }

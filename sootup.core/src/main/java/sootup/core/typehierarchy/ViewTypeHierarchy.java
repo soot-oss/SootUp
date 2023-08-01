@@ -181,7 +181,6 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         .map(graph::getEdgeTarget);
   }
 
-  /** for completeness - You could use Sootclass.getSuperclass() directly */
   public Stream<Vertex> directSuperClassOf(@Nonnull Vertex classVertex) {
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     return graph.outgoingEdgesOf(classVertex).stream()
@@ -192,7 +191,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   public Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
     if (vertex == null) {
-      throw new RuntimeException("Could not find " + classType + " in hierarchy.");
+      throw new IllegalStateException("Could not find '" + classType + "' in hierarchy.");
     }
     if (vertex.type != VertexType.Class) {
       throw new IllegalArgumentException(classType + " is not a class.");
@@ -206,7 +205,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   public Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType interfaceType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
     if (vertex == null) {
-      throw new RuntimeException("Could not find " + interfaceType + " in hierarchy.");
+      throw new IllegalStateException("Could not find " + interfaceType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Interface) {
       throw new IllegalArgumentException(interfaceType + " is not a class.");
@@ -216,11 +215,16 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         .collect(Collectors.toSet());
   }
 
+  /**
+   * method exists for completeness - superClassOf() / which is basically SootClass.getSuperClass()
+   * should be more performant.
+   */
   @Nullable
+  @Deprecated
   public ClassType directSuperClassOf(@Nonnull ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
     if (vertex == null) {
-      throw new RuntimeException("Could not find " + classType + " in hierarchy.");
+      throw new IllegalStateException("Could not find " + classType + " in hierarchy.");
     }
     Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
     List<Vertex> list =
@@ -230,6 +234,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             .collect(Collectors.toList());
 
     if (list.isEmpty()) {
+      /* is java.lang.Object */
       return null;
     } else if (list.size() > 1) {
       throw new RuntimeException(classType + "cannot have multiple superclasses");
@@ -245,7 +250,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Vertex vertex = scanResult.typeToVertex.get(type);
 
     if (vertex == null) {
-      throw new ResolveException("Could not find " + type + " in hierarchy for view " + view);
+      throw new IllegalStateException("Could not find " + type + " in hierarchy for view " + view);
     }
 
     switch (vertex.type) {

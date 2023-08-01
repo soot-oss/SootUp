@@ -47,7 +47,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -83,7 +83,7 @@ public class JInvokeStmtTest {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC),
+            EnumSet.of(ClassModifier.PUBLIC),
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());

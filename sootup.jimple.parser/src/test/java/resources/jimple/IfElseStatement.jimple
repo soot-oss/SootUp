@@ -1,4 +1,4 @@
-public synchronized class IfElseStatement extends java.lang.Object
+public super class IfElseStatement extends java.lang.Object
 {
     public void <init>()
     {

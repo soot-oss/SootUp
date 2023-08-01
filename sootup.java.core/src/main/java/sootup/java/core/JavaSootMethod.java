@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -45,7 +45,7 @@ public class JavaSootMethod extends SootMethod {
   public JavaSootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<MethodModifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       @Nonnull Iterable<AnnotationUsage> annotations,
       @Nonnull Position position) {
@@ -116,7 +116,7 @@ public class JavaSootMethod extends SootMethod {
 
   @Nonnull
   @Override
-  public JavaSootMethod withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+  public JavaSootMethod withModifiers(@Nonnull Iterable<MethodModifier> modifiers) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),

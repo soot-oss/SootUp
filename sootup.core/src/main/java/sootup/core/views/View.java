@@ -25,14 +25,10 @@ package sootup.core.views;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.Scope;
-import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -90,59 +86,7 @@ public interface View<T extends SootClass> {
   @Nonnull
   default T getClassOrThrow(@Nonnull ClassType classType) {
     return getClass(classType)
-        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in View."));
+        .orElseThrow(
+            () -> new IllegalArgumentException("Could not find " + classType + " in View."));
   }
-
-  /** @see ModuleDataKey */
-  <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value);
-
-  /** @see ModuleDataKey */
-  @Nullable
-  <K> K getModuleData(@Nonnull ModuleDataKey<K> key);
-
-  /**
-   * @see java.util.Map#computeIfAbsent(Object, Function)
-   * @see ModuleDataKey
-   */
-  default <K> K computeModuleDataIfAbsent(@Nonnull ModuleDataKey<K> key, Supplier<K> dataSupplier) {
-    K moduleData = getModuleData(key);
-    if (moduleData != null) {
-      return moduleData;
-    }
-
-    K computedModuleData = dataSupplier.get();
-    putModuleData(key, computedModuleData);
-    return computedModuleData;
-  }
-
-  /**
-   * A key for use with {@link #getModuleData(ModuleDataKey)}, {@link #putModuleData(ModuleDataKey,
-   * Object)} and {@link #computeModuleDataIfAbsent(ModuleDataKey, Supplier)}. This allows
-   * additional data to be stored or cached inside a {@link View} and to be retrieved in a type-safe
-   * manner. A {@link ModuleDataKey} of type <code>T</code> can only be used to store and retrieve
-   * data of type <code>T</code>.
-   *
-   * <p>Additionally, since it is an abstract class and not an interface, it can be assured that a
-   * given class can only be a key for a single type, which avoids clashes.
-   *
-   * <p>Example: <br>
-   * <br>
-   *
-   * <pre>
-   *   class StringDataKey extends ModuleDataKey&lt;String&gt; {
-   *     public static final StringDataKey instance = new StringDataKey();
-   *     private StringDataKey() {}
-   *   }
-   *
-   *   void storeInView(String str, View view) {
-   *     view.putModuleData(StringDataKey.instance, str);
-   *     String retrieved = view.getModuleData(StringDataKey.instance);
-   *   }
-   * </pre>
-   *
-   * @param <K> The type of the stored and retrieved data that is associated with the key
-   * @author Christian Brüggemann
-   */
-  @SuppressWarnings("unused") // Used in modules
-  abstract class ModuleDataKey<K> {}
 }

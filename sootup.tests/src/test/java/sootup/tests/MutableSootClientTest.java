@@ -79,7 +79,7 @@ public class MutableSootClientTest {
             Collections.emptySet(),
             Collections.emptySet(),
             new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(Modifier.class),
+            EnumSet.noneOf(ClassModifier.class),
             Collections.emptySet(),
             Collections.emptySet(),
             Collections.emptySet());
@@ -136,7 +136,7 @@ public class MutableSootClientTest {
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());

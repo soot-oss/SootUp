@@ -25,7 +25,7 @@ package sootup.java.core;
 import java.util.Collections;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
@@ -38,14 +38,14 @@ public class JavaSootField extends SootField {
   /**
    * Constructs a Soot field with the given name, type and modifiers.
    *
-   * @param signature
-   * @param modifiers
-   * @param annotations
-   * @param position
+   * @param signature the signature of the field
+   * @param modifiers modifier of the field
+   * @param annotations annotations of the field
+   * @param position position of the field
    */
   public JavaSootField(
       @Nonnull FieldSignature signature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<FieldModifier> modifiers,
       @Nonnull Iterable<AnnotationUsage> annotations,
       Position position) {
     super(signature, modifiers, position);

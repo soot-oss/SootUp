@@ -1,4 +1,4 @@
-public synchronized class WhileLoop extends java.lang.Object
+public super class WhileLoop extends java.lang.Object
 {
     public void whileLoop()
     {

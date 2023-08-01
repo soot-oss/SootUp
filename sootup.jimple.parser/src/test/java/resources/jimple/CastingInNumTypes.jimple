@@ -1,4 +1,4 @@
-synchronized class CastingInNumTypes extends java.lang.Object
+super class CastingInNumTypes extends java.lang.Object
 {
     public void displayNum()
     {

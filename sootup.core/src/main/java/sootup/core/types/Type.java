@@ -22,6 +22,7 @@ package sootup.core.types;
  * #L%
  */
 
+import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -50,7 +51,7 @@ public abstract class Type implements Acceptor<TypeVisitor> {
    * This method is used to make an array type for the given type. If the given type is an array
    * type, then increase its dimension with given dim
    */
-  public static ArrayType makeArrayType(Type type, int dim) {
+  public static ArrayType createArrayType(@Nonnull Type type, int dim) {
     if (type instanceof ArrayType) {
       return new ArrayType(
           ((ArrayType) type).getBaseType(), ((ArrayType) type).getDimension() + dim);

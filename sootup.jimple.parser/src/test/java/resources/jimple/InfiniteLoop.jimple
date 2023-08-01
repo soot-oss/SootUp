@@ -1,4 +1,4 @@
-synchronized class InfiniteLoop extends java.lang.Object
+super class InfiniteLoop extends java.lang.Object
 {
     void stmtLoop()
     {

@@ -1,4 +1,4 @@
-synchronized class UncheckedCast extends java.lang.Object
+super class UncheckedCast extends java.lang.Object
 {
     void <init>()
     {

@@ -1,4 +1,4 @@
-public synchronized class MethodOverridingSubclass extends MethodOverriding
+public super class MethodOverridingSubclass extends MethodOverriding
 {
     public void calculateArea()
     {

@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -51,7 +51,7 @@ public class WalaSootMethod extends JavaSootMethod {
   public WalaSootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<MethodModifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       DebuggingInformation debugInfo) {
 
@@ -92,7 +92,7 @@ public class WalaSootMethod extends JavaSootMethod {
   }
 
   @Nonnull
-  public JavaSootMethod withModifiers(Iterable<Modifier> modifiers) {
+  public JavaSootMethod withModifiers(Iterable<MethodModifier> modifiers) {
     return new WalaSootMethod(bodySource, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 

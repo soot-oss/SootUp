@@ -36,7 +36,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.core.views.View;
@@ -73,7 +73,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
 
-    boolean isStatic = Modifier.isStatic(builder.getModifiers());
+    boolean isStatic = MethodModifier.isStatic(builder.getModifiers());
     boolean allEssential = true;
     boolean containsInvoke = false;
     Local thisLocal = null;

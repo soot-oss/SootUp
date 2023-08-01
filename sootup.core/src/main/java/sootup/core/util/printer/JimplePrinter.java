@@ -30,9 +30,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.Field;
 import sootup.core.model.Method;
-import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -136,16 +136,16 @@ public class JimplePrinter {
             }
       */
 
-      EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
+      EnumSet<ClassModifier> modifiers = EnumSet.copyOf(cl.getModifiers());
       // remove unwanted modifier combinations
-      if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
-        modifiers.remove(Modifier.ABSTRACT);
+      if (cl.isInterface() && ClassModifier.isAbstract(modifiers)) {
+        modifiers.remove(ClassModifier.ABSTRACT);
       }
       if (modifiers.size() != 0) {
-        printer.modifier(Modifier.toString(modifiers));
+        printer.modifier(ClassModifier.toString(modifiers));
         printer.literal(" ");
       }
-      if (!Modifier.isInterface(modifiers) && !Modifier.isAnnotation(modifiers)) {
+      if (!ClassModifier.isInterface(modifiers) && !ClassModifier.isAnnotation(modifiers)) {
         printer.literal("class ");
       }
 
