@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -41,14 +42,17 @@ import sootup.core.views.View;
 public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>>>
     implements AnalysisInputLocation<S> {
 
+  @Nonnull protected final SourceType sourceType;
   @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
 
   /** not useful for retrieval of classes via view. remove inputlocation from sootclass? */
   public EagerInputLocation() {
-    map = Collections.emptyMap();
+    this(Collections.emptyMap(), SourceType.Application);
   }
 
-  public EagerInputLocation(@Nonnull Map<ClassType, ? extends SootClassSource<S>> map) {
+  public EagerInputLocation(
+      @Nonnull Map<ClassType, ? extends SootClassSource<S>> map, @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     this.map = ImmutableMap.copyOf(map);
   }
 
@@ -64,6 +68,12 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   public Collection<? extends AbstractClassSource<S>> getClassSources(@Nullable View<?> view) {
     // FIXME: add classloadingoptions
     return map.values();
+  }
+
+  @Nonnull
+  @Override
+  public SourceType getSourceType() {
+    return sourceType;
   }
 
   @Override

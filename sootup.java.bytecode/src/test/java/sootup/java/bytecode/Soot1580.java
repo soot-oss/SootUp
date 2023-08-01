@@ -21,7 +21,7 @@ public class Soot1580 {
   @Test
   public void test() {
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(jar, null);
+        PathBasedAnalysisInputLocation.create(jar, null);
 
     JavaProject project =
         JavaProject.builder(new JavaLanguage(7)).addInputLocation(inputLocation).build();

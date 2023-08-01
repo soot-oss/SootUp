@@ -43,7 +43,8 @@ public class MutatingSootClass {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(Paths.get("src/test/resources/BasicSetup/binary"), null);
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("src/test/resources/BasicSetup/binary"), null);
 
     // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
     // where classes are loaded depending on the language level of the analysis
