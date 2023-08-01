@@ -128,14 +128,17 @@ grammar Jimple;
   importItem:
     'import' location=identifier SEMICOLON;
 
+  common_modifier :
+    'final' | 'public' | 'protected' | 'private' | 'static' | 'enum'| 'synthetic';
+
   class_modifier :
-    'abstract' | 'final' | 'public' | 'protected' | 'private' | 'static' | 'super' | 'enum' | 'synthetic';
+   common_modifier | 'abstract' | 'super';
 
   method_modifier :
-    'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'varargs'| 'bridge' | 'strictfp' | 'enum'| 'synthetic';
+   common_modifier | 'abstract' | 'native' | 'synchronized' | 'varargs'| 'bridge' | 'strictfp';
 
   field_modifier :
-    'final' | 'public' | 'protected' | 'private' | 'static' | 'transient' | 'volatile' | 'enum'| 'synthetic';
+   common_modifier  | 'transient' | 'volatile';
 
   file_type :
     CLASS | 'interface' | 'annotation interface';
