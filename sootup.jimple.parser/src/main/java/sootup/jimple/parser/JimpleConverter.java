@@ -197,38 +197,22 @@ public class JimpleConverter {
     }
 
     private EnumSet<ClassModifier> getClassModifiers(List<JimpleParser.ModifierContext> modifier) {
-      Set<ClassModifier> modifierSet =
-          modifier.stream()
-              .map(
-                  modifierContext -> ClassModifier.valueOf(modifierContext.getText().toUpperCase()))
-              .collect(Collectors.toSet());
-      return modifierSet.isEmpty()
-          ? EnumSet.noneOf(ClassModifier.class)
-          : EnumSet.copyOf(modifierSet);
+      return modifier.stream()
+          .map(modContext -> ClassModifier.valueOf(modContext.getText().toUpperCase()))
+          .collect(Collectors.toCollection(() -> EnumSet.noneOf(ClassModifier.class)));
     }
 
     private EnumSet<MethodModifier> getMethodModifiers(
         List<JimpleParser.ModifierContext> modifier) {
-      Set<MethodModifier> modifierSet =
-          modifier.stream()
-              .map(
-                  modifierContext ->
-                      MethodModifier.valueOf(modifierContext.getText().toUpperCase()))
-              .collect(Collectors.toSet());
-      return modifierSet.isEmpty()
-          ? EnumSet.noneOf(MethodModifier.class)
-          : EnumSet.copyOf(modifierSet);
+      return modifier.stream()
+          .map(modContext -> MethodModifier.valueOf(modContext.getText().toUpperCase()))
+          .collect(Collectors.toCollection(() -> EnumSet.noneOf(MethodModifier.class)));
     }
 
     private EnumSet<FieldModifier> getFieldModifiers(List<JimpleParser.ModifierContext> modifier) {
-      Set<FieldModifier> modifierSet =
-          modifier.stream()
-              .map(
-                  modifierContext -> FieldModifier.valueOf(modifierContext.getText().toUpperCase()))
-              .collect(Collectors.toSet());
-      return modifierSet.isEmpty()
-          ? EnumSet.noneOf(FieldModifier.class)
-          : EnumSet.copyOf(modifierSet);
+      return modifier.stream()
+          .map(modContext -> FieldModifier.valueOf(modContext.getText().toUpperCase()))
+          .collect(Collectors.toCollection(() -> EnumSet.noneOf(FieldModifier.class)));
     }
 
     private class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
@@ -354,8 +338,6 @@ public class JimpleConverter {
                       labeledStmts.get(handlerLabel)));
             }
           }
-        } else {
-          // no body is given: no brackets, but a semicolon -> abstract
         }
 
         Position classPosition = JimpleConverterUtil.buildPositionFromCtx(ctx);
@@ -584,9 +566,7 @@ public class JimpleConverter {
             }
 
             List<Immediate> sizes =
-                ctx.immediate().stream()
-                    .map(this::visitImmediate)
-                    .collect(Collectors.toList());
+                ctx.immediate().stream().map(this::visitImmediate).collect(Collectors.toList());
             if (sizes.size() < 1) {
               throw new ResolveException(
                   "The Size list must have at least one Element.",
