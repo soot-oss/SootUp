@@ -27,7 +27,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -48,7 +47,6 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 
 public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
@@ -58,7 +56,6 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   protected final Body.BodyBuilder builder;
 
   protected final StmtGraph<?> graph;
-  private final IdentifierFactory factory = JavaIdentifierFactory.getInstance();
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
@@ -120,12 +117,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
               }
             }
             if (!findDef) {
-              arrayType = Type.makeArrayType(type_rhs, 1);
+              arrayType = Type.createArrayType(type_rhs, 1);
             }
           }
         }
         if (arrayType == null) {
-          arrayType = Type.makeArrayType(type_base, 1);
+          arrayType = Type.createArrayType(type_base, 1);
         }
       }
       type_lhs = arrayType.getElementType();
@@ -181,7 +178,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           if (sel == null) {
             sel = type_base;
           }
-          arrayType = Type.makeArrayType(sel, 1);
+          arrayType = Type.createArrayType(sel, 1);
         }
       }
       if (arrayType != null) {
@@ -204,7 +201,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
     } else if (rhs instanceof JCastExpr) {
       visit(rhs, type_lhs, stmt);
     } else if (rhs instanceof JInstanceOfExpr) {
-      visit(((JInstanceOfExpr) rhs).getOp(), factory.getType("java.lang.Object"), stmt);
+      visit(((JInstanceOfExpr) rhs).getOp(), hierarchy.objectClassType, stmt);
       visit(rhs, type_lhs, stmt);
     } else if (rhs instanceof JNewArrayExpr) {
       visit(((JNewArrayExpr) rhs).getSize(), PrimitiveType.getInt(), stmt);
@@ -229,12 +226,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
-    visit(stmt.getOp(), factory.getType("java.lang.Object"), stmt);
+    visit(stmt.getOp(), hierarchy.objectClassType, stmt);
   }
 
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-    visit(stmt.getOp(), factory.getType("java.lang.Object"), stmt);
+    visit(stmt.getOp(), hierarchy.objectClassType, stmt);
   }
 
   @Override
@@ -254,7 +251,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-    visit(stmt.getOp(), factory.getType("java.lang.Throwable"), stmt);
+    visit(stmt.getOp(), hierarchy.throwableClassType, stmt);
   }
 
   public AugEvalFunction getFuntion() {

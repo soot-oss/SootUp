@@ -70,7 +70,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
     map.put("l0", classType);
-    map.put("l1", Type.makeArrayType(super1, 1));
+    map.put("l1", Type.createArrayType(super1, 1));
     map.put("l2", super1);
     map.put("$stack3", sub1);
     Typing typing = createTyping(builder.getLocals(), map);
