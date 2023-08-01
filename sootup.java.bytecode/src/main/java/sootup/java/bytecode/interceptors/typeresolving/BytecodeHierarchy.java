@@ -112,7 +112,7 @@ public class BytecodeHierarchy {
     if (b instanceof BottomType) {
       return Collections.singleton(a);
     }
-    if (a instanceof NullType) {
+    if (a == NullType.getInstance()) {
       return Collections.singleton(b);
     }
     if (b instanceof NullType) {
