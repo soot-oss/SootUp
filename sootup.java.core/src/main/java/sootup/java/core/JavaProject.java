@@ -49,7 +49,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
       JavaLanguage language,
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
+    super(language, inputLocations, sourceTypeSpecifier);
   }
 
   @Nonnull
