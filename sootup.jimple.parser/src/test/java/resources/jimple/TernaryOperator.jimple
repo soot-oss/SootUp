@@ -1,4 +1,4 @@
-public synchronized class TernaryOperator extends java.lang.Object
+public super class TernaryOperator extends java.lang.Object
 {
     int num;
 

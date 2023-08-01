@@ -1,4 +1,4 @@
-public synchronized class NewCodeBlockInMethod extends java.lang.Object
+public super class NewCodeBlockInMethod extends java.lang.Object
 {
     public void newCodeBlockInMethod()
     {

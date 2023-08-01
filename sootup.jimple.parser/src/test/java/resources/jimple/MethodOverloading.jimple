@@ -1,4 +1,4 @@
-synchronized class MethodOverloading extends java.lang.Object
+super class MethodOverloading extends java.lang.Object
 {
     int calculate(int)
     {

@@ -1,4 +1,4 @@
-synchronized class VolatileVariable extends java.lang.Object
+super class VolatileVariable extends java.lang.Object
 {
     public volatile int counter;
 

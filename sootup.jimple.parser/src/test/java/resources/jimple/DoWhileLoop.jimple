@@ -1,4 +1,4 @@
-public synchronized class DoWhileLoop extends java.lang.Object
+public super class DoWhileLoop extends java.lang.Object
 {
     public void <init>()
     {

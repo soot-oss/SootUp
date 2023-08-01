@@ -1,4 +1,4 @@
-public synchronized class AccessArrays extends java.lang.Object
+public super class AccessArrays extends java.lang.Object
 {
     public void doubleArrays()
     {

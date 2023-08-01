@@ -1,4 +1,4 @@
-public synchronized class PrivateMethodInterfaceImpl extends java.lang.Object implements PrivateMethodInterface
+public super class PrivateMethodInterfaceImpl extends java.lang.Object implements PrivateMethodInterface
 {
     public void <init>()
     {

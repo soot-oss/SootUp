@@ -22,13 +22,9 @@ package sootup.core.model;
  * #L%
  */
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Objects;
-import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.signatures.SootClassMemberSignature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
 
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
@@ -39,13 +35,11 @@ import sootup.core.util.ImmutableUtils;
 public abstract class SootClassMember<S extends SootClassMemberSignature> {
 
   @Nonnull private final S signature;
-  @Nonnull private final ImmutableSet<Modifier> modifiers;
+
   @Nonnull private final Position position;
 
-  SootClassMember(
-      @Nonnull S signature, @Nonnull Iterable<Modifier> modifiers, @Nonnull Position position) {
+  SootClassMember(@Nonnull S signature, @Nonnull Position position) {
     this.signature = signature;
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.position = position;
   }
 
@@ -56,44 +50,22 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
   }
 
   /** Convenience method returning true if this class member is protected. */
-  public boolean isProtected() {
-    return Modifier.isProtected(this.getModifiers());
-  }
+  public abstract boolean isProtected();
 
   /** Convenience method returning true if this class member is private. */
-  public boolean isPrivate() {
-    return Modifier.isPrivate(this.getModifiers());
-  }
+  public abstract boolean isPrivate();
 
   /** Convenience method returning true if this class member is public. */
-  public boolean isPublic() {
-    return Modifier.isPublic(this.getModifiers());
-  }
+  public abstract boolean isPublic();
 
   /** Convenience method returning true if this class member is static. */
-  public boolean isStatic() {
-    return Modifier.isStatic(this.getModifiers());
-  }
+  public abstract boolean isStatic();
 
   /** Convenience method returning true if this field is final. */
-  public boolean isFinal() {
-    return Modifier.isFinal(this.getModifiers());
-  }
-
-  /**
-   * Gets the modifiers of this class member in an immutable set.
-   *
-   * @see Modifier
-   */
-  @Nonnull
-  public Set<Modifier> getModifiers() {
-    return modifiers;
-  }
+  public abstract boolean isFinal();
 
   /** Returns a hash code for this method consistent with structural equality. */
-  public int equivHashCode() {
-    return Objects.hash(modifiers, signature);
-  }
+  public abstract int equivHashCode();
 
   /** Returns the signature of this method. */
   @Override

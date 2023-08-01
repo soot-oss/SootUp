@@ -1,4 +1,4 @@
-public synchronized class ForEachLoop extends java.lang.Object
+public super class ForEachLoop extends java.lang.Object
 {
     public void <init>()
     {

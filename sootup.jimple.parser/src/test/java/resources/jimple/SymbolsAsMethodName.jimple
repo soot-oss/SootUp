@@ -1,4 +1,4 @@
-public synchronized class SymbolsAsMethodName extends java.lang.Object
+public super class SymbolsAsMethodName extends java.lang.Object
 {
     public void <init>()
     {

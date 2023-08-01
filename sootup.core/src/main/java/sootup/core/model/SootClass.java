@@ -106,12 +106,12 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
     return this._lazyFields.get();
   }
 
-  private final Supplier<Set<Modifier>> lazyModifiers =
+  private final Supplier<Set<ClassModifier>> lazyModifiers =
       Suppliers.memoize(classSource::resolveModifiers);
 
   /** Returns the modifiers of this class in an immutable set. */
   @Nonnull
-  public Set<Modifier> getModifiers() {
+  public Set<ClassModifier> getModifiers() {
     return lazyModifiers.get();
   }
 
@@ -184,17 +184,17 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   /** Convenience method; returns true if this class is an interface. */
   public boolean isInterface() {
-    return Modifier.isInterface(this.getModifiers());
+    return ClassModifier.isInterface(this.getModifiers());
   }
 
   /** Convenience method; returns true if this class is an enumeration. */
   public boolean isEnum() {
-    return Modifier.isEnum(this.getModifiers());
+    return ClassModifier.isEnum(this.getModifiers());
   }
 
   /** Convenience method; returns true if this class is synchronized. */
-  public boolean isSynchronized() {
-    return Modifier.isSynchronized(this.getModifiers());
+  public boolean isSuper() {
+    return ClassModifier.isSuper(this.getModifiers());
   }
 
   /** Returns true if this class is not an interface and not abstract. */
@@ -204,7 +204,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   /** Convenience method; returns true if this class is public. */
   public boolean isPublic() {
-    return Modifier.isPublic(this.getModifiers());
+    return ClassModifier.isPublic(this.getModifiers());
   }
 
   /** Returns the name of this class. */
@@ -240,27 +240,27 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   /** Convenience method returning true if this class is private. */
   public boolean isPrivate() {
-    return Modifier.isPrivate(this.getModifiers());
+    return ClassModifier.isPrivate(this.getModifiers());
   }
 
   /** Convenience method returning true if this class is protected. */
   public boolean isProtected() {
-    return Modifier.isProtected(this.getModifiers());
+    return ClassModifier.isProtected(this.getModifiers());
   }
 
   /** Convenience method returning true if this class is abstract. */
   public boolean isAbstract() {
-    return Modifier.isAbstract(this.getModifiers());
+    return ClassModifier.isAbstract(this.getModifiers());
   }
 
   /** Convenience method returning true if this class is final. */
   public boolean isFinal() {
-    return Modifier.isFinal(this.getModifiers());
+    return ClassModifier.isFinal(this.getModifiers());
   }
 
   /** Convenience method returning true if this class is static. */
   public boolean isStatic() {
-    return Modifier.isStatic(this.getModifiers());
+    return ClassModifier.isStatic(this.getModifiers());
   }
 
   private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
@@ -28,7 +28,7 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
             .anyMatch(
                 sootField ->
                     sootField.getName().equals("transientVar")
-                        && sootField.getModifiers().contains(Modifier.TRANSIENT)));
+                        && sootField.getModifiers().contains(FieldModifier.TRANSIENT)));
   }
 
   /**

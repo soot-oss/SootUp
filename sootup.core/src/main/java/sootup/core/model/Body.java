@@ -341,7 +341,7 @@ public class Body implements Copyable {
     return new BodyBuilder(graph);
   }
 
-  public static BodyBuilder builder(@Nonnull Body body, Set<Modifier> modifiers) {
+  public static BodyBuilder builder(@Nonnull Body body, Set<MethodModifier> modifiers) {
     return new BodyBuilder(body, modifiers);
   }
 
@@ -366,7 +366,7 @@ public class Body implements Copyable {
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
     @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
-    @Nonnull private Set<Modifier> modifiers = Collections.emptySet();
+    @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph graph;
@@ -382,7 +382,7 @@ public class Body implements Copyable {
       this.graph = graph;
     }
 
-    BodyBuilder(@Nonnull Body body, @Nonnull Set<Modifier> modifiers) {
+    BodyBuilder(@Nonnull Body body, @Nonnull Set<MethodModifier> modifiers) {
       setModifiers(modifiers);
       setMethodSignature(body.getMethodSignature());
       setLocals(new LinkedHashSet<>(body.getLocals()));
@@ -510,7 +510,7 @@ public class Body implements Copyable {
       return this;
     }
 
-    public BodyBuilder setModifiers(@Nonnull Set<Modifier> modifiers) {
+    public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
@@ -567,7 +567,7 @@ public class Body implements Copyable {
     }
 
     @Nonnull
-    public Set<Modifier> getModifiers() {
+    public Set<MethodModifier> getModifiers() {
       return modifiers;
     }
 

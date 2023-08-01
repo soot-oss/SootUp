@@ -1,4 +1,4 @@
-synchronized class UnaryOpInt extends java.lang.Object
+super class UnaryOpInt extends java.lang.Object
 {
     int i;
 

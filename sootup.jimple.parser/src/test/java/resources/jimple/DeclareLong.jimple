@@ -1,4 +1,4 @@
-public synchronized class DeclareLong extends java.lang.Object
+public super class DeclareLong extends java.lang.Object
 {
     long l1;
 

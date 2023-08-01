@@ -1,4 +1,4 @@
-synchronized class DeclareInnerClass extends java.lang.Object
+super class DeclareInnerClass extends java.lang.Object
 {
     public int a;
 

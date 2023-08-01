@@ -1,4 +1,4 @@
-public synchronized class MethodReturningVar extends java.lang.Object
+public super class MethodReturningVar extends java.lang.Object
 {
     public long longVariable()
     {

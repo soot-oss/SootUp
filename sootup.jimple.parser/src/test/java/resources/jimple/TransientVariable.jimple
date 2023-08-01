@@ -1,4 +1,4 @@
-synchronized class TransientVariable extends java.lang.Object
+super class TransientVariable extends java.lang.Object
 {
     transient int transientVar;
 

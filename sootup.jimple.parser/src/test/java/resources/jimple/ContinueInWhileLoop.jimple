@@ -1,4 +1,4 @@
-public synchronized class ContinueInWhileLoop extends java.lang.Object
+public super class ContinueInWhileLoop extends java.lang.Object
 {
     public void <init>()
     {

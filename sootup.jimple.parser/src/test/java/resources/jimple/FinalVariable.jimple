@@ -1,4 +1,4 @@
-public synchronized class FinalVariable extends java.lang.Object
+public super class FinalVariable extends java.lang.Object
 {
     public void <init>()
     {

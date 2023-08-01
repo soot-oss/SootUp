@@ -183,7 +183,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Override
   @Nonnull
-  public Body resolveBody(@Nonnull Iterable<Modifier> modifierIt) {
+  public Body resolveBody(@Nonnull Iterable<MethodModifier> modifierIt) {
 
     /* initialize */
     nextLocal = maxLocals;
@@ -206,7 +206,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     /* build body (add stmts, locals, traps, etc.) */
     final MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
-    bodyBuilder.setModifiers(AsmUtil.getModifiers(access));
+    bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
 
     final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
@@ -1879,7 +1879,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
-    if (!bodyBuilder.getModifiers().contains(Modifier.STATIC)) {
+    if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
       JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt<JThisRef> stmt =

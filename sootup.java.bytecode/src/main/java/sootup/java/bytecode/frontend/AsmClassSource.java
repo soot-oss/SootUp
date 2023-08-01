@@ -63,7 +63,7 @@ class AsmClassSource extends JavaSootClassSource {
               Type fieldType = AsmUtil.toJimpleType(fieldNode.desc);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
-              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
+              EnumSet<FieldModifier> modifiers = AsmUtil.getFieldModifiers(fieldNode.access);
 
               // TODO: add Position info
               return new JavaSootField(
@@ -120,7 +120,7 @@ class AsmClassSource extends JavaSootClassSource {
                   new ArrayList<>(AsmUtil.asmIdToSignature(methodSource.exceptions));
 
               String methodName = methodSource.name;
-              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
+              EnumSet<MethodModifier> modifiers = AsmUtil.getMethodModifiers(methodSource.access);
               List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
@@ -154,8 +154,8 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public EnumSet<Modifier> resolveModifiers() {
-    return AsmUtil.getModifiers(classNode.access);
+  public EnumSet<ClassModifier> resolveModifiers() {
+    return AsmUtil.getClassModifiers(classNode.access);
   }
 
   @Nonnull

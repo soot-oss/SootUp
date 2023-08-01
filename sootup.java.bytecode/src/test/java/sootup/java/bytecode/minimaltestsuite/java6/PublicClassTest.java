@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -24,7 +24,7 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void test() {
     SootClass<?> clazz = loadClass(getDeclaredClassSignature());
-    assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
+    assertEquals(EnumSet.of(ClassModifier.PUBLIC, ClassModifier.SUPER), clazz.getModifiers());
 
     SootMethod method;
     method = clazz.getMethod(getMethodSignature("private").getSubSignature()).get();
