@@ -32,8 +32,9 @@ public class VolatileVariableTest extends JimpleTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> sootField.getName().equals("counter")
-                    && sootField.getModifiers().contains(FieldModifier.VOLATILE)));
+                sootField ->
+                    sootField.getName().equals("counter")
+                        && sootField.getModifiers().contains(FieldModifier.VOLATILE)));
   }
 
   public List<String> expectedBodyStmts() {

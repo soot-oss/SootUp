@@ -334,9 +334,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals("void", foundMethod.getReturnType().toString());
     assertEquals(1, foundMethod.getParameterCount());
     assertTrue(
-        foundMethod.getParameterTypes().stream()
-            .anyMatch(
-                type -> "int".equals(type.toString())));
+        foundMethod.getParameterTypes().stream().anyMatch(type -> "int".equals(type.toString())));
 
     // Parse sub-signature for "empName" field
     FieldSubSignature nameFieldSubSignature =
@@ -420,8 +418,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
             .build()
             .createView();
 
-    final Collection<? extends AbstractClassSource> classSources =
-        pathBasedNamespace.getClassSources(v);
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
     runtimeContains(v, "List", "java.util");
@@ -445,7 +441,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
             .build();
-    JavaView view = javaProject.createOnDemandView();
+    JavaView view = javaProject.createView();
 
     Collection<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check

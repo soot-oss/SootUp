@@ -39,15 +39,17 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> sootField.getModifiers().contains(FieldModifier.PRIVATE)
-                    && sootField.getModifiers().contains(FieldModifier.STATIC)
-                    && sootField.getName().equals("i")));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PRIVATE)
+                        && sootField.getModifiers().contains(FieldModifier.STATIC)
+                        && sootField.getName().equals("i")));
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> sootField.getModifiers().contains(FieldModifier.PUBLIC)
-                    && sootField.getModifiers().contains(FieldModifier.FINAL)
-                    && sootField.getName().equals("s")));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PUBLIC)
+                        && sootField.getModifiers().contains(FieldModifier.FINAL)
+                        && sootField.getName().equals("s")));
   }
 
   /**
