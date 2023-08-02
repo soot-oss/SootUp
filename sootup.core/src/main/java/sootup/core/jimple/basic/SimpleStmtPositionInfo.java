@@ -24,7 +24,7 @@ package sootup.core.jimple.basic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.model.FullPosition;
+import sootup.core.model.LinePosition;
 import sootup.core.model.Position;
 
 /**
@@ -47,7 +47,7 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
    * @param lineNumber the line number of the statement.
    */
   public SimpleStmtPositionInfo(int lineNumber) {
-    stmtPosition = new FullPosition(lineNumber, -1, lineNumber, -1);
+    stmtPosition = new LinePosition(lineNumber);
   }
 
   @Nonnull
@@ -66,17 +66,5 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
     StringBuilder s = new StringBuilder();
     s.append("stmt at:").append(getStmtPosition()).append("\n");
     return s.toString();
-  }
-
-  @Nonnull
-  @Override
-  public StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition) {
-    return null;
-  }
-
-  @Nonnull
-  @Override
-  public StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions) {
-    return null;
   }
 }

@@ -23,7 +23,6 @@ package sootup.core.jimple.basic;
  */
 
 import javax.annotation.Nonnull;
-import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 import sootup.core.util.Copyable;
 
@@ -34,7 +33,7 @@ import sootup.core.util.Copyable;
  * @author Linghui Luo, Markus Schmidt
  */
 public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copyable {
-  protected final FullPosition[] operandPositions;
+  @Nonnull protected final Position[] operandPositions;
 
   /**
    * Create an instance from given statement position and operand positions.
@@ -43,7 +42,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
    * @param operandPositions the operand positions
    */
   public FullStmtPositionInfo(
-      @Nonnull Position stmtPosition, @Nonnull FullPosition[] operandPositions) {
+      @Nonnull Position stmtPosition, @Nonnull Position[] operandPositions) {
     super(stmtPosition);
     this.operandPositions = operandPositions;
   }
@@ -94,7 +93,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
   }
 
   @Nonnull
-  public StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions) {
+  public StmtPositionInfo withOperandPositions(@Nonnull Position[] operandPositions) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 }

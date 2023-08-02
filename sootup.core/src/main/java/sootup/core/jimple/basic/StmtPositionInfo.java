@@ -24,7 +24,6 @@ package sootup.core.jimple.basic;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 
 /**
@@ -34,7 +33,7 @@ import sootup.core.model.Position;
  */
 public abstract class StmtPositionInfo {
 
-  protected static final StmtPositionInfo noPosition =
+  protected static final StmtPositionInfo NOPOSITION =
       new StmtPositionInfo() {
         @Nonnull
         @Override
@@ -51,18 +50,6 @@ public abstract class StmtPositionInfo {
         public String toString() {
           return "No StmtPositionnfo";
         }
-
-        @Nonnull
-        @Override
-        public StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition) {
-          return this;
-        }
-
-        @Nonnull
-        @Override
-        public StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions) {
-          return this;
-        }
       };
 
   /**
@@ -72,7 +59,7 @@ public abstract class StmtPositionInfo {
    */
   @Nonnull
   public static StmtPositionInfo createNoStmtPositionInfo() {
-    return noPosition;
+    return NOPOSITION;
   }
 
   /**
@@ -94,10 +81,4 @@ public abstract class StmtPositionInfo {
 
   @Override
   public abstract String toString();
-
-  @Nonnull
-  public abstract StmtPositionInfo withStmtPosition(@Nonnull Position stmtPosition);
-
-  @Nonnull
-  public abstract StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions);
 }
