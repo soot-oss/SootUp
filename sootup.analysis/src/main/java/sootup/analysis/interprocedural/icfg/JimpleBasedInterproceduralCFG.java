@@ -135,7 +135,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderMethodToCallers);
 
   public JimpleBasedInterproceduralCFG(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature mainMethodSignature,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
@@ -148,14 +148,14 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   public String buildICFGGraph(CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
     computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
     return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
   }
 
   public void computeAllCalls(
       MethodSignature methodSignature,
-      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
       CallGraph callGraph) {
     ArrayList<MethodSignature> visitedMethods = new ArrayList<>();
     computeAllCalls(methodSignature, signatureToStmtGraph, callGraph, visitedMethods);
@@ -163,7 +163,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   private void computeAllCalls(
       MethodSignature methodSignature,
-      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph,
       CallGraph callGraph,
       List<MethodSignature> visitedMethods) {
     visitedMethods.add(methodSignature);
