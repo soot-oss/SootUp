@@ -80,5 +80,9 @@ public abstract class StmtPositionInfo {
   public abstract Position getOperandPosition(int index);
 
   @Override
-  public abstract String toString();
+  public String toString() {
+    StringBuilder s = new StringBuilder();
+    s.append("stmt at:").append(getStmtPosition());
+    return s.toString();
+  }
 }

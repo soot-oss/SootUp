@@ -64,7 +64,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
    * @return the position of the given operand
    */
   public Position getOperandPosition(int index) {
-    if (this.operandPositions != null && index >= 0 && index < this.operandPositions.length) {
+    if (index >= 0 && index < this.operandPositions.length) {
       return this.operandPositions[index];
     } else {
       return NoPositionInformation.getInstance();
@@ -74,15 +74,10 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();
-    s.append("stmt at: ").append(getStmtPosition()).append("\n");
+    s.append(super.toString());
     s.append("operands at: ");
-    if (operandPositions != null) {
-      s.append("\n");
-      for (int i = 0; i < operandPositions.length; i++) {
-        s.append(i).append(": ").append(operandPositions[i]).append(" ");
-      }
-    } else {
-      s.append("No position info");
+    for (int i = 0; i < operandPositions.length; i++) {
+      s.append(i).append(": ").append(operandPositions[i]).append(" ");
     }
     return s.toString();
   }

@@ -61,10 +61,4 @@ public class SimpleStmtPositionInfo extends StmtPositionInfo {
   public Position getOperandPosition(int index) {
     return null;
   }
-
-  public String toString() {
-    StringBuilder s = new StringBuilder();
-    s.append("stmt at:").append(getStmtPosition()).append("\n");
-    return s.toString();
-  }
 }

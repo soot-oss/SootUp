@@ -645,7 +645,7 @@ public class WalaIRToJimpleConverter {
       Position instructionPosition, Position[] operandPosition) {
 
     if (operandPosition == null) {
-      return new FullStmtPositionInfo(convertPosition(instructionPosition), null);
+      return new SimpleStmtPositionInfo(convertPosition(instructionPosition));
     }
     FullPosition[] operandPos =
         Arrays.stream(operandPosition)
