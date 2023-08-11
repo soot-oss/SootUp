@@ -1148,7 +1148,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         v =
             JavaJimple.getInstance()
-                .newMethodHandle(toSootFieldRef((Handle) val), ((Handle) val).getTag());
+                .newMethodHandle(toSootFieldSignature((Handle) val), ((Handle) val).getTag());
       }
     } else {
       throw new UnsupportedOperationException("Unknown constant type: " + val.getClass());
@@ -1170,6 +1170,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       Operand base = operandStack.popLocal();
       return Jimple.newInstanceFieldRef((Local) base.stackOrValue(), fieldSignature);
     }
+  }
+
+  private FieldSignature toSootFieldSignature(Handle methodHandle) {
+    String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
+    JavaClassType bsmCls = identifierFactory.getClassType(bsmClsName);
+    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);
+    return identifierFactory.getFieldSignature(methodHandle.getName(), bsmCls, t);
   }
 
   private MethodSignature toMethodSignature(Handle methodHandle) {

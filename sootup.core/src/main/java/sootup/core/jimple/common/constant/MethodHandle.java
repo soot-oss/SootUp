@@ -23,8 +23,8 @@ package sootup.core.jimple.common.constant;
  */
 
 import javax.annotation.Nonnull;
-import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.ConstantVisitor;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.Type;
 
@@ -80,19 +80,19 @@ public class MethodHandle implements Constant {
   }
 
   private final MethodSignature methodSignature;
-  private final JFieldRef fieldRef;
+  private final FieldSignature fieldSignature;
 
   public int tag;
 
   public MethodHandle(MethodSignature methodSignature, int tag, Type type) {
     this.methodSignature = methodSignature;
     this.tag = tag;
-    this.fieldRef = null;
+    this.fieldSignature = null;
     this.type = type;
   }
 
-  public MethodHandle(JFieldRef ref, int tag, Type type) {
-    this.fieldRef = ref;
+  public MethodHandle(FieldSignature ref, int tag, Type type) {
+    this.fieldSignature = ref;
     this.tag = tag;
     this.methodSignature = null;
     this.type = type;
@@ -110,7 +110,9 @@ public class MethodHandle implements Constant {
   // FIXME: [ms] serialize in a way it can be restored with the same parameters; adapt Jimple.g4 and
   // JimpleConverter.java
   public String toString() {
-    return "handle: " + methodSignature;
+    return "handle: "
+        + (methodSignature == null ? "" : methodSignature)
+        + (fieldSignature == null ? "" : fieldSignature);
   }
 
   @Nonnull

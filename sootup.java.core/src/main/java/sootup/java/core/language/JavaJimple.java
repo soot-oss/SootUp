@@ -32,7 +32,7 @@ import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.MethodType;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
-import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
@@ -86,7 +86,7 @@ public class JavaJimple extends Jimple {
     return new StringConstant(value, getIdentifierFactory().getType("java.lang.String"));
   }
 
-  public MethodHandle newMethodHandle(JFieldRef ref, int tag) {
+  public MethodHandle newMethodHandle(FieldSignature ref, int tag) {
     return new MethodHandle(
         ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }
