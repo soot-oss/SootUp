@@ -167,6 +167,7 @@ public class ClassConstant implements Constant {
     return value.hashCode();
   }
 
+  @Nonnull
   public String getValue() {
     return value;
   }

@@ -62,6 +62,7 @@ public class ConstantUtil {
       return JavaJimple.getInstance().newEnumConstant(enumData[1], enumData[0]);
     }
 
+    // TODO: [ms] are you sure? this is not a Java type.. i mean it is but from soot..
     if (obj instanceof ClassConstant) {
       return JavaJimple.getInstance().newClassConstant(((ClassConstant) obj).getValue());
     }

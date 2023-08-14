@@ -41,8 +41,8 @@ import sootup.core.jimple.common.stmt.Stmt;
  */
 final class StackFrame {
 
-  @Nullable private Operand[] out;
-  @Nullable private Local[] inStackLocals;
+  @Nullable private Operand[] out = null;
+  @Nullable private Local[] inStackLocals = null;
   @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
@@ -53,12 +53,6 @@ final class StackFrame {
    */
   StackFrame(@Nonnull AsmMethodSource src) {
     this.src = src;
-  }
-
-  /** @return operands produced by this frame. */
-  @Nullable
-  Operand[] getOut() {
-    return out;
   }
 
   /**
@@ -81,6 +75,12 @@ final class StackFrame {
     out = oprs;
   }
 
+  /** @return operands produced by this frame. */
+  @Nullable
+  Operand[] getOut() {
+    return out;
+  }
+
   /**
    * Merges the specified operands with the operands used by this frame.
    *
@@ -90,7 +90,7 @@ final class StackFrame {
    */
   void mergeIn(int lineNumber, @Nonnull Operand... oprs) {
     if (in.get(0).length != oprs.length) {
-      throw new IllegalArgumentException("Invalid in operands length!");
+      throw new IllegalArgumentException("Invalid Operand length!");
     }
 
     StmtPositionInfo positionInfo;
@@ -118,10 +118,12 @@ final class StackFrame {
           if (stack != rvalue) {
             JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
             src.mergeStmts(newOp.insn, as);
+            newOp.addUsageInStmt(
+                as); // [ms] necessary? added it as an equivalent existed in soot as well..
           }
         }
       } else {
-        for (int j = 0; j != nrIn; j++) {
+        for (int j = 0; j < nrIn; j++) {
           stack = in.get(j)[i].stackLocal;
           if (stack != null) {
             break;

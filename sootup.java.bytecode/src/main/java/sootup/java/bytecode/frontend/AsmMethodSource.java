@@ -579,8 +579,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /*
    * Following version is more complex, using stack frames as opposed to simply swapping
-   */
-  /*
+   * TODO: [ms] to achieve what.. is the result better?
+   *
    * StackFrame frame = getFrame(insn); Operand[] out = frame.out(); Operand dup, dup2 = null, dupd, dupd2 = null; if (out ==
    * null) { dupd = popImmediate(); dup = new Operand(insn, dupd.stackOrValue()); if (dword) { dupd2 = peek(); if (dupd2 ==
    * DWORD_DUMMY) { pop(); dupd2 = dupd; } else { dupd2 = popImmediate(); } dup2 = new Operand(insn, dupd2.stackOrValue());

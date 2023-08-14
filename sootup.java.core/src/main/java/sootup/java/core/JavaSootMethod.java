@@ -69,9 +69,7 @@ public class JavaSootMethod extends SootMethod {
   @Nonnull
   public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
     annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
-
     resolveDefaultsForAnnotationTypes(view, annotations);
-
     return annotations;
   }
 
