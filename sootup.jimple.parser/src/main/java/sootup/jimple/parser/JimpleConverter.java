@@ -23,6 +23,8 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.SootClassMemberSignature;
+import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
@@ -696,13 +698,19 @@ public class JimpleConverter {
             return BooleanConstant.getInstance(firstChar == 't' || firstChar == 'T');
           } else if (ctx.NULL() != null) {
             return NullConstant.getInstance();
-          } else if (ctx.methodhandle != null && ctx.method_signature() != null) {
-            final MethodSignature methodSignature =
-                util.getMethodSignature(ctx.method_signature(), ctx);
-            // TODO: [ms] support handles with JFieldRef too
-            // FIXME: [ms] update/specify tag when its printed
-            // return JavaJimple.getInstance().newMethodHandle( , 0);
-            return JavaJimple.getInstance().newMethodHandle(methodSignature, 0);
+          } else if (ctx.methodhandle() != null) {
+            JimpleParser.MethodhandleContext methodhandleContext = ctx.methodhandle();
+            final String kindName = methodhandleContext.STRING_CONSTANT().getText();
+            final SootClassMemberSignature<? extends SootClassMemberSubSignature>
+                referenceSignature =
+                    (methodhandleContext.method_signature() != null)
+                        ? util.getMethodSignature(
+                            methodhandleContext.method_signature(), methodhandleContext)
+                        : util.getFieldSignature(methodhandleContext.field_signature());
+            return JavaJimple.getInstance()
+                .newMethodHandle(
+                    referenceSignature,
+                    MethodHandle.Kind.getKind(kindName.substring(1, kindName.length() - 1)));
           } else if (ctx.methodtype != null && ctx.method_subsignature() != null) {
             final JimpleParser.Type_listContext typelist = ctx.method_subsignature().type_list();
             final List<Type> typeList = util.getTypeList(typelist);
