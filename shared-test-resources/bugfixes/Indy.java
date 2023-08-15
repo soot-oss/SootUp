@@ -1,15 +1,15 @@
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
-class Indy{
-    public Stream<LocalDate> test(LocalDate endExclusive, Period step) {
-        long months = step.toTotalMonths();
-        long days = step.getDays();
-        int sign = months > 0 || days > 0 ? 1 : -1;
-        long steps = 200000 / (months + days);
-        return LongStream.rangeClosed(0, steps).mapToObj(
-                n -> endExclusive.plusDays(days * n));
-    }
+import java.util.stream.IntStream;
 
+/** conversion failed when there is a merge (here: after the if) and an invokedynamic followed */
+class Indy{
+    public IntStream test(IntStream s) {
+        int sign;
+        if (s.isParallel()) {
+            sign = 1;
+        }
+        return s.map(n -> n+42);
+    }
 }
