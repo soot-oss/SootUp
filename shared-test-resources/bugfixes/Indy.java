@@ -9,6 +9,8 @@ class Indy{
         int sign;
         if (s.isParallel()) {
             sign = 1;
+        }else{
+            sign = -1;
         }
         return s.map(n -> n+42);
     }
