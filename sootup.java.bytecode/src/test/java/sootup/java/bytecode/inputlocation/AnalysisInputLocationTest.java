@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
@@ -55,17 +56,18 @@ public abstract class AnalysisInputLocationTest {
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int classesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, List<ClassType> sigs, int classesFound) {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
     final JavaView view = project.createView();
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
-        ns.getClassSource(sig, view);
-    assertTrue(clazzOpt.isPresent());
-    assertEquals(sig, clazzOpt.get().getClassType());
-
+    for (ClassType classType:sigs) {
+      final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
+          ns.getClassSource(classType, view);
+      assertTrue(clazzOpt.isPresent());
+      assertEquals(classType, clazzOpt.get().getClassType());
+    }
     final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
     assertEquals(classSources.size(), classesFound);

@@ -22,9 +22,9 @@ package sootup.core.frontend;
  */
 
 import java.nio.file.Path;
+import java.util.Optional;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.AbstractClass;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
@@ -34,9 +34,9 @@ import sootup.core.types.ClassType;
  *
  * @author Manuel Benz
  */
-public interface ClassProvider<T extends AbstractClass<? extends AbstractClassSource<T>>> {
+public interface ClassProvider<T extends SootClass<? extends SootClassSource<T>>> {
 
-  AbstractClassSource<T> createClassSource(
+  Optional<SootClassSource<T>> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       ClassType classSignature);

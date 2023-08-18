@@ -90,7 +90,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
               "modules", modulePackageSignature.getModuleSignature().getModuleName());
       Path foundClass = module.resolve(filepath);
       if (Files.isRegularFile(foundClass)) {
-        return Optional.of(classProvider.createClassSource(this, foundClass, klassType));
+        return classProvider.createClassSource(this, foundClass, klassType);
       } else {
         return Optional.empty();
       }
@@ -104,7 +104,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return Optional.of(classProvider.createClassSource(this, foundfile, klassType));
+            return classProvider.createClassSource(this, foundfile, klassType);
           }
         }
       }
@@ -150,14 +150,13 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(
-                              this,
-                              p,
-                              this.fromPath(
-                                  p.subpath(2, p.getNameCount()),
-                                  p.subpath(1, 2),
-                                  identifierFactory)))));
+                      classProvider.createClassSource(
+                          this,
+                          p,
+                          this.fromPath(
+                              p.subpath(2, p.getNameCount()),
+                              p.subpath(1, 2),
+                              identifierFactory))));
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }

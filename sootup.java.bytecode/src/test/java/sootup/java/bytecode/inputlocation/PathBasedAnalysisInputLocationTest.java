@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -273,7 +274,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         PathBasedAnalysisInputLocation.create(apk, null);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
-    testClassReceival(pathBasedNamespace, mainClass, 1392);
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
   }
 
   @Test
@@ -281,10 +282,10 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(jar, null);
 
-    final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
-    final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
-    testClassReceival(pathBasedNamespace, class1, 6);
-    testClassReceival(pathBasedNamespace, mainClass, 6);
+    ArrayList<ClassType> sigs=new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
+    sigs.add(getIdentifierFactory().getClassType("MiniApp"));
+    testClassReceival(pathBasedNamespace, sigs, 6);
   }
 
   @Test
@@ -292,7 +293,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(war, null);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
-    testClassReceival(pathBasedNamespace, warClass1, 19);
+    testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
   }
 
   @Test

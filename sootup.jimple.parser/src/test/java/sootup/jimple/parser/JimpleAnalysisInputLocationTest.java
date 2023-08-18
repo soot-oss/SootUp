@@ -69,6 +69,29 @@ public class JimpleAnalysisInputLocationTest {
           }
         };
 
+    final ClassType classTypeFake =
+        new ClassType() {
+          @Override
+          public boolean isBuiltInClass() {
+            return false;
+          }
+
+          @Override
+          public String getFullyQualifiedName() {
+            return "jimple.FakeJimple";
+          }
+
+          @Override
+          public String getClassName() {
+            return "FakeJimple";
+          }
+
+          @Override
+          public PackageName getPackageName() {
+            return new PackageName("jimple");
+          }
+        };
+
     final String resourceDir = "src/test/java/resources/";
 
     // files direct in dir
@@ -79,6 +102,8 @@ public class JimpleAnalysisInputLocationTest {
     assertTrue(classSource1.isPresent());
     final Optional<SootClass<?>> classSource2 = jv1.getClass(classType);
     assertFalse(classSource2.isPresent());
+    final Optional<SootClass<?>> classSourceNon = jv1.getClass(classTypeFake);
+    assertFalse(classSourceNon.isPresent());
 
     // files in subdir structure
     final JimpleAnalysisInputLocation inputLocation2 =

@@ -157,8 +157,7 @@ public abstract class PathBasedAnalysisInputLocation
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -183,7 +182,7 @@ public abstract class PathBasedAnalysisInputLocation
       return Optional.empty();
     }
 
-    return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
+    return classProvider.createClassSource(this, pathToClass, signature);
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

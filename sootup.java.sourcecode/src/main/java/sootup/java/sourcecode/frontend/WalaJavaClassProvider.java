@@ -347,9 +347,9 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   @Override
-  public SootClassSource<JavaSootClass> createClassSource(
+  public Optional<SootClassSource<JavaSootClass>> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> srcNamespace, Path sourcePath, ClassType type) {
-    return getClassSource(type).orElse(null);
+    return getClassSource(type);
   }
 
   @Override
