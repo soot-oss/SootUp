@@ -197,6 +197,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
           .filter(
               filePath ->
                   PathUtils.hasExtension(filePath, handledFileType)
+                  && filePath.toString().endsWith("." + handledFileType.getExtension())
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
               p ->
