@@ -177,8 +177,7 @@ public abstract class PathBasedAnalysisInputLocation
             path.getFileSystem()
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
-                        + "."
-                        + classProvider.getHandledFileType().getExtension()));
+                        + classProvider.getHandledFileType().getExtensionWithDot()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
@@ -653,7 +652,8 @@ public abstract class PathBasedAnalysisInputLocation
           dest.deleteOnExit();
         }
 
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
+        ZipInputStream zis =
+            new ZipInputStream(Files.newInputStream(Paths.get(warFilePath.toString())));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           Path filepath = destDirectory.resolve(zipEntry.getName());
@@ -668,7 +668,8 @@ public abstract class PathBasedAnalysisInputLocation
             if (file.exists()) {
               // compare contents -> does it contain the extracted war already?
               int readBytesExistingFile;
-              final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+              final BufferedInputStream bis =
+                  new BufferedInputStream(Files.newInputStream(file.toPath()));
               byte[] bisBuf = new byte[4096];
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
                 if (extractedSize > maxAllowedBytesToExtract) {
@@ -693,7 +694,8 @@ public abstract class PathBasedAnalysisInputLocation
               }
 
             } else {
-              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+              BufferedOutputStream bos =
+                  new BufferedOutputStream(Files.newOutputStream(file.toPath()));
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
                 if (extractedSize > maxAllowedBytesToExtract) {
                   throw new RuntimeException(

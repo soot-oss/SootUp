@@ -273,7 +273,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         PathBasedAnalysisInputLocation.create(apk, null);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
-    testClassReceival(pathBasedNamespace, mainClass, 1);
+    testClassReceival(pathBasedNamespace, mainClass, 1392);
   }
 
   @Test
@@ -283,8 +283,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final ClassType class1 = getIdentifierFactory().getClassType("Employee", "ds");
     final ClassType mainClass = getIdentifierFactory().getClassType("MiniApp");
-    testClassReceival(pathBasedNamespace, class1, 4);
-    testClassReceival(pathBasedNamespace, mainClass, 4);
+    testClassReceival(pathBasedNamespace, class1, 6);
+    testClassReceival(pathBasedNamespace, mainClass, 6);
   }
 
   @Test
@@ -292,7 +292,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(war, null);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
-    testClassReceival(pathBasedNamespace, warClass1, 2);
+    testClassReceival(pathBasedNamespace, warClass1, 19);
   }
 
   @Test

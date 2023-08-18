@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
@@ -79,8 +78,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
-                + "."
-                + classProvider.getHandledFileType().getExtension());
+                + classProvider.getHandledFileType().getExtensionWithDot());
 
     // parse as module
     if (klassType.getPackageName() instanceof ModulePackageName) {
@@ -136,8 +134,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
-            + "."
-            + classProvider.getHandledFileType().getExtension();
+            + classProvider.getHandledFileType().getExtensionWithDot();
 
     final Path archiveRoot = theFileSystem.getPath("modules", moduleSignature.getModuleName());
     try {
@@ -148,20 +145,19 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                   !Files.isDirectory(filePath)
                       && filePath
                           .toString()
-                          .endsWith(classProvider.getHandledFileType().getExtension())
+                          .endsWith(classProvider.getHandledFileType().getExtensionWithDot())
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
-              p -> {
-                return StreamUtils.optionalToStream(
-                    Optional.of(
-                        classProvider.createClassSource(
-                            this,
-                            p,
-                            this.fromPath(
-                                p.subpath(2, p.getNameCount()),
-                                p.subpath(1, 2),
-                                identifierFactory))));
-              });
+              p ->
+                  StreamUtils.optionalToStream(
+                      Optional.of(
+                          classProvider.createClassSource(
+                              this,
+                              p,
+                              this.fromPath(
+                                  p.subpath(2, p.getNameCount()),
+                                  p.subpath(1, 2),
+                                  identifierFactory)))));
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
@@ -246,7 +242,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
     return Collections.unmodifiableSet(moduleInfoMap.keySet());
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourceType;

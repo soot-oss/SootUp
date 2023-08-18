@@ -8,10 +8,8 @@ import java.util.Collection;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.frontend.ClassProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -52,19 +50,16 @@ public abstract class AnalysisInputLocationTest {
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
   final Path apk = Paths.get("../shared-test-resources/apk/SimpleApk.apk");
 
-  private ClassProvider<JavaSootClass> classProvider;
-
   protected IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int classesFound) {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
     final JavaView view = project.createView();
-    classProvider = new AsmJavaClassProvider(view);
 
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
         ns.getClassSource(sig, view);
@@ -73,6 +68,6 @@ public abstract class AnalysisInputLocationTest {
 
     final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
-    assertTrue(classSources.size() >= minClassesFound);
+    assertEquals(classSources.size(), classesFound);
   }
 }
