@@ -456,7 +456,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
             newInitialFlow());
     initFlow(universe, inFlow, outFlow);
 
-    Queue<Entry<A>> q = BitSetBasedPriorityQueue.of(universe);
+    Queue<Entry<A>> q = UniverseSortedPriorityQueue.of(universe);
 
     // Perform fixed point flow analysis
     for (int numComputations = 0; ; numComputations++) {

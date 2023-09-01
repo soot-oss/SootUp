@@ -36,19 +36,19 @@ import org.slf4j.LoggerFactory;
  * @author Steven Lambeth
  * @param <E> the type of elements held in the universe
  */
-public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
-  private static final Logger logger = LoggerFactory.getLogger(BitSetBasedPriorityQueue.class);
+public abstract class UniverseSortedPriorityQueue<E> extends AbstractQueue<E> {
+  private static final Logger logger = LoggerFactory.getLogger(UniverseSortedPriorityQueue.class);
 
-  private final List<? extends E> universe;
-  private final Map<E, Integer> ordinalMap;
-  final int N;
+  protected final List<? extends E> universe;
+  protected final Map<E, Integer> ordinalMap;
   int min = Integer.MAX_VALUE;
 
-  BitSetBasedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
+  UniverseSortedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
+    // TODO: [ms] we should index the ordinalMap ourselves? Or for intended reuse just wrap it
+    // together with the universe? and use an IdentityHashMap..
     assert ordinalMap.size() == universe.size();
     this.universe = universe;
     this.ordinalMap = ordinalMap;
-    this.N = universe.size();
   }
 
   abstract class Itr implements Iterator<E> {
@@ -60,7 +60,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
 
     @Override
     public boolean hasNext() {
-      return next < N;
+      return next < universe.size();
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
       if (expected != getExpected()) {
         throw new ConcurrentModificationException();
       }
-      if (next >= N) {
+      if (next >= universe.size()) {
         throw new NoSuchElementException();
       }
 
@@ -79,14 +79,14 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
 
     @Override
     public void remove() {
-      if (now >= N) {
+      if (now >= universe.size()) {
         throw new IllegalStateException();
       }
       if (expected != getExpected()) {
         throw new ConcurrentModificationException();
       }
 
-      BitSetBasedPriorityQueue.this.remove(now);
+      UniverseSortedPriorityQueue.this.remove(now);
       expected = getExpected();
       now = Integer.MAX_VALUE;
     }
@@ -164,7 +164,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
       return false;
     }
     try {
-      if (o.equals(peek())) {
+      if (o == peek()) {
         remove(min);
         return true;
       } else {
@@ -183,7 +183,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
       return false;
     }
     try {
-      if (o.equals(peek())) {
+      if (o == peek()) {
         return true;
       } else {
         return contains(getOrdinal(o));
@@ -197,7 +197,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
   /** {@inheritDoc} */
   @Override
   public boolean isEmpty() {
-    return min >= N;
+    return min >= universe.size();
   }
 
   /**
@@ -207,8 +207,8 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
    * @param universe
    * @return
    */
-  public static <E> BitSetBasedPriorityQueue<E> of(List<? extends E> universe) {
-    BitSetBasedPriorityQueue<E> q = noneOf(universe);
+  public static <E> UniverseSortedPriorityQueue<E> of(List<? extends E> universe) {
+    UniverseSortedPriorityQueue<E> q = noneOf(universe);
     q.addAll();
     return q;
   }
@@ -220,12 +220,12 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
    * @param universe
    * @return
    */
-  public static <E> BitSetBasedPriorityQueue<E> noneOf(List<? extends E> universe) {
+  public static <E> UniverseSortedPriorityQueue<E> noneOf(List<? extends E> universe) {
     Map<E, Integer> ordinalMap = new HashMap<>(2 * universe.size() / 3);
     int i = 0;
     for (E e : universe) {
       if (e == null) {
-        throw new NullPointerException("null is not allowed");
+        throw new IllegalArgumentException("null is not allowed");
       }
       if (ordinalMap.put(e, i++) != null) {
         throw new IllegalArgumentException("duplicate key found");
@@ -234,19 +234,19 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
     return newPriorityQueue(universe, ordinalMap);
   }
 
-  private static <E> BitSetBasedPriorityQueue<E> newPriorityQueue(
+  private static <E> UniverseSortedPriorityQueue<E> newPriorityQueue(
       List<? extends E> universe, Map<E, Integer> ordinalMap) {
-    return new LargeBitSetBasedPriorityQueue<E>(universe, ordinalMap);
+    return new LargeUniverseSortedPriorityQueue<E>(universe, ordinalMap);
   }
 
-  static class LargeBitSetBasedPriorityQueue<E> extends BitSetBasedPriorityQueue<E> {
+  static class LargeUniverseSortedPriorityQueue<E> extends UniverseSortedPriorityQueue<E> {
 
     private final BitSet queue;
     private long modCount = 0;
 
-    LargeBitSetBasedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
+    LargeUniverseSortedPriorityQueue(List<? extends E> universe, Map<E, Integer> ordinalMap) {
       super(universe, ordinalMap);
-      queue = new BitSet(N);
+      queue = new BitSet(universe.size());
     }
 
     @Override
@@ -262,7 +262,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
 
     @Override
     void addAll() {
-      queue.set(0, N);
+      queue.set(0, universe.size());
       min = 0;
       modCount++;
     }
@@ -293,6 +293,7 @@ public abstract class BitSetBasedPriorityQueue<E> extends AbstractQueue<E> {
       return queue.get(ordinal);
     }
 
+    @Nonnull
     @Override
     public Iterator<E> iterator() {
       return new Itr() {

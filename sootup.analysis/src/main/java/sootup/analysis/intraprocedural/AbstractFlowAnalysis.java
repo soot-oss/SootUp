@@ -55,6 +55,7 @@ public abstract class AbstractFlowAnalysis<F> {
   protected abstract F newInitialFlow();
 
   /** Determines whether <code>entryInitialFlow()</code> is applied to trap handlers. */
+  // FIXME: [ms] implement as an option
   protected boolean treatTrapHandlersAsEntries() {
     return false;
   }
