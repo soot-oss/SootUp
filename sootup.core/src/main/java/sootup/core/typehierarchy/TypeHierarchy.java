@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ResolveException;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -198,7 +197,7 @@ public interface TypeHierarchy {
         superClasses.add(currentSuperClass);
         currentSuperClass = superClassOf(currentSuperClass);
       }
-    } catch (ResolveException ex) {
+    } catch (IllegalArgumentException ex) {
       logger.warn(
           "Could not find "
               + (currentSuperClass != null ? currentSuperClass : classType)
