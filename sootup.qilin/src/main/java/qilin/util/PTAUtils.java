@@ -25,39 +25,22 @@ import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
-import qilin.core.callgraph.Kind;
-import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.core.sets.PointsToSetInternal;
-import qilin.util.queue.ChunkedQueue;
-import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.IdentifierFactory;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSubSignature;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
-import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
+import soot.util.NumberedString;
+import soot.util.dot.DotGraph;
+import soot.util.dot.DotGraphConstants;
+import soot.util.dot.DotGraphNode;
+import soot.util.queue.ChunkedQueue;
+import soot.util.queue.QueueReader;
 
 import java.io.*;
 import java.net.URL;
@@ -69,12 +52,7 @@ public final class PTAUtils {
     private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
     static final String output_dir = CoreConfig.v().getOutConfig().outDir;
     static Map<String, Node> nodes = new TreeMap<>();
-    private static final ClassType clRunnable = (ClassType) JavaIdentifierFactory.getInstance().getType("java.lang.Runnable");
-
-    public static SootClass getDeclaringClass(View view, SootMethod method) {
-        ClassType classType = method.getDeclaringClassType();
-        return (SootClass) view.getClass(classType).get();
-    }
+    private static final RefType clRunnable = RefType.v("java.lang.Runnable");
 
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();
@@ -87,10 +65,11 @@ public final class PTAUtils {
                 LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
                 final PointsToSet other = pta.reachingObjects(thisRef).toCIPointsToSet();
 
-                for (final Stmt s : srcmpag.getInvokeStmts()) {
-                    AbstractInvokeExpr ie = s.getInvokeExpr();
-                    if (ie instanceof JStaticInvokeExpr) {
-                        for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
+                for (final Unit u : srcmpag.getInvokeStmts()) {
+                    final Stmt s = (Stmt) u;
+                    InvokeExpr ie = s.getInvokeExpr();
+                    if (ie instanceof StaticInvokeExpr) {
+                        for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
                             Edge e = it.next();
                             SootMethod tgtmtd = e.tgt();
                             MethodPAG tgtmpag = pag.getMethodPAG(tgtmtd);
@@ -120,10 +99,11 @@ public final class PTAUtils {
             LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
             final Set<AllocNode> other = pts.computeIfAbsent(thisRef, k -> new HashSet<>());
 
-            for (final Stmt s : srcmpag.getInvokeStmts()) {
-                AbstractInvokeExpr ie = s.getInvokeExpr();
-                if (ie instanceof JStaticInvokeExpr) {
-                    for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
+            for (final Unit u : srcmpag.getInvokeStmts()) {
+                final Stmt s = (Stmt) u;
+                InvokeExpr ie = s.getInvokeExpr();
+                if (ie instanceof StaticInvokeExpr) {
+                    for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
                         Edge e = it.next();
                         SootMethod tgtmtd = e.tgt();
                         MethodPAG tgtmpag = pag.getMethodPAG(tgtmtd);
@@ -178,10 +158,10 @@ public final class PTAUtils {
         List<String> methodList = new ArrayList<>();
 
         for (Edge edge : callgraph) {
-            ContextMethod srcmtd = edge.getSrc();
+            MethodOrMethodContext srcmtd = edge.getSrc();
             if (appOnly && !srcmtd.method().getDeclaringClass().isApplicationClass())
                 continue;
-            ContextMethod dstmtd = edge.getTgt();
+            MethodOrMethodContext dstmtd = edge.getTgt();
             String srcName = srcmtd.toString();
 
             if (methodSet.add(srcName)) {
@@ -211,12 +191,12 @@ public final class PTAUtils {
     /**
      * slice a callgrph, put nodes &edges related to method into set1&set2
      */
-    private static void slice(CallGraph callgraph, ContextMethod method, Set<ContextMethod> set1,
+    private static void slice(CallGraph callgraph, MethodOrMethodContext method, Set<MethodOrMethodContext> set1,
                               Set<Edge> set2) {
         for (Iterator<Edge> it = callgraph.edgesInto(method); it.hasNext(); ) {
             Edge edge = it.next();
             set2.add(edge);
-            ContextMethod src = edge.getSrc();
+            MethodOrMethodContext src = edge.getSrc();
             if (set1.add(src))
                 slice(callgraph, src, set1, set2);
         }
@@ -226,8 +206,8 @@ public final class PTAUtils {
     /**
      * dump callgraph strench to method
      */
-    public static void dumpSlicedCallGraph(CallGraph callgraph, ContextMethod method) {
-        Set<ContextMethod> tgts = new HashSet<>();
+    public static void dumpSlicedCallGraph(CallGraph callgraph, MethodOrMethodContext method) {
+        Set<MethodOrMethodContext> tgts = new HashSet<>();
         Set<Edge> edges = new HashSet<>();
         tgts.add(method);
         slice(callgraph, method, tgts, edges);
@@ -238,16 +218,16 @@ public final class PTAUtils {
     /**
      * dump callgraph from entry to the method
      */
-    public static void dumpSlicedCallGraph2(CallGraph callgraph, ContextMethod method) {
+    public static void dumpSlicedCallGraph2(CallGraph callgraph, MethodOrMethodContext method) {
         Set<Edge> edges = new HashSet<>();
-        Set<ContextMethod> visited = new HashSet<>();
-        Queue<ContextMethod> queue = new UniqueQueue<>();
+        Set<MethodOrMethodContext> visited = new HashSet<>();
+        Queue<MethodOrMethodContext> queue = new UniqueQueue<>();
         queue.add(method);
         while (!queue.isEmpty()) {
-            ContextMethod front = queue.poll();
+            MethodOrMethodContext front = queue.poll();
             for (Iterator<Edge> it = callgraph.edgesInto(front); it.hasNext(); ) {
                 Edge edge = it.next();
-                ContextMethod src = edge.getSrc();
+                MethodOrMethodContext src = edge.getSrc();
                 if (visited.add(src)) {
                     queue.add(src);
                     edges.add(edge);
@@ -262,11 +242,11 @@ public final class PTAUtils {
         if (type instanceof ArrayType at) {
             type = at.getArrayElementType();
         }
-        if (!(type instanceof ClassType rt))
+        if (!(type instanceof RefType rt))
             return false;
-        if (!rt.hasSootClass()) {
-            return true;
-        }
+//        if (!rt.hasSootClass()) {
+//            return true;
+//        }
         SootClass cl = rt.getSootClass();
         return cl.resolvingLevel() < SootClass.HIERARCHY;
     }
@@ -282,12 +262,12 @@ public final class PTAUtils {
             return true;
         if (src instanceof NullType)
             return true;
-//        if (src instanceof AnySubType)
-//            return true;
+        if (src instanceof AnySubType)
+            return true;
         if (dst instanceof NullType)
             return false;
-//        if (dst instanceof AnySubType)
-//            throw new RuntimeException("oops src=" + src + " dst=" + dst);
+        if (dst instanceof AnySubType)
+            throw new RuntimeException("oops src=" + src + " dst=" + dst);
         return PTAScene.v().getOrMakeFastHierarchy().canStoreType(src, dst);
     }
 
@@ -297,9 +277,9 @@ public final class PTAUtils {
         if (site.kind() == Kind.THREAD && !PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, clRunnable)) {
             return targets;
         }
-        ContextMethod container = site.container();
-        if (site.iie() instanceof JSpecialInvokeExpr sie && site.kind() != Kind.THREAD) {
-            SootMethod target = VirtualCalls.v().resolveSpecial(sie, site.subSig(), container.method());
+        MethodOrMethodContext container = site.container();
+        if (site.iie() instanceof SpecialInvokeExpr && site.kind() != Kind.THREAD) {
+            SootMethod target = VirtualCalls.v().resolveSpecial((SpecialInvokeExpr) site.iie(), site.subSig(), container.method());
             // if the call target resides in a phantom class then
             // "target" will be null, simply do not add the target in that case
             if (target != null) {
@@ -551,15 +531,14 @@ public final class PTAUtils {
     }
 
     public static boolean isThrowable(Type type) {
-        if (type instanceof ClassType) {
-            IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, idFactory.getType("java.lang.Throwable"));
+        if (type instanceof RefType) {
+            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, RefType.v("java.lang.Throwable"));
         }
         return false;
     }
 
     public static boolean subtypeOfAbstractStringBuilder(Type t) {
-        if (!(t instanceof ClassType rt)) {
+        if (!(t instanceof RefType rt)) {
             return false;
         }
         String s = rt.toString();
@@ -567,12 +546,11 @@ public final class PTAUtils {
     }
 
     public static boolean supportFinalize(AllocNode heap) {
-        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
-        MethodSubSignature sigFinalize = idFactory.parseMethodSubSignature("void finalize()");
+        NumberedString sigFinalize = PTAScene.v().getSubSigNumberer().findOrAdd("void finalize()");
         Type type = heap.getType();
-        if (type instanceof ClassType refType && type != idFactory.getType("java.lang.Object")) {
+        if (type instanceof RefType refType && type != RefType.v("java.lang.Object")) {
             SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
-            if (finalizeMethod != null && finalizeMethod.getSignature().toString().equals("<java.lang.Object: void finalize()>")) {
+            if (finalizeMethod != null && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
                 return false;
             }
             return finalizeMethod != null;
@@ -640,14 +618,14 @@ public final class PTAUtils {
 
     public static boolean isOfPrimitiveBaseType(AllocNode heap) {
         if (heap.getType() instanceof ArrayType arrayType) {
-            return arrayType.getBaseType() instanceof PrimitiveType;
+            return arrayType.baseType instanceof PrimType;
         }
         return false;
     }
 
     public static boolean isPrimitiveArrayType(Type type) {
         if (type instanceof ArrayType arrayType) {
-            return arrayType.getArrayElementType() instanceof PrimitiveType;
+            return arrayType.getArrayElementType() instanceof PrimType;
         }
         return false;
     }
@@ -660,7 +638,7 @@ public final class PTAUtils {
     public static boolean enforceEmptyContext(AllocNode probe) {
         // primitive array objects should be context-insenstive.
         if (probe.getType() instanceof ArrayType arrayType) {
-            if (arrayType.getArrayElementType() instanceof PrimitiveType) {
+            if (arrayType.getArrayElementType() instanceof PrimType) {
                 return true;
             }
         }
@@ -683,12 +661,12 @@ public final class PTAUtils {
     public static void writeJimple(String parentDir, SootClass clz) {
 
         File packageDirectory = new File(
-                parentDir + File.separator + clz.getType().getPackageName().toString().replace(".", File.separator));
+                parentDir + File.separator + clz.getPackageName().replace(".", File.separator));
 
         try {
             packageDirectory.mkdirs();
             OutputStream streamOut = new FileOutputStream(
-                    packageDirectory + File.separator + clz.getName() + ".jimple");
+                    packageDirectory + File.separator + clz.getShortName() + ".jimple");
             PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
             Printer.v().printTo(clz, writerOut);
             writerOut.flush();
@@ -774,10 +752,10 @@ public final class PTAUtils {
 
     public static SootClass getSootClass(Type type) {
         SootClass allocated = null;
-        if (type instanceof ClassType classType) {
-            allocated = classType.getSootClass();
-        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof ClassType classType) {
-            allocated = classType.getSootClass();
+        if (type instanceof RefType) {
+            allocated = ((RefType) type).getSootClass();
+        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof RefType) {
+            allocated = ((RefType) ((ArrayType) type).getArrayElementType()).getSootClass();
         }
         return allocated;
     }
@@ -790,9 +768,9 @@ public final class PTAUtils {
             synchronized (PTAUtils.class) {
                 if (body == null) {
                     if (m.isConcrete()) {
-                        body = m.getBody();
+                        body = m.retrieveActiveBody();
                     } else {
-                        body = Body.builder().setMethodSignature(m.getSignature()).build();
+                        body = new JimpleBody(m);
                     }
                     methodToBody.putIfAbsent(m, body);
                 }
@@ -803,10 +781,10 @@ public final class PTAUtils {
 
     public static boolean isEmptyArray(AllocNode heap) {
         Object var = heap.getNewExpr();
-        if (var instanceof JNewArrayExpr nae) {
+        if (var instanceof NewArrayExpr nae) {
             Value sizeVal = nae.getSize();
             if (sizeVal instanceof IntConstant size) {
-                return size.getValue() == 0;
+                return size.value == 0;
             }
         }
         return false;
@@ -814,11 +792,11 @@ public final class PTAUtils {
 
     public static LocalVarNode paramToArg(PAG pag, Stmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
         MethodNodeFactory srcnf = srcmpag.nodeFactory();
-        AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
+        InvokeExpr ie = invokeStmt.getInvokeExpr();
         Parm mPi = (Parm) pi.getVariable();
         LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
         LocalVarNode receiver;
-        if (ie instanceof AbstractInstanceInvokeExpr iie) {
+        if (ie instanceof InstanceInvokeExpr iie) {
             receiver = pag.findLocalVarNode(iie.getBase());
         } else {
             // static call
@@ -827,7 +805,7 @@ public final class PTAUtils {
         if (mPi.isThis()) {
             return receiver;
         } else if (mPi.isReturn()) {
-            if (invokeStmt instanceof JAssignStmt assignStmt) {
+            if (invokeStmt instanceof AssignStmt assignStmt) {
                 Value mR = assignStmt.getLeftOp();
                 return (LocalVarNode) pag.findValNode(mR);
             } else {
@@ -855,7 +833,7 @@ public final class PTAUtils {
         SootClass curr = cl;
         while (curr != null) {
             worklist.add(curr);
-            curr = (SootClass) curr.getSuperclass().get();
+            curr = curr.getSuperclassUnsafe();
         }
         while (!worklist.isEmpty()) {
             SootClass sc = worklist.poll();
@@ -864,8 +842,7 @@ public final class PTAUtils {
             }
         }
         for (SootClass sc : visit) {
-            MethodSubSignature msubsig = JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
-            final SootMethod initStart = (SootMethod) sc.getMethod(msubsig).get();
+            final SootMethod initStart = sc.getMethodUnsafe(Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()"));
             if (initStart != null) {
                 ret.add(initStart);
             }

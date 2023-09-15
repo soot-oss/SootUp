@@ -18,16 +18,16 @@
 
 package qilin.parm.ctxcons;
 
-import qilin.core.context.Context;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.ContextMethod;
-import sootup.core.model.SootMethod;
+import soot.Context;
+import soot.MethodOrMethodContext;
+import soot.SootMethod;
 
 public class InsensCtxConstructor implements CtxConstructor {
 
     @Override
-    public Context constructCtx(ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
         return emptyContext;
     }
 }

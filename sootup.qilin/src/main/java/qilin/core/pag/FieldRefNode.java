@@ -18,9 +18,8 @@
 
 package qilin.core.pag;
 
-
-import qilin.core.util.Numberable;
-import sootup.core.views.View;
+import soot.jimple.spark.pag.SparkField;
+import soot.util.Numberable;
 
 /**
  * Represents a field reference node in the pointer assignment graph.
@@ -31,8 +30,8 @@ public class FieldRefNode extends Node implements Numberable {
     protected VarNode base;
     protected SparkField field;
 
-    public FieldRefNode(View view, VarNode base, SparkField field) {
-        super(view, field.getType());
+    public FieldRefNode(VarNode base, SparkField field) {
+        super(field.getType());
         this.base = base;
         this.field = field;
         base.addField(this, field);

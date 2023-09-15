@@ -1,9 +1,9 @@
 package qilin.pta.toolkits.mahjong.automata;
 
-import qilin.core.pag.SparkField;
 import qilin.util.Pair;
 import qilin.util.UnionFindSet;
-import sootup.core.types.Type;
+import soot.Type;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.Collection;
 import java.util.Set;

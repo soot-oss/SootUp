@@ -20,12 +20,12 @@ package qilin.pta.toolkits.conch;
 
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.jimple.AssignStmt;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.callgraph.Edge;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -112,14 +112,14 @@ public class DepOnParamAnalysis extends AbstractPAG {
                         containingMethod = heap.getMethod();
                     }
 
-                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
+                    Iterator<Edge> it = callGraph.edgesInto(containingMethod);
                     while (it.hasNext()) {
                         Edge edge = it.next();
                         SootMethod srcMethod = edge.src();
                         MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
                         MethodNodeFactory srcnf = srcmpag.nodeFactory();
-                        Stmt invokeStmt = edge.srcUnit();
-                        if (invokeStmt instanceof JAssignStmt assignStmt) {
+                        Stmt invokeStmt = (Stmt) edge.srcUnit();
+                        if (invokeStmt instanceof AssignStmt assignStmt) {
 
                             VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
                             if (sourceParam instanceof LocalVarNode pj) {

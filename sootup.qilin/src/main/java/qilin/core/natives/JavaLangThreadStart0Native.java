@@ -19,8 +19,8 @@
 package qilin.core.natives;
 
 import qilin.core.PTAScene;
-import sootup.core.jimple.basic.Value;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.Value;
 
 public class JavaLangThreadStart0Native extends NativeMethod {
 

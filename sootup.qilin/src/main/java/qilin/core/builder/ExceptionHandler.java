@@ -20,21 +20,17 @@ package qilin.core.builder;
 
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
-import sootup.core.jimple.basic.Trap;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.types.Type;
+import soot.*;
+import soot.jimple.IdentityStmt;
 
 import java.util.*;
 
 public class ExceptionHandler {
-    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(1000);
+    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
     protected PTA pta;
     protected PAG pag;
 
@@ -65,7 +61,7 @@ public class ExceptionHandler {
      * */
     public void dispatch(AllocNode throwObj, ExceptionThrowSite site) {
         Type type = throwObj.getType();
-        ContextMethod momc = site.container();
+        MethodOrMethodContext momc = site.container();
         SootMethod sm = momc.method();
         Context context = momc.context();
         MethodPAG mpag = pag.getMethodPAG(sm);
@@ -73,10 +69,10 @@ public class ExceptionHandler {
         VarNode throwNode = site.getThrowNode();
         List<Trap> trapList = mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
         for (Trap trap : trapList) {
-            if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, trap.getExceptionType())) {
-                Stmt handler = trap.getHandlerStmt();
-                assert handler instanceof JIdentityStmt;
-                JIdentityStmt handlerStmt = (JIdentityStmt) handler;
+            if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, trap.getException().getType())) {
+                Unit handler = trap.getHandlerUnit();
+                assert handler instanceof IdentityStmt;
+                IdentityStmt handlerStmt = (IdentityStmt) handler;
                 Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());
                 Node dst = pta.parameterize(caughtParam, context);
                 pag.addEdge(throwObj, dst);

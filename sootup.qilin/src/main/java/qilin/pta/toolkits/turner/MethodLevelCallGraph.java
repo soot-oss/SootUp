@@ -18,10 +18,10 @@
 
 package qilin.pta.toolkits.turner;
 
-import qilin.core.callgraph.CallGraph;
 import qilin.util.graph.DirectedGraph;
 import qilin.util.graph.DirectedGraphImpl;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.jimple.toolkits.callgraph.CallGraph;
 
 import java.util.Collection;
 

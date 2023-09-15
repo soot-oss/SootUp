@@ -21,17 +21,10 @@ package qilin.stat;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.basic.Local;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
+import soot.*;
 
 import java.util.*;
 
@@ -146,10 +139,7 @@ public class PointsToStat implements AbstractStat {
                 if (!handledNatives.contains(lvn.getMethod().toString())) {
                     mLocalVarNodesNoNative.add(lvn);
                 }
-                SootMethod method = lvn.getMethod();
-                ClassType classType = method.getDeclaringClassType();
-                SootClass sootClass = (SootClass) pag.getView().getClass(classType).get();
-                boolean app = sootClass.isApplicationClass();
+                boolean app = lvn.getMethod().getDeclaringClass().isApplicationClass();
                 totalLocalPointersCi++;
                 if (app) {
                     appLocalPointersCi++;
@@ -222,7 +212,7 @@ public class PointsToStat implements AbstractStat {
             }
             for (int i = 0; i < sm.getParameterCount(); ++i) {
                 Type mType = sm.getParameterType(i);
-                if (mType instanceof ReferenceType) {
+                if (mType instanceof RefLikeType) {
                     mLocalVarNodes.add((LocalVarNode) mnf.caseParm(i));
                     if (!handledNatives.contains(sm.toString())) {
                         mLocalVarNodesNoNative.add((LocalVarNode) mnf.caseParm(i));

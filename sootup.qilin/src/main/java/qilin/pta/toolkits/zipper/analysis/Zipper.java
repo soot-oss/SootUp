@@ -10,9 +10,9 @@ import qilin.pta.toolkits.zipper.flowgraph.ObjectFlowGraph;
 import qilin.util.ANSIColor;
 import qilin.util.Stopwatch;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.core.types.Type;
+import soot.RefType;
+import soot.SootMethod;
+import soot.Type;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,12 +98,12 @@ public class Zipper {
     public Set<SootMethod> analyze() {
         reset();
         System.out.println("Building PFGs (Pollution Flow Graphs) and computing precision-critical methods ...");
-        List<ClassType> types = pta.getPag().getAllocNodes().stream()
+        List<RefType> types = pta.getPag().getAllocNodes().stream()
                 .map(AllocNode::getType)
                 .distinct()
                 .sorted(Comparator.comparing(Type::toString))
-                .filter(t -> t instanceof ClassType)
-                .map(t -> (ClassType) t)
+                .filter(t -> t instanceof RefType)
+                .map(t -> (RefType) t)
                 .collect(Collectors.toList());
         if (Global.getThread() == Global.UNDEFINE) {
             computePCM(types);
@@ -126,12 +126,12 @@ public class Zipper {
         return pcm;
     }
 
-    private void computePCM(List<ClassType> types) {
+    private void computePCM(List<RefType> types) {
         FlowAnalysis fa = new FlowAnalysis(pta, pce, ofg);
         types.forEach(type -> analyze(type, fa));
     }
 
-    private void computePCMConcurrent(List<ClassType> types, int nThread) {
+    private void computePCMConcurrent(List<RefType> types, int nThread) {
         ExecutorService executorService = Executors.newFixedThreadPool(nThread);
         types.forEach(type ->
                 executorService.execute(() -> {
@@ -151,7 +151,7 @@ public class Zipper {
      * @param fa   Compute the set of precision-critical methods for a class/type and add these methods
      *             to the pcm collection.
      */
-    private void analyze(ClassType type, FlowAnalysis fa) {
+    private void analyze(RefType type, FlowAnalysis fa) {
         if (Global.isDebug()) {
             System.out.println("----------------------------------------");
         }
@@ -185,12 +185,12 @@ public class Zipper {
         // are also considered as the OUT methods of current type
         pce.PCEMethodsOf(type).stream()
                 .filter(m -> !m.isPrivate() && !m.isStatic())
-                .filter(m -> ToolUtil.isInnerType(pta.getPag().getView(),
-                        m.getDeclaringClassType(), type))
+                .filter(m -> ToolUtil.isInnerType(
+                        m.getDeclaringClass().getType(), type))
                 .forEach(outms::add);
         pce.PCEMethodsOf(type).stream()
                 .filter(m -> !m.isPrivate() && !m.isStatic())
-                .filter(m -> m.getDeclaringClassType().equals(type)
+                .filter(m -> m.getDeclaringClass().getType().equals(type)
                         && m.toString().contains("access$"))
                 .forEach(outms::add);
 

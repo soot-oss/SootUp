@@ -21,15 +21,8 @@ package qilin.core.builder;
 import qilin.CoreConfig;
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
-import sootup.core.IdentifierFactory;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootMethod;
+import soot.*;
+import soot.jimple.JimpleBody;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,36 +85,27 @@ public class FakeMainFactory extends ArtificialMethod {
         return this.method;
     }
 
-    public JStaticFieldRef getFieldCurrentThread() {
-        return getStaticFieldRef("FakeMain", "currentThread", "java.lang.Thread");
+    public Value getFieldCurrentThread() {
+        return getStaticFieldRef("FakeMain", "currentThread");
     }
 
-    public JStaticFieldRef getFieldGlobalThrow() {
-        return getStaticFieldRef("FakeMain", "globalThrow", "java.lang.Exception");
-    }
-
-    private boolean isStaticInitializer (SootMethod method) {
-        if (method instanceof JavaSootMethod jm) {
-            return jm.isStaticInitializer();
-        }
-        return false;
+    public Value getFieldGlobalThrow() {
+        return getStaticFieldRef("FakeMain", "globalThrow");
     }
 
     private void makeFakeMain() {
         implicitCallEdges = 0;
-        IdentifierFactory idFactory = JavaIdentifierFactory.getInstance();
         for (SootMethod entry : getEntryPoints()) {
             if (entry.isStatic()) {
-                if (entry.isMain()) {
-                    ClassType classType = (ClassType) idFactory.getType("java.lang.String");
-                    Value mockStr = getNew(classType);
-                    Local strArray = getNewArray(classType);
+                if (entry.getSubSignature().equals("void main(java.lang.String[])")) {
+                    Value mockStr = getNew(RefType.v("java.lang.String"));
+                    Value strArray = getNewArray(RefType.v("java.lang.String"));
                     addAssign(getArrayRef(strArray), mockStr);
-                    addInvoke(entry.getSignature().toString(), strArray);
+                    addInvoke(entry.getSignature(), strArray);
                     implicitCallEdges++;
-                } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY || !isStaticInitializer(entry)) {
+                } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY || !entry.isStaticInitializer()) {
                     // in the on fly mode, we won't add a call directly for <clinit> methods.
-                    addInvoke(entry.getSignature().toString());
+                    addInvoke(entry.getSignature());
                     implicitCallEdges++;
                 }
             }
@@ -129,42 +113,42 @@ public class FakeMainFactory extends ArtificialMethod {
         if (CoreConfig.v().getPtaConfig().singleentry) {
             return;
         }
-        Local sv = getNextLocal(idFactory.getType("java.lang.String"));
-        Local mainThread = getNew((ClassType) idFactory.getType("java.lang.Thread"));
-        Local mainThreadGroup = getNew((ClassType) idFactory.getType("java.lang.ThreadGroup"));
-        Local systemThreadGroup = getNew((ClassType) idFactory.getType("java.lang.ThreadGroup"));
+        Value sv = getNextLocal(RefType.v("java.lang.String"));
+        Value mainThread = getNew(RefType.v("java.lang.Thread"));
+        Value mainThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
+        Value systemThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
 
         Value gCurrentThread = getFieldCurrentThread();
         addAssign(gCurrentThread, mainThread); // Store
-        Local vRunnable = getNextLocal(idFactory.getType("java.lang.Runnable"));
+        Value vRunnable = getNextLocal(RefType.v("java.lang.Runnable"));
 
-        Local lThreadGroup = getNextLocal(idFactory.getType("java.lang.ThreadGroup"));
+        Value lThreadGroup = getNextLocal(RefType.v("java.lang.ThreadGroup"));
         addInvoke(mainThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>", mainThreadGroup, sv);
-        Value tmpThread = getNew((ClassType) idFactory.getType("java.lang.Thread"));
+        Value tmpThread = getNew(RefType.v("java.lang.Thread"));
         addInvoke(tmpThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>", lThreadGroup, vRunnable);
         addInvoke(tmpThread, "<java.lang.Thread: void exit()>");
 
         addInvoke(systemThreadGroup, "<java.lang.ThreadGroup: void <init>()>");
         addInvoke(mainThreadGroup, "<java.lang.ThreadGroup: void <init>(java.lang.ThreadGroup,java.lang.String)>", systemThreadGroup, sv);
 
-        Local lThread = getNextLocal(idFactory.getType("java.lang.Thread"));
-        Local lThrowable = getNextLocal(idFactory.getType("java.lang.Throwable"));
-        Value tmpThreadGroup = getNew((ClassType) idFactory.getType("java.lang.ThreadGroup"));
+        Value lThread = getNextLocal(RefType.v("java.lang.Thread"));
+        Value lThrowable = getNextLocal(RefType.v("java.lang.Throwable"));
+        Value tmpThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
         addInvoke(tmpThreadGroup, "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>", lThread, lThrowable); // TODO.
 
 
         // ClassLoader
-        Value defaultClassLoader = getNew((ClassType) idFactory.getType("sun.misc.Launcher$AppClassLoader"));
+        Value defaultClassLoader = getNew(RefType.v("sun.misc.Launcher$AppClassLoader"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void <init>()>");
-        Local vClass = getNextLocal(idFactory.getType("java.lang.Class"));
-        Local vDomain = getNextLocal(idFactory.getType("java.security.ProtectionDomain"));
+        Value vClass = getNextLocal(RefType.v("java.lang.Class"));
+        Value vDomain = getNextLocal(RefType.v("java.security.ProtectionDomain"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>", sv);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void checkPackageAccess(java.lang.Class,java.security.ProtectionDomain)>", vClass, vDomain);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void addClass(java.lang.Class)>", vClass);
 
         // PrivilegedActionException
-        Value privilegedActionException = getNew((ClassType) idFactory.getType("java.security.PrivilegedActionException"));
-        Local gLthrow = getNextLocal(idFactory.getType("java.lang.Exception"));
+        Value privilegedActionException = getNew(RefType.v("java.security.PrivilegedActionException"));
+        Value gLthrow = getNextLocal(RefType.v("java.lang.Exception"));
         addInvoke(privilegedActionException, "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>", gLthrow);
     }
 }

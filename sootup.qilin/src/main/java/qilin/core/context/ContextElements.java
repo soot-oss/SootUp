@@ -18,6 +18,8 @@
 
 package qilin.core.context;
 
+import soot.Context;
+
 import java.util.Arrays;
 
 public class ContextElements implements Context {

@@ -27,7 +27,6 @@ import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.TunnelingConstructor;
-import sootup.core.views.View;
 
 /*
  * This class support context tunneling from the paper "Precise and Scalable Points-to Analysis via Data-Driven
@@ -35,9 +34,8 @@ import sootup.core.views.View;
  * not show the claimed effectiveness. Maybe we should train the benchmarks to get new formulas?
  * */
 public class TunnelingPTA extends BasePTA {
-    public TunnelingPTA(View view, CtxConstructor ctxCons, int k, int hk) {
-        super(view);
-        this.ctxCons = new TunnelingConstructor(view, ctxCons);
+    public TunnelingPTA(CtxConstructor ctxCons, int k, int hk) {
+        this.ctxCons = new TunnelingConstructor(ctxCons);
         CtxSelector us = new UniformSelector(k, hk);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
             this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);

@@ -21,8 +21,8 @@ package qilin.parm.heapabst;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
-import sootup.core.model.SootMethod;
-import sootup.core.types.Type;
+import soot.SootMethod;
+import soot.Type;
 
 import java.util.Map;
 import java.util.Set;

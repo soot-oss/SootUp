@@ -19,10 +19,9 @@
 package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
-import qilin.core.util.Numberable;
 import qilin.util.PTAUtils;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.Type;
+import soot.util.Numberable;
 
 /**
  * Represents every node in the pointer assignment graph.
@@ -30,7 +29,6 @@ import sootup.core.views.View;
  * @author Ondrej Lhotak
  */
 public class Node implements Numberable {
-    protected View view;
     protected Type type;
     protected DoublePointsToSet p2set;
     private int number = 0;
@@ -38,11 +36,10 @@ public class Node implements Numberable {
     /**
      * Creates a new node of pointer assignment graph pag, with type type.
      */
-    protected Node(View view, Type type) {
+    protected Node(Type type) {
         if (PTAUtils.isUnresolved(type)) {
             throw new RuntimeException("Unresolved type " + type);
         }
-        this.view = view;
         this.type = type;
     }
 

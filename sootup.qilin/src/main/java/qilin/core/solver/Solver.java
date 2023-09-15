@@ -24,26 +24,20 @@ import qilin.core.PTAScene;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.Edge;
-import qilin.core.callgraph.Kind;
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.DoublePointsToSet;
+import qilin.core.sets.HybridPointsToSet;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.PTAUtils;
-import qilin.util.queue.ChunkedQueue;
-import qilin.util.queue.QueueReader;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.stmt.JThrowStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.spark.pag.SparkField;
+import soot.jimple.toolkits.callgraph.Edge;
+import soot.options.Options;
+import soot.util.NumberedString;
+import soot.util.queue.ChunkedQueue;
+import soot.util.queue.QueueReader;
 
 import java.util.*;
 
@@ -57,7 +51,7 @@ public class Solver extends Propagator {
     private final ChunkedQueue<VirtualCallSite> virtualCallSiteQueue = new ChunkedQueue<>();
     private final ChunkedQueue<Node> edgeQueue = new ChunkedQueue<>();
 
-    private final ChunkedQueue<ContextMethod> rmQueue = new ChunkedQueue<>();
+    private final ChunkedQueue<MethodOrMethodContext> rmQueue = new ChunkedQueue<>();
 
     public Solver(PTA pta) {
         this.cgb = pta.getCgb();
@@ -70,7 +64,7 @@ public class Solver extends Propagator {
 
     @Override
     public void propagate() {
-        final QueueReader<ContextMethod> newRMs = rmQueue.reader();
+        final QueueReader<MethodOrMethodContext> newRMs = rmQueue.reader();
         final QueueReader<Node> newPAGEdges = edgeQueue.reader();
         final QueueReader<ExceptionThrowSite> newThrows = throwSiteQueue.reader();
         final QueueReader<VirtualCallSite> newCalls = virtualCallSiteQueue.reader();
@@ -106,13 +100,13 @@ public class Solver extends Propagator {
         }
     }
 
-    public void processStmts(Iterator<ContextMethod> newRMs) {
+    public void processStmts(Iterator<MethodOrMethodContext> newRMs) {
         while (newRMs.hasNext()) {
-            ContextMethod momc = newRMs.next();
+            MethodOrMethodContext momc = newRMs.next();
             SootMethod method = momc.method();
-//            if (method.isPhantom()) {
-//                continue;
-//            }
+            if (method.isPhantom()) {
+                continue;
+            }
             MethodPAG mpag = pag.getMethodPAG(method);
             addToPAG(mpag, momc.context());
             // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple times.
@@ -121,7 +115,7 @@ public class Solver extends Propagator {
                 Iterator<SootMethod> it = mpag.triggeredClinits();
                 while (it.hasNext()) {
                     SootMethod sm = it.next();
-                    cgb.injectCallEdge(sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
+                    cgb.injectCallEdge(sm.getDeclaringClass().getType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
                 }
             }
             recordCallStmts(momc, mpag.getInvokeStmts());
@@ -129,36 +123,40 @@ public class Solver extends Propagator {
         }
     }
 
-    private void recordCallStmts(ContextMethod m, Collection<Stmt> units) {
-        for (final Stmt s : units) {
+    private void recordCallStmts(MethodOrMethodContext m, Collection<Unit> units) {
+        for (final Unit u : units) {
+            final Stmt s = (Stmt) u;
             if (s.containsInvokeExpr()) {
-                AbstractInvokeExpr ie = s.getInvokeExpr();
-                if (ie instanceof AbstractInstanceInvokeExpr iie) {
-                    Local receiver = iie.getBase();
+                InvokeExpr ie = s.getInvokeExpr();
+                if (ie instanceof InstanceInvokeExpr iie) {
+                    Local receiver = (Local) iie.getBase();
                     VarNode recNode = cgb.getReceiverVarNode(receiver, m);
-                    MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
+                    NumberedString subSig = iie.getMethodRef().getSubSignature();
                     VirtualCallSite virtualCallSite = new VirtualCallSite(recNode, s, m, iie, subSig, Edge.ieToKind(iie));
                     if (cgb.recordVirtualCallSite(recNode, virtualCallSite)) {
                         virtualCallSiteQueue.add(virtualCallSite);
                     }
-                } else if (ie instanceof JDynamicInvokeExpr) {
-                    // !TODO dynamicInvoke is provided in JDK after Java 7.
-                    // currently, PTA does not handle dynamicInvokeExpr.
-                } else if (ie instanceof JStaticInvokeExpr sie) {
-                    MethodSignature msig = sie.getMethodSignature();
-                    SootMethod tgt = (SootMethod) pag.getView().getMethod(msig).get();
-                    VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
-                    recNode = (VarNode) pta.parameterize(recNode, m.context());
-                    cgb.addStaticEdge(m, s, tgt, Edge.ieToKind(ie));
                 } else {
-                    throw new InternalError("Unresolved target " + ie.getMethodSignature()
-                            + ". Resolution error should have occured earlier.");
+                    SootMethod tgt = ie.getMethod();
+                    if (tgt != null) { // static invoke or dynamic invoke
+                        VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
+                        recNode = (VarNode) pta.parameterize(recNode, m.context());
+                        if (ie instanceof DynamicInvokeExpr) {
+                            // !TODO dynamicInvoke is provided in JDK after Java 7.
+                            // currently, PTA does not handle dynamicInvokeExpr.
+                        } else {
+                            cgb.addStaticEdge(m, s, tgt, Edge.ieToKind(ie));
+                        }
+                    } else if (!Options.v().ignore_resolution_errors()) {
+                        throw new InternalError("Unresolved target " + ie.getMethod()
+                                + ". Resolution error should have occured earlier.");
+                    }
                 }
             }
         }
     }
 
-    private void recordThrowStmts(ContextMethod m, Collection<Stmt> stmts) {
+    private void recordThrowStmts(MethodOrMethodContext m, Collection<Stmt> stmts) {
         for (final Stmt stmt : stmts) {
             SootMethod sm = m.method();
             MethodPAG mpag = pag.getMethodPAG(sm);
@@ -167,8 +165,8 @@ public class Solver extends Propagator {
             if (stmt.containsInvokeExpr()) {
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, sm);
             } else {
-                assert stmt instanceof JThrowStmt;
-                JThrowStmt ts = (JThrowStmt) stmt;
+                assert stmt instanceof ThrowStmt;
+                ThrowStmt ts = (ThrowStmt) stmt;
                 src = nodeFactory.getNode(ts.getOp());
             }
             VarNode throwNode = (VarNode) pta.parameterize(src, m.context());
@@ -256,7 +254,7 @@ public class Solver extends Propagator {
         });
     }
 
-    private void activateConstraints(QueueReader<VirtualCallSite> newCalls, QueueReader<ContextMethod> newRMs, QueueReader<ExceptionThrowSite> newThrows, QueueReader<Node> addedEdges) {
+    private void activateConstraints(QueueReader<VirtualCallSite> newCalls, QueueReader<MethodOrMethodContext> newRMs, QueueReader<ExceptionThrowSite> newThrows, QueueReader<Node> addedEdges) {
         while (newCalls.hasNext()) {
             while (newCalls.hasNext()) {
                 final VirtualCallSite site = newCalls.next();

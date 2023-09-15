@@ -19,14 +19,14 @@
 package qilin.pta.toolkits.common;
 
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.PAG;
 import qilin.core.pag.VarNode;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.core.types.ReferenceType;
-import sootup.core.views.View;
+import soot.RefLikeType;
+import soot.RefType;
+import soot.SootClass;
+import soot.SootMethod;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public class ToolUtil {
         MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
         Set<qilin.core.pag.VarNode> ret = new HashSet<>();
         for (int i = 0; i < m.getParameterCount(); ++i) {
-            if (m.getParameterType(i) instanceof ReferenceType) {
+            if (m.getParameterType(i) instanceof RefLikeType) {
                 qilin.core.pag.VarNode param = mthdNF.caseParm(i);
                 ret.add(param);
             }
@@ -52,7 +52,7 @@ public class ToolUtil {
 
     public static Set<VarNode> getRetVars(PAG pag, SootMethod m) {
         MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
-        if (m.getReturnType() instanceof ReferenceType) {
+        if (m.getReturnType() instanceof RefLikeType) {
             VarNode ret = mthdNF.caseRet();
             return Collections.singleton(ret);
         }
@@ -68,13 +68,12 @@ public class ToolUtil {
      * @param pOuter potential outer class
      * @return whether pInner is an inner class of pOuter
      */
-    public static boolean isInnerType(final View view, final ClassType pInner, ClassType pOuter) {
+    public static boolean isInnerType(final RefType pInner, RefType pOuter) {
         final String pInnerStr = pInner.toString();
         while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
-            SootClass sc = (SootClass) view.getClass(pOuter).get();
+            SootClass sc = pOuter.getSootClass();
             if (sc.hasSuperclass()) {
-                SootClass superClass = (SootClass) sc.getSuperclass().get();
-                pOuter = superClass.getType();
+                pOuter = sc.getSuperclass().getType();
             } else {
                 return false;
             }

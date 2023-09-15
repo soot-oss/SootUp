@@ -19,8 +19,8 @@
 package qilin.core.sets;
 
 import qilin.core.pag.AllocNode;
-import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.types.Type;
+import soot.Type;
+import soot.jimple.ClassConstant;
 
 import java.util.Collection;
 import java.util.Iterator;

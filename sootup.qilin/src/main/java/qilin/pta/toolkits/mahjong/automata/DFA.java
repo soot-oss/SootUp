@@ -1,6 +1,6 @@
 package qilin.pta.toolkits.mahjong.automata;
 
-import sootup.core.types.Type;
+import soot.Type;
 
 import java.util.HashSet;
 import java.util.LinkedList;

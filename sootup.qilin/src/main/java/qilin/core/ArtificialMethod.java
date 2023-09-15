@@ -18,55 +18,36 @@
 
 package qilin.core;
 
-import sootup.core.IdentifierFactory;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.ref.JArrayRef;
-import sootup.core.jimple.common.ref.JParameterRef;
-import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
-import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.*;
+import soot.jimple.IntConstant;
+import soot.jimple.Jimple;
+import soot.jimple.ParameterRef;
+import soot.jimple.ThisRef;
+import soot.jimple.internal.*;
 
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class ArtificialMethod {
-    protected View view;
-    protected IdentifierFactory identifierFactory;
     protected SootMethod method;
     protected Body body;
-    protected Local thisLocal;
-    protected Local[] paraLocals;
+    protected Value thisLocal;
+    protected Value[] paraLocals;
     protected int paraStart;
     protected int localStart;
 
-    protected Local getThis() {
+    protected Value getThis() {
         if (thisLocal == null) {
-            ClassType type = method.getDeclaringClassType();
+            RefType type = method.getDeclaringClass().getType();
+            Value thisRef = new ThisRef(type);
             thisLocal = getLocal(type, 0);
-            addIdentity(thisLocal, Jimple.newThisRef(type));
+            addIdentity(thisLocal, thisRef);
         }
         return thisLocal;
     }
 
-    protected Local getPara(int index) {
-        Local paraLocal = paraLocals[index];
+    protected Value getPara(int index) {
+        Value paraLocal = paraLocals[index];
         if (paraLocal == null) {
             Type type = method.getParameterType(index);
             return getPara(index, type);
@@ -74,10 +55,10 @@ public abstract class ArtificialMethod {
         return paraLocal;
     }
 
-    protected Local getPara(int index, Type type) {
-        Local paraLocal = paraLocals[index];
+    protected Value getPara(int index, Type type) {
+        Value paraLocal = paraLocals[index];
         if (paraLocal == null) {
-            IdentityRef paraRef = new JParameterRef(type, index);
+            Value paraRef = new ParameterRef(type, index);
             paraLocal = getLocal(type, paraStart + index);
             addIdentity(paraLocal, paraRef);
             paraLocals[index] = paraLocal;
@@ -85,59 +66,55 @@ public abstract class ArtificialMethod {
         return paraLocal;
     }
 
-    private void addIdentity(Local lValue, IdentityRef rValue) {
-        body.getUnits().add(Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+    private void addIdentity(Value lValue, Value rValue) {
+        body.getUnits().add(new JIdentityStmt(lValue, rValue));
     }
 
-    protected Local getNew(ClassType type) {
+    protected Value getNew(RefType type) {
         Value newExpr = new JNewExpr(type);
-        Local local = getNextLocal(type);
+        Value local = getNextLocal(type);
         addAssign(local, newExpr);
         return local;
     }
 
-    protected Local getNewArray(ReferenceType type) {
-        Value newExpr = new JNewArrayExpr(type, IntConstant.getInstance(1), identifierFactory);
-        Local local = getNextLocal(identifierFactory.getArrayType(type, 1));
+    protected Value getNewArray(RefType type) {
+        Value newExpr = new JNewArrayExpr(type, IntConstant.v(1));
+        Value local = getNextLocal(ArrayType.v(type, 1));
         addAssign(local, newExpr);
         return local;
     }
 
-    protected Local getNextLocal(Type type) {
+    protected Value getNextLocal(Type type) {
         return getLocal(type, localStart++);
     }
 
-    private Local getLocal(Type type, int index) {
-        Local local = Jimple.newLocal("r" + index, type);
+    private Value getLocal(Type type, int index) {
+        Local local = new JimpleLocal("r" + index, type);
         body.getLocals().add(local);
         return local;
     }
 
-    protected void addReturn(Immediate ret) {
-        body.getUnits().add(Jimple.newReturnStmt(ret, StmtPositionInfo.createNoStmtPositionInfo()));
+    protected void addReturn(Value ret) {
+        body.getUnits().add(new JReturnStmt(ret));
     }
 
-    protected JStaticFieldRef getStaticFieldRef(String className, String name, String fieldType) {
-        ClassType classType = (ClassType) JavaIdentifierFactory.getInstance().getType(className);
-        FieldSignature fieldSignature = JavaIdentifierFactory.getInstance().getFieldSignature(name, classType, fieldType);
-        return Jimple.newStaticFieldRef(fieldSignature);
+    protected Value getStaticFieldRef(String className, String name) {
+        return Jimple.v().newStaticFieldRef(RefType.v(className).getSootClass().getFieldByName(name).makeRef());
     }
 
-    protected JArrayRef getArrayRef(Value base) {
-        return new JArrayRef((Local) base, IntConstant.getInstance(0), );
+    protected Value getArrayRef(Value base) {
+        return new JArrayRef(base, IntConstant.v(0));
     }
 
     /**
      * add an instance invocation receiver.sig(args)
      */
-    protected void addInvoke(Value receiver, String sig, Immediate... args) {
-        MethodSignature msig = identifierFactory.parseMethodSignature(sig);
-        ClassType classType = msig.getDeclClassType();
-        SootClass sootClass = (SootClass) view.getClass(classType).get();
-        List<Immediate> argsL = Arrays.asList(args);
-        AbstractInvokeExpr invoke = sootClass.isInterface() ? Jimple.newInterfaceInvokeExpr((Local) receiver, msig, argsL)
-                : Jimple.newVirtualInvokeExpr((Local) receiver, msig, argsL);
-        body.getUnits().add(Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo()));
+    protected void addInvoke(Value receiver, String sig, Value... args) {
+        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        List<Value> argsL = Arrays.asList(args);
+        Value invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
+                : new JVirtualInvokeExpr(receiver, methodRef, argsL);
+        body.getUnits().add(new JInvokeStmt(invoke));
     }
 
     /**
@@ -145,14 +122,12 @@ public abstract class ArtificialMethod {
      *
      * @return rx
      */
-    protected Local getInvoke(Value receiver, String sig, Immediate... args) {
-        MethodSignature msig = identifierFactory.parseMethodSignature(sig);
-        List<Immediate> argsL = Arrays.asList(args);
-        ClassType classType = msig.getDeclClassType();
-        SootClass sootClass = (SootClass) view.getClass(classType).get();
-        Value invoke = sootClass.isInterface() ? Jimple.newInterfaceInvokeExpr((Local) receiver, msig, argsL)
-                : Jimple.newVirtualInvokeExpr((Local) receiver, msig, argsL);
-        Local rx = getNextLocal(msig.getType());
+    protected Value getInvoke(Value receiver, String sig, Value... args) {
+        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        List<Value> argsL = Arrays.asList(args);
+        Value invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
+                : new JVirtualInvokeExpr(receiver, methodRef, argsL);
+        Value rx = getNextLocal(methodRef.getReturnType());
         addAssign(rx, invoke);
         return rx;
     }
@@ -160,10 +135,10 @@ public abstract class ArtificialMethod {
     /**
      * add a static invocation sig(args)
      */
-    protected void addInvoke(String sig, Immediate... args) {
-        MethodSignature msig = identifierFactory.parseMethodSignature(sig);
-        List<Immediate> argsL = Arrays.asList(args);
-        body.getUnits().add(Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(msig, argsL), StmtPositionInfo.createNoStmtPositionInfo()));
+    protected void addInvoke(String sig, Value... args) {
+        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        List<Value> argsL = Arrays.asList(args);
+        body.getUnits().add(new JInvokeStmt(new JStaticInvokeExpr(methodRef, argsL)));
     }
 
     /**
@@ -171,15 +146,15 @@ public abstract class ArtificialMethod {
      *
      * @return rx
      */
-    protected Local getInvoke(String sig, Immediate... args) {
-        MethodSignature msig = identifierFactory.parseMethodSignature(sig);
-        List<Immediate> argsL = Arrays.asList(args);
-        Local rx = getNextLocal(msig.getType());
-        addAssign(rx, Jimple.newStaticInvokeExpr(msig, argsL));
+    protected Value getInvoke(String sig, Value... args) {
+        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        List<Value> argsL = Arrays.asList(args);
+        Value rx = getNextLocal(methodRef.getReturnType());
+        addAssign(rx, new JStaticInvokeExpr(methodRef, argsL));
         return rx;
     }
 
     protected void addAssign(Value lValue, Value rValue) {
-        body.getUnits().add(Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+        body.getUnits().add(new JAssignStmt(lValue, rValue));
     }
 }

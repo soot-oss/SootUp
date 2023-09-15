@@ -24,14 +24,14 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.java.core.JavaSootMethod;
+import soot.SootMethod;
+import soot.Unit;
+import soot.Value;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.Stmt;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,15 +69,14 @@ public class Conch extends AbstractConch {
         SootMethod containingMethod = heap.getMethod();
         MethodPAG cmpag = pag.getMethodPAG(containingMethod);
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
-        for (Stmt stmt : cmpag.getInvokeStmts()) {
-            if (stmt instanceof JInvokeStmt invokeStmt) {
-                AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
-                if (expr instanceof JSpecialInvokeExpr iie) {
+        for (Unit unit : cmpag.getInvokeStmts()) {
+            if (unit instanceof InvokeStmt invokeStmt) {
+                InvokeExpr expr = invokeStmt.getInvokeExpr();
+                if (expr instanceof SpecialInvokeExpr iie) {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
                     PointsToSet v1pts = pta.reachingObjects(baseNode);
-                    MethodSignature targetSig = iie.getMethodSignature();
-                    JavaSootMethod target = (JavaSootMethod) pag.getView().getMethod(targetSig).get();
+                    SootMethod target = iie.getMethod();
                     if (v1pts.size() == 1 && v1pts.toCIPointsToSet().contains(heap) && target.isConstructor()) {
                         return target;
                     }
@@ -91,14 +90,13 @@ public class Conch extends AbstractConch {
         MethodPAG cmpag = pag.getMethodPAG(outerInit);
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
         VarNode thisNode = nodeFactory.caseThis();
-        for (Stmt stmt : cmpag.getInvokeStmts()) {
-            if (stmt instanceof JInvokeStmt invokeStmt) {
-                AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
-                if (expr instanceof JSpecialInvokeExpr iie) {
+        for (Unit unit : cmpag.getInvokeStmts()) {
+            if (unit instanceof InvokeStmt invokeStmt) {
+                InvokeExpr expr = invokeStmt.getInvokeExpr();
+                if (expr instanceof SpecialInvokeExpr iie) {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
-                    MethodSignature methodSignature = iie.getMethodSignature();
-                    JavaSootMethod target = (JavaSootMethod) pag.getView().getMethod(methodSignature).get();
+                    SootMethod target = iie.getMethod();
                     if (PTAUtils.mustAlias(pta, thisNode, baseNode) && target.isConstructor()) {
                         return target;
                     }
@@ -126,13 +124,12 @@ public class Conch extends AbstractConch {
     private Set<Node> mappingtoCallerCommingParamsOrHeaps(Set<Node> params, SootMethod curr, SootMethod caller) {
         MethodPAG cmpag = pag.getMethodPAG(caller);
         Set<Node> ret = new HashSet<>();
-        for (Stmt stmt : cmpag.getInvokeStmts()) {
-            if (!(stmt.getInvokeExpr() instanceof JSpecialInvokeExpr)) {
+        for (Unit unit : cmpag.getInvokeStmts()) {
+            Stmt stmt = (Stmt) unit;
+            if (!(stmt.getInvokeExpr() instanceof SpecialInvokeExpr)) {
                 continue;
             }
-            AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-            MethodSignature methodSignature =  invokeExpr.getMethodSignature();
-            SootMethod target = (SootMethod) pag.getView().getMethod(methodSignature).get();
+            SootMethod target = stmt.getInvokeExpr().getMethod();
             if (target != null && target.equals(curr)) {
                 for (Node n : params) {
                     if (n instanceof VarNode paramNode) {
@@ -209,8 +206,7 @@ public class Conch extends AbstractConch {
 
     private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
         Set<Node> ret = this.pfg.fetchReachableParamsOf(from);
-        JavaSootMethod method1 = (JavaSootMethod) method;
-        if (method1.isConstructor()) {
+        if (method.isConstructor()) {
             return handleTransitiveConstructors(method, heap, ret);
         } else {
             return checkResult(ret);
@@ -300,7 +296,7 @@ public class Conch extends AbstractConch {
                     || PTAUtils.isOfPrimitiveBaseType(heap)) {
                 ciHeaps.add(heap);
             } else {
-                JavaSootMethod mthd = (JavaSootMethod) heap.getMethod();
+                SootMethod mthd = heap.getMethod();
                 if (mthd.isStaticInitializer()) {
                     ciHeaps.add(heap);
                 } else {

@@ -26,7 +26,6 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.DataDrivenSelector;
-import sootup.core.views.View;
 /*
  * Support Data-driven context-sensitivity for Points-to Analysis (OOPSLA 2017):
  * https://doi.org/10.1145/3133924
@@ -39,8 +38,7 @@ import sootup.core.views.View;
 
 public class DataDrivenPTA extends BasePTA {
 
-    public DataDrivenPTA(View view, CtxConstructor ctxCons) {
-        super(view);
+    public DataDrivenPTA(CtxConstructor ctxCons) {
         this.ctxCons = ctxCons;
         CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

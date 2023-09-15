@@ -21,13 +21,14 @@ package qilin.core.reflection;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.Unit;
+import soot.UnitPatchingChain;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public abstract class ReflectionModel {
@@ -50,9 +51,9 @@ public abstract class ReflectionModel {
     protected final String sigReifiedMethodArray = "<java.lang.Class: java.lang.reflect.Method[] getMethods()>";
     protected final String sigReifiedDeclaredMethodArray = "<java.lang.Class: java.lang.reflect.Method[] getDeclaredMethods()>";
 
-    private Collection<Stmt> transform(Stmt s) {
-        AbstractInvokeExpr ie = s.getInvokeExpr();
-        return switch (ie.getMethodSignature().toString()) {
+    private Collection<Unit> transform(Stmt s) {
+        InvokeExpr ie = s.getInvokeExpr();
+        return switch (ie.getMethodRef().getSignature()) {
             case sigForName, sigForName2 -> transformClassForName(s);
             case sigClassNewInstance -> transformClassNewInstance(s);
             case sigConstructorNewInstance -> transformContructorNewInstance(s);
@@ -73,33 +74,34 @@ public abstract class ReflectionModel {
         if (!PTAScene.v().reflectionBuilt.add(m)) {
             return;
         }
-        Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-        List<Stmt> units = PTAUtils.getMethodBody(m).getStmts();
-        for (final Stmt s : units) {
+        Map<Unit, Collection<Unit>> newUnits = DataFactory.createMap();
+        UnitPatchingChain units = PTAUtils.getMethodBody(m).getUnits();
+        for (final Unit u : units) {
+            final Stmt s = (Stmt) u;
             if (s.containsInvokeExpr()) {
-                newUnits.put(s, transform(s));
+                newUnits.put(u, transform(s));
             }
         }
-        for (Stmt unit : newUnits.keySet()) {
+        for (Unit unit : newUnits.keySet()) {
             units.insertAfter(newUnits.get(unit), unit);
         }
     }
 
-    abstract Collection<Stmt> transformClassForName(Stmt s);
+    abstract Collection<Unit> transformClassForName(Stmt s);
 
-    abstract Collection<Stmt> transformClassNewInstance(Stmt s);
+    abstract Collection<Unit> transformClassNewInstance(Stmt s);
 
-    abstract Collection<Stmt> transformContructorNewInstance(Stmt s);
+    abstract Collection<Unit> transformContructorNewInstance(Stmt s);
 
-    abstract Collection<Stmt> transformMethodInvoke(Stmt s);
+    abstract Collection<Unit> transformMethodInvoke(Stmt s);
 
-    abstract Collection<Stmt> transformFieldSet(Stmt s);
+    abstract Collection<Unit> transformFieldSet(Stmt s);
 
-    abstract Collection<Stmt> transformFieldGet(Stmt s);
+    abstract Collection<Unit> transformFieldGet(Stmt s);
 
-    abstract Collection<Stmt> transformArrayNewInstance(Stmt s);
+    abstract Collection<Unit> transformArrayNewInstance(Stmt s);
 
-    abstract Collection<Stmt> transformArrayGet(Stmt s);
+    abstract Collection<Unit> transformArrayGet(Stmt s);
 
-    abstract Collection<Stmt> transformArraySet(Stmt s);
+    abstract Collection<Unit> transformArraySet(Stmt s);
 }

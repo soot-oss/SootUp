@@ -20,6 +20,7 @@ package qilin.pta;
 
 import driver.PTAPattern;
 import qilin.CoreConfig;
+import qilin.pta.tools.DebloatedPTA;
 
 public class PTAConfig extends CoreConfig {
     private static PTAConfig config = null;
@@ -49,6 +50,7 @@ public class PTAConfig extends CoreConfig {
          * If this option is turned on, we will apply context debloating techniques.
          */
         public boolean ctxDebloating = false;
+        public DebloatedPTA.DebloatApproach debloatApproach = DebloatedPTA.DebloatApproach.CONCH;
 
     }
 
@@ -71,4 +73,14 @@ public class PTAConfig extends CoreConfig {
     public PointerAnalysisConfiguration getPtaConfig() {
         return (PointerAnalysisConfiguration) this.ptaConfig;
     }
+
+    /*
+     * Configures the callgraph options
+     * */
+    public enum CallgraphAlgorithm {
+        /*CHA, VTA, RTA, GEOM, and SPARK are all provided by Soot */
+        CHA, VTA, RTA, GEOM, SPARK, QILIN
+    }
+
+    public CallgraphAlgorithm callgraphAlg = CallgraphAlgorithm.QILIN;
 }

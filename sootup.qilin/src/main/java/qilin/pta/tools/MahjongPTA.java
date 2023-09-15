@@ -25,9 +25,7 @@ import qilin.parm.select.DebloatingSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
-import qilin.pta.StagedPTA;
 import qilin.pta.toolkits.mahjong.Mahjong;
-import sootup.core.views.View;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,8 +40,7 @@ public class MahjongPTA extends StagedPTA {
     public Set<Object> mergedHeap = new HashSet<>();
     public Set<Object> csHeap = new HashSet<>();
 
-    public MahjongPTA(View view, int k, int hk, CtxConstructor ctxCons) {
-        super(view);
+    public MahjongPTA(int k, int hk, CtxConstructor ctxCons) {
         this.ctxCons = ctxCons;
         CtxSelector us = new UniformSelector(k, hk);
         CtxSelector ds = new DebloatingSelector(csHeap);

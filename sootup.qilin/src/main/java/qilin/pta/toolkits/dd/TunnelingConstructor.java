@@ -18,33 +18,30 @@
 
 package qilin.pta.toolkits.dd;
 
-import qilin.core.context.Context;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.ContextMethod;
 import qilin.parm.ctxcons.*;
-import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import soot.Context;
+import soot.MethodOrMethodContext;
+import soot.SootMethod;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TunnelingConstructor implements CtxConstructor {
-    private final View view;
     private final CtxConstructor ctxCons;
     private final Map<SootMethod, CtxTunnelingFeaturesTrueTable> m2ftt = new HashMap<>();
 
     private CtxTunnelingFeaturesTrueTable findOrCreateTunnelingFeaturesTrueTable(SootMethod sm) {
-        return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm, view));
+        return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm));
     }
 
-    public TunnelingConstructor(View view, CtxConstructor ctxCons) {
-        this.view = view;
+    public TunnelingConstructor(CtxConstructor ctxCons) {
         this.ctxCons = ctxCons;
     }
 
     @Override
-    public Context constructCtx(ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
         CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
         CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
         if (ctxCons instanceof CallsiteCtxConstructor) {

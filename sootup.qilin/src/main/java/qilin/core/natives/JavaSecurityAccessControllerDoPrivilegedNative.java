@@ -17,10 +17,8 @@
  */
 package qilin.core.natives;
 
-
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.Value;
 
 public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod {
     public JavaSecurityAccessControllerDoPrivilegedNative(SootMethod method) {
@@ -36,6 +34,6 @@ public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod
     public void simulate() {
         Value r0 = getPara(0);
         Value r1 = getInvoke(r0, "<java.security.PrivilegedAction: java.lang.Object run()>");
-        addReturn((Immediate) r1);
+        addReturn(r1);
     }
 }

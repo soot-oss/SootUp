@@ -22,21 +22,14 @@ import qilin.CoreConfig;
 import qilin.util.DataFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
-
-import qilin.util.queue.ChunkedQueue;
-import qilin.util.queue.QueueReader;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Trap;
-import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.jimple.common.stmt.JThrowStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.*;
+import soot.jimple.Jimple;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
+import soot.jimple.ThrowStmt;
+import soot.util.Chain;
+import soot.util.queue.ChunkedQueue;
+import soot.util.queue.QueueReader;
 
 import java.util.*;
 
@@ -49,7 +42,7 @@ public class MethodPAG {
     private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
     private final QueueReader<Node> internalReader = internalEdges.reader();
     private final Set<SootMethod> clinits = DataFactory.createSet();
-    private final Collection<Stmt> invokeStmts = DataFactory.createSet();
+    private final Collection<Unit> invokeStmts = DataFactory.createSet();
     public Body body;
     /**
      * Since now the exception analysis is handled on-the-fly, we should record the
@@ -57,7 +50,6 @@ public class MethodPAG {
      */
     private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
     protected MethodNodeFactory nodeFactory;
-    protected PAG pag;
     SootMethod method;
     /*
      * List[i-1] is wrappered in List[i].
@@ -69,7 +61,6 @@ public class MethodPAG {
     public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
 
     public MethodPAG(PAG pag, SootMethod m, Body body) {
-        this.pag = pag;
         this.method = m;
         this.nodeFactory = new MethodNodeFactory(pag, this);
         this.body = body;
@@ -84,11 +75,11 @@ public class MethodPAG {
         return nodeFactory;
     }
 
-    public Collection<Stmt> getInvokeStmts() {
+    public Collection<Unit> getInvokeStmts() {
         return invokeStmts;
     }
 
-    public boolean addCallStmt(Stmt unit) {
+    public boolean addCallStmt(Unit unit) {
         return this.invokeStmts.add(unit);
     }
 
@@ -104,14 +95,11 @@ public class MethodPAG {
 
     protected void buildNormal() {
         if (method.isStatic()) {
-            View view = pag.getView();
-            ClassType declClassType = method.getDeclaringClassType();
-            SootClass declClass = (SootClass) view.getClass(declClassType).get();
-            PTAUtils.clinitsOf(declClass).forEach(this::addTriggeredClinit);
+            PTAUtils.clinitsOf(method.getDeclaringClass()).forEach(this::addTriggeredClinit);
         }
-        for (Stmt unit : body.getStmts()) {
+        for (Unit unit : body.getUnits()) {
             try {
-                nodeFactory.handleStmt(unit);
+                nodeFactory.handleStmt((Stmt) unit);
             } catch (Exception e) {
                 System.out.println("Warning:" + e);
             }
@@ -123,24 +111,24 @@ public class MethodPAG {
         if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
             return;
         }
-        List<Trap> traps = body.getTraps();
-        List<Stmt> units = body.getStmts();
-        Set<Stmt> inTraps = DataFactory.createSet();
+        Chain<Trap> traps = body.getTraps();
+        PatchingChain<Unit> units = body.getUnits();
+        Set<Unit> inTraps = DataFactory.createSet();
         /*
          * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.
          * */
         traps.forEach(trap -> {
-            units.iterator().forEachRemaining(unit -> {
-                if (unit == trap.getEndStmt()) {
+            units.iterator(trap.getBeginUnit(), trap.getEndUnit()).forEachRemaining(unit -> {
+                if (unit == trap.getEndUnit()) {
                     return;
                 }
                 inTraps.add(unit);
-                Stmt stmt = unit;
+                Stmt stmt = (Stmt) unit;
                 Node src = null;
                 if (stmt.containsInvokeExpr()) {
                     // note, method.getExceptions() does not return implicit exceptions.
                     src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-                } else if (stmt instanceof JThrowStmt ts) {
+                } else if (stmt instanceof ThrowStmt ts) {
                     src = nodeFactory.getNode(ts.getOp());
                 }
                 if (src != null) {
@@ -149,7 +137,7 @@ public class MethodPAG {
             });
         });
 
-        for (Stmt unit : body.getStmts()) {
+        for (Unit unit : body.getUnits()) {
             if (inTraps.contains(unit)) {
                 continue;
             }
@@ -157,7 +145,7 @@ public class MethodPAG {
             Node src = null;
             if (stmt.containsInvokeExpr()) {
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-            } else if (stmt instanceof JThrowStmt ts) {
+            } else if (stmt instanceof ThrowStmt ts) {
                 src = nodeFactory.getNode(ts.getOp());
             }
             if (src != null) {
@@ -177,11 +165,7 @@ public class MethodPAG {
     protected void addMiscEdges() {
         if (method.getSignature().equals("<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
             // Implements the special status of java.lang.ref.Reference just as in Doop (library/reference.logic).
-            ClassType type = (ClassType) JavaIdentifierFactory.getInstance().getType("java.lang.ref.Reference");
-            View view = pag.getView();
-            SootClass sootClass = (SootClass) view.getClass(type).get();
-            SootField sootField = (SootField) sootClass.getField("pending").get();
-            JStaticFieldRef sfr = Jimple.newStaticFieldRef(sootField.getSignature());
+            StaticFieldRef sfr = Jimple.v().newStaticFieldRef(RefType.v("java.lang.ref.Reference").getSootClass().getFieldByName("pending").makeRef());
             addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
         }
     }

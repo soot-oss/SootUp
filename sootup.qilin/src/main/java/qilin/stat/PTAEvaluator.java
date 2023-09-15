@@ -61,10 +61,6 @@ public class PTAEvaluator implements IEvaluator {
         runtimeStat.begin();
     }
 
-    protected PointsToStat createPointsToStat() {
-        return new PointsToStat(pta);
-    }
-
     /**
      * Note the end of a qilin.pta run.
      */
@@ -79,7 +75,8 @@ public class PTAEvaluator implements IEvaluator {
         BenchmarkStat benchmarkStat = new BenchmarkStat(pta);
         CallGraphStat callGraphStat = new CallGraphStat(pta);
         TypeClientStat typeClientStat = new TypeClientStat(pta);
-        PointsToStat ptsStat = createPointsToStat();
+        PointsToStat ptsStat = new PointsToStat(pta);
+        AliasStat aliasStat = new AliasStat(pta);
         YummyStat yummyStat = new YummyStat(pta);
         runtimeStat.export(exporter);
         // memory stats
@@ -100,6 +97,8 @@ public class PTAEvaluator implements IEvaluator {
         ptsStat.export(exporter);
         exporter.addLine(" ====== Assignments ======");
         pagStat.export(exporter);
+        exporter.addLine(" ====== Aliases ======");
+        aliasStat.export(exporter);
         exporter.addLine(" ====== Classes ======");
         benchmarkStat.export(exporter);
 

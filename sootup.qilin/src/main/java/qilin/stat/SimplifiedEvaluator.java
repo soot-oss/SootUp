@@ -1,24 +1,34 @@
+/* Qilin - a Java Pointer Analysis Framework
+ * Copyright (C) 2021-2030 Qilin developers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3.0 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
+ */
+
 package qilin.stat;
 
 import qilin.core.PTA;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JCastExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 
 import java.util.*;
 
@@ -50,7 +60,7 @@ public class SimplifiedEvaluator implements IEvaluator {
         // loop over all reachable method's statement to find casts, local
         // references, virtual call sites
         Set<SootMethod> reachableMethods = new HashSet<>();
-        for (ContextMethod momc : pta.getCgb().getReachableMethods()) {
+        for (MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
             final SootMethod sm = momc.method();
             reachableMethods.add(sm);
         }
@@ -58,11 +68,12 @@ public class SimplifiedEvaluator implements IEvaluator {
         int totalCastsMayFail = 0;
         for (SootMethod sm : reachableMethods) {
             // All the statements in the method
-            for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
+            for (Unit unit : PTAUtils.getMethodBody(sm).getUnits()) {
+                Stmt st = (Stmt) unit;
                 // virtual calls
                 if (st.containsInvokeExpr()) {
-                    AbstractInvokeExpr ie = st.getInvokeExpr();
-                    if (!(ie instanceof JStaticInvokeExpr)) {
+                    InvokeExpr ie = st.getInvokeExpr();
+                    if (!(ie instanceof StaticInvokeExpr)) {
                         // Virtual, Special or Instance
                         // have to check target soot method, cannot just
                         // count edges
@@ -73,12 +84,12 @@ public class SimplifiedEvaluator implements IEvaluator {
                             totalPolyCalls++;
                         }
                     }
-                } else if (st instanceof JAssignStmt) {
-                    Value rhs = ((JAssignStmt) st).getRightOp();
-                    Value lhs = ((JAssignStmt) st).getLeftOp();
-                    if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
-                        final Type targetType = ((JCastExpr) rhs).getType();
-                        Value v = ((JCastExpr) rhs).getOp();
+                } else if (st instanceof AssignStmt) {
+                    Value rhs = ((AssignStmt) st).getRightOp();
+                    Value lhs = ((AssignStmt) st).getLeftOp();
+                    if (rhs instanceof CastExpr && lhs.getType() instanceof RefLikeType) {
+                        final Type targetType = ((CastExpr) rhs).getCastType();
+                        Value v = ((CastExpr) rhs).getOp();
                         if (!(v instanceof Local)) {
                             continue;
                         }
@@ -97,9 +108,11 @@ public class SimplifiedEvaluator implements IEvaluator {
                 }
             }
         }
+        AliasStat aliasStat = new AliasStat(pta);
+        aliasStat.aliasesProcessing();
         exporter.collectMetric("#May Fail Cast (Total):", String.valueOf(totalCastsMayFail));
         exporter.collectMetric("#Virtual Call Site(Polymorphic):", String.valueOf(totalPolyCalls));
-
+        exporter.collectMetric("#globalAlias_incstst:", String.valueOf(aliasStat.getGlobalAliasesIncludingStSt()));
         ptsStat();
     }
 
@@ -129,7 +142,7 @@ public class SimplifiedEvaluator implements IEvaluator {
             }
             for (int i = 0; i < sm.getParameterCount(); ++i) {
                 Type mType = sm.getParameterType(i);
-                if (mType instanceof ReferenceType) {
+                if (mType instanceof RefLikeType) {
                     mLocalVarNodes.add((LocalVarNode) mnf.caseParm(i));
                 }
             }

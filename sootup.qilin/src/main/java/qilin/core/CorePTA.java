@@ -18,13 +18,12 @@
 
 package qilin.core;
 
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import sootup.core.model.SootMethod;
+import soot.*;
 
 /*
  * This represents a parameterized PTA which could be concreted to many pointer analyses.
@@ -56,7 +55,7 @@ public abstract class CorePTA extends PTA {
     public abstract Propagator getPropagator();
 
     @Override
-    public Context createCalleeCtx(ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context createCalleeCtx(MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
         return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
     }
 
@@ -111,7 +110,7 @@ public abstract class CorePTA extends PTA {
      * Finds or creates the ContextMethod for method and context.
      */
     @Override
-    public ContextMethod parameterize(SootMethod method, Context context) {
+    public MethodOrMethodContext parameterize(SootMethod method, Context context) {
         Context ctx = ctxSel.select(method, context);
         return pag.makeContextMethod(ctx, method);
     }

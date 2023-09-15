@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.turner.Turner;
+import qilin.pta.tools.DebloatedPTA;
 
 import java.util.*;
 
@@ -82,7 +83,11 @@ public class PTAOption extends Options {
         // a specific PTA's configuration
         addOption("tc", "turnerconfig", "[DEFAULT, PHASE_ONE, PHASE_TWO]", "Run Turner in the given setting (default value: DEFAULT)");
         addOption("cd", "ctxdebloat", "Enable context debloating optimization (default value: false)");
+        addOption("cda", "debloatapproach", "[CONCH, DEBLOATERX]", "Specify debloating approach (default value: CONCH)");
         addOption("tmd", "modular", "Enable Turner to run modularly (default value: false)");
+
+        // callgraph algorithm configurations
+        addOption("cga", "callgraphalg", "[CHA, VTA, RTA, SPARK, GEOM, QILIN]", "Specify callgraph construction algorithm (default value: QILIN)");
 
         // others
         addOption("h", "help", "print this message");
@@ -137,6 +142,9 @@ public class PTAOption extends Options {
         }
         if (cmd.hasOption("ctxdebloat")) {
             PTAConfig.v().getPtaConfig().ctxDebloating = true;
+            if (cmd.hasOption("debloatapproach")) {
+                PTAConfig.v().getPtaConfig().debloatApproach = DebloatedPTA.DebloatApproach.valueOf(cmd.getOptionValue("debloatapproach"));
+            }
         }
         if (cmd.hasOption("preciseexceptions")) {
             PTAConfig.v().getPtaConfig().preciseExceptions = true;
@@ -169,7 +177,10 @@ public class PTAOption extends Options {
         if (cmd.hasOption("turnerconfig")) {
             PTAConfig.v().turnerConfig = PTAConfig.TurnerConfig.valueOf(cmd.getOptionValue("turnerconfig"));
         }
-
+        // callgraph
+        if (cmd.hasOption("callgraphalg")) {
+            PTAConfig.v().callgraphAlg = PTAConfig.CallgraphAlgorithm.valueOf(cmd.getOptionValue("callgraphalg"));
+        }
         // output
         if (cmd.hasOption("dumpjimple")) {
             PTAConfig.v().getOutConfig().dumpJimple = true;

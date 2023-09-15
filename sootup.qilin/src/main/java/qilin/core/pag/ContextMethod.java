@@ -18,10 +18,11 @@
 
 package qilin.core.pag;
 
-import qilin.core.context.Context;
-import sootup.core.model.SootMethod;
+import soot.Context;
+import soot.MethodOrMethodContext;
+import soot.SootMethod;
 
-public final class ContextMethod {
+public final class ContextMethod implements MethodOrMethodContext {
     private final SootMethod method;
     private final Context context;
 

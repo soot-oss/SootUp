@@ -19,10 +19,9 @@
 package qilin.core.natives;
 
 import qilin.core.PTAScene;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
-import sootup.core.model.SootMethod;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.RefType;
+import soot.SootMethod;
+import soot.Value;
 
 public class JavaLangThreadCurrentThread extends NativeMethod {
     JavaLangThreadCurrentThread(SootMethod method) {
@@ -31,9 +30,9 @@ public class JavaLangThreadCurrentThread extends NativeMethod {
 
     @Override
     void simulate() {
-        Value lv = getNextLocal(JavaIdentifierFactory.getInstance().getType("java.lang.Thread"));
+        Value lv = getNextLocal(RefType.v("java.lang.Thread"));
         Value rv = PTAScene.v().getFieldCurrentThread();
         addAssign(lv, rv);
-        addReturn((Immediate) lv);
+        addReturn(lv);
     }
 }

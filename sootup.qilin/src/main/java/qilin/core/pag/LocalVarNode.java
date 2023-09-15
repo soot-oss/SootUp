@@ -18,9 +18,8 @@
 
 package qilin.core.pag;
 
-import sootup.core.model.SootMethod;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.SootMethod;
+import soot.Type;
 
 /**
  * @author Ondrej Lhotak
@@ -28,8 +27,8 @@ import sootup.core.views.View;
 public class LocalVarNode extends VarNode {
     protected SootMethod method;
 
-    public LocalVarNode(View view, Object variable, Type t, SootMethod m) {
-        super(view, variable, t);
+    public LocalVarNode(Object variable, Type t, SootMethod m) {
+        super(variable, t);
         this.method = m;
     }
 
@@ -47,6 +46,13 @@ public class LocalVarNode extends VarNode {
     public boolean isThis() {
         if (variable instanceof Parm parm) {
             return parm.isThis();
+        }
+        return false;
+    }
+
+    public boolean isReturn() {
+        if (variable instanceof Parm parm) {
+            return parm.isReturn();
         }
         return false;
     }

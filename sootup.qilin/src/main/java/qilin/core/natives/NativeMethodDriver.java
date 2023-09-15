@@ -19,14 +19,14 @@
 package qilin.core.natives;
 
 import qilin.core.PTAScene;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
 
 public class NativeMethodDriver {
     public void buildNative(SootMethod method) {
         if (!PTAScene.v().nativeBuilt.add(method)) {
             return;
         }
-        String sig = method.getSignature().toString();
+        String sig = method.getSignature();
         switch (sig) {
             case "<java.lang.Object: java.lang.Object clone()>":
             case "<qilin.pta.nativemodel.JavaLangObject: java.lang.Object clone()>":

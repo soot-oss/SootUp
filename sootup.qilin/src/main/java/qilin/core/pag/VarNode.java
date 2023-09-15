@@ -18,11 +18,12 @@
 
 package qilin.core.pag;
 
-import qilin.core.context.Context;
 import qilin.util.DataFactory;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.AnySubType;
+import soot.Context;
+import soot.RefLikeType;
+import soot.Type;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,9 +41,9 @@ public abstract class VarNode extends ValNode {
     protected boolean interProcTarget = false;
     protected boolean interProcSource = false;
 
-    protected VarNode(View view, Object variable, Type t) {
-        super(view, t);
-        if (!(t instanceof ReferenceType)) {
+    protected VarNode(Object variable, Type t) {
+        super(t);
+        if (!(t instanceof RefLikeType) || t instanceof AnySubType) {
             throw new RuntimeException("Attempt to create VarNode of type " + t);
         }
         this.variable = variable;

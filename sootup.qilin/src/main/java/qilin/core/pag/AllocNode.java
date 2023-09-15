@@ -20,12 +20,10 @@ package qilin.core.pag;
 
 import qilin.CoreConfig;
 import qilin.core.context.ContextElement;
-import qilin.core.util.Numberable;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.RefType;
+import soot.SootMethod;
+import soot.Type;
+import soot.util.Numberable;
 
 /**
  * Represents an allocation site node in the pointer assignment graph.
@@ -36,12 +34,11 @@ public class AllocNode extends Node implements ContextElement, Numberable {
     protected Object newExpr;
     private final SootMethod method;
 
-    public AllocNode(View view, Object newExpr, Type t, SootMethod m) {
-        super(view, t);
+    public AllocNode(Object newExpr, Type t, SootMethod m) {
+        super(t);
         this.method = m;
-        if (t instanceof ClassType rt) {
-            SootClass sc = (SootClass) view.getClass(rt).get();
-            if (sc.isAbstract()) {
+        if (t instanceof RefType rt) {
+            if (rt.getSootClass().isAbstract()) {
                 boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
                 if (!usesReflectionLog) {
                     throw new RuntimeException("Attempt to create allocnode with abstract type " + t);

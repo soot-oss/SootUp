@@ -18,7 +18,6 @@
 
 package qilin.pta.tools;
 
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
@@ -26,39 +25,49 @@ import qilin.parm.select.CtxSelector;
 import qilin.parm.select.DebloatingSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.pta.PTAConfig;
-import qilin.pta.StagedPTA;
+import qilin.pta.toolkits.common.DebloatedOAG;
+import qilin.pta.toolkits.common.OAG;
+import qilin.pta.toolkits.debloaterx.CollectionHeuristic;
+import qilin.pta.toolkits.debloaterx.DebloaterX;
 import qilin.pta.toolkits.conch.Conch;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
-import sootup.core.jimple.basic.Local;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
+import soot.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /*
  * refer to "Context Debloating for Object-Sensitive Pointer Analysis" (ASE'21)
  * */
 public class DebloatedPTA extends StagedPTA {
+    public enum DebloatApproach {
+        CONCH, DEBLOATERX, COLLECTION
+    }
+
     protected BasePTA basePTA;
     protected Set<Object> ctxDepHeaps = new HashSet<>();
+    protected DebloatApproach debloatApproach = DebloatApproach.CONCH;
 
     /*
      * The debloating approach is currently for object-sensitive PTA only.
      * Thus the base PTA should be k-OBJ, Zipper-OBJ or Eagle-OBJ.
      * */
     public DebloatedPTA(BasePTA basePTA) {
-        super(basePTA.view);
         this.basePTA = basePTA;
         CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
         basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
         if (basePTA instanceof StagedPTA stagedPTA) {
             this.prePTA = stagedPTA.getPrePTA();
         } else {
-            this.prePTA = new Spark(basePTA.view);
+            this.prePTA = new Spark();
         }
         System.out.println("debloating ....");
+    }
+
+    /* this constructor is used to specify the debloating approach. */
+    public DebloatedPTA(BasePTA basePTA, DebloatApproach approach) {
+        this(basePTA);
+        this.debloatApproach = approach;
     }
 
     @Override
@@ -67,13 +76,43 @@ public class DebloatedPTA extends StagedPTA {
         prePTA.pureRun();
         sparkTimer.stop();
         System.out.println(sparkTimer);
-        Stopwatch conchTimer = Stopwatch.newAndStart("Conch");
-        Conch hc = new Conch(prePTA);
-        hc.runClassifier();
-        this.ctxDepHeaps.addAll(hc.ctxDependentHeaps());
-        System.out.println();
-        conchTimer.stop();
-        System.out.println(conchTimer);
+        if (debloatApproach == DebloatApproach.CONCH) {
+            Stopwatch conchTimer = Stopwatch.newAndStart("Conch");
+            Conch hc = new Conch(prePTA);
+            hc.runClassifier();
+            this.ctxDepHeaps.addAll(hc.ctxDependentHeaps());
+            System.out.println();
+            conchTimer.stop();
+            System.out.println(conchTimer);
+        } else if (debloatApproach == DebloatApproach.DEBLOATERX) {
+            Stopwatch debloaterXTimer = Stopwatch.newAndStart("DebloaterX");
+            DebloaterX debloaterX = new DebloaterX(prePTA);
+            debloaterX.run();
+            Set<AllocNode> mCtxDepHeaps = debloaterX.getCtxDepHeaps();
+            for (AllocNode obj : mCtxDepHeaps) {
+                this.ctxDepHeaps.add(obj.getNewExpr());
+            }
+            System.out.println();
+            debloaterXTimer.stop();
+            System.out.println(debloaterXTimer);
+            // stat OAG reductions
+            OAG oag = new OAG(prePTA);
+            oag.build();
+            OAG doag1 = new DebloatedOAG(prePTA, mCtxDepHeaps);
+            doag1.build();
+            System.out.println("OAG #node:" + oag.nodeSize() + "; #edge:" + oag.edgeSize());
+            System.out.println("DebloaterX OAG #node:" + doag1.nodeSize() + "; #edge:" + doag1.edgeSize());
+        } else {
+            assert (debloatApproach == DebloatApproach.COLLECTION);
+            Stopwatch collectionHeuristic = Stopwatch.newAndStart("COLLECTION");
+            CollectionHeuristic ch = new CollectionHeuristic(prePTA);
+            ch.run();
+            collectionHeuristic.stop();
+            System.out.println(collectionHeuristic);
+            for (AllocNode obj : ch.getCtxDepHeaps()) {
+                this.ctxDepHeaps.add(obj.getNewExpr());
+            }
+        }
     }
 
     @Override
@@ -95,7 +134,7 @@ public class DebloatedPTA extends StagedPTA {
     }
 
     @Override
-    public ContextMethod parameterize(SootMethod method, Context context) {
+    public MethodOrMethodContext parameterize(SootMethod method, Context context) {
         return basePTA.parameterize(method, context);
     }
 
@@ -115,13 +154,8 @@ public class DebloatedPTA extends StagedPTA {
     }
 
     @Override
-    public Context createCalleeCtx(ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    public Context createCalleeCtx(MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
         return basePTA.createCalleeCtx(caller, receiverNode, callSite, target);
-    }
-
-    @Override
-    public PointsToSet reachingObjectsInternal(PointsToSet s, SparkField f) {
-        return basePTA.reachingObjectsInternal(s, f);
     }
 
     @Override

@@ -24,38 +24,9 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.constant.StringConstant;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JCastExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
-import sootup.core.jimple.common.ref.JArrayRef;
-import sootup.core.jimple.common.ref.JCaughtExceptionRef;
-import sootup.core.jimple.common.ref.JInstanceFieldRef;
-import sootup.core.jimple.common.ref.JParameterRef;
-import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.jimple.common.ref.JThisRef;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.JReturnStmt;
-import sootup.core.jimple.common.stmt.JThrowStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.internal.JNewArrayExpr;
 
 /**
  * @author Ondrej Lhotak
@@ -74,31 +45,31 @@ public class MethodNodeFactory {
     public Node getNode(Value v) {
         if (v instanceof Local l) {
             return caseLocal(l);
-        } else if (v instanceof JCastExpr castExpr) {
+        } else if (v instanceof CastExpr castExpr) {
             return caseCastExpr(castExpr);
-        } else if (v instanceof JNewExpr ne) {
+        } else if (v instanceof NewExpr ne) {
             return caseNewExpr(ne);
-        } else if (v instanceof JStaticFieldRef sfr) {
+        } else if (v instanceof StaticFieldRef sfr) {
             return caseStaticFieldRef(sfr);
-        } else if (v instanceof JNewArrayExpr nae) {
+        } else if (v instanceof NewArrayExpr nae) {
             return caseNewArrayExpr(nae);
-        } else if (v instanceof JArrayRef ar) {
+        } else if (v instanceof ArrayRef ar) {
             return caseArrayRef(ar);
         } else if (v instanceof ClassConstant cc) {
             return caseClassConstant(cc);
         } else if (v instanceof StringConstant sc) {
             return caseStringConstant(sc);
-        } else if (v instanceof JCaughtExceptionRef cef) {
+        } else if (v instanceof CaughtExceptionRef cef) {
             return caseCaughtExceptionRef(cef);
-        } else if (v instanceof JParameterRef pr) {
+        } else if (v instanceof ParameterRef pr) {
             return caseParameterRef(pr);
         } else if (v instanceof NullConstant nc) {
             return caseNullConstant(nc);
-        } else if (v instanceof JInstanceFieldRef ifr) {
+        } else if (v instanceof InstanceFieldRef ifr) {
             return caseInstanceFieldRef(ifr);
-        } else if (v instanceof JThisRef) {
+        } else if (v instanceof ThisRef) {
             return caseThis();
-        } else if (v instanceof JNewMultiArrayExpr nmae) {
+        } else if (v instanceof NewMultiArrayExpr nmae) {
             return caseNewMultiArrayExpr(nmae);
         }
         System.out.println(v + ";;" + v.getClass());
@@ -122,82 +93,130 @@ public class MethodNodeFactory {
      * the invoke method throws an Exception.
      */
     protected void handleInvokeStmt(Stmt s) {
-        AbstractInvokeExpr ie = s.getInvokeExpr();
+        InvokeExpr ie = s.getInvokeExpr();
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
-            if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
+            if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
                 continue;
             }
             getNode(arg);
         }
-        if (s instanceof JAssignStmt assignStmt) {
-            Value l = assignStmt.getLeftOp();
-            if ((l.getType() instanceof ReferenceType)) {
+        if (s instanceof AssignStmt) {
+            Value l = ((AssignStmt) s).getLeftOp();
+            if ((l.getType() instanceof RefLikeType)) {
                 getNode(l);
             }
         }
-        if (ie instanceof AbstractInstanceInvokeExpr iie) {
-            getNode(iie.getBase());
+        if (ie instanceof InstanceInvokeExpr) {
+            getNode(((InstanceInvokeExpr) ie).getBase());
         }
     }
 
-    private void resolveClinit(JStaticFieldRef staticFieldRef) {
-        ClassType declClassType = staticFieldRef.getFieldSignature().getDeclClassType();
-        SootClass sootClass = (SootClass) pag.getView().getClass(declClassType).get();
-        PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
+    private void resolveClinit(StaticFieldRef staticFieldRef) {
+        PTAUtils.clinitsOf(staticFieldRef.getField().getDeclaringClass()).forEach(mpag::addTriggeredClinit);
     }
 
+    /**
+     * Adds the edges required for this statement to the graph.
+     */
+    private void handleIntraStmt(Stmt s) {
+        s.apply(new AbstractStmtSwitch<>() {
+            public void caseAssignStmt(AssignStmt as) {
+                Value l = as.getLeftOp();
+                Value r = as.getRightOp();
+                if (l instanceof StaticFieldRef) {
+                    resolveClinit((StaticFieldRef) l);
+                } else if (r instanceof StaticFieldRef) {
+                    resolveClinit((StaticFieldRef) r);
+                }
 
+                if (!(l.getType() instanceof RefLikeType))
+                    return;
+                // check for improper casts, with mal-formed code we might get
+                // l = (refliketype)int_type, if so just return
+                if (r instanceof CastExpr && (!(((CastExpr) r).getOp().getType() instanceof RefLikeType))) {
+                    return;
+                }
 
-    /* cases for handle values */
+                if (!(r.getType() instanceof RefLikeType))
+                    throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
+                            + " in method " + method.getSignature());
+                Node dest = getNode(l);
+                Node src = getNode(r);
+                mpag.addInternalEdge(src, dest);
+            }
+
+            public void caseReturnStmt(ReturnStmt rs) {
+                if (!(rs.getOp().getType() instanceof RefLikeType))
+                    return;
+                Node retNode = getNode(rs.getOp());
+                mpag.addInternalEdge(retNode, caseRet());
+            }
+
+            public void caseIdentityStmt(IdentityStmt is) {
+                if (!(is.getLeftOp().getType() instanceof RefLikeType)) {
+                    return;
+                }
+                Node dest = getNode(is.getLeftOp());
+                Node src = getNode(is.getRightOp());
+                mpag.addInternalEdge(src, dest);
+            }
+
+            public void caseThrowStmt(ThrowStmt ts) {
+                if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+                    mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+                }
+            }
+        });
+    }
 
     private VarNode caseLocal(Local l) {
         return pag.makeLocalVarNode(l, l.getType(), method);
     }
 
-    private AllocNode caseNewArrayExpr(JNewArrayExpr nae) {
+    private AllocNode caseNewArrayExpr(NewArrayExpr nae) {
         return pag.makeAllocNode(nae, nae.getType(), method);
     }
 
-    private AllocNode caseNewExpr(JNewExpr ne) {
+    private AllocNode caseNewExpr(NewExpr ne) {
         SootClass cl = PTAScene.v().loadClassAndSupport(ne.getType().toString());
         PTAUtils.clinitsOf(cl).forEach(mpag::addTriggeredClinit);
         return pag.makeAllocNode(ne, ne.getType(), method);
     }
 
-    private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
-        SootField sf = (SootField) pag.getView().getField(ifr.getFieldSignature()).get();
-//        if (sf == null) {
-//            sf = new SootField(ifr.getFieldSignature(), ifr.getType(), Modifier.PUBLIC);
-//            sf.setNumber(Scene.v().getFieldNumberer().size());
-//            Scene.v().getFieldNumberer().add(sf);
-//            System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
-//        }
+    private FieldRefNode caseInstanceFieldRef(InstanceFieldRef ifr) {
+        SootField sf = ifr.getField();
+        if (sf == null) {
+            sf = new SootField(ifr.getFieldRef().name(), ifr.getType(), Modifier.PUBLIC);
+            sf.setNumber(Scene.v().getFieldNumberer().size());
+            Scene.v().getFieldNumberer().add(sf);
+            System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
+        }
         return pag.makeFieldRefNode(pag.makeLocalVarNode(ifr.getBase(), ifr.getBase().getType(), method), new Field(sf));
     }
 
-    private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {
+    private VarNode caseNewMultiArrayExpr(NewMultiArrayExpr nmae) {
         ArrayType type = (ArrayType) nmae.getType();
         int pos = 0;
-        AllocNode prevAn = pag.makeAllocNode(new JNewArrayExpr(type, nmae.getSize(pos), JavaIdentifierFactory.getInstance()), type, method);
+        AllocNode prevAn = pag.makeAllocNode(new JNewArrayExpr(type, nmae.getSize(pos)), type, method);
         VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
         mpag.addInternalEdge(prevAn, prevVn); // new
         VarNode ret = prevVn;
         while (true) {
-            Type t = type.getArrayElementType();
+            Type t = type.getElementType();
             if (!(t instanceof ArrayType)) {
                 break;
             }
             type = (ArrayType) t;
             ++pos;
-            Immediate sizeVal;
+            Value sizeVal;
             if (pos < nmae.getSizeCount()) {
                 sizeVal = nmae.getSize(pos);
             } else {
-                sizeVal = IntConstant.getInstance(1);
+                sizeVal = IntConstant.v(1);
             }
-            AllocNode an = pag.makeAllocNode(new JNewArrayExpr(type, sizeVal, JavaIdentifierFactory.getInstance()), type, method);
+            AllocNode an = pag.makeAllocNode(new JNewArrayExpr(type, sizeVal), type, method);
             VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
             mpag.addInternalEdge(an, vn); // new
             mpag.addInternalEdge(vn, pag.makeFieldRefNode(prevVn, ArrayElement.v())); // store
@@ -206,15 +225,15 @@ public class MethodNodeFactory {
         return ret;
     }
 
-    private VarNode caseCastExpr(JCastExpr ce) {
+    private VarNode caseCastExpr(CastExpr ce) {
         Node opNode = getNode(ce.getOp());
-        VarNode castNode = pag.makeLocalVarNode(ce, ce.getType(), method);
+        VarNode castNode = pag.makeLocalVarNode(ce, ce.getCastType(), method);
         mpag.addInternalEdge(opNode, castNode);
         return castNode;
     }
 
     public VarNode caseThis() {
-        Type type = method.isStatic() ? JavaIdentifierFactory.getInstance().getType("java.lang.Object") : method.getDeclaringClassType();
+        Type type = method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClass().getType();
         VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
         ret.setInterProcTarget();
         return ret;
@@ -233,7 +252,7 @@ public class MethodNodeFactory {
     }
 
     public VarNode caseMethodThrow() {
-        VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE), JavaIdentifierFactory.getInstance().getType("java.lang.Throwable"), method);
+        VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE), RefType.v("java.lang.Throwable"), method);
         ret.setInterProcSource();
         return ret;
     }
@@ -242,7 +261,7 @@ public class MethodNodeFactory {
         return pag.makeFieldRefNode(base, ArrayElement.v());
     }
 
-    private Node caseCaughtExceptionRef(JCaughtExceptionRef cer) {
+    private Node caseCaughtExceptionRef(CaughtExceptionRef cer) {
         if (CoreConfig.v().getPtaConfig().preciseExceptions) {
             // we model caughtException expression as an local assignment.
             return pag.makeLocalVarNode(cer, cer.getType(), method);
@@ -251,16 +270,16 @@ public class MethodNodeFactory {
         }
     }
 
-    private FieldRefNode caseArrayRef(JArrayRef ar) {
+    private FieldRefNode caseArrayRef(ArrayRef ar) {
         return caseArray(caseLocal((Local) ar.getBase()));
     }
 
-    private VarNode caseParameterRef(JParameterRef pr) {
+    private VarNode caseParameterRef(ParameterRef pr) {
         return caseParm(pr.getIndex());
     }
 
-    private VarNode caseStaticFieldRef(JStaticFieldRef sfr) {
-        return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
+    private VarNode caseStaticFieldRef(StaticFieldRef sfr) {
+        return pag.makeGlobalVarNode(sfr.getField(), sfr.getField().getType());
     }
 
     private Node caseNullConstant(NullConstant nr) {
@@ -268,91 +287,26 @@ public class MethodNodeFactory {
     }
 
     private VarNode caseStringConstant(StringConstant sc) {
-        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.String");
         AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
-        VarNode stringConstantVar = pag.makeGlobalVarNode(sc, type);
+        VarNode stringConstantVar = pag.makeGlobalVarNode(sc, RefType.v("java.lang.String"));
         mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, sc), type, method);
+        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, sc), RefType.v("java.lang.String"), method);
         mpag.addInternalEdge(stringConstantVar, vn);
         return vn;
     }
 
     public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.Throwable");
-        return pag.makeLocalVarNode(invoke, type, method);
+        return pag.makeLocalVarNode(invoke, RefType.v("java.lang.Throwable"), method);
     }
 
     final public VarNode caseClassConstant(ClassConstant cc) {
-        Type type = JavaIdentifierFactory.getInstance().getType("java.lang.Class");
         AllocNode classConstant = pag.makeClassConstantNode(cc);
-        VarNode classConstantVar = pag.makeGlobalVarNode(cc, type);
+        VarNode classConstantVar = pag.makeGlobalVarNode(cc, RefType.v("java.lang.Class"));
         mpag.addInternalEdge(classConstant, classConstantVar);
-        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, cc), type, method);
+        VarNode vn = pag.makeLocalVarNode(new Pair<>(method, cc), RefType.v("java.lang.Class"), method);
         mpag.addInternalEdge(classConstantVar, vn);
         return vn;
     }
 
 
-    /* cases for handle intra-statements */
-    /**
-     * Adds the edges required for this statement to the graph.
-     */
-    public void caseAssignStmt(JAssignStmt as) {
-        Value l = as.getLeftOp();
-        Value r = as.getRightOp();
-        if (l instanceof JStaticFieldRef sfr) {
-            resolveClinit(sfr);
-        } else if (r instanceof JStaticFieldRef sfr) {
-            resolveClinit(sfr);
-        }
-
-        if (!(l.getType() instanceof ReferenceType))
-            return;
-        // check for improper casts, with mal-formed code we might get
-        // l = (refliketype)int_type, if so just return
-        if (r instanceof JCastExpr && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
-            return;
-        }
-
-        if (!(r.getType() instanceof ReferenceType))
-            throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
-                    + " in method " + method.getSignature());
-        Node dest = getNode(l);
-        Node src = getNode(r);
-        mpag.addInternalEdge(src, dest);
-    }
-
-    public void caseReturnStmt(JReturnStmt rs) {
-        if (!(rs.getOp().getType() instanceof ReferenceType))
-            return;
-        Node retNode = getNode(rs.getOp());
-        mpag.addInternalEdge(retNode, caseRet());
-    }
-
-    public void caseIdentityStmt(JIdentityStmt is) {
-        if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
-            return;
-        }
-        Node dest = getNode(is.getLeftOp());
-        Node src = getNode(is.getRightOp());
-        mpag.addInternalEdge(src, dest);
-    }
-
-    public void caseThrowStmt(JThrowStmt ts) {
-        if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-            mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
-        }
-    }
-
-    private void handleIntraStmt(Stmt s) {
-        if (s instanceof JAssignStmt as) {
-            caseAssignStmt(as);
-        } else if (s instanceof JReturnStmt rs) {
-            caseReturnStmt(rs);
-        } else if (s instanceof JIdentityStmt is) {
-            caseIdentityStmt(is);
-        } else if (s instanceof JThrowStmt ts) {
-            caseThrowStmt(ts);
-        }
-    }
 }

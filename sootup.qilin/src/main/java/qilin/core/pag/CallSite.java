@@ -19,20 +19,20 @@
 package qilin.core.pag;
 
 import qilin.core.context.ContextElement;
-import sootup.core.jimple.common.stmt.Stmt;
+import soot.Unit;
 
 /**
  * callsite based context element in the points to analysis.
  */
 public class CallSite implements ContextElement {
 
-    private final Stmt unit;
+    private final Unit unit;
 
-    public CallSite(Stmt unit) {
+    public CallSite(Unit unit) {
         this.unit = unit;
     }
 
-    public Stmt getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 

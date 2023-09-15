@@ -21,8 +21,8 @@ package qilin.pta.toolkits.common;
 import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
-import qilin.core.pag.SparkField;
 import qilin.core.sets.PointsToSet;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.*;
 

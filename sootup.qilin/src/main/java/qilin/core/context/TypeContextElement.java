@@ -21,10 +21,9 @@ package qilin.core.context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.StringConstantNode;
-import sootup.core.IdentifierFactory;
-import sootup.core.model.SootMethod;
-import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.RefType;
+import soot.SootMethod;
+import soot.Type;
 
 /**
  * Type based context element in the points to analysis.
@@ -39,14 +38,13 @@ public class TypeContextElement implements ContextElement {
 
     public static TypeContextElement getTypeContextElement(AllocNode a) {
         SootMethod declaringMethod = a.getMethod();
-        IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-        Type declType = identifierFactory.getType("java.lang.Object");
+        Type declType = RefType.v("java.lang.Object");
         if (declaringMethod != null) {
-            declType = declaringMethod.getDeclaringClassType();
+            declType = declaringMethod.getDeclaringClass().getType();
         } else if (a instanceof ClassConstantNode) {
-            declType = identifierFactory.getType("java.lang.System");
+            declType = RefType.v("java.lang.System");
         } else if (a instanceof StringConstantNode) {
-            declType = identifierFactory.getType("java.lang.String");
+            declType = RefType.v("java.lang.String");
         }
         return new TypeContextElement(declType);
     }

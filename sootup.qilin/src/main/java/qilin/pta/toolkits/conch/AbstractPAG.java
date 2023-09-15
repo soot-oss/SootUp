@@ -23,12 +23,12 @@ import heros.solver.CountingThreadPoolExecutor;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.CallGraph;
 import qilin.core.pag.*;
-import qilin.util.queue.QueueReader;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ReferenceType;
+import soot.RefLikeType;
+import soot.SootMethod;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.util.queue.QueueReader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public abstract class AbstractPAG {
 
     protected void build() {
         prePTA.getNakedReachableMethods()
-                .parallelStream()// .filter(m -> !m.isPhantom())
+                .parallelStream().filter(m -> !m.isPhantom())
                 .forEach(this::buildFG);
     }
 
@@ -101,12 +101,12 @@ public abstract class AbstractPAG {
 
         int numParms = method.getParameterCount();
         for (int i = 0; i < numParms; i++) {
-            if (method.getParameterType(i) instanceof ReferenceType) {
+            if (method.getParameterType(i) instanceof RefLikeType) {
                 LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
                 addParamEdge(param);
             }
         }
-        if (method.getReturnType() instanceof ReferenceType) {
+        if (method.getReturnType() instanceof RefLikeType) {
             LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
             addReturnEdge(mret);
         }
@@ -218,6 +218,6 @@ public abstract class AbstractPAG {
     }
 
     protected AllocNode getSymbolicHeapOf(SootMethod method, Stmt invokeStmt) {
-        return symbolicHeaps.computeIfAbsent(method, k -> new ConcurrentHashMap<>()).computeIfAbsent(invokeStmt, k -> new AllocNode(prePAG.getView(), invokeStmt, null, method));
+        return symbolicHeaps.computeIfAbsent(method, k -> new ConcurrentHashMap<>()).computeIfAbsent(invokeStmt, k -> new AllocNode(invokeStmt, null, method));
     }
 }

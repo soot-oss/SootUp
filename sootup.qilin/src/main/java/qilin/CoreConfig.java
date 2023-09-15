@@ -18,6 +18,8 @@
 
 package qilin;
 
+import soot.SourceLocator;
+
 import java.util.List;
 
 public class CoreConfig {
@@ -129,7 +131,7 @@ public class CoreConfig {
     }
 
     public static class OutputConfiguration {
-        public String outDir = "sootUpOut";
+        public String outDir = SourceLocator.v().getOutputDir();
         /**
          * dump appclasses to jimple
          */

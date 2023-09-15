@@ -18,15 +18,14 @@
 
 package qilin.core.pag;
 
-import qilin.core.context.Context;
-import sootup.core.views.View;
+import soot.Context;
 
 public class ContextVarNode extends VarNode {
     private final Context context;
     private final VarNode base;
 
-    public ContextVarNode(View view, VarNode base, Context context) {
-        super(view, base.getVariable(), base.getType());
+    public ContextVarNode(VarNode base, Context context) {
+        super(base.getVariable(), base.getType());
         this.context = context;
         this.base = base;
     }

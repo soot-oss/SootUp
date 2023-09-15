@@ -21,22 +21,20 @@ package qilin.pta.toolkits.eagle;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Util;
-import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ReferenceType;
+import soot.RefLikeType;
+import soot.SootMethod;
+import soot.Unit;
+import soot.Value;
+import soot.jimple.*;
+import soot.jimple.spark.pag.SparkField;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
+import soot.util.queue.QueueReader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -264,9 +262,9 @@ public class Eagle {
 
         CallGraph callGraph = prePTA.getCallGraph();
         for (SootMethod method : prePTA.getNakedReachableMethods()) {
-//            if (method.isPhantom()) {
-//                continue;
-//            }
+            if (method.isPhantom()) {
+                continue;
+            }
             MethodPAG srcmpag = prePAG.getMethodPAG(method);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
@@ -303,11 +301,11 @@ public class Eagle {
             int numParms = method.getParameterCount();
             LocalVarNode[] parms = new LocalVarNode[numParms];
             for (int i = 0; i < numParms; i++) {
-                if (method.getParameterType(i) instanceof ReferenceType) {
+                if (method.getParameterType(i) instanceof RefLikeType) {
                     parms[i] = (LocalVarNode) srcnf.caseParm(i);
                 }
             }
-            LocalVarNode mret = method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
+            LocalVarNode mret = method.getReturnType() instanceof RefLikeType ? (LocalVarNode) srcnf.caseRet() : null;
             LocalVarNode throwFinal = prePAG.findLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE));
             if (method.isStatic()) {
                 pts.getOrDefault(thisRef, Collections.emptySet()).forEach(a -> {
@@ -322,42 +320,43 @@ public class Eagle {
             }
 
             // add invoke edges
-            for (final Stmt s : srcmpag.getInvokeStmts()) {
-                AbstractInvokeExpr ie = s.getInvokeExpr();
+            for (final Unit u : srcmpag.getInvokeStmts()) {
+                final Stmt s = (Stmt) u;
+                InvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant)
+                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant)
                         continue;
                     args[i] = arg;
                 }
                 LocalVarNode retDest = null;
-                if (s instanceof JAssignStmt) {
-                    Value dest = ((JAssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof ReferenceType) {
+                if (s instanceof AssignStmt) {
+                    Value dest = ((AssignStmt) s).getLeftOp();
+                    if (dest.getType() instanceof RefLikeType) {
                         retDest = prePAG.findLocalVarNode(dest);
                     }
                 }
                 LocalVarNode receiver;
-                if (ie instanceof AbstractInstanceInvokeExpr iie) {
+                if (ie instanceof InstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 } else {
                     // static call
                     receiver = thisRef;
                 }
-                for (Iterator<Edge> it = callGraph.edgesOutOf(s); it.hasNext(); ) {
+                for (Iterator<Edge> it = callGraph.edgesOutOf(u); it.hasNext(); ) {
                     Edge e = it.next();
                     SootMethod tgtmtd = e.tgt();
                     for (int i = 0; i < numArgs; i++) {
-                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof ReferenceType))
+                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof RefLikeType))
                             continue;
                         ValNode argNode = prePAG.findValNode(args[i]);
                         if (argNode instanceof LocalVarNode) {
                             this.addStoreEdge((LocalVarNode) argNode, receiver);
                         }
                     }
-                    if (retDest != null && tgtmtd.getReturnType() instanceof ReferenceType) {
+                    if (retDest != null && tgtmtd.getReturnType() instanceof RefLikeType) {
                         this.addLoadEdge(receiver, retDest);
                     }
                     LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);

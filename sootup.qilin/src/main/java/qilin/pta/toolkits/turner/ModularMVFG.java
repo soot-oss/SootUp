@@ -25,8 +25,8 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
 import qilin.util.graph.MergedNode;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ReferenceType;
+import soot.RefLikeType;
+import soot.SootMethod;
 
 import java.util.Set;
 
@@ -47,10 +47,10 @@ public class ModularMVFG extends AbstractMVFG {
     protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
         for (SootMethod tgtmtd : targets) {
             // the target method is in the same scc with current method.
-            if (/* tgtmtd.isPhantom() || */ sccNode.getContent().contains(tgtmtd)) {
+            if (tgtmtd.isPhantom() || sccNode.getContent().contains(tgtmtd)) {
                 return true;
             }
-            if (!(tgtmtd.getReturnType() instanceof ReferenceType)) {
+            if (!(tgtmtd.getReturnType() instanceof RefLikeType)) {
                 continue;
             }
             MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
@@ -69,7 +69,7 @@ public class ModularMVFG extends AbstractMVFG {
     protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
         for (SootMethod tgtmtd : targets) {
             // the target method is in the same scc with current method.
-            if (/* tgtmtd.isPhantom() || */ sccNode.getContent().contains(tgtmtd)) {
+            if (tgtmtd.isPhantom() || sccNode.getContent().contains(tgtmtd)) {
                 return true;
             }
             MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
@@ -80,7 +80,7 @@ public class ModularMVFG extends AbstractMVFG {
             if (paramIndex == PointsToAnalysis.THIS_NODE) {
                 parm = (LocalVarNode) tgtnf.caseThis();
             } else {
-                if (tgtmtd.getParameterType(paramIndex) instanceof ReferenceType) {
+                if (tgtmtd.getParameterType(paramIndex) instanceof RefLikeType) {
                     parm = (LocalVarNode) tgtnf.caseParm(paramIndex);
                 } else {
                     continue;

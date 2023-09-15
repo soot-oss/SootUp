@@ -18,11 +18,11 @@
 
 package qilin.core;
 
-import qilin.core.context.Context;
 import qilin.core.pag.Node;
 import qilin.core.sets.PointsToSet;
-import sootup.core.jimple.basic.Local;
-import sootup.core.model.SootField;
+import soot.Context;
+import soot.Local;
+import soot.SootField;
 
 /**
  * A generic interface to any type of pointer analysis.

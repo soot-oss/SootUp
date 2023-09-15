@@ -18,11 +18,11 @@
 
 package qilin.parm.select;
 
-import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import sootup.core.model.SootMethod;
+import soot.Context;
+import soot.SootMethod;
 
 /*
  * A pipeline context selector which selects context by firstly using ctxSelA and then ctxSelB.

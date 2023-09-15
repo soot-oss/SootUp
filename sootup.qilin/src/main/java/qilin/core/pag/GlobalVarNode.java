@@ -18,11 +18,9 @@
 
 package qilin.core.pag;
 
-
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.SootClass;
+import soot.SootField;
+import soot.Type;
 
 /**
  * Represents a simple variable node in the pointer assignment graph that is not associated with any particular
@@ -31,8 +29,8 @@ import sootup.core.views.View;
  * @author Ondrej Lhotak
  */
 public class GlobalVarNode extends VarNode {
-    public GlobalVarNode(View view, Object variable, Type t) {
-        super(view, variable, t);
+    public GlobalVarNode(Object variable, Type t) {
+        super(variable, t);
     }
 
     @Override
@@ -45,8 +43,8 @@ public class GlobalVarNode extends VarNode {
     }
 
     public SootClass getDeclaringClass() {
-        if (variable instanceof SootField sootField) {
-            return (SootClass) view.getClass(sootField.getDeclaringClassType()).get();
+        if (variable instanceof SootField) {
+            return ((SootField) variable).getDeclaringClass();
         }
 
         return null;

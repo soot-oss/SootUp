@@ -18,8 +18,9 @@
 
 package qilin.core.pag;
 
-import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.RefType;
+import soot.Type;
+import soot.jimple.spark.pag.SparkField;
 
 /**
  * Represents an array element.
@@ -50,6 +51,6 @@ public class ArrayElement implements SparkField {
     }
 
     public Type getType() {
-        return JavaIdentifierFactory.getInstance().getType("java.lang.Object");
+        return RefType.v("java.lang.Object");
     }
 }

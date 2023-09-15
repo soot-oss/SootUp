@@ -19,23 +19,10 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.JIfStmt;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.JNopStmt;
-import sootup.core.jimple.common.stmt.JReturnStmt;
-import sootup.core.jimple.common.stmt.JReturnVoidStmt;
-import sootup.core.jimple.common.stmt.JThrowStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import sootup.core.jimple.javabytecode.stmt.JRetStmt;
-import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.SootMethod;
+import soot.Body;
+import soot.SootMethod;
+import soot.Unit;
+import soot.jimple.*;
 
 /*
  * features and formulas used in "Data-driven context-sensitivity for Points-to Analysis (OOPSLA 2017)"
@@ -44,7 +31,7 @@ public class FeaturesTrueTable {
     private final boolean[] features = new boolean[26];
 
     public FeaturesTrueTable(SootMethod sm) {
-        String sig = sm.getSignature().toString();
+        String sig = sm.getSignature();
         this.features[1] = sig.contains("java");
         this.features[2] = sig.contains("lang");
         this.features[3] = sig.contains("sun");
@@ -56,36 +43,37 @@ public class FeaturesTrueTable {
         this.features[9] = sig.contains("String");
         this.features[10] = sig.contains("init");
         Body body = PTAUtils.getMethodBody(sm);
-        for (Stmt stmt : body.getStmts()) {
-            if (stmt instanceof JAssignStmt) {
+        for (Unit unit : body.getUnits()) {
+            if (unit instanceof AssignStmt) {
                 this.features[11] = true;
-            } else if (stmt instanceof JIdentityStmt) {
+            } else if (unit instanceof IdentityStmt) {
                 this.features[12] = true;
-            } else if (stmt instanceof JInvokeStmt) {
+            } else if (unit instanceof InvokeStmt) {
                 this.features[13] = true;
-            } else if (stmt instanceof JReturnStmt) {
+            } else if (unit instanceof ReturnStmt) {
                 this.features[14] = true;
-            } else if (stmt instanceof JThrowStmt) {
+            } else if (unit instanceof ThrowStmt) {
                 this.features[15] = true;
-            } else if (stmt instanceof JBreakpointStmt) {
+            } else if (unit instanceof BreakpointStmt) {
                 this.features[16] = true;
-            } else if (stmt instanceof JEnterMonitorStmt) {
+            } else if (unit instanceof EnterMonitorStmt) {
                 this.features[17] = true;
-            } else if (stmt instanceof JExitMonitorStmt) {
+            } else if (unit instanceof ExitMonitorStmt) {
                 this.features[18] = true;
-            } else if (stmt instanceof JGotoStmt) {
+            } else if (unit instanceof GotoStmt) {
                 this.features[19] = true;
-            } else if (stmt instanceof JIfStmt) {
+            } else if (unit instanceof IfStmt) {
                 this.features[20] = true;
-            } else if (stmt instanceof JSwitchStmt) {
+            } else if (unit instanceof LookupSwitchStmt) {
                 this.features[21] = true;
-                this.features[25] = true;
-            } else if (stmt instanceof JNopStmt) {
+            } else if (unit instanceof NopStmt) {
                 this.features[22] = true;
-            } else if (stmt instanceof JRetStmt) {
+            } else if (unit instanceof RetStmt) {
                 this.features[23] = true;
-            } else if (stmt instanceof JReturnVoidStmt) {
+            } else if (unit instanceof ReturnVoidStmt) {
                 this.features[24] = true;
+            } else if (unit instanceof TableSwitchStmt) {
+                this.features[25] = true;
             }
         }
     }

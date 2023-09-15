@@ -18,15 +18,14 @@
 
 package qilin.core.pag;
 
-import qilin.core.context.Context;
-import sootup.core.views.View;
+import soot.Context;
 
 public class ContextAllocNode extends AllocNode {
     private final Context context;
     private final AllocNode base;
 
-    public ContextAllocNode(View view, AllocNode base, Context context) {
-        super(view, base.getNewExpr(), base.getType(), base.getMethod());
+    public ContextAllocNode(AllocNode base, Context context) {
+        super(base.getNewExpr(), base.getType(), base.getMethod());
         this.context = context;
         this.base = base;
     }

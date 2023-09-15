@@ -23,12 +23,11 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
-import qilin.core.pag.Node;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.graph.DirectedGraph;
-import qilin.util.queue.QueueReader;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.util.queue.QueueReader;
 
 import java.util.*;
 
@@ -39,9 +38,9 @@ public class OAG implements DirectedGraph<AllocNode> {
     protected final PTA pta;
     protected final Map<AllocNode, Set<AllocNode>> successors;
     protected final Map<AllocNode, Set<AllocNode>> predecessors;
-    private final Set<AllocNode> nodes = new HashSet<>();
-    private Collection<AllocNode> rootNodes;
-    private Collection<AllocNode> tailNodes;
+    protected final Set<AllocNode> nodes = new HashSet<>();
+    protected Collection<AllocNode> rootNodes;
+    protected Collection<AllocNode> tailNodes;
 
     public OAG(PTA prePta) {
         this.pta = prePta;
@@ -109,13 +108,13 @@ public class OAG implements DirectedGraph<AllocNode> {
     protected void buildOAG() {
         Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
         for (SootMethod method : this.pta.getNakedReachableMethods()) {
-//            if (method.isPhantom()) {
-//                continue;
-//            }
+            if (method.isPhantom()) {
+                continue;
+            }
             MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-            QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+            QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
             while (reader.hasNext()) {
                 qilin.core.pag.Node from = reader.next(), to = reader.next();
                 if (from instanceof AllocNode tgt) {
@@ -149,4 +148,15 @@ public class OAG implements DirectedGraph<AllocNode> {
         this.successors.computeIfAbsent(src, k -> new HashSet<>()).add(tgt);
     }
 
+    public int nodeSize() {
+        return this.nodes.size();
+    }
+
+    public int edgeSize() {
+        int ret = 0;
+        for (AllocNode obj : predecessors.keySet()) {
+            ret += predecessors.get(obj).size();
+        }
+        return ret;
+    }
 }

@@ -19,11 +19,11 @@
 package qilin.pta.toolkits.conch;
 
 import qilin.core.PTA;
-import qilin.core.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.callgraph.Edge;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -128,7 +128,7 @@ public class LeakAnalysis extends AbstractPAG {
                     AllocNode sourceHeap = (AllocNode) sourceNode;
                     result.add(sourceHeap);
                     SootMethod containingMethod = sourceHeap.getMethod();
-                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
+                    Iterator<Edge> it = callGraph.edgesInto(containingMethod);
                     while (it.hasNext()) {
                         Edge edge = it.next();
                         SootMethod srcMethod = edge.src();
@@ -148,7 +148,7 @@ public class LeakAnalysis extends AbstractPAG {
                 } else if (initState == DFA.State.F) {
                     LocalVarNode pj = (LocalVarNode) sourceNode;
                     SootMethod containingMethod = pj.getMethod();
-                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
+                    Iterator<Edge> it = callGraph.edgesInto(containingMethod);
                     while (it.hasNext()) {
                         Edge edge = it.next();
                         SootMethod srcMethod = edge.src();
@@ -176,7 +176,7 @@ public class LeakAnalysis extends AbstractPAG {
                     // ret = pi.f*
                     LocalVarNode retOrThrow = (LocalVarNode) sourceNode;
                     SootMethod containingMethod = retOrThrow.getMethod();
-                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
+                    Iterator<Edge> it = callGraph.edgesInto(containingMethod);
                     VarNode pi = (VarNode) pe.getTgtNode();
                     // add r --> ai summary edge inverse_inter_load.
                     while (it.hasNext()) {

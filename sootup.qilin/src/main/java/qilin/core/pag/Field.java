@@ -18,9 +18,9 @@
 
 package qilin.core.pag;
 
-
-import sootup.core.model.SootField;
-import sootup.core.types.Type;
+import soot.SootField;
+import soot.Type;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.Objects;
 
@@ -36,8 +36,7 @@ public class Field implements SparkField {
 
     @Override
     public int getNumber() {
-        throw new UnsupportedOperationException();
-        // return field.getNumber();
+        return field.getNumber();
     }
 
     @Override

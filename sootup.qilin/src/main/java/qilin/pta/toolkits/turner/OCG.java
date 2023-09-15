@@ -24,11 +24,8 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ArrayType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
+import soot.*;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.*;
 
@@ -58,7 +55,7 @@ public class OCG {
 
             SparkField f = contextField.getField();
             if (f.getType() instanceof ArrayType at) {
-                if (at.getBaseType() instanceof PrimitiveType) {
+                if (at.baseType instanceof PrimType) {
                     return;
                 }
             }
@@ -246,11 +243,11 @@ public class OCG {
             return false;
         }
         Type retType = method.getReturnType();
-        if (!(retType instanceof ReferenceType)) {
+        if (!(retType instanceof RefLikeType)) {
             return false;
         }
         if (retType instanceof ArrayType at) {
-            if (at.getBaseType() instanceof PrimitiveType) {
+            if (at.baseType instanceof PrimType) {
                 return false;
             }
         }

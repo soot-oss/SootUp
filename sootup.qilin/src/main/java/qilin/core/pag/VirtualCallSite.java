@@ -18,10 +18,11 @@
 
 package qilin.core.pag;
 
-import qilin.core.callgraph.Kind;
-import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.signatures.MethodSubSignature;
+import soot.Kind;
+import soot.MethodOrMethodContext;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.Stmt;
+import soot.util.NumberedString;
 
 import java.util.Objects;
 
@@ -32,13 +33,13 @@ import java.util.Objects;
  */
 public class VirtualCallSite extends CallSite {
     private final VarNode recNode;
-    private final ContextMethod container;
-    private final AbstractInstanceInvokeExpr iie;
-    private final MethodSubSignature subSig;
+    private final MethodOrMethodContext container;
+    private final InstanceInvokeExpr iie;
+    private final NumberedString subSig;
     private final Kind kind;
 
-    public VirtualCallSite(VarNode recNode, Stmt stmt, ContextMethod container, AbstractInstanceInvokeExpr iie,
-                           MethodSubSignature subSig, Kind kind) {
+    public VirtualCallSite(VarNode recNode, Stmt stmt, MethodOrMethodContext container, InstanceInvokeExpr iie,
+                           NumberedString subSig, Kind kind) {
         super(stmt);
         this.recNode = recNode;
         this.container = container;
@@ -51,15 +52,15 @@ public class VirtualCallSite extends CallSite {
         return recNode;
     }
 
-    public ContextMethod container() {
+    public MethodOrMethodContext container() {
         return container;
     }
 
-    public AbstractInstanceInvokeExpr iie() {
+    public InstanceInvokeExpr iie() {
         return iie;
     }
 
-    public MethodSubSignature subSig() {
+    public NumberedString subSig() {
         return subSig;
     }
 

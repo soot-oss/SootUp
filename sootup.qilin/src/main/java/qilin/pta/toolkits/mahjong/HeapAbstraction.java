@@ -8,7 +8,7 @@ import qilin.pta.toolkits.mahjong.automata.DFAFactory;
 import qilin.pta.toolkits.mahjong.automata.DFAState;
 import qilin.pta.toolkits.common.FieldPointstoGraph;
 import qilin.util.UnionFindSet;
-import sootup.core.types.Type;
+import soot.Type;
 
 import java.util.Collection;
 import java.util.HashMap;

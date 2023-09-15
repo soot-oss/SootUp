@@ -18,8 +18,8 @@
 
 package qilin.core.sets;
 
-import qilin.core.util.BitSetIterator;
-import qilin.core.util.BitVector;
+import soot.util.BitSetIterator;
+import soot.util.BitVector;
 
 import java.util.Arrays;
 import java.util.Iterator;

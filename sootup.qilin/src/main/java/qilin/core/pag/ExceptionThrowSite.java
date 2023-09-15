@@ -18,22 +18,23 @@
 
 package qilin.core.pag;
 
-import sootup.core.jimple.common.stmt.Stmt;
+import soot.MethodOrMethodContext;
+import soot.Unit;
 
 import java.util.Objects;
 
 public class ExceptionThrowSite {
-    private final Stmt unit;
+    private final Unit unit;
     private final VarNode throwNode;
-    private final ContextMethod container;
+    private final MethodOrMethodContext container;
 
-    public ExceptionThrowSite(VarNode throwNode, Stmt unit, ContextMethod container) {
+    public ExceptionThrowSite(VarNode throwNode, Unit unit, MethodOrMethodContext container) {
         this.unit = unit;
         this.container = container;
         this.throwNode = throwNode;
     }
 
-    public ContextMethod container() {
+    public MethodOrMethodContext container() {
         return container;
     }
 
@@ -41,7 +42,7 @@ public class ExceptionThrowSite {
         return throwNode;
     }
 
-    public Stmt getUnit() {
+    public Unit getUnit() {
         return unit;
     }
 

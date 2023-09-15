@@ -21,8 +21,8 @@ package qilin.pta.toolkits.conch;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.graph.DirectedGraphImpl;
-import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
+import soot.util.queue.QueueReader;
 
 import java.util.HashSet;
 import java.util.Set;

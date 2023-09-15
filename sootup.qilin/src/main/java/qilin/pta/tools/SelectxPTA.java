@@ -19,14 +19,13 @@
 package qilin.pta.tools;
 
 import qilin.pta.toolkits.selectx.Selectx;
-import sootup.core.views.View;
 
 import java.util.Map;
 
 public class SelectxPTA extends PartialCallSiteSensPTA {
 
-    public SelectxPTA(View view, int ctxLen) {
-        super(view, ctxLen);
+    public SelectxPTA(int ctxLen) {
+        super(ctxLen);
         System.out.println("selectx ... ");
     }
 

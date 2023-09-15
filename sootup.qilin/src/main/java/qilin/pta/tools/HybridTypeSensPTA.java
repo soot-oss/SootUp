@@ -26,7 +26,6 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
-import sootup.core.views.View;
 
 /**
  * refer to "Hybrid Context-Sensitivity for Points-To Analysis" (PLDI'13)
@@ -34,8 +33,7 @@ import sootup.core.views.View;
 
 public class HybridTypeSensPTA extends BasePTA {
 
-    public HybridTypeSensPTA(View view, int k, int hk) {
-        super(view);
+    public HybridTypeSensPTA(int k, int hk) {
         this.ctxCons = new HybTypeCtxConstructor();
         CtxSelector us = new UniformSelector(k, hk);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

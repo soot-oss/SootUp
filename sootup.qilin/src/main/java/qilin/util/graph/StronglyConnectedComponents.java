@@ -18,11 +18,7 @@
 
 package qilin.util.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class StronglyConnectedComponents<N> {
     private final List<List<N>> componentList;

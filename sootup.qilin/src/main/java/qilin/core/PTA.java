@@ -20,8 +20,6 @@ package qilin.core;
 
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.*;
 import qilin.core.sets.PointsToSet;
@@ -29,10 +27,9 @@ import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import sootup.core.jimple.basic.Local;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.java.core.JavaIdentifierFactory;
+import soot.*;
+import soot.jimple.spark.pag.SparkField;
+import soot.jimple.toolkits.callgraph.CallGraph;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,8 +47,8 @@ public abstract class PTA implements PointsToAnalysis {
         this.pag = createPAG();
         this.cgb = createCallGraphBuilder();
         this.eh = new ExceptionHandler(this);
-        AllocNode rootBase = pag.makeAllocNode("ROOT", JavaIdentifierFactory.getInstance().getType("java.lang.Object"), null);
-        this.rootNode = new ContextAllocNode(pag.getView(), rootBase, CtxConstructor.emptyContext);
+        AllocNode rootBase = pag.makeAllocNode("ROOT", RefType.v("java.lang.Object"), null);
+        this.rootNode = new ContextAllocNode(rootBase, CtxConstructor.emptyContext);
     }
 
     protected abstract PAG createPAG();
@@ -85,7 +82,7 @@ public abstract class PTA implements PointsToAnalysis {
         return callGraph;
     }
 
-    public Collection<ContextMethod> getReachableMethods() {
+    public Collection<MethodOrMethodContext> getReachableMethods() {
         return cgb.getReachableMethods();
     }
 
@@ -103,13 +100,13 @@ public abstract class PTA implements PointsToAnalysis {
 
     public abstract Node parameterize(Node n, Context context);
 
-    public abstract ContextMethod parameterize(SootMethod method, Context context);
+    public abstract MethodOrMethodContext parameterize(SootMethod method, Context context);
 
     public abstract AllocNode getRootNode();
 
     public abstract Context emptyContext();
 
-    public abstract Context createCalleeCtx(ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
+    public abstract Context createCalleeCtx(MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
 
     public abstract HeapAbstractor heapAbstractor();
 

@@ -20,21 +20,20 @@ package qilin.stat;
 
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Util;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JCastExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.Type;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Type;
+import soot.jimple.AssignStmt;
+import soot.jimple.CastExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -82,7 +81,7 @@ public class Exporter {
     private void dumpMethods(Collection<SootMethod> methods, String fileName) {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : methods) {
-            String sig = sm.getSignature().toString();
+            String sig = sm.getSignature();
             sig = Util.stripQuotes(sig);
             builder.append(sig);
             builder.append("\n");
@@ -127,11 +126,11 @@ public class Exporter {
         Util.writeToFile(finalPath, builder.toString());
     }
 
-    public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
+    public void dumpPolyCalls(Map<InvokeExpr, SootMethod> polys) {
         StringBuilder builder = new StringBuilder();
-        for (AbstractInvokeExpr ie : polys.keySet()) {
-            MethodSignature tgtSig = ie.getMethodSignature();
-            String polySig = polys.get(ie).getSignature() + "/" + tgtSig.getDeclClassType() + "." + tgtSig.getName() + "\n";
+        for (InvokeExpr ie : polys.keySet()) {
+            SootMethod tgt = ie.getMethod();
+            String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClass() + "." + tgt.getName() + "\n";
             builder.append(polySig);
         }
         String polyCalls = "PolyCalls.csv";
@@ -143,16 +142,16 @@ public class Exporter {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : casts.keySet()) {
             for (Stmt stmt : casts.get(sm)) {
-                JAssignStmt as = (JAssignStmt) stmt;
-                JCastExpr ce = (JCastExpr) as.getRightOp();
-                final Type targetType = ce.getType();
+                AssignStmt as = (AssignStmt) stmt;
+                CastExpr ce = (CastExpr) as.getRightOp();
+                final Type targetType = ce.getCastType();
                 builder.append(sm.toString());
                 builder.append("\t");
-                builder.append(targetType);
+                builder.append(targetType.toString());
                 builder.append("\t");
                 builder.append(sm).append("/").append(ce.getOp().toString());
                 builder.append("\t");
-                builder.append(sm).append("/").append(as.getLeftOp());
+                builder.append(sm).append("/").append(as.getLeftOp().toString());
                 builder.append("\n");
             }
         }
@@ -176,7 +175,7 @@ public class Exporter {
                     StringBuilder builder = new StringBuilder();
                     builder.append(n.toString());
                     builder.append("\t");
-                    String sig = Util.stripQuotes(sm.getSignature().toString());
+                    String sig = Util.stripQuotes(sm.getSignature());
                     builder.append(sig);
                     builder.append("\n");
                     try {
@@ -202,8 +201,8 @@ public class Exporter {
             mfile.createNewFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
             for (Edge edge : ciCallGraph) {
-                String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
-                String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
+                String srcSig = Util.stripQuotes(edge.src().getSignature());
+                String dstSig = Util.stripQuotes(edge.tgt().getSignature());
                 String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
                 writer.write(str);
             }

@@ -21,61 +21,48 @@ package qilin.core.builder;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
-import qilin.core.callgraph.Kind;
-import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-
-import qilin.util.queue.ChunkedQueue;
-import qilin.util.queue.QueueReader;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
+import soot.*;
+import soot.jimple.*;
+import soot.jimple.internal.JInvokeStmt;
+import soot.jimple.internal.JStaticInvokeExpr;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
+import soot.util.queue.ChunkedQueue;
+import soot.util.queue.QueueReader;
 
 import java.util.*;
 
 public class CallGraphBuilder {
     protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
     protected final Map<SootMethod, Map<Object, Stmt>> methodToInvokeStmt;
-    protected final Set<ContextMethod> reachMethods;
-    private ChunkedQueue<ContextMethod> rmQueue;
+    protected final Set<MethodOrMethodContext> reachMethods;
+    private ChunkedQueue<MethodOrMethodContext> rmQueue;
 
     protected final Set<Edge> calledges;
     protected final PTA pta;
     protected final PAG pag;
-    protected CallGraph callGraph;
     protected CallGraph cicg;
 
     public CallGraphBuilder(PTA pta) {
         this.pta = pta;
         this.pag = pta.getPag();
-        this.callGraph = new CallGraph();
-        receiverToSites = DataFactory.createMap(1000);
+        PTAScene.v().setCallGraph(new CallGraph());
+        receiverToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
         methodToInvokeStmt = DataFactory.createMap();
         reachMethods = DataFactory.createSet();
         calledges = DataFactory.createSet();
     }
 
-    public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
+    public void setRMQueue(ChunkedQueue<MethodOrMethodContext> rmQueue) {
         this.rmQueue = rmQueue;
     }
 
-    public Collection<ContextMethod> getReachableMethods() {
+    public Collection<MethodOrMethodContext> getReachableMethods() {
         return reachMethods;
     }
 
@@ -93,7 +80,7 @@ public class CallGraphBuilder {
         if (cicg == null) {
             constructCallGraph();
         }
-        return callGraph;
+        return PTAScene.v().getCallGraph();
     }
 
     public CallGraph getCICallGraph() {
@@ -105,21 +92,21 @@ public class CallGraphBuilder {
 
     private void constructCallGraph() {
         cicg = new CallGraph();
-        Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
+        Map<Unit, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
         calledges.forEach(e -> {
-            callGraph.addEdge(e);
+            PTAScene.v().getCallGraph().addEdge(e);
             SootMethod src = e.src();
             SootMethod tgt = e.tgt();
-            Stmt unit = e.srcUnit();
+            Unit unit = e.srcUnit();
             Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> DataFactory.createMap());
             Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
             if (set.add(tgt)) {
-                cicg.addEdge(new Edge(new ContextMethod(src, pta.emptyContext()), e.srcUnit(), new ContextMethod(tgt, pta.emptyContext()), e.kind()));
+                cicg.addEdge(new Edge(src, e.srcUnit(), tgt, e.kind()));
             }
         });
     }
 
-    public List<ContextMethod> getEntryPoints() {
+    public List<MethodOrMethodContext> getEntryPoints() {
         Node thisRef = pag.getMethodPAG(PTAScene.v().getFakeMainMethod()).nodeFactory().caseThis();
         thisRef = pta.parameterize(thisRef, pta.emptyContext());
         pag.addEdge(pta.getRootNode(), thisRef);
@@ -127,14 +114,14 @@ public class CallGraphBuilder {
     }
 
     public void initReachableMethods() {
-        for (ContextMethod momc : getEntryPoints()) {
+        for (MethodOrMethodContext momc : getEntryPoints()) {
             if (reachMethods.add(momc)) {
                 rmQueue.add(momc);
             }
         }
     }
 
-    public VarNode getReceiverVarNode(Local receiver, ContextMethod m) {
+    public VarNode getReceiverVarNode(Local receiver, MethodOrMethodContext m) {
         LocalVarNode base = pag.makeLocalVarNode(receiver, receiver.getType(), m.method());
         return (VarNode) pta.parameterize(base, m.context());
     }
@@ -144,8 +131,8 @@ public class CallGraphBuilder {
         final QueueReader<SootMethod> targets = PTAUtils.dispatch(type, site);
         while (targets.hasNext()) {
             SootMethod target = targets.next();
-            if (site.iie() instanceof JSpecialInvokeExpr) {
-                Type calleeDeclType = target.getDeclaringClassType();
+            if (site.iie() instanceof SpecialInvokeExpr) {
+                Type calleeDeclType = target.getDeclaringClass().getType();
                 if (!Scene.v().getFastHierarchy().canStoreType(type, calleeDeclType)) {
                     continue;
                 }
@@ -154,34 +141,34 @@ public class CallGraphBuilder {
         }
     }
 
-    private void addVirtualEdge(ContextMethod caller, Stmt callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
+    private void addVirtualEdge(MethodOrMethodContext caller, Unit callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
         Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
-        ContextMethod cstarget = pta.parameterize(callee, tgtContext);
+        MethodOrMethodContext cstarget = pta.parameterize(callee, tgtContext);
         handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
         Node thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
         thisRef = pta.parameterize(thisRef, cstarget.context());
         pag.addEdge(receiverNode, thisRef);
     }
 
-    public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
+    public void injectCallEdge(Object heapOrType, MethodOrMethodContext callee, Kind kind) {
         Map<Object, Stmt> stmtMap = methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
         if (!stmtMap.containsKey(heapOrType)) {
-            AbstractInvokeExpr ie = new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
-            JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.createNoStmtPositionInfo());
+            InvokeExpr ie = new JStaticInvokeExpr(callee.method().makeRef(), Collections.emptyList());
+            JInvokeStmt stmt = new JInvokeStmt(ie);
             stmtMap.put(heapOrType, stmt);
             handleCallEdge(new Edge(pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()), stmtMap.get(heapOrType), callee, kind));
         }
     }
 
-    public void addStaticEdge(ContextMethod caller, Stmt callStmt, SootMethod calleem, Kind kind) {
+    public void addStaticEdge(MethodOrMethodContext caller, Unit callStmt, SootMethod calleem, Kind kind) {
         Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
-        ContextMethod callee = pta.parameterize(calleem, typeContext);
+        MethodOrMethodContext callee = pta.parameterize(calleem, typeContext);
         handleCallEdge(new Edge(caller, callStmt, callee, kind));
     }
 
     protected void handleCallEdge(Edge edge) {
         if (calledges.add(edge)) {
-            ContextMethod callee = edge.getTgt();
+            MethodOrMethodContext callee = edge.getTgt();
             if (reachMethods.add(callee)) {
                 rmQueue.add(callee);
             }
@@ -216,16 +203,16 @@ public class CallGraphBuilder {
         MethodNodeFactory srcnf = srcmpag.nodeFactory();
         MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
         SootMethod tgtmtd = tgtmpag.getMethod();
-        AbstractInvokeExpr ie = s.getInvokeExpr();
+        InvokeExpr ie = s.getInvokeExpr();
         // add arg --> param edges.
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
-            if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
+            if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
                 continue;
             }
             Type tgtType = tgtmtd.getParameterType(i);
-            if (!(tgtType instanceof ReferenceType)) {
+            if (!(tgtType instanceof RefLikeType)) {
                 continue;
             }
             Node argNode = srcnf.getNode(arg);
@@ -235,13 +222,13 @@ public class CallGraphBuilder {
             pag.addEdge(argNode, parm);
         }
         // add normal return edge
-        if (s instanceof JAssignStmt jassign) {
-            Value dest = jassign.getLeftOp();
+        if (s instanceof AssignStmt) {
+            Value dest = ((AssignStmt) s).getLeftOp();
 
-            if (dest.getType() instanceof ReferenceType) {
+            if (dest.getType() instanceof RefLikeType) {
                 Node destNode = srcnf.getNode(dest);
                 destNode = pta.parameterize(destNode, srcContext);
-                if (tgtmtd.getReturnType() instanceof ReferenceType) {
+                if (tgtmtd.getReturnType() instanceof RefLikeType) {
                     Node retNode = tgtnf.caseRet();
                     retNode = pta.parameterize(retNode, tgtContext);
                     pag.addEdge(retNode, destNode);

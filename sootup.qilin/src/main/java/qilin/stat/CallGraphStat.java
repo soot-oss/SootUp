@@ -22,15 +22,12 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
-import qilin.core.callgraph.CallGraph;
-import qilin.core.callgraph.Edge;
-import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.util.PTAUtils;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
+import soot.MethodOrMethodContext;
+import soot.SootMethod;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,8 +38,8 @@ public class CallGraphStat implements AbstractStat {
 
     private final Set<SootMethod> reachableMethods = new HashSet<>();
     private int reachableStatic = 0;
-    private final Set<ContextMethod> reachableParameterizedMethods = new HashSet<>();
-    private final Set<ContextMethod> reachableAppParameterizedMethods = new HashSet<>();
+    private final Set<MethodOrMethodContext> reachableParameterizedMethods = new HashSet<>();
+    private final Set<MethodOrMethodContext> reachableAppParameterizedMethods = new HashSet<>();
     private final Set<SootMethod> reachableAppMethods = new HashSet<>();
     private int reachableAppStatic = 0;
     private int CSCallEdges = 0;
@@ -72,10 +69,9 @@ public class CallGraphStat implements AbstractStat {
     private void init() {
         CallGraph csCallGraph = pta.getCgb().getCallGraph();
         CSCallEdges = csCallGraph.size();
-        for (final ContextMethod momc : pta.getCgb().getReachableMethods()) {
+        for (final MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
             final SootMethod m = momc.method();
-            SootClass declClass = PTAUtils.getDeclaringClass(pta.getPag().getView(), m);
-            boolean toApp = declClass.isApplicationClass();
+            boolean toApp = m.getDeclaringClass().isApplicationClass();
             reachableParameterizedMethods.add(momc);
             reachableMethods.add(m);
 //            if (m.toString().equals("<sun.security.provider.PolicyParser: void read(java.io.Reader)>")) {
@@ -90,8 +86,7 @@ public class CallGraphStat implements AbstractStat {
             for (Iterator<Edge> iterator = csCallGraph.edgesInto(momc); iterator.hasNext(); ) {
                 Edge e = iterator.next();
                 final SootMethod srcm = e.getSrc().method();
-                SootClass sc = PTAUtils.getDeclaringClass(pta.getPag().getView(), srcm);
-                boolean fromApp = sc.isApplicationClass();
+                boolean fromApp = srcm.getDeclaringClass().isApplicationClass();
                 if (fromApp && toApp) {
                     CSApp2app++;
                 } else if (fromApp) {
@@ -117,20 +112,20 @@ public class CallGraphStat implements AbstractStat {
         CallGraph ciCallGraph = pta.getCallGraph();
         CICallEdges = ciCallGraph.size();
         for (SootMethod sm : reachableMethods) {
-            boolean toApp = PTAUtils.getDeclaringClass(pta.getPag().getView(), sm).isApplicationClass();
+            boolean toApp = sm.getDeclaringClass().isApplicationClass();
             if (sm.isStatic()) {
                 reachableStatic++;
                 if (toApp) {
                     reachableAppStatic++;
                 }
             }
-            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(new ContextMethod(sm, pta.emptyContext())); iterator.hasNext(); ) {
+            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(sm); iterator.hasNext(); ) {
                 Edge e = iterator.next();
                 final SootMethod srcm = e.getSrc().method();
 //                if (sm.toString().equals("<java.lang.ClassNotFoundException: java.lang.Throwable getCause()>")) {
 //                    System.out.println("from:" + srcm);
 //                }
-                boolean fromApp = PTAUtils.getDeclaringClass(pta.getPag().getView(), srcm).isApplicationClass();
+                boolean fromApp = srcm.getDeclaringClass().isApplicationClass();
                 if (fromApp && toApp) {
                     CIApp2app++;
                 } else if (fromApp) {

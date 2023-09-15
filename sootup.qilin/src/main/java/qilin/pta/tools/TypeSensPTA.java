@@ -26,15 +26,13 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
-import sootup.core.views.View;
 
 /*
  * refer to "Pick Your Contexts Well: Understanding Object-Sensitivity" (PLDI'11)
  * */
 public class TypeSensPTA extends BasePTA {
 
-    public TypeSensPTA(View view, int k, int hk) {
-        super(view);
+    public TypeSensPTA(int k, int hk) {
         this.ctxCons = new TypeCtxConstructor();
         CtxSelector us = new UniformSelector(k, hk);
         if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

@@ -19,17 +19,16 @@
 package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
-import qilin.core.util.Numberable;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.Type;
+import soot.util.Numberable;
 
 /**
  * Represents a simple of pointer node in the pointer assignment graph.
  */
 public class ValNode extends Node implements Comparable, Numberable {
 
-    protected ValNode(View view, Type t) {
-        super(view, t);
+    protected ValNode(Type t) {
+        super(t);
     }
 
     public int compareTo(Object o) {

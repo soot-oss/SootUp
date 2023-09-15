@@ -18,12 +18,7 @@
 
 package qilin.util.graph;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Reachability<N> {
     private final DirectedGraph<N> graph;

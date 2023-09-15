@@ -19,26 +19,27 @@
 package qilin.core.pag;
 
 import qilin.CoreConfig;
-import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
-import sootup.core.types.ArrayType;
-import sootup.core.types.Type;
-import sootup.core.views.View;
+import soot.ArrayType;
+import soot.Context;
+import soot.RefType;
+import soot.Type;
+import soot.jimple.spark.pag.SparkField;
 
 public class ContextField extends ValNode {
     protected Context context;
     protected SparkField field;
 
-    public ContextField(View view, Context context, SparkField field) {
-        super(view, refineFieldType(view, context, field));
+    public ContextField(Context context, SparkField field) {
+        super(refineFieldType(context, field));
         this.context = context;
         this.field = field;
     }
 
-    private static Type refineFieldType(View view, Context context, SparkField field) {
+    private static Type refineFieldType(Context context, SparkField field) {
         if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
-            return view.getIdentifierFactory().getType("java.lang.Object");
+            return RefType.v("java.lang.Object");
         }
         if (field instanceof ArrayElement) {
             ContextElement[] contextElements = ((ContextElements) context).getElements();

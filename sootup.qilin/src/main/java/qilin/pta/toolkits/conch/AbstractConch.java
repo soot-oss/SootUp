@@ -24,9 +24,10 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import sootup.core.model.SootMethod;
-import sootup.core.types.ArrayType;
-import sootup.core.types.PrimitiveType;
+import soot.ArrayType;
+import soot.PrimType;
+import soot.SootMethod;
+import soot.jimple.spark.pag.SparkField;
 
 import java.util.*;
 
@@ -55,8 +56,7 @@ public class AbstractConch {
          * The following line computes the receiver objects for the this_ptr of static methods.
          * */
         Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(pta);
-        pta.getNakedReachableMethods().stream()//.filter(m -> !m.isPhantom())
-                .forEach(method -> {
+        pta.getNakedReachableMethods().stream().filter(m -> !m.isPhantom()).forEach(method -> {
             collectStoresIn(method);
             collectLoadsIn(method);
             buildInvokedOnFor(method, pts);
@@ -166,14 +166,14 @@ public class AbstractConch {
 
     private boolean primitiveField(SparkField f) {
         String s = "java.lang.String";
-        if (f.getType() instanceof PrimitiveType) {
+        if (f.getType() instanceof PrimType) {
             return true;
         } else if (f.getType() instanceof ArrayType at) {
             /*
              * here, we let primitive array as primitive type as that in Turner.
              * this wont hurt precision of clients.
              * */
-            return at.getBaseType() instanceof PrimitiveType;
+            return at.baseType instanceof PrimType;
         } else return f.getType().toString().equals(s);
     }
 

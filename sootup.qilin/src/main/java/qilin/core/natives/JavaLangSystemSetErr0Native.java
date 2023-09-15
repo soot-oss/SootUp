@@ -18,8 +18,8 @@
 
 package qilin.core.natives;
 
-import sootup.core.jimple.basic.Value;
-import sootup.core.model.SootMethod;
+import soot.SootMethod;
+import soot.Value;
 
 public class JavaLangSystemSetErr0Native extends NativeMethod {
     public JavaLangSystemSetErr0Native(SootMethod method) {
