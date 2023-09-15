@@ -80,12 +80,12 @@ public class MutableBlockStmtGraphTest {
       };
 
   Stmt firstHandlerStmt =
-      new JIdentityStmt<>(
+      new JIdentityStmt(
           new Local("ex", throwableSig),
           new JCaughtExceptionRef(throwableSig),
           StmtPositionInfo.createNoStmtPositionInfo());
   Stmt secondHandlerStmt =
-      new JIdentityStmt<>(
+      new JIdentityStmt(
           new Local("ex2", throwableSig),
           new JCaughtExceptionRef(ioExceptionSig),
           StmtPositionInfo.createNoStmtPositionInfo());
@@ -568,12 +568,12 @@ public class MutableBlockStmtGraphTest {
     Local exc = new Local("ex", UnknownType.getInstance());
     // hint: applied types make no sense in this test!
     Stmt catchStmt1 =
-        new JIdentityStmt<>(
+        new JIdentityStmt(
             exc,
             new JCaughtExceptionRef(UnknownType.getInstance()),
             StmtPositionInfo.createNoStmtPositionInfo());
     Stmt catchStmt2 =
-        new JIdentityStmt<>(
+        new JIdentityStmt(
             exc,
             new JCaughtExceptionRef(PrimitiveType.getInt()),
             StmtPositionInfo.createNoStmtPositionInfo());

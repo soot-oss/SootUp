@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -13,10 +14,17 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 public class AggregatorTest {
 
@@ -96,5 +104,24 @@ public class AggregatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;
+  }
+
+  @Test
+  public void testResource_Misuse() {
+
+    String classPath = "../sootup.tests/src/test/resources/interceptor/";
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JavaClassPathAnalysisInputLocation(classPath);
+    JavaLanguage language = new JavaLanguage(8);
+
+    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaView view = project.createView();
+    view.configBodyInterceptors((analysisInputLocation) -> BytecodeClassLoadingOptions.Default);
+
+    final SootMethod sootMethod =
+        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
+            .get();
+
+    sootMethod.getBody();
   }
 }

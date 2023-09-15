@@ -37,7 +37,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
-  @Nonnull final Value leftOp;
+  @Nonnull final LhsValue leftOp;
   @Nonnull final Value rightOp;
 
   /**
@@ -47,29 +47,15 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull LhsValue variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     leftOp = variable;
     rightOp = rValue;
 
-    if (!validateVariable(variable)) {
-      throw new RuntimeException(
-          "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
-    }
     if (!validateValue(rValue)) {
       throw new RuntimeException(
           "Illegal Assignment statement. Make sure that right hand side has a valid operand.");
     }
-  }
-
-  /**
-   * returns true if variable can be on the left side of the assign statement
-   *
-   * @param variable the variable on the left side of the assign statement.
-   */
-  private boolean validateVariable(@Nonnull Value variable) {
-    // i.e. not Constant, not IdentityRef, not Expr
-    return variable instanceof Local || variable instanceof ConcreteRef;
   }
 
   /**
@@ -203,7 +189,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withVariable(@Nonnull Value variable) {
+  public JAssignStmt withVariable(@Nonnull LhsValue variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
@@ -219,7 +205,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
 
   @Nonnull
   @Override
-  public Value getLeftOp() {
+  public LhsValue getLeftOp() {
     return leftOp;
   }
 
@@ -229,11 +215,12 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     return rightOp;
   }
 
+  @Nonnull
   @Override
   public Stmt withNewDef(@Nonnull Local newLocal) {
     // "ReplaceDefVisitor"
     final Value leftOp = getLeftOp();
-    Value newVal;
+    LhsValue newVal;
     if (leftOp instanceof ConcreteRef) {
       if (leftOp instanceof JArrayRef) {
         newVal = ((JArrayRef) leftOp).withBase(newLocal);

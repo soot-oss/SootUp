@@ -98,6 +98,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
     return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 
+  @Nonnull
   @Override
   public Stmt withNewDef(@Nonnull Local newLocal) {
     return withLocal(newLocal);

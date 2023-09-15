@@ -10,7 +10,6 @@ import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -114,9 +113,9 @@ public class CopyPropagatorTest {
   // r6 = r3
   Stmt stmt14 = JavaJimple.newAssignStmt(r6, r3, noStmtPositionInfo);
 
-  JAssignStmt<Local, Constant> eestmt4 =
+  JAssignStmt eestmt4 =
       JavaJimple.newAssignStmt(r4, NullConstant.getInstance(), noStmtPositionInfo);
-  JAssignStmt<Local, Constant> estmt13 =
+  JAssignStmt estmt13 =
       JavaJimple.newAssignStmt(r5, NullConstant.getInstance(), noStmtPositionInfo);
 
   @Test
@@ -124,8 +123,8 @@ public class CopyPropagatorTest {
     assertTrue(eestmt4.equivTo(eestmt4.withRValue(NullConstant.getInstance())));
   }
 
-  @Test
   /** Test the copy propagation's chain */
+  @Test
   public void testChainBody() {
 
     Body body = createChainBody();
@@ -137,8 +136,8 @@ public class CopyPropagatorTest {
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
-  @Test
   /** Test the copy propagation for loop */
+  @Test
   public void testLoopBody() {
 
     Body.BodyBuilder builder = createLoopBody();
@@ -150,8 +149,8 @@ public class CopyPropagatorTest {
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
   }
 
+  /** Test the copy propagation for castExpr */
   @Test
-  /* Test the copy propagation for castExpr */
   public void testCastExprBody() {
 
     Body body = createCastExprBody();

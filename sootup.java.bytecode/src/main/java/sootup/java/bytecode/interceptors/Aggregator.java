@@ -93,7 +93,9 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
         Stmt relevantDef = defs.get(0);
-        if (!graph.containsNode(relevantDef)) {
+        // TODO: ms: check why its possible that we can get relevantDes/stmt but they are not in the
+        // graph anymore
+        if (!graph.containsNode(relevantDef) || !graph.containsNode(stmt)) {
           continue;
         }
         List<Stmt> path = graph.getExtendedBasicBlockPathBetween(relevantDef, stmt);
@@ -176,7 +178,12 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        Value aggregatee = ((JAssignStmt) relevantDef).getRightOp();
+        // cannot aggregate e.g. a JIdentityStmt
+        if (!(relevantDef instanceof JAssignStmt)) {
+          continue;
+        }
+
+        Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
         JAssignStmt newStmt = null;
         if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
           AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
@@ -192,6 +199,7 @@ public class Aggregator implements BodyInterceptor {
         } else {
           newStmt = assignStmt.withRValue(aggregatee);
         }
+
         if (newStmt != null) {
           builder.replaceStmt(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {

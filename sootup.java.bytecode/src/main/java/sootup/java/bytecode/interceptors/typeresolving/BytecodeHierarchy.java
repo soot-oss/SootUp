@@ -33,7 +33,6 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {
-
   private final TypeHierarchy typeHierarchy;
   public final ClassType objectClassType;
   public final ClassType throwableClassType;
@@ -47,6 +46,10 @@ public class BytecodeHierarchy {
     throwableClassType = factory.getClassType("java.lang.Throwable");
     serializableClassType = factory.getClassType("java.io.Serializable");
     cloneableClassType = factory.getClassType("java.lang.Cloneable");
+  }
+
+  boolean contains(ClassType type) {
+    return typeHierarchy.contains(type);
   }
 
   public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
@@ -198,7 +201,8 @@ public class BytecodeHierarchy {
   }
 
   private boolean canStoreType(ClassType ancestor, ClassType child) {
-    return ancestor == objectClassType || typeHierarchy.subtypesOf(ancestor).contains(child);
+    return ancestor == objectClassType
+        || (typeHierarchy.contains(ancestor) && typeHierarchy.subtypesOf(ancestor).contains(child));
   }
 
   private Set<AncestryPath> buildAncestryPaths(ClassType type) {

@@ -184,6 +184,7 @@ public interface TypeHierarchy {
     }
     return superClasses;
   }
+
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
@@ -213,4 +214,8 @@ public interface TypeHierarchy {
   boolean isInterface(@Nonnull ClassType type);
 
   Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
+
+  // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
+  // View.getClass(...).isPresent()
+  boolean contains(ClassType type);
 }

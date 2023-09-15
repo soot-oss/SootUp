@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -62,7 +63,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
+  Map<LhsValue, Collection<Stmt>> allDefs = new HashMap<>();
   Map<Local, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override
@@ -212,13 +213,15 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           if (stmt instanceof JAssignStmt) {
             JAssignStmt assignStmt = (JAssignStmt) stmt;
             if (assignStmt.containsInvokeExpr()) {
-              // Just find one use of local which is essential
+              // Just find one use of Value which is essential
               boolean deadAssignment = true;
-              Local local = (Local) assignStmt.getRightOp();
-              for (Stmt use : allUses.get(local)) {
-                if (builder.getStmts().contains(use)) {
-                  deadAssignment = false;
-                  break;
+              if (assignStmt.getRightOp() instanceof Local) {
+                Local value = (Local) assignStmt.getRightOp();
+                for (Stmt use : allUses.get(value)) {
+                  if (builder.getStmts().contains(use)) {
+                    deadAssignment = false;
+                    break;
+                  }
                 }
               }
               if (deadAssignment) {

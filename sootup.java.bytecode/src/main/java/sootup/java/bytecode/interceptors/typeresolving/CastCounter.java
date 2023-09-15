@@ -80,6 +80,9 @@ public class CastCounter extends TypeChecker {
     Typing typing = getTyping();
     if (countOnly) {
       Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
+      if (evaType == null) {
+        return;
+      }
       if (hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
@@ -130,8 +133,10 @@ public class CastCounter extends TypeChecker {
       } else {
         newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
       }
-      builder.replaceStmt(stmt, newStmt);
-      this.stmt2NewStmt.put(oriStmt, newStmt);
+      if (graph.containsNode(stmt)) {
+        builder.replaceStmt(stmt, newStmt);
+        this.stmt2NewStmt.put(oriStmt, newStmt);
+      }
     }
   }
 

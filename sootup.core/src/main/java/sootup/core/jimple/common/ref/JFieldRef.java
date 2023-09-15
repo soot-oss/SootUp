@@ -23,10 +23,11 @@ package sootup.core.jimple.common.ref;
  */
 
 import javax.annotation.Nonnull;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.Type;
 
-public abstract class JFieldRef implements ConcreteRef {
+public abstract class JFieldRef implements ConcreteRef, LhsValue {
 
   @Nonnull private final FieldSignature fieldSignature;
 

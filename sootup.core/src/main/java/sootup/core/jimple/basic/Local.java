@@ -43,7 +43,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LhsValue, Copyable, Acceptor<ImmediateVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;

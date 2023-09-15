@@ -78,5 +78,6 @@ public abstract class AbstractDefinitionStmt extends Stmt {
     return false;
   }
 
+  @Nonnull
   public abstract Stmt withNewDef(@Nonnull Local newLocal);
 }

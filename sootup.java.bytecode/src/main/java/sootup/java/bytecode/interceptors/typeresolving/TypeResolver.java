@@ -181,6 +181,10 @@ public class TypeResolver {
         Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
         Type t_old = actualTyping.getType(local);
         Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+        if (t_right == null) {
+          workQueue.removeFirst();
+          continue;
+        }
         if (lhs instanceof JArrayRef) {
           t_right = Type.createArrayType(t_right, 1);
         }
