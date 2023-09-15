@@ -28,7 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A fixed size priority queue based on bitsets. The elements of the priority queue are ordered
+ * TLDR: this class implements sorting a priorityquueue based on the order of items in a List (i.e.
+ * the Universe") it seems equivalent to using a PriorityQueue with a custom Comparator sorting the
+ * items ordered using the same Universe. as a rough guess this class is faster as the sorting-call
+ * seems to be called just once vs multiple times TODO: check that.
+ *
+ * <p>A fixed size priority queue based on bitsets. The elements of the priority queue are ordered
  * according to a given universe. This priority queue does not permit {@code null} elements.
  * Inserting of elements that are not part of the universe is also permitted (doing so will result
  * in a {@code NoSuchElementException}).

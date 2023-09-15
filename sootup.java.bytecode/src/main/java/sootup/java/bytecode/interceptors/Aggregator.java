@@ -20,6 +20,7 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
-import sootup.core.jimple.common.stmt.*;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -86,10 +87,14 @@ public class Aggregator implements BodyInterceptor {
         if (defs.size() != 1) {
           continue;
         }
-
         Stmt relevantDef = defs.get(0);
+        if (!graph.containsNode(relevantDef)) {
+          continue;
+        }
         List<Stmt> path = graph.getExtendedBasicBlockPathBetween(relevantDef, stmt);
-
+        if (path == null) {
+          continue;
+        }
         boolean cantAggr = false;
         boolean propagatingInvokeExpr = false;
         boolean propagatingFieldRef = false;
