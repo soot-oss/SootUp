@@ -525,7 +525,8 @@ public abstract class Jimple {
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, StmtPositionInfo posInfo) {
+  public static JAssignStmt newAssignStmt(
+      LhsValue variable, Value rvalue, StmtPositionInfo posInfo) {
     return new JAssignStmt(variable, rvalue, posInfo);
   }
 

@@ -24,6 +24,7 @@ package sootup.core.jimple.visitor;
 
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -77,7 +78,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       refVisitor.init(oldUse, newUse);
       ((Ref) leftOp).accept(refVisitor);
       if (refVisitor.getResult() != leftOp) {
-        setResult(stmt.withVariable(refVisitor.getResult()));
+        setResult(stmt.withVariable((LhsValue) refVisitor.getResult()));
       }
     }
 

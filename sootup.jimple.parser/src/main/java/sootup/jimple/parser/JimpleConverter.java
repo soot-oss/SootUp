@@ -487,10 +487,10 @@ public class JimpleConverter {
                   return Jimple.newIdentityStmt(left, ref, pos);
 
                 } else if (assignments.EQUALS() != null) {
-                  Value left =
+                  LhsValue left =
                       assignments.local != null
                           ? getLocal(assignments.local.getText())
-                          : valueVisitor.visitReference(assignments.reference());
+                          : (LhsValue) valueVisitor.visitReference(assignments.reference());
 
                   final Value right = valueVisitor.visitValue(assignments.value());
                   return Jimple.newAssignStmt(left, right, pos);
@@ -569,7 +569,7 @@ public class JimpleConverter {
 
             List<Immediate> sizes =
                 ctx.immediate().stream().map(this::visitImmediate).collect(Collectors.toList());
-            if (sizes.size() < 1) {
+            if (sizes.isEmpty()) {
               throw new ResolveException(
                   "The Size list must have at least one Element.",
                   path,
