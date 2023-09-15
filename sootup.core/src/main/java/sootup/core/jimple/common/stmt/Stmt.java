@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.EquivTo;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -60,7 +61,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
    * types/assignments so we return a List
    */
   @Nonnull
-  public List<Value> getDefs() {
+  public List<LhsValue> getDefs() {
     return Collections.emptyList();
   }
 
@@ -68,7 +69,7 @@ public abstract class Stmt implements EquivTo, Acceptor<StmtVisitor>, Copyable {
   @Nonnull
   public List<Value> getUsesAndDefs() {
     List<Value> uses = getUses();
-    List<Value> defs = getDefs();
+    List<Value> defs = new ArrayList<>(getDefs());
     if (uses.isEmpty()) {
       return defs;
     } else if (defs.isEmpty()) {

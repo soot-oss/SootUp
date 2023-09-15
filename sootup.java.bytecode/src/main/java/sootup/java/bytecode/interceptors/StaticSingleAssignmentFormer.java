@@ -28,6 +28,7 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.DominanceTree;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -124,7 +125,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           }
         }
         // generate new def and replace with new def
-        final List<Value> defs = stmt.getDefs();
+        final List<LhsValue> defs = stmt.getDefs();
         if (!defs.isEmpty() && defs.get(0) instanceof Local) {
           Local def = (Local) defs.get(0);
           Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);

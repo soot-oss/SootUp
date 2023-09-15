@@ -26,6 +26,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
@@ -79,7 +80,7 @@ public class LocalSplitter implements BodyInterceptor {
     Set<Local> visitedLocals = new LinkedHashSet<>();
     Set<Local> toSplitLocals = new LinkedHashSet<>();
     for (Stmt stmt : stmts) {
-      final List<Value> defs = stmt.getDefs();
+      final List<LhsValue> defs = stmt.getDefs();
       if (!defs.isEmpty()) {
         Value def = defs.get(0);
         if (def instanceof Local) {
@@ -101,7 +102,7 @@ public class LocalSplitter implements BodyInterceptor {
     while (!stmts.isEmpty()) {
       Stmt currentStmt = stmts.remove(0);
       // At first Check the definition(left side) of the currentStmt is a local which must be split:
-      final List<Value> defs = currentStmt.getDefs();
+      final List<LhsValue> defs = currentStmt.getDefs();
       if (!defs.isEmpty() && defs.get(0) instanceof Local && toSplitLocals.contains(defs.get(0))) {
         // then assign a new name to the oriLocal to get a new local which is called newLocal
         Local oriLocal = (Local) defs.get(0);
@@ -204,7 +205,7 @@ public class LocalSplitter implements BodyInterceptor {
           // then add all successors of head which are not in forwardsQueue and visitedStmts,
           // into the forwardsQueue.
           else {
-            final List<Value> headDefs = head.getDefs();
+            final List<LhsValue> headDefs = head.getDefs();
             if (headDefs.isEmpty() || !headDefs.get(0).equivTo(oriLocal)) {
               for (Stmt succ : graph.successors(head)) {
                 if (!visitedStmts.contains(succ) && !forwardsQueue.contains(succ)) {
@@ -351,7 +352,7 @@ public class LocalSplitter implements BodyInterceptor {
    * @return if so, return true, else return false
    */
   private boolean hasModifiedDef(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    final List<Value> defs = stmt.getDefs();
+    final List<LhsValue> defs = stmt.getDefs();
     if (!defs.isEmpty() && defs.get(0) instanceof Local) {
       return isLocalFromSameOrigin(oriLocal, defs.get(0));
     }

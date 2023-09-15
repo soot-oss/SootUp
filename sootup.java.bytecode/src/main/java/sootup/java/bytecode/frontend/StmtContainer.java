@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -83,7 +84,7 @@ class StmtContainer extends Stmt {
 
   @Nonnull
   @Override
-  public List<Value> getDefs() {
+  public List<LhsValue> getDefs() {
     throw new UnsupportedOperationException();
   }
 

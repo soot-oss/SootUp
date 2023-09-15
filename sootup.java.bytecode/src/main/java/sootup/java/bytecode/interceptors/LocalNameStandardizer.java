@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.basic.LhsValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.Value;
@@ -44,7 +45,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
     for (Stmt stmt : graph) {
-      final List<Value> defs = stmt.getDefs();
+      final List<LhsValue> defs = stmt.getDefs();
       for (Value def : defs) {
         if (def instanceof Local) {
           final Local localDef = (Local) def;

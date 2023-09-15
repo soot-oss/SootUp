@@ -429,13 +429,10 @@ public class Body implements Copyable {
         for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
           final Stmt stmt = currStmt;
           if (currStmt.getUses().contains(oldLocal)) {
-            final Stmt newStmt = currStmt.withNewUse(oldLocal, newLocal);
-            if (newStmt != null) {
-              currStmt = newStmt;
-            }
+            currStmt = currStmt.withNewUse(oldLocal, newLocal);
           }
-          final List<Value> defs = currStmt.getDefs();
-          for (Value def : defs) {
+          final List<LhsValue> defs = currStmt.getDefs();
+          for (LhsValue def : defs) {
             if (def == oldLocal || def.getUses().contains(oldLocal)) {
               if (currStmt instanceof AbstractDefinitionStmt) {
                 currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
@@ -581,16 +578,14 @@ public class Body implements Copyable {
   public static Map<LhsValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
     Map<LhsValue, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<Value> defs = stmt.getDefs();
-      for (Value value : defs) {
-        if (value instanceof LhsValue) {
-          Collection<Stmt> localDefs = allDefs.get(value);
-          if (localDefs == null) {
-            localDefs = new ArrayList<>();
-          }
-          localDefs.add(stmt);
-          allDefs.put((Local) value, localDefs);
+      List<LhsValue> defs = stmt.getDefs();
+      for (LhsValue value : defs) {
+        Collection<Stmt> localDefs = allDefs.get(value);
+        if (localDefs == null) {
+          localDefs = new ArrayList<>();
         }
+        localDefs.add(stmt);
+        allDefs.put(value, localDefs);
       }
     }
     return allDefs;
