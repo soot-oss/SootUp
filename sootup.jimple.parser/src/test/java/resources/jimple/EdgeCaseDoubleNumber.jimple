@@ -1,0 +1,26 @@
+public class EdgeCaseDoubleNumber extends java.lang.Object
+{
+
+    private double positiveInfinity;
+    private double negativeInfinity;
+    private double notANumber;
+
+    public void <init>()
+    {
+        unknown l0;
+
+
+        l0 := @this: InfinityDoubleNumber;
+
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        l0.<EdgeCaseDoubleNumber: double positiveInfinity> = #Infinity;
+        l0.<EdgeCaseDoubleNumber: double negativeInfinity> = #-Infinity;
+        l0.<EdgeCaseDoubleNumber: double notANumber> = #NaN;
+
+        return;
+    }
+
+
+}
+

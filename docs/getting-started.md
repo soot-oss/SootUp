@@ -53,6 +53,10 @@ You can use bytecode analysis typically when you do not have access to the sourc
 
 If you have access to the source code, it is also possible to create a project for analyzing source code. Following example shows how to create project for analyzing Java source code.
 
+!!! info "Experimental"
+
+    The source code frontend is experimental and should only be used for testing purposes. You should compile the code for analysis first and use the bytecode frontend instead.  
+
 !!! example "Create a project to analyze Java source code"
 
     ~~~java

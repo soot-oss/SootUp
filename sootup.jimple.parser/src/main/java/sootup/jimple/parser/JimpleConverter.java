@@ -686,6 +686,18 @@ public class JimpleConverter {
               floatStr = floatStr.substring(0, lastCharPos);
               return FloatConstant.getInstance(Float.parseFloat(floatStr));
             }
+
+            if (floatStr.charAt(0) == '#') {
+              switch (floatStr.substring(1)) {
+                case "Infinity":
+                  return DoubleConstant.getInstance(Double.POSITIVE_INFINITY);
+                case "-Infinity":
+                  return DoubleConstant.getInstance(Double.NEGATIVE_INFINITY);
+                case "NaN":
+                  return DoubleConstant.getInstance(Double.NaN);
+              }
+            }
+
             return DoubleConstant.getInstance(Double.parseDouble(floatStr));
           } else if (ctx.CLASS() != null) {
             final String text = Jimple.unescape(ctx.STRING_CONSTANT().getText());
