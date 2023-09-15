@@ -40,7 +40,11 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ReferenceType;
 import sootup.core.views.View;
 
-/** @author Zun Wang */
+/**
+ * FIXME: *WHAT DOES IT DO*
+ *
+ * @author Zun Wang
+ */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
@@ -51,7 +55,7 @@ public class CopyPropagator implements BodyInterceptor {
         if (use instanceof Local) {
           List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
 
-          if (isPropagable(defsOfUse)) {
+          if (isPropatabable(defsOfUse)) {
             AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) defsOfUse.get(0);
             Value rhs = defStmt.getRightOp();
             // if rhs is a constant, then replace use, if it is possible
@@ -86,7 +90,7 @@ public class CopyPropagator implements BodyInterceptor {
     }
   }
 
-  private boolean isPropagable(List<Stmt> defsOfUse) {
+  private boolean isPropatabable(List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
     boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {

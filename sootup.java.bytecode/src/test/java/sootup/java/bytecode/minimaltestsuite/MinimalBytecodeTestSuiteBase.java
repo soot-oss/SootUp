@@ -4,20 +4,27 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.interceptors.*;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -61,6 +68,26 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + File.separator))
                 .build();
         javaView = project.createView();
+
+        Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions> bana =
+            (clazz) ->
+                new ClassLoadingOptions() {
+                  @Nonnull
+                  @Override
+                  public List<BodyInterceptor> getBodyInterceptors() {
+                    final ArrayList<BodyInterceptor> interceptors = new ArrayList<>();
+                    //   interceptors.add(new LocalSplitter());
+                    interceptors.add(new Aggregator());
+                    interceptors.add(new CopyPropagator());
+                    //          interceptors.add(new UnusedLocalEliminator());
+                    interceptors.add(new DeadAssignmentEliminator());
+                    interceptors.add(new UnreachableCodeEliminator());
+
+                    return interceptors;
+                  }
+                };
+
+        javaView.configBodyInterceptors(bana);
       }
     }
 

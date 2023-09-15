@@ -245,7 +245,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
   /**
    * Look for a path in graph, from def to use. This path has to lie inside an extended basic block
-   * (and this property implies uniqueness.). The path returned includes from and to.
+   * (and this property implies uniqueness.). The path returned includes from and to. FIXME: ms:
+   * explain better
    *
    * @param from start point for the path.
    * @param to end point for the path.
