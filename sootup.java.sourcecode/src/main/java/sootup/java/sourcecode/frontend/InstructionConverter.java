@@ -872,25 +872,18 @@ public class InstructionConverter {
 
   private Immediate extractValueAndAddAssignStmt(
       StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
-    Immediate value;
-    Object constant = null;
     if (symbolTable.isZero(val)) {
-      value = IntConstant.getInstance(0);
-      // FIXME: type safety found an issue..fix it as value would have been a constant on the
-      // lefthandside
-      throw new IllegalStateException("ms: this execution path needs to be fixed.");
+      return IntConstant.getInstance(0);
     } else {
+      Local value = getLocal(PrimitiveType.getInt(), val);
       if (symbolTable.isConstant(val)) {
-        constant = symbolTable.getConstantValue(val);
+        Object constant = symbolTable.getConstantValue(val);
+        JAssignStmt assignStmt =
+            Jimple.newAssignStmt(value, ConstantUtil.fromObject(constant), posInfo);
+        addTo.add(assignStmt);
       }
-      value = getLocal(PrimitiveType.getInt(), val);
+      return value;
     }
-    if (constant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt((LhsValue) value, ConstantUtil.fromObject(constant), posInfo);
-      addTo.add(assignStmt);
-    }
-    return value;
   }
 
   private Stmt convertReturnInstruction(SSAReturnInstruction inst) {
