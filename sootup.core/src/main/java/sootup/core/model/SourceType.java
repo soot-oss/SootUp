@@ -24,9 +24,9 @@ package sootup.core.model;
 
 public enum SourceType {
   Phantom, // in soot: code that we have no access to and only can assume the class layout.. TODO:
-           // which seems to makes no sense anymore as we now reference indirectly to SootClasses
-           // and dont need a "catch all" Phantom SootClass?
+  // which seems to makes no sense anymore as we now reference indirectly to SootClasses
+  // and dont need a "catch all" Phantom SootClass?
   Application, // code that we want to analyze e.g. in call graph generation its traversed
   Library // code that is given but should not be analyzed e.g. in call graph generation its not
-          // traversed
+  // traversed
 }
