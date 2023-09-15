@@ -40,25 +40,30 @@ import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
+/*
+ * The Jimple Local Aggregator removes some unnecessary copies by combining local variables.
+ * Essentially, it finds definitions which have only a single use and, if it is safe to do so,
+ * removes the original definition after replacing the use with the definition's right-hand side.
+ * At this stage in JimpleBody construction, local aggregation serves largely to remove the copies to and
+ * from stack variables which simulate load and store instructions in the original bytecode.
+ * */
 public class Aggregator implements BodyInterceptor {
 
-  // TODO: [ms] the onlyStackVars flag kind of enable/disables ***everything*** that does
-  // something in this Interceptor.. check with old soot again (see usage in big if)
-  boolean onlyStackVars;
+  // if this is true, only aggregate variables starting with "$" which are the ones which are *not*
+  // referring to a field of a class
+  protected boolean dontAggregateFieldLocals;
 
   public Aggregator() {
     this(false);
   }
 
-  public Aggregator(boolean onlyStackVars) {
-    this.onlyStackVars = onlyStackVars;
+  public Aggregator(boolean dontAggregateFieldLocals) {
+    this.dontAggregateFieldLocals = dontAggregateFieldLocals;
   }
 
   /**
    * Traverse the statements in the given body, looking for aggregation possibilities; that is,
    * given a def d and a use u, d has no other uses, u has no other defs, collapse d and u.
-   *
-   * <p>option: only-stack-locals; if this is true, only aggregate variables starting with $
    */
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
@@ -76,7 +81,7 @@ public class Aggregator implements BodyInterceptor {
         continue;
       }
       Local lhsLocal = (Local) lhs;
-      if (onlyStackVars && !lhsLocal.getName().startsWith("$stack")) {
+      if (dontAggregateFieldLocals && !lhsLocal.getName().startsWith("$")) {
         continue;
       }
       for (Value val : assignStmt.getUses()) {

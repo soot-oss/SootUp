@@ -41,7 +41,12 @@ import sootup.core.types.ReferenceType;
 import sootup.core.views.View;
 
 /**
- * FIXME: *WHAT DOES IT DO*
+ * The CopyPropagator performs cascaded copy propagation. If the propagator encounters situations of
+ * the form: A: a = ...; ... B: x = a; ... C: ... = ... x; where a and x are each defined only once
+ * (at A and B, respectively), then it can propagate immediately without checking between B and C
+ * for redefinitions of a. In this case the propagator is global. Otherwise, if a has multiple
+ * definitions then the propagator checks for redefinitions and propagates copies only within
+ * extended basic blocks.
  *
  * @author Zun Wang
  */
