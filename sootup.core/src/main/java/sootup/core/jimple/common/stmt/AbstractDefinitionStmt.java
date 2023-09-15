@@ -30,27 +30,17 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.types.Type;
 
-public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> extends Stmt {
+public abstract class AbstractDefinitionStmt extends Stmt {
 
-  @Nonnull private final L leftOp;
-  @Nonnull private final R rightOp;
-
-  AbstractDefinitionStmt(
-      @Nonnull L leftOp, @Nonnull R rightOp, @Nonnull StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.leftOp = leftOp;
-    this.rightOp = rightOp;
   }
 
   @Nonnull
-  public final L getLeftOp() {
-    return leftOp;
-  }
+  public abstract Value getLeftOp();
 
   @Nonnull
-  public R getRightOp() {
-    return rightOp;
-  }
+  public abstract Value getRightOp();
 
   @Nonnull
   public Type getType() {
@@ -61,14 +51,15 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
   @Nonnull
   public List<Value> getDefs() {
     final List<Value> defs = new ArrayList<>();
-    defs.add(leftOp);
+    defs.add(getLeftOp());
     return defs;
   }
 
   @Override
   @Nonnull
   public final List<Value> getUses() {
-    final List<Value> defsuses = leftOp.getUses();
+    final List<Value> defsuses = getLeftOp().getUses();
+    final Value rightOp = getRightOp();
     final List<Value> uses = rightOp.getUses();
     List<Value> list = new ArrayList<>(defsuses.size() + uses.size() + 1);
     list.addAll(defsuses);

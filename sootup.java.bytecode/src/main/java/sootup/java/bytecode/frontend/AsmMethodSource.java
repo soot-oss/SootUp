@@ -133,9 +133,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
 
-  @Nonnull
-  private final Map<LabelNode, AbstractDefinitionStmt<Local, JCaughtExceptionRef>>
-      inlineExceptionHandlers = new HashMap<>();
+  @Nonnull private final Map<LabelNode, JIdentityStmt> inlineExceptionHandlers = new HashMap<>();
 
   @Nonnull private final Map<LabelNode, Stmt> labelsToStmt = new HashMap<>();
 
@@ -234,8 +232,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
 
     // propagate position information
-    if (graph.getNodes().size() > 0) {
-      Position firstStmtPos = graph.getStartingStmt().getPositionInfo().getStmtPosition();
+    final Stmt startingStmt = graph.getStartingStmt();
+    if (!graph.getNodes().isEmpty() && startingStmt != null) {
+      Position firstStmtPos = startingStmt.getPositionInfo().getStmtPosition();
       bodyBuilder.setPosition(
           new FullPosition(
               firstStmtPos.getFirstLine(),
@@ -389,8 +388,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       Local stackLocal = newStackLocal();
       operand.stackLocal = stackLocal;
-      JAssignStmt<Local, ?> asssignStmt =
-          Jimple.newAssignStmt(stackLocal, opValue, getStmtPositionInfo());
+      JAssignStmt asssignStmt = Jimple.newAssignStmt(stackLocal, opValue, getStmtPositionInfo());
 
       setStmt(operand.insn, asssignStmt);
       operand.updateUsages();
@@ -453,8 +451,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
       opr = new Operand(insn, val, this);
       frame.setOut(opr);
-      JAssignStmt<JFieldRef, ?> as =
-          Jimple.newAssignStmt(val, rvalue.stackOrValue(), getStmtPositionInfo());
+      JAssignStmt as = Jimple.newAssignStmt(val, rvalue.stackOrValue(), getStmtPositionInfo());
       setStmt(insn, as);
       rvalue.addUsageInStmt(as);
     } else {
@@ -562,8 +559,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       JArrayRef ar =
           JavaJimple.getInstance()
               .newArrayRef((Local) baseOp.stackOrValue(), (Immediate) indexOp.stackOrValue());
-      JAssignStmt<JArrayRef, ?> as =
-          Jimple.newAssignStmt(ar, valueOp.stackOrValue(), getStmtPositionInfo());
+      JAssignStmt as = Jimple.newAssignStmt(ar, valueOp.stackOrValue(), getStmtPositionInfo());
       frame.setIn(valueOp, indexOp, baseOp);
       setStmt(insn, as);
       valueOp.addUsageInStmt(as);
@@ -1571,7 +1567,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     Local local = getOrCreateLocal(insn.var);
     if (!insnToStmt.containsKey(insn)) {
-      AbstractDefinitionStmt<Local, ?> as =
+      AbstractDefinitionStmt as =
           Jimple.newAssignStmt(local, opr.stackOrValue(), getStmtPositionInfo());
       frame.setIn(opr);
       setStmt(insn, as);
@@ -1621,8 +1617,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (out == null) {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
-      AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-          Jimple.newIdentityStmt(stack, ref, getStmtPositionInfo());
+      JIdentityStmt as = Jimple.newIdentityStmt(stack, ref, getStmtPositionInfo());
       opr = new Operand(ln, ref, this);
       opr.stackLocal = stack;
       frame.setOut(opr);
@@ -1702,8 +1697,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         // Catch the exception
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
         Local local = newStackLocal();
-        AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
-            Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
+        JIdentityStmt as = Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
 
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
@@ -1882,7 +1876,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
       JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
       locals.set(localIdx++, thisLocal);
-      final JIdentityStmt<JThisRef> stmt =
+      final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
@@ -1898,7 +1892,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
       locals.set(localIdx, local);
 
-      final JIdentityStmt<JParameterRef> stmt =
+      final JIdentityStmt stmt =
           Jimple.newIdentityStmt(local, Jimple.newParameterRef(parameterType, i), methodPosInfo);
       preambleBlock.add(stmt);
 
@@ -1979,7 +1973,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt<?> identityRef = findIdentityRefInStmtContainer(stmt);
+          JIdentityStmt identityRef = findIdentityRefInStmtContainer(stmt);
           if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
             danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
           }
@@ -2021,10 +2015,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
     // FIXME:[ms] the following code seems odd.. we need a testcase to test inlineexceptionhandling!
-    for (Entry<LabelNode, AbstractDefinitionStmt<Local, JCaughtExceptionRef>> entry :
-        inlineExceptionHandlers.entrySet()) {
+    for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
 
-      AbstractDefinitionStmt<Local, JCaughtExceptionRef> handlerStmt = entry.getValue();
+      JIdentityStmt handlerStmt = entry.getValue();
       emitStmt(handlerStmt, stmtList);
       trapHandler.put(entry.getKey(), handlerStmt);
       // TODO: update handlerStmts positioninfo!
@@ -2052,13 +2045,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nullable
-  private JIdentityStmt<?> findIdentityRefInStmtContainer(@Nonnull Stmt stmt) {
+  private JIdentityStmt findIdentityRefInStmtContainer(@Nonnull Stmt stmt) {
     if (stmt instanceof JIdentityStmt) {
-      return (JIdentityStmt<?>) stmt;
+      return (JIdentityStmt) stmt;
     } else if (stmt instanceof StmtContainer) {
       for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
         if (stmtEntry instanceof JIdentityStmt) {
-          return (JIdentityStmt<?>) stmtEntry;
+          return (JIdentityStmt) stmtEntry;
         }
       }
     }
@@ -2110,11 +2103,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     replacedStmt.put(oldStmt, newStmt);
 
     if (oldStmt instanceof BranchingStmt) {
-      List<LabelNode> branchLabels = stmtsThatBranchToLabel.get((BranchingStmt) oldStmt);
-      if (branchLabels != null) {
-        branchLabels.forEach(bl -> stmtsThatBranchToLabel.put((BranchingStmt) newStmt, bl));
-        stmtsThatBranchToLabel.removeAll(oldStmt);
-      }
+      final BranchingStmt branchingStmt = (BranchingStmt) oldStmt;
+      List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(branchingStmt);
+      branchLabels.forEach(bl -> stmtsThatBranchToLabel.put((BranchingStmt) newStmt, bl));
+      stmtsThatBranchToLabel.removeAll(branchingStmt);
     }
   }
 

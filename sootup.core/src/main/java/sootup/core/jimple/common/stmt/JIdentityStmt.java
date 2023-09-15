@@ -31,17 +31,34 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefinitionStmt<Local, T>
-    implements Copyable {
+public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
+
+  @Nonnull final Local leftOp;
+  @Nonnull final IdentityRef rightOp;
 
   public JIdentityStmt(
-      @Nonnull Local local, @Nonnull T identityValue, @Nonnull StmtPositionInfo positionInfo) {
-    super(local, identityValue, positionInfo);
+      @Nonnull Local local,
+      @Nonnull IdentityRef identityValue,
+      @Nonnull StmtPositionInfo positionInfo) {
+    super(positionInfo);
+    leftOp = local;
+    rightOp = identityValue;
   }
 
   @Override
   public String toString() {
     return getLeftOp() + " := " + getRightOp();
+  }
+
+  @Nonnull
+  public Local getLeftOp() {
+    return leftOp;
+  }
+
+  @Nonnull
+  @Override
+  public IdentityRef getRightOp() {
+    return rightOp;
   }
 
   @Override
@@ -67,18 +84,18 @@ public final class JIdentityStmt<T extends IdentityRef> extends AbstractDefiniti
   }
 
   @Nonnull
-  public JIdentityStmt<T> withLocal(@Nonnull Local local) {
-    return new JIdentityStmt<>(local, getRightOp(), getPositionInfo());
+  public JIdentityStmt withLocal(@Nonnull Local local) {
+    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public <N extends IdentityRef> JIdentityStmt<N> withIdentityValue(@Nonnull N identityValue) {
-    return new JIdentityStmt<>(getLeftOp(), identityValue, getPositionInfo());
+  public JIdentityStmt withIdentityValue(@Nonnull IdentityRef identityValue) {
+    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
   }
 
   @Nonnull
-  public JIdentityStmt<T> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JIdentityStmt<>(getLeftOp(), getRightOp(), positionInfo);
+  public JIdentityStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 
   @Override

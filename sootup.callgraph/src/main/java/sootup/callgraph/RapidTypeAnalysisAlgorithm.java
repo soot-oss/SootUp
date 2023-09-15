@@ -108,7 +108,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
-            .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
+            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
             .collect(Collectors.toSet());

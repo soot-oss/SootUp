@@ -152,14 +152,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
         final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
         if (overridenTrapHandlers != null) {
-          if (!isRemoved && overridenTrapHandlers.size() > 0) {
+          if (!isRemoved && !overridenTrapHandlers.isEmpty()) {
             // check if theres an overlapping trap that has a less specific TrapRange which is
             // ending before it gets the active exception information again
             // not logical as a compiler output... but possible.
             overridenTrapHandlers.remove(trap);
           }
 
-          if (overridenTrapHandlers.size() > 0) {
+          if (!overridenTrapHandlers.isEmpty()) {
             currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
           }
         }
@@ -178,7 +178,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               overlappingTraps.computeIfAbsent(
                   trap.getExceptionType(),
                   k ->
-                      new PriorityQueue<Trap>(
+                      new PriorityQueue<>(
                           (trapA, trapB) -> {
                             if (trapA.getEndStmt() == trapB.getEndStmt()) {
                               final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
@@ -422,7 +422,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Iterator<Stmt> iterator = stmts.iterator();
     final Stmt node = iterator.next();
     MutableBasicBlock block = getOrCreateBlock(node);
-    if (block.getHead() != node || block.getSuccessors().size() > 0) {
+    if (block.getHead() != node || !block.getSuccessors().isEmpty()) {
       throw new IllegalArgumentException(
           "The first Stmt in the List is already in the StmtGraph and and is not the head of a Block where currently no successor are set, yet.");
     } else if (block.getStmtCount() > 1) {
@@ -662,10 +662,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return false;
     }
     // check if the same traps are applied to both blocks
-    if (!firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors())) {
-      return false;
-    }
-    return true;
+    return firstBlock.getExceptionalSuccessors().equals(followingBlock.getExceptionalSuccessors());
   }
 
   /** trys to merge the second block into the first one if possible */
@@ -998,7 +995,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // TODO: reuse tryMerge*Block?
 
     // add BlockB to BlockA if blockA has no branchingstmt as tail && same traps
-    if (blockOfFrom.getStmts().size() > 0 && from == blockOfFrom.getTail()) {
+    if (!blockOfFrom.getStmts().isEmpty() && from == blockOfFrom.getTail()) {
       if (blockOfFrom.getPredecessors().size() == 1) {
         MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
         if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
@@ -1018,7 +1015,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       // remove outgoing connections from blockA if from stmt is the tail
       if (!from.branches()) {
-        if (blockOfFrom.getStmts().size() > 0 && blockOfFrom.getSuccessors().size() == 1) {
+        if (!blockOfFrom.getStmts().isEmpty() && blockOfFrom.getSuccessors().size() == 1) {
           // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
           // other predesccorblocks
           MutableBasicBlock singleSuccessorBlock = blockOfFrom.getSuccessors().get(0);
@@ -1156,7 +1153,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     Stmt head = block.getHead();
     if (!(head instanceof JIdentityStmt
-        && ((JIdentityStmt<?>) head).getRightOp() instanceof JCaughtExceptionRef)) {
+        && ((JIdentityStmt) head).getRightOp() instanceof JCaughtExceptionRef)) {
       // only an exception handler stmt can have exceptional predecessors
       return Collections.emptyList();
     }
@@ -1174,7 +1171,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     Stmt head = block.getHead();
     if (!(head instanceof JIdentityStmt
-        && ((JIdentityStmt<?>) head).getRightOp() instanceof JCaughtExceptionRef)) {
+        && ((JIdentityStmt) head).getRightOp() instanceof JCaughtExceptionRef)) {
       // only an exception handler stmt can have exceptional predecessors
       return Collections.emptyList();
     }

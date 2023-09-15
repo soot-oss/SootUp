@@ -53,7 +53,7 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    final JIdentityStmt<?> firstStmt =
+    final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),

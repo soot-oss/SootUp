@@ -69,9 +69,9 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (value instanceof Local) {
-            List<AbstractDefinitionStmt<?, Value>> defsOfUse = ((Local) value).getDefsOfLocal(defs);
+            List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefsOfLocal(defs);
             if (defsOfUse.size() == 1) {
-              AbstractDefinitionStmt<?, ?> definitionStmt = defsOfUse.get(0);
+              AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
               Value rhs = definitionStmt.getRightOp();
               if (rhs instanceof NumericConstant
                   || rhs instanceof StringConstant

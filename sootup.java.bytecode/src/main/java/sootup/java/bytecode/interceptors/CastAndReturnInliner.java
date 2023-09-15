@@ -77,7 +77,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
       }
-      JAssignStmt<?, ?> assign = (JAssignStmt) successorOfGoto;
+      JAssignStmt assign = (JAssignStmt) successorOfGoto;
 
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;

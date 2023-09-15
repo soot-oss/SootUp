@@ -1,7 +1,7 @@
 package sootup.core.jimple.common.stmt;
 
 /*-
- * #%L
+ * #%Value
  * Soot - a J*va Optimization Framework
  * %%
  * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Markus Schmidt and others
@@ -19,7 +19,7 @@ package sootup.core.jimple.common.stmt;
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
+ * #Value%
  */
 
 import javax.annotation.Nonnull;
@@ -35,8 +35,10 @@ import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt<L extends Value, R extends Value>
-    extends AbstractDefinitionStmt<L, R> implements Copyable {
+public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
+
+  @Nonnull final Value leftOp;
+  @Nonnull final Value rightOp;
 
   /**
    * Instantiates a new JAssignStmt.
@@ -45,8 +47,11 @@ public final class JAssignStmt<L extends Value, R extends Value>
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull L variable, @Nonnull R rValue, @Nonnull StmtPositionInfo positionInfo) {
-    super(variable, rValue, positionInfo);
+      @Nonnull Value variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+    super(positionInfo);
+    leftOp = variable;
+    rightOp = rValue;
+
     if (!validateVariable(variable)) {
       throw new RuntimeException(
           "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
@@ -198,18 +203,30 @@ public final class JAssignStmt<L extends Value, R extends Value>
   }
 
   @Nonnull
-  public <N extends Value> JAssignStmt<N, R> withVariable(@Nonnull N variable) {
-    return new JAssignStmt<>(variable, getRightOp(), getPositionInfo());
+  public JAssignStmt withVariable(@Nonnull Value variable) {
+    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
   @Nonnull
-  public <N extends Value> JAssignStmt<L, N> withRValue(@Nonnull N rValue) {
-    return new JAssignStmt<>(getLeftOp(), rValue, getPositionInfo());
+  public JAssignStmt withRValue(@Nonnull Value rValue) {
+    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
   }
 
   @Nonnull
-  public JAssignStmt<L, R> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
+  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
+  }
+
+  @Nonnull
+  @Override
+  public Value getLeftOp() {
+    return leftOp;
+  }
+
+  @Nonnull
+  @Override
+  public Value getRightOp() {
+    return rightOp;
   }
 
   @Override

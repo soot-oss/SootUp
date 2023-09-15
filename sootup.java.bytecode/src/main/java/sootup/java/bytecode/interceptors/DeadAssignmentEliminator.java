@@ -83,7 +83,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       boolean isEssential = true;
 
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
 
@@ -207,10 +207,10 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       if (containsInvoke) {
         allUses = Body.collectUses(builder.getStmts());
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
-        List<JAssignStmt<?, ?>> postProcess = new ArrayList<>();
+        List<JAssignStmt> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {
           if (stmt instanceof JAssignStmt) {
-            JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+            JAssignStmt assignStmt = (JAssignStmt) stmt;
             if (assignStmt.containsInvokeExpr()) {
               // Just find one use of local which is essential
               boolean deadAssignment = true;
@@ -228,7 +228,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           }
         }
 
-        for (JAssignStmt<?, ?> assignStmt : postProcess) {
+        for (JAssignStmt assignStmt : postProcess) {
           // Transform it into a simple invoke
           Stmt newInvoke =
               Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());

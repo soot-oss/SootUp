@@ -131,7 +131,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           newLocals.add(newDef);
           nextFreeIdx++;
           localToNameStack.get(def).push(newDef);
-          Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(newDef);
+          Stmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
           stmtGraph.replaceNode(stmt, newStmt);
           if (constainsPhiExpr(newStmt)) {
             newPhiStmts.add(newStmt);
@@ -225,7 +225,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
             basicBlocks.add(df);
 
             // create an empty phiStmt
-            JAssignStmt<?, ?> phiStmt = createEmptyPhiStmt(local);
+            JAssignStmt phiStmt = createEmptyPhiStmt(local);
 
             // store phiStmt into map
             if (blockToPhiStmts.containsKey(df)) {
@@ -332,9 +332,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     return false;
   }
 
-  private JAssignStmt<?, ?> createEmptyPhiStmt(Local local) {
+  private JAssignStmt createEmptyPhiStmt(Local local) {
     JPhiExpr phi = new JPhiExpr(Collections.emptyList(), Collections.emptyMap());
-    return new JAssignStmt<>(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
+    return new JAssignStmt(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
   }
 
   private Local getOriginalLocal(Local local, Set<Local> oriLocals) {
@@ -363,7 +363,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
         argToBlock.put(arg, block);
         newPhiExpr = newPhiExpr.withArgs(args);
         newPhiExpr = newPhiExpr.withArgToBlockMap(argToBlock);
-        newPhiStmt = ((JAssignStmt<?, ?>) phiStmt).withRValue(newPhiExpr);
+        newPhiStmt = ((JAssignStmt) phiStmt).withRValue(newPhiExpr);
         break;
       }
     }

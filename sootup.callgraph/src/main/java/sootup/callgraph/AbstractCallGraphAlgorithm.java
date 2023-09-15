@@ -246,7 +246,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
               // constructor calls
               if (stmt instanceof JAssignStmt) {
-                Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+                Value rightOp = ((JAssignStmt) stmt).getRightOp();
                 instantiateVisitor.init();
                 rightOp.accept(instantiateVisitor);
                 ClassType classType = instantiateVisitor.getResult();

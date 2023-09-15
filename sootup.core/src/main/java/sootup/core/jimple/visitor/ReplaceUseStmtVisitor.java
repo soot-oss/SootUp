@@ -69,7 +69,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
 
     // uses on the def side..
     final Value leftOp = stmt.getLeftOp();
@@ -109,7 +109,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt<?> stmt) {
+  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
     defaultCaseStmt(stmt);
   }
 

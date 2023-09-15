@@ -112,15 +112,14 @@ public class CastCounter extends TypeChecker {
         old_local = generateTempLocal(evaType);
         builder.addLocal(old_local);
         typing.set(old_local, evaType);
-        JAssignStmt<?, ?> newAssign =
-            Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
+        JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
         builder.insertBefore(stmt, newAssign);
       }
       Local new_local = generateTempLocal(stdType);
       builder.addLocal(new_local);
       typing.set(new_local, stdType);
       addUpdatedValue(oriValue, new_local, oriStmt);
-      JAssignStmt<?, ?> newCast =
+      JAssignStmt newCast =
           Jimple.newAssignStmt(
               new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
       builder.insertBefore(stmt, newCast);
@@ -129,7 +128,7 @@ public class CastCounter extends TypeChecker {
       if (stmt.getUses().contains(value)) {
         newStmt = stmt.withNewUse(value, new_local);
       } else {
-        newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(new_local);
+        newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
       }
       builder.replaceStmt(stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);
@@ -146,8 +145,8 @@ public class CastCounter extends TypeChecker {
     }
     map.put(oldValue, newValue);
     if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
-      Value leftOp = ((JAssignStmt<?, ?>) stmt).getLeftOp();
-      Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+      Value leftOp = ((JAssignStmt) stmt).getLeftOp();
+      Value rightOp = ((JAssignStmt) stmt).getRightOp();
       if (leftOp instanceof JArrayRef) {
         if (oldValue == leftOp) {
           Local base = ((JArrayRef) oldValue).getBase();

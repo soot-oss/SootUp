@@ -110,7 +110,7 @@ public class LocalSplitter implements BodyInterceptor {
         localIndex++;
 
         // create newStmt whose definition is replaced with the newLocal,
-        Stmt newStmt = ((AbstractDefinitionStmt<?, ?>) currentStmt).withNewDef(newLocal);
+        Stmt newStmt = ((AbstractDefinitionStmt) currentStmt).withNewDef(newLocal);
         // replace corresponding oldStmt with newStmt in builder
         replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
 
@@ -175,7 +175,7 @@ public class LocalSplitter implements BodyInterceptor {
                 if (hasModifiedDef(backStmt, oriLocal)) {
                   if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
                     Stmt newBackStmt =
-                        ((AbstractDefinitionStmt<?, ?>) backStmt).withNewDef(modifiedLocal);
+                        ((AbstractDefinitionStmt) backStmt).withNewDef(modifiedLocal);
                     replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
                     newLocals.remove(newLocal);
                   }
@@ -393,7 +393,7 @@ public class LocalSplitter implements BodyInterceptor {
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
       if (stmt instanceof JIdentityStmt
-          && ((JIdentityStmt<?>) stmt).getRightOp() instanceof JCaughtExceptionRef) {
+          && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef) {
         handlerStmts.add(stmt);
       } else {
         final List<Stmt> predecessors = graph.predecessors(stmt);

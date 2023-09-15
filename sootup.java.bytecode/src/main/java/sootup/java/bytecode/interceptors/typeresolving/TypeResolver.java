@@ -46,7 +46,7 @@ import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
 public class TypeResolver {
-  private final ArrayList<AbstractDefinitionStmt<?, ?>> assignments = new ArrayList<>();
+  private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
   private int castCount;
@@ -101,7 +101,7 @@ public class TypeResolver {
   private void init(Body.BodyBuilder builder) {
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof AbstractDefinitionStmt) {
-        AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) stmt;
+        AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
         Value lhs = defStmt.getLeftOp();
         if (lhs instanceof Local || lhs instanceof JArrayRef || lhs instanceof JInstanceFieldRef) {
           final int id = assignments.size();
@@ -176,7 +176,7 @@ public class TypeResolver {
         workQueue.removeFirst();
       } else {
         actualSL.clear(stmtId);
-        AbstractDefinitionStmt<?, ?> defStmt = this.assignments.get(stmtId);
+        AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
         Value lhs = defStmt.getLeftOp();
         Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
         Type t_old = actualTyping.getType(local);

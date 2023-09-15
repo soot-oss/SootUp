@@ -77,7 +77,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     Value lhs = stmt.getLeftOp();
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
@@ -103,7 +103,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             if (defStmts != null) {
               for (Stmt defStmt : defStmts) {
                 if (defStmt instanceof JAssignStmt) {
-                  Value arrExpr = ((JAssignStmt<?, ?>) defStmt).getRightOp();
+                  Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
                   if (arrExpr instanceof JNewArrayExpr) {
                     arrayType = (ArrayType) arrExpr.getType();
                     findDef = true;
@@ -162,7 +162,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             Collection<Stmt> stmts = defs.get(pair.getLocal());
             for (Stmt s : stmts) {
               if (s instanceof JAssignStmt) {
-                Value value = ((JAssignStmt<?, ?>) s).getRightOp();
+                Value value = ((JAssignStmt) s).getRightOp();
                 if (value instanceof JNewArrayExpr) {
                   sel = selectType(sel, ((JNewArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof JNewMultiArrayExpr) {

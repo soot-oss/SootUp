@@ -75,7 +75,7 @@ public class Aggregator implements BodyInterceptor {
       if (!(stmt instanceof JAssignStmt)) {
         continue;
       }
-      final JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+      final JAssignStmt assignStmt = (JAssignStmt) stmt;
       Value lhs = assignStmt.getLeftOp();
       if (!(lhs instanceof Local)) {
         continue;
@@ -88,7 +88,7 @@ public class Aggregator implements BodyInterceptor {
         if (!(val instanceof Local)) {
           continue;
         }
-        List<AbstractDefinitionStmt<?, Value>> defs = ((Local) val).getDefsOfLocal(stmts);
+        List<AbstractDefinitionStmt> defs = ((Local) val).getDefsOfLocal(stmts);
         if (defs.size() != 1) {
           continue;
         }
@@ -176,20 +176,18 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        Value aggregatee = ((JAssignStmt<?, ?>) relevantDef).getRightOp();
-        JAssignStmt<?, ?> newStmt = null;
+        Value aggregatee = ((JAssignStmt) relevantDef).getRightOp();
+        JAssignStmt newStmt = null;
         if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
           AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
           if (rightOp.getOp1() == val) {
             AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
             newStmt =
-                new JAssignStmt<>(
-                    assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
+                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
           } else if (rightOp.getOp2() == val) {
             AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
             newStmt =
-                new JAssignStmt<>(
-                    assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
+                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
           }
         } else {
           newStmt = assignStmt.withRValue(aggregatee);

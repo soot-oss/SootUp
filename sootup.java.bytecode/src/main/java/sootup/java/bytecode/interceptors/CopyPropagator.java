@@ -61,7 +61,7 @@ public class CopyPropagator implements BodyInterceptor {
           List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
 
           if (isPropatabable(defsOfUse)) {
-            AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) defsOfUse.get(0);
+            AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
             Value rhs = defStmt.getRightOp();
             // if rhs is a constant, then replace use, if it is possible
             if (rhs instanceof Constant) {

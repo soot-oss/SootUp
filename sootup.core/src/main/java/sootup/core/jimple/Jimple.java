@@ -519,15 +519,14 @@ public abstract class Jimple {
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
-  public static <L extends IdentityRef> JIdentityStmt<L> newIdentityStmt(
+  public static <L extends IdentityRef> JIdentityStmt newIdentityStmt(
       Local local, L identityRef, StmtPositionInfo posInfo) {
-    return new JIdentityStmt<>(local, identityRef, posInfo);
+    return new JIdentityStmt(local, identityRef, posInfo);
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static <L extends Value, R extends Value> JAssignStmt<L, R> newAssignStmt(
-      L variable, R rvalue, StmtPositionInfo posInfo) {
-    return new JAssignStmt<>(variable, rvalue, posInfo);
+  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, StmtPositionInfo posInfo) {
+    return new JAssignStmt(variable, rvalue, posInfo);
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */

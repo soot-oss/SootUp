@@ -86,7 +86,6 @@ public class Body implements Copyable {
     this.graph = /* FIXME: [ms] make immutable when availabe */
         new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
     this.position = position;
-    // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
 
@@ -159,7 +158,7 @@ public class Body implements Copyable {
   public Stmt getThisStmt() {
     for (Stmt u : getStmts()) {
       if (u instanceof JIdentityStmt) {
-        if (((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
+        if (((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
           return u;
         }
       } else {
@@ -175,23 +174,23 @@ public class Body implements Copyable {
   /** Return LHS of the first identity stmt assigning from \@this. */
   @Nullable
   public Local getThisLocal() {
-    final JIdentityStmt<?> thisStmt = (JIdentityStmt<?>) getThisStmt();
+    final JIdentityStmt thisStmt = (JIdentityStmt) getThisStmt();
     if (thisStmt == null) {
       return null;
     }
-    return thisStmt.getLeftOp();
+    return (Local) thisStmt.getLeftOp();
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
-  @Nullable
+  @Nonnull
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt) {
-        if (((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
-          JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
+        if (((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
+          JIdentityStmt idStmt = (JIdentityStmt) s;
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
           if (pr.getIndex() == i) {
-            return idStmt.getLeftOp();
+            return (Local) idStmt.getLeftOp();
           }
         }
       } else {
@@ -199,7 +198,7 @@ public class Body implements Copyable {
         //  break;
       }
     }
-    return null;
+    throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
   }
 
   /**
@@ -216,10 +215,10 @@ public class Body implements Copyable {
     // fixed index positions at the beginning?
     for (Stmt u : graph.getNodes()) {
       if (u instanceof JIdentityStmt) {
-        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) u;
+        JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), idStmt.getLeftOp());
+          retVal.add(pr.getIndex(), (Local) idStmt.getLeftOp());
         }
       }
       /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
@@ -439,7 +438,7 @@ public class Body implements Copyable {
           for (Value def : defs) {
             if (def == oldLocal || def.getUses().contains(oldLocal)) {
               if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt<?, ?>) currStmt).withNewDef(newLocal);
+                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
               }
             }
           }

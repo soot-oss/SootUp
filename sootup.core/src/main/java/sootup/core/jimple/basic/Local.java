@@ -124,12 +124,12 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   }
 
   /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
-  public List<AbstractDefinitionStmt<?, Value>> getDefsOfLocal(List<Stmt> defs) {
-    List<AbstractDefinitionStmt<?, Value>> localDefs = new ArrayList<>();
+  public List<AbstractDefinitionStmt> getDefsOfLocal(List<Stmt> defs) {
+    List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt<?, Value>) stmt).getLeftOp().equals(this)) {
-        localDefs.add((AbstractDefinitionStmt<?, Value>) stmt);
+          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(this)) {
+        localDefs.add((AbstractDefinitionStmt) stmt);
       }
     }
     return localDefs;
