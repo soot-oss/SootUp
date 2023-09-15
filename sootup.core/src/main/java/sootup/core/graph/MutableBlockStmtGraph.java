@@ -847,7 +847,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           (type, handler) ->
               successorBlock.addExceptionalSuccessorBlock(type, getOrCreateBlock(handler)));
       stmts.forEach(stmt -> addNodeToBlock(block, stmt));
-      tryMergeBlocks(block, successorBlock);
+      if (!tryMergeBlocks(block, successorBlock)) {
+        // update index: for splitted stmts
+        successorBlock.getStmts().forEach((stmt) -> stmtToBlock.put(stmt, successorBlock));
+        blocks.add(successorBlock);
+      }
     }
 
     if (beforeStmt == getStartingStmt()) {
