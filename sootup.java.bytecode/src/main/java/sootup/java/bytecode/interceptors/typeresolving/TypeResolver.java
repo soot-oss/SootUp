@@ -178,10 +178,20 @@ public class TypeResolver {
         actualSL.clear(stmtId);
         AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
         Value lhs = defStmt.getLeftOp();
-        Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
+        Local local;
+        if (lhs instanceof Local) {
+          local = (Local) lhs;
+        } else if (lhs instanceof JArrayRef) {
+          local = ((JArrayRef) lhs).getBase();
+        } else if (lhs instanceof JInstanceFieldRef) {
+          local = ((JInstanceFieldRef) lhs).getBase();
+        } else {
+          throw new IllegalStateException("can not handle " + lhs.getClass());
+        }
         Type t_old = actualTyping.getType(local);
         Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
         if (t_right == null) {
+          // TODO: ms: is this correct to handle: null?
           workQueue.removeFirst();
           continue;
         }

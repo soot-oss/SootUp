@@ -211,6 +211,9 @@ public class BytecodeHierarchy {
     Set<AncestryPath> paths = new HashSet<>();
     while (!pathNodes.isEmpty()) {
       AncestryPath node = pathNodes.removeFirst();
+      if (!typeHierarchy.contains(node.type)) {
+        break;
+      }
       if (node.type == objectClassType) {
         paths.add(node);
       } else {
@@ -231,10 +234,11 @@ public class BytecodeHierarchy {
             pathNodes.add(superNode);
           }
           ClassType superClass = typeHierarchy.superClassOf(node.type);
-          // only java.lang.Object can have no SuperClass i.e. is null - this is already filtered
-          // above
-          AncestryPath superNode = new AncestryPath(superClass, node);
-          pathNodes.add(superNode);
+          // only java.lang.Object can have no SuperClass i.e. is null
+          if (superClass != null) {
+            AncestryPath superNode = new AncestryPath(superClass, node);
+            pathNodes.add(superNode);
+          }
         }
       }
     }
