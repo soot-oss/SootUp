@@ -23,7 +23,9 @@ package sootup.java.bytecode.interceptors;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
@@ -108,19 +110,18 @@ public class Aggregator implements BodyInterceptor {
         boolean propagatingArrayRef = false;
         List<JFieldRef> fieldRefList = new ArrayList<>();
 
-        List<Value> localsUsed = new ArrayList<>();
+        Set<Value> localsUsed = new HashSet<>();
         for (Stmt pathStmt : path) {
-          List<Value> allDefs = pathStmt.getDefs();
-          for (Value def : allDefs) {
-            if (def instanceof Local) {
-              localsUsed.add(def);
-            } else if (def instanceof AbstractInstanceInvokeExpr) {
+          for (Value use : pathStmt.getUses()) {
+            if (use instanceof Local) {
+              localsUsed.add(use);
+            } else if (use instanceof AbstractInstanceInvokeExpr) {
               propagatingInvokeExpr = true;
-            } else if (def instanceof JArrayRef) {
+            } else if (use instanceof JArrayRef) {
               propagatingArrayRef = true;
-            } else if (def instanceof JFieldRef) {
+            } else if (use instanceof JFieldRef) {
               propagatingFieldRef = true;
-              fieldRefList.add((JFieldRef) def);
+              fieldRefList.add((JFieldRef) use);
             }
           }
         }
