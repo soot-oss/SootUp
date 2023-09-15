@@ -1394,7 +1394,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         oprs = new Operand[nrArgs + 1];
       }
       if (oprs != null) {
-        while (nrArgs-- > 0) {
+        while (nrArgs > 0) {
+          nrArgs--;
           oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
         }
         if (!isStaticInvokeExpr) {
