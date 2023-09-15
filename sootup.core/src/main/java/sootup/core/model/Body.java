@@ -33,7 +33,6 @@ import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.ImmutableUtils;
@@ -365,7 +364,6 @@ public class Body implements Copyable {
    */
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
-    @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
     @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
@@ -416,12 +414,6 @@ public class Body implements Copyable {
     @Nonnull
     public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
       this.locals = locals;
-      return this;
-    }
-
-    @Nonnull
-    public BodyBuilder addLocal(@Nonnull String name, Type type) {
-      locals.add(localGen.generateLocal(type));
       return this;
     }
 
