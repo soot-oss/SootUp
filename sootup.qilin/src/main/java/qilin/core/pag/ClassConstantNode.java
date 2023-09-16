@@ -19,7 +19,7 @@
 package qilin.core.pag;
 
 import soot.RefType;
-import soot.jimple.ClassConstant;
+import sootup.core.jimple.common.constant.ClassConstant;
 
 /**
  * Represents an allocation site node the represents a known java.lang.Class object.

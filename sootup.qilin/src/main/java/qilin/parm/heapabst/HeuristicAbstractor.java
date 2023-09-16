@@ -23,7 +23,8 @@ import qilin.core.pag.MergedNewExpr;
 import qilin.core.pag.PAG;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.*;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.Set;
 

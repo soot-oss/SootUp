@@ -24,9 +24,19 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.JNewArrayExpr;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.StringConstant;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Modifier;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 /**
  * @author Ondrej Lhotak
@@ -233,7 +243,7 @@ public class MethodNodeFactory {
     }
 
     public VarNode caseThis() {
-        Type type = method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClass().getType();
+        Type type = method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClassType();
         VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
         ret.setInterProcTarget();
         return ret;

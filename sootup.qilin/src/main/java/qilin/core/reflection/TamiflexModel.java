@@ -22,10 +22,17 @@ import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 import soot.tagkit.LineNumberTag;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

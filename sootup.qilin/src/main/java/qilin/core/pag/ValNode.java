@@ -19,8 +19,8 @@
 package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
-import soot.Type;
 import soot.util.Numberable;
+import sootup.core.types.Type;
 
 /**
  * Represents a simple of pointer node in the pointer assignment graph.

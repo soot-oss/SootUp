@@ -25,9 +25,9 @@ import qilin.core.builder.FakeMainFactory;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
 import soot.MethodOrMethodContext;
-import soot.SootMethod;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.model.SootMethod;
 
 import java.util.HashSet;
 import java.util.Iterator;

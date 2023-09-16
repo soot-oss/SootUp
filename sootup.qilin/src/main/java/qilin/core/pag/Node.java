@@ -20,8 +20,8 @@ package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
 import qilin.util.PTAUtils;
-import soot.Type;
 import soot.util.Numberable;
+import sootup.core.types.Type;
 
 /**
  * Represents every node in the pointer assignment graph.

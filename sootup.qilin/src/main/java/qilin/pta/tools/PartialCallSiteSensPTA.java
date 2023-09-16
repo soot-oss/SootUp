@@ -27,9 +27,13 @@ import qilin.parm.select.*;
 import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.*;
+import soot.MethodOrMethodContext;
 import soot.jimple.*;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.HashSet;
 import java.util.Map;

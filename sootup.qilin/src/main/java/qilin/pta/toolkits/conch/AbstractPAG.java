@@ -25,10 +25,10 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import soot.RefLikeType;
-import soot.SootMethod;
-import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.Collections;

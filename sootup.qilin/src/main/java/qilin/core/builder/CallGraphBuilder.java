@@ -26,7 +26,8 @@ import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.*;
+import soot.Context;
+import soot.MethodOrMethodContext;
 import soot.jimple.*;
 import soot.jimple.internal.JInvokeStmt;
 import soot.jimple.internal.JStaticInvokeExpr;
@@ -34,6 +35,11 @@ import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 
@@ -132,7 +138,7 @@ public class CallGraphBuilder {
         while (targets.hasNext()) {
             SootMethod target = targets.next();
             if (site.iie() instanceof SpecialInvokeExpr) {
-                Type calleeDeclType = target.getDeclaringClass().getType();
+                Type calleeDeclType = target.getDeclaringClassType();
                 if (!Scene.v().getFastHierarchy().canStoreType(type, calleeDeclType)) {
                     continue;
                 }

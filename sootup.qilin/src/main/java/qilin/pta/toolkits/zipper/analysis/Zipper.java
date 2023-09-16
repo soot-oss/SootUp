@@ -11,8 +11,8 @@ import qilin.util.ANSIColor;
 import qilin.util.Stopwatch;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
 import soot.RefType;
-import soot.SootMethod;
-import soot.Type;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -186,11 +186,11 @@ public class Zipper {
         pce.PCEMethodsOf(type).stream()
                 .filter(m -> !m.isPrivate() && !m.isStatic())
                 .filter(m -> ToolUtil.isInnerType(
-                        m.getDeclaringClass().getType(), type))
+                        m.getDeclaringClassType(), type))
                 .forEach(outms::add);
         pce.PCEMethodsOf(type).stream()
                 .filter(m -> !m.isPrivate() && !m.isStatic())
-                .filter(m -> m.getDeclaringClass().getType().equals(type)
+                .filter(m -> m.getDeclaringClassType().equals(type)
                         && m.toString().contains("access$"))
                 .forEach(outms::add);
 

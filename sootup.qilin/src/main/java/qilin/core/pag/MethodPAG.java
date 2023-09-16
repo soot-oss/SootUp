@@ -22,14 +22,17 @@ import qilin.CoreConfig;
 import qilin.util.DataFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
-import soot.*;
+
 import soot.jimple.Jimple;
 import soot.jimple.StaticFieldRef;
-import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.util.Chain;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 

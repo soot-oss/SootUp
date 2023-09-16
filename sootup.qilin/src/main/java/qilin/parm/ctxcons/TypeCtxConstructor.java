@@ -26,7 +26,7 @@ import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 // implementation of type context...(Yannis popl'11)
 public class TypeCtxConstructor implements CtxConstructor {

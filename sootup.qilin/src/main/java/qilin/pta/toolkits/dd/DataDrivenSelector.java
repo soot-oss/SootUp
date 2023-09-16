@@ -27,7 +27,7 @@ import qilin.parm.ctxcons.ObjCtxConstructor;
 import qilin.parm.ctxcons.TypeCtxConstructor;
 import qilin.parm.select.CtxSelector;
 import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.Map;

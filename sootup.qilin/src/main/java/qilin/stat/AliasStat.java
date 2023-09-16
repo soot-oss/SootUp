@@ -23,14 +23,14 @@ import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
+import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Pair;
 import qilin.util.Util;
-import soot.Local;
-import soot.SootMethod;
-import soot.jimple.spark.pag.SparkField;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.Collections;

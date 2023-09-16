@@ -31,7 +31,8 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.queue.UniqueQueue;
-import soot.*;
+import soot.Context;
+import soot.MethodOrMethodContext;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -41,6 +42,15 @@ import soot.util.dot.DotGraphConstants;
 import soot.util.dot.DotGraphNode;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.io.*;
 import java.net.URL;
@@ -67,7 +77,7 @@ public final class PTAUtils {
 
                 for (final Unit u : srcmpag.getInvokeStmts()) {
                     final Stmt s = (Stmt) u;
-                    InvokeExpr ie = s.getInvokeExpr();
+                    AbstractInvokeExpr ie = s.getInvokeExpr();
                     if (ie instanceof StaticInvokeExpr) {
                         for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
                             Edge e = it.next();
@@ -101,7 +111,7 @@ public final class PTAUtils {
 
             for (final Unit u : srcmpag.getInvokeStmts()) {
                 final Stmt s = (Stmt) u;
-                InvokeExpr ie = s.getInvokeExpr();
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 if (ie instanceof StaticInvokeExpr) {
                     for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
                         Edge e = it.next();
@@ -784,7 +794,7 @@ public final class PTAUtils {
         if (var instanceof NewArrayExpr nae) {
             Value sizeVal = nae.getSize();
             if (sizeVal instanceof IntConstant size) {
-                return size.value == 0;
+                return size.getValue() == 0;
             }
         }
         return false;

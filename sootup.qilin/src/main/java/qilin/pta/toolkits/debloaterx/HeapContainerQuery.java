@@ -3,8 +3,7 @@ package qilin.pta.toolkits.debloaterx;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import soot.*;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 import java.util.stream.Collectors;

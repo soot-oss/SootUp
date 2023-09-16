@@ -4,11 +4,13 @@ import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ArrayElement;
 import qilin.core.pag.PAG;
+import qilin.core.pag.SparkField;
 import qilin.util.Stopwatch;
-import soot.*;
-import soot.jimple.IntConstant;
 import soot.jimple.internal.JNewArrayExpr;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +44,7 @@ public class ContainerFinder {
             if (type instanceof ArrayType at) {
                 JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
                 Value vl = nae.getSize();
-                if (utility.isCoarseType(at) && (!(vl instanceof IntConstant ic) || ic.value != 0)) {
+                if (utility.isCoarseType(at) && (!(vl instanceof IntConstant ic) || ic.getValue() != 0)) {
                     containers.computeIfAbsent(heap, k -> new HashSet<>()).add(ArrayElement.v());
                 } else {
                     notcontainers.add(heap);

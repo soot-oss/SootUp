@@ -32,7 +32,11 @@ import qilin.pta.toolkits.debloaterx.DebloaterX;
 import qilin.pta.toolkits.conch.Conch;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
-import soot.*;
+import soot.Context;
+import soot.MethodOrMethodContext;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 

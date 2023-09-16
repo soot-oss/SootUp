@@ -19,7 +19,7 @@
 package qilin.core.reflection;
 
 import soot.Unit;
-import soot.jimple.Stmt;
+import sootup.core.jimple.common.stmt.Stmt;
 
 import java.util.Collection;
 import java.util.Collections;

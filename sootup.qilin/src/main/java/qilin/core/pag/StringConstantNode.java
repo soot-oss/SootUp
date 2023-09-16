@@ -19,7 +19,7 @@
 package qilin.core.pag;
 
 import soot.RefType;
-import soot.jimple.StringConstant;
+import sootup.core.jimple.common.constant.StringConstant;
 
 /**
  * Represents an allocation site node the represents a constant string.
@@ -36,6 +36,6 @@ public class StringConstantNode extends ConstantNode {
     }
 
     public String getString() {
-        return ((StringConstant) newExpr).value;
+        return ((StringConstant) newExpr).getValue();
     }
 }

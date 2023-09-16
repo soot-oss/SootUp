@@ -22,7 +22,7 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 /*
  * A pipeline context selector which selects context by firstly using ctxSelA and then ctxSelB.

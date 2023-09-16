@@ -25,8 +25,8 @@ import qilin.core.pag.PAG;
 import qilin.core.pag.VarNode;
 import soot.RefLikeType;
 import soot.RefType;
-import soot.SootClass;
-import soot.SootMethod;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
 import java.util.Collections;
 import java.util.HashSet;

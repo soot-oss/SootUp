@@ -19,8 +19,7 @@
 package qilin.core.pag;
 
 import soot.RefType;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.types.Type;
 
 /**
  * Represents an array element.

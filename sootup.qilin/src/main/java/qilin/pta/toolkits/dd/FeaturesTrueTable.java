@@ -19,10 +19,10 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.Body;
-import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.*;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 
 /*
  * features and formulas used in "Data-driven context-sensitivity for Points-to Analysis (OOPSLA 2017)"

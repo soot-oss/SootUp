@@ -26,11 +26,12 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import soot.*;
 import soot.jimple.*;
-import soot.jimple.spark.pag.SparkField;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 public class Selectx {
     private final PTA prePTA;

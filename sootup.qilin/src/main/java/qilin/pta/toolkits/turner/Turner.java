@@ -21,12 +21,12 @@ package qilin.pta.toolkits.turner;
 import qilin.core.PTA;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
+import qilin.core.pag.SparkField;
 import qilin.pta.PTAConfig;
 import qilin.util.graph.MergedNode;
 import qilin.util.graph.SCCMergedGraph;
 import qilin.util.graph.TopologicalSorter;
-import soot.SootMethod;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

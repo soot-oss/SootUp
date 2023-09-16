@@ -7,12 +7,12 @@ import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
 import soot.RefType;
-import soot.SootMethod;
 import soot.Unit;
-import soot.Value;
 import soot.jimple.*;
-import soot.jimple.spark.pag.SparkField;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

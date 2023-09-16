@@ -27,9 +27,11 @@ import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import soot.*;
-import soot.jimple.spark.pag.SparkField;
-import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.Context;
+import soot.MethodOrMethodContext;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -21,8 +21,8 @@ package qilin.core.pag;
 import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.Stmt;
 import soot.util.NumberedString;
+import sootup.core.jimple.common.stmt.Stmt;
 
 import java.util.Objects;
 

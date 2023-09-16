@@ -20,11 +20,16 @@ package qilin.core;
 
 import qilin.core.builder.FakeMainFactory;
 import qilin.util.DataFactory;
-import soot.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.util.Chain;
 import soot.util.IterableNumberer;
 import soot.util.StringNumberer;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.Set;
 

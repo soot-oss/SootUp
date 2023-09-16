@@ -21,9 +21,9 @@ package qilin.core.pag;
 import qilin.CoreConfig;
 import qilin.core.context.ContextElement;
 import soot.RefType;
-import soot.SootMethod;
-import soot.Type;
 import soot.util.Numberable;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 /**
  * Represents an allocation site node in the pointer assignment graph.

@@ -24,8 +24,9 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
-import soot.*;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.util.*;
 

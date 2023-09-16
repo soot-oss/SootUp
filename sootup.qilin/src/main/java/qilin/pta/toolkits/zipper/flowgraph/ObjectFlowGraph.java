@@ -4,9 +4,10 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.pta.toolkits.zipper.Global;
-import soot.SootMethod;
-import soot.Value;
 import soot.jimple.*;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 

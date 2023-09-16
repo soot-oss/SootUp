@@ -24,7 +24,7 @@ import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 public class CallsiteCtxConstructor implements CtxConstructor {
 

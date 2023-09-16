@@ -22,8 +22,7 @@ import qilin.util.DataFactory;
 import soot.AnySubType;
 import soot.Context;
 import soot.RefLikeType;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.types.Type;
 
 import java.util.Collection;
 import java.util.Collections;

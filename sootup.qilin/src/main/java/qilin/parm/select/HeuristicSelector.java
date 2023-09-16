@@ -24,7 +24,7 @@ import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.util.PTAUtils;
 import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 public class HeuristicSelector extends CtxSelector {
 

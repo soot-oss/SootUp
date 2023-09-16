@@ -24,7 +24,11 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
-import soot.*;
+import soot.Context;
+import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 

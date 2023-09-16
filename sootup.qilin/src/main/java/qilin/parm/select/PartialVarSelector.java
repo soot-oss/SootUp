@@ -23,7 +23,7 @@ import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
 import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.Set;
 

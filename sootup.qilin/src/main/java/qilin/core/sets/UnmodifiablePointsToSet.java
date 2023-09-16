@@ -24,8 +24,8 @@ import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.Node;
 import qilin.core.pag.StringConstantNode;
 import soot.RefType;
-import soot.Type;
-import soot.jimple.ClassConstant;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.types.Type;
 
 import java.util.*;
 

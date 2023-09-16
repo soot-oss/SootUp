@@ -21,12 +21,18 @@ package qilin.core.builder;
 import qilin.CoreConfig;
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
-import soot.*;
 import soot.jimple.JimpleBody;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.Modifier;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.ibm.wala.cast.java.types.JavaPrimitiveTypeMap.VoidType;
 
 public class FakeMainFactory extends ArtificialMethod {
     public static FakeMainFactory instance;

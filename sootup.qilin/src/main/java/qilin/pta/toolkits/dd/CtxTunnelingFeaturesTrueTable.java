@@ -19,8 +19,12 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.*;
 import soot.jimple.*;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.Body;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
 /*
  * features and formulas used in "Precise and Scalable Points-to Analysis via Data-Driven

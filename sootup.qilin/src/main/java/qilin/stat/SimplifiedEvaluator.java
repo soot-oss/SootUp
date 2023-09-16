@@ -25,10 +25,15 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.*;
+import soot.MethodOrMethodContext;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 

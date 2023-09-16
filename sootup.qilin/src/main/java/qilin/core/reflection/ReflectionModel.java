@@ -21,11 +21,11 @@ package qilin.core.reflection;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.SootMethod;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.jimple.InvokeExpr;
-import soot.jimple.Stmt;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.Collections;

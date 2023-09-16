@@ -18,8 +18,6 @@
 
 package qilin.core.pag;
 
-import soot.jimple.spark.pag.SparkField;
-
 public class FieldValNode extends ValNode {
     // note, field could only be ArrayElement or Field type.
     // Parm should be a local variable in some methods.

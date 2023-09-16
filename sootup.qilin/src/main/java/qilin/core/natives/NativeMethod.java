@@ -20,8 +20,8 @@ package qilin.core.natives;
 
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
-import soot.SootMethod;
-import soot.Value;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.SootMethod;
 
 public abstract class NativeMethod extends ArtificialMethod {
 

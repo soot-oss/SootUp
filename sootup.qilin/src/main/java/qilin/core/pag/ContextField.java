@@ -21,11 +21,10 @@ package qilin.core.pag;
 import qilin.CoreConfig;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
-import soot.ArrayType;
 import soot.Context;
 import soot.RefType;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 public class ContextField extends ValNode {
     protected Context context;

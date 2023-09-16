@@ -24,6 +24,7 @@ import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
 import soot.*;
+import sootup.core.model.SootMethod;
 
 /*
  * This represents a parameterized PTA which could be concreted to many pointer analyses.

@@ -19,10 +19,13 @@
 package qilin.core;
 
 import qilin.util.DataFactory;
-import soot.*;
 import soot.jimple.SpecialInvokeExpr;
 import soot.util.*;
 import soot.util.queue.ChunkedQueue;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,9 +67,9 @@ public class VirtualCalls {
     public SootMethod resolveSpecial(SpecialInvokeExpr iie, NumberedString subSig, SootMethod container, boolean appOnly) {
         SootMethod target = iie.getMethod();
         /* cf. JVM spec, invokespecial instruction */
-        if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClass().getType(),
-                target.getDeclaringClass().getType())
-                && container.getDeclaringClass().getType() != target.getDeclaringClass().getType()
+        if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClassType(),
+                target.getDeclaringClassType())
+                && container.getDeclaringClassType() != target.getDeclaringClassType()
                 && !target.getName().equals("<init>")
                 && subSig != Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()")) {
 

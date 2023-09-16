@@ -26,7 +26,7 @@ import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
 import qilin.util.graph.MergedNode;
 import soot.RefLikeType;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.Set;
 

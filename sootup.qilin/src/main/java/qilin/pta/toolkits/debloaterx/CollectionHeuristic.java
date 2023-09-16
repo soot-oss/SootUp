@@ -7,13 +7,13 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
 import qilin.core.pag.PAG;
-import soot.ArrayType;
+import qilin.core.pag.SparkField;
 import soot.RefType;
-import soot.SootClass;
-import soot.SootMethod;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
 import soot.util.queue.QueueReader;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.Type;
 
 import java.util.Collections;
 import java.util.HashMap;

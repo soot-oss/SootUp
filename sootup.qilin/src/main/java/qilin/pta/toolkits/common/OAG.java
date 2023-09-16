@@ -26,8 +26,8 @@ import qilin.core.pag.MethodPAG;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.graph.DirectedGraph;
-import soot.SootMethod;
 import soot.util.queue.QueueReader;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 

@@ -24,10 +24,10 @@ import qilin.core.pag.Parm;
 import qilin.pta.toolkits.eagle.Eagle;
 import qilin.util.Pair;
 import qilin.util.Stopwatch;
-import soot.Local;
 import soot.jimple.Expr;
 import soot.jimple.NewArrayExpr;
-import soot.jimple.Stmt;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.Stmt;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

@@ -24,14 +24,13 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import soot.SootMethod;
 import soot.Unit;
-import soot.Value;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.Stmt;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 import java.util.stream.Collectors;

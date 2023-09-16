@@ -18,9 +18,8 @@
 
 package qilin.core.pag;
 
-import soot.SootField;
-import soot.Type;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootField;
+import sootup.core.types.Type;
 
 import java.util.Objects;
 

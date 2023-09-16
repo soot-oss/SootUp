@@ -18,7 +18,6 @@
 
 package qilin.core.pag;
 
-import soot.jimple.spark.pag.SparkField;
 import soot.util.Numberable;
 
 /**

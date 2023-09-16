@@ -23,10 +23,10 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.sets.PointsToSet;
 import soot.MethodOrMethodContext;
-import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.HashSet;

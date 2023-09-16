@@ -25,13 +25,14 @@ import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
-import soot.SootMethod;
 import soot.Unit;
-import soot.Value;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 

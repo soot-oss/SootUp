@@ -18,8 +18,8 @@
 
 package qilin.core.pag;
 
-import soot.SootMethod;
-import soot.Type;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 public abstract class ConstantNode extends AllocNode {
     protected ConstantNode(Object newExpr, Type t, SootMethod m) {

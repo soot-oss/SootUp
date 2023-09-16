@@ -21,8 +21,8 @@ package qilin.stat;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import soot.SootClass;
-import soot.SootMethod;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 
 import java.util.Set;
 import java.util.stream.Collectors;

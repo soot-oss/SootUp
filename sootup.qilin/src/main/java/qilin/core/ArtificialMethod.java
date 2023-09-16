@@ -18,12 +18,16 @@
 
 package qilin.core;
 
-import soot.*;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.ParameterRef;
 import soot.jimple.ThisRef;
 import soot.jimple.internal.*;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +42,7 @@ public abstract class ArtificialMethod {
 
     protected Value getThis() {
         if (thisLocal == null) {
-            RefType type = method.getDeclaringClass().getType();
+            RefType type = method.getDeclaringClassType();
             Value thisRef = new ThisRef(type);
             thisLocal = getLocal(type, 0);
             addIdentity(thisLocal, thisRef);

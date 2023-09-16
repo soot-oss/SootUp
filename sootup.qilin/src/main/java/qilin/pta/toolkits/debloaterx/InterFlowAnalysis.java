@@ -2,10 +2,10 @@ package qilin.pta.toolkits.debloaterx;
 
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Node;
+import qilin.core.pag.SparkField;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
-import soot.SootMethod;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
 
 import java.util.Collections;
 import java.util.HashMap;

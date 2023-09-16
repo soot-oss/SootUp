@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import qilin.core.PTA;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import soot.*;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

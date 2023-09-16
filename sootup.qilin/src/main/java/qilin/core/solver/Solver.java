@@ -30,14 +30,17 @@ import qilin.core.sets.HybridPointsToSet;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.PTAUtils;
-import soot.*;
+import soot.Context;
+import soot.MethodOrMethodContext;
 import soot.jimple.*;
-import soot.jimple.spark.pag.SparkField;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
 import soot.util.NumberedString;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.*;
 
@@ -115,7 +118,7 @@ public class Solver extends Propagator {
                 Iterator<SootMethod> it = mpag.triggeredClinits();
                 while (it.hasNext()) {
                     SootMethod sm = it.next();
-                    cgb.injectCallEdge(sm.getDeclaringClass().getType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
+                    cgb.injectCallEdge(sm.getDeclaringClassType(), pta.parameterize(sm, pta.emptyContext()), Kind.CLINIT);
                 }
             }
             recordCallStmts(momc, mpag.getInvokeStmts());

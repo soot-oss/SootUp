@@ -24,8 +24,12 @@ import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
-import soot.*;
+import soot.Context;
+import soot.MethodOrMethodContext;
 import soot.jimple.IdentityStmt;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.*;
 

@@ -23,7 +23,7 @@ import qilin.core.pag.ContextAllocNode;
 import qilin.parm.ctxcons.*;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 import java.util.HashMap;
 import java.util.Map;

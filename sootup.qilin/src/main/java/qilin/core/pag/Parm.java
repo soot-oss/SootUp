@@ -20,8 +20,8 @@ package qilin.core.pag;
 
 import qilin.core.PointsToAnalysis;
 import soot.RefType;
-import soot.SootMethod;
-import soot.Type;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 import java.util.Objects;
 
@@ -69,7 +69,7 @@ public class Parm {
         if (index == PointsToAnalysis.RETURN_NODE) {
             return method.getReturnType();
         } else if (index == PointsToAnalysis.THIS_NODE) {
-            return method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClass().getType();
+            return method.isStatic() ? RefType.v("java.lang.Object") : method.getDeclaringClassType();
         }
 
         return method.getParameterType(index);

@@ -22,10 +22,10 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import soot.SootMethod;
 import soot.jimple.AssignStmt;
-import soot.jimple.Stmt;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.Collections;
 import java.util.Iterator;

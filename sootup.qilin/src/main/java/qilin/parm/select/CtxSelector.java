@@ -25,7 +25,7 @@ import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
 import soot.Context;
-import soot.SootMethod;
+import sootup.core.model.SootMethod;
 
 public abstract class CtxSelector {
     public abstract Context select(SootMethod m, Context context);

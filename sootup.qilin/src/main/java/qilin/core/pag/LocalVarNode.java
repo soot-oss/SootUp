@@ -18,8 +18,9 @@
 
 package qilin.core.pag;
 
-import soot.SootMethod;
-import soot.Type;
+
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
 
 /**
  * @author Ondrej Lhotak

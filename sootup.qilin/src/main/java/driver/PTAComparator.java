@@ -25,7 +25,7 @@ import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.PTAConfig;
 import qilin.util.Util;
-import soot.Local;
+import sootup.core.jimple.basic.Local;
 
 import java.io.PrintStream;
 import java.util.*;

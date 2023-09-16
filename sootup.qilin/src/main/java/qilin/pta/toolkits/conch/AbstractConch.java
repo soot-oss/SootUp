@@ -24,10 +24,9 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import soot.ArrayType;
-import soot.PrimType;
-import soot.SootMethod;
-import soot.jimple.spark.pag.SparkField;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType;
 
 import java.util.*;
 
@@ -166,14 +165,14 @@ public class AbstractConch {
 
     private boolean primitiveField(SparkField f) {
         String s = "java.lang.String";
-        if (f.getType() instanceof PrimType) {
+        if (f.getType() instanceof PrimitiveType) {
             return true;
         } else if (f.getType() instanceof ArrayType at) {
             /*
              * here, we let primitive array as primitive type as that in Turner.
              * this wont hurt precision of clients.
              * */
-            return at.baseType instanceof PrimType;
+            return at.getBaseType() instanceof PrimitiveType;
         } else return f.getType().toString().equals(s);
     }
 
