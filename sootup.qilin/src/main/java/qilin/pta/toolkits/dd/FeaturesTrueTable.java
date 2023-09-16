@@ -20,7 +20,6 @@ package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
 import soot.Unit;
-import soot.jimple.*;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
@@ -31,7 +30,7 @@ public class FeaturesTrueTable {
     private final boolean[] features = new boolean[26];
 
     public FeaturesTrueTable(SootMethod sm) {
-        String sig = sm.getSignature();
+        String sig = sm.getSignature().toString();
         this.features[1] = sig.contains("java");
         this.features[2] = sig.contains("lang");
         this.features[3] = sig.contains("sun");

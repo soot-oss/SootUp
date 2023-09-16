@@ -19,7 +19,6 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.jimple.*;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.Body;
@@ -34,7 +33,7 @@ public class CtxTunnelingFeaturesTrueTable {
     private final boolean[] f = new boolean[24];
 
     public CtxTunnelingFeaturesTrueTable(SootMethod sm) {
-        String sig = sm.getSignature();
+        String sig = sm.getSignature().toString();
         // the 10 atomic signature features.
         this.f[1] = sig.contains("java");
         this.f[2] = sig.contains("lang");

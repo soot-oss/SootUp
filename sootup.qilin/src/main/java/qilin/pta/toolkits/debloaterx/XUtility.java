@@ -6,17 +6,18 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.RefType;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.NumberedString;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -71,10 +72,10 @@ public class XUtility {
     }
 
     private boolean isImpreciseType(Type type) {
-        if (type == RefType.v("java.lang.Object")) {
+        if (type == PTAUtils.getClassType("java.lang.Object")) {
             return true;
         }
-        if (type instanceof RefType refType) {
+        if (type instanceof ClassType refType) {
             SootClass sc = refType.getSootClass();
             return sc.isAbstract() || sc.isInterface() || sc.getShortName().startsWith("Abstract");
         }
@@ -271,7 +272,7 @@ public class XUtility {
     }
 
     public Set<SparkField> getFields(Type type) {
-        if (type instanceof RefType refType) {
+        if (type instanceof ClassType refType) {
             Set<SparkField> ret = this.t2Fields.get(refType);
             if (ret != null) {
                 return ret;

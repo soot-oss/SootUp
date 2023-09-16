@@ -565,7 +565,7 @@ public class PAG {
                         if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
                             continue;
                         }
-                        Type objType = RefType.v("java.lang.Object");
+                        Type objType = PTAUtils.getClassType("java.lang.Object");
                         if (srcArr.getType() == objType) {
                             Local localSrc = new JimpleLocal("intermediate/" + body.getLocalCount(), ArrayType.v(objType, 1));
                             body.getLocals().add(localSrc);
@@ -598,7 +598,7 @@ public class PAG {
     }
 
     public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-        return makeLocalVarNode(invoke, RefType.v("java.lang.Throwable"), method);
+        return makeLocalVarNode(invoke, PTAUtils.getClassType("java.lang.Throwable"), method);
     }
 
     public HeapAbstractor heapAbstractor() {

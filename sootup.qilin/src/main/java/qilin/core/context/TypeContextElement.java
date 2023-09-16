@@ -21,7 +21,7 @@ package qilin.core.context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.StringConstantNode;
-import soot.RefType;
+import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -38,13 +38,13 @@ public class TypeContextElement implements ContextElement {
 
     public static TypeContextElement getTypeContextElement(AllocNode a) {
         SootMethod declaringMethod = a.getMethod();
-        Type declType = RefType.v("java.lang.Object");
+        Type declType = PTAUtils.getClassType("java.lang.Object");
         if (declaringMethod != null) {
             declType = declaringMethod.getDeclaringClassType();
         } else if (a instanceof ClassConstantNode) {
-            declType = RefType.v("java.lang.System");
+            declType = PTAUtils.getClassType("java.lang.System");
         } else if (a instanceof StringConstantNode) {
-            declType = RefType.v("java.lang.String");
+            declType = PTAUtils.getClassType("java.lang.String");
         }
         return new TypeContextElement(declType);
     }

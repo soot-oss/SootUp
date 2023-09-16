@@ -27,6 +27,7 @@ import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.Context;
+import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.jimple.*;
 import soot.jimple.internal.JInvokeStmt;

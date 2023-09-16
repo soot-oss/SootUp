@@ -114,7 +114,7 @@ public class MethodPAG {
         if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
             return;
         }
-        Chain<Trap> traps = body.getTraps();
+        List<Trap> traps = body.getTraps();
         PatchingChain<Unit> units = body.getUnits();
         Set<Unit> inTraps = DataFactory.createSet();
         /*

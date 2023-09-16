@@ -27,6 +27,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public abstract class ArtificialMethod {
 
     protected Value getThis() {
         if (thisLocal == null) {
-            RefType type = method.getDeclaringClassType();
+            ClassType type = method.getDeclaringClassType();
             Value thisRef = new ThisRef(type);
             thisLocal = getLocal(type, 0);
             addIdentity(thisLocal, thisRef);
@@ -74,14 +75,14 @@ public abstract class ArtificialMethod {
         body.getUnits().add(new JIdentityStmt(lValue, rValue));
     }
 
-    protected Value getNew(RefType type) {
+    protected Value getNew(ClassType type) {
         Value newExpr = new JNewExpr(type);
         Value local = getNextLocal(type);
         addAssign(local, newExpr);
         return local;
     }
 
-    protected Value getNewArray(RefType type) {
+    protected Value getNewArray(ClassType type) {
         Value newExpr = new JNewArrayExpr(type, IntConstant.v(1));
         Value local = getNextLocal(ArrayType.v(type, 1));
         addAssign(local, newExpr);

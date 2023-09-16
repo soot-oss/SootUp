@@ -19,12 +19,15 @@
 package qilin.core;
 
 import qilin.util.DataFactory;
+import qilin.util.PTAUtils;
 import soot.jimple.SpecialInvokeExpr;
 import soot.util.*;
 import soot.util.queue.ChunkedQueue;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.Type;
 
 import java.util.HashSet;
@@ -79,11 +82,11 @@ public class VirtualCalls {
         }
     }
 
-    public SootMethod resolveNonSpecial(RefType t, NumberedString subSig) {
+    public SootMethod resolveNonSpecial(ClassType t, NumberedString subSig) {
         return resolveNonSpecial(t, subSig, false);
     }
 
-    public SootMethod resolveNonSpecial(RefType t, NumberedString subSig, boolean appOnly) {
+    public SootMethod resolveNonSpecial(ClassType t, NumberedString subSig, boolean appOnly) {
         Map<NumberedString, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
         SootMethod ret = vtbl.get(subSig);
         if (ret != null) {
@@ -125,13 +128,13 @@ public class VirtualCalls {
     public void resolve(Type t, Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets, boolean appOnly) {
         if (declaredType instanceof ArrayType) {
-            declaredType = RefType.v("java.lang.Object");
+            declaredType = PTAUtils.getClassType("java.lang.Object");
         }
         if (sigType instanceof ArrayType) {
-            sigType = RefType.v("java.lang.Object");
+            sigType = PTAUtils.getClassType("java.lang.Object");
         }
         if (t instanceof ArrayType) {
-            t = RefType.v("java.lang.Object");
+            t = PTAUtils.getClassType("java.lang.Object");
         }
 
         if (declaredType != null && !Scene.v().getFastHierarchy().canStoreType(t, declaredType)) {
@@ -140,13 +143,13 @@ public class VirtualCalls {
         if (sigType != null && !Scene.v().getFastHierarchy().canStoreType(t, sigType)) {
             return;
         }
-        if (t instanceof RefType) {
-            SootMethod target = resolveNonSpecial((RefType) t, subSig, appOnly);
+        if (t instanceof ClassType) {
+            SootMethod target = resolveNonSpecial((ClassType) t, subSig, appOnly);
             if (target != null) {
                 targets.add(target);
             }
         } else if (t instanceof AnySubType) {
-            RefType base = ((AnySubType) t).getBase();
+            ClassType base = ((AnySubType) t).getBase();
 
             /*
              * Whenever any sub type of a specific type is considered as receiver for a method to call and the base type is an
@@ -167,7 +170,7 @@ public class VirtualCalls {
     }
 
     protected void resolveAnySubType(Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
-                                     ChunkedQueue<SootMethod> targets, boolean appOnly, RefType base) {
+                                     ChunkedQueue<SootMethod> targets, boolean appOnly, ClassType base) {
         {
             Set<Type> subTypes = baseToSubTypes.get(base);
             if (subTypes != null && !subTypes.isEmpty()) {

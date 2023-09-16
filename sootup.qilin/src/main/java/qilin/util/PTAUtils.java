@@ -33,7 +33,6 @@ import qilin.core.sets.PointsToSetInternal;
 import qilin.util.queue.UniqueQueue;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.NumberedString;
@@ -50,7 +49,10 @@ import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -62,7 +64,11 @@ public final class PTAUtils {
     private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
     static final String output_dir = CoreConfig.v().getOutConfig().outDir;
     static Map<String, Node> nodes = new TreeMap<>();
-    private static final RefType clRunnable = RefType.v("java.lang.Runnable");
+    private static final ClassType clRunnable = getClassType("java.lang.Runnable");
+
+    public static ClassType getClassType(String fullyQualifiedClassName) {
+        return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+    }
 
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();
@@ -548,7 +554,7 @@ public final class PTAUtils {
     }
 
     public static boolean subtypeOfAbstractStringBuilder(Type t) {
-        if (!(t instanceof RefType rt)) {
+        if (!(t instanceof ClassType rt)) {
             return false;
         }
         String s = rt.toString();
@@ -558,7 +564,7 @@ public final class PTAUtils {
     public static boolean supportFinalize(AllocNode heap) {
         NumberedString sigFinalize = PTAScene.v().getSubSigNumberer().findOrAdd("void finalize()");
         Type type = heap.getType();
-        if (type instanceof RefType refType && type != RefType.v("java.lang.Object")) {
+        if (type instanceof ClassType refType && type != PTAUtils.getClassType("java.lang.Object")) {
             SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
             if (finalizeMethod != null && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
                 return false;
@@ -628,14 +634,14 @@ public final class PTAUtils {
 
     public static boolean isOfPrimitiveBaseType(AllocNode heap) {
         if (heap.getType() instanceof ArrayType arrayType) {
-            return arrayType.baseType instanceof PrimType;
+            return arrayType.getBaseType() instanceof PrimitiveType;
         }
         return false;
     }
 
     public static boolean isPrimitiveArrayType(Type type) {
         if (type instanceof ArrayType arrayType) {
-            return arrayType.getArrayElementType() instanceof PrimType;
+            return arrayType.getArrayElementType() instanceof PrimitiveType;
         }
         return false;
     }
@@ -648,7 +654,7 @@ public final class PTAUtils {
     public static boolean enforceEmptyContext(AllocNode probe) {
         // primitive array objects should be context-insenstive.
         if (probe.getType() instanceof ArrayType arrayType) {
-            if (arrayType.getArrayElementType() instanceof PrimType) {
+            if (arrayType.getArrayElementType() instanceof PrimitiveType) {
                 return true;
             }
         }
@@ -762,10 +768,10 @@ public final class PTAUtils {
 
     public static SootClass getSootClass(Type type) {
         SootClass allocated = null;
-        if (type instanceof RefType) {
-            allocated = ((RefType) type).getSootClass();
-        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof RefType) {
-            allocated = ((RefType) ((ArrayType) type).getArrayElementType()).getSootClass();
+        if (type instanceof ClassType) {
+            allocated = ((ClassType) type).getSootClass();
+        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof ClassType) {
+            allocated = ((ClassType) ((ArrayType) type).getArrayElementType()).getSootClass();
         }
         return allocated;
     }

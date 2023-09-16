@@ -30,12 +30,14 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 import java.util.Set;
 
 public class PTAScene {
     private static volatile PTAScene instance = null;
     private final Scene sootScene;
+    private final View view;
     private final FakeMainFactory fakeMainFactory;
 
     public static PTAScene v() {
@@ -94,6 +96,10 @@ public class PTAScene {
      * */
     public void setCallGraph(CallGraph cg) {
         sootScene.setCallGraph(cg);
+    }
+
+    public View getView() {
+        return view;
     }
 
     public CallGraph getCallGraph() {

@@ -6,11 +6,11 @@ import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
-import soot.RefType;
 import soot.Unit;
 import soot.jimple.*;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -29,7 +29,7 @@ public class XPAG {
         this.pta = pta;
         this.pag = pta.getPag();
         this.utility = utility;
-        this.dummyThis = new LocalVarNode("DUMMYTHIS", RefType.v("java.lang.Object"), null);
+        this.dummyThis = new LocalVarNode("DUMMYTHIS", PTAUtils.getClassType("java.lang.Object"), null);
         buildGraph(pta.getNakedReachableMethods());
     }
 

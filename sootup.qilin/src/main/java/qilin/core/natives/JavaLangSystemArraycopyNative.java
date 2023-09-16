@@ -18,10 +18,11 @@
 
 package qilin.core.natives;
 
+import qilin.util.PTAUtils;
 import soot.ArrayType;
-import soot.RefType;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 
 /*
  * This file will be temporarily discarded. Yes, it is correct but need one more level of context.
@@ -39,11 +40,12 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
     public void simulate() {
 //        Value srcArr = getPara(0);
 //        Value dstArr = getPara(2);
-        Value srcArr = getPara(0, ArrayType.v(RefType.v("java.lang.Object"), 1));
-        Value dstArr = getPara(2, ArrayType.v(RefType.v("java.lang.Object"), 1));
+        ClassType objType = PTAUtils.getClassType("java.lang.Object");
+        Value srcArr = getPara(0, ArrayType.v(objType, 1));
+        Value dstArr = getPara(2, ArrayType.v(objType, 1));
         Value src = getArrayRef(srcArr);
         Value dst = getArrayRef(dstArr);
-        Value temp = getNextLocal(RefType.v("java.lang.Object"));
+        Value temp = getNextLocal(objType);
         addAssign(temp, src);
         addAssign(dst, temp);
     }

@@ -5,6 +5,7 @@ import qilin.core.PTA;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -85,7 +86,7 @@ public class DebloaterX {
         }
         Set<AllocNode> objects = this.utility.getReceiverObjects(method);
         for (AllocNode revobj : objects) {
-            if (revobj.getType() instanceof RefType) {
+            if (revobj.getType() instanceof ClassType) {
                 HeapContainerQuery hcq = this.utility.getHCQ(revobj);
                 for (SparkField field : fields) {
                     if (hcq.isCSField(field)) {

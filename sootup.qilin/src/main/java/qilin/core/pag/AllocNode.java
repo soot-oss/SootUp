@@ -19,11 +19,16 @@
 package qilin.core.pag;
 
 import qilin.CoreConfig;
+import qilin.core.PTAScene;
 import qilin.core.context.ContextElement;
-import soot.RefType;
 import soot.util.Numberable;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
+
+import java.util.Optional;
 
 /**
  * Represents an allocation site node in the pointer assignment graph.
@@ -37,8 +42,10 @@ public class AllocNode extends Node implements ContextElement, Numberable {
     public AllocNode(Object newExpr, Type t, SootMethod m) {
         super(t);
         this.method = m;
-        if (t instanceof RefType rt) {
-            if (rt.getSootClass().isAbstract()) {
+        if (t instanceof ClassType rt) {
+            View view = PTAScene.v().getView();
+            Optional<SootClass> osc = view.getClass(rt);
+            if (osc.isPresent() && osc.get().isAbstract()) {
                 boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
                 if (!usesReflectionLog) {
                     throw new RuntimeException("Attempt to create allocnode with abstract type " + t);

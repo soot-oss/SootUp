@@ -19,13 +19,16 @@
 package qilin.core.sets;
 
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.Node;
 import qilin.core.pag.StringConstantNode;
-import soot.RefType;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.model.SootClass;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 import java.util.*;
 
@@ -62,8 +65,10 @@ public class UnmodifiablePointsToSet implements PointsToSet {
         pts.forall(new P2SetVisitor(pta) {
             public void visit(Node n) {
                 Type t = n.getType();
-                if (t instanceof RefType rt) {
-                    if (rt.getSootClass().isAbstract()) {
+                if (t instanceof ClassType rt) {
+                    View view = PTAScene.v().getView();
+                    Optional<SootClass> osc = (Optional<SootClass>) view.getClass(rt);
+                    if (osc.isPresent() && osc.get().isAbstract()) {
                         return;
                     }
                 }

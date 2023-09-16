@@ -27,6 +27,7 @@ import soot.RefLikeType;
 import soot.RefType;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,7 +69,7 @@ public class ToolUtil {
      * @param pOuter potential outer class
      * @return whether pInner is an inner class of pOuter
      */
-    public static boolean isInnerType(final RefType pInner, RefType pOuter) {
+    public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
         final String pInnerStr = pInner.toString();
         while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
             SootClass sc = pOuter.getSootClass();

@@ -27,8 +27,10 @@ import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
+import qilin.util.PTAUtils;
 import soot.Context;
 import soot.MethodOrMethodContext;
+import soot.jimple.toolkits.callgraph.CallGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -49,7 +51,7 @@ public abstract class PTA implements PointsToAnalysis {
         this.pag = createPAG();
         this.cgb = createCallGraphBuilder();
         this.eh = new ExceptionHandler(this);
-        AllocNode rootBase = pag.makeAllocNode("ROOT", RefType.v("java.lang.Object"), null);
+        AllocNode rootBase = pag.makeAllocNode("ROOT", PTAUtils.getClassType("java.lang.Object"), null);
         this.rootNode = new ContextAllocNode(rootBase, CtxConstructor.emptyContext);
     }
 

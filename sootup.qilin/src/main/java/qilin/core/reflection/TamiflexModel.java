@@ -61,7 +61,7 @@ public class TamiflexModel extends ReflectionModel {
         if (classForNames.containsKey(s)) {
             Collection<String> fornames = classForNames.get(s);
             for (String clazz : fornames) {
-                Type refType = RefType.v(clazz);
+                Type refType = PTAUtils.getClassType(clazz);
                 ClassConstant cc = ClassConstant.fromType(refType);
                 if (s instanceof AssignStmt) {
                     Value lvalue = ((AssignStmt) s).getLeftOp();

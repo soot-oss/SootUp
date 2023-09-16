@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import soot.RefType;
+import qilin.util.PTAUtils;
 import sootup.core.jimple.common.constant.StringConstant;
 
 /**
@@ -28,7 +28,7 @@ import sootup.core.jimple.common.constant.StringConstant;
  */
 public class StringConstantNode extends ConstantNode {
     public StringConstantNode(StringConstant sc) {
-        super(sc, RefType.v("java.lang.String"), null);
+        super(sc, PTAUtils.getClassType("java.lang.String"), null);
     }
 
     public String toString() {

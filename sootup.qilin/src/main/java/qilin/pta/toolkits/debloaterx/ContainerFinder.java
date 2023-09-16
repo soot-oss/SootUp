@@ -10,6 +10,7 @@ import soot.jimple.internal.JNewArrayExpr;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -49,7 +50,7 @@ public class ContainerFinder {
                 } else {
                     notcontainers.add(heap);
                 }
-            } else if (type instanceof RefType refType) {
+            } else if (type instanceof ClassType refType) {
                 if (utility.isCoarseType(refType) && heap.getMethod() != null) {
                     remainObjs.add(heap);
                 } else {
@@ -109,8 +110,8 @@ public class ContainerFinder {
     public boolean isAContainer(AllocNode heap) {
         if (this.containers.containsKey(heap)) {
             return true;
-        } else if (heap.getMethod().getSignature().startsWith("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int,java.lang.Class)>")
-                || heap.getMethod().getSignature().startsWith("<java.util.AbstractCollection: java.lang.Object[] toArray(java.lang.Object[])>")) {
+        } else if (heap.getMethod().getSignature().toString().startsWith("<java.util.Arrays: java.lang.Object[] copyOf(java.lang.Object[],int,java.lang.Class)>")
+                || heap.getMethod().getSignature().toString().startsWith("<java.util.AbstractCollection: java.lang.Object[] toArray(java.lang.Object[])>")) {
             // We will remove such hacks in the future. The noise of [java.lang.String] types introduced by the resolving of reflection of
             // Array.newInstance makes the whole analysis imprecise. Qilin's reflection mechanism causes this. One potential solution is
             // not to resolve reflection for these two methods.

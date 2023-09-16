@@ -104,8 +104,8 @@ public class FakeMainFactory extends ArtificialMethod {
         for (SootMethod entry : getEntryPoints()) {
             if (entry.isStatic()) {
                 if (entry.getSubSignature().equals("void main(java.lang.String[])")) {
-                    Value mockStr = getNew(RefType.v("java.lang.String"));
-                    Value strArray = getNewArray(RefType.v("java.lang.String"));
+                    Value mockStr = getNew(PTAUtils.getClassType("java.lang.String"));
+                    Value strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
                     addAssign(getArrayRef(strArray), mockStr);
                     addInvoke(entry.getSignature(), strArray);
                     implicitCallEdges++;
@@ -119,42 +119,42 @@ public class FakeMainFactory extends ArtificialMethod {
         if (CoreConfig.v().getPtaConfig().singleentry) {
             return;
         }
-        Value sv = getNextLocal(RefType.v("java.lang.String"));
-        Value mainThread = getNew(RefType.v("java.lang.Thread"));
-        Value mainThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
-        Value systemThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
+        Value sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));
+        Value mainThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
+        Value mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+        Value systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
 
         Value gCurrentThread = getFieldCurrentThread();
         addAssign(gCurrentThread, mainThread); // Store
-        Value vRunnable = getNextLocal(RefType.v("java.lang.Runnable"));
+        Value vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
 
-        Value lThreadGroup = getNextLocal(RefType.v("java.lang.ThreadGroup"));
+        Value lThreadGroup = getNextLocal(PTAUtils.getClassType("java.lang.ThreadGroup"));
         addInvoke(mainThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>", mainThreadGroup, sv);
-        Value tmpThread = getNew(RefType.v("java.lang.Thread"));
+        Value tmpThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
         addInvoke(tmpThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>", lThreadGroup, vRunnable);
         addInvoke(tmpThread, "<java.lang.Thread: void exit()>");
 
         addInvoke(systemThreadGroup, "<java.lang.ThreadGroup: void <init>()>");
         addInvoke(mainThreadGroup, "<java.lang.ThreadGroup: void <init>(java.lang.ThreadGroup,java.lang.String)>", systemThreadGroup, sv);
 
-        Value lThread = getNextLocal(RefType.v("java.lang.Thread"));
-        Value lThrowable = getNextLocal(RefType.v("java.lang.Throwable"));
-        Value tmpThreadGroup = getNew(RefType.v("java.lang.ThreadGroup"));
+        Value lThread = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
+        Value lThrowable = getNextLocal(PTAUtils.getClassType("java.lang.Throwable"));
+        Value tmpThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
         addInvoke(tmpThreadGroup, "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>", lThread, lThrowable); // TODO.
 
 
         // ClassLoader
-        Value defaultClassLoader = getNew(RefType.v("sun.misc.Launcher$AppClassLoader"));
+        Value defaultClassLoader = getNew(PTAUtils.getClassType("sun.misc.Launcher$AppClassLoader"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void <init>()>");
-        Value vClass = getNextLocal(RefType.v("java.lang.Class"));
-        Value vDomain = getNextLocal(RefType.v("java.security.ProtectionDomain"));
+        Value vClass = getNextLocal(PTAUtils.getClassType("java.lang.Class"));
+        Value vDomain = getNextLocal(PTAUtils.getClassType("java.security.ProtectionDomain"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>", sv);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void checkPackageAccess(java.lang.Class,java.security.ProtectionDomain)>", vClass, vDomain);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void addClass(java.lang.Class)>", vClass);
 
         // PrivilegedActionException
-        Value privilegedActionException = getNew(RefType.v("java.security.PrivilegedActionException"));
-        Value gLthrow = getNextLocal(RefType.v("java.lang.Exception"));
+        Value privilegedActionException = getNew(PTAUtils.getClassType("java.security.PrivilegedActionException"));
+        Value gLthrow = getNextLocal(PTAUtils.getClassType("java.lang.Exception"));
         addInvoke(privilegedActionException, "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>", gLthrow);
     }
 }

@@ -8,11 +8,12 @@ import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
-import soot.RefType;
+import qilin.util.PTAUtils;
 import soot.util.queue.QueueReader;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
 import java.util.Collections;
@@ -103,7 +104,7 @@ public class CollectionHeuristic {
         allInterfaces.addAll(worklist);
         boolean flag = false;
         for (SootClass interf : allInterfaces) {
-            if (interf.getType() == RefType.v("java.util.Collection")
+            if (interf.getType() == PTAUtils.getClassType("java.util.Collection")
                 //    || interf.getType() == RefType.v("java.util.Map")
             ) {
                 flag = true;
@@ -125,20 +126,20 @@ public class CollectionHeuristic {
 
     private void computeContainerTypes() {
         for (Type type : t2Fields.keySet()) {
-            if (type instanceof RefType refType) {
+            if (type instanceof ClassType refType) {
                 SootClass sc = refType.getSootClass();
                 if (isImplementingCollection(sc) || isNestedInClassImplementCollection(sc)) {
                     containerType.add(type);
                 } else {
                     for (SparkField sf : t2Fields.get(type)) {
-                        if (sf.getType() == RefType.v("java.lang.Object")) {
+                        if (sf.getType() == PTAUtils.getClassType("java.lang.Object")) {
                             containerType.add(type);
                             break;
                         }
                     }
                 }
             } else if (type instanceof ArrayType at) {
-                if (at.baseType == RefType.v("java.lang.Object")) {
+                if (at.getBaseType() == PTAUtils.getClassType("java.lang.Object")) {
                     containerType.add(at);
                 }
             } else {
@@ -148,21 +149,21 @@ public class CollectionHeuristic {
         // build a mapping from any field type to their containing type.
         Map<Type, Set<Type>> ft2t = new HashMap<>();
         for (Type type : t2Fields.keySet()) {
-            if (type instanceof RefType) {
+            if (type instanceof ClassType) {
                 for (SparkField sf : t2Fields.get(type)) {
                     Type sft = sf.getType();
                     if (sft instanceof ArrayType at) {
-                        sft = at.baseType;
+                        sft = at.getBaseType();
                     }
                     ft2t.computeIfAbsent(sft, k -> new HashSet<>()).add(type);
                 }
             } else if (type instanceof ArrayType at) {
-                ft2t.computeIfAbsent(at.baseType, k -> new HashSet<>()).add(type);
+                ft2t.computeIfAbsent(at.getBaseType(), k -> new HashSet<>()).add(type);
             }
         }
         // find more container types by checking whether a type has a field of a container type.
         Set<Type> newlyFound = new HashSet<>();
-        containerType.addAll(ft2t.getOrDefault(RefType.v("java.lang.Object"), Collections.emptySet()));
+        containerType.addAll(ft2t.getOrDefault(PTAUtils.getClassType("java.lang.Object"), Collections.emptySet()));
         for (Type t1 : containerType) {
             for (Type t2 : ft2t.getOrDefault(t1, Collections.emptySet())) {
                 if (!containerType.contains(t2)) {
