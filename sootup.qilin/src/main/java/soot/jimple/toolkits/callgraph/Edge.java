@@ -25,7 +25,6 @@ package soot.jimple.toolkits.callgraph;
 import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.Unit;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.SpecialInvokeExpr;
@@ -57,7 +56,7 @@ public final class Edge implements Invalidable {
      * The unit at which the call occurs; may be null for calls not occurring at a specific statement (eg. calls in native
      * code)
      */
-    private Unit srcUnit;
+    private Stmt srcUnit;
 
     /**
      * The kind of edge. Note: kind should not be tested by other classes; instead, accessors such as isExplicit() should be
@@ -67,7 +66,7 @@ public final class Edge implements Invalidable {
 
     private boolean invalid = false;
 
-    public Edge(MethodOrMethodContext src, Unit srcUnit, MethodOrMethodContext tgt, Kind kind) {
+    public Edge(MethodOrMethodContext src, Stmt srcUnit, MethodOrMethodContext tgt, Kind kind) {
         this.src = src;
         this.srcUnit = srcUnit;
         this.tgt = tgt;
@@ -93,12 +92,12 @@ public final class Edge implements Invalidable {
         return src;
     }
 
-    public Unit srcUnit() {
+    public Stmt srcUnit() {
         return srcUnit;
     }
 
     public Stmt srcStmt() {
-        return (Stmt) srcUnit;
+        return srcUnit;
     }
 
     public SootMethod tgt() {

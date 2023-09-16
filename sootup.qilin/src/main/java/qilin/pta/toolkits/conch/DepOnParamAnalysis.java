@@ -118,7 +118,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
                         SootMethod srcMethod = edge.src();
                         MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
                         MethodNodeFactory srcnf = srcmpag.nodeFactory();
-                        Stmt invokeStmt = (Stmt) edge.srcUnit();
+                        Stmt invokeStmt = edge.srcUnit();
                         if (invokeStmt instanceof AssignStmt assignStmt) {
 
                             VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());

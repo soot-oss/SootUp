@@ -27,12 +27,12 @@ import qilin.util.PTAUtils;
 import qilin.util.Util;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
-import soot.Unit;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -320,7 +320,7 @@ public class Eagle {
             }
 
             // add invoke edges
-            for (final Unit u : srcmpag.getInvokeStmts()) {
+            for (final Stmt u : srcmpag.getInvokeStmts()) {
                 final Stmt s = (Stmt) u;
                 InvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();

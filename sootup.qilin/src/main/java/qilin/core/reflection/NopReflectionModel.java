@@ -18,7 +18,6 @@
 
 package qilin.core.reflection;
 
-import soot.Unit;
 import sootup.core.jimple.common.stmt.Stmt;
 
 import java.util.Collection;
@@ -31,47 +30,47 @@ import java.util.Collections;
 public class NopReflectionModel extends ReflectionModel {
 
     @Override
-    Collection<Unit> transformClassForName(Stmt s) {
+    Collection<Stmt> transformClassForName(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformClassNewInstance(Stmt s) {
+    Collection<Stmt> transformClassNewInstance(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformContructorNewInstance(Stmt s) {
+    Collection<Stmt> transformContructorNewInstance(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformMethodInvoke(Stmt s) {
+    Collection<Stmt> transformMethodInvoke(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformFieldSet(Stmt s) {
+    Collection<Stmt> transformFieldSet(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformFieldGet(Stmt s) {
+    Collection<Stmt> transformFieldGet(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformArrayNewInstance(Stmt s) {
+    Collection<Stmt> transformArrayNewInstance(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformArrayGet(Stmt s) {
+    Collection<Stmt> transformArrayGet(Stmt s) {
         return Collections.emptySet();
     }
 
     @Override
-    Collection<Unit> transformArraySet(Stmt s) {
+    Collection<Stmt> transformArraySet(Stmt s) {
         return Collections.emptySet();
     }
 }

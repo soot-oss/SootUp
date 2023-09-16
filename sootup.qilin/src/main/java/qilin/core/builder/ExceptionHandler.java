@@ -28,6 +28,7 @@ import soot.Context;
 import soot.MethodOrMethodContext;
 import soot.jimple.IdentityStmt;
 import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -74,7 +75,7 @@ public class ExceptionHandler {
         List<Trap> trapList = mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
         for (Trap trap : trapList) {
             if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, trap.getException().getType())) {
-                Unit handler = trap.getHandlerUnit();
+                Stmt handler = trap.getHandlerUnit();
                 assert handler instanceof IdentityStmt;
                 IdentityStmt handlerStmt = (IdentityStmt) handler;
                 Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());

@@ -25,7 +25,6 @@ import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
-import soot.Unit;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -152,8 +151,7 @@ public abstract class AbstractMVFG {
         });
 
         // add invoke edges
-        for (final Unit u : srcmpag.getInvokeStmts()) {
-            final Stmt s = (Stmt) u;
+        for (final Stmt s : srcmpag.getInvokeStmts()) {
             InvokeExpr ie = s.getInvokeExpr();
             int numArgs = ie.getArgCount();
             Value[] args = new Value[numArgs];
@@ -179,7 +177,7 @@ public abstract class AbstractMVFG {
             }
 
             Set<SootMethod> targets = new HashSet<>();
-            for (Iterator<Edge> it = callGraph.edgesOutOf(u); it.hasNext(); ) {
+            for (Iterator<Edge> it = callGraph.edgesOutOf(s); it.hasNext(); ) {
                 Edge e = it.next();
                 SootMethod tgtmtd = e.tgt();
                 targets.add(tgtmtd);

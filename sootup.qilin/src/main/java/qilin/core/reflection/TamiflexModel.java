@@ -25,11 +25,14 @@ import qilin.util.PTAUtils;
 import soot.jimple.*;
 import soot.jimple.internal.*;
 import soot.tagkit.LineNumberTag;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
@@ -53,10 +56,10 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    Collection<Unit> transformClassForName(Stmt s) {
+    Collection<Stmt> transformClassForName(Stmt s) {
         // <java.lang.Class: java.lang.Class forName(java.lang.String)>
         // <java.lang.Class: java.lang.Class forName(java.lang.String,boolean,java.lang.ClassLoader)>
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> classForNames = reflectionMap.getOrDefault(ReflectionKind.ClassForName, Collections.emptyMap());
         if (classForNames.containsKey(s)) {
             Collection<String> fornames = classForNames.get(s);
@@ -73,13 +76,13 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformClassNewInstance(Stmt s) {
+    protected Collection<Stmt> transformClassNewInstance(Stmt s) {
         // <java.lang.Class: java.lang.Object newInstance()>
         if (!(s instanceof AssignStmt)) {
             return Collections.emptySet();
         }
         Value lvalue = ((AssignStmt) s).getLeftOp();
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> classNewInstances = reflectionMap.getOrDefault(ReflectionKind.ClassNewInstance, Collections.emptyMap());
         if (classNewInstances.containsKey(s)) {
             Collection<String> classNames = classNewInstances.get(s);
@@ -97,13 +100,13 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformContructorNewInstance(Stmt s) {
+    protected Collection<Stmt> transformContructorNewInstance(Stmt s) {
         // <java.lang.reflect.Constructor: java.lang.Object newInstance(java.lang.Object[])>
         if (!(s instanceof AssignStmt)) {
             return Collections.emptySet();
         }
         Value lvalue = ((AssignStmt) s).getLeftOp();
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> constructorNewInstances = reflectionMap.getOrDefault(ReflectionKind.ConstructorNewInstance, Collections.emptyMap());
         if (constructorNewInstances.containsKey(s)) {
             Collection<String> constructorSignatures = constructorNewInstances.get(s);
@@ -129,9 +132,9 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformMethodInvoke(Stmt s) {
+    protected Collection<Stmt> transformMethodInvoke(Stmt s) {
         // <java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> methodInvokes = reflectionMap.getOrDefault(ReflectionKind.MethodInvoke, Collections.emptyMap());
         if (methodInvokes.containsKey(s)) {
             Collection<String> methodSignatures = methodInvokes.get(s);
@@ -172,9 +175,9 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformFieldSet(Stmt s) {
+    protected Collection<Stmt> transformFieldSet(Stmt s) {
         // <java.lang.reflect.Field: void set(java.lang.Object,java.lang.Object)>
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> fieldSets = reflectionMap.getOrDefault(ReflectionKind.FieldSet, Collections.emptyMap());
         if (fieldSets.containsKey(s)) {
             Collection<String> fieldSignatures = fieldSets.get(s);
@@ -199,9 +202,9 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformFieldGet(Stmt s) {
+    protected Collection<Stmt> transformFieldGet(Stmt s) {
         // <java.lang.reflect.Field: java.lang.Object get(java.lang.Object)>
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> fieldGets = reflectionMap.getOrDefault(ReflectionKind.FieldGet, Collections.emptyMap());
         if (fieldGets.containsKey(s) && s instanceof AssignStmt) {
             Collection<String> fieldSignatures = fieldGets.get(s);
@@ -228,9 +231,9 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    protected Collection<Unit> transformArrayNewInstance(Stmt s) {
+    protected Collection<Stmt> transformArrayNewInstance(Stmt s) {
         // <java.lang.reflect.Array: java.lang.Object newInstance(java.lang.Class,int)>
-        Collection<Unit> ret = DataFactory.createSet();
+        Collection<Stmt> ret = DataFactory.createSet();
         Map<Stmt, Set<String>> mappedToArrayTypes = reflectionMap.getOrDefault(ReflectionKind.ArrayNewInstance, Collections.emptyMap());
         Collection<String> arrayTypes = mappedToArrayTypes.getOrDefault(s, Collections.emptySet());
         for (String arrayType : arrayTypes) {
@@ -245,8 +248,8 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    Collection<Unit> transformArrayGet(Stmt s) {
-        Collection<Unit> ret = DataFactory.createSet();
+    Collection<Stmt> transformArrayGet(Stmt s) {
+        Collection<Stmt> ret = DataFactory.createSet();
         InvokeExpr iie = s.getInvokeExpr();
         Value base = iie.getArg(0);
         if (s instanceof AssignStmt) {
@@ -267,8 +270,8 @@ public class TamiflexModel extends ReflectionModel {
     }
 
     @Override
-    Collection<Unit> transformArraySet(Stmt s) {
-        Collection<Unit> ret = DataFactory.createSet();
+    Collection<Stmt> transformArraySet(Stmt s) {
+        Collection<Stmt> ret = DataFactory.createSet();
         InvokeExpr iie = s.getInvokeExpr();
         Value base = iie.getArg(0);
         if (base.getType() instanceof ArrayType) {
@@ -377,13 +380,11 @@ public class TamiflexModel extends ReflectionModel {
         Collection<SootMethod> sourceMethods = inferSourceMethod(inClzDotMthd);
         for (SootMethod sm : sourceMethods) {
             Body body = PTAUtils.getMethodBody(sm);
-            for (Unit u : body.getUnits()) {
-                if (u instanceof Stmt stmt) {
-                    if (stmt.containsInvokeExpr()) {
-                        String methodSig = stmt.getInvokeExpr().getMethodRef().getSignature();
-                        if (matchReflectionKind(kind, methodSig)) {
-                            potential.add(stmt);
-                        }
+            for (Stmt stmt : body.getStmts()) {
+                if (stmt.containsInvokeExpr()) {
+                    String methodSig = stmt.getInvokeExpr().getMethodRef().getSignature();
+                    if (matchReflectionKind(kind, methodSig)) {
+                        potential.add(stmt);
                     }
                 }
             }

@@ -6,7 +6,6 @@ import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
 import soot.RefLikeType;
-import soot.Unit;
 import soot.jimple.*;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
@@ -71,7 +70,7 @@ public class XPAG {
             }  // global-local
         }
         // handle call statements.
-        for (final Unit u : srcmpag.getInvokeStmts()) {
+        for (final Stmt u : srcmpag.getInvokeStmts()) {
             final Stmt s = (Stmt) u;
             InvokeExpr ie = s.getInvokeExpr();
             int numArgs = ie.getArgCount();

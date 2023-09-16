@@ -26,6 +26,7 @@ import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -56,7 +57,7 @@ public class OCG {
 
             SparkField f = contextField.getField();
             if (f.getType() instanceof ArrayType at) {
-                if (at.baseType instanceof PrimType) {
+                if (at.getBaseType() instanceof PrimitiveType) {
                     return;
                 }
             }
@@ -248,7 +249,7 @@ public class OCG {
             return false;
         }
         if (retType instanceof ArrayType at) {
-            if (at.baseType instanceof PrimType) {
+            if (at.getBaseType() instanceof PrimitiveType) {
                 return false;
             }
         }

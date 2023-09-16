@@ -21,6 +21,7 @@ package qilin.pta.toolkits.dd;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -52,7 +53,7 @@ public class CtxTunnelingFeaturesTrueTable {
         Body body = PTAUtils.getMethodBody(sm);
         this.f[15] = body.getLocalCount() > 0;
         int heapAllocCnt = 0;
-        for (Unit unit : body.getUnits()) {
+        for (Stmt unit : body.getStmts()) {
             if (unit instanceof AssignStmt assignStmt) {
                 Value left = assignStmt.getLeftOp();
                 if (left instanceof Local) {

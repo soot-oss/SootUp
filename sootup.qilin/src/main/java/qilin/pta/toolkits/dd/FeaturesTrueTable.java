@@ -19,7 +19,7 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
-import soot.Unit;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
@@ -42,7 +42,7 @@ public class FeaturesTrueTable {
         this.features[9] = sig.contains("String");
         this.features[10] = sig.contains("init");
         Body body = PTAUtils.getMethodBody(sm);
-        for (Unit unit : body.getUnits()) {
+        for (Stmt unit : body.getStmts()) {
             if (unit instanceof AssignStmt) {
                 this.features[11] = true;
             } else if (unit instanceof IdentityStmt) {

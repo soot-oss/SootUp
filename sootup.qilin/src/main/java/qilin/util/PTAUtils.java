@@ -32,6 +32,7 @@ import qilin.core.sets.PointsToSet;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.queue.UniqueQueue;
 import soot.Context;
+import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -50,6 +51,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.core.JavaIdentifierFactory;
@@ -81,11 +83,10 @@ public final class PTAUtils {
                 LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
                 final PointsToSet other = pta.reachingObjects(thisRef).toCIPointsToSet();
 
-                for (final Unit u : srcmpag.getInvokeStmts()) {
-                    final Stmt s = (Stmt) u;
+                for (final Stmt s : srcmpag.getInvokeStmts()) {
                     AbstractInvokeExpr ie = s.getInvokeExpr();
                     if (ie instanceof StaticInvokeExpr) {
-                        for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
+                        for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                             Edge e = it.next();
                             SootMethod tgtmtd = e.tgt();
                             MethodPAG tgtmpag = pag.getMethodPAG(tgtmtd);
@@ -115,11 +116,10 @@ public final class PTAUtils {
             LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
             final Set<AllocNode> other = pts.computeIfAbsent(thisRef, k -> new HashSet<>());
 
-            for (final Unit u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
                 AbstractInvokeExpr ie = s.getInvokeExpr();
                 if (ie instanceof StaticInvokeExpr) {
-                    for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
+                    for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                         Edge e = it.next();
                         SootMethod tgtmtd = e.tgt();
                         MethodPAG tgtmpag = pag.getMethodPAG(tgtmtd);
@@ -258,7 +258,7 @@ public final class PTAUtils {
         if (type instanceof ArrayType at) {
             type = at.getArrayElementType();
         }
-        if (!(type instanceof RefType rt))
+        if (!(type instanceof ClassType rt))
             return false;
 //        if (!rt.hasSootClass()) {
 //            return true;
@@ -547,8 +547,8 @@ public final class PTAUtils {
     }
 
     public static boolean isThrowable(Type type) {
-        if (type instanceof RefType) {
-            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, RefType.v("java.lang.Throwable"));
+        if (type instanceof ClassType) {
+            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, PTAUtils.getClassType("java.lang.Throwable"));
         }
         return false;
     }

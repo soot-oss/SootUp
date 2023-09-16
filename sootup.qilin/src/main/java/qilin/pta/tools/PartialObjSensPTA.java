@@ -30,7 +30,6 @@ import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -145,9 +144,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
                     }
                 }
             }
-            for (final Unit u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
-
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
                 InvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 for (int i = 0; i < numArgs; i++) {

@@ -45,7 +45,7 @@ public class MethodPAG {
     private final ChunkedQueue<Node> internalEdges = new ChunkedQueue<>();
     private final QueueReader<Node> internalReader = internalEdges.reader();
     private final Set<SootMethod> clinits = DataFactory.createSet();
-    private final Collection<Unit> invokeStmts = DataFactory.createSet();
+    private final Collection<Stmt> invokeStmts = DataFactory.createSet();
     public Body body;
     /**
      * Since now the exception analysis is handled on-the-fly, we should record the
@@ -78,11 +78,11 @@ public class MethodPAG {
         return nodeFactory;
     }
 
-    public Collection<Unit> getInvokeStmts() {
+    public Collection<Stmt> getInvokeStmts() {
         return invokeStmts;
     }
 
-    public boolean addCallStmt(Unit unit) {
+    public boolean addCallStmt(Stmt unit) {
         return this.invokeStmts.add(unit);
     }
 
@@ -100,9 +100,9 @@ public class MethodPAG {
         if (method.isStatic()) {
             PTAUtils.clinitsOf(method.getDeclaringClass()).forEach(this::addTriggeredClinit);
         }
-        for (Unit unit : body.getUnits()) {
+        for (Stmt unit : body.getStmts()) {
             try {
-                nodeFactory.handleStmt((Stmt) unit);
+                nodeFactory.handleStmt(unit);
             } catch (Exception e) {
                 System.out.println("Warning:" + e);
             }
@@ -115,8 +115,8 @@ public class MethodPAG {
             return;
         }
         List<Trap> traps = body.getTraps();
-        PatchingChain<Unit> units = body.getUnits();
-        Set<Unit> inTraps = DataFactory.createSet();
+        List<Stmt> units = body.getStmts();
+        Set<Stmt> inTraps = DataFactory.createSet();
         /*
          * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.
          * */
@@ -140,11 +140,11 @@ public class MethodPAG {
             });
         });
 
-        for (Unit unit : body.getUnits()) {
+        for (Stmt unit : body.getStmts()) {
             if (inTraps.contains(unit)) {
                 continue;
             }
-            Stmt stmt = (Stmt) unit;
+            Stmt stmt = unit;
             Node src = null;
             if (stmt.containsInvokeExpr()) {
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);

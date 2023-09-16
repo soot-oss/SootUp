@@ -24,7 +24,6 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import soot.Unit;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.SpecialInvokeExpr;
@@ -68,7 +67,7 @@ public class Conch extends AbstractConch {
         SootMethod containingMethod = heap.getMethod();
         MethodPAG cmpag = pag.getMethodPAG(containingMethod);
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
-        for (Unit unit : cmpag.getInvokeStmts()) {
+        for (Stmt unit : cmpag.getInvokeStmts()) {
             if (unit instanceof InvokeStmt invokeStmt) {
                 InvokeExpr expr = invokeStmt.getInvokeExpr();
                 if (expr instanceof SpecialInvokeExpr iie) {

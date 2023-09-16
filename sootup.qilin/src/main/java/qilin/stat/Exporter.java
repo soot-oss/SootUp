@@ -175,7 +175,7 @@ public class Exporter {
                     StringBuilder builder = new StringBuilder();
                     builder.append(n.toString());
                     builder.append("\t");
-                    String sig = Util.stripQuotes(sm.getSignature());
+                    String sig = Util.stripQuotes(sm.getSignature().toString());
                     builder.append(sig);
                     builder.append("\n");
                     try {
@@ -201,8 +201,8 @@ public class Exporter {
             mfile.createNewFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
             for (Edge edge : ciCallGraph) {
-                String srcSig = Util.stripQuotes(edge.src().getSignature());
-                String dstSig = Util.stripQuotes(edge.tgt().getSignature());
+                String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
+                String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
                 String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
                 writer.write(str);
             }

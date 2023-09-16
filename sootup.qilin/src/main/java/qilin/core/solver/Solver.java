@@ -127,9 +127,8 @@ public class Solver extends Propagator {
         }
     }
 
-    private void recordCallStmts(MethodOrMethodContext m, Collection<Unit> units) {
-        for (final Unit u : units) {
-            final Stmt s = (Stmt) u;
+    private void recordCallStmts(MethodOrMethodContext m, Collection<Stmt> units) {
+        for (final Stmt s : units) {
             if (s.containsInvokeExpr()) {
                 InvokeExpr ie = s.getInvokeExpr();
                 if (ie instanceof InstanceInvokeExpr iie) {

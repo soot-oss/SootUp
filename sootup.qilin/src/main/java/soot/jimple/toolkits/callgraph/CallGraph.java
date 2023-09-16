@@ -33,7 +33,6 @@ import java.util.Set;
 
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.Unit;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -50,7 +49,7 @@ public class CallGraph implements Iterable<Edge> {
     protected ChunkedQueue<Edge> stream = new ChunkedQueue<Edge>();
     protected QueueReader<Edge> reader = stream.reader();
     protected Map<MethodOrMethodContext, Edge> srcMethodToEdge = new LinkedHashMap<MethodOrMethodContext, Edge>();
-    protected Map<Unit, Edge> srcUnitToEdge = new LinkedHashMap<Unit, Edge>();
+    protected Map<Stmt, Edge> srcUnitToEdge = new LinkedHashMap<Stmt, Edge>();
     protected Map<MethodOrMethodContext, Edge> tgtToEdge = new LinkedHashMap<MethodOrMethodContext, Edge>();
     protected Edge dummy = new Edge(null, null, null, Kind.INVALID);
 
@@ -94,7 +93,7 @@ public class CallGraph implements Iterable<Edge> {
      *          The unit from which to remove all outgoing edges
      * @return True if at least one edge has been removed, otherwise false
      */
-    public boolean removeAllEdgesOutOf(Unit u) {
+    public boolean removeAllEdgesOutOf(Stmt u) {
         boolean hasRemoved = false;
         Set<Edge> edgesToRemove = new HashSet<>();
         for (QueueReader<Edge> edgeRdr = listener(); edgeRdr.hasNext();) {
@@ -226,7 +225,7 @@ public class CallGraph implements Iterable<Edge> {
      * @param callee
      * @return
      */
-    public Edge findEdge(Unit u, SootMethod callee) {
+    public Edge findEdge(Stmt u, SootMethod callee) {
         Edge e = srcUnitToEdge.get(u);
         if (e != null) {
             while (e.srcUnit() == u && e.kind() != Kind.INVALID) {
@@ -249,15 +248,15 @@ public class CallGraph implements Iterable<Edge> {
     /**
      * Returns an iterator over all edges that have u as their source unit.
      */
-    public Iterator<Edge> edgesOutOf(Unit u) {
+    public Iterator<Edge> edgesOutOf(Stmt u) {
         return new TargetsOfUnitIterator(u);
     }
 
     class TargetsOfUnitIterator implements Iterator<Edge> {
-        private final Unit u;
+        private final Stmt u;
         private Edge position;
 
-        TargetsOfUnitIterator(Unit u) {
+        TargetsOfUnitIterator(Stmt u) {
             this.u = u;
             if (u == null) {
                 throw new RuntimeException();

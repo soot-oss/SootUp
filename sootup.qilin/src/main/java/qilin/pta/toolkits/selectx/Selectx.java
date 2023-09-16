@@ -26,7 +26,6 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
@@ -265,10 +264,8 @@ public class Selectx {
 
             // add invoke edges
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
-            for (final Unit u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
-
-                CallSite callSite = new CallSite(u);
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
+                CallSite callSite = new CallSite(s);
                 InvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
@@ -290,7 +287,7 @@ public class Selectx {
                 if (ie instanceof InstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 }
-                for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(u); it.hasNext(); ) {
+                for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                     Edge e = it.next();
                     SootMethod tgtmtd = e.tgt();
                     MethodPAG tgtmpag = prePAG.getMethodPAG(tgtmtd);

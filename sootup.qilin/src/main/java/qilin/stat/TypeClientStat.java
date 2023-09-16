@@ -72,9 +72,7 @@ public class TypeClientStat implements AbstractStat {
             boolean app = sm.getDeclaringClass().isApplicationClass();
 
             // All the statements in the method
-            for (Unit unit : PTAUtils.getMethodBody(sm).getUnits()) {
-                Stmt st = (Stmt) unit;
-
+            for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {
                 // virtual calls
                 if (st.containsInvokeExpr()) {
                     InvokeExpr ie = st.getInvokeExpr();
