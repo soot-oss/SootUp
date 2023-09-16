@@ -14,6 +14,7 @@ import soot.jimple.InvokeExpr;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -151,7 +152,7 @@ public class FlowAnalysis {
                                 }
                                 if (callsiteStmt instanceof AssignStmt assignStmt) {
                                     Value lv = assignStmt.getLeftOp();
-                                    if (!(lv.getType() instanceof RefLikeType)) {
+                                    if (!(lv.getType() instanceof ReferenceType)) {
                                         return;
                                     }
                                     final VarNode to = (VarNode) pta.getPag().findValNode(lv);

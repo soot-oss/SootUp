@@ -27,6 +27,7 @@ import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -245,7 +246,7 @@ public class OCG {
             return false;
         }
         Type retType = method.getReturnType();
-        if (!(retType instanceof RefLikeType)) {
+        if (!(retType instanceof ReferenceType)) {
             return false;
         }
         if (retType instanceof ArrayType at) {

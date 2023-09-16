@@ -21,13 +21,13 @@ package qilin.core.reflection;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.UnitPatchingChain;
 import soot.jimple.InvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public abstract class ReflectionModel {
@@ -74,7 +74,7 @@ public abstract class ReflectionModel {
             return;
         }
         Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-        UnitPatchingChain units = PTAUtils.getMethodBody(m).getUnits();
+        List<Stmt> units = PTAUtils.getMethodBody(m).getStmts();
         for (final Stmt u : units) {
             if (u.containsInvokeExpr()) {
                 newUnits.put(u, transform(u));

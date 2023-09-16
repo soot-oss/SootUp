@@ -38,8 +38,10 @@ import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -99,12 +101,12 @@ public class CallGraphBuilder {
 
     private void constructCallGraph() {
         cicg = new CallGraph();
-        Map<Unit, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
+        Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
         calledges.forEach(e -> {
             PTAScene.v().getCallGraph().addEdge(e);
             SootMethod src = e.src();
             SootMethod tgt = e.tgt();
-            Unit unit = e.srcUnit();
+            Stmt unit = e.srcUnit();
             Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> DataFactory.createMap());
             Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
             if (set.add(tgt)) {
@@ -148,7 +150,7 @@ public class CallGraphBuilder {
         }
     }
 
-    private void addVirtualEdge(MethodOrMethodContext caller, Unit callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
+    private void addVirtualEdge(MethodOrMethodContext caller, Stmt callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
         Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
         MethodOrMethodContext cstarget = pta.parameterize(callee, tgtContext);
         handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
@@ -167,7 +169,7 @@ public class CallGraphBuilder {
         }
     }
 
-    public void addStaticEdge(MethodOrMethodContext caller, Unit callStmt, SootMethod calleem, Kind kind) {
+    public void addStaticEdge(MethodOrMethodContext caller, Stmt callStmt, SootMethod calleem, Kind kind) {
         Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
         MethodOrMethodContext callee = pta.parameterize(calleem, typeContext);
         handleCallEdge(new Edge(caller, callStmt, callee, kind));
@@ -215,11 +217,11 @@ public class CallGraphBuilder {
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
-            if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+            if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                 continue;
             }
             Type tgtType = tgtmtd.getParameterType(i);
-            if (!(tgtType instanceof RefLikeType)) {
+            if (!(tgtType instanceof ReferenceType)) {
                 continue;
             }
             Node argNode = srcnf.getNode(arg);
@@ -232,10 +234,10 @@ public class CallGraphBuilder {
         if (s instanceof AssignStmt) {
             Value dest = ((AssignStmt) s).getLeftOp();
 
-            if (dest.getType() instanceof RefLikeType) {
+            if (dest.getType() instanceof ReferenceType) {
                 Node destNode = srcnf.getNode(dest);
                 destNode = pta.parameterize(destNode, srcContext);
-                if (tgtmtd.getReturnType() instanceof RefLikeType) {
+                if (tgtmtd.getReturnType() instanceof ReferenceType) {
                     Node retNode = tgtnf.caseRet();
                     retNode = pta.parameterize(retNode, tgtContext);
                     pag.addEdge(retNode, destNode);

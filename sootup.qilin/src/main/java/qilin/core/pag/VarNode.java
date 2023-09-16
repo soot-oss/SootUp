@@ -22,6 +22,7 @@ import qilin.util.DataFactory;
 import soot.AnySubType;
 import soot.Context;
 import soot.RefLikeType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ public abstract class VarNode extends ValNode {
 
     protected VarNode(Object variable, Type t) {
         super(t);
-        if (!(t instanceof RefLikeType) || t instanceof AnySubType) {
+        if (!(t instanceof ReferenceType) || t instanceof AnySubType) {
             throw new RuntimeException("Attempt to create VarNode of type " + t);
         }
         this.variable = variable;

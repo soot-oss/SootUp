@@ -6,6 +6,7 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -36,7 +37,7 @@ public class DebloaterX {
         SootMethod method = heap.getMethod();
         if (method.isStatic()) {
             Type type = method.getReturnType();
-            if (!(type instanceof RefLikeType)) {
+            if (!(type instanceof ReferenceType)) {
                 return false;
             }
             MethodPAG methodPag = pag.getMethodPAG(method);
@@ -57,7 +58,7 @@ public class DebloaterX {
             return false;
         }
         Type type = method.getReturnType();
-        if (!(type instanceof RefLikeType)) {
+        if (!(type instanceof ReferenceType)) {
             return false;
         }
         MethodPAG methodPag = pag.getMethodPAG(method);

@@ -5,13 +5,13 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.queue.UniqueQueue;
-import soot.RefLikeType;
 import soot.jimple.*;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,21 +70,20 @@ public class XPAG {
             }  // global-local
         }
         // handle call statements.
-        for (final Stmt u : srcmpag.getInvokeStmts()) {
-            final Stmt s = (Stmt) u;
+        for (final Stmt s : srcmpag.getInvokeStmts()) {
             InvokeExpr ie = s.getInvokeExpr();
             int numArgs = ie.getArgCount();
             Value[] args = new Value[numArgs];
             for (int i = 0; i < numArgs; i++) {
                 Value arg = ie.getArg(i);
-                if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant)
+                if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant)
                     continue;
                 args[i] = arg;
             }
             LocalVarNode retDest = null;
             if (s instanceof AssignStmt) {
                 Value dest = ((AssignStmt) s).getLeftOp();
-                if (dest.getType() instanceof RefLikeType) {
+                if (dest.getType() instanceof ReferenceType) {
                     retDest = pag.findLocalVarNode(dest);
                 }
             }
@@ -105,7 +104,7 @@ public class XPAG {
         }
         // handle parameters.
         for (int i = 0; i < method.getParameterCount(); ++i) {
-            if (method.getParameterType(i) instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+            if (method.getParameterType(i) instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
                 LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
                 addParamEdge(param);
             }
@@ -115,7 +114,7 @@ public class XPAG {
             addParamEdge((LocalVarNode) srcnf.caseThis());
         }
         // handle returns
-        if (method.getReturnType() instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
+        if (method.getReturnType() instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
             addReturnEdge((LocalVarNode) srcnf.caseRet());
         }
     }
@@ -142,14 +141,14 @@ public class XPAG {
         Value[] args = new Value[numArgs];
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
-            if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant)
+            if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant)
                 continue;
             args[i] = arg;
         }
         LocalVarNode retDest = null;
         if (invokeStmt instanceof AssignStmt) {
             Value dest = ((AssignStmt) invokeStmt).getLeftOp();
-            if (dest.getType() instanceof RefLikeType) {
+            if (dest.getType() instanceof ReferenceType) {
                 retDest = pag.findLocalVarNode(dest);
             }
         }
@@ -164,7 +163,7 @@ public class XPAG {
         }
         // handle parameters
         for (int i = 0; i < method.getParameterCount(); ++i) {
-            if (args[i] != null && method.getParameterType(i) instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+            if (args[i] != null && method.getParameterType(i) instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
                 LocalVarNode param = (LocalVarNode) nodeFactory.caseParm(i);
                 ValNode argVal = pag.findValNode(args[i]);
                 if (argVal instanceof LocalVarNode argNode) {
@@ -173,7 +172,7 @@ public class XPAG {
             }
         }
         // handle return node
-        if (retDest != null && method.getReturnType() instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
+        if (retDest != null && method.getReturnType() instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
             addAssignEdge((LocalVarNode) nodeFactory.caseRet(), retDest);
         }
         // handle this node

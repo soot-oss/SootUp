@@ -24,7 +24,6 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
-import soot.RefLikeType;
 import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -33,6 +32,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.*;
 
@@ -157,14 +157,14 @@ public abstract class AbstractMVFG {
             Value[] args = new Value[numArgs];
             for (int i = 0; i < numArgs; i++) {
                 Value arg = ie.getArg(i);
-                if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant)
+                if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant)
                     continue;
                 args[i] = arg;
             }
             LocalVarNode retDest = null;
             if (s instanceof AssignStmt) {
                 Value dest = ((AssignStmt) s).getLeftOp();
-                if (dest.getType() instanceof RefLikeType) {
+                if (dest.getType() instanceof ReferenceType) {
                     retDest = pag.findLocalVarNode(dest);
                 }
             }
@@ -191,7 +191,7 @@ public abstract class AbstractMVFG {
                         this.addStoreEdge((LocalVarNode) argNode, receiver);
                     }
                 }
-                if (retDest != null && retDest.getType() instanceof RefLikeType) {
+                if (retDest != null && retDest.getType() instanceof ReferenceType) {
                     if (statisfyAddingLoadCondition(targets)) {
                         this.addLoadEdge(receiver, retDest);
                     }
@@ -212,13 +212,13 @@ public abstract class AbstractMVFG {
 
         int numParms = method.getParameterCount();
         for (int i = 0; i < numParms; i++) {
-            if (method.getParameterType(i) instanceof RefLikeType) {
+            if (method.getParameterType(i) instanceof ReferenceType) {
                 LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
                 addNormalEdge(new TranEdge(param, param, DFA.TranCond.PARAM));
                 addNormalEdge(new TranEdge(param, param, DFA.TranCond.IPARAM));
             }
         }
-        if (method.getReturnType() instanceof RefLikeType) {
+        if (method.getReturnType() instanceof ReferenceType) {
             LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
             addStoreEdge(mret, thisRef);
         }
@@ -250,13 +250,13 @@ public abstract class AbstractMVFG {
         workList.add(new Pair<>(thisRef, DFA.State.S));
 
         for (int i = 0; i < numParms; i++) {
-            if (method.getParameterType(i) instanceof RefLikeType) {
+            if (method.getParameterType(i) instanceof ReferenceType) {
                 LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
                 startState.add(param);
                 workList.add(new Pair<>(param, DFA.State.S));
             }
         }
-        if (method.getReturnType() instanceof RefLikeType) {
+        if (method.getReturnType() instanceof ReferenceType) {
             LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
             startState.add(mret);
             workList.add(new Pair<>(mret, DFA.State.S));

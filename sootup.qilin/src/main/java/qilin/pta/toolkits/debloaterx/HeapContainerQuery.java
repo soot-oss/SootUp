@@ -4,6 +4,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class HeapContainerQuery {
         for (SootMethod m : invokedMs) {
             MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
             for (int i = 0; i < m.getParameterCount(); ++i) {
-                if (m.getParameterType(i) instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(m.getParameterType(i))) {
+                if (m.getParameterType(i) instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(m.getParameterType(i))) {
                     LocalVarNode param = (LocalVarNode) mthdNF.caseParm(i);
                     ret.add(param);
                 }

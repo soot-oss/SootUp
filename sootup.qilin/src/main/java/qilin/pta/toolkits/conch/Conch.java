@@ -88,7 +88,7 @@ public class Conch extends AbstractConch {
         MethodPAG cmpag = pag.getMethodPAG(outerInit);
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
         VarNode thisNode = nodeFactory.caseThis();
-        for (Unit unit : cmpag.getInvokeStmts()) {
+        for (Stmt unit : cmpag.getInvokeStmts()) {
             if (unit instanceof InvokeStmt invokeStmt) {
                 InvokeExpr expr = invokeStmt.getInvokeExpr();
                 if (expr instanceof SpecialInvokeExpr iie) {
@@ -122,8 +122,7 @@ public class Conch extends AbstractConch {
     private Set<Node> mappingtoCallerCommingParamsOrHeaps(Set<Node> params, SootMethod curr, SootMethod caller) {
         MethodPAG cmpag = pag.getMethodPAG(caller);
         Set<Node> ret = new HashSet<>();
-        for (Unit unit : cmpag.getInvokeStmts()) {
-            Stmt stmt = (Stmt) unit;
+        for (Stmt stmt : cmpag.getInvokeStmts()) {
             if (!(stmt.getInvokeExpr() instanceof SpecialInvokeExpr)) {
                 continue;
             }

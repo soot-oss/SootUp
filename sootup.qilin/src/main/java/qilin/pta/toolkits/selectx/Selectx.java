@@ -29,8 +29,10 @@ import qilin.core.pag.*;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 public class Selectx {
     private final PTA prePTA;
@@ -271,7 +273,7 @@ public class Selectx {
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                         continue;
                     }
                     args[i] = arg;
@@ -279,7 +281,7 @@ public class Selectx {
                 LocalVarNode retDest = null;
                 if (s instanceof AssignStmt) {
                     Value dest = ((AssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof RefLikeType) {
+                    if (dest.getType() instanceof ReferenceType) {
                         retDest = prePAG.findLocalVarNode(dest);
                     }
                 }
@@ -293,13 +295,13 @@ public class Selectx {
                     MethodPAG tgtmpag = prePAG.getMethodPAG(tgtmtd);
                     MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
                     for (int i = 0; i < numArgs; i++) {
-                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof RefLikeType)) {
+                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof ReferenceType)) {
                             continue;
                         }
                         LocalVarNode parm = (LocalVarNode) tgtnf.caseParm(i);
                         this.addEntryEdge((LocalVarNode) srcnf.getNode(args[i]), parm, callSite);
                     }
-                    if (retDest != null && tgtmtd.getReturnType() instanceof RefLikeType) {
+                    if (retDest != null && tgtmtd.getReturnType() instanceof ReferenceType) {
                         LocalVarNode ret = (LocalVarNode) tgtnf.caseRet();
                         this.addExitEdge(ret, retDest, callSite);
                     }

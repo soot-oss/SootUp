@@ -25,8 +25,8 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.MethodPAG;
 import qilin.core.pag.Node;
 import qilin.util.graph.MergedNode;
-import soot.RefLikeType;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.Set;
 
@@ -50,7 +50,7 @@ public class ModularMVFG extends AbstractMVFG {
             if (tgtmtd.isPhantom() || sccNode.getContent().contains(tgtmtd)) {
                 return true;
             }
-            if (!(tgtmtd.getReturnType() instanceof RefLikeType)) {
+            if (!(tgtmtd.getReturnType() instanceof ReferenceType)) {
                 continue;
             }
             MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
@@ -80,7 +80,7 @@ public class ModularMVFG extends AbstractMVFG {
             if (paramIndex == PointsToAnalysis.THIS_NODE) {
                 parm = (LocalVarNode) tgtnf.caseThis();
             } else {
-                if (tgtmtd.getParameterType(paramIndex) instanceof RefLikeType) {
+                if (tgtmtd.getParameterType(paramIndex) instanceof ReferenceType) {
                     parm = (LocalVarNode) tgtnf.caseParm(paramIndex);
                 } else {
                     continue;

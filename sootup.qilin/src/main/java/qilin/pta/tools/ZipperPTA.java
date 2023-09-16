@@ -36,6 +36,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -119,7 +120,7 @@ public class ZipperPTA extends StagedPTA {
                 int numArgs = ie.getArgCount();
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                         continue;
                     }
                     nodes.add(arg);
@@ -127,7 +128,7 @@ public class ZipperPTA extends StagedPTA {
 
                 if (s instanceof AssignStmt) {
                     Value dest = ((AssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof RefLikeType) {
+                    if (dest.getType() instanceof ReferenceType) {
                         nodes.add(dest);
                     }
                 }

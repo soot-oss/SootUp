@@ -26,8 +26,6 @@ import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Util;
 import qilin.util.queue.UniqueQueue;
-import soot.RefLikeType;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
@@ -35,6 +33,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -301,11 +300,11 @@ public class Eagle {
             int numParms = method.getParameterCount();
             LocalVarNode[] parms = new LocalVarNode[numParms];
             for (int i = 0; i < numParms; i++) {
-                if (method.getParameterType(i) instanceof RefLikeType) {
+                if (method.getParameterType(i) instanceof ReferenceType) {
                     parms[i] = (LocalVarNode) srcnf.caseParm(i);
                 }
             }
-            LocalVarNode mret = method.getReturnType() instanceof RefLikeType ? (LocalVarNode) srcnf.caseRet() : null;
+            LocalVarNode mret = method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
             LocalVarNode throwFinal = prePAG.findLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE));
             if (method.isStatic()) {
                 pts.getOrDefault(thisRef, Collections.emptySet()).forEach(a -> {
@@ -320,21 +319,20 @@ public class Eagle {
             }
 
             // add invoke edges
-            for (final Stmt u : srcmpag.getInvokeStmts()) {
-                final Stmt s = (Stmt) u;
+            for (final Stmt s : srcmpag.getInvokeStmts()) {
                 InvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
-                    if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant)
+                    if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant)
                         continue;
                     args[i] = arg;
                 }
                 LocalVarNode retDest = null;
                 if (s instanceof AssignStmt) {
                     Value dest = ((AssignStmt) s).getLeftOp();
-                    if (dest.getType() instanceof RefLikeType) {
+                    if (dest.getType() instanceof ReferenceType) {
                         retDest = prePAG.findLocalVarNode(dest);
                     }
                 }
@@ -345,18 +343,18 @@ public class Eagle {
                     // static call
                     receiver = thisRef;
                 }
-                for (Iterator<Edge> it = callGraph.edgesOutOf(u); it.hasNext(); ) {
+                for (Iterator<Edge> it = callGraph.edgesOutOf(s); it.hasNext(); ) {
                     Edge e = it.next();
                     SootMethod tgtmtd = e.tgt();
                     for (int i = 0; i < numArgs; i++) {
-                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof RefLikeType))
+                        if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof ReferenceType))
                             continue;
                         ValNode argNode = prePAG.findValNode(args[i]);
                         if (argNode instanceof LocalVarNode) {
                             this.addStoreEdge((LocalVarNode) argNode, receiver);
                         }
                     }
-                    if (retDest != null && tgtmtd.getReturnType() instanceof RefLikeType) {
+                    if (retDest != null && tgtmtd.getReturnType() instanceof ReferenceType) {
                         this.addLoadEdge(receiver, retDest);
                     }
                     LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);

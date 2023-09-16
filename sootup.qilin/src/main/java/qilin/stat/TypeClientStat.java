@@ -24,13 +24,13 @@ import qilin.core.builder.FakeMainFactory;
 import qilin.core.pag.AllocNode;
 import qilin.util.PTAUtils;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -104,7 +104,7 @@ public class TypeClientStat implements AbstractStat {
                 } else if (st instanceof AssignStmt) {
                     Value rhs = ((AssignStmt) st).getRightOp();
                     Value lhs = ((AssignStmt) st).getLeftOp();
-                    if (rhs instanceof CastExpr && lhs.getType() instanceof RefLikeType) {
+                    if (rhs instanceof CastExpr && lhs.getType() instanceof ReferenceType) {
                         final Type targetType = ((CastExpr) rhs).getCastType();
                         Value v = ((CastExpr) rhs).getOp();
                         if (!(v instanceof Local)) {
