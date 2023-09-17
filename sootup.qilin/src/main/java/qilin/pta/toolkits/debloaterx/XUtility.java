@@ -6,12 +6,12 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.NumberedString;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -209,8 +209,8 @@ public class XUtility {
                 continue;
             }
             final Stmt s = edge.srcStmt();
-            InvokeExpr ie = s.getInvokeExpr();
-            if (ie instanceof InstanceInvokeExpr iie) {
+            AbstractInvokeExpr ie = s.getInvokeExpr();
+            if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
                 NumberedString subSig = iie.getMethodRef().getSubSignature();
                 VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, edge.src(), iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
@@ -221,7 +221,7 @@ public class XUtility {
         }
         // foreach virtualcallsite, we build mapping from their receiver objects.
         for (VirtualCallSite vcallsite : vcallsites) {
-            InstanceInvokeExpr iie = vcallsite.iie();
+            AbstractInstanceInvokeExpr iie = vcallsite.iie();
             LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
             for (AllocNode heap : pta.reachingObjects(receiver).toCIPointsToSet().toCollection()) {
                 QueueReader<SootMethod> reader = PTAUtils.dispatch(heap.getType(), vcallsite);

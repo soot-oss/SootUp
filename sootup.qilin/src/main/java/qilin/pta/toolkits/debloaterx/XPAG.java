@@ -7,6 +7,10 @@ import qilin.util.PTAUtils;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -69,7 +73,7 @@ public class XPAG {
         }
         // handle call statements.
         for (final Stmt s : srcmpag.getInvokeStmts()) {
-            InvokeExpr ie = s.getInvokeExpr();
+            AbstractInvokeExpr ie = s.getInvokeExpr();
             int numArgs = ie.getArgCount();
             Value[] args = new Value[numArgs];
             for (int i = 0; i < numArgs; i++) {
@@ -85,16 +89,16 @@ public class XPAG {
                     retDest = pag.findLocalVarNode(dest);
                 }
             }
-            if (ie instanceof InstanceInvokeExpr iie) {
+            if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
-                if (iie instanceof SpecialInvokeExpr sie) {
+                if (iie instanceof JSpecialInvokeExpr sie) {
                     inline(s, sie.getMethod());
                 } else {
                     /* instance call with non-this base variable are modeled as in Eagle/Turner. */
                     modelVirtualCall(numArgs, args, receiver, retDest);
                 }
             } else {
-                if (ie instanceof StaticInvokeExpr sie) {
+                if (ie instanceof JStaticInvokeExpr sie) {
                     SootMethod target = sie.getMethod();
                     inline(s, target);
                 }
@@ -134,7 +138,7 @@ public class XPAG {
     }
 
     private void inline(Stmt invokeStmt, SootMethod method) {
-        InvokeExpr ie = invokeStmt.getInvokeExpr();
+        AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
         int numArgs = ie.getArgCount();
         Value[] args = new Value[numArgs];
         for (int i = 0; i < numArgs; i++) {
@@ -151,7 +155,7 @@ public class XPAG {
             }
         }
         LocalVarNode receiver = null;
-        if (ie instanceof InstanceInvokeExpr iie) {
+        if (ie instanceof AbstractInstanceInvokeExpr iie) {
             receiver = pag.findLocalVarNode(iie.getBase());
         }
         MethodPAG mpag = pag.getMethodPAG(method);

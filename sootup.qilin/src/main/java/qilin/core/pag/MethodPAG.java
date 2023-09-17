@@ -24,12 +24,11 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
 
 import soot.jimple.Jimple;
-import soot.jimple.StaticFieldRef;
 import soot.jimple.ThrowStmt;
-import soot.util.Chain;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -168,7 +167,7 @@ public class MethodPAG {
     protected void addMiscEdges() {
         if (method.getSignature().equals("<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
             // Implements the special status of java.lang.ref.Reference just as in Doop (library/reference.logic).
-            StaticFieldRef sfr = Jimple.v().newStaticFieldRef(RefType.v("java.lang.ref.Reference").getSootClass().getFieldByName("pending").makeRef());
+            JStaticFieldRef sfr = Jimple.v().newStaticFieldRef(RefType.v("java.lang.ref.Reference").getSootClass().getFieldByName("pending").makeRef());
             addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
         }
     }

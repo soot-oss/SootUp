@@ -20,9 +20,9 @@ package qilin.core;
 
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.jimple.SpecialInvokeExpr;
 import soot.util.*;
 import soot.util.queue.ChunkedQueue;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
@@ -63,11 +63,11 @@ public class VirtualCalls {
         instance = null;
     }
 
-    public SootMethod resolveSpecial(SpecialInvokeExpr iie, NumberedString subSig, SootMethod container) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, NumberedString subSig, SootMethod container) {
         return resolveSpecial(iie, subSig, container, false);
     }
 
-    public SootMethod resolveSpecial(SpecialInvokeExpr iie, NumberedString subSig, SootMethod container, boolean appOnly) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, NumberedString subSig, SootMethod container, boolean appOnly) {
         SootMethod target = iie.getMethod();
         /* cf. JVM spec, invokespecial instruction */
         if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClassType(),

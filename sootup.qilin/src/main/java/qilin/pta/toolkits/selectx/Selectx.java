@@ -30,6 +30,8 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -268,7 +270,7 @@ public class Selectx {
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             for (final Stmt s : srcmpag.getInvokeStmts()) {
                 CallSite callSite = new CallSite(s);
-                InvokeExpr ie = s.getInvokeExpr();
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
@@ -286,7 +288,7 @@ public class Selectx {
                     }
                 }
                 LocalVarNode receiver = null;
-                if (ie instanceof InstanceInvokeExpr iie) {
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 }
                 for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(s); it.hasNext(); ) {

@@ -25,12 +25,12 @@ package soot.jimple.toolkits.callgraph;
 import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.jimple.InterfaceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.VirtualInvokeExpr;
 import soot.util.Invalidable;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -116,14 +116,14 @@ public final class Edge implements Invalidable {
         return kind;
     }
 
-    public static Kind ieToKind(InvokeExpr ie) {
-        if (ie instanceof VirtualInvokeExpr) {
+    public static Kind ieToKind(AbstractInvokeExpr ie) {
+        if (ie instanceof JVirtualInvokeExpr) {
             return Kind.VIRTUAL;
-        } else if (ie instanceof SpecialInvokeExpr) {
+        } else if (ie instanceof JSpecialInvokeExpr) {
             return Kind.SPECIAL;
-        } else if (ie instanceof InterfaceInvokeExpr) {
+        } else if (ie instanceof JInterfaceInvokeExpr) {
             return Kind.INTERFACE;
-        } else if (ie instanceof StaticInvokeExpr) {
+        } else if (ie instanceof JStaticInvokeExpr) {
             return Kind.STATIC;
         } else {
             throw new RuntimeException();

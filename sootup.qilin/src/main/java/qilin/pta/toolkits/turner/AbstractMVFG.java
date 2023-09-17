@@ -24,12 +24,13 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -152,7 +153,7 @@ public abstract class AbstractMVFG {
 
         // add invoke edges
         for (final Stmt s : srcmpag.getInvokeStmts()) {
-            InvokeExpr ie = s.getInvokeExpr();
+            AbstractInvokeExpr ie = s.getInvokeExpr();
             int numArgs = ie.getArgCount();
             Value[] args = new Value[numArgs];
             for (int i = 0; i < numArgs; i++) {
@@ -169,7 +170,7 @@ public abstract class AbstractMVFG {
                 }
             }
             LocalVarNode receiver;
-            if (ie instanceof InstanceInvokeExpr iie) {
+            if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 receiver = pag.findLocalVarNode(iie.getBase());
             } else {
                 // static call

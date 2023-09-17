@@ -31,8 +31,6 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
-import soot.jimple.internal.JArrayRef;
 import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JimpleLocal;
 import soot.util.ArrayNumberer;
@@ -42,6 +40,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.StringConstant;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootField;
@@ -556,10 +557,10 @@ public class PAG {
         Body body = PTAUtils.getMethodBody(method);
         for (Stmt s : body.getStmts()) {
             if (s.containsInvokeExpr()) {
-                InvokeExpr invokeExpr = s.getInvokeExpr();
-                if (invokeExpr instanceof StaticInvokeExpr sie) {
+                AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
+                if (invokeExpr instanceof JStaticInvokeExpr sie) {
                     SootMethod sm = sie.getMethod();
-                    String sig = sm.getSignature();
+                    String sig = sm.getSignature().toString();
                     if (sig.equals("<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
                         Value srcArr = sie.getArg(0);
                         if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {

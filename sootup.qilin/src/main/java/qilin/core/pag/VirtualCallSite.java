@@ -20,8 +20,8 @@ package qilin.core.pag;
 
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.jimple.InstanceInvokeExpr;
 import soot.util.NumberedString;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 
 import java.util.Objects;
@@ -34,11 +34,11 @@ import java.util.Objects;
 public class VirtualCallSite extends CallSite {
     private final VarNode recNode;
     private final MethodOrMethodContext container;
-    private final InstanceInvokeExpr iie;
+    private final AbstractInstanceInvokeExpr iie;
     private final NumberedString subSig;
     private final Kind kind;
 
-    public VirtualCallSite(VarNode recNode, Stmt stmt, MethodOrMethodContext container, InstanceInvokeExpr iie,
+    public VirtualCallSite(VarNode recNode, Stmt stmt, MethodOrMethodContext container, AbstractInstanceInvokeExpr iie,
                            NumberedString subSig, Kind kind) {
         super(stmt);
         this.recNode = recNode;
@@ -56,7 +56,7 @@ public class VirtualCallSite extends CallSite {
         return container;
     }
 
-    public InstanceInvokeExpr iie() {
+    public AbstractInstanceInvokeExpr iie() {
         return iie;
     }
 

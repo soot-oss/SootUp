@@ -29,9 +29,6 @@ import qilin.util.PTAUtils;
 import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
-import soot.jimple.internal.JInvokeStmt;
-import soot.jimple.internal.JStaticInvokeExpr;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.ChunkedQueue;
@@ -39,6 +36,10 @@ import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -140,7 +141,7 @@ public class CallGraphBuilder {
         final QueueReader<SootMethod> targets = PTAUtils.dispatch(type, site);
         while (targets.hasNext()) {
             SootMethod target = targets.next();
-            if (site.iie() instanceof SpecialInvokeExpr) {
+            if (site.iie() instanceof JSpecialInvokeExpr) {
                 Type calleeDeclType = target.getDeclaringClassType();
                 if (!Scene.v().getFastHierarchy().canStoreType(type, calleeDeclType)) {
                     continue;
@@ -162,7 +163,7 @@ public class CallGraphBuilder {
     public void injectCallEdge(Object heapOrType, MethodOrMethodContext callee, Kind kind) {
         Map<Object, Stmt> stmtMap = methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
         if (!stmtMap.containsKey(heapOrType)) {
-            InvokeExpr ie = new JStaticInvokeExpr(callee.method().makeRef(), Collections.emptyList());
+            AbstractInvokeExpr ie = new JStaticInvokeExpr(callee.method().makeRef(), Collections.emptyList());
             JInvokeStmt stmt = new JInvokeStmt(ie);
             stmtMap.put(heapOrType, stmt);
             handleCallEdge(new Edge(pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()), stmtMap.get(heapOrType), callee, kind));
@@ -212,7 +213,7 @@ public class CallGraphBuilder {
         MethodNodeFactory srcnf = srcmpag.nodeFactory();
         MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
         SootMethod tgtmtd = tgtmpag.getMethod();
-        InvokeExpr ie = s.getInvokeExpr();
+        AbstractInvokeExpr ie = s.getInvokeExpr();
         // add arg --> param edges.
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {

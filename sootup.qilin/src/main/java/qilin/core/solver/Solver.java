@@ -26,20 +26,21 @@ import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.core.sets.DoublePointsToSet;
-import qilin.core.sets.HybridPointsToSet;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.PTAUtils;
 import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.jimple.*;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
 import soot.util.NumberedString;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -130,9 +131,9 @@ public class Solver extends Propagator {
     private void recordCallStmts(MethodOrMethodContext m, Collection<Stmt> units) {
         for (final Stmt s : units) {
             if (s.containsInvokeExpr()) {
-                InvokeExpr ie = s.getInvokeExpr();
-                if (ie instanceof InstanceInvokeExpr iie) {
-                    Local receiver = (Local) iie.getBase();
+                AbstractInvokeExpr ie = s.getInvokeExpr();
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
+                    Local receiver = iie.getBase();
                     VarNode recNode = cgb.getReceiverVarNode(receiver, m);
                     NumberedString subSig = iie.getMethodRef().getSubSignature();
                     VirtualCallSite virtualCallSite = new VirtualCallSite(recNode, s, m, iie, subSig, Edge.ieToKind(iie));
@@ -144,7 +145,7 @@ public class Solver extends Propagator {
                     if (tgt != null) { // static invoke or dynamic invoke
                         VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
                         recNode = (VarNode) pta.parameterize(recNode, m.context());
-                        if (ie instanceof DynamicInvokeExpr) {
+                        if (ie instanceof JDynamicInvokeExpr) {
                             // !TODO dynamicInvoke is provided in JDK after Java 7.
                             // currently, PTA does not handle dynamicInvokeExpr.
                         } else {

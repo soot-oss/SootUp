@@ -31,6 +31,8 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -320,7 +322,7 @@ public class Eagle {
 
             // add invoke edges
             for (final Stmt s : srcmpag.getInvokeStmts()) {
-                InvokeExpr ie = s.getInvokeExpr();
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 Value[] args = new Value[numArgs];
                 for (int i = 0; i < numArgs; i++) {
@@ -337,7 +339,7 @@ public class Eagle {
                     }
                 }
                 LocalVarNode receiver;
-                if (ie instanceof InstanceInvokeExpr iie) {
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     receiver = prePAG.findLocalVarNode(iie.getBase());
                 } else {
                     // static call

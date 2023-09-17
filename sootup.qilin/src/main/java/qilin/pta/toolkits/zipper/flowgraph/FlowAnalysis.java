@@ -9,9 +9,9 @@ import qilin.util.ANSIColor;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
 import qilin.util.graph.Reachability;
 import soot.jimple.AssignStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -145,9 +145,9 @@ public class FlowAnalysis {
                     pta.getCgb().getReceiverToSitesMap()
                             .getOrDefault(var, Collections.emptySet())
                             .forEach(vcs -> {
-                                Stmt callsiteStmt = (Stmt) vcs.getUnit();
-                                InvokeExpr invo = callsiteStmt.getInvokeExpr();
-                                if (!(invo instanceof InstanceInvokeExpr)) {
+                                Stmt callsiteStmt = vcs.getUnit();
+                                AbstractInvokeExpr invo = callsiteStmt.getInvokeExpr();
+                                if (!(invo instanceof AbstractInstanceInvokeExpr)) {
                                     return;
                                 }
                                 if (callsiteStmt instanceof AssignStmt assignStmt) {

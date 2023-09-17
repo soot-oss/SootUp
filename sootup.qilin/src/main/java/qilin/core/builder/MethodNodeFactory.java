@@ -29,6 +29,18 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.constant.StringConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
@@ -55,31 +67,31 @@ public class MethodNodeFactory {
     public Node getNode(Value v) {
         if (v instanceof Local l) {
             return caseLocal(l);
-        } else if (v instanceof CastExpr castExpr) {
+        } else if (v instanceof JCastExpr castExpr) {
             return caseCastExpr(castExpr);
-        } else if (v instanceof NewExpr ne) {
+        } else if (v instanceof JNewExpr ne) {
             return caseNewExpr(ne);
-        } else if (v instanceof StaticFieldRef sfr) {
+        } else if (v instanceof JStaticFieldRef sfr) {
             return caseStaticFieldRef(sfr);
-        } else if (v instanceof NewArrayExpr nae) {
+        } else if (v instanceof JNewArrayExpr nae) {
             return caseNewArrayExpr(nae);
-        } else if (v instanceof ArrayRef ar) {
+        } else if (v instanceof JArrayRef ar) {
             return caseArrayRef(ar);
         } else if (v instanceof ClassConstant cc) {
             return caseClassConstant(cc);
         } else if (v instanceof StringConstant sc) {
             return caseStringConstant(sc);
-        } else if (v instanceof CaughtExceptionRef cef) {
+        } else if (v instanceof JCaughtExceptionRef cef) {
             return caseCaughtExceptionRef(cef);
-        } else if (v instanceof ParameterRef pr) {
+        } else if (v instanceof JParameterRef pr) {
             return caseParameterRef(pr);
         } else if (v instanceof NullConstant nc) {
             return caseNullConstant(nc);
-        } else if (v instanceof InstanceFieldRef ifr) {
+        } else if (v instanceof JInstanceFieldRef ifr) {
             return caseInstanceFieldRef(ifr);
-        } else if (v instanceof ThisRef) {
+        } else if (v instanceof JThisRef) {
             return caseThis();
-        } else if (v instanceof NewMultiArrayExpr nmae) {
+        } else if (v instanceof JNewMultiArrayExpr nmae) {
             return caseNewMultiArrayExpr(nmae);
         }
         System.out.println(v + ";;" + v.getClass());
@@ -103,7 +115,7 @@ public class MethodNodeFactory {
      * the invoke method throws an Exception.
      */
     protected void handleInvokeStmt(Stmt s) {
-        InvokeExpr ie = s.getInvokeExpr();
+        AbstractInvokeExpr ie = s.getInvokeExpr();
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
@@ -118,12 +130,12 @@ public class MethodNodeFactory {
                 getNode(l);
             }
         }
-        if (ie instanceof InstanceInvokeExpr) {
-            getNode(((InstanceInvokeExpr) ie).getBase());
+        if (ie instanceof AbstractInstanceInvokeExpr aie) {
+            getNode(aie.getBase());
         }
     }
 
-    private void resolveClinit(StaticFieldRef staticFieldRef) {
+    private void resolveClinit(JStaticFieldRef staticFieldRef) {
         PTAUtils.clinitsOf(staticFieldRef.getField().getDeclaringClass()).forEach(mpag::addTriggeredClinit);
     }
 
@@ -135,17 +147,17 @@ public class MethodNodeFactory {
             public void caseAssignStmt(AssignStmt as) {
                 Value l = as.getLeftOp();
                 Value r = as.getRightOp();
-                if (l instanceof StaticFieldRef) {
-                    resolveClinit((StaticFieldRef) l);
-                } else if (r instanceof StaticFieldRef) {
-                    resolveClinit((StaticFieldRef) r);
+                if (l instanceof JStaticFieldRef) {
+                    resolveClinit((JStaticFieldRef) l);
+                } else if (r instanceof JStaticFieldRef) {
+                    resolveClinit((JStaticFieldRef) r);
                 }
 
                 if (!(l.getType() instanceof ReferenceType))
                     return;
                 // check for improper casts, with mal-formed code we might get
                 // l = (refliketype)int_type, if so just return
-                if (r instanceof CastExpr && (!(((CastExpr) r).getOp().getType() instanceof ReferenceType))) {
+                if (r instanceof JCastExpr && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
                     return;
                 }
 
@@ -185,17 +197,17 @@ public class MethodNodeFactory {
         return pag.makeLocalVarNode(l, l.getType(), method);
     }
 
-    private AllocNode caseNewArrayExpr(NewArrayExpr nae) {
+    private AllocNode caseNewArrayExpr(JNewArrayExpr nae) {
         return pag.makeAllocNode(nae, nae.getType(), method);
     }
 
-    private AllocNode caseNewExpr(NewExpr ne) {
+    private AllocNode caseNewExpr(JNewExpr ne) {
         SootClass cl = PTAScene.v().loadClassAndSupport(ne.getType().toString());
         PTAUtils.clinitsOf(cl).forEach(mpag::addTriggeredClinit);
         return pag.makeAllocNode(ne, ne.getType(), method);
     }
 
-    private FieldRefNode caseInstanceFieldRef(InstanceFieldRef ifr) {
+    private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
         SootField sf = ifr.getField();
         if (sf == null) {
             sf = new SootField(ifr.getFieldRef().name(), ifr.getType(), Modifier.PUBLIC);
@@ -206,7 +218,7 @@ public class MethodNodeFactory {
         return pag.makeFieldRefNode(pag.makeLocalVarNode(ifr.getBase(), ifr.getBase().getType(), method), new Field(sf));
     }
 
-    private VarNode caseNewMultiArrayExpr(NewMultiArrayExpr nmae) {
+    private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {
         ArrayType type = (ArrayType) nmae.getType();
         int pos = 0;
         AllocNode prevAn = pag.makeAllocNode(new JNewArrayExpr(type, nmae.getSize(pos)), type, method);
@@ -235,7 +247,7 @@ public class MethodNodeFactory {
         return ret;
     }
 
-    private VarNode caseCastExpr(CastExpr ce) {
+    private VarNode caseCastExpr(JCastExpr ce) {
         Node opNode = getNode(ce.getOp());
         VarNode castNode = pag.makeLocalVarNode(ce, ce.getCastType(), method);
         mpag.addInternalEdge(opNode, castNode);
@@ -271,7 +283,7 @@ public class MethodNodeFactory {
         return pag.makeFieldRefNode(base, ArrayElement.v());
     }
 
-    private Node caseCaughtExceptionRef(CaughtExceptionRef cer) {
+    private Node caseCaughtExceptionRef(JCaughtExceptionRef cer) {
         if (CoreConfig.v().getPtaConfig().preciseExceptions) {
             // we model caughtException expression as an local assignment.
             return pag.makeLocalVarNode(cer, cer.getType(), method);
@@ -280,15 +292,15 @@ public class MethodNodeFactory {
         }
     }
 
-    private FieldRefNode caseArrayRef(ArrayRef ar) {
-        return caseArray(caseLocal((Local) ar.getBase()));
+    private FieldRefNode caseArrayRef(JArrayRef ar) {
+        return caseArray(caseLocal(ar.getBase()));
     }
 
-    private VarNode caseParameterRef(ParameterRef pr) {
+    private VarNode caseParameterRef(JParameterRef pr) {
         return caseParm(pr.getIndex());
     }
 
-    private VarNode caseStaticFieldRef(StaticFieldRef sfr) {
+    private VarNode caseStaticFieldRef(JStaticFieldRef sfr) {
         return pag.makeGlobalVarNode(sfr.getField(), sfr.getField().getType());
     }
 

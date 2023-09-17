@@ -34,6 +34,8 @@ import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -116,7 +118,7 @@ public class ZipperPTA extends StagedPTA {
                 }
             }
             for (final Stmt s : srcmpag.getInvokeStmts()) {
-                InvokeExpr ie = s.getInvokeExpr();
+                AbstractInvokeExpr ie = s.getInvokeExpr();
                 int numArgs = ie.getArgCount();
                 for (int i = 0; i < numArgs; i++) {
                     Value arg = ie.getArg(i);
@@ -132,7 +134,7 @@ public class ZipperPTA extends StagedPTA {
                         nodes.add(dest);
                     }
                 }
-                if (ie instanceof InstanceInvokeExpr iie) {
+                if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     Value base = iie.getBase();
                     if (base instanceof Local) {
                         nodes.add(base);

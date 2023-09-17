@@ -5,15 +5,17 @@ import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.NullConstant;
 import soot.util.NumberedString;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.util.HashSet;
@@ -44,7 +46,7 @@ public class IntraFlowAnalysis {
         VarNode thisNode = srcnf.caseThis();
         // handle parameters
         for (int i = 0; i < method.getParameterCount(); ++i) {
-            if (method.getParameterType(i) instanceof RefLikeType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+            if (method.getParameterType(i) instanceof ReferenceType && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
                 LocalVarNode param = (LocalVarNode) srcnf.caseParm(i);
                 this.params.add(param);
             }
@@ -94,7 +96,7 @@ public class IntraFlowAnalysis {
 
     public boolean isContentFromParam(AllocNode heap) {
         Type heapType = heap.getType();
-        if (heapType instanceof RefType) {
+        if (heapType instanceof ClassType) {
             return isInstanceObjectContentFromParam(heap);
         } else {
             return isArrayContentFromParam(heap);
@@ -130,16 +132,15 @@ public class IntraFlowAnalysis {
     }
 
     private Set<Node> collectParamInArguments(AllocNode heap) {
-        RefType type = (RefType) heap.getType();
+        ClassType type = (ClassType) heap.getType();
         Set<Node> x = epsilon(heap);
         Set<Node> ret = new HashSet<>();
         HeapContainerQuery hcq = this.utility.getHCQ(heap);
         Set<LocalVarNode> inParams = hcq.getInParamsToCSFields();
         MethodPAG srcmpag = pag.getMethodPAG(method);
-        for (final Unit u : srcmpag.getInvokeStmts()) {
-            final Stmt s = (Stmt) u;
-            InvokeExpr ie = s.getInvokeExpr();
-            if (!(ie instanceof InstanceInvokeExpr iie)) {
+        for (final Stmt s : srcmpag.getInvokeStmts()) {
+            AbstractInvokeExpr ie = s.getInvokeExpr();
+            if (!(ie instanceof AbstractInstanceInvokeExpr iie)) {
                 continue;
             }
             LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
@@ -150,7 +151,7 @@ public class IntraFlowAnalysis {
             Value[] args = new Value[numArgs];
             for (int i = 0; i < numArgs; i++) {
                 Value arg = ie.getArg(i);
-                if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+                if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                     continue;
                 }
                 args[i] = arg;
@@ -167,7 +168,7 @@ public class IntraFlowAnalysis {
                     System.out.println(target);
                 }
                 for (int i = 0; i < numParms; i++) {
-                    if (target.getParameterType(i) instanceof RefLikeType) {
+                    if (target.getParameterType(i) instanceof ReferenceType) {
                         if (args[i] != null) {
                             ValNode argNode = pag.findValNode(args[i]);
                             if (argNode instanceof LocalVarNode lvn) {

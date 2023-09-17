@@ -22,13 +22,21 @@ import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.jimple.*;
 import soot.jimple.internal.*;
 import soot.tagkit.LineNumberTag;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -111,9 +119,9 @@ public class TamiflexModel extends ReflectionModel {
         Map<Stmt, Set<String>> constructorNewInstances = reflectionMap.getOrDefault(ReflectionKind.ConstructorNewInstance, Collections.emptyMap());
         if (constructorNewInstances.containsKey(s)) {
             Collection<String> constructorSignatures = constructorNewInstances.get(s);
-            InvokeExpr iie = s.getInvokeExpr();
+            AbstractInvokeExpr iie = s.getInvokeExpr();
             Value args = iie.getArg(0);
-            ArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
+            JArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
             Value arg = new JimpleLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
             ret.add(new JAssignStmt(arg, arrayRef));
             for (String constructorSignature : constructorSignatures) {
@@ -139,12 +147,12 @@ public class TamiflexModel extends ReflectionModel {
         Map<Stmt, Set<String>> methodInvokes = reflectionMap.getOrDefault(ReflectionKind.MethodInvoke, Collections.emptyMap());
         if (methodInvokes.containsKey(s)) {
             Collection<String> methodSignatures = methodInvokes.get(s);
-            InvokeExpr iie = s.getInvokeExpr();
+            AbstractInvokeExpr iie = s.getInvokeExpr();
             Value base = iie.getArg(0);
             Value args = iie.getArg(1);
             Value arg = null;
             if (args.getType() instanceof ArrayType) {
-                ArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
+                JArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
                 arg = new JimpleLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
                 ret.add(new JAssignStmt(arg, arrayRef));
             }
@@ -156,7 +164,7 @@ public class TamiflexModel extends ReflectionModel {
                 for (int i = 0; i < argCount; i++) {
                     mArgs.add(arg);
                 }
-                InvokeExpr ie;
+                AbstractInvokeExpr ie;
                 if (method.isStatic()) {
                     assert base instanceof NullConstant;
                     ie = new JStaticInvokeExpr(method.makeRef(), mArgs);
@@ -182,12 +190,12 @@ public class TamiflexModel extends ReflectionModel {
         Map<Stmt, Set<String>> fieldSets = reflectionMap.getOrDefault(ReflectionKind.FieldSet, Collections.emptyMap());
         if (fieldSets.containsKey(s)) {
             Collection<String> fieldSignatures = fieldSets.get(s);
-            InvokeExpr iie = s.getInvokeExpr();
+            AbstractInvokeExpr iie = s.getInvokeExpr();
             Value base = iie.getArg(0);
             Value rValue = iie.getArg(1);
             for (String fieldSignature : fieldSignatures) {
                 SootField field = PTAScene.v().getField(fieldSignature).makeRef().resolve();
-                FieldRef fieldRef;
+                JFieldRef fieldRef;
                 if (field.isStatic()) {
                     assert base instanceof NullConstant;
                     fieldRef = Jimple.v().newStaticFieldRef(field.makeRef());
@@ -210,11 +218,11 @@ public class TamiflexModel extends ReflectionModel {
         if (fieldGets.containsKey(s) && s instanceof AssignStmt) {
             Collection<String> fieldSignatures = fieldGets.get(s);
             Value lvalue = ((AssignStmt) s).getLeftOp();
-            InvokeExpr iie = s.getInvokeExpr();
+            AbstractInvokeExpr iie = s.getInvokeExpr();
             Value base = iie.getArg(0);
             for (String fieldSignature : fieldSignatures) {
                 SootField field = PTAScene.v().getField(fieldSignature).makeRef().resolve();
-                FieldRef fieldRef;
+                JFieldRef fieldRef;
                 if (field.isStatic()) {
                     assert base instanceof NullConstant;
                     fieldRef = Jimple.v().newStaticFieldRef(field.makeRef());
@@ -251,7 +259,7 @@ public class TamiflexModel extends ReflectionModel {
     @Override
     Collection<Stmt> transformArrayGet(Stmt s) {
         Collection<Stmt> ret = DataFactory.createSet();
-        InvokeExpr iie = s.getInvokeExpr();
+        AbstractInvokeExpr iie = s.getInvokeExpr();
         Value base = iie.getArg(0);
         if (s instanceof AssignStmt) {
             Value lvalue = ((AssignStmt) s).getLeftOp();
@@ -273,7 +281,7 @@ public class TamiflexModel extends ReflectionModel {
     @Override
     Collection<Stmt> transformArraySet(Stmt s) {
         Collection<Stmt> ret = DataFactory.createSet();
-        InvokeExpr iie = s.getInvokeExpr();
+        AbstractInvokeExpr iie = s.getInvokeExpr();
         Value base = iie.getArg(0);
         if (base.getType() instanceof ArrayType) {
             Value from = iie.getArg(2);

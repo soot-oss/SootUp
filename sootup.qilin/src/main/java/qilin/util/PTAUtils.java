@@ -44,7 +44,11 @@ import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -85,7 +89,7 @@ public final class PTAUtils {
 
                 for (final Stmt s : srcmpag.getInvokeStmts()) {
                     AbstractInvokeExpr ie = s.getInvokeExpr();
-                    if (ie instanceof StaticInvokeExpr) {
+                    if (ie instanceof JStaticInvokeExpr) {
                         for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                             Edge e = it.next();
                             SootMethod tgtmtd = e.tgt();
@@ -118,7 +122,7 @@ public final class PTAUtils {
 
             for (final Stmt s : srcmpag.getInvokeStmts()) {
                 AbstractInvokeExpr ie = s.getInvokeExpr();
-                if (ie instanceof StaticInvokeExpr) {
+                if (ie instanceof JStaticInvokeExpr) {
                     for (Iterator<Edge> it = pta.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
                         Edge e = it.next();
                         SootMethod tgtmtd = e.tgt();
@@ -294,8 +298,8 @@ public final class PTAUtils {
             return targets;
         }
         MethodOrMethodContext container = site.container();
-        if (site.iie() instanceof SpecialInvokeExpr && site.kind() != Kind.THREAD) {
-            SootMethod target = VirtualCalls.v().resolveSpecial((SpecialInvokeExpr) site.iie(), site.subSig(), container.method());
+        if (site.iie() instanceof JSpecialInvokeExpr && site.kind() != Kind.THREAD) {
+            SootMethod target = VirtualCalls.v().resolveSpecial((JSpecialInvokeExpr) site.iie(), site.subSig(), container.method());
             // if the call target resides in a phantom class then
             // "target" will be null, simply do not add the target in that case
             if (target != null) {
@@ -797,7 +801,7 @@ public final class PTAUtils {
 
     public static boolean isEmptyArray(AllocNode heap) {
         Object var = heap.getNewExpr();
-        if (var instanceof NewArrayExpr nae) {
+        if (var instanceof JNewArrayExpr nae) {
             Value sizeVal = nae.getSize();
             if (sizeVal instanceof IntConstant size) {
                 return size.getValue() == 0;
@@ -808,11 +812,11 @@ public final class PTAUtils {
 
     public static LocalVarNode paramToArg(PAG pag, Stmt invokeStmt, MethodPAG srcmpag, VarNode pi) {
         MethodNodeFactory srcnf = srcmpag.nodeFactory();
-        InvokeExpr ie = invokeStmt.getInvokeExpr();
+        AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
         Parm mPi = (Parm) pi.getVariable();
         LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
         LocalVarNode receiver;
-        if (ie instanceof InstanceInvokeExpr iie) {
+        if (ie instanceof AbstractInstanceInvokeExpr iie) {
             receiver = pag.findLocalVarNode(iie.getBase());
         } else {
             // static call

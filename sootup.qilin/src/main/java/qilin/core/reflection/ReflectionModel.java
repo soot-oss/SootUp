@@ -21,7 +21,7 @@ package qilin.core.reflection;
 import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.jimple.InvokeExpr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -51,7 +51,7 @@ public abstract class ReflectionModel {
     protected final String sigReifiedDeclaredMethodArray = "<java.lang.Class: java.lang.reflect.Method[] getDeclaredMethods()>";
 
     private Collection<Stmt> transform(Stmt s) {
-        InvokeExpr ie = s.getInvokeExpr();
+        AbstractInvokeExpr ie = s.getInvokeExpr();
         return switch (ie.getMethodRef().getSignature()) {
             case sigForName, sigForName2 -> transformClassForName(s);
             case sigClassNewInstance -> transformClassNewInstance(s);
