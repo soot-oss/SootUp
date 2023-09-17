@@ -167,7 +167,7 @@ public class Turner {
     }
 
     private Collection<Object> computeCtxLevelForVariables(SootMethod method) {
-        if (method.isPhantom()) {
+        if (!method.isConcrete()) {
             return Collections.emptySet();
         } else {
             AbstractMVFG mvfg = MethodVFG.findOrCreateMethodVFG(prePTA, method, ocg);
@@ -178,7 +178,7 @@ public class Turner {
     }
 
     private Collection<Object> computeCtxLevelForVariables(SootMethod method, MergedNode<SootMethod> sccNode) {
-        if (method.isPhantom()) {
+        if (!method.isConcrete()) {
             return Collections.emptySet();
         } else {
             AbstractMVFG mvfg = ModularMVFG.findOrCreateMethodVFG(prePTA, method, ocg, sccNode);

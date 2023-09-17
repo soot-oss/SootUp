@@ -69,7 +69,7 @@ public class YummyStat implements AbstractStat {
         Set<SootMethod> instanceReachables = new HashSet<>();
         for (final MethodOrMethodContext momc : pta.getReachableMethods()) {
             SootMethod method = momc.method();
-            if (!method.isPhantom() && !method.isStatic()) {
+            if (method.isConcrete() && !method.isStatic()) {
                 instanceReachables.add(method);
             }
         }

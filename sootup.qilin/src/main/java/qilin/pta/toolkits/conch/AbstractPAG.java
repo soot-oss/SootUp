@@ -68,7 +68,7 @@ public abstract class AbstractPAG {
 
     protected void build() {
         prePTA.getNakedReachableMethods()
-                .parallelStream().filter(m -> !m.isPhantom())
+                .parallelStream().filter(SootMethod::isConcrete)
                 .forEach(this::buildFG);
     }
 

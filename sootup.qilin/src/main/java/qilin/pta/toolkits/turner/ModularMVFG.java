@@ -47,7 +47,7 @@ public class ModularMVFG extends AbstractMVFG {
     protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
         for (SootMethod tgtmtd : targets) {
             // the target method is in the same scc with current method.
-            if (tgtmtd.isPhantom() || sccNode.getContent().contains(tgtmtd)) {
+            if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
                 return true;
             }
             if (!(tgtmtd.getReturnType() instanceof ReferenceType)) {
@@ -69,7 +69,7 @@ public class ModularMVFG extends AbstractMVFG {
     protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
         for (SootMethod tgtmtd : targets) {
             // the target method is in the same scc with current method.
-            if (tgtmtd.isPhantom() || sccNode.getContent().contains(tgtmtd)) {
+            if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
                 return true;
             }
             MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);

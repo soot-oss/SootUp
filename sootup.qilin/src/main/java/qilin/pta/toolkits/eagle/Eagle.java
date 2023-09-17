@@ -263,7 +263,7 @@ public class Eagle {
 
         CallGraph callGraph = prePTA.getCallGraph();
         for (SootMethod method : prePTA.getNakedReachableMethods()) {
-            if (method.isPhantom()) {
+            if (!method.isConcrete()) {
                 continue;
             }
             MethodPAG srcmpag = prePAG.getMethodPAG(method);

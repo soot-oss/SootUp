@@ -55,7 +55,7 @@ public class AbstractConch {
          * The following line computes the receiver objects for the this_ptr of static methods.
          * */
         Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(pta);
-        pta.getNakedReachableMethods().stream().filter(m -> !m.isPhantom()).forEach(method -> {
+        pta.getNakedReachableMethods().stream().filter(SootMethod::isConcrete).forEach(method -> {
             collectStoresIn(method);
             collectLoadsIn(method);
             buildInvokedOnFor(method, pts);

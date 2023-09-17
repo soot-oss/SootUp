@@ -90,7 +90,7 @@ public class ZipperPTA extends StagedPTA {
             SootMethod method = momc.method();
             Set<Object> nodes = new HashSet<>();
 
-            if (method.isPhantom()) {
+            if (!method.isConcrete()) {
                 return;
             }
             MethodPAG srcmpag = pag.getMethodPAG(method);

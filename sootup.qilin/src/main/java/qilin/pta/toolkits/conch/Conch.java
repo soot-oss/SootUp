@@ -70,8 +70,8 @@ public class Conch extends AbstractConch {
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
         for (Stmt unit : cmpag.getInvokeStmts()) {
             if (unit instanceof InvokeStmt invokeStmt) {
-                InvokeExpr expr = invokeStmt.getInvokeExpr();
-                if (expr instanceof SpecialInvokeExpr iie) {
+                AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+                if (expr instanceof JSpecialInvokeExpr iie) {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
                     PointsToSet v1pts = pta.reachingObjects(baseNode);

@@ -119,7 +119,7 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
         for (MethodOrMethodContext momc : prePTA.getReachableMethods()) {
             SootMethod method = momc.method();
             Set<Object> nodes = new HashSet<>();
-            if (method.isPhantom()) {
+            if (!method.isConcrete()) {
                 return;
             }
             MethodPAG srcmpag = pag.getMethodPAG(method);

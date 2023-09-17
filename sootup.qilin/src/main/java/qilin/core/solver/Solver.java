@@ -109,7 +109,7 @@ public class Solver extends Propagator {
         while (newRMs.hasNext()) {
             MethodOrMethodContext momc = newRMs.next();
             SootMethod method = momc.method();
-            if (method.isPhantom()) {
+            if (!method.isConcrete()) {
                 continue;
             }
             MethodPAG mpag = pag.getMethodPAG(method);

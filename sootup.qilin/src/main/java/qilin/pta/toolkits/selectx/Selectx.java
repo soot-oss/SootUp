@@ -228,7 +228,7 @@ public class Selectx {
 
     private void buildGraph() {
         for (SootMethod method : prePTA.getNakedReachableMethods()) {
-            if (method.isPhantom()) {
+            if (!method.isConcrete()) {
                 continue;
             }
             MethodPAG srcmpag = prePAG.getMethodPAG(method);
