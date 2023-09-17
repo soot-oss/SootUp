@@ -22,6 +22,8 @@ import qilin.CoreConfig;
 import qilin.core.ArtificialMethod;
 import qilin.util.PTAUtils;
 import soot.jimple.JimpleBody;
+import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
@@ -105,13 +107,13 @@ public class FakeMainFactory extends ArtificialMethod {
             if (entry.isStatic()) {
                 if (entry.getSubSignature().equals("void main(java.lang.String[])")) {
                     Value mockStr = getNew(PTAUtils.getClassType("java.lang.String"));
-                    Value strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
+                    Immediate strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
                     addAssign(getArrayRef(strArray), mockStr);
-                    addInvoke(entry.getSignature(), strArray);
+                    addInvoke(entry.getSignature().toString(), strArray);
                     implicitCallEdges++;
                 } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY || !entry.isStaticInitializer()) {
                     // in the on fly mode, we won't add a call directly for <clinit> methods.
-                    addInvoke(entry.getSignature());
+                    addInvoke(entry.getSignature().toString());
                     implicitCallEdges++;
                 }
             }
@@ -119,42 +121,42 @@ public class FakeMainFactory extends ArtificialMethod {
         if (CoreConfig.v().getPtaConfig().singleentry) {
             return;
         }
-        Value sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));
-        Value mainThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
-        Value mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
-        Value systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+        Local sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));
+        Local mainThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
+        Local mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+        Local systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
 
         Value gCurrentThread = getFieldCurrentThread();
         addAssign(gCurrentThread, mainThread); // Store
-        Value vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
+        Local vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
 
-        Value lThreadGroup = getNextLocal(PTAUtils.getClassType("java.lang.ThreadGroup"));
+        Local lThreadGroup = getNextLocal(PTAUtils.getClassType("java.lang.ThreadGroup"));
         addInvoke(mainThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>", mainThreadGroup, sv);
-        Value tmpThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
+        Local tmpThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
         addInvoke(tmpThread, "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>", lThreadGroup, vRunnable);
         addInvoke(tmpThread, "<java.lang.Thread: void exit()>");
 
         addInvoke(systemThreadGroup, "<java.lang.ThreadGroup: void <init>()>");
         addInvoke(mainThreadGroup, "<java.lang.ThreadGroup: void <init>(java.lang.ThreadGroup,java.lang.String)>", systemThreadGroup, sv);
 
-        Value lThread = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
-        Value lThrowable = getNextLocal(PTAUtils.getClassType("java.lang.Throwable"));
-        Value tmpThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+        Local lThread = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
+        Local lThrowable = getNextLocal(PTAUtils.getClassType("java.lang.Throwable"));
+        Local tmpThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
         addInvoke(tmpThreadGroup, "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>", lThread, lThrowable); // TODO.
 
 
         // ClassLoader
-        Value defaultClassLoader = getNew(PTAUtils.getClassType("sun.misc.Launcher$AppClassLoader"));
+        Local defaultClassLoader = getNew(PTAUtils.getClassType("sun.misc.Launcher$AppClassLoader"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void <init>()>");
-        Value vClass = getNextLocal(PTAUtils.getClassType("java.lang.Class"));
-        Value vDomain = getNextLocal(PTAUtils.getClassType("java.security.ProtectionDomain"));
+        Local vClass = getNextLocal(PTAUtils.getClassType("java.lang.Class"));
+        Local vDomain = getNextLocal(PTAUtils.getClassType("java.security.ProtectionDomain"));
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>", sv);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void checkPackageAccess(java.lang.Class,java.security.ProtectionDomain)>", vClass, vDomain);
         addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void addClass(java.lang.Class)>", vClass);
 
         // PrivilegedActionException
-        Value privilegedActionException = getNew(PTAUtils.getClassType("java.security.PrivilegedActionException"));
-        Value gLthrow = getNextLocal(PTAUtils.getClassType("java.lang.Exception"));
+        Local privilegedActionException = getNew(PTAUtils.getClassType("java.security.PrivilegedActionException"));
+        Local gLthrow = getNextLocal(PTAUtils.getClassType("java.lang.Exception"));
         addInvoke(privilegedActionException, "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>", gLthrow);
     }
 }

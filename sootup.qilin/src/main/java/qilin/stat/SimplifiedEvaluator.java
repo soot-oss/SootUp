@@ -96,7 +96,7 @@ public class SimplifiedEvaluator implements IEvaluator {
                     Value rhs = assignStmt.getRightOp();
                     Value lhs = assignStmt.getLeftOp();
                     if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
-                        final Type targetType = ((JCastExpr) rhs).getCastType();
+                        final Type targetType = rhs.getType();
                         Value v = ((JCastExpr) rhs).getOp();
                         if (!(v instanceof Local)) {
                             continue;

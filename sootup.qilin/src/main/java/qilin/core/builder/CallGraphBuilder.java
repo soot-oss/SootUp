@@ -34,6 +34,7 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -165,7 +166,7 @@ public class CallGraphBuilder {
         Map<Object, Stmt> stmtMap = methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
         if (!stmtMap.containsKey(heapOrType)) {
             AbstractInvokeExpr ie = new JStaticInvokeExpr(callee.method().makeRef(), Collections.emptyList());
-            JInvokeStmt stmt = new JInvokeStmt(ie);
+            JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.createNoStmtPositionInfo());
             stmtMap.put(heapOrType, stmt);
             handleCallEdge(new Edge(pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()), stmtMap.get(heapOrType), callee, kind));
         }

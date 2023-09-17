@@ -30,6 +30,8 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
@@ -46,15 +48,15 @@ import java.util.List;
 public abstract class ArtificialMethod {
     protected SootMethod method;
     protected Body body;
-    protected Value thisLocal;
-    protected Value[] paraLocals;
+    protected Local thisLocal;
+    protected Local[] paraLocals;
     protected int paraStart;
     protected int localStart;
 
     protected Value getThis() {
         if (thisLocal == null) {
             ClassType type = method.getDeclaringClassType();
-            Value thisRef = new ThisRef(type);
+            IdentityRef thisRef = new JThisRef(type);
             thisLocal = getLocal(type, 0);
             addIdentity(thisLocal, thisRef);
         }
@@ -71,9 +73,9 @@ public abstract class ArtificialMethod {
     }
 
     protected Value getPara(int index, Type type) {
-        Value paraLocal = paraLocals[index];
+        Local paraLocal = paraLocals[index];
         if (paraLocal == null) {
-            Value paraRef = new ParameterRef(type, index);
+            IdentityRef paraRef = new JParameterRef(type, index);
             paraLocal = getLocal(type, paraStart + index);
             addIdentity(paraLocal, paraRef);
             paraLocals[index] = paraLocal;
@@ -92,9 +94,9 @@ public abstract class ArtificialMethod {
         return local;
     }
 
-    protected Value getNewArray(ClassType type) {
+    protected Immediate getNewArray(ClassType type) {
         Value newExpr = new JNewArrayExpr(type, IntConstant.v(1));
-        Value local = getNextLocal(new ArrayType(type, 1));
+        Local local = getNextLocal(new ArrayType(type, 1));
         addAssign(local, newExpr);
         return local;
     }

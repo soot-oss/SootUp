@@ -25,11 +25,11 @@ import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
 import qilin.core.sets.PointsToSet;
 import qilin.util.Util;
-import soot.jimple.AssignStmt;
-import soot.jimple.CastExpr;
-import soot.jimple.InvokeExpr;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JCastExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -81,7 +81,7 @@ public class Exporter {
     private void dumpMethods(Collection<SootMethod> methods, String fileName) {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : methods) {
-            String sig = sm.getSignature();
+            String sig = sm.getSignature().toString();
             sig = Util.stripQuotes(sig);
             builder.append(sig);
             builder.append("\n");
@@ -126,9 +126,9 @@ public class Exporter {
         Util.writeToFile(finalPath, builder.toString());
     }
 
-    public void dumpPolyCalls(Map<InvokeExpr, SootMethod> polys) {
+    public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
         StringBuilder builder = new StringBuilder();
-        for (InvokeExpr ie : polys.keySet()) {
+        for (AbstractInvokeExpr ie : polys.keySet()) {
             SootMethod tgt = ie.getMethod();
             String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClass() + "." + tgt.getName() + "\n";
             builder.append(polySig);
@@ -142,9 +142,9 @@ public class Exporter {
         StringBuilder builder = new StringBuilder();
         for (SootMethod sm : casts.keySet()) {
             for (Stmt stmt : casts.get(sm)) {
-                AssignStmt as = (AssignStmt) stmt;
-                CastExpr ce = (CastExpr) as.getRightOp();
-                final Type targetType = ce.getCastType();
+                JAssignStmt as = (JAssignStmt) stmt;
+                JCastExpr ce = (JCastExpr) as.getRightOp();
+                final Type targetType = ce.getType();
                 builder.append(sm.toString());
                 builder.append("\t");
                 builder.append(targetType.toString());
