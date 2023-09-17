@@ -46,6 +46,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
 import java.util.*;
@@ -566,7 +567,7 @@ public class PAG {
                         }
                         Type objType = PTAUtils.getClassType("java.lang.Object");
                         if (srcArr.getType() == objType) {
-                            Local localSrc = new JimpleLocal("intermediate/" + body.getLocalCount(), ArrayType.v(objType, 1));
+                            Local localSrc = new JimpleLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
                             body.getLocals().add(localSrc);
                             newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localSrc, srcArr));
                             srcArr = localSrc;
@@ -576,7 +577,7 @@ public class PAG {
                             continue;
                         }
                         if (dstArr.getType() == objType) {
-                            Local localDst = new JimpleLocal("intermediate/" + body.getLocalCount(), ArrayType.v(objType, 1));
+                            Local localDst = new JimpleLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
                             body.getLocals().add(localDst);
                             newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localDst, dstArr));
                             dstArr = localDst;

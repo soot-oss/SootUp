@@ -4,8 +4,6 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import qilin.util.queue.UniqueQueue;
-import soot.jimple.*;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;

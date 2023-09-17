@@ -35,6 +35,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 import java.io.BufferedReader;
@@ -113,7 +114,7 @@ public class TamiflexModel extends ReflectionModel {
             InvokeExpr iie = s.getInvokeExpr();
             Value args = iie.getArg(0);
             ArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
-            Value arg = new JimpleLocal("intermediate/" + arrayRef, RefType.v("java.lang.Object"));
+            Value arg = new JimpleLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
             ret.add(new JAssignStmt(arg, arrayRef));
             for (String constructorSignature : constructorSignatures) {
                 SootMethod constructor = PTAScene.v().getMethod(constructorSignature);
@@ -144,7 +145,7 @@ public class TamiflexModel extends ReflectionModel {
             Value arg = null;
             if (args.getType() instanceof ArrayType) {
                 ArrayRef arrayRef = new JArrayRef(args, IntConstant.v(0));
-                arg = new JimpleLocal("intermediate/" + arrayRef, RefType.v("java.lang.Object"));
+                arg = new JimpleLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
                 ret.add(new JAssignStmt(arg, arrayRef));
             }
 
@@ -221,7 +222,7 @@ public class TamiflexModel extends ReflectionModel {
                     assert !(base instanceof NullConstant);
                     fieldRef = new JInstanceFieldRef(base, field.makeRef());
                 }
-                if (fieldRef.getType() instanceof RefLikeType) {
+                if (fieldRef.getType() instanceof ReferenceType) {
                     Stmt stmt = new JAssignStmt(lvalue, fieldRef);
                     ret.add(stmt);
                 }
@@ -257,8 +258,8 @@ public class TamiflexModel extends ReflectionModel {
             Value arrayRef = null;
             if (base.getType() instanceof ArrayType) {
                 arrayRef = new JArrayRef(base, IntConstant.v(0));
-            } else if (base.getType() == RefType.v("java.lang.Object")) {
-                Local local = new JimpleLocal("intermediate/" + base, ArrayType.v(RefType.v("java.lang.Object"), 1));
+            } else if (base.getType() == PTAUtils.getClassType("java.lang.Object")) {
+                Local local = new JimpleLocal("intermediate/" + base, new ArrayType(PTAUtils.getClassType("java.lang.Object"), 1));
                 ret.add(new JAssignStmt(local, base));
                 arrayRef = new JArrayRef(local, IntConstant.v(0));
             }

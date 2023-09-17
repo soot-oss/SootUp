@@ -21,7 +21,6 @@ package qilin.core.pag;
 import qilin.util.DataFactory;
 import soot.AnySubType;
 import soot.Context;
-import soot.RefLikeType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 

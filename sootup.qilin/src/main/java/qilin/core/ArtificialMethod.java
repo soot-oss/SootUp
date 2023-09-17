@@ -18,7 +18,6 @@
 
 package qilin.core;
 
-import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.ParameterRef;
 import soot.jimple.ThisRef;
@@ -27,6 +26,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
@@ -84,7 +84,7 @@ public abstract class ArtificialMethod {
 
     protected Value getNewArray(ClassType type) {
         Value newExpr = new JNewArrayExpr(type, IntConstant.v(1));
-        Value local = getNextLocal(ArrayType.v(type, 1));
+        Value local = getNextLocal(new ArrayType(type, 1));
         addAssign(local, newExpr);
         return local;
     }

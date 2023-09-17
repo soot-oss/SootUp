@@ -35,6 +35,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
 /**
@@ -106,14 +107,14 @@ public class MethodNodeFactory {
         int numArgs = ie.getArgCount();
         for (int i = 0; i < numArgs; i++) {
             Value arg = ie.getArg(i);
-            if (!(arg.getType() instanceof RefLikeType) || arg instanceof NullConstant) {
+            if (!(arg.getType() instanceof ReferenceType) || arg instanceof NullConstant) {
                 continue;
             }
             getNode(arg);
         }
         if (s instanceof AssignStmt) {
             Value l = ((AssignStmt) s).getLeftOp();
-            if ((l.getType() instanceof RefLikeType)) {
+            if ((l.getType() instanceof ReferenceType)) {
                 getNode(l);
             }
         }
@@ -140,15 +141,15 @@ public class MethodNodeFactory {
                     resolveClinit((StaticFieldRef) r);
                 }
 
-                if (!(l.getType() instanceof RefLikeType))
+                if (!(l.getType() instanceof ReferenceType))
                     return;
                 // check for improper casts, with mal-formed code we might get
                 // l = (refliketype)int_type, if so just return
-                if (r instanceof CastExpr && (!(((CastExpr) r).getOp().getType() instanceof RefLikeType))) {
+                if (r instanceof CastExpr && (!(((CastExpr) r).getOp().getType() instanceof ReferenceType))) {
                     return;
                 }
 
-                if (!(r.getType() instanceof RefLikeType))
+                if (!(r.getType() instanceof ReferenceType))
                     throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
                             + " in method " + method.getSignature());
                 Node dest = getNode(l);
@@ -157,14 +158,14 @@ public class MethodNodeFactory {
             }
 
             public void caseReturnStmt(ReturnStmt rs) {
-                if (!(rs.getOp().getType() instanceof RefLikeType))
+                if (!(rs.getOp().getType() instanceof ReferenceType))
                     return;
                 Node retNode = getNode(rs.getOp());
                 mpag.addInternalEdge(retNode, caseRet());
             }
 
             public void caseIdentityStmt(IdentityStmt is) {
-                if (!(is.getLeftOp().getType() instanceof RefLikeType)) {
+                if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
                     return;
                 }
                 Node dest = getNode(is.getLeftOp());
