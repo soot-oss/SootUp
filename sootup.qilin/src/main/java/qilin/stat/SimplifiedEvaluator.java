@@ -33,6 +33,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -91,9 +92,9 @@ public class SimplifiedEvaluator implements IEvaluator {
                             totalPolyCalls++;
                         }
                     }
-                } else if (st instanceof AssignStmt) {
-                    Value rhs = ((AssignStmt) st).getRightOp();
-                    Value lhs = ((AssignStmt) st).getLeftOp();
+                } else if (st instanceof JAssignStmt assignStmt) {
+                    Value rhs = assignStmt.getRightOp();
+                    Value lhs = assignStmt.getLeftOp();
                     if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
                         final Type targetType = ((JCastExpr) rhs).getCastType();
                         Value v = ((JCastExpr) rhs).getOp();

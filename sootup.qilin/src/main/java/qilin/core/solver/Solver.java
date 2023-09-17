@@ -41,6 +41,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -169,8 +170,8 @@ public class Solver extends Propagator {
             if (stmt.containsInvokeExpr()) {
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, sm);
             } else {
-                assert stmt instanceof ThrowStmt;
-                ThrowStmt ts = (ThrowStmt) stmt;
+                assert stmt instanceof JThrowStmt;
+                JThrowStmt ts = (JThrowStmt) stmt;
                 src = nodeFactory.getNode(ts.getOp());
             }
             VarNode throwNode = (VarNode) pta.parameterize(src, m.context());

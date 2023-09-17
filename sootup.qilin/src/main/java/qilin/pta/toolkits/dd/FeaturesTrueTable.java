@@ -19,7 +19,21 @@
 package qilin.pta.toolkits.dd;
 
 import qilin.util.PTAUtils;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.JNopStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.javabytecode.stmt.JBreakpointStmt;
+import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JRetStmt;
+import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
@@ -43,35 +57,35 @@ public class FeaturesTrueTable {
         this.features[10] = sig.contains("init");
         Body body = PTAUtils.getMethodBody(sm);
         for (Stmt unit : body.getStmts()) {
-            if (unit instanceof AssignStmt) {
+            if (unit instanceof JAssignStmt) {
                 this.features[11] = true;
-            } else if (unit instanceof IdentityStmt) {
+            } else if (unit instanceof JIdentityStmt) {
                 this.features[12] = true;
-            } else if (unit instanceof InvokeStmt) {
+            } else if (unit instanceof JInvokeStmt) {
                 this.features[13] = true;
-            } else if (unit instanceof ReturnStmt) {
+            } else if (unit instanceof JReturnStmt) {
                 this.features[14] = true;
-            } else if (unit instanceof ThrowStmt) {
+            } else if (unit instanceof JThrowStmt) {
                 this.features[15] = true;
-            } else if (unit instanceof BreakpointStmt) {
+            } else if (unit instanceof JBreakpointStmt) {
                 this.features[16] = true;
-            } else if (unit instanceof EnterMonitorStmt) {
+            } else if (unit instanceof JEnterMonitorStmt) {
                 this.features[17] = true;
-            } else if (unit instanceof ExitMonitorStmt) {
+            } else if (unit instanceof JExitMonitorStmt) {
                 this.features[18] = true;
-            } else if (unit instanceof GotoStmt) {
+            } else if (unit instanceof JGotoStmt) {
                 this.features[19] = true;
-            } else if (unit instanceof IfStmt) {
+            } else if (unit instanceof JIfStmt) {
                 this.features[20] = true;
-            } else if (unit instanceof LookupSwitchStmt) {
+            } else if (unit instanceof JSwitchStmt) {
                 this.features[21] = true;
-            } else if (unit instanceof NopStmt) {
+            } else if (unit instanceof JNopStmt) {
                 this.features[22] = true;
-            } else if (unit instanceof RetStmt) {
+            } else if (unit instanceof JRetStmt) {
                 this.features[23] = true;
-            } else if (unit instanceof ReturnVoidStmt) {
+            } else if (unit instanceof JReturnVoidStmt) {
                 this.features[24] = true;
-            } else if (unit instanceof TableSwitchStmt) {
+            } else if (unit instanceof JSwitchStmt) {
                 this.features[25] = true;
             }
         }

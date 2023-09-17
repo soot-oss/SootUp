@@ -11,6 +11,7 @@ import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -83,8 +84,8 @@ public class XPAG {
                 args[i] = arg;
             }
             LocalVarNode retDest = null;
-            if (s instanceof AssignStmt) {
-                Value dest = ((AssignStmt) s).getLeftOp();
+            if (s instanceof JAssignStmt) {
+                Value dest = ((JAssignStmt) s).getLeftOp();
                 if (dest.getType() instanceof ReferenceType) {
                     retDest = pag.findLocalVarNode(dest);
                 }
@@ -148,8 +149,8 @@ public class XPAG {
             args[i] = arg;
         }
         LocalVarNode retDest = null;
-        if (invokeStmt instanceof AssignStmt) {
-            Value dest = ((AssignStmt) invokeStmt).getLeftOp();
+        if (invokeStmt instanceof JAssignStmt) {
+            Value dest = ((JAssignStmt) invokeStmt).getLeftOp();
             if (dest.getType() instanceof ReferenceType) {
                 retDest = pag.findLocalVarNode(dest);
             }

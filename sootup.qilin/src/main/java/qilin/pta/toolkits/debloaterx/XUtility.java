@@ -195,7 +195,7 @@ public class XUtility {
     }
 
     private void buildHeapFieldsMapping() {
-        pta.getNakedReachableMethods().stream().filter(m -> !m.isPhantom()).forEach(this::buildHeapFieldsMappingIn);
+        pta.getNakedReachableMethods().stream().filter(SootMethod::isConcrete).forEach(this::buildHeapFieldsMappingIn);
     }
 
     /* records objects (together with their types) and their invoked methods */
@@ -205,7 +205,7 @@ public class XUtility {
         Set<VirtualCallSite> vcallsites = new HashSet<>();
         for (Edge edge : callgraph) {
             SootMethod tgtM = edge.tgt();
-            if (tgtM.isStatic() || tgtM.isPhantom()) {
+            if (tgtM.isStatic() || !tgtM.isConcrete()) {
                 continue;
             }
             final Stmt s = edge.srcStmt();

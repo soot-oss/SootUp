@@ -31,18 +31,19 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.jimple.internal.JAssignStmt;
 import soot.jimple.internal.JimpleLocal;
 import soot.util.ArrayNumberer;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootField;
@@ -570,7 +571,7 @@ public class PAG {
                         if (srcArr.getType() == objType) {
                             Local localSrc = new JimpleLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
                             body.getLocals().add(localSrc);
-                            newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localSrc, srcArr));
+                            newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localSrc, srcArr, StmtPositionInfo.createNoStmtPositionInfo()));
                             srcArr = localSrc;
                         }
                         Value dstArr = sie.getArg(2);
@@ -580,15 +581,15 @@ public class PAG {
                         if (dstArr.getType() == objType) {
                             Local localDst = new JimpleLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
                             body.getLocals().add(localDst);
-                            newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localDst, dstArr));
+                            newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localDst, dstArr,StmtPositionInfo.createNoStmtPositionInfo()));
                             dstArr = localDst;
                         }
                         Value src = new JArrayRef(srcArr, IntConstant.v(0));
                         Value dst = new JArrayRef(dstArr, IntConstant.v(0));
                         Local local = new JimpleLocal("nativeArrayCopy" + body.getLocalCount(), PTAUtils.getClassType("java.lang.Object"));
                         body.getLocals().add(local);
-                        newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt(local, src));
-                        newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt(dst, local));
+                        newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
+                        newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
                     }
                 }
             }

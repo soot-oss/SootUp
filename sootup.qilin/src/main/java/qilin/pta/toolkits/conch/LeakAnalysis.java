@@ -183,7 +183,7 @@ public class LeakAnalysis extends AbstractPAG {
                         Edge edge = it.next();
                         SootMethod srcMethod = edge.src();
                         MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-                        Stmt invokeStmt = (Stmt) edge.srcUnit();
+                        Stmt invokeStmt = edge.srcUnit();
                         VarNode ai = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pi);
                         VarNode r = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, retOrThrow);
                         if (r != null && ai != null) {

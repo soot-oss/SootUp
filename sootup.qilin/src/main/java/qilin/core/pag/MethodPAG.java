@@ -24,11 +24,11 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
 
 import soot.jimple.Jimple;
-import soot.jimple.ThrowStmt;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -125,12 +125,12 @@ public class MethodPAG {
                     return;
                 }
                 inTraps.add(unit);
-                Stmt stmt = (Stmt) unit;
+                Stmt stmt = unit;
                 Node src = null;
                 if (stmt.containsInvokeExpr()) {
                     // note, method.getExceptions() does not return implicit exceptions.
                     src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-                } else if (stmt instanceof ThrowStmt ts) {
+                } else if (stmt instanceof JThrowStmt ts) {
                     src = nodeFactory.getNode(ts.getOp());
                 }
                 if (src != null) {
@@ -139,15 +139,14 @@ public class MethodPAG {
             });
         });
 
-        for (Stmt unit : body.getStmts()) {
-            if (inTraps.contains(unit)) {
+        for (Stmt stmt : body.getStmts()) {
+            if (inTraps.contains(stmt)) {
                 continue;
             }
-            Stmt stmt = unit;
             Node src = null;
             if (stmt.containsInvokeExpr()) {
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-            } else if (stmt instanceof ThrowStmt ts) {
+            } else if (stmt instanceof JThrowStmt ts) {
                 src = nodeFactory.getNode(ts.getOp());
             }
             if (src != null) {

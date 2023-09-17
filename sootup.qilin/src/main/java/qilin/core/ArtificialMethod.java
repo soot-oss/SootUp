@@ -18,12 +18,22 @@
 
 package qilin.core;
 
-import soot.jimple.Jimple;
-import soot.jimple.ParameterRef;
-import soot.jimple.ThisRef;
-import soot.jimple.internal.*;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
+import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
@@ -71,13 +81,13 @@ public abstract class ArtificialMethod {
         return paraLocal;
     }
 
-    private void addIdentity(Value lValue, Value rValue) {
-        body.getUnits().add(new JIdentityStmt(lValue, rValue));
+    private void addIdentity(Local lValue, IdentityRef rValue) {
+        body.getUnits().add(new JIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
-    protected Value getNew(ClassType type) {
+    protected Local getNew(ClassType type) {
         Value newExpr = new JNewExpr(type);
-        Value local = getNextLocal(type);
+        Local local = getNextLocal(type);
         addAssign(local, newExpr);
         return local;
     }
@@ -89,18 +99,18 @@ public abstract class ArtificialMethod {
         return local;
     }
 
-    protected Value getNextLocal(Type type) {
+    protected Local getNextLocal(Type type) {
         return getLocal(type, localStart++);
     }
 
-    private Value getLocal(Type type, int index) {
+    private Local getLocal(Type type, int index) {
         Local local = new JimpleLocal("r" + index, type);
         body.getLocals().add(local);
         return local;
     }
 
-    protected void addReturn(Value ret) {
-        body.getUnits().add(new JReturnStmt(ret));
+    protected void addReturn(Immediate ret) {
+        body.getUnits().add(new JReturnStmt(ret, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
     protected Value getStaticFieldRef(String className, String name) {
@@ -114,12 +124,12 @@ public abstract class ArtificialMethod {
     /**
      * add an instance invocation receiver.sig(args)
      */
-    protected void addInvoke(Value receiver, String sig, Value... args) {
+    protected void addInvoke(Local receiver, String sig, Immediate ... args) {
         SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
-        List<Value> argsL = Arrays.asList(args);
-        Value invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
+        List<Immediate> argsL = Arrays.asList(args);
+        AbstractInvokeExpr invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
                 : new JVirtualInvokeExpr(receiver, methodRef, argsL);
-        body.getUnits().add(new JInvokeStmt(invoke));
+        body.getUnits().add(new JInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
     /**
@@ -127,9 +137,9 @@ public abstract class ArtificialMethod {
      *
      * @return rx
      */
-    protected Value getInvoke(Value receiver, String sig, Value... args) {
+    protected Value getInvoke(Local receiver, String sig, Immediate... args) {
         SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
-        List<Value> argsL = Arrays.asList(args);
+        List<Immediate> argsL = Arrays.asList(args);
         Value invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
                 : new JVirtualInvokeExpr(receiver, methodRef, argsL);
         Value rx = getNextLocal(methodRef.getReturnType());
@@ -140,9 +150,9 @@ public abstract class ArtificialMethod {
     /**
      * add a static invocation sig(args)
      */
-    protected void addInvoke(String sig, Value... args) {
+    protected void addInvoke(String sig, Immediate... args) {
         SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
-        List<Value> argsL = Arrays.asList(args);
+        List<Immediate> argsL = Arrays.asList(args);
         body.getUnits().add(new JInvokeStmt(new JStaticInvokeExpr(methodRef, argsL)));
     }
 
@@ -151,15 +161,15 @@ public abstract class ArtificialMethod {
      *
      * @return rx
      */
-    protected Value getInvoke(String sig, Value... args) {
+    protected Value getInvoke(String sig, Immediate... args) {
         SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
-        List<Value> argsL = Arrays.asList(args);
+        List<Immediate> argsL = Arrays.asList(args);
         Value rx = getNextLocal(methodRef.getReturnType());
         addAssign(rx, new JStaticInvokeExpr(methodRef, argsL));
         return rx;
     }
 
     protected void addAssign(Value lValue, Value rValue) {
-        body.getUnits().add(new JAssignStmt(lValue, rValue));
+        body.getUnits().add(new JAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 }

@@ -41,6 +41,10 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.ref.JThisRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.JReturnStmt;
+import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Modifier;
 import sootup.core.model.SootClass;
@@ -124,8 +128,8 @@ public class MethodNodeFactory {
             }
             getNode(arg);
         }
-        if (s instanceof AssignStmt) {
-            Value l = ((AssignStmt) s).getLeftOp();
+        if (s instanceof JAssignStmt) {
+            Value l = ((JAssignStmt) s).getLeftOp();
             if ((l.getType() instanceof ReferenceType)) {
                 getNode(l);
             }
@@ -144,7 +148,7 @@ public class MethodNodeFactory {
      */
     private void handleIntraStmt(Stmt s) {
         s.apply(new AbstractStmtSwitch<>() {
-            public void caseAssignStmt(AssignStmt as) {
+            public void caseAssignStmt(JAssignStmt as) {
                 Value l = as.getLeftOp();
                 Value r = as.getRightOp();
                 if (l instanceof JStaticFieldRef) {
@@ -169,14 +173,14 @@ public class MethodNodeFactory {
                 mpag.addInternalEdge(src, dest);
             }
 
-            public void caseReturnStmt(ReturnStmt rs) {
+            public void caseReturnStmt(JReturnStmt rs) {
                 if (!(rs.getOp().getType() instanceof ReferenceType))
                     return;
                 Node retNode = getNode(rs.getOp());
                 mpag.addInternalEdge(retNode, caseRet());
             }
 
-            public void caseIdentityStmt(IdentityStmt is) {
+            public void caseIdentityStmt(JIdentityStmt is) {
                 if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
                     return;
                 }
@@ -185,7 +189,7 @@ public class MethodNodeFactory {
                 mpag.addInternalEdge(src, dest);
             }
 
-            public void caseThrowStmt(ThrowStmt ts) {
+            public void caseThrowStmt(JThrowStmt ts) {
                 if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
                     mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
                 }

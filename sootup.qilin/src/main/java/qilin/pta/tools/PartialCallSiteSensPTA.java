@@ -34,6 +34,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -157,17 +158,15 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
                     nodes.add(arg);
                 }
 
-                if (s instanceof AssignStmt) {
-                    Value dest = ((AssignStmt) s).getLeftOp();
+                if (s instanceof JAssignStmt) {
+                    Value dest = ((JAssignStmt) s).getLeftOp();
                     if (dest.getType() instanceof ReferenceType) {
                         nodes.add(dest);
                     }
                 }
                 if (ie instanceof AbstractInstanceInvokeExpr iie) {
-                    Value base = iie.getBase();
-                    if (base instanceof Local) {
-                        nodes.add(base);
-                    }
+                    Local base = iie.getBase();
+                    nodes.add(base);
                 }
             }
             for (Object o : nodes) {

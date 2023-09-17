@@ -30,6 +30,8 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -63,7 +65,7 @@ public class CtxTunnelingFeaturesTrueTable {
         this.f[15] = body.getLocalCount() > 0;
         int heapAllocCnt = 0;
         for (Stmt unit : body.getStmts()) {
-            if (unit instanceof AssignStmt assignStmt) {
+            if (unit instanceof JAssignStmt assignStmt) {
                 Value left = assignStmt.getLeftOp();
                 if (left instanceof Local) {
                     Value right = assignStmt.getRightOp();
@@ -83,7 +85,7 @@ public class CtxTunnelingFeaturesTrueTable {
                 } else if (left instanceof JInstanceFieldRef) {
                     this.f[16] = true;
                 }
-            } else if (unit instanceof InvokeStmt invokeStmt) {
+            } else if (unit instanceof JInvokeStmt invokeStmt) {
                 AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
                 if (expr instanceof JStaticInvokeExpr) {
                     this.f[17] = true;

@@ -24,11 +24,11 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
-import soot.jimple.InvokeStmt;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
@@ -69,7 +69,7 @@ public class Conch extends AbstractConch {
         MethodPAG cmpag = pag.getMethodPAG(containingMethod);
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
         for (Stmt unit : cmpag.getInvokeStmts()) {
-            if (unit instanceof InvokeStmt invokeStmt) {
+            if (unit instanceof JInvokeStmt invokeStmt) {
                 AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
                 if (expr instanceof JSpecialInvokeExpr iie) {
                     Value base = iie.getBase();
@@ -90,7 +90,7 @@ public class Conch extends AbstractConch {
         MethodNodeFactory nodeFactory = cmpag.nodeFactory();
         VarNode thisNode = nodeFactory.caseThis();
         for (Stmt unit : cmpag.getInvokeStmts()) {
-            if (unit instanceof InvokeStmt invokeStmt) {
+            if (unit instanceof JInvokeStmt invokeStmt) {
                 AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
                 if (expr instanceof JSpecialInvokeExpr iie) {
                     Value base = iie.getBase();

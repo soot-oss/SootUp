@@ -39,6 +39,7 @@ import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -232,8 +233,8 @@ public class CallGraphBuilder {
             pag.addEdge(argNode, parm);
         }
         // add normal return edge
-        if (s instanceof AssignStmt) {
-            Value dest = ((AssignStmt) s).getLeftOp();
+        if (s instanceof JAssignStmt) {
+            Value dest = ((JAssignStmt) s).getLeftOp();
 
             if (dest.getType() instanceof ReferenceType) {
                 Node destNode = srcnf.getNode(dest);

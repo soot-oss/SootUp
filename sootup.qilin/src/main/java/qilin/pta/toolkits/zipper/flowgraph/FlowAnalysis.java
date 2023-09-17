@@ -8,10 +8,10 @@ import qilin.pta.toolkits.zipper.analysis.PotentialContextElement;
 import qilin.util.ANSIColor;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
 import qilin.util.graph.Reachability;
-import soot.jimple.AssignStmt;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
@@ -150,7 +150,7 @@ public class FlowAnalysis {
                                 if (!(invo instanceof AbstractInstanceInvokeExpr)) {
                                     return;
                                 }
-                                if (callsiteStmt instanceof AssignStmt assignStmt) {
+                                if (callsiteStmt instanceof JAssignStmt assignStmt) {
                                     Value lv = assignStmt.getLeftOp();
                                     if (!(lv.getType() instanceof ReferenceType)) {
                                         return;
