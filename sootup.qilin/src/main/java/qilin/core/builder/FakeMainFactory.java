@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.ibm.wala.cast.java.types.JavaPrimitiveTypeMap.VoidType;
-
 public class FakeMainFactory extends ArtificialMethod {
     public static FakeMainFactory instance;
 
@@ -46,7 +44,7 @@ public class FakeMainFactory extends ArtificialMethod {
         this.localStart = 0;
         this.fakeClass = new SootClass("FakeMain");
         this.fakeClass.setResolvingLevel(SootClass.BODIES);
-        this.method = new SootMethod("fakeMain", null, VoidType.v());
+        this.method = new SootMethod("fakeMain", null, VoidType);
         this.method.setModifiers(Modifier.STATIC);
         SootField currentThread = new SootField("currentThread", RefType.v("java.lang.Thread"), Modifier.STATIC);
         SootField globalThrow = new SootField("globalThrow", RefType.v("java.lang.Exception"), Modifier.STATIC);
@@ -81,12 +79,12 @@ public class FakeMainFactory extends ArtificialMethod {
     }
 
     public SootMethod getFakeMain() {
-        if (body == null) {
+        if (bodyBuilder == null) {
             synchronized (this) {
-                if (body == null) {
+                if (bodyBuilder == null) {
                     this.method.setSource((m, phaseName) -> new JimpleBody(this.method));
-                    this.body = PTAUtils.getMethodBody(method);
                     makeFakeMain();
+                    this.body = PTAUtils.getMethodBody(method);
                 }
             }
         }
@@ -105,13 +103,13 @@ public class FakeMainFactory extends ArtificialMethod {
         implicitCallEdges = 0;
         for (SootMethod entry : getEntryPoints()) {
             if (entry.isStatic()) {
-                if (entry.getSubSignature().equals("void main(java.lang.String[])")) {
+                if (entry.getSignature().getSubSignature().toString().equals("void main(java.lang.String[])")) {
                     Value mockStr = getNew(PTAUtils.getClassType("java.lang.String"));
                     Immediate strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
                     addAssign(getArrayRef(strArray), mockStr);
                     addInvoke(entry.getSignature().toString(), strArray);
                     implicitCallEdges++;
-                } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY || !entry.isStaticInitializer()) {
+                } else if (CoreConfig.v().getPtaConfig().clinitMode != CoreConfig.ClinitMode.ONFLY || !PTAUtils.isStaticInitializer(entry)) {
                     // in the on fly mode, we won't add a call directly for <clinit> methods.
                     addInvoke(entry.getSignature().toString());
                     implicitCallEdges++;

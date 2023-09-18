@@ -102,6 +102,7 @@ public class TamiflexModel extends ReflectionModel {
             Collection<String> classNames = classNewInstances.get(s);
             for (String clsName : classNames) {
                 SootClass cls = PTAScene.v().getSootClass(clsName);
+
                 if (cls.declaresMethod(PTAScene.v().getSubSigNumberer().findOrAdd("void <init>()"))) {
                     JNewExpr newExpr = new JNewExpr(cls.getType());
                     ret.add(new JAssignStmt<>(lvalue, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));

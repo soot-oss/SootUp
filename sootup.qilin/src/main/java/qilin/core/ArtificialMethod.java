@@ -30,10 +30,7 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.jimple.common.stmt.JReturnStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -50,7 +47,7 @@ import java.util.List;
 
 public abstract class ArtificialMethod {
     protected SootMethod method;
-    protected Body body;
+    protected Body.BodyBuilder bodyBuilder;
     protected Local thisLocal;
     protected Local[] paraLocals;
     protected int paraStart;
@@ -87,7 +84,9 @@ public abstract class ArtificialMethod {
     }
 
     private void addIdentity(Local lValue, IdentityRef rValue) {
-        body.getUnits().add(new JIdentityStmt<>(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+        Stmt startingStmt = bodyBuilder.getStmtGraph().getStartingStmt();
+        Stmt identityStmt = Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+        bodyBuilder.addFlow(startingStmt, identityStmt);
     }
 
     protected Local getNew(ClassType type) {
@@ -110,12 +109,14 @@ public abstract class ArtificialMethod {
 
     private Local getLocal(Type type, int index) {
         Local local = Jimple.newLocal("r" + index, type);
-        body.getLocals().add(local);
+        bodyBuilder.addLocal(local);
         return local;
     }
 
     protected void addReturn(Immediate ret) {
-        body.getUnits().add(new JReturnStmt(ret, StmtPositionInfo.createNoStmtPositionInfo()));
+        Stmt startingStmt = bodyBuilder.getStmtGraph().getStartingStmt();
+        Stmt stmt = Jimple.newReturnStmt(ret, StmtPositionInfo.createNoStmtPositionInfo());
+        bodyBuilder.addFlow(startingStmt, stmt);
     }
 
     protected Value getStaticFieldRef(String className, String name) {
@@ -139,7 +140,9 @@ public abstract class ArtificialMethod {
         List<Immediate> argsL = Arrays.asList(args);
         AbstractInvokeExpr invoke = clazz.isInterface() ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
                 : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
-        body.getUnits().add(new JInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo()));
+        Stmt startingStmt = bodyBuilder.getStmtGraph().getStartingStmt();
+        Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
+        bodyBuilder.addFlow(startingStmt, stmt);
     }
 
     /**
@@ -165,7 +168,9 @@ public abstract class ArtificialMethod {
     protected void addInvoke(String sig, Immediate... args) {
         MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
         List<Immediate> argsL = Arrays.asList(args);
-        body.getUnits().add(new JInvokeStmt(Jimple.newStaticInvokeExpr(methodSig, argsL), StmtPositionInfo.createNoStmtPositionInfo()));
+        Stmt startingStmt = bodyBuilder.getStmtGraph().getStartingStmt();
+        Stmt stmt = Jimple.newInvokeStmt(Jimple.newStaticInvokeExpr(methodSig, argsL), StmtPositionInfo.createNoStmtPositionInfo());
+        bodyBuilder.addFlow(startingStmt, stmt);
     }
 
     /**
@@ -182,6 +187,8 @@ public abstract class ArtificialMethod {
     }
 
     protected void addAssign(Value lValue, Value rValue) {
-        body.getUnits().add(new JAssignStmt<>(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+        Stmt startingStmt = bodyBuilder.getStmtGraph().getStartingStmt();
+        Stmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+        bodyBuilder.addFlow(startingStmt, stmt);
     }
 }
