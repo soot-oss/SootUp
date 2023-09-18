@@ -20,11 +20,11 @@ package qilin.core;
 
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.util.*;
 import soot.util.queue.ChunkedQueue;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
@@ -42,7 +42,7 @@ import java.util.Set;
  */
 public class VirtualCalls {
     private static volatile VirtualCalls instance = null;
-    private final Map<Type, Map<NumberedString, SootMethod>> typeToVtbl = DataFactory.createMap(Scene.v().getTypeNumberer().size());
+    private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl = DataFactory.createMap(Scene.v().getTypeNumberer().size());
     protected Map<Type, Set<Type>> baseToSubTypes = DataFactory.createMap();
 
     private VirtualCalls() {
@@ -63,11 +63,11 @@ public class VirtualCalls {
         instance = null;
     }
 
-    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, NumberedString subSig, SootMethod container) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container) {
         return resolveSpecial(iie, subSig, container, false);
     }
 
-    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, NumberedString subSig, SootMethod container, boolean appOnly) {
+    public SootMethod resolveSpecial(JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container, boolean appOnly) {
         SootMethod target = iie.getMethod();
         /* cf. JVM spec, invokespecial instruction */
         if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClassType(),
@@ -82,12 +82,12 @@ public class VirtualCalls {
         }
     }
 
-    public SootMethod resolveNonSpecial(ClassType t, NumberedString subSig) {
+    public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig) {
         return resolveNonSpecial(t, subSig, false);
     }
 
-    public SootMethod resolveNonSpecial(ClassType t, NumberedString subSig, boolean appOnly) {
-        Map<NumberedString, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
+    public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig, boolean appOnly) {
+        Map<MethodSubSignature, SootMethod> vtbl = typeToVtbl.computeIfAbsent(t, k -> DataFactory.createMap(8));
         SootMethod ret = vtbl.get(subSig);
         if (ret != null) {
             return ret;
@@ -115,17 +115,17 @@ public class VirtualCalls {
         return ret;
     }
 
-    public void resolve(Type t, Type declaredType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets) {
         resolve(t, declaredType, null, subSig, container, targets);
     }
 
-    public void resolve(Type t, Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets) {
         resolve(t, declaredType, sigType, subSig, container, targets, false);
     }
 
-    public void resolve(Type t, Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
+    public void resolve(Type t, Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
                         ChunkedQueue<SootMethod> targets, boolean appOnly) {
         if (declaredType instanceof ArrayType) {
             declaredType = PTAUtils.getClassType("java.lang.Object");
@@ -169,7 +169,7 @@ public class VirtualCalls {
         }
     }
 
-    protected void resolveAnySubType(Type declaredType, Type sigType, NumberedString subSig, SootMethod container,
+    protected void resolveAnySubType(Type declaredType, Type sigType, MethodSubSignature subSig, SootMethod container,
                                      ChunkedQueue<SootMethod> targets, boolean appOnly, ClassType base) {
         {
             Set<Type> subTypes = baseToSubTypes.get(base);

@@ -20,6 +20,7 @@ package qilin.stat;
 
 import qilin.CoreConfig;
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.pag.AllocNode;
 import qilin.util.PTAUtils;
@@ -33,9 +34,11 @@ import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 import java.util.*;
 
@@ -73,7 +76,9 @@ public class TypeClientStat implements AbstractStat {
         }
 
         for (SootMethod sm : reachableMethods) {
-            boolean app = sm.getDeclaringClass().isApplicationClass();
+            View view = PTAScene.v().getView();
+            SootClass sc = (SootClass) view.getClass(sm.getDeclaringClassType()).get();
+            boolean app = sc.isApplicationClass();
 
             // All the statements in the method
             for (Stmt st : PTAUtils.getMethodBody(sm).getStmts()) {

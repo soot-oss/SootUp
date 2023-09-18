@@ -33,7 +33,6 @@ import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.jimple.toolkits.callgraph.Edge;
-import soot.options.Options;
 import soot.util.NumberedString;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
@@ -44,6 +43,8 @@ import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 
 import java.util.*;
 
@@ -136,25 +137,26 @@ public class Solver extends Propagator {
                 if (ie instanceof AbstractInstanceInvokeExpr iie) {
                     Local receiver = iie.getBase();
                     VarNode recNode = cgb.getReceiverVarNode(receiver, m);
-                    NumberedString subSig = iie.getMethodRef().getSubSignature();
+                    MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
                     VirtualCallSite virtualCallSite = new VirtualCallSite(recNode, s, m, iie, subSig, Edge.ieToKind(iie));
                     if (cgb.recordVirtualCallSite(recNode, virtualCallSite)) {
                         virtualCallSiteQueue.add(virtualCallSite);
                     }
                 } else {
-                    SootMethod tgt = ie.getMethod();
-                    if (tgt != null) { // static invoke or dynamic invoke
+                    MethodSignature tgtSig = ie.getMethodSignature();
+                    Optional<SootMethod> otgt = PTAScene.v().getView().getMethod(tgtSig);
+                    if (otgt.isPresent()) {
+                        // static invoke or dynamic invoke
                         VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
                         recNode = (VarNode) pta.parameterize(recNode, m.context());
                         if (ie instanceof JDynamicInvokeExpr) {
                             // !TODO dynamicInvoke is provided in JDK after Java 7.
                             // currently, PTA does not handle dynamicInvokeExpr.
                         } else {
-                            cgb.addStaticEdge(m, s, tgt, Edge.ieToKind(ie));
+                            cgb.addStaticEdge(m, s, otgt.get(), Edge.ieToKind(ie));
                         }
-                    } else if (!Options.v().ignore_resolution_errors()) {
-                        throw new InternalError("Unresolved target " + ie.getMethod()
-                                + ". Resolution error should have occured earlier.");
+                    } else {
+                        //
                     }
                 }
             }

@@ -165,7 +165,7 @@ public class CallGraphBuilder {
     public void injectCallEdge(Object heapOrType, MethodOrMethodContext callee, Kind kind) {
         Map<Object, Stmt> stmtMap = methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
         if (!stmtMap.containsKey(heapOrType)) {
-            AbstractInvokeExpr ie = new JStaticInvokeExpr(callee.method().makeRef(), Collections.emptyList());
+            AbstractInvokeExpr ie = new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
             JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.createNoStmtPositionInfo());
             stmtMap.put(heapOrType, stmt);
             handleCallEdge(new Edge(pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()), stmtMap.get(heapOrType), callee, kind));

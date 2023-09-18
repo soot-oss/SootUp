@@ -31,14 +31,15 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.Context;
 import soot.MethodOrMethodContext;
-import soot.jimple.internal.JimpleLocal;
 import soot.util.ArrayNumberer;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -50,6 +51,7 @@ import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
+import sootup.java.core.language.JavaJimple;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -317,7 +319,7 @@ public class PAG {
     public AllocNode makeStringConstantNode(StringConstant sc) {
         StringConstant stringConstant = sc;
         if (!CoreConfig.v().getPtaConfig().stringConstants) {
-            stringConstant = StringConstant.v(PointsToAnalysis.STRING_NODE);
+            stringConstant = JavaJimple.getInstance().newStringConstant(PointsToAnalysis.STRING_NODE);
         }
         AllocNode ret = valToAllocNode.get(stringConstant);
         if (ret == null) {
@@ -560,8 +562,7 @@ public class PAG {
             if (s.containsInvokeExpr()) {
                 AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
                 if (invokeExpr instanceof JStaticInvokeExpr sie) {
-                    SootMethod sm = sie.getMethod();
-                    String sig = sm.getSignature().toString();
+                    String sig = sie.getMethodSignature().toString();
                     if (sig.equals("<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
                         Value srcArr = sie.getArg(0);
                         if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
@@ -584,8 +585,8 @@ public class PAG {
                             newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt(localDst, dstArr,StmtPositionInfo.createNoStmtPositionInfo()));
                             dstArr = localDst;
                         }
-                        Value src = new JArrayRef(srcArr, IntConstant.v(0));
-                        Value dst = new JArrayRef(dstArr, IntConstant.v(0));
+                        Value src = new JArrayRef((Local) srcArr, IntConstant.getInstance(0));
+                        Value dst = new JArrayRef((Local) dstArr, IntConstant.getInstance(0));
                         Local local = new JimpleLocal("nativeArrayCopy" + body.getLocalCount(), PTAUtils.getClassType("java.lang.Object"));
                         body.getLocals().add(local);
                         newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt(local, src, StmtPositionInfo.createNoStmtPositionInfo()));

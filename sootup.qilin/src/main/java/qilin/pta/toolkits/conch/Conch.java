@@ -19,6 +19,7 @@
 package qilin.pta.toolkits.conch;
 
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
@@ -31,6 +32,8 @@ import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,8 +98,9 @@ public class Conch extends AbstractConch {
                 if (expr instanceof JSpecialInvokeExpr iie) {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
-                    SootMethod target = iie.getMethod();
-                    if (PTAUtils.mustAlias(pta, thisNode, baseNode) && target.isConstructor()) {
+                    MethodSignature targetSig = iie.getMethodSignature();
+                    SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(targetSig).get();
+                    if (PTAUtils.mustAlias(pta, thisNode, baseNode) && targetSig.getSubSignature().getName().equals("<init>")) {
                         return target;
                     }
                 }

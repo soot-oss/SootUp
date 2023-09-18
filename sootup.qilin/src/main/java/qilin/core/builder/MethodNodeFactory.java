@@ -24,9 +24,12 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -47,12 +50,16 @@ import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Modifier;
+import sootup.core.model.Position;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+
+import java.util.Collections;
 
 /**
  * @author Ondrej Lhotak
@@ -213,8 +220,9 @@ public class MethodNodeFactory {
 
     private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
         SootField sf = ifr.getField();
+        FieldSignature fieldSig = ifr.getFieldSignature();
         if (sf == null) {
-            sf = new SootField(ifr.getFieldRef().name(), ifr.getType(), Modifier.PUBLIC);
+            sf = new SootField(fieldSig, Collections.singleton(Modifier.PUBLIC), NoPositionInformation.getInstance());
             sf.setNumber(Scene.v().getFieldNumberer().size());
             Scene.v().getFieldNumberer().add(sf);
             System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
@@ -230,17 +238,17 @@ public class MethodNodeFactory {
         mpag.addInternalEdge(prevAn, prevVn); // new
         VarNode ret = prevVn;
         while (true) {
-            Type t = type.getElementType();
+            Type t = type.getArrayElementType();
             if (!(t instanceof ArrayType)) {
                 break;
             }
             type = (ArrayType) t;
             ++pos;
-            Value sizeVal;
+            Immediate sizeVal;
             if (pos < nmae.getSizeCount()) {
                 sizeVal = nmae.getSize(pos);
             } else {
-                sizeVal = IntConstant.v(1);
+                sizeVal = IntConstant.getInstance(1);
             }
             AllocNode an = pag.makeAllocNode(new JNewArrayExpr(type, sizeVal), type, method);
             VarNode vn = pag.makeLocalVarNode(an.getNewExpr(), an.getType(), method);
@@ -253,7 +261,7 @@ public class MethodNodeFactory {
 
     private VarNode caseCastExpr(JCastExpr ce) {
         Node opNode = getNode(ce.getOp());
-        VarNode castNode = pag.makeLocalVarNode(ce, ce.getCastType(), method);
+        VarNode castNode = pag.makeLocalVarNode(ce, ce.getType(), method);
         mpag.addInternalEdge(opNode, castNode);
         return castNode;
     }

@@ -52,7 +52,7 @@ public abstract class ReflectionModel {
 
     private Collection<Stmt> transform(Stmt s) {
         AbstractInvokeExpr ie = s.getInvokeExpr();
-        return switch (ie.getMethodRef().getSignature()) {
+        return switch (ie.getMethodSignature().toString()) {
             case sigForName, sigForName2 -> transformClassForName(s);
             case sigClassNewInstance -> transformClassNewInstance(s);
             case sigConstructorNewInstance -> transformContructorNewInstance(s);

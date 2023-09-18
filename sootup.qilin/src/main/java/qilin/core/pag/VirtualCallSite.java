@@ -23,6 +23,7 @@ import soot.MethodOrMethodContext;
 import soot.util.NumberedString;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.signatures.MethodSubSignature;
 
 import java.util.Objects;
 
@@ -35,11 +36,11 @@ public class VirtualCallSite extends CallSite {
     private final VarNode recNode;
     private final MethodOrMethodContext container;
     private final AbstractInstanceInvokeExpr iie;
-    private final NumberedString subSig;
+    private final MethodSubSignature subSig;
     private final Kind kind;
 
     public VirtualCallSite(VarNode recNode, Stmt stmt, MethodOrMethodContext container, AbstractInstanceInvokeExpr iie,
-                           NumberedString subSig, Kind kind) {
+                           MethodSubSignature subSig, Kind kind) {
         super(stmt);
         this.recNode = recNode;
         this.container = container;
@@ -60,7 +61,7 @@ public class VirtualCallSite extends CallSite {
         return iie;
     }
 
-    public NumberedString subSig() {
+    public MethodSubSignature subSig() {
         return subSig;
     }
 
