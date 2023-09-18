@@ -13,6 +13,7 @@ import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
@@ -156,7 +157,7 @@ public class IntraFlowAnalysis {
                 }
                 args[i] = arg;
             }
-            NumberedString subSig = iie.getMethodRef().getSubSignature();
+            MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
             VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, method, iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
             QueueReader<SootMethod> targets = PTAUtils.dispatch(type, virtualCallSite);
             while (targets.hasNext()) {

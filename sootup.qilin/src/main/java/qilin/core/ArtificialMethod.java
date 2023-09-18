@@ -18,18 +18,19 @@
 
 package qilin.core;
 
+import qilin.util.PTAUtils;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -37,10 +38,15 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +90,7 @@ public abstract class ArtificialMethod {
     }
 
     private void addIdentity(Local lValue, IdentityRef rValue) {
-        body.getUnits().add(new JIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+        body.getUnits().add(new JIdentityStmt<>(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
     protected Local getNew(ClassType type) {
@@ -95,7 +101,7 @@ public abstract class ArtificialMethod {
     }
 
     protected Immediate getNewArray(ClassType type) {
-        Value newExpr = new JNewArrayExpr(type, IntConstant.v(1));
+        Value newExpr = JavaJimple.getInstance().newNewArrayExpr(type, IntConstant.getInstance(1));
         Local local = getNextLocal(new ArrayType(type, 1));
         addAssign(local, newExpr);
         return local;
@@ -106,7 +112,7 @@ public abstract class ArtificialMethod {
     }
 
     private Local getLocal(Type type, int index) {
-        Local local = new JimpleLocal("r" + index, type);
+        Local local = Jimple.newLocal("r" + index, type);
         body.getLocals().add(local);
         return local;
     }
@@ -116,11 +122,14 @@ public abstract class ArtificialMethod {
     }
 
     protected Value getStaticFieldRef(String className, String name) {
-        return Jimple.v().newStaticFieldRef(RefType.v(className).getSootClass().getFieldByName(name).makeRef());
+        ClassType classType = PTAUtils.getClassType(className);
+        SootClass sc = (SootClass) PTAScene.v().getView().getClass(classType).get();
+        SootField field = (SootField) sc.getField(name).get();
+        return Jimple.newStaticFieldRef(field.getSignature());
     }
 
     protected Value getArrayRef(Value base) {
-        return new JArrayRef(base, IntConstant.v(0));
+        return JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
     }
 
     /**
@@ -172,6 +181,6 @@ public abstract class ArtificialMethod {
     }
 
     protected void addAssign(Value lValue, Value rValue) {
-        body.getUnits().add(new JAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
+        body.getUnits().add(new JAssignStmt<>(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 }

@@ -76,6 +76,12 @@ public final class PTAUtils {
         return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
     }
 
+    public static boolean isApplicationMethod(SootMethod sm) {
+        ClassType classType = sm.getDeclaringClassType();
+        SootClass sc = (SootClass) PTAScene.v().getView().getClass(classType).get();
+        return sc.isApplicationClass();
+    }
+
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();
         Set<SootMethod> workList = new HashSet<>();

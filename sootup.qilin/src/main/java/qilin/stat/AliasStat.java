@@ -26,6 +26,7 @@ import qilin.core.pag.Node;
 import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
+import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.Util;
 import soot.util.queue.QueueReader;
@@ -144,13 +145,13 @@ public class AliasStat implements AbstractStat {
 
     public void aliasesProcessing() {
         Collection<SootMethod> reachableMethods = pta.getNakedReachableMethods();
-        Pair<Integer, Integer> r1 = recordAndComputeIntraAliases(reachableMethods.stream().filter(m -> m.getDeclaringClass().isApplicationClass()).collect(Collectors.toSet()));
+        Pair<Integer, Integer> r1 = recordAndComputeIntraAliases(reachableMethods.stream().filter(PTAUtils::isApplicationMethod).collect(Collectors.toSet()));
         this.intraAlias_app = r1.getFirst();
         this.intraAlias_incstst_app = r1.getSecond();
         Pair<Integer, Integer> r2 = computeInterAliases();
         this.globalAlias_app = r2.getFirst();
         this.globalAlias_incstst_app = r2.getSecond();
-        Pair<Integer, Integer> r3 = recordAndComputeIntraAliases(reachableMethods.stream().filter(m -> !m.getDeclaringClass().isApplicationClass()).collect(Collectors.toSet()));
+        Pair<Integer, Integer> r3 = recordAndComputeIntraAliases(reachableMethods.stream().filter(m -> !PTAUtils.isApplicationMethod(m)).collect(Collectors.toSet()));
         this.intraAlias = this.intraAlias_app + r3.getFirst();
         this.intraAlias_incstst = this.intraAlias_incstst_app + r3.getSecond();
         Pair<Integer, Integer> r4 = computeInterAliases();

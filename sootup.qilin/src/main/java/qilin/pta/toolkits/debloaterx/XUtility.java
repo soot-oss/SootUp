@@ -8,7 +8,6 @@ import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
-import soot.util.NumberedString;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -16,6 +15,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -85,7 +85,7 @@ public class XUtility {
     /* Implemnting the rules for defining coarse types (Figure 6 in the paper) */
     public boolean isCoarseType(Type type) {
         if (type instanceof ArrayType at) {
-            type = at.getElementType();
+            type = at.getArrayElementType();
         }
         return isImpreciseType(type) || rawOrPolyTypes().contains(type);
     }
@@ -95,7 +95,7 @@ public class XUtility {
         for (AllocNode heap : pag.getAllocNodes()) {
             Type type = heap.getType();
             if (type instanceof ArrayType at) {
-                Type et = at.getElementType();
+                Type et = at.getArrayElementType();
                 if (isImpreciseType(et)) {
                     rawOrPolyTypes.add(et);
                 } else {
@@ -105,7 +105,7 @@ public class XUtility {
                 for (SparkField field : getFields(heap)) {
                     Type ft = field.getType();
                     if (ft instanceof ArrayType fat) {
-                        ft = fat.getElementType();
+                        ft = fat.getArrayElementType();
                     }
                     if (isImpreciseType(ft)) {
                         rawOrPolyTypes.add(ft);
@@ -212,7 +212,7 @@ public class XUtility {
             AbstractInvokeExpr ie = s.getInvokeExpr();
             if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
-                NumberedString subSig = iie.getMethodRef().getSubSignature();
+                MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
                 VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, edge.src(), iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
                 vcallsites.add(virtualCallSite);
             } else {
