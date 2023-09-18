@@ -27,13 +27,11 @@ import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,8 +76,8 @@ public class Conch extends AbstractConch {
                     Value base = iie.getBase();
                     VarNode baseNode = (VarNode) nodeFactory.getNode(base);
                     PointsToSet v1pts = pta.reachingObjects(baseNode);
-                    SootMethod target = iie.getMethod();
-                    if (v1pts.size() == 1 && v1pts.toCIPointsToSet().contains(heap) && target.isConstructor()) {
+                    SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(iie.getMethodSignature()).get();
+                    if (v1pts.size() == 1 && v1pts.toCIPointsToSet().contains(heap) && PTAUtils.isConstructor(target)) {
                         return target;
                     }
                 }
@@ -131,8 +129,9 @@ public class Conch extends AbstractConch {
             if (!(stmt.getInvokeExpr() instanceof JSpecialInvokeExpr)) {
                 continue;
             }
-            SootMethod target = stmt.getInvokeExpr().getMethod();
-            if (target != null && target.equals(curr)) {
+            MethodSignature methodSig = stmt.getInvokeExpr().getMethodSignature();
+            Optional<SootMethod> otarget = (Optional<SootMethod>) PTAScene.v().getView().getMethod(methodSig);
+            if (otarget.isPresent() && otarget.get().equals(curr)) {
                 for (Node n : params) {
                     if (n instanceof VarNode paramNode) {
                         LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
@@ -208,7 +207,7 @@ public class Conch extends AbstractConch {
 
     private Trilean isCommingFromParams(LocalVarNode from, SootMethod method, AllocNode heap) {
         Set<Node> ret = this.pfg.fetchReachableParamsOf(from);
-        if (method.isConstructor()) {
+        if (PTAUtils.isConstructor(method)) {
             return handleTransitiveConstructors(method, heap, ret);
         } else {
             return checkResult(ret);
@@ -299,7 +298,7 @@ public class Conch extends AbstractConch {
                 ciHeaps.add(heap);
             } else {
                 SootMethod mthd = heap.getMethod();
-                if (mthd.isStaticInitializer()) {
+                if (PTAUtils.isStaticInitializer(mthd)) {
                     ciHeaps.add(heap);
                 } else {
                     remainToSolve.add(heap);

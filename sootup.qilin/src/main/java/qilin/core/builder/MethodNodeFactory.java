@@ -49,8 +49,9 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.Modifier;
-import sootup.core.model.Position;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -60,6 +61,7 @@ import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 
 /**
@@ -136,8 +138,8 @@ public class MethodNodeFactory {
             }
             getNode(arg);
         }
-        if (s instanceof JAssignStmt) {
-            Value l = ((JAssignStmt) s).getLeftOp();
+        if (s instanceof JAssignStmt assignStmt) {
+            Value l = assignStmt.getLeftOp();
             if ((l.getType() instanceof ReferenceType)) {
                 getNode(l);
             }
@@ -155,10 +157,11 @@ public class MethodNodeFactory {
      * Adds the edges required for this statement to the graph.
      */
     private void handleIntraStmt(Stmt s) {
-        s.apply(new AbstractStmtSwitch<>() {
-            public void caseAssignStmt(JAssignStmt as) {
-                Value l = as.getLeftOp();
-                Value r = as.getRightOp();
+        s.accept(new AbstractStmtVisitor<>() {
+            @Override
+            public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+                Value l = stmt.getLeftOp();
+                Value r = stmt.getRightOp();
                 if (l instanceof JStaticFieldRef) {
                     resolveClinit((JStaticFieldRef) l);
                 } else if (r instanceof JStaticFieldRef) {
@@ -174,32 +177,40 @@ public class MethodNodeFactory {
                 }
 
                 if (!(r.getType() instanceof ReferenceType))
-                    throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + as
+                    throw new RuntimeException("Type mismatch in assignment (rhs not a RefLikeType) " + stmt
                             + " in method " + method.getSignature());
                 Node dest = getNode(l);
                 Node src = getNode(r);
                 mpag.addInternalEdge(src, dest);
             }
 
-            public void caseReturnStmt(JReturnStmt rs) {
-                if (!(rs.getOp().getType() instanceof ReferenceType))
-                    return;
-                Node retNode = getNode(rs.getOp());
-                mpag.addInternalEdge(retNode, caseRet());
-            }
-
-            public void caseIdentityStmt(JIdentityStmt is) {
-                if (!(is.getLeftOp().getType() instanceof ReferenceType)) {
+            @Override
+            public void caseIdentityStmt(@Nonnull JIdentityStmt<?> stmt) {
+                if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
                     return;
                 }
-                Node dest = getNode(is.getLeftOp());
-                Node src = getNode(is.getRightOp());
+                Node dest = getNode(stmt.getLeftOp());
+                Node src = getNode(stmt.getRightOp());
                 mpag.addInternalEdge(src, dest);
             }
 
-            public void caseThrowStmt(JThrowStmt ts) {
+            @Override
+            public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+                defaultCaseStmt(stmt);
+            }
+
+            @Override
+            public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+                if (!(stmt.getOp().getType() instanceof ReferenceType))
+                    return;
+                Node retNode = getNode(stmt.getOp());
+                mpag.addInternalEdge(retNode, caseRet());
+            }
+
+            @Override
+            public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
                 if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-                    mpag.addInternalEdge(getNode(ts.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+                    mpag.addInternalEdge(getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
                 }
             }
         });
@@ -314,7 +325,7 @@ public class MethodNodeFactory {
     }
 
     private VarNode caseStaticFieldRef(JStaticFieldRef sfr) {
-        return pag.makeGlobalVarNode(sfr.getField(), sfr.getField().getType());
+        return pag.makeGlobalVarNode(sfr.getFieldSignature(), sfr.getType());
     }
 
     private Node caseNullConstant(NullConstant nr) {

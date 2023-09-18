@@ -22,7 +22,7 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,8 +44,10 @@ public class BenchmarkStat implements AbstractStat {
     }
 
     private void init() {
-        reachableClasses = pta.getNakedReachableMethods().stream().map(SootMethod::getDeclaringClass)
-                .collect(Collectors.toSet());
+        reachableClasses = pta.getNakedReachableMethods().stream().map(m -> {
+            ClassType classType = m.getDeclaringClassType();
+            return (SootClass) PTAScene.v().getView().getClass(classType).get();
+        }).collect(Collectors.toSet());
         reachableAppClasses = reachableClasses.stream().filter(SootClass::isApplicationClass)
                 .collect(Collectors.toSet());
 

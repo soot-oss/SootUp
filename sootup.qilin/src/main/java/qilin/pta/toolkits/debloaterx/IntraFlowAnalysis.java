@@ -5,7 +5,6 @@ import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
-import soot.util.NumberedString;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;

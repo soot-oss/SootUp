@@ -18,6 +18,7 @@
 
 package qilin.pta.toolkits.dd;
 
+import qilin.core.PTAScene;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -99,11 +100,12 @@ public class CtxTunnelingFeaturesTrueTable {
         this.f[20] = heapAllocCnt == 1;
         this.f[21] = sig.contains("Object");
         this.f[22] = heapAllocCnt >= 1; // note, the original implementation is >=1 not > 1 which is conflict with the paper.
-        this.f[23] = sm.getDeclaringClass().getMethods().size() > 20; // their artifact uses 20 as the threshold.
+        SootClass sc = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
+        this.f[23] = sc.getMethods().size() > 20; // their artifact uses 20 as the threshold.
     }
 
     public boolean containedInNestedClass(SootMethod sm) {
-        SootClass sc = sm.getDeclaringClass();
+        SootClass sc = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
         return sc.toString().contains("$");
     }
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import qilin.core.PTA;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
+import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
@@ -111,7 +112,7 @@ public class DebloaterX {
         Map<SootMethod, Set<AllocNode>> m2o = new HashMap<>();
         for (AllocNode heap : pag.getAllocNodes()) {
             SootMethod method = heap.getMethod();
-            if (method == null || method.isStaticInitializer()) {
+            if (method == null || PTAUtils.isStaticInitializer(method)) {
                 continue;
             }
             m2o.computeIfAbsent(method, k -> new HashSet<>()).add(heap);

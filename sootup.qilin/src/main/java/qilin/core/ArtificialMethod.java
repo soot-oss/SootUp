@@ -26,10 +26,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
@@ -41,7 +38,7 @@ import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -136,10 +133,12 @@ public abstract class ArtificialMethod {
      * add an instance invocation receiver.sig(args)
      */
     protected void addInvoke(Local receiver, String sig, Immediate ... args) {
-        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+        SootMethod method = (SootMethod) PTAScene.v().getView().getMethod(methodSig).get();
+        SootClass clazz = (SootClass) PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
         List<Immediate> argsL = Arrays.asList(args);
-        AbstractInvokeExpr invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
-                : new JVirtualInvokeExpr(receiver, methodRef, argsL);
+        AbstractInvokeExpr invoke = clazz.isInterface() ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
+                : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
         body.getUnits().add(new JInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
@@ -149,11 +148,13 @@ public abstract class ArtificialMethod {
      * @return rx
      */
     protected Value getInvoke(Local receiver, String sig, Immediate... args) {
-        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
+        SootMethod method = (SootMethod) PTAScene.v().getView().getMethod(methodSig).get();
+        SootClass clazz = (SootClass) PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
         List<Immediate> argsL = Arrays.asList(args);
-        Value invoke = methodRef.getDeclaringClass().isInterface() ? new JInterfaceInvokeExpr(receiver, methodRef, argsL)
-                : new JVirtualInvokeExpr(receiver, methodRef, argsL);
-        Value rx = getNextLocal(methodRef.getReturnType());
+        Value invoke = clazz.isInterface() ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
+                : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
+        Value rx = getNextLocal(method.getReturnType());
         addAssign(rx, invoke);
         return rx;
     }
@@ -162,9 +163,9 @@ public abstract class ArtificialMethod {
      * add a static invocation sig(args)
      */
     protected void addInvoke(String sig, Immediate... args) {
-        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
         List<Immediate> argsL = Arrays.asList(args);
-        body.getUnits().add(new JInvokeStmt(new JStaticInvokeExpr(methodRef, argsL)));
+        body.getUnits().add(new JInvokeStmt(Jimple.newStaticInvokeExpr(methodSig, argsL), StmtPositionInfo.createNoStmtPositionInfo()));
     }
 
     /**
@@ -173,10 +174,10 @@ public abstract class ArtificialMethod {
      * @return rx
      */
     protected Value getInvoke(String sig, Immediate... args) {
-        SootMethodRef methodRef = PTAScene.v().getMethod(sig).makeRef();
+        MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
         List<Immediate> argsL = Arrays.asList(args);
-        Value rx = getNextLocal(methodRef.getReturnType());
-        addAssign(rx, new JStaticInvokeExpr(methodRef, argsL));
+        Value rx = getNextLocal(methodSig.getType());
+        addAssign(rx, Jimple.newStaticInvokeExpr(methodSig, argsL));
         return rx;
     }
 

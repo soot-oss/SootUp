@@ -82,6 +82,14 @@ public final class PTAUtils {
         return sc.isApplicationClass();
     }
 
+    public static boolean isStaticInitializer(SootMethod method) {
+        return method.getName().equals("<clinit>");
+    }
+
+    public static boolean isConstructor(SootMethod method) {
+        return method.getName().equals("<init>");
+    }
+
     public static Map<LocalVarNode, Set<AllocNode>> calcStaticThisPTS(PTA pta) {
         Map<LocalVarNode, Set<AllocNode>> pts = new HashMap<>();
         Set<SootMethod> workList = new HashSet<>();

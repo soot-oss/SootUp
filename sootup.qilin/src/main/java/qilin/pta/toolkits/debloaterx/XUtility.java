@@ -76,8 +76,8 @@ public class XUtility {
             return true;
         }
         if (type instanceof ClassType refType) {
-            SootClass sc = refType.getSootClass();
-            return sc.isAbstract() || sc.isInterface() || sc.getShortName().startsWith("Abstract");
+            SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
+            return sc.isAbstract() || sc.isInterface() || refType.getClassName().startsWith("Abstract");
         }
         return false;
     }
