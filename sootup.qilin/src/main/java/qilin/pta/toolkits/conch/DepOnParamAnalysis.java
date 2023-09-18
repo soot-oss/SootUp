@@ -112,7 +112,7 @@ public class DepOnParamAnalysis extends AbstractPAG {
                         containingMethod = heap.getMethod();
                     }
 
-                    Iterator<Edge> it = callGraph.edgesInto(containingMethod);
+                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
                     while (it.hasNext()) {
                         Edge edge = it.next();
                         SootMethod srcMethod = edge.src();

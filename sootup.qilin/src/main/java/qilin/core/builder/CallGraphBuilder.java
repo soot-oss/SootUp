@@ -113,7 +113,7 @@ public class CallGraphBuilder {
             Map<SootMethod, Set<SootMethod>> submap = map.computeIfAbsent(unit, k -> DataFactory.createMap());
             Set<SootMethod> set = submap.computeIfAbsent(src, k -> DataFactory.createSet());
             if (set.add(tgt)) {
-                cicg.addEdge(new Edge(src, e.srcUnit(), tgt, e.kind()));
+                cicg.addEdge(new Edge(new ContextMethod(src, pta.emptyContext()), e.srcUnit(), new ContextMethod(tgt, pta.emptyContext()), e.kind()));
             }
         });
     }

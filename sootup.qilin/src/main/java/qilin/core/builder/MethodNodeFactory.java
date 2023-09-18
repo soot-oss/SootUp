@@ -57,6 +57,7 @@ import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
@@ -150,7 +151,11 @@ public class MethodNodeFactory {
     }
 
     private void resolveClinit(JStaticFieldRef staticFieldRef) {
-        PTAUtils.clinitsOf(staticFieldRef.getField().getDeclaringClass()).forEach(mpag::addTriggeredClinit);
+        FieldSignature fieldSig = staticFieldRef.getFieldSignature();
+        SootField field = (SootField) PTAScene.v().getView().getField(fieldSig).get();
+        ClassType classType = field.getDeclaringClassType();
+        SootClass sootClass = (SootClass) PTAScene.v().getView().getClass(classType).get();
+        PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
     }
 
     /**
@@ -231,8 +236,8 @@ public class MethodNodeFactory {
     }
 
     private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
-        SootField sf = ifr.getField();
         FieldSignature fieldSig = ifr.getFieldSignature();
+        SootField sf = (SootField) PTAScene.v().getView().getField(fieldSig).get();
         if (sf == null) {
             sf = new SootField(fieldSig, Collections.singleton(Modifier.PUBLIC), NoPositionInformation.getInstance());
             sf.setNumber(Scene.v().getFieldNumberer().size());

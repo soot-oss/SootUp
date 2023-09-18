@@ -193,7 +193,7 @@ public final class PTAUtils {
 
         for (Edge edge : callgraph) {
             MethodOrMethodContext srcmtd = edge.getSrc();
-            if (appOnly && !srcmtd.method().getDeclaringClass().isApplicationClass())
+            if (appOnly && !PTAUtils.isApplicationMethod(srcmtd.method()))
                 continue;
             MethodOrMethodContext dstmtd = edge.getTgt();
             String srcName = srcmtd.toString();

@@ -24,6 +24,7 @@ import soot.util.queue.ChunkedQueue;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -33,6 +34,7 @@ import sootup.core.types.Type;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -42,7 +44,7 @@ import java.util.Set;
  */
 public class VirtualCalls {
     private static volatile VirtualCalls instance = null;
-    private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl = DataFactory.createMap(Scene.v().getTypeNumberer().size());
+    private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
     protected Map<Type, Set<Type>> baseToSubTypes = DataFactory.createMap();
 
     private VirtualCalls() {
@@ -68,15 +70,16 @@ public class VirtualCalls {
     }
 
     public SootMethod resolveSpecial(JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container, boolean appOnly) {
-        SootMethod target = iie.getMethod();
+        MethodSignature methodSig = iie.getMethodSignature();
+        SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(methodSig).get();
         /* cf. JVM spec, invokespecial instruction */
-        if (Scene.v().getFastHierarchy().canStoreType(container.getDeclaringClassType(),
-                target.getDeclaringClassType())
+        if (PTAScene.v().getView().getTypeHierarchy().isSubtype(target.getDeclaringClassType(), container.getDeclaringClassType())
                 && container.getDeclaringClassType() != target.getDeclaringClassType()
                 && !target.getName().equals("<init>")
-                && subSig != Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()")) {
-
-            return resolveNonSpecial(container.getDeclaringClass().getSuperclass().getType(), subSig, appOnly);
+                && !subSig.toString().equals("void <clinit>()")) {
+            SootClass cls = (SootClass) PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
+            SootClass superCls = (SootClass) cls.getSuperclass().get();
+            return resolveNonSpecial(superCls.getType(), subSig, appOnly);
         } else {
             return target;
         }
@@ -92,19 +95,20 @@ public class VirtualCalls {
         if (ret != null) {
             return ret;
         }
-        SootClass cls = t.getSootClass();
+        SootClass cls = (SootClass) PTAScene.v().getView().getClass(t).get();
         if (appOnly && cls.isLibraryClass()) {
             return null;
         }
-
-        SootMethod m = cls.getMethodUnsafe(subSig);
-        if (m != null) {
+        Optional<SootMethod> om = cls.getMethod(subSig);
+        if (om.isPresent()) {
+            SootMethod m = om.get();
             if (!m.isAbstract()) {
                 ret = m;
             }
         } else {
-            SootClass c = cls.getSuperclassUnsafe();
-            if (c != null) {
+            Optional<SootClass> oc = cls.getSuperclass();
+            if (oc.isPresent()) {
+                SootClass c = oc.get();
                 ret = resolveNonSpecial(c.getType(), subSig);
             }
         }
@@ -137,10 +141,10 @@ public class VirtualCalls {
             t = PTAUtils.getClassType("java.lang.Object");
         }
 
-        if (declaredType != null && !Scene.v().getFastHierarchy().canStoreType(t, declaredType)) {
+        if (declaredType != null && !PTAScene.v().getView().getTypeHierarchy().isSubtype(declaredType, t)) {
             return;
         }
-        if (sigType != null && !Scene.v().getFastHierarchy().canStoreType(t, sigType)) {
+        if (sigType != null && !PTAScene.v().getView().getTypeHierarchy().isSubtype(sigType, t)) {
             return;
         }
         if (t instanceof ClassType) {
@@ -148,22 +152,24 @@ public class VirtualCalls {
             if (target != null) {
                 targets.add(target);
             }
-        } else if (t instanceof AnySubType) {
-            ClassType base = ((AnySubType) t).getBase();
-
-            /*
-             * Whenever any sub type of a specific type is considered as receiver for a method to call and the base type is an
-             * interface, calls to existing methods with matching signature (possible implementation of method to call) are also
-             * added. As Javas' subtyping allows contra-variance for return types and co-variance for parameters when overriding a
-             * method, these cases are also considered here.
-             *
-             * Example: Classes A, B (B sub type of A), interface I with method public A foo(B b); and a class C with method public
-             * B foo(A a) { ... }. The extended class hierarchy will contain C as possible implementation of I.
-             *
-             * Since Java has no multiple inheritance call by signature resolution is only activated if the base is an interface.
-             */
-            resolveAnySubType(declaredType, sigType, subSig, container, targets, appOnly, base);
-        } else if (t instanceof NullType) {
+        }
+//        else if (t instanceof AnySubType) {
+//            ClassType base = ((AnySubType) t).getBase();
+//
+//            /*
+//             * Whenever any sub type of a specific type is considered as receiver for a method to call and the base type is an
+//             * interface, calls to existing methods with matching signature (possible implementation of method to call) are also
+//             * added. As Javas' subtyping allows contra-variance for return types and co-variance for parameters when overriding a
+//             * method, these cases are also considered here.
+//             *
+//             * Example: Classes A, B (B sub type of A), interface I with method public A foo(B b); and a class C with method public
+//             * B foo(A a) { ... }. The extended class hierarchy will contain C as possible implementation of I.
+//             *
+//             * Since Java has no multiple inheritance call by signature resolution is only activated if the base is an interface.
+//             */
+//            resolveAnySubType(declaredType, sigType, subSig, container, targets, appOnly, base);
+//        }
+        else if (t instanceof NullType) {
         } else {
             throw new RuntimeException("oops " + t);
         }
@@ -184,17 +190,15 @@ public class VirtualCalls {
         Set<Type> newSubTypes = new HashSet<>();
         newSubTypes.add(base);
 
-        LinkedList<SootClass> worklist = new LinkedList<>();
-        HashSet<SootClass> workset = new HashSet<>();
-        SootClass cl = base.getSootClass();
-
-        if (workset.add(cl)) {
-            worklist.add(cl);
-        }
+        LinkedList<ClassType> worklist = new LinkedList<>();
+        HashSet<ClassType> workset = new HashSet<>();
+        workset.add(base);
+        worklist.add(base);
         while (!worklist.isEmpty()) {
-            cl = worklist.removeFirst();
+            ClassType classType = worklist.removeFirst();
+            SootClass cl = (SootClass) PTAScene.v().getView().getClass(classType).get();
             if (cl.isInterface()) {
-                for (final SootClass c : Scene.v().getFastHierarchy().getAllImplementersOfInterface(cl)) {
+                for (final ClassType c : PTAScene.v().getView().getTypeHierarchy().implementersOf(cl.getType())) {
                     if (workset.add(c)) {
                         worklist.add(c);
                     }
@@ -204,7 +208,7 @@ public class VirtualCalls {
                     resolve(cl.getType(), declaredType, sigType, subSig, container, targets, appOnly);
                     newSubTypes.add(cl.getType());
                 }
-                for (final SootClass c : Scene.v().getFastHierarchy().getSubclassesOf(cl)) {
+                for (final ClassType c : PTAScene.v().getView().getTypeHierarchy().subclassesOf(classType)) {
                     if (workset.add(c)) {
                         worklist.add(c);
                     }
