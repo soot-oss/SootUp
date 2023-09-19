@@ -121,7 +121,7 @@ Let's say the following is the target program that we want to analyze:
       }
     
       public static void main(String[] args) {
-        HelloWorld hw = new HelloWorld;
+        HelloWorld hw = new HelloWorld();
         hw.hello();
       }
 
