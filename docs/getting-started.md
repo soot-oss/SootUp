@@ -40,10 +40,8 @@ You can use bytecode analysis typically when you do not have access to the sourc
 !!! example "Create a project to analyze Java bytecode"
 
     ~~~java
-    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    
     AnalysisInputLocation<JavaSootClass> inputLocation = 
-            PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+            new JavaClassPathAnalysisInputLocation("path2Binary");
             
     JavaLanguage language = new JavaLanguage(8);
     
@@ -60,10 +58,8 @@ If you have access to the source code, it is also possible to create a project f
 !!! example "Create a project to analyze Java source code"
 
     ~~~java
-    Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
-    
     AnalysisInputLocation<JavaSootClass> inputLocation = 
-            new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+            new JavaSourcePathAnalysisInputLocation("path2Source");
             
     JavaLanguage language = new JavaLanguage(8);
     
@@ -76,7 +72,7 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 !!! example "Create a project to analyze jimple code"
 
     ~~~java
-    Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+    Path pathToJimple = Paths.get("path2Jimple");
     
     AnalysisInputLocation<JavaSootClass> inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
@@ -124,10 +120,13 @@ Let's say the following is the target program that we want to analyze:
       
       }
     
-      public static void main(String[] var0) {
-      
-        System.out.println("Hello World!");
-        
+      public static void main(String[] args) {
+        HelloWorld hw = new HelloWorld;
+        hw.hello();
+      }
+
+      public void hello() {
+
       }
       
     }
@@ -213,9 +212,8 @@ Below we show a comparison of the code so far with the same functionality in soo
 === "SootUp"
 
     ``` java
-    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+    new JavaClassPathAnalysisInputLocation("path2Binary");
 
     JavaLanguage language = new JavaLanguage(8);
 
