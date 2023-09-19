@@ -46,6 +46,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ReferenceType;
 import sootup.java.core.JavaIdentifierFactory;
@@ -102,11 +103,12 @@ public class TamiflexModel extends ReflectionModel {
             Collection<String> classNames = classNewInstances.get(s);
             for (String clsName : classNames) {
                 SootClass cls = PTAScene.v().getSootClass(clsName);
-
-                if (cls.declaresMethod(PTAScene.v().getSubSigNumberer().findOrAdd("void <init>()"))) {
+                MethodSubSignature initSubSig = JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <init>()");
+                Optional<SootMethod> omthd = cls.getMethod(initSubSig);
+                if (omthd.isPresent()) {
                     JNewExpr newExpr = new JNewExpr(cls.getType());
                     ret.add(new JAssignStmt<>(lvalue, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));
-                    SootMethod constructor = cls.getMethod(PTAScene.v().getSubSigNumberer().findOrAdd("void <init>()"));
+                    SootMethod constructor = omthd.get();
                     ret.add(new JInvokeStmt(new JSpecialInvokeExpr((Local) lvalue, constructor.getSignature(), Collections.emptyList()), StmtPositionInfo.createNoStmtPositionInfo()));
                 }
             }
@@ -253,7 +255,7 @@ public class TamiflexModel extends ReflectionModel {
         Map<Stmt, Set<String>> mappedToArrayTypes = reflectionMap.getOrDefault(ReflectionKind.ArrayNewInstance, Collections.emptyMap());
         Collection<String> arrayTypes = mappedToArrayTypes.getOrDefault(s, Collections.emptySet());
         for (String arrayType : arrayTypes) {
-            ArrayType at = (ArrayType) PTAScene.v().getTypeUnsafe(arrayType, true);
+            ArrayType at = (ArrayType) JavaIdentifierFactory.getInstance().getType(arrayType);
             JNewArrayExpr newExpr = JavaJimple.getInstance().newNewArrayExpr(at.getArrayElementType(), IntConstant.getInstance(1));
             if (s instanceof JAssignStmt) {
                 Value lvalue = ((JAssignStmt) s).getLeftOp();
@@ -382,7 +384,8 @@ public class TamiflexModel extends ReflectionModel {
         }
         SootClass sootClass = PTAScene.v().getSootClass(inClassStr);
         Set<SootMethod> ret = DataFactory.createSet();
-        for (SootMethod m : sootClass.getMethods()) {
+        Set<SootMethod> declMethods = sootClass.getMethods();
+        for (SootMethod m : declMethods) {
             if (m.isConcrete() && m.getName().equals(inMethodStr)) {
                 ret.add(m);
             }

@@ -20,25 +20,50 @@ package qilin.core;
 
 import qilin.core.builder.FakeMainFactory;
 import qilin.util.DataFactory;
+import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.util.Chain;
 import soot.util.IterableNumberer;
-import soot.util.StringNumberer;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 public class PTAScene {
     private static volatile PTAScene instance = null;
-    private final Scene sootScene;
+
     private final View view;
+    private CallGraph callgraph;
     private final FakeMainFactory fakeMainFactory;
+
+    private SootClass mainClass = null;
+
+    public void setMainClass(SootClass m) {
+        mainClass = m;
+    }
+
+    public boolean hasMainClass() {
+        return mainClass != null;
+    }
+
+    public SootClass getMainClass() {
+        if (!hasMainClass()) {
+            throw new RuntimeException("There is no main class set!");
+        }
+        return mainClass;
+    }
 
     public static PTAScene v() {
         if (instance == null) {
@@ -57,13 +82,11 @@ public class PTAScene {
     }
 
     public static void reset() {
-        G.reset();
         VirtualCalls.reset();
         instance = null;
     }
 
     private PTAScene() {
-        this.sootScene = Scene.v();
         this.fakeMainFactory = new FakeMainFactory();
     }
 
@@ -86,16 +109,12 @@ public class PTAScene {
         return this.fakeMainFactory.getFieldGlobalThrow();
     }
 
-    public void setMainClass(SootClass m) {
-        sootScene.setMainClass(m);
-    }
-
     /*
      *  wrapper methods of Soot Scene. Note, we do not allow you to use Soot Scene directly in qilin.qilin.pta subproject
      * to avoid confusing.
      * */
     public void setCallGraph(CallGraph cg) {
-        sootScene.setCallGraph(cg);
+        this.callgraph = cg;
     }
 
     public View getView() {
@@ -103,19 +122,15 @@ public class PTAScene {
     }
 
     public CallGraph getCallGraph() {
-        return sootScene.getCallGraph();
+        return this.callgraph;
     }
 
     public IterableNumberer<Local> getLocalNumberer() {
         return sootScene.getLocalNumberer();
     }
 
-    public IterableNumberer<Type> getTypeNumberer() {
-        return sootScene.getTypeNumberer();
-    }
-
-    public FastHierarchy getOrMakeFastHierarchy() {
-        return sootScene.getOrMakeFastHierarchy();
+    public boolean canStoreType(final Type child, final Type parent) {
+        return view.getTypeHierarchy().isSubtype(parent, child);
     }
 
     public SootClass loadClassAndSupport(String className) {
@@ -123,7 +138,8 @@ public class PTAScene {
     }
 
     public SootMethod getMethod(String methodSignature) {
-        return sootScene.getMethod(methodSignature);
+        MethodSignature mthdSig = JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+        return (SootMethod) view.getMethod(mthdSig).get();
     }
 
     public Chain<SootClass> getApplicationClasses() {
@@ -135,63 +151,42 @@ public class PTAScene {
     }
 
     public boolean containsMethod(String methodSignature) {
-        return sootScene.containsMethod(methodSignature);
+        MethodSignature mthdSig = JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+        return view.getMethod(mthdSig).isPresent();
     }
 
     public boolean containsField(String fieldSignature) {
-        return sootScene.containsField(fieldSignature);
+        FieldSignature fieldSig = JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+        return view.getField(fieldSig).isPresent();
     }
 
-    public void loadBasicClasses() {
-        sootScene.loadBasicClasses();
+    public Collection<SootClass> getClasses() {
+        return view.getClasses();
     }
 
-    public void addBasicClass(String name, int level) {
-        sootScene.addBasicClass(name, level);
-    }
-
-    public Chain<SootClass> getClasses() {
-        return sootScene.getClasses();
-    }
-
-    public Chain<SootClass> getPhantomClasses() {
-        return sootScene.getPhantomClasses();
+    public Collection<SootClass> getPhantomClasses() {
+        return Collections.emptySet();
     }
 
     public SootClass getSootClass(String className) {
-        return sootScene.getSootClass(className);
+        ClassType classType = PTAUtils.getClassType(className);
+        return (SootClass) view.getClass(classType).get();
     }
 
     public boolean containsClass(String className) {
-        return sootScene.containsClass(className);
+        ClassType classType = PTAUtils.getClassType(className);
+        Optional<SootClass> oclazz = view.getClass(classType);
+        return oclazz.isPresent();
     }
 
     public SootField getField(String fieldSignature) {
-        return sootScene.getField(fieldSignature);
+        FieldSignature fieldSig = JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+        return (SootField) view.getField(fieldSig).get();
     }
 
-    public Type getTypeUnsafe(String arg, boolean phantomNonExist) {
-        return sootScene.getTypeUnsafe(arg, phantomNonExist);
-    }
-
-    public StringNumberer getSubSigNumberer() {
-        return sootScene.getSubSigNumberer();
-    }
-
-    public IterableNumberer<SootMethod> getMethodNumberer() {
-        return sootScene.getMethodNumberer();
-    }
 
     public void loadNecessaryClasses() {
         sootScene.loadNecessaryClasses();
-    }
-
-    public boolean containsType(String className) {
-        return sootScene.containsType(className);
-    }
-
-    public RefType getRefType(String className) {
-        return sootScene.getRefType(className);
     }
 
     /*

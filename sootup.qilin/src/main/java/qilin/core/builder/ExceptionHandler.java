@@ -74,7 +74,7 @@ public class ExceptionHandler {
         VarNode throwNode = site.getThrowNode();
         List<Trap> trapList = mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
         for (Trap trap : trapList) {
-            if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, trap.getException().getType())) {
+            if (PTAScene.v().canStoreType(type, trap.getException().getType())) {
                 Stmt handler = trap.getHandlerUnit();
                 assert handler instanceof JIdentityStmt;
                 JIdentityStmt handlerStmt = (JIdentityStmt) handler;

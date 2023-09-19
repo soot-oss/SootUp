@@ -213,7 +213,7 @@ public class XUtility {
             if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
                 MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
-                VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, edge.src(), iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
+                VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, new ContextMethod(edge.src(), pta.emptyContext()), iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
                 vcallsites.add(virtualCallSite);
             } else {
                 throw new RuntimeException("ie could not be of " + ie.getClass());
@@ -279,12 +279,12 @@ public class XUtility {
             } else {
                 ret = this.t2Fields.computeIfAbsent(refType, k -> new HashSet<>());
                 for (AllocNode heap : this.o2Fields.keySet()) {
-                    if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(heap.getType(), refType)) {
+                    if (PTAScene.v().canStoreType(heap.getType(), refType)) {
                         for (SparkField sparkField : this.o2Fields.get(heap)) {
                             if (sparkField instanceof Field f) {
                                 SootField sf = f.getField();
                                 Type declType = sf.getDeclaringClassType();
-                                if (PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, declType)) {
+                                if (PTAScene.v().canStoreType(type, declType)) {
                                     ret.add(sparkField);
                                 }
                             } else {

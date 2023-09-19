@@ -49,10 +49,12 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
@@ -302,13 +304,13 @@ public final class PTAUtils {
             return false;
         if (dst instanceof AnySubType)
             throw new RuntimeException("oops src=" + src + " dst=" + dst);
-        return PTAScene.v().getOrMakeFastHierarchy().canStoreType(src, dst);
+        return PTAScene.v().canStoreType(src, dst);
     }
 
     public static QueueReader<SootMethod> dispatch(Type type, VirtualCallSite site) {
         final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
         final QueueReader<SootMethod> targets = targetsQueue.reader();
-        if (site.kind() == Kind.THREAD && !PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, clRunnable)) {
+        if (site.kind() == Kind.THREAD && !PTAScene.v().canStoreType(type, clRunnable)) {
             return targets;
         }
         MethodOrMethodContext container = site.container();
@@ -566,7 +568,7 @@ public final class PTAUtils {
 
     public static boolean isThrowable(Type type) {
         if (type instanceof ClassType) {
-            return PTAScene.v().getOrMakeFastHierarchy().canStoreType(type, PTAUtils.getClassType("java.lang.Throwable"));
+            return PTAScene.v().canStoreType(type, PTAUtils.getClassType("java.lang.Throwable"));
         }
         return false;
     }
@@ -580,7 +582,7 @@ public final class PTAUtils {
     }
 
     public static boolean supportFinalize(AllocNode heap) {
-        NumberedString sigFinalize = PTAScene.v().getSubSigNumberer().findOrAdd("void finalize()");
+        MethodSubSignature sigFinalize = JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
         Type type = heap.getType();
         if (type instanceof ClassType refType && type != PTAUtils.getClassType("java.lang.Object")) {
             SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
@@ -839,7 +841,7 @@ public final class PTAUtils {
         if (mPi.isThis()) {
             return receiver;
         } else if (mPi.isReturn()) {
-            if (invokeStmt instanceof AssignStmt assignStmt) {
+            if (invokeStmt instanceof JAssignStmt assignStmt) {
                 Value mR = assignStmt.getLeftOp();
                 return (LocalVarNode) pag.findValNode(mR);
             } else {

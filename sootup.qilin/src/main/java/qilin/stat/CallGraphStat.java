@@ -22,14 +22,17 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
+import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.util.PTAUtils;
 import soot.MethodOrMethodContext;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -61,6 +64,7 @@ public class CallGraphStat implements AbstractStat {
     private int CIStaticToInstance = 0;
     private int CIInstanceToStatic = 0;
     private int CIInstancetoInstance = 0;
+    private int allMethods = 0;
 
     public CallGraphStat(PTA pta) {
         this.pta = pta;
@@ -68,6 +72,12 @@ public class CallGraphStat implements AbstractStat {
     }
 
     private void init() {
+        // stat method numbers
+        Collection<SootClass> clazzs = PTAScene.v().getView().getClasses();
+        for (SootClass clazz : clazzs) {
+            allMethods += clazz.getMethods().size();
+        }
+        //
         CallGraph csCallGraph = pta.getCgb().getCallGraph();
         CSCallEdges = csCallGraph.size();
         for (final MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
@@ -120,7 +130,7 @@ public class CallGraphStat implements AbstractStat {
                     reachableAppStatic++;
                 }
             }
-            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(sm); iterator.hasNext(); ) {
+            for (Iterator<Edge> iterator = ciCallGraph.edgesInto(new ContextMethod(sm, pta.emptyContext())); iterator.hasNext(); ) {
                 Edge e = iterator.next();
                 final SootMethod srcm = e.getSrc().method();
 //                if (sm.toString().equals("<java.lang.ClassNotFoundException: java.lang.Throwable getCause()>")) {
@@ -161,7 +171,7 @@ public class CallGraphStat implements AbstractStat {
 
     @Override
     public void export(Exporter exporter) {
-        exporter.collectMetric("#Method (Static):", String.valueOf(PTAScene.v().getMethodNumberer().size() - 1));// -fakeMain
+        exporter.collectMetric("#Method (Static):", String.valueOf( allMethods - 1));// -fakeMain
         exporter.collectMetric("#Reachable Method (CI):", String.valueOf(reachableMethods.size() - 1));// -fakeMain
         exporter.collectMetric("\t#Reachable-Static Method (CI):", String.valueOf(reachableStatic - 1));// -fakeMain
         exporter.collectMetric("#Reachable Method (CS):", String.valueOf(reachableParameterizedMethods.size() - 1));// -fakeMain
