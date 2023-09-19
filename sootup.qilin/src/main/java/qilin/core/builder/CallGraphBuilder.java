@@ -64,7 +64,7 @@ public class CallGraphBuilder {
         this.pta = pta;
         this.pag = pta.getPag();
         PTAScene.v().setCallGraph(new CallGraph());
-        receiverToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
+        receiverToSites = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
         methodToInvokeStmt = DataFactory.createMap();
         reachMethods = DataFactory.createSet();
         calledges = DataFactory.createSet();
@@ -145,7 +145,7 @@ public class CallGraphBuilder {
             SootMethod target = targets.next();
             if (site.iie() instanceof JSpecialInvokeExpr) {
                 Type calleeDeclType = target.getDeclaringClassType();
-                if (!Scene.v().getFastHierarchy().canStoreType(type, calleeDeclType)) {
+                if (!PTAScene.v().canStoreType(type, calleeDeclType)) {
                     continue;
                 }
             }

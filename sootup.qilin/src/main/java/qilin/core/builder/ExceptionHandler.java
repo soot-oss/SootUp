@@ -35,7 +35,7 @@ import sootup.core.types.Type;
 import java.util.*;
 
 public class ExceptionHandler {
-    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(PTAScene.v().getLocalNumberer().size());
+    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
     protected PTA pta;
     protected PAG pag;
 
@@ -74,8 +74,8 @@ public class ExceptionHandler {
         VarNode throwNode = site.getThrowNode();
         List<Trap> trapList = mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
         for (Trap trap : trapList) {
-            if (PTAScene.v().canStoreType(type, trap.getException().getType())) {
-                Stmt handler = trap.getHandlerUnit();
+            if (PTAScene.v().canStoreType(type, trap.getExceptionType())) {
+                Stmt handler = trap.getHandlerStmt();
                 assert handler instanceof JIdentityStmt;
                 JIdentityStmt handlerStmt = (JIdentityStmt) handler;
                 Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());

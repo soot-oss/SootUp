@@ -23,8 +23,6 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.util.Chain;
-import soot.util.IterableNumberer;
-import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -123,10 +121,6 @@ public class PTAScene {
 
     public CallGraph getCallGraph() {
         return this.callgraph;
-    }
-
-    public IterableNumberer<Local> getLocalNumberer() {
-        return sootScene.getLocalNumberer();
     }
 
     public boolean canStoreType(final Type child, final Type parent) {

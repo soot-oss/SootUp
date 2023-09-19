@@ -363,9 +363,9 @@ public class PAG {
             valToValNode.put(value, ret = new LocalVarNode(value, type, method));
             valNodeNumberer.add(ret);
             if (value instanceof Local local) {
-                if (local.getNumber() == 0) {
-                    PTAScene.v().getLocalNumberer().add(local);
-                }
+//                if (local.getNumber() == 0) {
+//                    PTAScene.v().getLocalNumberer().add(local);
+//                }
                 locals.add(local);
             }
         } else if (!(ret.getType().equals(type))) {

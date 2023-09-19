@@ -409,8 +409,10 @@ public class TamiflexModel extends ReflectionModel {
             }
         }
         for (Stmt stmt : potential) {
-            LineNumberTag tag = (LineNumberTag) stmt.getTag("LineNumberTag");
-            if (lineNumber < 0 || tag != null && tag.getLineNumber() == lineNumber) {
+            int firstLine = stmt.getPositionInfo().getStmtPosition().getFirstLine();
+            int lastLine = stmt.getPositionInfo().getStmtPosition().getLastLine();
+            // !TODO potential bug here
+            if (lineNumber < 0 || firstLine <= lineNumber && lineNumber <= lastLine) {
                 ret.add(stmt);
             }
         }
