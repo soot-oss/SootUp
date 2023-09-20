@@ -20,6 +20,7 @@ package qilin.stat;
 
 import qilin.CoreConfig;
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
@@ -129,8 +130,8 @@ public class Exporter {
     public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
         StringBuilder builder = new StringBuilder();
         for (AbstractInvokeExpr ie : polys.keySet()) {
-            SootMethod tgt = ie.getMethod();
-            String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClass() + "." + tgt.getName() + "\n";
+            SootMethod tgt = (SootMethod) PTAScene.v().getView().getMethod(ie.getMethodSignature()).get();
+            String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClassType() + "." + tgt.getName() + "\n";
             builder.append(polySig);
         }
         String polyCalls = "PolyCalls.csv";

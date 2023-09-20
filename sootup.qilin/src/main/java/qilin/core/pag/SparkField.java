@@ -30,7 +30,8 @@ import sootup.core.types.Type;
  *
  * @author Ondrej Lhotak
  */
-public interface SparkField extends Numberable {
+//public interface SparkField extends Numberable {
+public interface SparkField {
     public Type getType();
 }
 

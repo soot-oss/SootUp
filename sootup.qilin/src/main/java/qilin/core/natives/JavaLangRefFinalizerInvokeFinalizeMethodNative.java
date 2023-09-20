@@ -18,6 +18,7 @@
 
 package qilin.core.natives;
 
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
@@ -30,7 +31,7 @@ public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod
      * "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>"
      */
     public void simulate() {
-        Value r0 = getPara(0);
+        Local r0 = getPara(0);
         addInvoke(r0, "<java.lang.Object: void finalize()>");
     }
 }

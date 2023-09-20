@@ -810,21 +810,29 @@ public final class PTAUtils {
         Set<SootMethod> ret = new HashSet<>();
         Set<SootClass> visit = new HashSet<>();
         Queue<SootClass> worklist = new UniqueQueue<>();
-        SootClass curr = cl;
-        while (curr != null) {
-            worklist.add(curr);
-            curr = curr.getSuperclassUnsafe();
+        Optional<SootClass> curr = Optional.of(cl);
+        while (curr.isPresent()) {
+            SootClass sc = curr.get();
+            worklist.add(sc);
+            curr = sc.getSuperclass();
         }
         while (!worklist.isEmpty()) {
             SootClass sc = worklist.poll();
             if (visit.add(sc)) {
-                worklist.addAll(sc.getInterfaces());
+                Set<ClassType> itfs = sc.getInterfaces();
+                for (ClassType itf : itfs) {
+                    Optional<SootClass> xsc = PTAScene.v().getView().getClass(itf);
+                    if (xsc.isPresent()) {
+                        worklist.add(xsc.get());
+                    }
+                }
             }
         }
         for (SootClass sc : visit) {
-            final SootMethod initStart = sc.getMethodUnsafe(Scene.v().getSubSigNumberer().findOrAdd("void <clinit>()"));
-            if (initStart != null) {
-                ret.add(initStart);
+            MethodSubSignature subclinit = JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+            final Optional<SootMethod> initStart = sc.getMethod(subclinit);
+            if (initStart.isPresent()) {
+                ret.add(initStart.get());
             }
         }
         return ret;

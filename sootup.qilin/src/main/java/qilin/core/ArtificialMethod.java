@@ -53,7 +53,7 @@ public abstract class ArtificialMethod {
     protected int paraStart;
     protected int localStart;
 
-    protected Value getThis() {
+    protected Local getThis() {
         if (thisLocal == null) {
             ClassType type = method.getDeclaringClassType();
             IdentityRef thisRef = new JThisRef(type);
@@ -63,8 +63,8 @@ public abstract class ArtificialMethod {
         return thisLocal;
     }
 
-    protected Value getPara(int index) {
-        Value paraLocal = paraLocals[index];
+    protected Local getPara(int index) {
+        Local paraLocal = paraLocals[index];
         if (paraLocal == null) {
             Type type = method.getParameterType(index);
             return getPara(index, type);
@@ -72,7 +72,7 @@ public abstract class ArtificialMethod {
         return paraLocal;
     }
 
-    protected Value getPara(int index, Type type) {
+    protected Local getPara(int index, Type type) {
         Local paraLocal = paraLocals[index];
         if (paraLocal == null) {
             IdentityRef paraRef = new JParameterRef(type, index);
@@ -150,14 +150,14 @@ public abstract class ArtificialMethod {
      *
      * @return rx
      */
-    protected Value getInvoke(Local receiver, String sig, Immediate... args) {
+    protected Local getInvoke(Local receiver, String sig, Immediate... args) {
         MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
         SootMethod method = (SootMethod) PTAScene.v().getView().getMethod(methodSig).get();
         SootClass clazz = (SootClass) PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
         List<Immediate> argsL = Arrays.asList(args);
         Value invoke = clazz.isInterface() ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
                 : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
-        Value rx = getNextLocal(method.getReturnType());
+        Local rx = getNextLocal(method.getReturnType());
         addAssign(rx, invoke);
         return rx;
     }

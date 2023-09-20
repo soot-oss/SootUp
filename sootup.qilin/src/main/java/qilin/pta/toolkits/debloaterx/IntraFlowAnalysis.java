@@ -157,7 +157,7 @@ public class IntraFlowAnalysis {
                 args[i] = arg;
             }
             MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
-            VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, method, iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
+            VirtualCallSite virtualCallSite = new VirtualCallSite(receiver, s, new ContextMethod(method, utility.getPta().emptyContext()), iie, subSig, soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
             QueueReader<SootMethod> targets = PTAUtils.dispatch(type, virtualCallSite);
             while (targets.hasNext()) {
                 SootMethod target = targets.next();

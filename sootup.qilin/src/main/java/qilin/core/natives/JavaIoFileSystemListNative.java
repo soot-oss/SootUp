@@ -19,6 +19,7 @@
 package qilin.core.natives;
 
 import qilin.util.PTAUtils;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
@@ -33,7 +34,7 @@ public class JavaIoFileSystemListNative extends NativeMethod {
      * only exists in old JDK(e.g., JDK6).
      */
     public void simulate() {
-        Value arrLocal = getNewArray(PTAUtils.getClassType("java.lang.String"));
+        Immediate arrLocal = getNewArray(PTAUtils.getClassType("java.lang.String"));
         Value elem = getNew(PTAUtils.getClassType("java.lang.String"));
 //        addInvoke(elem, "<java.lang.String: void <init>()>");
         addAssign(getArrayRef(arrLocal), elem);

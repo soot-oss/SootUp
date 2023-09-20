@@ -1,6 +1,7 @@
 package qilin.pta.toolkits.debloaterx;
 
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
@@ -84,26 +85,28 @@ public class CollectionHeuristic {
     }
 
     private void buildHeapFieldsMapping() {
-        pta.getNakedReachableMethods().stream().filter(m -> !m.isPhantom()).forEach(this::buildHeapFieldsMappingIn);
+        pta.getNakedReachableMethods().stream().filter(SootMethod::isConcrete).forEach(this::buildHeapFieldsMappingIn);
     }
 
     private boolean isImplementingCollection(SootClass sc) {
-        Set<SootClass> allInterfaces = new HashSet<>(sc.getInterfaces());
+        Set<ClassType> allInterfaces = new HashSet<>(sc.getInterfaces());
         while (sc.hasSuperclass()) {
-            sc = sc.getSuperclass();
+            sc = (SootClass) sc.getSuperclass().get();
             allInterfaces.addAll(sc.getInterfaces());
         }
         // interface may also have super class
         Set<SootClass> worklist = new HashSet<>();
-        for (SootClass tmp : allInterfaces) {
-            while (tmp.hasSuperclass() && tmp.getSuperclass().isInterface()) {
-                worklist.add(tmp.getSuperclass());
-                tmp = tmp.getSuperclass();
+        for (ClassType tmp : allInterfaces) {
+            SootClass msc = (SootClass) PTAScene.v().getView().getClass(tmp).get();
+            worklist.add(msc);
+            while (msc.hasSuperclass() && ((SootClass) msc.getSuperclass().get()).isInterface()) {
+                SootClass superClazz = (SootClass) msc.getSuperclass().get();
+                worklist.add(superClazz);
+                msc = superClazz;
             }
         }
-        allInterfaces.addAll(worklist);
         boolean flag = false;
-        for (SootClass interf : allInterfaces) {
+        for (SootClass interf : worklist) {
             if (interf.getType() == PTAUtils.getClassType("java.util.Collection")
                 //    || interf.getType() == RefType.v("java.util.Map")
             ) {
@@ -117,7 +120,7 @@ public class CollectionHeuristic {
         if (!sc.isInnerClass()) {
             return false;
         }
-        SootClass outer = sc.getOuterClass();
+        SootClass outer = (SootClass) sc.getOuterClass().get();
         if (isImplementingCollection(outer)) {
             return true;
         }
@@ -127,7 +130,7 @@ public class CollectionHeuristic {
     private void computeContainerTypes() {
         for (Type type : t2Fields.keySet()) {
             if (type instanceof ClassType refType) {
-                SootClass sc = refType.getSootClass();
+                SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
                 if (isImplementingCollection(sc) || isNestedInClassImplementCollection(sc)) {
                     containerType.add(type);
                 } else {

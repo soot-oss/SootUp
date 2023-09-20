@@ -33,15 +33,15 @@ public class Field implements SparkField {
         this.field = sf;
     }
 
-    @Override
-    public int getNumber() {
-        return field.getNumber();
-    }
-
-    @Override
-    public void setNumber(int number) {
-        throw new UnsupportedOperationException();
-    }
+//    @Override
+//    public int getNumber() {
+//        return field.getNumber();
+//    }
+//
+//    @Override
+//    public void setNumber(int number) {
+//        throw new UnsupportedOperationException();
+//    }
 
     @Override
     public Type getType() {
@@ -54,7 +54,7 @@ public class Field implements SparkField {
 
     @Override
     public String toString() {
-        return "FieldNode " + getNumber() + " " + field;
+        return "FieldNode " + field;
     }
 
     @Override

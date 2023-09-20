@@ -3,6 +3,7 @@ package qilin.pta.toolkits.zipper.analysis;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.AllocNode;
+import qilin.core.pag.ContextMethod;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.toolkits.common.OAG;
@@ -160,7 +161,7 @@ public class PotentialContextElement {
             while (!queue.isEmpty()) {
                 final SootMethod method = queue.poll();
                 methods.add(method);
-                pta.getCallGraph().edgesOutOf(method).forEachRemaining(edge -> {
+                pta.getCallGraph().edgesOutOf(new ContextMethod(method, pta.emptyContext())).forEachRemaining(edge -> {
                     SootMethod callee = edge.getTgt().method();
                     if (callee.isStatic() && !methods.contains(callee)) {
                         queue.offer(callee);

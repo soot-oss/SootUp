@@ -1,6 +1,7 @@
 package qilin.pta.toolkits.debloaterx;
 
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
@@ -93,14 +94,15 @@ public class XPAG {
             if (ie instanceof AbstractInstanceInvokeExpr iie) {
                 LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
                 if (iie instanceof JSpecialInvokeExpr sie) {
-                    inline(s, sie.getMethod());
+                    SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
+                    inline(s, target);
                 } else {
                     /* instance call with non-this base variable are modeled as in Eagle/Turner. */
                     modelVirtualCall(numArgs, args, receiver, retDest);
                 }
             } else {
                 if (ie instanceof JStaticInvokeExpr sie) {
-                    SootMethod target = sie.getMethod();
+                    SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
                     inline(s, target);
                 }
             }
