@@ -19,15 +19,21 @@
 package qilin.core.natives;
 
 import qilin.core.ArtificialMethod;
-import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
-public abstract class NativeMethod extends ArtificialMethod {
+import java.util.Collections;
 
+public abstract class NativeMethod extends ArtificialMethod {
     NativeMethod(SootMethod method) {
         this.method = method;
-        this.body = PTAUtils.getMethodBody(method);
+        if (method.isConcrete()) {
+            Body body = method.getBody();
+            this.bodyBuilder = Body.builder(body, Collections.emptySet());
+        } else {
+            this.bodyBuilder = Body.builder();
+        }
         int paraCount = method.getParameterCount();
         paraLocals = new Local[paraCount];
         this.paraStart = method.isStatic() ? 0 : 1;

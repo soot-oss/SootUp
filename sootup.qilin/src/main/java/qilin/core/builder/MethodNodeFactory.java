@@ -64,6 +64,7 @@ import sootup.java.core.language.JavaJimple;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * @author Ondrej Lhotak
@@ -237,12 +238,13 @@ public class MethodNodeFactory {
 
     private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
         FieldSignature fieldSig = ifr.getFieldSignature();
-        SootField sf = (SootField) PTAScene.v().getView().getField(fieldSig).get();
-        if (sf == null) {
+        Optional<SootField> osf = PTAScene.v().getView().getField(fieldSig);
+        SootField sf;
+        if (osf.isEmpty()) {
             sf = new SootField(fieldSig, Collections.singleton(Modifier.PUBLIC), NoPositionInformation.getInstance());
-            sf.setNumber(Scene.v().getFieldNumberer().size());
-            Scene.v().getFieldNumberer().add(sf);
             System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
+        } else {
+            sf = osf.get();
         }
         return pag.makeFieldRefNode(pag.makeLocalVarNode(ifr.getBase(), ifr.getBase().getType(), method), new Field(sf));
     }

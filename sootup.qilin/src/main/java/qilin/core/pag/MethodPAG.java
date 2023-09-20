@@ -19,6 +19,7 @@
 package qilin.core.pag;
 
 import qilin.CoreConfig;
+import qilin.core.PTAScene;
 import qilin.util.DataFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
@@ -31,6 +32,7 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 
 import java.util.*;
@@ -97,7 +99,8 @@ public class MethodPAG {
 
     protected void buildNormal() {
         if (method.isStatic()) {
-            PTAUtils.clinitsOf(method.getDeclaringClass()).forEach(this::addTriggeredClinit);
+            SootClass sc = (SootClass) PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
+            PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);
         }
         for (Stmt unit : body.getStmts()) {
             try {
@@ -120,7 +123,7 @@ public class MethodPAG {
          * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.
          * */
         traps.forEach(trap -> {
-            units.iterator(trap.getBeginUnit(), trap.getEndUnit()).forEachRemaining(unit -> {
+            units.iterator(trap.getBeginStmt(), trap.getEndStmt()).forEachRemaining(unit -> {
                 if (unit == trap.getEndUnit()) {
                     return;
                 }
