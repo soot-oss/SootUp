@@ -27,7 +27,6 @@ import org.junit.BeforeClass;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.pta.PTAConfig;
-import soot.options.Options;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +69,6 @@ public abstract class JunitTests {
 
     public PTA run(String mainClass, String ptaPattern) {
         PTAConfig.v().getAppConfig().MAIN_CLASS = mainClass;
-        Options.v().set_main_class(mainClass);
         PTAScene.v().setMainClass(PTAScene.v().getSootClass(mainClass));
         PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
         PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();

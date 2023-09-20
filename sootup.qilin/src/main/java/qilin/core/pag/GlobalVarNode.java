@@ -19,6 +19,7 @@
 package qilin.core.pag;
 
 
+import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.types.Type;
@@ -45,7 +46,7 @@ public class GlobalVarNode extends VarNode {
 
     public SootClass getDeclaringClass() {
         if (variable instanceof SootField sf) {
-            return sf.getDeclaringClass();
+            return (SootClass) PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
         }
 
         return null;

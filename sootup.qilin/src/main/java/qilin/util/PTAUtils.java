@@ -36,7 +36,6 @@ import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
-import soot.util.NumberedString;
 import soot.util.dot.DotGraph;
 import soot.util.dot.DotGraphConstants;
 import soot.util.dot.DotGraphNode;
@@ -55,11 +54,13 @@ import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
+import sootup.core.util.printer.JimplePrinter;
 import sootup.java.core.JavaIdentifierFactory;
 
 import java.io.*;
@@ -276,15 +277,17 @@ public final class PTAUtils {
 
     public static boolean isUnresolved(Type type) {
         if (type instanceof ArrayType at) {
-            type = at.getArrayElementType();
+            type = at.getBaseType();
         }
         if (!(type instanceof ClassType rt))
             return false;
 //        if (!rt.hasSootClass()) {
 //            return true;
 //        }
-        SootClass cl = rt.getSootClass();
-        return cl.resolvingLevel() < SootClass.HIERARCHY;
+        Optional<SootClass> ocl = PTAScene.v().getView().getClass(rt);
+        return ocl.isEmpty();
+//        SootClass cl = rt.getSootClass();
+//        return cl.resolvingLevel() < SootClass.HIERARCHY;
     }
 
     public static boolean castNeverFails(Type src, Type dst) {
@@ -298,12 +301,12 @@ public final class PTAUtils {
             return true;
         if (src instanceof NullType)
             return true;
-        if (src instanceof AnySubType)
-            return true;
+//        if (src instanceof AnySubType)
+//            return true;
         if (dst instanceof NullType)
             return false;
-        if (dst instanceof AnySubType)
-            throw new RuntimeException("oops src=" + src + " dst=" + dst);
+//        if (dst instanceof AnySubType)
+//            throw new RuntimeException("oops src=" + src + " dst=" + dst);
         return PTAScene.v().canStoreType(src, dst);
     }
 
@@ -350,14 +353,14 @@ public final class PTAUtils {
                 if (vn instanceof LocalVarNode) {
                     SootMethod sm = ((LocalVarNode) vn).getMethod();
                     if (sm != null) {
-                        clz = sm.getDeclaringClass();
+                        clz = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
                     }
                 } else if (vn instanceof GlobalVarNode gvn) {
                     clz = gvn.getDeclaringClass();
                 } else if (vn instanceof ContextVarNode cv) {
                     VarNode varNode = cv.base();
                     if (varNode instanceof LocalVarNode cvbase) {
-                        clz = cvbase.getMethod().getDeclaringClass();
+                        clz = (SootClass) PTAScene.v().getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
                     } else if (varNode instanceof GlobalVarNode gvn) {
                         clz = gvn.getDeclaringClass();
                     }
@@ -614,7 +617,7 @@ public final class PTAUtils {
     }
 
     public static boolean isFakeMainMethod(SootMethod method) {
-        String sig = "<FakeMain: void fakeMain()>";
+        String sig = "<qilin.pta.FakeMain: void main()>";
         return method.getSignature().equals(sig);
     }
 
@@ -625,32 +628,6 @@ public final class PTAUtils {
      */
     private static final String[] NO_CONTEXT = {"java.lang.Throwable", "java.lang.StringBuffer", "java.lang.StringBuilder"};
     private static Set<SootClass> ignoreList = null;
-
-    /**
-     * Install no context list for classes given plus all subclasses.
-     */
-    private static void initEmptyHeapContextTypes() {
-        if (ignoreList == null) {
-            ignoreList = new HashSet<>();
-            Hierarchy hierarchy = new Hierarchy();
-            for (String str : NO_CONTEXT) {
-                SootClass clz = PTAScene.v().getSootClass(str);
-                if (clz.isInterface()) {
-                    for (SootClass child : hierarchy.getSubinterfacesOfIncluding(clz)) {
-                        if (child != null) {
-                            ignoreList.add(child);
-                        }
-                    }
-                } else {
-                    for (SootClass child : hierarchy.getSubclassesOfIncluding(clz)) {
-                        if (child != null) {
-                            ignoreList.add(child);
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public static boolean isOfPrimitiveBaseType(AllocNode heap) {
         if (heap.getType() instanceof ArrayType arrayType) {
@@ -667,44 +644,21 @@ public final class PTAUtils {
     }
 
     /**
-     * Limit heap context to 0 for these AllocNodes of types in ignoreList.
-     * We set heaps of StringBuilder/StringBuffer/Throwable types to be context-insensitive just like that in Doop.
-     * refers to library/string-constants.logic in doop.
-     */
-    public static boolean enforceEmptyContext(AllocNode probe) {
-        // primitive array objects should be context-insenstive.
-        if (probe.getType() instanceof ArrayType arrayType) {
-            if (arrayType.getArrayElementType() instanceof PrimitiveType) {
-                return true;
-            }
-        }
-        // shortcircuit below computation
-        initEmptyHeapContextTypes();
-        if (!ignoreList.isEmpty()) {
-            // check if the type that is allocated should never has context
-            // because it is on the ignore List
-            SootClass allocated = getSootClass(probe.getType());
-            // first check if on the no context list, that trumps all
-            return ignoreList.contains(allocated);
-        }
-        return false;
-    }
-
-    /**
      * Write the jimple file for clz. ParentDir is the absolute path of parent
      * directory.
      */
     public static void writeJimple(String parentDir, SootClass clz) {
-
+        PackageName pkgName = clz.getType().getPackageName();
+        String clzName = clz.getType().getClassName();
         File packageDirectory = new File(
-                parentDir + File.separator + clz.getPackageName().replace(".", File.separator));
+                parentDir + File.separator + pkgName.getPackageName().replace(".", File.separator));
 
         try {
             packageDirectory.mkdirs();
             OutputStream streamOut = new FileOutputStream(
-                    packageDirectory + File.separator + clz.getShortName() + ".jimple");
+                    packageDirectory + File.separator + clzName + ".jimple");
             PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
-            Printer.v().printTo(clz, writerOut);
+            new JimplePrinter().printTo(clz, writerOut);
             writerOut.flush();
             writerOut.close();
             streamOut.close();
@@ -784,16 +738,6 @@ public final class PTAUtils {
             System.out.println("cannot find meta info.");
         }
         return mainClass;
-    }
-
-    public static SootClass getSootClass(Type type) {
-        SootClass allocated = null;
-        if (type instanceof ClassType) {
-            allocated = ((ClassType) type).getSootClass();
-        } else if (type instanceof ArrayType && ((ArrayType) type).getArrayElementType() instanceof ClassType) {
-            allocated = ((ClassType) ((ArrayType) type).getArrayElementType()).getSootClass();
-        }
-        return allocated;
     }
 
     private static final Map<SootMethod, Body> methodToBody = DataFactory.createMap();

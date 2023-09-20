@@ -20,11 +20,11 @@ package qilin.test.util;
 
 import qilin.core.PTA;
 import qilin.util.PTAUtils;
-import soot.SootMethod;
-import soot.Unit;
-import soot.jimple.InvokeExpr;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class AssertionsParser {
     public static Set<IAssertion> retrieveQueryInfo(PTA pta) {
         Set<IAssertion> aliasAssertionSet = new HashSet<>();
         for (SootMethod sm : pta.getNakedReachableMethods()) {
-            if (sm.isNative() || sm.isPhantom()) {
+            if (sm.isNative()) {
                 continue;
             }
 
@@ -46,12 +46,11 @@ public class AssertionsParser {
 //                PTAUtils.dumpMPAG(pta, sm);
 //                System.out.println("=================================================================");
 //            }
-            for (Unit unit : PTAUtils.getMethodBody(sm).getUnits()) {
-                final Stmt stmt = (Stmt) unit;
+            for (final Stmt stmt : PTAUtils.getMethodBody(sm).getStmts()) {
                 if (stmt.containsInvokeExpr()) {
-                    InvokeExpr ie = stmt.getInvokeExpr();
-                    if (ie instanceof StaticInvokeExpr) {
-                        final String calleeSig = ie.getMethodRef().getSignature();
+                    AbstractInvokeExpr ie = stmt.getInvokeExpr();
+                    if (ie instanceof JStaticInvokeExpr) {
+                        final MethodSignature calleeSig = ie.getMethodSignature();
                         if (calleeSig.equals(mayAliasSig)) {
                             aliasAssertionSet.add(new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), true));
                         } else if (calleeSig.equals(notAliasSig)) {

@@ -22,13 +22,13 @@ import qilin.core.PTA;
 import qilin.core.sets.PointsToSet;
 import qilin.pta.PTAConfig;
 import qilin.util.PTAUtils;
-import soot.Local;
-import soot.SootMethod;
-import soot.Value;
-import soot.jimple.ClassConstant;
-import soot.jimple.NullConstant;
-import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.jimple.common.constant.NullConstant;
+import sootup.core.jimple.common.constant.StringConstant;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.SootMethod;
 
 import java.util.Objects;
 
@@ -82,15 +82,15 @@ public class AliasAssertion implements IAssertion {
         }
         if (va instanceof StringConstant && vb instanceof StringConstant) {
             return va.equals(vb);
-        } else if (va instanceof StringConstant) {
-            String s = ((StringConstant) va).value;
+        } else if (va instanceof StringConstant strConst) {
+            String s = strConst.getValue();
             if (!PTAConfig.v().getPtaConfig().stringConstants) {
                 s = "STRING_NODE";
             }
             PointsToSet pts = pta.reachingObjects((Local) vb).toCIPointsToSet();
             return pts.possibleStringConstants().contains(s);
-        } else if (vb instanceof StringConstant) {
-            String s = ((StringConstant) vb).value;
+        } else if (vb instanceof StringConstant strConst) {
+            String s = strConst.getValue();
             if (!PTAConfig.v().getPtaConfig().stringConstants) {
                 s = "STRING_NODE";
             }
