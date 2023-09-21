@@ -231,7 +231,7 @@ public class InstructionConverter {
     }
     JArrayRef arrayRef = JavaJimple.getInstance().newArrayRef(base, index);
     int def = inst.getDef();
-    LhsValue left = getLocal(base.getType(), def);
+    LValue left = getLocal(base.getType(), def);
 
     Position[] operandPos = new Position[1];
     // TODO: loaded arrayindex position info is missing
@@ -414,7 +414,7 @@ public class InstructionConverter {
       }
       JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
       // TODO check modifier
-      LhsValue left;
+      LValue left;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
@@ -474,7 +474,7 @@ public class InstructionConverter {
 
   private Stmt convertEnclosingObjectReference(EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
-    LhsValue variable = getLocal(enclosingType, inst.getDef());
+    LValue variable = getLocal(enclosingType, inst.getDef());
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
 
     // TODO check modifier
@@ -633,7 +633,7 @@ public class InstructionConverter {
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature(
             fieldRef.getName().toString(), classSig, fieldType.toString());
-    LhsValue fieldValue;
+    LValue fieldValue;
     if (inst.isStatic()) {
       fieldValue = Jimple.newStaticFieldRef(fieldSig);
     } else {
@@ -663,7 +663,7 @@ public class InstructionConverter {
   private Stmt convertNewInstruction(SSANewInstruction inst) {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
-    LhsValue var = getLocal(type, result);
+    LValue var = getLocal(type, result);
     Value rvalue;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
@@ -707,7 +707,7 @@ public class InstructionConverter {
     // TODO. how to get type of ref?
     Local op = getLocal(UnknownType.getInstance(), ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
-    LhsValue left = getLocal(PrimitiveType.getBoolean(), result);
+    LValue left = getLocal(PrimitiveType.getBoolean(), result);
 
     Position[] operandPos = new Position[2];
     // TODO: has no operand positions yet for checked and expected side
@@ -726,7 +726,7 @@ public class InstructionConverter {
     Type toType = converter.convertType(inst.getToType());
     int def = inst.getDef();
     int use = inst.getUse(0);
-    LhsValue lvalue = getLocal(toType, def);
+    LValue lvalue = getLocal(toType, def);
     Immediate rvalue;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
@@ -913,7 +913,7 @@ public class InstructionConverter {
   private List<Stmt> convertStringAddition(
       Immediate op1,
       Immediate op2,
-      LhsValue result,
+      LValue result,
       Type type,
       int iindex,
       AstMethod.DebuggingInformation debugInfo) {

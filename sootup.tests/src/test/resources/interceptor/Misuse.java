@@ -39,4 +39,11 @@ public class Misuse {
             e.printStackTrace();
         }
     }
+
+
+    public void test1() {
+        File file = new File();
+        file.open();
+        file.close();
+    }
 }

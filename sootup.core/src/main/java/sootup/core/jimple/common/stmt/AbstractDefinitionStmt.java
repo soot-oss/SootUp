@@ -25,7 +25,7 @@ package sootup.core.jimple.common.stmt;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.LhsValue;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -38,7 +38,7 @@ public abstract class AbstractDefinitionStmt extends Stmt {
   }
 
   @Nonnull
-  public abstract LhsValue getLeftOp();
+  public abstract LValue getLeftOp();
 
   @Nonnull
   public abstract Value getRightOp();
@@ -50,8 +50,8 @@ public abstract class AbstractDefinitionStmt extends Stmt {
 
   @Override
   @Nonnull
-  public List<LhsValue> getDefs() {
-    final List<LhsValue> defs = new ArrayList<>();
+  public List<LValue> getDefs() {
+    final List<LValue> defs = new ArrayList<>();
     defs.add(getLeftOp());
     return defs;
   }

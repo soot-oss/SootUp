@@ -42,7 +42,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.*;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -525,8 +524,7 @@ public abstract class Jimple {
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static JAssignStmt newAssignStmt(
-      LhsValue variable, Value rvalue, StmtPositionInfo posInfo) {
+  public static JAssignStmt newAssignStmt(LValue variable, Value rvalue, StmtPositionInfo posInfo) {
     return new JAssignStmt(variable, rvalue, posInfo);
   }
 

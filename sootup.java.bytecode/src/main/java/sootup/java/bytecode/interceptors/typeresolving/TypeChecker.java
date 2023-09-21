@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LhsValue;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;
@@ -98,7 +98,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (Type.isObjectLikeType(type_base)
               || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<LhsValue, Collection<Stmt>> defs =
+            Map<LValue, Collection<Stmt>> defs =
                 Body.collectDefs(builder.getStmtGraph().getNodes());
             Collection<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
@@ -151,8 +151,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<LhsValue, Collection<Stmt>> defs =
-              Body.collectDefs(builder.getStmtGraph().getNodes());
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));

@@ -431,8 +431,8 @@ public class Body implements Copyable {
           if (currStmt.getUses().contains(oldLocal)) {
             currStmt = currStmt.withNewUse(oldLocal, newLocal);
           }
-          final List<LhsValue> defs = currStmt.getDefs();
-          for (LhsValue def : defs) {
+          final List<LValue> defs = currStmt.getDefs();
+          for (LValue def : defs) {
             if (def == oldLocal || def.getUses().contains(oldLocal)) {
               if (currStmt instanceof AbstractDefinitionStmt) {
                 currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
@@ -575,11 +575,11 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<LhsValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
-    Map<LhsValue, Collection<Stmt>> allDefs = new HashMap<>();
+  public static Map<LValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
+    Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<LhsValue> defs = stmt.getDefs();
-      for (LhsValue value : defs) {
+      List<LValue> defs = stmt.getDefs();
+      for (LValue value : defs) {
         Collection<Stmt> localDefs = allDefs.get(value);
         if (localDefs == null) {
           localDefs = new ArrayList<>();

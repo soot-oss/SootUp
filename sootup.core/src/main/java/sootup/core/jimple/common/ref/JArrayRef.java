@@ -31,7 +31,7 @@ import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JArrayRef implements ConcreteRef, LhsValue, Copyable {
+public final class JArrayRef implements ConcreteRef, LValue, Copyable {
 
   private final Local base;
   private final Immediate index;

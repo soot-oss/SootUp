@@ -37,7 +37,7 @@ import sootup.core.util.printer.StmtPrinter;
 /** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
-  @Nonnull final LhsValue leftOp;
+  @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
 
   /**
@@ -47,7 +47,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull LhsValue variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+      @Nonnull LValue variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
     leftOp = variable;
     rightOp = rValue;
@@ -189,7 +189,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withVariable(@Nonnull LhsValue variable) {
+  public JAssignStmt withVariable(@Nonnull LValue variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
@@ -205,7 +205,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
 
   @Nonnull
   @Override
-  public LhsValue getLeftOp() {
+  public LValue getLeftOp() {
     return leftOp;
   }
 
@@ -220,7 +220,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public Stmt withNewDef(@Nonnull Local newLocal) {
     // "ReplaceDefVisitor"
     final Value leftOp = getLeftOp();
-    LhsValue newVal;
+    LValue newVal;
     if (leftOp instanceof ConcreteRef) {
       if (leftOp instanceof JArrayRef) {
         newVal = ((JArrayRef) leftOp).withBase(newLocal);

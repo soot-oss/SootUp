@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.LhsValue;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -63,7 +63,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<LhsValue, Collection<Stmt>> allDefs = new HashMap<>();
+  Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
   Map<Local, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override

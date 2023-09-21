@@ -2,11 +2,14 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -15,9 +18,9 @@ import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -116,12 +119,43 @@ public class AggregatorTest {
 
     JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
     JavaView view = project.createView();
-    view.configBodyInterceptors((analysisInputLocation) -> BytecodeClassLoadingOptions.Default);
 
-    final SootMethod sootMethod =
-        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
-            .get();
+    view.configBodyInterceptors(
+        (analysisInputLocation) ->
+            new ClassLoadingOptions() {
+              @Nonnull
+              @Override
+              public List<BodyInterceptor> getBodyInterceptors() {
+                return Arrays.asList(
+                    new CastAndReturnInliner(),
+                    // new UnreachableCodeEliminator(),
+                    // new LocalSplitter(),
+                    new Aggregator()
+                    // new TypeAssigner(),
+                    // ms: is already called from typeassigner? new LocalNameStandardizer(),
+                    /*new CopyPropagator(),
+                    new DeadAssignmentEliminator(),
+                    new ConditionalBranchFolder(),
+                    new EmptySwitchEliminator(),
+                    new NopEliminator(),
+                    new UnusedLocalEliminator(),
+                    new UnreachableCodeEliminator()*/ );
+              }
+            });
 
-    sootMethod.getBody();
+    {
+      final SootMethod sootMethod =
+          view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
+              .get();
+
+      sootMethod.getBody();
+    }
+    {
+      final SootMethod sootMethod =
+          view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test1()>"))
+              .get();
+
+      System.out.println(sootMethod.getBody());
+    }
   }
 }

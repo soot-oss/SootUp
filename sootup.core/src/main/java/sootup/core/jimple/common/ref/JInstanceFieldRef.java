@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
-import sootup.core.jimple.basic.LhsValue;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
@@ -38,7 +38,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JInstanceFieldRef extends JFieldRef implements LhsValue, Copyable {
+public final class JInstanceFieldRef extends JFieldRef implements LValue, Copyable {
 
   private final Local base;
 

@@ -43,7 +43,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, LhsValue, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
@@ -124,7 +124,7 @@ public class Local implements Immediate, LhsValue, Copyable, Acceptor<ImmediateV
   }
 
   /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
-  public List<AbstractDefinitionStmt> getDefsOfLocal(List<Stmt> defs) {
+  public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
     List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt

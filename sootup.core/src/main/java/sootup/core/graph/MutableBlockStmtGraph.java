@@ -28,7 +28,7 @@ import sootup.core.types.Type;
  * */
 public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Nullable private Stmt startingStmt = null;
-  @Nonnull private final Map<Stmt, MutableBasicBlock> stmtToBlock = new HashMap<>();
+  @Nonnull private final Map<Stmt, MutableBasicBlock> stmtToBlock = new IdentityHashMap<>();
 
   @Nonnull private final Set<MutableBasicBlock> blocks = new HashSet<>();
 

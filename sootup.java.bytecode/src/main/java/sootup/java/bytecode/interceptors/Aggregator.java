@@ -90,13 +90,11 @@ public class Aggregator implements BodyInterceptor {
         if (!(val instanceof Local)) {
           continue;
         }
-        List<AbstractDefinitionStmt> defs = ((Local) val).getDefsOfLocal(stmts);
+        List<AbstractDefinitionStmt> defs = ((Local) val).getDefs(stmts);
         if (defs.size() != 1) {
           continue;
         }
         Stmt relevantDef = defs.get(0);
-        // TODO: ms: check why its possible that we can get relevantDes/stmt but they are not in the
-        // graph anymore
         if (!graph.containsNode(relevantDef) || !graph.containsNode(stmt)) {
           continue;
         }

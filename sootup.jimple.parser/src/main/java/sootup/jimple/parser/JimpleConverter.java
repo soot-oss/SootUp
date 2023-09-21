@@ -487,10 +487,10 @@ public class JimpleConverter {
                   return Jimple.newIdentityStmt(left, ref, pos);
 
                 } else if (assignments.EQUALS() != null) {
-                  LhsValue left =
+                  LValue left =
                       assignments.local != null
                           ? getLocal(assignments.local.getText())
-                          : (LhsValue) valueVisitor.visitReference(assignments.reference());
+                          : (LValue) valueVisitor.visitReference(assignments.reference());
 
                   final Value right = valueVisitor.visitValue(assignments.value());
                   return Jimple.newAssignStmt(left, right, pos);
