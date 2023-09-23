@@ -24,15 +24,17 @@ import qilin.util.DataFactory;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.util.PTAUtils;
 
-import soot.jimple.Jimple;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 
 import java.util.*;
@@ -123,23 +125,49 @@ public class MethodPAG {
          * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.
          * */
         traps.forEach(trap -> {
-            units.iterator(trap.getBeginStmt(), trap.getEndStmt()).forEachRemaining(unit -> {
-                if (unit == trap.getEndUnit()) {
-                    return;
+            StmtGraph<?> stmtGraph = body.getStmtGraph();
+            List<Stmt> succs = stmtGraph.getAllSuccessors(trap.getBeginStmt());
+            while(true) {
+                if (succs.contains(trap.getEndStmt())) {
+                    break;
                 }
-                inTraps.add(unit);
-                Stmt stmt = unit;
-                Node src = null;
-                if (stmt.containsInvokeExpr()) {
-                    // note, method.getExceptions() does not return implicit exceptions.
-                    src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-                } else if (stmt instanceof JThrowStmt ts) {
-                    src = nodeFactory.getNode(ts.getOp());
+                if (succs.size() == 0) {
+                    break;
                 }
-                if (src != null) {
-                    addStmtTrap(src, stmt, trap);
+                List<Stmt> tmp = new ArrayList<>();
+                for (Stmt stmt : succs) {
+                    inTraps.add(stmt);
+                    Node src = null;
+                    if (stmt.containsInvokeExpr()) {
+                        // note, method.getExceptions() does not return implicit exceptions.
+                        src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
+                    } else if (stmt instanceof JThrowStmt ts) {
+                        src = nodeFactory.getNode(ts.getOp());
+                    }
+                    if (src != null) {
+                        addStmtTrap(src, stmt, trap);
+                    }
+                    tmp.addAll(stmtGraph.getAllSuccessors(stmt));
                 }
-            });
+                succs = tmp;
+            }
+//            units.iterator(trap.getBeginStmt(), trap.getEndStmt()).forEachRemaining(unit -> {
+//                if (unit == trap.getEndUnit()) {
+//                    return;
+//                }
+//                inTraps.add(unit);
+//                Stmt stmt = unit;
+//                Node src = null;
+//                if (stmt.containsInvokeExpr()) {
+//                    // note, method.getExceptions() does not return implicit exceptions.
+//                    src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
+//                } else if (stmt instanceof JThrowStmt ts) {
+//                    src = nodeFactory.getNode(ts.getOp());
+//                }
+//                if (src != null) {
+//                    addStmtTrap(src, stmt, trap);
+//                }
+//            });
         });
 
         for (Stmt stmt : body.getStmts()) {
@@ -169,7 +197,9 @@ public class MethodPAG {
     protected void addMiscEdges() {
         if (method.getSignature().equals("<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
             // Implements the special status of java.lang.ref.Reference just as in Doop (library/reference.logic).
-            JStaticFieldRef sfr = Jimple.v().newStaticFieldRef(RefType.v("java.lang.ref.Reference").getSootClass().getFieldByName("pending").makeRef());
+            SootClass sootClass = PTAScene.v().getSootClass("java.lang.ref.Reference");
+            SootField sf = (SootField) sootClass.getField("pending").get();
+            JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
             addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
         }
     }

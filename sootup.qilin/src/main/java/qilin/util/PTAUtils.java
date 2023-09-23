@@ -745,18 +745,18 @@ public final class PTAUtils {
     public static Body getMethodBody(SootMethod m) {
         Body body = methodToBody.get(m);
         if (body == null) {
-            synchronized (PTAUtils.class) {
-                if (body == null) {
-                    if (m.isConcrete()) {
-                        body = m.retrieveActiveBody();
-                    } else {
-                        body = new JimpleBody(m);
-                    }
-                    methodToBody.putIfAbsent(m, body);
-                }
+            if (m.isConcrete()) {
+                body = m.getBody();
+            } else {
+                body = Body.builder().build();
             }
+            methodToBody.putIfAbsent(m, body);
         }
         return body;
+    }
+
+    public static void updateMethodBody(SootMethod m, Body body) {
+        methodToBody.put(m, body);
     }
 
     public static boolean isEmptyArray(AllocNode heap) {

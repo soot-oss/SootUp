@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PTAScene {
     private static volatile PTAScene instance = null;
@@ -136,12 +137,19 @@ public class PTAScene {
         return (SootMethod) view.getMethod(mthdSig).get();
     }
 
-    public Chain<SootClass> getApplicationClasses() {
-        return sootScene.getApplicationClasses();
+    public Collection<SootClass> getApplicationClasses() {
+        Collection<SootClass> classes = view.getClasses();
+        return classes.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
+//        for (SootClass sc : classes) {
+//            sc.isApplicationClass()
+//        }
+//        return sootScene.getApplicationClasses();
     }
 
-    public Chain<SootClass> getLibraryClasses() {
-        return sootScene.getLibraryClasses();
+    public Collection<SootClass> getLibraryClasses() {
+        Collection<SootClass> classes = view.getClasses();
+        return classes.stream().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
+//        return sootScene.getLibraryClasses();
     }
 
     public boolean containsMethod(String methodSignature) {

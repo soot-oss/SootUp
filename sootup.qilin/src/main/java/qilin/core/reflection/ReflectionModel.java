@@ -23,6 +23,7 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
 import java.util.Collection;
@@ -74,15 +75,20 @@ public abstract class ReflectionModel {
             return;
         }
         Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
-        List<Stmt> units = PTAUtils.getMethodBody(m).getStmts();
+        Body body = PTAUtils.getMethodBody(m);
+        List<Stmt> units = body.getStmts();
         for (final Stmt u : units) {
             if (u.containsInvokeExpr()) {
                 newUnits.put(u, transform(u));
             }
         }
+        Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
         for (Stmt unit : newUnits.keySet()) {
-            units.insertAfter(newUnits.get(unit), unit);
+            for (Stmt succ : newUnits.get(unit)) {
+                builder.addFlow(unit, succ);
+            }
         }
+        PTAUtils.updateMethodBody(m, builder.build());
     }
 
     abstract Collection<Stmt> transformClassForName(Stmt s);

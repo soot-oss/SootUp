@@ -528,35 +528,31 @@ public class PAG {
         if (methodToPag.containsKey(m)) {
             return methodToPag.get(m);
         }
-        Body body = PTAUtils.getMethodBody(m);
-        synchronized (body) {
-            // Some other thread may have created the MethodPAG for this method.
-            if (methodToPag.containsKey(m)) {
-                return methodToPag.get(m);
-            }
-            if (m.isConcrete()) {
-                reflectionModel.buildReflection(m);
-            }
-            if (m.isNative()) {
-                nativeDriver.buildNative(m);
-            } else {
-                // we will revert these back in the future.
-                /*
-                 * To keep same with Doop, we move the simulation of
-                 * <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>
-                 * directly to its caller methods.
-                 * */
-                if (PTAScene.v().arraycopyBuilt.add(m)) {
-                    handleArrayCopy(m);
-                }
+        if (m.isConcrete()) {
+            reflectionModel.buildReflection(m);
+        }
+        if (m.isNative()) {
+            nativeDriver.buildNative(m);
+        } else {
+            // we will revert these back in the future.
+            /*
+             * To keep same with Doop, we move the simulation of
+             * <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>
+             * directly to its caller methods.
+             * */
+            if (PTAScene.v().arraycopyBuilt.add(m)) {
+                handleArrayCopy(m);
             }
         }
+        Body body = PTAUtils.getMethodBody(m);
         return methodToPag.computeIfAbsent(m, k -> new MethodPAG(this, m, body));
     }
 
     private void handleArrayCopy(SootMethod method) {
         Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
         Body body = PTAUtils.getMethodBody(method);
+        Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+        int localCount = body.getLocalCount();
         for (Stmt s : body.getStmts()) {
             if (s.containsInvokeExpr()) {
                 AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
@@ -569,8 +565,8 @@ public class PAG {
                         }
                         Type objType = PTAUtils.getClassType("java.lang.Object");
                         if (srcArr.getType() == objType) {
-                            Local localSrc = Jimple.newLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
-                            body.getLocals().add(localSrc);
+                            Local localSrc = Jimple.newLocal("intermediate/" + (localCount ++), new ArrayType(objType, 1));
+                            builder.addLocal(localSrc);
                             newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt<>(localSrc, srcArr, StmtPositionInfo.createNoStmtPositionInfo()));
                             srcArr = localSrc;
                         }
@@ -579,24 +575,28 @@ public class PAG {
                             continue;
                         }
                         if (dstArr.getType() == objType) {
-                            Local localDst = Jimple.newLocal("intermediate/" + body.getLocalCount(), new ArrayType(objType, 1));
-                            body.getLocals().add(localDst);
+                            Local localDst = Jimple.newLocal("intermediate/" + (localCount ++), new ArrayType(objType, 1));
+                            builder.addLocal(localDst);
                             newUnits.computeIfAbsent(s, k -> new HashSet<>()).add(new JAssignStmt<>(localDst, dstArr,StmtPositionInfo.createNoStmtPositionInfo()));
                             dstArr = localDst;
                         }
                         Value src = JavaJimple.getInstance().newArrayRef((Local) srcArr, IntConstant.getInstance(0));
                         Value dst = JavaJimple.getInstance().newArrayRef((Local) dstArr, IntConstant.getInstance(0));
-                        Local local = Jimple.newLocal("nativeArrayCopy" + body.getLocalCount(), PTAUtils.getClassType("java.lang.Object"));
-                        body.getLocals().add(local);
+                        Local local = Jimple.newLocal("nativeArrayCopy" + (localCount ++), PTAUtils.getClassType("java.lang.Object"));
+                        builder.addLocal(local);
                         newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt<>(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
                         newUnits.computeIfAbsent(s, k -> DataFactory.createSet()).add(new JAssignStmt<>(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
                     }
                 }
             }
         }
+
         for (Stmt unit : newUnits.keySet()) {
-            body.getUnits().insertAfter(newUnits.get(unit), unit);
+            for (Stmt succ : newUnits.get(unit)) {
+                builder.addFlow(unit, succ);
+            }
         }
+        PTAUtils.updateMethodBody(method, builder.build());
     }
 
     public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
