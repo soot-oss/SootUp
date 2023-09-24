@@ -659,8 +659,7 @@ public final class PTAUtils {
   public static void writeJimple(String parentDir, SootClass clz) {
     PackageName pkgName = clz.getType().getPackageName();
     String clzName = clz.getType().getClassName();
-    File packageDirectory =
-        new File(
+    File packageDirectory = new File(
             parentDir + File.separator + pkgName.getPackageName().replace(".", File.separator));
 
     try {
@@ -817,9 +816,10 @@ public final class PTAUtils {
     Set<SootMethod> ret = new HashSet<>();
     Set<SootClass> visit = new HashSet<>();
     Queue<SootClass> worklist = new UniqueQueue<>();
-    Optional<SootClass> curr = Optional.of(cl);
+    Optional<ClassType> curr = Optional.of(cl.getType());
     while (curr.isPresent()) {
-      SootClass sc = curr.get();
+      ClassType ct = curr.get();
+      SootClass sc = (SootClass) PTAScene.v().getView().getClass(ct).get();
       worklist.add(sc);
       curr = sc.getSuperclass();
     }

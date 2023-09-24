@@ -44,24 +44,19 @@ public abstract class JunitTests {
     File rootDir = new File("../");
     File testDir =
         new File(
-            rootDir,
-            "qilin.microben"
-                + File.separator
-                + "build"
-                + File.separator
-                + "classes"
-                + File.separator
-                + "java"
-                + File.separator
-                + "main");
+            rootDir, "sootup.qilin" + File.separator + "target" + File.separator + "test-classes");
     appPath = testDir.getCanonicalPath();
     System.out.println("APP_PATH:" + appPath);
     File refLogDir =
         new File(
             rootDir,
-            "qilin.microben"
+            "sootup.qilin"
                 + File.separator
                 + "src"
+                + File.separator
+                + "test"
+                + File.separator
+                + "java"
                 + File.separator
                 + "qilin"
                 + File.separator
