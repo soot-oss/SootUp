@@ -31,5 +31,5 @@ public interface MutableTypeHierarchy extends TypeHierarchy {
    *
    * <p>For internal use only.
    */
-  void addType(SootClass sootClass);
+  void addType(SootClass<?> sootClass);
 }

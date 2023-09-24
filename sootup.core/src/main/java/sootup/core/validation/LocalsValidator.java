@@ -23,32 +23,37 @@ package sootup.core.validation;
  */
 
 import java.util.List;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
 import sootup.core.model.Body;
 
 public class LocalsValidator implements BodyValidator {
 
-  /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
+  /** Verifies that each Local of getUses() and getDefs() belongs to this body's locals. */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
-    for (Value v : body.getUses()) {
-      validateLocal(body, v, exception);
-    }
-    for (Value v : body.getDefs()) {
-      validateLocal(body, v, exception);
-    }
-  }
+  public void validate(@Nonnull Body body, @Nonnull List<ValidationException> exception) {
+    final Set<Local> locals = body.getLocals();
 
-  private void validateLocal(Body body, Value v, List<ValidationException> exception) {
-    Value value;
-    if ((value = v) instanceof Local) {
-      if (!body.getLocals().contains(value)) {
-        exception.add(
-            new ValidationException(
-                value, "Local not in chain : " + value + " in " + body.getMethodSignature()));
-      }
-    }
+    body.getUses()
+        .parallelStream()
+        .filter(value -> value instanceof Local && !locals.contains(value))
+        .forEach(
+            value ->
+                exception.add(
+                    new ValidationException(
+                        value,
+                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+
+    body.getDefs()
+        .parallelStream()
+        .filter(value -> value instanceof Local && !locals.contains(value))
+        .forEach(
+            value ->
+                exception.add(
+                    new ValidationException(
+                        value,
+                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
   }
 
   @Override

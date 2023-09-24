@@ -29,9 +29,7 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    view =
-        new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir)))
-            .createOnDemandView();
+    view = new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir))).createView();
   }
 
   /**
@@ -87,7 +85,7 @@ public abstract class JimpleTestSuiteBase {
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     if (!expectedStmts.equals(actualStmts)) {
-      System.out.println(Utils.printJimpleStmtsForTest(actualStmts));
+      System.out.println(Utils.generateJimpleTest(actualStmts));
       assertEquals(expectedStmts, actualStmts);
     }
   }

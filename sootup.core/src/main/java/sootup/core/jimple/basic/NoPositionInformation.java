@@ -22,14 +22,14 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import sootup.core.model.Position;
+import sootup.core.model.FullPosition;
 
 /**
  * This convenience class represents the case when there is no position information available.
  *
  * @author Linghui Luo
  */
-public class NoPositionInformation extends Position {
+public class NoPositionInformation extends FullPosition {
 
   private static final NoPositionInformation INSTANCE = new NoPositionInformation();
 
@@ -43,6 +43,6 @@ public class NoPositionInformation extends Position {
 
   @Override
   public String toString() {
-    return "No position info";
+    return "NoPositionInformation";
   }
 }

@@ -159,7 +159,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
       @Nonnull ClassType type, @Nonnull View<?> view) {
     for (String path : sourcePaths) {
       try {
-        return Optional.ofNullable(classProvider.createClassSource(this, Paths.get(path), type));
+        return classProvider.createClassSource(this, Paths.get(path), type);
       } catch (ResolveException e) {
         log.debug(type + " not found in sourcePath " + path, e);
       }

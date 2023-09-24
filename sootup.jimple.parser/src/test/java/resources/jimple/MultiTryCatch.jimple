@@ -1,4 +1,4 @@
-synchronized class MultiTryCatch extends java.lang.Object
+super class MultiTryCatch extends java.lang.Object
 {
     public void printFile() throws java.lang.Exception
     {

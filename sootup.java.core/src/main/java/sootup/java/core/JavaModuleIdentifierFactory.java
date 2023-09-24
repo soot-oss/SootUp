@@ -22,9 +22,9 @@ package sootup.java.core;
  * #L%
  */
 
-import java.util.HashMap;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.signatures.MethodSignature;
@@ -36,7 +36,8 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static final String MODULE_INFO_FILE = "module-info";
 
-  private static final Map<String, ModuleSignature> modules = new HashMap<>();
+  private static final Cache<String, ModuleSignature> modules =
+      CacheBuilder.newBuilder().weakValues().build();
 
   private static final JavaModuleIdentifierFactory INSTANCE = new JavaModuleIdentifierFactory();
 
@@ -48,13 +49,13 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
     return getInstance(getModuleSignature(module));
   }
 
-  private static final Map<ModuleSignature, JavaModuleIdentifierFactory>
-      moduleIdentifierFactoryWrapper = new HashMap<>();
+  private static final Cache<ModuleSignature, JavaModuleIdentifierFactory>
+      moduleIdentifierFactoryWrapper = CacheBuilder.newBuilder().weakValues().build();
 
   public static JavaModuleIdentifierFactory getInstance(@Nonnull ModuleSignature moduleSignature) {
-    return moduleIdentifierFactoryWrapper.computeIfAbsent(
-        moduleSignature,
-        methodSignature -> new JavaModuleIdentifierFactoryWrapper(moduleSignature));
+    return moduleIdentifierFactoryWrapper
+        .asMap()
+        .computeIfAbsent(moduleSignature, JavaModuleIdentifierFactoryWrapper::new);
   }
 
   static {
@@ -139,12 +140,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
    *     the unnamed module.
    */
   public static ModuleSignature getModuleSignature(@Nonnull final String moduleName) {
-    ModuleSignature moduleSignature = modules.get(moduleName);
-    if (moduleSignature == null) {
-      moduleSignature = new ModuleSignature(moduleName);
-      modules.put(moduleName, moduleSignature);
-    }
-    return moduleSignature;
+    return modules.asMap().computeIfAbsent(moduleName, ModuleSignature::new);
   }
 
   @Override
@@ -166,24 +162,20 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
   public ModulePackageName getPackageName(
       @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
-    ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);
-    if (packageSignature == null) {
-      ModuleSignature moduleSignature = getModuleSignature(moduleName);
-      packageSignature = new ModulePackageName(packageName, moduleSignature);
-      packages.put(fqId, packageSignature);
-    }
-    return packageSignature;
+    return (ModulePackageName)
+        packageCache
+            .asMap()
+            .computeIfAbsent(
+                fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
   }
 
   public ModulePackageName getPackageName(
       @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
     String fqId = moduleSignature.getModuleName() + "." + packageName;
-    ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);
-    if (packageSignature == null) {
-      packageSignature = new ModulePackageName(packageName, moduleSignature);
-      packages.put(fqId, packageSignature);
-    }
-    return packageSignature;
+    return (ModulePackageName)
+        packageCache
+            .asMap()
+            .computeIfAbsent(fqId, key -> new ModulePackageName(packageName, moduleSignature));
   }
 
   /** Wrapper which refers to a given ModuleSignature when building stuff */

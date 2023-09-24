@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -66,7 +66,7 @@ public class ViewTypeHierarchyTest {
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
     JavaProject p =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(analysisInputLocation).build();
-    view = p.createOnDemandView();
+    view = p.createView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }
 
@@ -202,7 +202,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             Collections.emptySet(),
             null,
-            EnumSet.of(Modifier.FINAL),
+            EnumSet.of(ClassModifier.FINAL),
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());

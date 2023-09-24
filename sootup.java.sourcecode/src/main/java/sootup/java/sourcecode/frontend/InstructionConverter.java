@@ -33,10 +33,10 @@ import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.classLoader.CallSiteReference;
-import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
-import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
-import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
-import com.ibm.wala.shrikeBT.IShiftInstruction;
+import com.ibm.wala.shrike.shrikeBT.IBinaryOpInstruction;
+import com.ibm.wala.shrike.shrikeBT.IConditionalBranchInstruction.IOperator;
+import com.ibm.wala.shrike.shrikeBT.IConditionalBranchInstruction.Operator;
+import com.ibm.wala.shrike.shrikeBT.IShiftInstruction;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
 import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
@@ -76,7 +76,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -317,7 +317,7 @@ public class InstructionConverter {
     SootField assertionsDisabled =
         new SootField(
             fieldSig,
-            EnumSet.of(Modifier.FINAL, Modifier.STATIC),
+            EnumSet.of(FieldModifier.FINAL, FieldModifier.STATIC),
             NoPositionInformation.getInstance());
 
     converter.addSootField(assertionsDisabled);
@@ -422,7 +422,7 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         SootField field =
             new SootField(
-                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -455,7 +455,7 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         SootField field =
             new SootField(
-                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {

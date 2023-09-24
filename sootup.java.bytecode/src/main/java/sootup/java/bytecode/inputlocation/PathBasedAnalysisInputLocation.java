@@ -75,42 +75,38 @@ import sootup.java.core.types.ModuleJavaClassType;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public abstract class PathBasedAnalysisInputLocation
+    implements AnalysisInputLocation<JavaSootClass> {
+  private final SourceType sourceType;
   protected Path path;
 
-  /**
-   * Variable to track if user has specified the SourceType. By default, it will be set to false.
-   */
-  private SourceType srcType = null;
-
-  /**
-   * Variable to store AnalysisInputLocation, which can be DirectoryBasedAnalysisInputLocation,
-   * WarArchiveAnalysisInputLocation, MultiReleaseJarAnalysisInputLocation,
-   * ArchiveBasedAnalysisInputLocation
-   */
-  PathBasedAnalysisInputLocation pathBasedAnalysisInputLocationObj;
-
-  public PathBasedAnalysisInputLocation getPathBasedAnalysisInputLocationObj() {
-    return pathBasedAnalysisInputLocationObj;
-  }
-
-  public PathBasedAnalysisInputLocation(@Nonnull Path path) {
+  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
     this.path = path;
+    this.sourceType = srcType;
   }
 
-  public PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  @Nullable
+  @Override
+  public SourceType getSourceType() {
+    return sourceType;
+  }
+
+  @Nonnull
+  public static PathBasedAnalysisInputLocation create(
+      @Nonnull Path path, @Nonnull SourceType srcType) {
+    final PathBasedAnalysisInputLocation inputLocation;
     if (Files.isDirectory(path)) {
-      pathBasedAnalysisInputLocationObj = new DirectoryBasedAnalysisInputLocation(path, srcType);
+      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
 
       if (PathUtils.hasExtension(path, FileType.WAR)) {
-        pathBasedAnalysisInputLocationObj = new WarArchiveAnalysisInputLocation(path, srcType);
+        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
-        pathBasedAnalysisInputLocationObj = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+        inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
-        pathBasedAnalysisInputLocationObj = new ApkAnalysisInputLocation(path, srcType);
+        inputLocation = new ApkAnalysisInputLocation(path, srcType);
       } else {
-        pathBasedAnalysisInputLocationObj = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
     } else {
       throw new IllegalArgumentException(
@@ -118,47 +114,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
               + path.toAbsolutePath()
               + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
     }
-  }
-
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nonnull SourceType srcType) {
-    this.srcType = srcType;
-  }
-
-  /**
-   * Create or find a class source for a given type.
-   *
-   * @param type The type of the class to be found.
-   * @param view
-   * @return The source entry for that class.
-   */
-  @Nonnull
-  @Override
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    return pathBasedAnalysisInputLocationObj.getClassSource(type, view);
-  }
-
-  /**
-   * Scan the input location and create ClassSources for every compilation / interpretation unit.
-   *
-   * @param view
-   * @return The source entries.
-   */
-  @Nonnull
-  @Override
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
-    return pathBasedAnalysisInputLocationObj.getClassSources(view);
-  }
-
-  @Override
-  public SourceType getSourceType() {
-    return srcType;
+    return inputLocation;
   }
 
   private static boolean isMultiReleaseJar(Path path) {
@@ -201,8 +157,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -221,41 +176,33 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
             path.getFileSystem()
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
-                        + "."
-                        + classProvider.getHandledFileType().getExtension()));
+                        + classProvider.getHandledFileType().getExtensionWithDot()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
     }
 
-    return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
+    return classProvider.createClassSource(this, pathToClass, signature);
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path);
-      super.setSpecifiedAsBuiltInByUser(srcType);
+      super(path, srcType);
     }
 
     @Override
     @Nonnull
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
         @Nonnull View<?> view) {
-      return walkDirectory(
-          path,
-          view.getIdentifierFactory(),
-          new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+      return walkDirectory(path, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     }
 
     @Override
     @Nonnull
     public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
         @Nonnull ClassType type, @Nonnull View<?> view) {
-      return getClassSourceInternal(
-          (JavaClassType) type,
-          path,
-          new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+      return getClassSourceInternal((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
   }
 
@@ -310,7 +257,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-      baseInputLocations.add(new PathBasedAnalysisInputLocation(archiveRoot, srcType));
+      baseInputLocations.add(PathBasedAnalysisInputLocation.create(archiveRoot, srcType));
 
       String sep = archiveRoot.getFileSystem().getSeparator();
 
@@ -337,7 +284,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                   ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
                   JavaModulePathAnalysisInputLocation inputLocation =
                       new JavaModulePathAnalysisInputLocation(
-                          versionRoot.toString(), versionRoot.getFileSystem());
+                          versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
                   inputLocations.get(availableVersions[i]).add(inputLocation);
                   moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
@@ -351,7 +298,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                     ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
                     JavaModulePathAnalysisInputLocation inputLocation =
                         new JavaModulePathAnalysisInputLocation(
-                            versionRoot.toString(), versionRoot.getFileSystem());
+                            versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
                     inputLocations.get(availableVersions[i]).add(inputLocation);
                     moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
@@ -369,7 +316,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
           if (inputLocations.get(availableVersions[i]).size() == 0) {
             inputLocations
                 .get(availableVersions[i])
-                .add(new PathBasedAnalysisInputLocation(versionRoot, srcType));
+                .add(PathBasedAnalysisInputLocation.create(versionRoot, srcType));
           }
         }
       }
@@ -547,7 +494,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-      new Dex2jarCmd().doMain("-f", apkPath, "-o", outputFile);
+      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }
@@ -581,8 +528,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
                     }));
 
     private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path);
-      super.setSpecifiedAsBuiltInByUser(srcType);
+      super(path, srcType);
     }
 
     @Override
@@ -593,9 +539,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(
-            (JavaClassType) type,
-            archiveRoot,
-            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+            (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -610,9 +554,7 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
       try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
-            archiveRoot,
-            view.getProject().getIdentifierFactory(),
-            new AsmJavaClassProvider(((View<JavaSootClass>) view).getBodyInterceptors(this)));
+            archiveRoot, view.getProject().getIdentifierFactory(), new AsmJavaClassProvider(view));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -709,7 +651,8 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
           dest.deleteOnExit();
         }
 
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(warFilePath.toString()));
+        ZipInputStream zis =
+            new ZipInputStream(Files.newInputStream(Paths.get(warFilePath.toString())));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           Path filepath = destDirectory.resolve(zipEntry.getName());
@@ -724,7 +667,8 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
             if (file.exists()) {
               // compare contents -> does it contain the extracted war already?
               int readBytesExistingFile;
-              final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+              final BufferedInputStream bis =
+                  new BufferedInputStream(Files.newInputStream(file.toPath()));
               byte[] bisBuf = new byte[4096];
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
                 if (extractedSize > maxAllowedBytesToExtract) {
@@ -749,7 +693,8 @@ public class PathBasedAnalysisInputLocation implements AnalysisInputLocation<Jav
               }
 
             } else {
-              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+              BufferedOutputStream bos =
+                  new BufferedOutputStream(Files.newOutputStream(file.toPath()));
               while ((readBytesZip = zis.read(incomingValues)) != -1) {
                 if (extractedSize > maxAllowedBytesToExtract) {
                   throw new RuntimeException(

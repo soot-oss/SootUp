@@ -3,8 +3,10 @@ package sootup.jimple.parser;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Set;
 import org.antlr.v4.runtime.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -12,9 +14,13 @@ import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.jimple.JimpleLexer;
@@ -448,26 +454,18 @@ public class JimpleConverterTest {
       assertEquals("Banana.class.AClass", parser.identifier().getText());
     }
     {
-      final CodePointCharStream charStream = CharStreams.fromString("Banana.\"class\".AClass");
+      final CodePointCharStream charStream = CharStreams.fromString("Banana.\\\"class\\\".AClass");
       final JimpleParser parser =
           JimpleConverterUtil.createJimpleParser(
               charStream, Paths.get("InputFromString.doesNotExists"));
-      assertEquals("Banana.\"class\".AClass", parser.identifier().getText());
+      assertEquals("Banana.\\\"class\\\".AClass", parser.identifier().getText());
     }
     {
-      final CodePointCharStream charStream = CharStreams.fromString("\"Banana.class.AClass\"");
+      final CodePointCharStream charStream = CharStreams.fromString("\\\"Banana.class.AClass\\\"");
       final JimpleParser parser =
           JimpleConverterUtil.createJimpleParser(
               charStream, Paths.get("InputFromString.doesNotExists"));
-      assertEquals("\"Banana.class.AClass\"", parser.identifier().getText());
-    }
-
-    {
-      final CodePointCharStream charStream = CharStreams.fromString("\"Banana. class .AClass\"");
-      final JimpleParser parser =
-          JimpleConverterUtil.createJimpleParser(
-              charStream, Paths.get("InputFromString.doesNotExists"));
-      assertEquals("\"Banana. class .AClass\"", parser.identifier().getText());
+      assertEquals("\\\"Banana.class.AClass\\\"", parser.identifier().getText());
     }
     {
       final CodePointCharStream charStream = CharStreams.fromString("Banana. class .AClass");
@@ -563,9 +561,9 @@ public class JimpleConverterTest {
     {
       // current escaping
       CharStream cs =
-          CharStreams.fromString("public class 'annotation interface' extends java.lang.Object {}");
+          CharStreams.fromString("public class 'annotationinterface' extends java.lang.Object {}");
       SootClass<?> sc = parseJimpleClass(cs);
-      assertEquals("annotation interface", sc.getClassSource().getClassType().toString());
+      assertEquals("annotationinterface", sc.getClassSource().getClassType().toString());
     }
 
     {
@@ -581,7 +579,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      parseJimpleClass(cs);
       fail("escaping is needed");
     } catch (Exception ignored) {
     }
@@ -590,7 +588,7 @@ public class JimpleConverterTest {
       // inside quotes
       CharStream cs =
           CharStreams.fromString(
-              "public class \"\\'some.pckg.ClassObj\\'\" extends java.lang.Object \n {}");
+              "public class \\'some.pckg.ClassObj\\' extends java.lang.Object \n {}");
       SootClass<?> sc = parseJimpleClass(cs);
       assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
     }
@@ -608,7 +606,7 @@ public class JimpleConverterTest {
       // testing escaped string things
       CharStream cs =
           CharStreams.fromString(
-              "public class \"some.\\'.pckg.\\'.ClassObj\" extends java.lang.Object \n {}");
+              "public class some.\\'.pckg.\\'.ClassObj extends java.lang.Object \n {}");
       SootClass<?> sc = parseJimpleClass(cs);
       assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
     }
@@ -619,8 +617,8 @@ public class JimpleConverterTest {
           CharStreams.fromString(
               "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
       try {
-        SootClass<?> sc = parseJimpleClass(cs);
-        fail("quotes in string are not escaped");
+        parseJimpleClass(cs);
+        fail("\" is not allowed in identifiers");
       } catch (Exception ignore) {
       }
     }
@@ -629,10 +627,10 @@ public class JimpleConverterTest {
 
       // escaped quotes in escaped sequence
       CharStream cs =
-          CharStreams.fromString("public class \"\\'class\\'\" extends java.lang.Object \n {}");
+          CharStreams.fromString("public class \\'class\\' extends java.lang.Object \n {}");
       SootClass<?> sc = parseJimpleClass(cs);
 
-      assertEquals("'class'", Jimple.unescape("\"\\'class\\'\""));
+      assertEquals("'class'", Jimple.unescape("\\'class\\'"));
       assertEquals("'class'", sc.getClassSource().getClassType().toString());
     }
 
@@ -641,7 +639,7 @@ public class JimpleConverterTest {
       try {
         CharStream cs =
             CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
-        SootClass<?> sc = parseJimpleClass(cs);
+        parseJimpleClass(cs);
         fail("start and end quote do not match.");
       } catch (Exception ignore) {
       }
@@ -783,5 +781,27 @@ public class JimpleConverterTest {
 
     JimpleLexer lexer = new JimpleLexer(cs);
     assertEquals(60, lexer.getAllTokens().size());
+  }
+
+  @Test
+  public void testQuotedTypeParsing() throws IOException {
+    SootClass<?> clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/SubTypeValidator.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    Body body = method.getBody();
+    assertEquals(3, body.getLocalCount());
+  }
+
+  @Test
+  public void testEdgeCaseDoubleParsing() throws IOException {
+    SootClass<?> clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
+    Set<? extends SootField> fields = clazz.getFields();
+    for (SootField field : fields) {
+      assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
+    }
   }
 }

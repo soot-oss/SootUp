@@ -1,4 +1,4 @@
-public synchronized class Autoboxing extends java.lang.Object
+public super class Autoboxing extends java.lang.Object
 {
     public void <init>()
     {

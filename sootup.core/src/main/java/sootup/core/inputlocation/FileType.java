@@ -48,6 +48,11 @@ public enum FileType {
   }
 
   @Nonnull
+  public String getExtensionWithDot() {
+    return "." + extension;
+  }
+
+  @Nonnull
   public String getExtension() {
     return extension;
   }

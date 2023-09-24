@@ -1,4 +1,4 @@
-public synchronized class DynamicInvoke extends java.lang.Object
+public super class DynamicInvoke extends java.lang.Object
 {
     public void <init>()
     {
@@ -19,7 +19,7 @@ public synchronized class DynamicInvoke extends java.lang.Object
 
         l0 = "This test";
 
-        $stack1 = dynamicinvoke makeConcatWithConstants <java.lang.String (java.lang.String)>(l0) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>("\u0001 is cool");
+        $stack1 = dynamicinvoke "makeConcatWithConstants" <java.lang.String (java.lang.String)>(l0) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>("\u0001 is cool");
 
         l0 = $stack1;
 

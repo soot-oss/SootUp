@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SootClass;
@@ -42,8 +43,6 @@ import sootup.core.views.View;
  */
 public abstract class Project<S extends SootClass<?>, V extends View<? extends SootClass<?>>> {
 
-  @Nonnull private final IdentifierFactory identifierFactory;
-
   @Nonnull private final List<AnalysisInputLocation<? extends S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;
@@ -58,11 +57,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
       @Nonnull Language language,
       @Nonnull AnalysisInputLocation<? extends S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(
-        language,
-        Collections.singletonList(inputLocation),
-        language.getIdentifierFactory(),
-        sourceTypeSpecifier);
+    this(language, Collections.singletonList(inputLocation), sourceTypeSpecifier);
   }
 
   /**
@@ -70,13 +65,11 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
    *
    * @param language the language
    * @param inputLocations the input locations
-   * @param identifierFactory the identifier factory
    * @param sourceTypeSpecifier the source type specifier
    */
   public Project(
       @Nonnull Language language,
       @Nonnull List<AnalysisInputLocation<? extends S>> inputLocations,
-      @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.language = language;
     List<AnalysisInputLocation<? extends S>> unmodifiableInputLocations =
@@ -84,7 +77,6 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
 
     this.sourceTypeSpecifier = sourceTypeSpecifier;
     this.inputLocations = unmodifiableInputLocations;
-    this.identifierFactory = identifierFactory;
   }
 
   public void validate() {
@@ -105,7 +97,7 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
 
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {
-    return this.identifierFactory;
+    return language.getIdentifierFactory();
   }
 
   @Nonnull
@@ -119,22 +111,29 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   }
 
   /**
-   * Create a complete view from everything in all provided input locations.
+   * Create a view with a default cache.
    *
-   * @return A complete view on the provided code
+   * @return A view on the provided code
    */
   @Nonnull
-  public abstract V createFullView();
+  public abstract V createView();
+
+  /**
+   * Create a view with a provided cache.
+   *
+   * @return A view on the provided code
+   */
+  @Nonnull
+  public abstract V createView(@Nonnull ClassCacheProvider<S> cacheProvider);
 
   /**
    * Creates an on-demand View that uses the default {@link ClassLoadingOptions} of each frontend.
    */
-  @Nonnull
-  public abstract V createOnDemandView();
 
-  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
+  /** Creates a View with custom {@link ClassLoadingOptions}. */
   @Nonnull
-  public abstract V createOnDemandView(
+  public abstract V createView(
+      @Nonnull ClassCacheProvider<S> cacheProvider,
       @Nonnull
           Function<AnalysisInputLocation<? extends S>, ClassLoadingOptions>
               classLoadingOptionsSpecifier);

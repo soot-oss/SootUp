@@ -37,14 +37,14 @@ public class MutableSootClientTest {
   /** Load the jar file for analysis as input location. */
   @BeforeClass
   public static void setupProject() {
-    location = new PathBasedAnalysisInputLocation(pathToJar, SourceType.Application);
+    location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
     p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
   }
 
   /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
-    mv = p.createMutableFullView();
+    mv = p.createMutableView();
   }
 
   /**
@@ -78,8 +78,8 @@ public class MutableSootClientTest {
             null,
             Collections.emptySet(),
             Collections.emptySet(),
-            new Position(0, 0, 0, 0),
-            EnumSet.noneOf(Modifier.class),
+            new FullPosition(0, 0, 0, 0),
+            EnumSet.noneOf(ClassModifier.class),
             Collections.emptySet(),
             Collections.emptySet(),
             Collections.emptySet());
@@ -136,7 +136,7 @@ public class MutableSootClientTest {
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());

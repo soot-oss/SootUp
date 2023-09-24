@@ -1,4 +1,4 @@
-public synchronized class AnonymousDiamondOperator extends java.lang.Object
+public super class AnonymousDiamondOperator extends java.lang.Object
 {
     public void <init>()
     {

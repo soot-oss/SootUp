@@ -5,15 +5,12 @@ import static org.junit.Assert.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.frontend.ClassProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.frontend.AsmJavaClassProvider;
-import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -54,31 +51,25 @@ public abstract class AnalysisInputLocationTest {
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
   final Path apk = Paths.get("../shared-test-resources/apk/SimpleApk.apk");
 
-  private ClassProvider<JavaSootClass> classProvider;
-
-  @Before
-  public void setUp() {
-    classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
-  }
-
   protected IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation<JavaSootClass> ns, ClassType sig, int minClassesFound) {
+      AnalysisInputLocation<JavaSootClass> ns, List<ClassType> sigs, int classesFound) {
 
     final JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
-    final JavaView view = project.createOnDemandView();
+    final JavaView view = project.createView();
 
-    final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
-        ns.getClassSource(sig, view);
-    assertTrue(clazzOpt.isPresent());
-    assertEquals(sig, clazzOpt.get().getClassType());
-
+    for (ClassType classType : sigs) {
+      final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
+          ns.getClassSource(classType, view);
+      assertTrue(clazzOpt.isPresent());
+      assertEquals(classType, clazzOpt.get().getClassType());
+    }
     final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
 
-    assertTrue(classSources.size() >= minClassesFound);
+    assertEquals(classSources.size(), classesFound);
   }
 }

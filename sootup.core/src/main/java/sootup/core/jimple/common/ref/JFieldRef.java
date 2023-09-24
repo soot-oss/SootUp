@@ -51,4 +51,7 @@ public abstract class JFieldRef implements ConcreteRef {
     }
     return this.getFieldSignature().equals(ref.getFieldSignature());
   }
+
+  @Nonnull
+  public abstract JFieldRef withFieldSignature(@Nonnull FieldSignature fieldSignature);
 }

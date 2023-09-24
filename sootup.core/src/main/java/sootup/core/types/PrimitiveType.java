@@ -56,14 +56,6 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
-  public static boolean isIntLikeType(Type t) {
-    return t == PrimitiveType.IntType.getInstance()
-        || t == PrimitiveType.ByteType.getInstance()
-        || t == PrimitiveType.ShortType.getInstance()
-        || t == PrimitiveType.CharType.getInstance()
-        || t == PrimitiveType.BooleanType.getInstance();
-  }
-
   @Nonnull
   public static ByteType getByte() {
     return ByteType.getInstance();
@@ -104,7 +96,7 @@ public abstract class PrimitiveType extends Type {
     return BooleanType.getInstance();
   }
 
-  public static class ByteType extends PrimitiveType {
+  public static class ByteType extends PrimitiveType.IntType {
     private static final ByteType INSTANCE = new ByteType();
 
     private ByteType() {
@@ -121,7 +113,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class ShortType extends PrimitiveType {
+  public static class ShortType extends PrimitiveType.IntType {
     private static final ShortType INSTANCE = new ShortType();
 
     private ShortType() {
@@ -143,6 +135,10 @@ public abstract class PrimitiveType extends Type {
 
     public IntType() {
       super("int");
+    }
+
+    protected IntType(@Nonnull String name) {
+      super(name);
     }
 
     public static IntType getInstance() {
@@ -206,7 +202,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class CharType extends PrimitiveType {
+  public static class CharType extends PrimitiveType.IntType {
     private static final CharType INSTANCE = new CharType();
 
     private CharType() {
@@ -223,7 +219,7 @@ public abstract class PrimitiveType extends Type {
     }
   }
 
-  public static class BooleanType extends PrimitiveType {
+  public static class BooleanType extends PrimitiveType.IntType {
     private static final BooleanType INSTANCE = new BooleanType();
 
     private BooleanType() {

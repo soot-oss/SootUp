@@ -1,4 +1,4 @@
-public synchronized class EmptyStatement extends java.lang.Object
+public super class EmptyStatement extends java.lang.Object
 {
     public void emptyStatement()
     {

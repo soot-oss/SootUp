@@ -14,7 +14,7 @@ public interface BasicBlock<V extends BasicBlock<V>> {
   @Nonnull
   List<V> getSuccessors();
 
-  List<V> getExceptionalPredecessors();
+  Map<ClassType, V> getExceptionalPredecessors();
 
   @Nonnull
   Map<? extends ClassType, V> getExceptionalSuccessors();

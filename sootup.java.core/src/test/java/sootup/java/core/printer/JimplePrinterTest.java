@@ -58,7 +58,7 @@ public class JimplePrinterTest {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
@@ -81,7 +81,7 @@ public class JimplePrinterTest {
         new SootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
@@ -97,7 +97,7 @@ public class JimplePrinterTest {
         new SootMethod(
             new OverridingBodySource(methodSignatureOne, bodyTwo),
             methodSignatureTwo,
-            EnumSet.of(Modifier.PRIVATE),
+            EnumSet.of(MethodModifier.PRIVATE),
             Collections.singletonList(
                 JavaIdentifierFactory.getInstance()
                     .getClassType("files.stuff.FileNotFoundException")),
@@ -113,9 +113,9 @@ public class JimplePrinterTest {
                             "counter",
                             JavaIdentifierFactory.getInstance().getClassType(className),
                             PrimitiveType.getInt()),
-                    EnumSet.of(Modifier.PRIVATE),
+                    EnumSet.of(FieldModifier.PRIVATE),
                     NoPositionInformation.getInstance())),
-            EnumSet.of(Modifier.PUBLIC),
+            EnumSet.of(ClassModifier.PUBLIC),
             Collections.singleton(
                 JavaIdentifierFactory.getInstance().getClassType("some.great.Interface")),
             JavaIdentifierFactory.getInstance().getClassType("some.great.Superclass"),

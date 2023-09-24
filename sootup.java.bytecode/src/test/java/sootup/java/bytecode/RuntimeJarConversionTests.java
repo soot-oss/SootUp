@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode;
+package sootup.java.bytecode;
 
 import java.nio.file.Paths;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(
+        PathBasedAnalysisInputLocation.create(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
@@ -26,7 +26,7 @@ public class RuntimeJarConversionTests {
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);
 
     JavaView view =
-        project.createOnDemandView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+        project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     final SootMethod sootMethod = view.getMethod(methodSignature).get();
     sootMethod.getBody();

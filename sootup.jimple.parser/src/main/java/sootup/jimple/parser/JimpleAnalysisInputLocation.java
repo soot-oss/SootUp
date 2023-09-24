@@ -85,8 +85,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -98,7 +97,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Nonnull
   public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
     return walkDirectory(
-        path, view.getIdentifierFactory(), new JimpleClassProvider(view.getBodyInterceptors()));
+        path, view.getIdentifierFactory(), new JimpleClassProvider(view.getBodyInterceptors(this)));
   }
 
   @Override
@@ -106,7 +105,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
     final JimpleClassProvider<T> classProvider =
-        new JimpleClassProvider<>(view.getBodyInterceptors());
+        new JimpleClassProvider<>(view.getBodyInterceptors(this));
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 
@@ -126,7 +125,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
       }
     }
 
-    return Optional.of(classProvider.createClassSource(this, pathToClass, type));
+    return classProvider.createClassSource(this, pathToClass, type);
   }
 
   @Override

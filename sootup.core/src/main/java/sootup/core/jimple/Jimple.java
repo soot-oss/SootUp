@@ -576,7 +576,7 @@ public abstract class Jimple {
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
   public JArrayRef newArrayRef(Local base, Immediate index) {
-    return new JArrayRef(base, index, getIdentifierFactory());
+    return new JArrayRef(base, index);
   }
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */

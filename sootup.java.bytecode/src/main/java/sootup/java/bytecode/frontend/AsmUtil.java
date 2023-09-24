@@ -3,7 +3,7 @@ package sootup.java.bytecode.frontend;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2018-2020 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
+ * Copyright (C) 2018-2023 Andreas Dann, Markus Schmidt, Jan Martin Persch and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -42,7 +42,9 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -99,11 +101,35 @@ public final class AsmUtil {
     return str.replace('/', '.');
   }
 
-  public static EnumSet<Modifier> getModifiers(int access) {
-    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
+  public static EnumSet<ClassModifier> getClassModifiers(int access) {
+    EnumSet<ClassModifier> modifierEnumSet = EnumSet.noneOf(ClassModifier.class);
 
     // add all modifiers for which (access & ABSTRACT) =! 0
-    for (Modifier modifier : Modifier.values()) {
+    for (ClassModifier modifier : ClassModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  public static EnumSet<MethodModifier> getMethodModifiers(int access) {
+    EnumSet<MethodModifier> modifierEnumSet = EnumSet.noneOf(MethodModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (MethodModifier modifier : MethodModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  public static EnumSet<FieldModifier> getFieldModifiers(int access) {
+    EnumSet<FieldModifier> modifierEnumSet = EnumSet.noneOf(FieldModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (FieldModifier modifier : FieldModifier.values()) {
       if ((access & modifier.getBytecode()) != 0) {
         modifierEnumSet.add(modifier);
       }
@@ -154,60 +180,79 @@ public final class AsmUtil {
 
   @Nonnull
   public static Type toJimpleType(@Nonnull String desc) {
-    int idx = desc.lastIndexOf('[');
-    int nrDims = idx + 1;
+    int nrDims = countArrayDim(desc);
     if (nrDims > 0) {
-      if (desc.charAt(0) != '[') {
-        throw new AssertionError("Invalid array descriptor: " + desc);
-      }
-      desc = desc.substring(idx + 1);
+      desc = desc.substring(nrDims);
     }
-    Type baseType;
-    switch (desc.charAt(0)) {
-      case 'Z':
-        baseType = PrimitiveType.getBoolean();
-        break;
-      case 'B':
-        baseType = PrimitiveType.getByte();
-        break;
-      case 'C':
-        baseType = PrimitiveType.getChar();
-        break;
-      case 'S':
-        baseType = PrimitiveType.getShort();
-        break;
-      case 'I':
-        baseType = PrimitiveType.getInt();
-        break;
-      case 'F':
-        baseType = PrimitiveType.getFloat();
-        break;
-      case 'J':
-        baseType = PrimitiveType.getLong();
-        break;
-      case 'D':
-        baseType = PrimitiveType.getDouble();
-        break;
-      case 'V':
-        baseType = VoidType.getInstance();
-        break;
-      case 'L':
-        if (desc.charAt(desc.length() - 1) != ';') {
-          throw new AssertionError("Invalid reference descriptor: " + desc);
-        }
-        String name = desc.substring(1, desc.length() - 1);
-        name = toQualifiedName(name);
-        baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
-        break;
-      default:
+
+    Type baseType = toPrimitiveOrVoidType(desc).orElse(null);
+    if (baseType == null) {
+      if (desc.charAt(0) != 'L') {
         throw new AssertionError("Unknown descriptor: " + desc);
+      }
+      if (desc.charAt(desc.length() - 1) != ';') {
+        throw new AssertionError("Invalid reference descriptor: " + desc);
+      }
+      String name = desc.substring(1, desc.length() - 1);
+      baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
     }
-    if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
+    if ((baseType instanceof PrimitiveType || baseType instanceof VoidType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
     return nrDims > 0
         ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
         : baseType;
+  }
+
+  @Nonnull
+  public static Type arrayTypetoJimpleType(@Nonnull String desc) {
+    if (desc.startsWith("[")) {
+      return toJimpleType(desc);
+    }
+    return toJimpleClassType(desc);
+  }
+
+  /** returns the amount of dimensions of a description. */
+  private static int countArrayDim(@Nonnull String desc) {
+    int nrDims = desc.lastIndexOf('[') + 1;
+    for (int index = 0; index < nrDims; index++) {
+      if (desc.charAt(index) != '[') {
+        throw new AssertionError("Invalid array descriptor: " + desc);
+      }
+    }
+    return nrDims;
+  }
+
+  /**
+   * Converts a description to a primitive type or the void type. If the description does not match
+   * it will return an empty Optional
+   */
+  private static Optional<Type> toPrimitiveOrVoidType(@Nonnull String desc) {
+    if (desc.length() > 1) {
+      return Optional.empty();
+    }
+    switch (desc.charAt(0)) {
+      case 'Z':
+        return Optional.of(PrimitiveType.getBoolean());
+      case 'B':
+        return Optional.of(PrimitiveType.getByte());
+      case 'C':
+        return Optional.of(PrimitiveType.getChar());
+      case 'S':
+        return Optional.of(PrimitiveType.getShort());
+      case 'I':
+        return Optional.of(PrimitiveType.getInt());
+      case 'F':
+        return Optional.of(PrimitiveType.getFloat());
+      case 'J':
+        return Optional.of(PrimitiveType.getLong());
+      case 'D':
+        return Optional.of(PrimitiveType.getDouble());
+      case 'V':
+        return Optional.of(VoidType.getInstance());
+      default:
+    }
+    return Optional.empty();
   }
 
   /** Converts n types contained in desc to a list of Jimple Types */
@@ -314,6 +359,10 @@ public final class AsmUtil {
                 (ArrayList<AnnotationNode>) annotationValue;
 
             paramMap.put(annotationName, createAnnotationUsage(annotationValueList));
+          } else if (annotationValue instanceof AnnotationNode) {
+            paramMap.put(
+                annotationName,
+                createAnnotationUsage(Collections.singletonList((AnnotationNode) annotationValue)));
           } else {
             if (annotationValue instanceof ArrayList) {
               paramMap.put(

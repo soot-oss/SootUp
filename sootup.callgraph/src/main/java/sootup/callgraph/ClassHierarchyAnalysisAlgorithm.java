@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.MethodDispatchResolver;
-import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.views.View;
 
 /**
@@ -47,11 +46,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    * The constructor of the CHA algorithm.
    *
    * @param view it contains the data of the classes and methods
-   * @param typeHierarchy it contains the hierarchy of all classes to resolve virtual calls
    */
-  public ClassHierarchyAnalysisAlgorithm(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull TypeHierarchy typeHierarchy) {
-    super(view, typeHierarchy);
+  public ClassHierarchyAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+    super(view);
   }
 
   @Nonnull
@@ -92,13 +89,48 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
             .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (targetMethod == null
-        || Modifier.isStatic(targetMethod.getModifiers())
+        || MethodModifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      return Stream.concat(
-          result,
-          MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream());
+      if (targetMethod.isAbstract()) {
+        return resolveAllSubClassCallTargets(targetMethodSignature);
+      }
+      return MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
+          .map(
+              methodSignature ->
+                  Stream.concat(
+                      Stream.of(methodSignature),
+                      resolveAllSubClassCallTargets(targetMethodSignature)))
+          .orElseGet(() -> resolveAllSubClassCallTargets(targetMethodSignature));
     }
+  }
+
+  private Stream<MethodSignature> resolveAllSubClassCallTargets(
+      MethodSignature targetMethodSignature) {
+    return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
+        .map(
+            methodSignature ->
+                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+  }
+
+  @Override
+  protected void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
+  }
+
+  @Override
+  protected void preProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    // do nothing
   }
 }

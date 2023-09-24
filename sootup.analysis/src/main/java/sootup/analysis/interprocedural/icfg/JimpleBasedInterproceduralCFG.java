@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
@@ -60,7 +60,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected static final Logger logger =
       LoggerFactory.getLogger(JimpleBasedInterproceduralCFG.class);
-  private MethodSignature mainMethodSignature;
+  private final MethodSignature mainMethodSignature;
 
   protected boolean includeReflectiveCalls;
 
@@ -69,6 +69,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<Stmt, Collection<SootMethod>> loaderUnitToCallees =
       new CacheLoader<Stmt, Collection<SootMethod>>() {
+        @Nonnull
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
@@ -94,8 +95,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
 
   protected CacheLoader<SootMethod, Collection<Stmt>> loaderMethodToCallers =
       new CacheLoader<SootMethod, Collection<Stmt>>() {
+        @Nonnull
         @Override
-        public Collection<Stmt> load(SootMethod method) throws Exception {
+        public Collection<Stmt> load(SootMethod method) {
           ArrayList<Stmt> res = new ArrayList<>();
           // only retain callers that are explicit call sites or
           // Thread.start()
@@ -110,11 +112,6 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
           return res;
         }
 
-        /**
-         * returns SootMethod if accepted, null otherwise
-         *
-         * @param methodSignature
-         */
         @Nullable
         private Stmt filterEdgeAndGetCallerStmt(@Nonnull MethodSignature methodSignature) {
           Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges =
@@ -152,9 +149,35 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     initializeStmtToOwner();
   }
 
+  public String buildICFGGraph(CallGraph callGraph) {
+    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
+    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view);
+  }
+
+  public void computeAllCalls(
+      MethodSignature methodSignature,
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      CallGraph callGraph) {
+    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+    // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
+    if (signatureToStmtGraph.containsKey(methodSignature)) return;
+    if (methodOpt.isPresent()) {
+      SootMethod sootMethod = methodOpt.get();
+      if (sootMethod.hasBody()) {
+        StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
+        signatureToStmtGraph.put(methodSignature, stmtGraph);
+      }
+    }
+    callGraph
+        .callsFrom(methodSignature)
+        .forEach(
+            nextMethodSignature ->
+                computeAllCalls(nextMethodSignature, signatureToStmtGraph, callGraph));
+  }
+
   private CallGraph initCallGraph() {
-    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-    CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cga = new ClassHierarchyAnalysisAlgorithm(view);
     return cga.initialize(Collections.singletonList(mainMethodSignature));
   }
 
@@ -184,7 +207,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       if (methodOpt.isPresent()) {
         final SootMethod method = methodOpt.get();
         if (method.hasBody()) {
-          for (Stmt s : method.getBody().getStmtGraph().nodes()) {
+          for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
             if (s.containsInvokeExpr()) {
               CalleeMethodSignature callee =
                   new CalleeMethodSignature(

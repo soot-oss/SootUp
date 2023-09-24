@@ -20,11 +20,14 @@ package sootup.core.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -36,6 +39,8 @@ import sootup.core.views.View;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
+
+  Logger logger = LoggerFactory.getLogger(TypeHierarchy.class);
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
@@ -141,17 +146,21 @@ public interface TypeHierarchy {
         return false;
       }
     } else if (supertype instanceof ClassType) {
+      String supertypeName = ((ClassType) supertype).getFullyQualifiedName();
       if (potentialSubtype instanceof ClassType) {
-        // First condition is a fast path
-        return supertype.equals(superClassOf((ClassType) potentialSubtype))
+        String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
+        // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
+        // superClassOf() check is a fast path
+        return (supertypeName.equals("java.lang.Object")
+                && !potentialSubtypeName.equals("java.lang.Object"))
+            || supertype.equals(superClassOf((ClassType) potentialSubtype))
             || superClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
-        return fullyQualifiedName.equals("java.lang.Object")
-            || fullyQualifiedName.equals("java.io.Serializable")
-            || fullyQualifiedName.equals("java.lang.Cloneable");
+        return supertypeName.equals("java.lang.Object")
+            || supertypeName.equals("java.io.Serializable")
+            || supertypeName.equals("java.lang.Cloneable");
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }
@@ -162,7 +171,7 @@ public interface TypeHierarchy {
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list.
+   * will be the last entry in the list. i.e. its ordered from bottom level to top level.
    */
   @Nonnull
   default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
@@ -174,4 +183,33 @@ public interface TypeHierarchy {
     }
     return superClasses;
   }
+  /**
+   * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
+   * will be the last entry in the list, or till one of the superclasses is not contained in view.
+   */
+  @Nonnull
+  default List<ClassType> incompleteSuperClassesOf(@Nonnull ClassType classType) {
+    List<ClassType> superClasses = new ArrayList<>();
+    ClassType currentSuperClass = null;
+    try {
+      currentSuperClass = superClassOf(classType);
+      while (currentSuperClass != null) {
+        superClasses.add(currentSuperClass);
+        currentSuperClass = superClassOf(currentSuperClass);
+      }
+    } catch (IllegalArgumentException ex) {
+      logger.warn(
+          "Could not find "
+              + (currentSuperClass != null ? currentSuperClass : classType)
+              + " and stopped there the resolve of superclasses of "
+              + classType);
+    }
+    return superClasses;
+  }
+
+  Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+
+  boolean isInterface(@Nonnull ClassType type);
+
+  Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
 }

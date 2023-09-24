@@ -106,7 +106,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return baseType;
   }
 
-  public Immediate getSize(@Nonnull int index) {
+  public Value getSize(@Nonnull int index) {
     return sizes.get(index);
   }
 

@@ -32,7 +32,7 @@ public class LegacyJimplePrinterTest {
 
     Project project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -49,7 +49,7 @@ public class LegacyJimplePrinterTest {
         new SootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
@@ -57,7 +57,7 @@ public class LegacyJimplePrinterTest {
         new OverridingClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
-            EnumSet.of(Modifier.PUBLIC),
+            EnumSet.of(ClassModifier.PUBLIC),
             Collections.emptySet(),
             null,
             null,

@@ -29,11 +29,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -56,6 +58,7 @@ import sootup.java.core.types.JavaClassType;
 public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final ModuleFinder moduleFinder;
+  @Nonnull private final SourceType sourcetype;
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
@@ -65,7 +68,12 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    this(modulePath, FileSystems.getDefault());
+    this(modulePath, FileSystems.getDefault(), SourceType.Application);
+  }
+
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull SourceType sourcetype) {
+    this(modulePath, FileSystems.getDefault(), sourcetype);
   }
 
   /**
@@ -77,7 +85,8 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
+      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
+    this.sourcetype = sourcetype;
     moduleFinder = new ModuleFinder(modulePath, fileSystem);
   }
 
@@ -104,6 +113,12 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     return allModules.stream()
         .flatMap(sig -> getClassSourcesInternal(sig, view))
         .collect(Collectors.toList());
+  }
+
+  @Nullable
+  @Override
+  public SourceType getSourceType() {
+    return sourcetype;
   }
 
   @Override

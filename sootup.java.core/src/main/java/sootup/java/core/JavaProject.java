@@ -29,6 +29,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import sootup.core.Project;
 import sootup.core.SourceTypeSpecifier;
+import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
@@ -48,23 +49,16 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
       JavaLanguage language,
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
+    super(language, inputLocations, sourceTypeSpecifier);
   }
 
   @Nonnull
-  @Override
-  public JavaView createOnDemandView() {
-    return new JavaView(this);
-  }
-
-  @Nonnull
-  public MutableJavaView createMutableOnDemandView() {
+  public MutableJavaView createMutableView() {
     return new MutableJavaView(this);
   }
 
   @Nonnull
-  @Override
-  public JavaView createOnDemandView(
+  public JavaView createView(
       @Nonnull
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier) {
@@ -73,12 +67,54 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   @Nonnull
   @Override
+  public JavaView createView(
+      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaView(this, cacheProvider, classLoadingOptionsSpecifier);
+  }
+
+  @Nonnull
+  public JavaView createView(@Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
+    return new JavaView(this, cacheProvider);
+  }
+
+  @Nonnull
+  public JavaView createView() {
+    return new JavaView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaView createOnDemandView() {
+    return new JavaView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public MutableJavaView createMutableOnDemandView() {
+    return new MutableJavaView(this);
+  }
+
+  @Deprecated
+  @Nonnull
+  public JavaView createOnDemandView(
+      @Nonnull
+          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
+              classLoadingOptionsSpecifier) {
+    return new JavaView(this, classLoadingOptionsSpecifier);
+  }
+
+  @Deprecated
+  @Nonnull
   public JavaView createFullView() {
     final JavaView view = createOnDemandView();
     view.getClasses();
     return view;
   }
 
+  @Deprecated
   @Nonnull
   public MutableJavaView createMutableFullView() {
     final MutableJavaView view = createMutableOnDemandView();

@@ -4,21 +4,17 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -64,16 +60,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
                             + "binary"
                             + File.separator))
                 .build();
-        javaView =
-            project.createOnDemandView(
-                analysisInputLocation ->
-                    new ClassLoadingOptions() {
-                      @Nonnull
-                      @Override
-                      public List<BodyInterceptor> getBodyInterceptors() {
-                        return Collections.emptyList();
-                      }
-                    });
+        javaView = project.createView();
       }
     }
 
@@ -141,7 +128,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
     assertNotNull(body);
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
     if (!expectedStmts.equals(actualStmts)) {
-      System.out.println(Utils.printJimpleStmtsForTest(Utils.filterJimple(actualStmts.stream())));
+      System.out.println(Utils.generateJimpleTest(actualStmts));
       assertEquals(expectedStmts, actualStmts);
     }
   }

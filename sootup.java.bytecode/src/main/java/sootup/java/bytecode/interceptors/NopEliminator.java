@@ -28,6 +28,7 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.views.View;
 
 /**
  * This class removes {@link JNopStmt}s from a given {@link Body}.
@@ -44,11 +45,11 @@ public class NopEliminator implements BodyInterceptor {
    * @param builder The current body before interception.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();
-    for (Stmt stmt : graph.nodes()) {
+    for (Stmt stmt : graph.getNodes()) {
       if (stmt instanceof JNopStmt) {
         q.add(stmt);
       }

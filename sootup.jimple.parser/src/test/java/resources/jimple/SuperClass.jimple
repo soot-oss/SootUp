@@ -1,4 +1,4 @@
-synchronized class SuperClass extends java.lang.Object
+super class SuperClass extends java.lang.Object
 {
     int c;
 

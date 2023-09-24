@@ -52,7 +52,13 @@ public class PackageName {
 
   /** The name of the package. */
   @Nonnull
+  @Deprecated // "use getName()"
   public String getPackageName() {
+    return packageName;
+  }
+
+  @Nonnull
+  public String getName() {
     return packageName;
   }
 

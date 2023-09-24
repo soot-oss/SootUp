@@ -1,8 +1,7 @@
-# Getting Started
-
+# General Usage of SootUp
 This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
-## Core Data Structures
+## The core datastructures
 Before you get started with the SootUp library, it helps to learn about the following core data structures: 
 
 - `Project`: defines the outlines of an analysis. SootUp users should first create a `Project` instance. It is the starting point for all operations. 
@@ -41,10 +40,8 @@ You can use bytecode analysis typically when you do not have access to the sourc
 !!! example "Create a project to analyze Java bytecode"
 
     ~~~java
-    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    
     AnalysisInputLocation<JavaSootClass> inputLocation = 
-            PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+            new JavaClassPathAnalysisInputLocation("path2Binary");
             
     JavaLanguage language = new JavaLanguage(8);
     
@@ -54,13 +51,15 @@ You can use bytecode analysis typically when you do not have access to the sourc
 
 If you have access to the source code, it is also possible to create a project for analyzing source code. Following example shows how to create project for analyzing Java source code.
 
+!!! info "Experimental"
+
+    The source code frontend is experimental and should only be used for testing purposes. You should compile the code for analysis first and use the bytecode frontend instead.  
+
 !!! example "Create a project to analyze Java source code"
 
     ~~~java
-    Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
-    
     AnalysisInputLocation<JavaSootClass> inputLocation = 
-            new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
+            new JavaSourcePathAnalysisInputLocation("path2Source");
             
     JavaLanguage language = new JavaLanguage(8);
     
@@ -73,7 +72,7 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 !!! example "Create a project to analyze jimple code"
 
     ~~~java
-    Path pathToJimple = Paths.get("src/test/resources/BasicSetup/jimple");
+    Path pathToJimple = Paths.get("path2Jimple");
     
     AnalysisInputLocation<JavaSootClass> inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
@@ -89,13 +88,20 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
 
 ## Creating a View
 
-It is possible to create different views based on your needs. You can prefer creating a full view, when you are interested in the whole program including all the application code, and the library code; or you can create an on-demand view, when you want to limit your analysis' scope.
-You can call different view creation methods on the `project` object.
+
+To create an analysis view, you can call the `createView()` method on the `project` object:
 
 ```java
-project.createFullView();
+JavaView view = project.createView();
 ```
 
+By default, whenever a class is retrieved, it will be permanently stored in a cache.
+If you do not want retrieved classes to be stored indefinetly, you can instead provide a different `CacheProvider` to the created view.
+To for example use an `LRUCache` instead, which stores at most 50 classes, and always replaces the least recently used class by a newly retrieved one, use the following call:
+
+```java
+JavaView view = project.createView(new LRUCacheProvider(50));
+```
 
 ## Retrieving a Class
 
@@ -114,10 +120,13 @@ Let's say the following is the target program that we want to analyze:
       
       }
     
-      public static void main(String[] var0) {
-      
-        System.out.println("Hello World!");
-        
+      public static void main(String[] args) {
+        HelloWorld hw = new HelloWorld();
+        hw.hello();
+      }
+
+      public void hello() {
+
       }
       
     }
@@ -182,7 +191,7 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 
 ## Retrieving the Control-Flow Graph of a Method
 
-Each `SootMethod` contains a Control-Flow Graph (CFG), or as we name here a `StmtGraph`, that is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
+Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via the `StmtGraph`. This structure is usually used for program analysis. You can retrieve the CFG of a `SootMethod` as follows:
 
 !!! example "Retrieving the CFG of a SootMethod"
 
@@ -191,9 +200,8 @@ Each `SootMethod` contains a Control-Flow Graph (CFG), or as we name here a `Stm
     ```
 
 
-You can view all the code used until this point below:
 
-!!! info "All the code used above"
+!!! info "Access or Download all of the code used above"
 
     [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
 
@@ -204,9 +212,8 @@ Below we show a comparison of the code so far with the same functionality in soo
 === "SootUp"
 
     ``` java
-    Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(pathToBinary);
+    new JavaClassPathAnalysisInputLocation("path2Binary");
 
     JavaLanguage language = new JavaLanguage(8);
 
@@ -224,7 +231,7 @@ Below we show a comparison of the code so far with the same functionality in soo
                 "main", classType, "void",
                 Collections.singletonList("java.lang.String[]"));
 
-    View view = project.createOnDemandView();
+    View view = project.createView();
 
     SootClass<JavaSootClassSource> sootClass =
         (SootClass<JavaSootClassSource>) view.getClass(classType).get();
@@ -298,7 +305,7 @@ Below we show a comparison of the code so far with the same functionality in soo
 ## Creating Different Views
 1. Create a full view of all classes found in given analysis input location. 
 ~~~java
-  project.createFullView();
+  project.createView();
 ~~~  
 2. Create a on-demand view. An on-demand view does not load all classes into the view, but only classes that are specified and their transitive closure. 
 

@@ -1,0 +1,9 @@
+public super class AlphaBetaGamma extends java.lang.Object
+{
+
+    public void αβγ()
+    {
+
+        return;
+    }
+}

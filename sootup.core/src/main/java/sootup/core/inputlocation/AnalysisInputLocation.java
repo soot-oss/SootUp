@@ -73,7 +73,5 @@ public interface AnalysisInputLocation<T extends AbstractClass> {
    * @return returns null as source type
    */
   @Nullable
-  default SourceType getSourceType() {
-    return null;
-  }
+  SourceType getSourceType();
 }

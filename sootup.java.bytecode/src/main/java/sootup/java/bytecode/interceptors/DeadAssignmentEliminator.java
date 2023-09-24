@@ -36,10 +36,10 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.BodyUtils;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.*;
+import sootup.core.views.View;
 
 /**
  * This interceptor eliminates assignment statements to locals whose values are not subsequently
@@ -62,23 +62,23 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<Local, List<Stmt>> allDefs = new HashMap<>();
-  Map<Local, List<Stmt>> allUses = new HashMap<>();
+  Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
+  Map<Local, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     StmtGraph<MutableBasicBlock> stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
 
-    boolean isStatic = Modifier.isStatic(builder.getModifiers());
+    boolean isStatic = MethodModifier.isStatic(builder.getModifiers());
     boolean allEssential = true;
     boolean containsInvoke = false;
     Local thisLocal = null;
 
-    for (Iterator<Stmt> iterator = stmtGraph.nodes().iterator(); iterator.hasNext(); ) {
+    for (Iterator<Stmt> iterator = stmtGraph.getNodes().iterator(); iterator.hasNext(); ) {
       Stmt stmt = iterator.next();
       boolean isEssential = true;
 
@@ -177,7 +177,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     if (containsInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
-      allDefs = BodyUtils.collectDefs(builder.getStmts());
+      allDefs = Body.collectDefs(builder.getStmts());
 
       if (!allEssential) {
         Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
@@ -187,7 +187,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             for (Value value : stmt.getUses()) {
               if (value instanceof Local) {
                 Local local = (Local) value;
-                List<Stmt> defs = allDefs.get(local);
+                Collection<Stmt> defs = allDefs.get(local);
                 if (defs != null) {
                   deque.addAll(defs);
                 }
@@ -205,7 +205,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if (containsInvoke) {
-        allUses = BodyUtils.collectUses(builder.getStmts());
+        allUses = Body.collectUses(builder.getStmts());
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
         List<JAssignStmt<?, ?>> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {

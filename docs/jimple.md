@@ -1029,8 +1029,8 @@ They end the execution/flow inside the current method and return (a value) to it
         virtualinvoke $stack1.<java.io.PrintStream: 
           void println(java.lang.String)>("Inside method print");
         return;
-     }
-   }
+      }
+    }
     /*
       "return $stack2" is JReturnStmt.
       "return" is JReturnVoidStmt.
@@ -2297,7 +2297,6 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 === "Jimple"
 
     ```jimple
-    
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()

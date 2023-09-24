@@ -25,16 +25,12 @@ package sootup.core.jimple.common.ref;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
-import sootup.core.types.ArrayType;
-import sootup.core.types.NullType;
 import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -42,42 +38,10 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   private final Local base;
   private final Immediate index;
-  private final IdentifierFactory identifierFactory;
 
-  public JArrayRef(
-      @Nonnull Local base, @Nonnull Immediate index, @Nonnull IdentifierFactory identifierFactory) {
+  public JArrayRef(@Nonnull Local base, @Nonnull Immediate index) {
     this.base = base;
     this.index = index;
-    this.identifierFactory = identifierFactory;
-  }
-
-  private Type determineType(@Nonnull IdentifierFactory identifierFactory) {
-    Type type = base.getType();
-
-    if (type.equals(UnknownType.getInstance())) {
-      return UnknownType.getInstance();
-    } else if (type.equals(NullType.getInstance())) {
-      return NullType.getInstance();
-    } else {
-      // use makeArrayType on non-array type references when they propagate to this point.
-      // kludge, most likely not correct.
-      // may stop spark from complaining when it gets passed phantoms.
-      // ideally I'd want to find out just how they manage to get this far.
-      ArrayType arrayType;
-      if (type instanceof ArrayType) {
-        arrayType = (ArrayType) type;
-      } else {
-        arrayType = identifierFactory.getArrayType(type, 1);
-      }
-
-      // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
-      if (arrayType.getDimension() == 1) {
-        return arrayType.getBaseType();
-      } else {
-        return identifierFactory.getArrayType(
-            arrayType.getBaseType(), arrayType.getDimension() - 1);
-      }
-    }
   }
 
   @Override
@@ -127,7 +91,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   @Override
   @Nonnull
   public Type getType() {
-    return determineType(identifierFactory);
+    return base.getType();
   }
 
   @Override
@@ -137,11 +101,11 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Nonnull
   public JArrayRef withBase(@Nonnull Local base) {
-    return new JArrayRef(base, getIndex(), identifierFactory);
+    return new JArrayRef(base, getIndex());
   }
 
   @Nonnull
   public JArrayRef withIndex(@Nonnull Immediate index) {
-    return new JArrayRef(getBase(), index, identifierFactory);
+    return new JArrayRef(getBase(), index);
   }
 }

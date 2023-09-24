@@ -5,7 +5,6 @@ import org.junit.Test;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
-import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -40,7 +39,7 @@ public class CallgraphExample {
                     System.getProperty("java.home") + "/lib/rt.jar")) // add rt.jar
             .build();
 
-    JavaView view = project.createFullView();
+    JavaView view = project.createView();
 
     // Get a MethodSignature
     ClassType classTypeA = project.getIdentifierFactory().getClassType("A");
@@ -56,8 +55,8 @@ public class CallgraphExample {
     // Create type hierarchy and CHA
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     System.out.println(typeHierarchy.subclassesOf(classTypeA));
-    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view, typeHierarchy);
-    cha = new RapidTypeAnalysisAlgorithm(view, typeHierarchy);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
+
     // Create CG by initializing CHA with entry method(s)
     CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
 

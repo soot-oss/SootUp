@@ -57,7 +57,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
       }
       if (fact instanceof JInstanceFieldRef) {
         JInstanceFieldRef ins = (JInstanceFieldRef) fact;
-        names.add(((Local) ins.getBase()).getName() + "." + ins.getFieldSignature().getName());
+        names.add(ins.getBase().getName() + "." + ins.getFieldSignature().getName());
       }
       if (fact instanceof JStaticFieldRef) {
         JStaticFieldRef stat = (JStaticFieldRef) fact;
@@ -100,8 +100,8 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintPropagated");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result.contains("l1"));
-    assertTrue(result.contains("l2"));
+    assertTrue(result + " is missing an element.", result.contains("l1"));
+    assertTrue(result + " is missing an element.", result.contains("l2"));
   }
 
   @Test

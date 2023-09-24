@@ -38,6 +38,15 @@ public class ArrayType extends ReferenceType {
   private final int dimension;
 
   public ArrayType(Type baseType, int dimension) {
+    if (!(baseType instanceof PrimitiveType
+        || baseType instanceof ClassType
+        || baseType instanceof NullType)) {
+      throw new RuntimeException(
+          "The type: " + baseType + "can not be as a base type of an ArrayType.");
+    }
+    if (dimension < 1) {
+      throw new RuntimeException("The dimension of array type should be at least 1.");
+    }
     this.baseType = baseType;
     this.dimension = dimension;
   }
@@ -84,11 +93,11 @@ public class ArrayType extends ReferenceType {
     return dimension;
   }
 
-  public Type getArrayElementType() {
+  public Type getElementType() {
     if (dimension > 1) {
       return new ArrayType(baseType, dimension - 1);
     } else {
-      return baseType;
+      return this.baseType;
     }
   }
 

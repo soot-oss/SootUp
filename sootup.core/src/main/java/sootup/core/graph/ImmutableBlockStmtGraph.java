@@ -46,7 +46,7 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<Stmt> nodes() {
+  public List<Stmt> getNodes() {
     int size = 0;
     for (ImmutableBasicBlock block : blocks) {
       size += block.getStmtCount();
@@ -178,8 +178,9 @@ public class ImmutableBlockStmtGraph
     }
 
     @Override
-    public List<ImmutableBasicBlock> getExceptionalPredecessors() {
-      return null;
+    @Nonnull
+    public Map<ClassType, ImmutableBasicBlock> getExceptionalPredecessors() {
+      throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Nonnull

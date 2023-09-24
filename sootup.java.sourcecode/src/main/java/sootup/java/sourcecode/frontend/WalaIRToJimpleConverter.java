@@ -30,8 +30,8 @@ import com.ibm.wala.cfg.IBasicBlock;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.shrikeCT.ClassConstants;
-import com.ibm.wala.shrikeCT.InvalidClassFileException;
+import com.ibm.wala.shrike.shrikeCT.ClassConstants;
+import com.ibm.wala.shrike.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.*;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
@@ -50,12 +50,7 @@ import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.Modifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -148,7 +143,7 @@ public class WalaIRToJimpleConverter {
     Position position = walaClass.getSourcePosition();
 
     // convert modifiers
-    EnumSet<Modifier> modifiers = convertModifiers(walaClass);
+    EnumSet<ClassModifier> modifiers = convertModifiers(walaClass);
 
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
@@ -164,7 +159,8 @@ public class WalaIRToJimpleConverter {
       FieldSignature signature =
           identifierFactory.getFieldSignature("this$0", classSig, outerClass);
       SootField enclosingObject =
-          new SootField(signature, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+          new SootField(
+              signature, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
       sootFields.add(enclosingObject);
     }
 
@@ -198,7 +194,7 @@ public class WalaIRToJimpleConverter {
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
-      EnumSet<Modifier> modifiers,
+      EnumSet<ClassModifier> modifiers,
       Iterable<AnnotationType> annotations) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
@@ -229,7 +225,7 @@ public class WalaIRToJimpleConverter {
    */
   public SootField convertField(JavaClassType classSig, AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
-    EnumSet<Modifier> modifiers = convertModifiers(walaField);
+    EnumSet<FieldModifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
         identifierFactory.getFieldSignature(walaField.getName().toString(), classSig, type);
     return new SootField(signature, modifiers, NoPositionInformation.getInstance());
@@ -257,7 +253,7 @@ public class WalaIRToJimpleConverter {
 
     Type returnType = convertType(walaMethod.getReturnType());
 
-    EnumSet<Modifier> modifiers = convertModifiers(walaMethod);
+    EnumSet<MethodModifier> modifiers = convertModifiers(walaMethod);
 
     List<ClassType> thrownExceptions = new ArrayList<>();
     try {
@@ -324,96 +320,96 @@ public class WalaIRToJimpleConverter {
   }
 
   /** Return all modifiers for the given field. */
-  public EnumSet<Modifier> convertModifiers(AstField field) {
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+  public EnumSet<FieldModifier> convertModifiers(AstField field) {
+    EnumSet<FieldModifier> modifiers = EnumSet.noneOf(FieldModifier.class);
     if (field.isFinal()) {
-      modifiers.add(Modifier.FINAL);
+      modifiers.add(FieldModifier.FINAL);
     }
     if (field.isPrivate()) {
-      modifiers.add(Modifier.PRIVATE);
+      modifiers.add(FieldModifier.PRIVATE);
     }
     if (field.isProtected()) {
-      modifiers.add(Modifier.PROTECTED);
+      modifiers.add(FieldModifier.PROTECTED);
     }
     if (field.isPublic()) {
-      modifiers.add(Modifier.PUBLIC);
+      modifiers.add(FieldModifier.PUBLIC);
     }
     if (field.isStatic()) {
-      modifiers.add(Modifier.STATIC);
+      modifiers.add(FieldModifier.STATIC);
     }
     if (field.isVolatile()) {
-      modifiers.add(Modifier.VOLATILE);
+      modifiers.add(FieldModifier.VOLATILE);
     }
     // TODO: TRANSIENT field
     return modifiers;
   }
 
   /** Return all modifiers for the given method. */
-  public EnumSet<Modifier> convertModifiers(AstMethod method) {
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+  public EnumSet<MethodModifier> convertModifiers(AstMethod method) {
+    EnumSet<MethodModifier> modifiers = EnumSet.noneOf(MethodModifier.class);
     if (method.isPrivate()) {
-      modifiers.add(Modifier.PRIVATE);
+      modifiers.add(MethodModifier.PRIVATE);
     }
     if (method.isProtected()) {
-      modifiers.add(Modifier.PROTECTED);
+      modifiers.add(MethodModifier.PROTECTED);
     }
     if (method.isPublic()) {
-      modifiers.add(Modifier.PUBLIC);
+      modifiers.add(MethodModifier.PUBLIC);
     }
     if (method.isStatic()) {
-      modifiers.add(Modifier.STATIC);
+      modifiers.add(MethodModifier.STATIC);
     }
     if (method.isFinal()) {
-      modifiers.add(Modifier.FINAL);
+      modifiers.add(MethodModifier.FINAL);
     }
     if (method.isAbstract()) {
-      modifiers.add(Modifier.ABSTRACT);
+      modifiers.add(MethodModifier.ABSTRACT);
     }
     if (method.isSynchronized()) {
-      modifiers.add(Modifier.SYNCHRONIZED);
+      modifiers.add(MethodModifier.SYNCHRONIZED);
     }
     if (method.isNative()) {
-      modifiers.add(Modifier.NATIVE);
+      modifiers.add(MethodModifier.NATIVE);
     }
     if (method.isSynthetic()) {
-      modifiers.add(Modifier.SYNTHETIC);
+      modifiers.add(MethodModifier.SYNTHETIC);
     }
     if (method.isBridge()) {
-      modifiers.add(Modifier.VOLATILE);
+      modifiers.add(MethodModifier.BRIDGE);
     }
-    // TODO: strictfp and annotation
+    // TODO: strictfp and annotation and varargs
     return modifiers;
   }
 
-  public EnumSet<Modifier> convertModifiers(AstClass klass) {
+  public EnumSet<ClassModifier> convertModifiers(AstClass klass) {
     int modif = klass.getModifiers();
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+    EnumSet<ClassModifier> modifiers = EnumSet.noneOf(ClassModifier.class);
     if (klass.isAbstract()) {
-      modifiers.add(Modifier.ABSTRACT);
+      modifiers.add(ClassModifier.ABSTRACT);
     }
     if (klass.isPrivate()) {
-      modifiers.add(Modifier.PRIVATE);
+      modifiers.add(ClassModifier.PRIVATE);
     }
     if (klass.isSynthetic()) {
-      modifiers.add(Modifier.SYNTHETIC);
+      modifiers.add(ClassModifier.SYNTHETIC);
     }
     if (klass.isPublic()) {
-      modifiers.add(Modifier.PUBLIC);
+      modifiers.add(ClassModifier.PUBLIC);
     }
     if (klass.isInterface()) {
-      modifiers.add(Modifier.INTERFACE);
+      modifiers.add(ClassModifier.INTERFACE);
     }
     if (klass.getSuperclass().getName().toString().equals("Ljava/lang/Enum")) {
-      modifiers.add(Modifier.ENUM);
+      modifiers.add(ClassModifier.ENUM);
     }
-    if ((modif & ClassConstants.ACC_FINAL) != 0) modifiers.add(Modifier.FINAL);
+    if ((modif & ClassConstants.ACC_FINAL) != 0) modifiers.add(ClassModifier.FINAL);
     // TODO:  annotation
     return modifiers;
   }
 
   @Nonnull
   private Body createBody(
-      MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
+      MethodSignature methodSignature, EnumSet<MethodModifier> modifiers, AstMethod walaMethod) {
 
     if (walaMethod.isAbstract()) {
       return Body.builder().setMethodSignature(methodSignature).build();
@@ -424,7 +420,7 @@ public class WalaIRToJimpleConverter {
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      LocalGenerator localGenerator = new LocalGenerator(new LinkedHashSet<>());
+      LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {
@@ -435,7 +431,7 @@ public class WalaIRToJimpleConverter {
 
         /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
-        if (!Modifier.isStatic(modifiers)) {
+        if (!MethodModifier.isStatic(modifiers)) {
           JavaClassType thisType = (JavaClassType) methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
@@ -638,7 +634,7 @@ public class WalaIRToJimpleConverter {
    *   converts Wala Position to Soots Position
    * */
   public static sootup.core.model.Position convertPosition(Position instructionPosition) {
-    return new sootup.core.model.Position(
+    return new FullPosition(
         instructionPosition.getFirstLine(),
         instructionPosition.getFirstCol(),
         instructionPosition.getLastLine(),
@@ -649,21 +645,21 @@ public class WalaIRToJimpleConverter {
       Position instructionPosition, Position[] operandPosition) {
 
     if (operandPosition == null) {
-      return new StmtPositionInfo(convertPosition(instructionPosition), null);
+      return new SimpleStmtPositionInfo(convertPosition(instructionPosition));
     }
-    sootup.core.model.Position[] operandPos =
+    FullPosition[] operandPos =
         Arrays.stream(operandPosition)
             .map(
                 instrPos ->
                     instrPos == null
                         ? null
-                        : new sootup.core.model.Position(
+                        : new FullPosition(
                             instrPos.getFirstLine(),
                             instrPos.getFirstCol(),
                             instrPos.getLastLine(),
                             instrPos.getLastCol()))
-            .toArray(sootup.core.model.Position[]::new);
+            .toArray(sootup.core.model.FullPosition[]::new);
 
-    return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);
+    return new FullStmtPositionInfo(convertPosition(instructionPosition), operandPos);
   }
 }
