@@ -22,13 +22,13 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class TypeTests extends JunitTests {
-    @Test
-    public void testType1k0() {
-        checkAssertions(run("qilin.microben.context.type.Type1k0", "1t"));
-    }
+  @Test
+  public void testType1k0() {
+    checkAssertions(run("qilin.microben.context.type.Type1k0", "1t"));
+  }
 
-    @Test
-    public void testType2k0() {
-        checkAssertions(run("qilin.microben.context.type.Type2k0", "2t"));
-    }
+  @Test
+  public void testType2k0() {
+    checkAssertions(run("qilin.microben.context.type.Type2k0", "2t"));
+  }
 }

@@ -18,10 +18,9 @@
 
 package qilin.core.reflection;
 
-import sootup.core.jimple.common.stmt.Stmt;
-
 import java.util.Collection;
 import java.util.Collections;
+import sootup.core.jimple.common.stmt.Stmt;
 
 /*
  * This is an empty reflection model which does nothing for reflection statements.
@@ -29,48 +28,48 @@ import java.util.Collections;
 
 public class NopReflectionModel extends ReflectionModel {
 
-    @Override
-    Collection<Stmt> transformClassForName(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformClassForName(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformClassNewInstance(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformClassNewInstance(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformContructorNewInstance(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformContructorNewInstance(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformMethodInvoke(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformMethodInvoke(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformFieldSet(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformFieldSet(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformFieldGet(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformFieldGet(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformArrayNewInstance(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformArrayNewInstance(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformArrayGet(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformArrayGet(Stmt s) {
+    return Collections.emptySet();
+  }
 
-    @Override
-    Collection<Stmt> transformArraySet(Stmt s) {
-        return Collections.emptySet();
-    }
+  @Override
+  Collection<Stmt> transformArraySet(Stmt s) {
+    return Collections.emptySet();
+  }
 }

@@ -22,19 +22,19 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
 public class JavaLangSystemSetIn0Native extends NativeMethod {
-    public JavaLangSystemSetIn0Native(SootMethod method) {
-        super(method);
-    }
+  public JavaLangSystemSetIn0Native(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * NOTE: this native method is not documented in JDK API. It should have the
-     * side effect: System.in = parameter
-     * <p>
-     * private static native void setIn0(java.io.InputStream);
-     */
-    public void simulate() {
-        Value r1 = getPara(0);
-        Value systemIn = getStaticFieldRef("java.lang.System", "in");
-        addAssign(systemIn, r1);
-    }
+  /**
+   * NOTE: this native method is not documented in JDK API. It should have the side effect:
+   * System.in = parameter
+   *
+   * <p>private static native void setIn0(java.io.InputStream);
+   */
+  protected void simulateImpl() {
+    Value r1 = getPara(0);
+    Value systemIn = getStaticFieldRef("java.lang.System", "in");
+    addAssign(systemIn, r1);
+  }
 }

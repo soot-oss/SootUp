@@ -23,20 +23,19 @@ package soot.util;
  */
 
 /**
- * A class implementing this interface can be invalidated. The invalidation state can be retrieved by other classes.
+ * A class implementing this interface can be invalidated. The invalidation state can be retrieved
+ * by other classes.
  *
  * @author Marc Miltenberger
  */
 public interface Invalidable {
-    /**
-     * Return true if the object is invalid.
-     *
-     * @return true if the object is invalid.
-     */
-    public boolean isInvalid();
+  /**
+   * Return true if the object is invalid.
+   *
+   * @return true if the object is invalid.
+   */
+  public boolean isInvalid();
 
-    /**
-     * Invalidates the object. Does nothing if the object is already invalid.
-     */
-    public void invalidate();
+  /** Invalidates the object. Does nothing if the object is already invalid. */
+  public void invalidate();
 }

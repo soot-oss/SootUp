@@ -29,16 +29,16 @@ import sootup.core.types.ClassType;
  * */
 
 public class JavaLangReflectArraySet extends NativeMethod {
-    JavaLangReflectArraySet(SootMethod method) {
-        super(method);
-    }
+  JavaLangReflectArraySet(SootMethod method) {
+    super(method);
+  }
 
-    @Override
-    void simulate() {
-        ClassType objType = PTAUtils.getClassType("java.lang.Object");
-        Value arrayBase = getPara(0, new ArrayType(objType, 1));
-        Value rightValue = getPara(2);
-        Value arrayRef = getArrayRef(arrayBase);
-        addAssign(arrayRef, rightValue); // a[] = b;
-    }
+  @Override
+  protected void simulateImpl() {
+    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    Value arrayBase = getPara(0, new ArrayType(objType, 1));
+    Value rightValue = getPara(2);
+    Value arrayRef = getArrayRef(arrayBase);
+    addAssign(arrayRef, rightValue); // a[] = b;
+  }
 }

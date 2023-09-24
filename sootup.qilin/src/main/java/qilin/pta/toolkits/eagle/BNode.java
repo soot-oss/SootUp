@@ -21,42 +21,39 @@ package qilin.pta.toolkits.eagle;
 import qilin.core.pag.AllocNode;
 import qilin.util.PTAUtils;
 
-/**
- * Original Graph Node(sparkNode) expanded bidirectinally
- */
+/** Original Graph Node(sparkNode) expanded bidirectinally */
 public class BNode {
-    public Object sparkNode;
-    public Boolean forward;
-    public int level;
-    public Boolean cs;
+  public Object sparkNode;
+  public Boolean forward;
+  public int level;
+  public Boolean cs;
 
-    public boolean entryCS() {
-        if (this.cs)
-            return false;
-        return this.cs = true;
-    }
+  public boolean entryCS() {
+    if (this.cs) return false;
+    return this.cs = true;
+  }
 
-    public BNode(Object origin, Boolean forward) {
-        this.sparkNode = origin;
-        this.forward = forward;
-        this.cs = false;
-        this.level = 0;
-    }
+  public BNode(Object origin, Boolean forward) {
+    this.sparkNode = origin;
+    this.forward = forward;
+    this.cs = false;
+    this.level = 0;
+  }
 
-    public Object getIR() {
-        return PTAUtils.getIR(sparkNode);
-    }
+  public Object getIR() {
+    return PTAUtils.getIR(sparkNode);
+  }
 
-    boolean isHeapPlus() {
-        return sparkNode instanceof AllocNode && this.forward;
-    }
+  boolean isHeapPlus() {
+    return sparkNode instanceof AllocNode && this.forward;
+  }
 
-    boolean isHeapMinus() {
-        return sparkNode instanceof AllocNode && !this.forward;
-    }
+  boolean isHeapMinus() {
+    return sparkNode instanceof AllocNode && !this.forward;
+  }
 
-    @Override
-    public String toString() {
-        return sparkNode + "," + forward;
-    }
+  @Override
+  public String toString() {
+    return sparkNode + "," + forward;
+  }
 }

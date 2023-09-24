@@ -23,23 +23,23 @@ import qilin.test.util.JunitTests;
 
 public class CFATests extends JunitTests {
 
-    @Test
-    public void testCFA1k0() {
-        checkAssertions(run("qilin.microben.context.cfa.CFA1k0", "1c"));
-    }
+  @Test
+  public void testCFA1k0() {
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k0", "1c"));
+  }
 
-    @Test
-    public void testCFA1k1() {
-        checkAssertions(run("qilin.microben.context.cfa.CFA1k1", "1c"));
-    }
+  @Test
+  public void testCFA1k1() {
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k1", "1c"));
+  }
 
-    @Test
-    public void testCFA1k2() {
-        checkAssertions(run("qilin.microben.context.cfa.CFA1k2", "1c"));
-    }
+  @Test
+  public void testCFA1k2() {
+    checkAssertions(run("qilin.microben.context.cfa.CFA1k2", "1c"));
+  }
 
-    @Test
-    public void testCFA2k() {
-        checkAssertions(run("qilin.microben.context.cfa.CFA2k", "2c"));
-    }
+  @Test
+  public void testCFA2k() {
+    checkAssertions(run("qilin.microben.context.cfa.CFA2k", "2c"));
+  }
 }

@@ -19,21 +19,30 @@
 package qilin.core.reflection;
 
 public enum ReflectionKind {
-    ClassForName, ClassNewInstance, ConstructorNewInstance, MethodInvoke, FieldSet, FieldGet, MethodGet, ArrayNewInstance,
-    ArrayGet, ArraySet, FieldGetName;
+  ClassForName,
+  ClassNewInstance,
+  ConstructorNewInstance,
+  MethodInvoke,
+  FieldSet,
+  FieldGet,
+  MethodGet,
+  ArrayNewInstance,
+  ArrayGet,
+  ArraySet,
+  FieldGetName;
 
-    public static ReflectionKind parse(String kindStr) {
-        return switch (kindStr) {
-            case "Class.forName" -> ClassForName;
-            case "Class.newInstance" -> ClassNewInstance;
-            case "Constructor.newInstance" -> ConstructorNewInstance;
-            case "Method.invoke" -> MethodInvoke;
-            case "Method.getName" -> MethodGet;
-            case "Field.set*" -> FieldSet;
-            case "Field.get*" -> FieldGet;
-            case "Field.getName" -> FieldGetName;
-            case "Array.newInstance" -> ArrayNewInstance;
-            default -> null;
-        };
-    }
+  public static ReflectionKind parse(String kindStr) {
+    return switch (kindStr) {
+      case "Class.forName" -> ClassForName;
+      case "Class.newInstance" -> ClassNewInstance;
+      case "Constructor.newInstance" -> ConstructorNewInstance;
+      case "Method.invoke" -> MethodInvoke;
+      case "Method.getName" -> MethodGet;
+      case "Field.set*" -> FieldSet;
+      case "Field.get*" -> FieldGet;
+      case "Field.getName" -> FieldGetName;
+      case "Array.newInstance" -> ArrayNewInstance;
+      default -> null;
+    };
+  }
 }

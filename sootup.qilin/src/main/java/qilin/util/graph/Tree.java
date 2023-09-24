@@ -21,17 +21,17 @@ package qilin.util.graph;
 import java.util.Collection;
 
 public interface Tree<N> {
-    N getRoot();
+  N getRoot();
 
-    Collection<N> getLeaves();
+  Collection<N> getLeaves();
 
-    boolean isALeaf(N n);
+  boolean isALeaf(N n);
 
-    Collection<N> getAllNodes();
+  Collection<N> getAllNodes();
 
-    int size();
+  int size();
 
-    N parentOf(N n);
+  N parentOf(N n);
 
-    Collection<N> childrenOf(N n);
+  Collection<N> childrenOf(N n);
 }

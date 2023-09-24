@@ -21,40 +21,40 @@ package qilin.pta.toolkits.turner;
 import java.util.Objects;
 
 public class TranEdge {
-    private final Object src;
-    private final Object dst;
-    private final DFA.TranCond tranCond;
+  private final Object src;
+  private final Object dst;
+  private final DFA.TranCond tranCond;
 
-    public TranEdge(Object s, Object d, DFA.TranCond tran) {
-        this.src = s;
-        this.dst = d;
-        this.tranCond = tran;
-    }
+  public TranEdge(Object s, Object d, DFA.TranCond tran) {
+    this.src = s;
+    this.dst = d;
+    this.tranCond = tran;
+  }
 
-    public Object getSource() {
-        return src;
-    }
+  public Object getSource() {
+    return src;
+  }
 
-    public Object getTarget() {
-        return dst;
-    }
+  public Object getTarget() {
+    return dst;
+  }
 
-    public DFA.TranCond getTranCond() {
-        return tranCond;
-    }
+  public DFA.TranCond getTranCond() {
+    return tranCond;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TranEdge tranEdge = (TranEdge) o;
-        return Objects.equals(src, tranEdge.src) &&
-                Objects.equals(dst, tranEdge.dst) &&
-                tranCond == tranEdge.tranCond;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TranEdge tranEdge = (TranEdge) o;
+    return Objects.equals(src, tranEdge.src)
+        && Objects.equals(dst, tranEdge.dst)
+        && tranCond == tranEdge.tranCond;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(src, dst, tranCond);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(src, dst, tranCond);
+  }
 }

@@ -25,22 +25,20 @@ import sootup.core.model.SootMethod;
 
 public class JavaLangThreadStart0Native extends NativeMethod {
 
-    public JavaLangThreadStart0Native(SootMethod method) {
-        super(method);
-    }
+  public JavaLangThreadStart0Native(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * Calls to Thread.start() get redirected to Thread.run.
-     * <p>
-     * In JRE 1.5 and JRE 1.6 Thread.start() is defined in Java
-     * and there is native method start0.
-     */
-
-    @Override
-    void simulate() {
-        Local mThis = getThis();
-        addInvoke(mThis, "<java.lang.Thread: void run()>");
-        Value lv = PTAScene.v().getFieldCurrentThread();
-        addAssign(lv, mThis); // store.
-    }
+  /**
+   * Calls to Thread.start() get redirected to Thread.run.
+   *
+   * <p>In JRE 1.5 and JRE 1.6 Thread.start() is defined in Java and there is native method start0.
+   */
+  @Override
+  protected void simulateImpl() {
+    Local mThis = getThis();
+    addInvoke(mThis, "<java.lang.Thread: void run()>");
+    Value lv = PTAScene.v().getFieldCurrentThread();
+    addAssign(lv, mThis); // store.
+  }
 }

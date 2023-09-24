@@ -27,25 +27,22 @@ import qilin.parm.select.PipelineSelector;
 import qilin.parm.select.UniformSelector;
 import qilin.pta.PTAConfig;
 
-/**
- * refer to "Hybrid Context-Sensitivity for Points-To Analysis" (PLDI'13)
- */
+/** refer to "Hybrid Context-Sensitivity for Points-To Analysis" (PLDI'13) */
 public class HybridObjectSensPTA extends BasePTA {
 
-    public HybridObjectSensPTA(int k, int hk) {
-        this.ctxCons = new HybObjCtxConstructor();
-        CtxSelector us = new UniformSelector(k + 1, hk);
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("Hybrid k-OBJ ...");
+  public HybridObjectSensPTA(int k, int hk) {
+    this.ctxCons = new HybObjCtxConstructor();
+    CtxSelector us = new UniformSelector(k + 1, hk);
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
-
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("Hybrid k-OBJ ...");
+  }
 }

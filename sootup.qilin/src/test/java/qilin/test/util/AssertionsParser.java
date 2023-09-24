@@ -18,6 +18,8 @@
 
 package qilin.test.util;
 
+import java.util.HashSet;
+import java.util.Set;
 import qilin.core.PTA;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -26,42 +28,44 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class AssertionsParser {
-    protected static String mayAliasSig = "<qilin.microben.utils.Assert: void mayAlias(java.lang.Object,java.lang.Object)>";
-    protected static String notAliasSig = "<qilin.microben.utils.Assert: void notAlias(java.lang.Object,java.lang.Object)>";
+  protected static String mayAliasSig =
+      "<qilin.microben.utils.Assert: void mayAlias(java.lang.Object,java.lang.Object)>";
+  protected static String notAliasSig =
+      "<qilin.microben.utils.Assert: void notAlias(java.lang.Object,java.lang.Object)>";
 
-    public static Set<IAssertion> retrieveQueryInfo(PTA pta) {
-        Set<IAssertion> aliasAssertionSet = new HashSet<>();
-        for (SootMethod sm : pta.getNakedReachableMethods()) {
-            if (sm.isNative()) {
-                continue;
-            }
+  public static Set<IAssertion> retrieveQueryInfo(PTA pta) {
+    Set<IAssertion> aliasAssertionSet = new HashSet<>();
+    for (SootMethod sm : pta.getNakedReachableMethods()) {
+      if (sm.isNative()) {
+        continue;
+      }
 
-//            if (sm.getSignature().equals("<qilin.pta.reflog.DoopRefBug: void main(java.lang.String[])>")) {
-//                System.out.println(sm);
-//                System.out.println(PTAUtils.getMethodBody(sm));
-//                PTAUtils.dumpMPAG(pta, sm);
-//                System.out.println("=================================================================");
-//            }
-            for (final Stmt stmt : PTAUtils.getMethodBody(sm).getStmts()) {
-                if (stmt.containsInvokeExpr()) {
-                    AbstractInvokeExpr ie = stmt.getInvokeExpr();
-                    if (ie instanceof JStaticInvokeExpr) {
-                        final MethodSignature calleeSig = ie.getMethodSignature();
-                        if (calleeSig.equals(mayAliasSig)) {
-                            aliasAssertionSet.add(new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), true));
-                        } else if (calleeSig.equals(notAliasSig)) {
-                            aliasAssertionSet.add(new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), false));
-                        }
-                    }
-                }
+      //            if (sm.getSignature().equals("<qilin.pta.reflog.DoopRefBug: void
+      // main(java.lang.String[])>")) {
+      //                System.out.println(sm);
+      //                System.out.println(PTAUtils.getMethodBody(sm));
+      //                PTAUtils.dumpMPAG(pta, sm);
+      //
+      // System.out.println("=================================================================");
+      //            }
+      for (final Stmt stmt : PTAUtils.getMethodBody(sm).getStmts()) {
+        if (stmt.containsInvokeExpr()) {
+          AbstractInvokeExpr ie = stmt.getInvokeExpr();
+          if (ie instanceof JStaticInvokeExpr) {
+            final MethodSignature calleeSig = ie.getMethodSignature();
+            if (calleeSig.equals(mayAliasSig)) {
+              aliasAssertionSet.add(
+                  new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), true));
+            } else if (calleeSig.equals(notAliasSig)) {
+              aliasAssertionSet.add(
+                  new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), false));
             }
+          }
         }
-        System.out.println("#alias queries: " + aliasAssertionSet.size());
-        return aliasAssertionSet;
+      }
     }
-
+    System.out.println("#alias queries: " + aliasAssertionSet.size());
+    return aliasAssertionSet;
+  }
 }

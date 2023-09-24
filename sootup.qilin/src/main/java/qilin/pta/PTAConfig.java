@@ -23,64 +23,52 @@ import qilin.CoreConfig;
 import qilin.pta.tools.DebloatedPTA;
 
 public class PTAConfig extends CoreConfig {
-    private static PTAConfig config = null;
+  private static PTAConfig config = null;
 
-    public static PTAConfig v() {
-        if (config == null) {
-            config = new PTAConfig();
-            coreConfig = config;
-        }
-        return config;
+  public static PTAConfig v() {
+    if (config == null) {
+      config = new PTAConfig();
+      coreConfig = config;
     }
+    return config;
+  }
 
-    public static void reset() {
-        CoreConfig.reset();
-        config = null;
-    }
+  public static void reset() {
+    CoreConfig.reset();
+    config = null;
+  }
 
-    public static class PointerAnalysisConfiguration extends CorePTAConfiguration {
-        public PTAPattern ptaPattern;
+  public static class PointerAnalysisConfiguration extends CorePTAConfiguration {
+    public PTAPattern ptaPattern;
 
-        /**
-         * If this option is turned on, then main analysis will not run.
-         */
-        public boolean preAnalysisOnly = false;
+    /** If this option is turned on, then main analysis will not run. */
+    public boolean preAnalysisOnly = false;
 
-        /**
-         * If this option is turned on, we will apply context debloating techniques.
-         */
-        public boolean ctxDebloating = false;
-        public DebloatedPTA.DebloatApproach debloatApproach = DebloatedPTA.DebloatApproach.CONCH;
+    /** If this option is turned on, we will apply context debloating techniques. */
+    public boolean ctxDebloating = false;
 
-    }
+    public DebloatedPTA.DebloatApproach debloatApproach = DebloatedPTA.DebloatApproach.CONCH;
+  }
 
-    /*
-     * Notice that the DEFAULT option is equivalent to Full Turner.
-     * PHASE_TWO: all objects are assumed to be CS-likely.
-     * PHASE_ONE: only non-CS-likely objects are analyzed context-insensitively. All other variables and objects
-     * are analyzed context-sensitively.
-     * */
-    public enum TurnerConfig {
-        DEFAULT, PHASE_TWO, PHASE_ONE
-    }
+  /*
+   * Notice that the DEFAULT option is equivalent to Full Turner.
+   * PHASE_TWO: all objects are assumed to be CS-likely.
+   * PHASE_ONE: only non-CS-likely objects are analyzed context-insensitively. All other variables and objects
+   * are analyzed context-sensitively.
+   * */
+  public enum TurnerConfig {
+    DEFAULT,
+    PHASE_TWO,
+    PHASE_ONE
+  }
 
-    public TurnerConfig turnerConfig = TurnerConfig.DEFAULT;
+  public TurnerConfig turnerConfig = TurnerConfig.DEFAULT;
 
-    private PTAConfig() {
-        this.ptaConfig = new PointerAnalysisConfiguration();
-    }
+  private PTAConfig() {
+    this.ptaConfig = new PointerAnalysisConfiguration();
+  }
 
-    public PointerAnalysisConfiguration getPtaConfig() {
-        return (PointerAnalysisConfiguration) this.ptaConfig;
-    }
-
-    /*
-     * Configures the callgraph options
-     * */
-    public enum CallgraphAlgorithm {
-        /*CHA, VTA, RTA, GEOM, and SPARK are all provided by Soot */
-        CHA, VTA, RTA, GEOM, SPARK, QILIN
-    }
-
-    public CallgraphAlgorithm callgraphAlg = CallgraphAlgorithm.QILIN;
+  public PointerAnalysisConfiguration getPtaConfig() {
+    return (PointerAnalysisConfiguration) this.ptaConfig;
+  }
 }

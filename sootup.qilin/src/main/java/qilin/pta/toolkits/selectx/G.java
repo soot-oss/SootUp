@@ -20,40 +20,39 @@ package qilin.pta.toolkits.selectx;
 
 import java.util.*;
 import java.util.stream.Stream;
-
 import qilin.core.pag.GlobalVarNode;
 
 public class G extends BNode {
-    public static Map<GlobalVarNode, G> g2GN = new HashMap<>();
-    public static Map<GlobalVarNode, G> g2GP = new HashMap<>();
+  public static Map<GlobalVarNode, G> g2GN = new HashMap<>();
+  public static Map<GlobalVarNode, G> g2GP = new HashMap<>();
 
-    public static G v(GlobalVarNode origin, boolean positive) {
-        if (positive) {
-            return g2GP.computeIfAbsent(origin, k -> new G(origin, true));
-        } else {
-            return g2GN.computeIfAbsent(origin, k -> new G(origin, false));
-        }
+  public static G v(GlobalVarNode origin, boolean positive) {
+    if (positive) {
+      return g2GP.computeIfAbsent(origin, k -> new G(origin, true));
+    } else {
+      return g2GN.computeIfAbsent(origin, k -> new G(origin, false));
     }
+  }
 
-    private final Set<L> outLs = new HashSet<>();
-    private final boolean positive;
+  private final Set<L> outLs = new HashSet<>();
+  private final boolean positive;
 
-    G(GlobalVarNode origin, boolean positive) {
-        super(origin);
-        this.positive = positive;
-    }
+  G(GlobalVarNode origin, boolean positive) {
+    super(origin);
+    this.positive = positive;
+  }
 
-    public boolean addOutEdge(L toE) {
-        return outLs.add(toE);
-    }
+  public boolean addOutEdge(L toE) {
+    return outLs.add(toE);
+  }
 
-    @Override
-    public boolean addOutEdge(BNode toE) {
-        return addOutEdge((L) toE);
-    }
+  @Override
+  public boolean addOutEdge(BNode toE) {
+    return addOutEdge((L) toE);
+  }
 
-    @Override
-    public Stream<? extends BNode> forwardTargets() {
-        return outLs.stream();
-    }
+  @Override
+  public Stream<? extends BNode> forwardTargets() {
+    return outLs.stream();
+  }
 }

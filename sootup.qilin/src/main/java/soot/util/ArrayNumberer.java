@@ -35,120 +35,120 @@ import java.util.NoSuchElementException;
  */
 public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> {
 
-    protected E[] numberToObj;
-    protected int lastNumber;
-    protected BitSet freeNumbers;
+  protected E[] numberToObj;
+  protected int lastNumber;
+  protected BitSet freeNumbers;
 
-    @SuppressWarnings("unchecked")
-    public ArrayNumberer() {
-        this.numberToObj = (E[]) new Numberable[1024];
-        this.lastNumber = 0;
+  @SuppressWarnings("unchecked")
+  public ArrayNumberer() {
+    this.numberToObj = (E[]) new Numberable[1024];
+    this.lastNumber = 0;
+  }
+
+  public ArrayNumberer(E[] elements) {
+    this.numberToObj = elements;
+    this.lastNumber = elements.length;
+  }
+
+  private void resize(int n) {
+    numberToObj = Arrays.copyOf(numberToObj, n);
+  }
+
+  @Override
+  public synchronized void add(E o) {
+    if (o.getNumber() != 0) {
+      return;
     }
 
-    public ArrayNumberer(E[] elements) {
-        this.numberToObj = elements;
-        this.lastNumber = elements.length;
+    // In case we removed entries from the numberer, we want to re-use the free space
+    int chosenNumber = -1;
+    if (freeNumbers != null) {
+      int ns = freeNumbers.nextSetBit(0);
+      if (ns != -1) {
+        chosenNumber = ns;
+        freeNumbers.clear(ns);
+      }
+    }
+    if (chosenNumber == -1) {
+      chosenNumber = ++lastNumber;
+    }
+    if (chosenNumber >= numberToObj.length) {
+      resize(numberToObj.length * 2);
+    }
+    numberToObj[chosenNumber] = o;
+    o.setNumber(chosenNumber);
+  }
+
+  @Override
+  public long get(E o) {
+    if (o == null) {
+      return 0;
+    }
+    int ret = o.getNumber();
+    if (ret == 0) {
+      throw new RuntimeException("unnumbered: " + o);
+    }
+    return ret;
+  }
+
+  @Override
+  public E get(long number) {
+    if (number == 0) {
+      return null;
+    }
+    E ret = numberToObj[(int) number];
+    if (ret == null) {
+      return null;
+    }
+    return ret;
+  }
+
+  @Override
+  public int size() {
+    return lastNumber;
+  }
+
+  @Override
+  public Iterator<E> iterator() {
+    return new Iterator<E>() {
+      int cur = 1;
+
+      @Override
+      public final boolean hasNext() {
+        return cur <= lastNumber && cur < numberToObj.length && numberToObj[cur] != null;
+      }
+
+      @Override
+      public final E next() {
+        if (hasNext()) {
+          return numberToObj[cur++];
+        }
+        throw new NoSuchElementException();
+      }
+
+      @Override
+      public final void remove() {
+        ArrayNumberer.this.remove(numberToObj[cur - 1]);
+      }
+    };
+  }
+
+  @Override
+  public boolean remove(E o) {
+    if (o == null) {
+      return false;
     }
 
-    private void resize(int n) {
-        numberToObj = Arrays.copyOf(numberToObj, n);
+    int num = o.getNumber();
+    if (num == 0) {
+      return false;
     }
-
-    @Override
-    public synchronized void add(E o) {
-        if (o.getNumber() != 0) {
-            return;
-        }
-
-        // In case we removed entries from the numberer, we want to re-use the free space
-        int chosenNumber = -1;
-        if (freeNumbers != null) {
-            int ns = freeNumbers.nextSetBit(0);
-            if (ns != -1) {
-                chosenNumber = ns;
-                freeNumbers.clear(ns);
-            }
-        }
-        if (chosenNumber == -1) {
-            chosenNumber = ++lastNumber;
-        }
-        if (chosenNumber >= numberToObj.length) {
-            resize(numberToObj.length * 2);
-        }
-        numberToObj[chosenNumber] = o;
-        o.setNumber(chosenNumber);
+    if (freeNumbers == null) {
+      freeNumbers = new BitSet(2 * num);
     }
-
-    @Override
-    public long get(E o) {
-        if (o == null) {
-            return 0;
-        }
-        int ret = o.getNumber();
-        if (ret == 0) {
-            throw new RuntimeException("unnumbered: " + o);
-        }
-        return ret;
-    }
-
-    @Override
-    public E get(long number) {
-        if (number == 0) {
-            return null;
-        }
-        E ret = numberToObj[(int) number];
-        if (ret == null) {
-            return null;
-        }
-        return ret;
-    }
-
-    @Override
-    public int size() {
-        return lastNumber;
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            int cur = 1;
-
-            @Override
-            public final boolean hasNext() {
-                return cur <= lastNumber && cur < numberToObj.length && numberToObj[cur] != null;
-            }
-
-            @Override
-            public final E next() {
-                if (hasNext()) {
-                    return numberToObj[cur++];
-                }
-                throw new NoSuchElementException();
-            }
-
-            @Override
-            public final void remove() {
-                ArrayNumberer.this.remove(numberToObj[cur - 1]);
-            }
-        };
-    }
-
-    @Override
-    public boolean remove(E o) {
-        if (o == null) {
-            return false;
-        }
-
-        int num = o.getNumber();
-        if (num == 0) {
-            return false;
-        }
-        if (freeNumbers == null) {
-            freeNumbers = new BitSet(2 * num);
-        }
-        numberToObj[num] = null;
-        o.setNumber(0);
-        freeNumbers.set(num);
-        return true;
-    }
+    numberToObj[num] = null;
+    o.setNumber(0);
+    freeNumbers.set(num);
+    return true;
+  }
 }

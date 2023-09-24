@@ -27,7 +27,11 @@ import soot.MethodOrMethodContext;
 import sootup.core.model.SootMethod;
 
 public interface CtxConstructor {
-    Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
+  Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target);
 
-    Context emptyContext = new ContextElements(new ContextElement[0], 0);
+  Context emptyContext = new ContextElements(new ContextElement[0], 0);
 }

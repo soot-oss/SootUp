@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import java.util.Optional;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.context.ContextElement;
@@ -28,53 +29,49 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-import java.util.Optional;
-
 /**
  * Represents an allocation site node in the pointer assignment graph.
  *
  * @author Ondrej Lhotak
  */
 public class AllocNode extends Node implements ContextElement, Numberable {
-    protected Object newExpr;
-    private final SootMethod method;
+  protected Object newExpr;
+  private final SootMethod method;
 
-    public AllocNode(Object newExpr, Type t, SootMethod m) {
-        super(t);
-        this.method = m;
-        if (t instanceof ClassType rt) {
-            View view = PTAScene.v().getView();
-            Optional<SootClass> osc = view.getClass(rt);
-            if (osc.isPresent() && osc.get().isAbstract()) {
-                boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
-                if (!usesReflectionLog) {
-                    throw new RuntimeException("Attempt to create allocnode with abstract type " + t);
-                }
-            }
+  public AllocNode(Object newExpr, Type t, SootMethod m) {
+    super(t);
+    this.method = m;
+    if (t instanceof ClassType rt) {
+      View view = PTAScene.v().getView();
+      Optional<SootClass> osc = view.getClass(rt);
+      if (osc.isPresent() && osc.get().isAbstract()) {
+        boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
+        if (!usesReflectionLog) {
+          throw new RuntimeException("Attempt to create allocnode with abstract type " + t);
         }
-        this.newExpr = newExpr;
+      }
     }
+    this.newExpr = newExpr;
+  }
 
-    /**
-     * Returns the new expression of this allocation site.
-     */
-    public Object getNewExpr() {
-        return newExpr;
-    }
+  /** Returns the new expression of this allocation site. */
+  public Object getNewExpr() {
+    return newExpr;
+  }
 
-    public String toString() {
-        return "AllocNode " + getNumber() + " " + newExpr + " in method " + method;
-    }
+  public String toString() {
+    return "AllocNode " + getNumber() + " " + newExpr + " in method " + method;
+  }
 
-    public String toString2() {
-        return newExpr + " in method " + method;
-    }
+  public String toString2() {
+    return newExpr + " in method " + method;
+  }
 
-    public SootMethod getMethod() {
-        return method;
-    }
+  public SootMethod getMethod() {
+    return method;
+  }
 
-    public AllocNode base() {
-        return this;
-    }
+  public AllocNode base() {
+    return this;
+  }
 }

@@ -29,20 +29,24 @@ import sootup.core.model.SootMethod;
 // implementation of obj context...(Ana Tosem'05)
 public class ObjCtxConstructor implements CtxConstructor {
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        Context callerContext = caller.context();
-        if (receiverNode == null) { // static invoke
-            return callerContext;
-        }
-        Context context = receiverNode.context();
-        assert context instanceof ContextElements;
-        ContextElements ctxElems = (ContextElements) context;
-        int s = ctxElems.size();
-        ContextElement[] cxtAllocs = ctxElems.getElements();
-        ContextElement[] array = new ContextElement[s + 1];
-        array[0] = receiverNode.base();
-        System.arraycopy(cxtAllocs, 0, array, 1, s);
-        return new ContextElements(array, s + 1);
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    Context callerContext = caller.context();
+    if (receiverNode == null) { // static invoke
+      return callerContext;
     }
+    Context context = receiverNode.context();
+    assert context instanceof ContextElements;
+    ContextElements ctxElems = (ContextElements) context;
+    int s = ctxElems.size();
+    ContextElement[] cxtAllocs = ctxElems.getElements();
+    ContextElement[] array = new ContextElement[s + 1];
+    array[0] = receiverNode.base();
+    System.arraycopy(cxtAllocs, 0, array, 1, s);
+    return new ContextElements(array, s + 1);
+  }
 }

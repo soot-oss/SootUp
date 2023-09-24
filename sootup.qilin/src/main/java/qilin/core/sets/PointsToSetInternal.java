@@ -26,39 +26,34 @@ import java.util.Iterator;
  * @author Ondrej Lhotak
  */
 public abstract class PointsToSetInternal {
-    /**
-     * Calls v's visit method on all nodes in this set.
-     */
-    public abstract boolean forall(P2SetVisitor v);
+  /** Calls v's visit method on all nodes in this set. */
+  public abstract boolean forall(P2SetVisitor v);
 
-    public abstract boolean addAll(final PointsToSetInternal other, final PointsToSetInternal exclude);
+  public abstract boolean addAll(
+      final PointsToSetInternal other, final PointsToSetInternal exclude);
 
-    /**
-     * Adds node index idx to this set, returns true if idx was not already in this set.
-     */
-    public abstract boolean add(int idx);
+  /** Adds node index idx to this set, returns true if idx was not already in this set. */
+  public abstract boolean add(int idx);
 
-    /**
-     * Returns true iff the set contains the node number index.
-     */
-    public abstract boolean contains(int idx);
+  /** Returns true iff the set contains the node number index. */
+  public abstract boolean contains(int idx);
 
-    public abstract Iterator<Integer> iterator();
+  public abstract Iterator<Integer> iterator();
 
-    public abstract void clear();
+  public abstract void clear();
 
-    public abstract boolean isEmpty();
+  public abstract boolean isEmpty();
 
-    public boolean hasNonEmptyIntersection(final PointsToSetInternal other) {
-        Iterator<Integer> it = iterator();
-        while (it.hasNext()) {
-            int idx = it.next();
-            if (other.contains(idx)) {
-                return true;
-            }
-        }
-        return false;
+  public boolean hasNonEmptyIntersection(final PointsToSetInternal other) {
+    Iterator<Integer> it = iterator();
+    while (it.hasNext()) {
+      int idx = it.next();
+      if (other.contains(idx)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public abstract int size();
+  public abstract int size();
 }

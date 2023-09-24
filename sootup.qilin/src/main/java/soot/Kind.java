@@ -31,251 +31,231 @@ import soot.util.Numberable;
  */
 public final class Kind implements Numberable {
 
-    public static final Kind INVALID = new Kind("INVALID");
-    /**
-     * Due to explicit invokestatic instruction.
-     */
-    public static final Kind STATIC = new Kind("STATIC");
-    /**
-     * Due to explicit invokevirtual instruction.
-     */
-    public static final Kind VIRTUAL = new Kind("VIRTUAL");
-    /**
-     * Due to explicit invokeinterface instruction.
-     */
-    public static final Kind INTERFACE = new Kind("INTERFACE");
-    /**
-     * Due to explicit invokespecial instruction.
-     */
-    public static final Kind SPECIAL = new Kind("SPECIAL");
-    /**
-     * Implicit call to static initializer.
-     */
-    public static final Kind CLINIT = new Kind("CLINIT");
-    /**
-     * Fake edges from our generic callback model.
-     */
-    public static final Kind GENERIC_FAKE = new Kind("GENERIC_FAKE");
-    /**
-     * Implicit call to Thread.run() due to Thread.start() call.
-     */
-    public static final Kind THREAD = new Kind("THREAD");
-    /**
-     * Implicit call to java.lang.Runnable.run() due to Executor.execute() call.
-     */
-    public static final Kind EXECUTOR = new Kind("EXECUTOR");
-    /**
-     * Implicit call to AsyncTask.doInBackground() due to AsyncTask.execute() call.
-     */
-    public static final Kind ASYNCTASK = new Kind("ASYNCTASK");
-    /**
-     * Implicit call to java.lang.ref.Finalizer.register from new bytecode.
-     */
-    public static final Kind FINALIZE = new Kind("FINALIZE");
-    /**
-     * Implicit call to Handler.handleMessage(android.os.Message) due to Handler.sendxxxxMessagexxxx() call.
-     */
-    public static final Kind HANDLER = new Kind("HANDLER");
-    /**
-     * Implicit call to finalize() from java.lang.ref.Finalizer.invokeFinalizeMethod().
-     */
-    public static final Kind INVOKE_FINALIZE = new Kind("INVOKE_FINALIZE");
-    /**
-     * Implicit call to run() through AccessController.doPrivileged().
-     */
-    public static final Kind PRIVILEGED = new Kind("PRIVILEGED");
-    /**
-     * Implicit call to constructor from java.lang.Class.newInstance().
-     */
-    public static final Kind NEWINSTANCE = new Kind("NEWINSTANCE");
-    /**
-     * Due to call to Method.invoke(..).
-     */
-    public static final Kind REFL_INVOKE = new Kind("REFL_METHOD_INVOKE");
-    /**
-     * Due to call to Constructor.newInstance(..).
-     */
-    public static final Kind REFL_CONSTR_NEWINSTANCE = new Kind("REFL_CONSTRUCTOR_NEWINSTANCE");
-    /**
-     * Due to call to Class.newInstance(..) when reflection log is enabled.
-     */
-    public static final Kind REFL_CLASS_NEWINSTANCE = new Kind("REFL_CLASS_NEWINSTANCE");
+  public static final Kind INVALID = new Kind("INVALID");
 
-    private final String name;
-    private int num;
+  /** Due to explicit invokestatic instruction. */
+  public static final Kind STATIC = new Kind("STATIC");
 
-    private Kind(String name) {
-        this.name = name;
-    }
+  /** Due to explicit invokevirtual instruction. */
+  public static final Kind VIRTUAL = new Kind("VIRTUAL");
 
-    public String name() {
-        return name;
-    }
+  /** Due to explicit invokeinterface instruction. */
+  public static final Kind INTERFACE = new Kind("INTERFACE");
 
-    @Override
-    public int getNumber() {
-        return num;
-    }
+  /** Due to explicit invokespecial instruction. */
+  public static final Kind SPECIAL = new Kind("SPECIAL");
 
-    @Override
-    public void setNumber(int num) {
-        this.num = num;
-    }
+  /** Implicit call to static initializer. */
+  public static final Kind CLINIT = new Kind("CLINIT");
 
-    @Override
-    public String toString() {
-        return name();
-    }
+  /** Fake edges from our generic callback model. */
+  public static final Kind GENERIC_FAKE = new Kind("GENERIC_FAKE");
 
-    public boolean passesParameters() {
-        return passesParameters(this);
-    }
+  /** Implicit call to Thread.run() due to Thread.start() call. */
+  public static final Kind THREAD = new Kind("THREAD");
 
-    public boolean isFake() {
-        return isFake(this);
-    }
+  /** Implicit call to java.lang.Runnable.run() due to Executor.execute() call. */
+  public static final Kind EXECUTOR = new Kind("EXECUTOR");
 
-    /**
-     * Returns true if the call is due to an explicit invoke statement.
-     */
-    public boolean isExplicit() {
-        return isExplicit(this);
-    }
+  /** Implicit call to AsyncTask.doInBackground() due to AsyncTask.execute() call. */
+  public static final Kind ASYNCTASK = new Kind("ASYNCTASK");
 
-    /**
-     * Returns true if the call is due to an explicit instance invoke statement.
-     */
-    public boolean isInstance() {
-        return isInstance(this);
-    }
+  /** Implicit call to java.lang.ref.Finalizer.register from new bytecode. */
+  public static final Kind FINALIZE = new Kind("FINALIZE");
 
-    /**
-     * Returns true if the call is due to an explicit virtual invoke statement.
-     */
-    public boolean isVirtual() {
-        return isVirtual(this);
-    }
+  /**
+   * Implicit call to Handler.handleMessage(android.os.Message) due to Handler.sendxxxxMessagexxxx()
+   * call.
+   */
+  public static final Kind HANDLER = new Kind("HANDLER");
 
-    public boolean isSpecial() {
-        return isSpecial(this);
-    }
+  /** Implicit call to finalize() from java.lang.ref.Finalizer.invokeFinalizeMethod(). */
+  public static final Kind INVOKE_FINALIZE = new Kind("INVOKE_FINALIZE");
 
-    /**
-     * Returns true if the call is to static initializer.
-     */
-    public boolean isClinit() {
-        return isClinit(this);
-    }
+  /** Implicit call to run() through AccessController.doPrivileged(). */
+  public static final Kind PRIVILEGED = new Kind("PRIVILEGED");
 
-    /**
-     * Returns true if the call is due to an explicit static invoke statement.
-     */
-    public boolean isStatic() {
-        return isStatic(this);
-    }
+  /** Implicit call to constructor from java.lang.Class.newInstance(). */
+  public static final Kind NEWINSTANCE = new Kind("NEWINSTANCE");
 
-    public boolean isThread() {
-        return isThread(this);
-    }
+  /** Due to call to Method.invoke(..). */
+  public static final Kind REFL_INVOKE = new Kind("REFL_METHOD_INVOKE");
 
-    public boolean isExecutor() {
-        return isExecutor(this);
-    }
+  /** Due to call to Constructor.newInstance(..). */
+  public static final Kind REFL_CONSTR_NEWINSTANCE = new Kind("REFL_CONSTRUCTOR_NEWINSTANCE");
 
-    public boolean isAsyncTask() {
-        return isAsyncTask(this);
-    }
+  /** Due to call to Class.newInstance(..) when reflection log is enabled. */
+  public static final Kind REFL_CLASS_NEWINSTANCE = new Kind("REFL_CLASS_NEWINSTANCE");
 
-    public boolean isPrivileged() {
-        return isPrivileged(this);
-    }
+  private final String name;
+  private int num;
 
-    public boolean isReflection() {
-        return isReflection(this);
-    }
+  private Kind(String name) {
+    this.name = name;
+  }
 
-    public boolean isReflInvoke() {
-        return isReflInvoke(this);
-    }
+  public String name() {
+    return name;
+  }
 
-    public boolean isHandler() {
-        return isHandler(this);
-    }
+  @Override
+  public int getNumber() {
+    return num;
+  }
 
-    public static boolean passesParameters(Kind k) {
-        return isExplicit(k) || k == THREAD || k == EXECUTOR || k == ASYNCTASK || k == FINALIZE || k == PRIVILEGED
-                || k == NEWINSTANCE || k == INVOKE_FINALIZE || k == REFL_INVOKE || k == REFL_CONSTR_NEWINSTANCE
-                || k == REFL_CLASS_NEWINSTANCE || k == GENERIC_FAKE;
-    }
+  @Override
+  public void setNumber(int num) {
+    this.num = num;
+  }
 
-    public static boolean isFake(Kind k) {
-        return k == THREAD || k == EXECUTOR || k == ASYNCTASK || k == PRIVILEGED || k == HANDLER || k == GENERIC_FAKE;
-    }
+  @Override
+  public String toString() {
+    return name();
+  }
 
-    /**
-     * Returns true if the call is due to an explicit invoke statement.
-     */
-    public static boolean isExplicit(Kind k) {
-        return isInstance(k) || isStatic(k);
-    }
+  public boolean passesParameters() {
+    return passesParameters(this);
+  }
 
-    /**
-     * Returns true if the call is due to an explicit instance invoke statement.
-     */
-    public static boolean isInstance(Kind k) {
-        return k == VIRTUAL || k == INTERFACE || k == SPECIAL;
-    }
+  public boolean isFake() {
+    return isFake(this);
+  }
 
-    /**
-     * Returns true if the call is due to an explicit virtual invoke statement.
-     */
-    public static boolean isVirtual(Kind k) {
-        return k == VIRTUAL;
-    }
+  /** Returns true if the call is due to an explicit invoke statement. */
+  public boolean isExplicit() {
+    return isExplicit(this);
+  }
 
-    public static boolean isSpecial(Kind k) {
-        return k == SPECIAL;
-    }
+  /** Returns true if the call is due to an explicit instance invoke statement. */
+  public boolean isInstance() {
+    return isInstance(this);
+  }
 
-    /**
-     * Returns true if the call is to static initializer.
-     */
-    public static boolean isClinit(Kind k) {
-        return k == CLINIT;
-    }
+  /** Returns true if the call is due to an explicit virtual invoke statement. */
+  public boolean isVirtual() {
+    return isVirtual(this);
+  }
 
-    /**
-     * Returns true if the call is due to an explicit static invoke statement.
-     */
-    public static boolean isStatic(Kind k) {
-        return k == STATIC;
-    }
+  public boolean isSpecial() {
+    return isSpecial(this);
+  }
 
-    public static boolean isThread(Kind k) {
-        return k == THREAD;
-    }
+  /** Returns true if the call is to static initializer. */
+  public boolean isClinit() {
+    return isClinit(this);
+  }
 
-    public static boolean isExecutor(Kind k) {
-        return k == EXECUTOR;
-    }
+  /** Returns true if the call is due to an explicit static invoke statement. */
+  public boolean isStatic() {
+    return isStatic(this);
+  }
 
-    public static boolean isAsyncTask(Kind k) {
-        return k == ASYNCTASK;
-    }
+  public boolean isThread() {
+    return isThread(this);
+  }
 
-    public static boolean isPrivileged(Kind k) {
-        return k == PRIVILEGED;
-    }
+  public boolean isExecutor() {
+    return isExecutor(this);
+  }
 
-    public static boolean isReflection(Kind k) {
-        return k == REFL_CLASS_NEWINSTANCE || k == REFL_CONSTR_NEWINSTANCE || k == REFL_INVOKE;
-    }
+  public boolean isAsyncTask() {
+    return isAsyncTask(this);
+  }
 
-    public static boolean isReflInvoke(Kind k) {
-        return k == REFL_INVOKE;
-    }
+  public boolean isPrivileged() {
+    return isPrivileged(this);
+  }
 
-    public static boolean isHandler(Kind k) {
-        return k == HANDLER;
-    }
+  public boolean isReflection() {
+    return isReflection(this);
+  }
+
+  public boolean isReflInvoke() {
+    return isReflInvoke(this);
+  }
+
+  public boolean isHandler() {
+    return isHandler(this);
+  }
+
+  public static boolean passesParameters(Kind k) {
+    return isExplicit(k)
+        || k == THREAD
+        || k == EXECUTOR
+        || k == ASYNCTASK
+        || k == FINALIZE
+        || k == PRIVILEGED
+        || k == NEWINSTANCE
+        || k == INVOKE_FINALIZE
+        || k == REFL_INVOKE
+        || k == REFL_CONSTR_NEWINSTANCE
+        || k == REFL_CLASS_NEWINSTANCE
+        || k == GENERIC_FAKE;
+  }
+
+  public static boolean isFake(Kind k) {
+    return k == THREAD
+        || k == EXECUTOR
+        || k == ASYNCTASK
+        || k == PRIVILEGED
+        || k == HANDLER
+        || k == GENERIC_FAKE;
+  }
+
+  /** Returns true if the call is due to an explicit invoke statement. */
+  public static boolean isExplicit(Kind k) {
+    return isInstance(k) || isStatic(k);
+  }
+
+  /** Returns true if the call is due to an explicit instance invoke statement. */
+  public static boolean isInstance(Kind k) {
+    return k == VIRTUAL || k == INTERFACE || k == SPECIAL;
+  }
+
+  /** Returns true if the call is due to an explicit virtual invoke statement. */
+  public static boolean isVirtual(Kind k) {
+    return k == VIRTUAL;
+  }
+
+  public static boolean isSpecial(Kind k) {
+    return k == SPECIAL;
+  }
+
+  /** Returns true if the call is to static initializer. */
+  public static boolean isClinit(Kind k) {
+    return k == CLINIT;
+  }
+
+  /** Returns true if the call is due to an explicit static invoke statement. */
+  public static boolean isStatic(Kind k) {
+    return k == STATIC;
+  }
+
+  public static boolean isThread(Kind k) {
+    return k == THREAD;
+  }
+
+  public static boolean isExecutor(Kind k) {
+    return k == EXECUTOR;
+  }
+
+  public static boolean isAsyncTask(Kind k) {
+    return k == ASYNCTASK;
+  }
+
+  public static boolean isPrivileged(Kind k) {
+    return k == PRIVILEGED;
+  }
+
+  public static boolean isReflection(Kind k) {
+    return k == REFL_CLASS_NEWINSTANCE || k == REFL_CONSTR_NEWINSTANCE || k == REFL_INVOKE;
+  }
+
+  public static boolean isReflInvoke(Kind k) {
+    return k == REFL_INVOKE;
+  }
+
+  public static boolean isHandler(Kind k) {
+    return k == HANDLER;
+  }
 }

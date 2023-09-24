@@ -18,13 +18,12 @@
 
 package qilin.core.sets;
 
-import qilin.core.pag.AllocNode;
-import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.types.Type;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import qilin.core.pag.AllocNode;
+import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.core.types.Type;
 
 /**
  * A generic interface to some set of runtime objects computed by a pointer analysis.
@@ -32,67 +31,61 @@ import java.util.Set;
  * @author Ondrej Lhotak
  */
 public interface PointsToSet {
-    /**
-     * Returns true if this set contains no run-time objects.
-     */
-    boolean isEmpty();
+  /** Returns true if this set contains no run-time objects. */
+  boolean isEmpty();
 
-    /**
-     * Returns true iff the set contains n.
-     */
-    boolean contains(AllocNode n);
+  /** Returns true iff the set contains n. */
+  boolean contains(AllocNode n);
 
-    /**
-     * Returns true if this set shares some objects with other.
-     */
-    boolean hasNonEmptyIntersection(PointsToSet other);
+  /** Returns true if this set shares some objects with other. */
+  boolean hasNonEmptyIntersection(PointsToSet other);
 
-    /**
-     * Set of all possible run-time types of objects in the set.
-     */
-    Set<Type> possibleTypes();
+  /** Set of all possible run-time types of objects in the set. */
+  Set<Type> possibleTypes();
 
-    /**
-     * If this points-to set consists entirely of string constants, returns a set of these constant strings. If this point-to
-     * set may contain something other than constant strings, returns null.
-     */
-    Set<String> possibleStringConstants();
+  /**
+   * If this points-to set consists entirely of string constants, returns a set of these constant
+   * strings. If this point-to set may contain something other than constant strings, returns null.
+   */
+  Set<String> possibleStringConstants();
 
-    /**
-     * If this points-to set consists entirely of objects of type java.lang.Class of a known class, returns a set of
-     * ClassConstant's that are these classes. If this point-to set may contain something else, returns null.
-     */
-    Set<ClassConstant> possibleClassConstants();
+  /**
+   * If this points-to set consists entirely of objects of type java.lang.Class of a known class,
+   * returns a set of ClassConstant's that are these classes. If this point-to set may contain
+   * something else, returns null.
+   */
+  Set<ClassConstant> possibleClassConstants();
 
-    /**
-     * Size of objects in this set.
-     *
-     * @author Dongjie He
-     */
-    int size();
+  /**
+   * Size of objects in this set.
+   *
+   * @author Dongjie He
+   */
+  int size();
 
-    /*
-     * Empty this set.
-     *
-     * @author Dongjie He
-     * */
-    void clear();
+  /*
+   * Empty this set.
+   *
+   * @author Dongjie He
+   * */
+  void clear();
 
-    /**
-     * Computes a hash code based on the contents of the points-to set. Note that hashCode() is not overwritten on purpose.
-     * This is because Spark relies on comparison by object identity.
-     */
-    int pointsToSetHashCode();
+  /**
+   * Computes a hash code based on the contents of the points-to set. Note that hashCode() is not
+   * overwritten on purpose. This is because Spark relies on comparison by object identity.
+   */
+  int pointsToSetHashCode();
 
-    /**
-     * Returns <code>true</code> if and only if other holds the same alloc nodes as this. Note that equals() is not overwritten
-     * on purpose. This is because Spark relies on comparison by object identity.
-     */
-    boolean pointsToSetEquals(Object other);
+  /**
+   * Returns <code>true</code> if and only if other holds the same alloc nodes as this. Note that
+   * equals() is not overwritten on purpose. This is because Spark relies on comparison by object
+   * identity.
+   */
+  boolean pointsToSetEquals(Object other);
 
-    PointsToSet toCIPointsToSet();
+  PointsToSet toCIPointsToSet();
 
-    Collection<AllocNode> toCollection();
+  Collection<AllocNode> toCollection();
 
-    Iterator<AllocNode> iterator();
+  Iterator<AllocNode> iterator();
 }

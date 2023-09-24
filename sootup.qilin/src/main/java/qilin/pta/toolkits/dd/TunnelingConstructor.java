@@ -18,6 +18,8 @@
 
 package qilin.pta.toolkits.dd;
 
+import java.util.HashMap;
+import java.util.Map;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
 import qilin.parm.ctxcons.*;
@@ -25,44 +27,46 @@ import soot.Context;
 import soot.MethodOrMethodContext;
 import sootup.core.model.SootMethod;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class TunnelingConstructor implements CtxConstructor {
-    private final CtxConstructor ctxCons;
-    private final Map<SootMethod, CtxTunnelingFeaturesTrueTable> m2ftt = new HashMap<>();
+  private final CtxConstructor ctxCons;
+  private final Map<SootMethod, CtxTunnelingFeaturesTrueTable> m2ftt = new HashMap<>();
 
-    private CtxTunnelingFeaturesTrueTable findOrCreateTunnelingFeaturesTrueTable(SootMethod sm) {
-        return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm));
-    }
+  private CtxTunnelingFeaturesTrueTable findOrCreateTunnelingFeaturesTrueTable(SootMethod sm) {
+    return m2ftt.computeIfAbsent(sm, k -> new CtxTunnelingFeaturesTrueTable(sm));
+  }
 
-    public TunnelingConstructor(CtxConstructor ctxCons) {
-        this.ctxCons = ctxCons;
-    }
+  public TunnelingConstructor(CtxConstructor ctxCons) {
+    this.ctxCons = ctxCons;
+  }
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
-        CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
-        if (ctxCons instanceof CallsiteCtxConstructor) {
-            if (ctftt1.cfaFormula1() || ctftt2.cfaFormula2()) {
-                return caller.context();
-            }
-        } else if (ctxCons instanceof TypeCtxConstructor) {
-            if (ctftt1.typeFormula1() || ctftt2.typeFormula2()) {
-                return caller.context();
-            }
-        } else if (ctxCons instanceof ObjCtxConstructor) {
-            if (ctftt1.objFormula1() || ctftt2.objFormula2()) {
-                return caller.context();
-            }
-        } else if (ctxCons instanceof HybObjCtxConstructor) {
-            if (ctftt1.hybridFormula1() || ctftt2.hybridFormula2()) {
-                return caller.context();
-            }
-        } else {
-            throw new RuntimeException("unsupported context constructor for tunneling: " + ctxCons.getClass());
-        }
-        return ctxCons.constructCtx(caller, receiverNode, callSite, target);
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
+    CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
+    if (ctxCons instanceof CallsiteCtxConstructor) {
+      if (ctftt1.cfaFormula1() || ctftt2.cfaFormula2()) {
+        return caller.context();
+      }
+    } else if (ctxCons instanceof TypeCtxConstructor) {
+      if (ctftt1.typeFormula1() || ctftt2.typeFormula2()) {
+        return caller.context();
+      }
+    } else if (ctxCons instanceof ObjCtxConstructor) {
+      if (ctftt1.objFormula1() || ctftt2.objFormula2()) {
+        return caller.context();
+      }
+    } else if (ctxCons instanceof HybObjCtxConstructor) {
+      if (ctftt1.hybridFormula1() || ctftt2.hybridFormula2()) {
+        return caller.context();
+      }
+    } else {
+      throw new RuntimeException(
+          "unsupported context constructor for tunneling: " + ctxCons.getClass());
     }
+    return ctxCons.constructCtx(caller, receiverNode, callSite, target);
+  }
 }

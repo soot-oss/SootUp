@@ -23,36 +23,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DFA {
-    public enum State {
-        S, FLOW, IFLOW, E, ERROR;
-    }
+  public enum State {
+    S,
+    FLOW,
+    IFLOW,
+    E,
+    ERROR;
+  }
 
-    public enum TranCond {
-        PARAM, IPARAM, ASSIGN, IASSIGN, LOAD, ILOAD, STORE, ISTORE, NEW, INEW, CSLIKELY;
-    }
+  public enum TranCond {
+    PARAM,
+    IPARAM,
+    ASSIGN,
+    IASSIGN,
+    LOAD,
+    ILOAD,
+    STORE,
+    ISTORE,
+    NEW,
+    INEW,
+    CSLIKELY;
+  }
 
-    private static final Map<State, Map<TranCond, State>> transitionFunc = new HashMap<>();
+  private static final Map<State, Map<TranCond, State>> transitionFunc = new HashMap<>();
 
-    static {
-        Map<TranCond, State> mS = transitionFunc.computeIfAbsent(State.S, k -> new HashMap<>());
-        mS.put(TranCond.PARAM, State.FLOW);
+  static {
+    Map<TranCond, State> mS = transitionFunc.computeIfAbsent(State.S, k -> new HashMap<>());
+    mS.put(TranCond.PARAM, State.FLOW);
 
-        Map<TranCond, State> mFlow = transitionFunc.computeIfAbsent(State.FLOW, k -> new HashMap<>());
-        mFlow.put(TranCond.ASSIGN, State.FLOW);
-        mFlow.put(TranCond.LOAD, State.FLOW);
-        mFlow.put(TranCond.STORE, State.IFLOW);
-        mFlow.put(TranCond.ISTORE, State.IFLOW);
-        mFlow.put(TranCond.NEW, State.FLOW);
+    Map<TranCond, State> mFlow = transitionFunc.computeIfAbsent(State.FLOW, k -> new HashMap<>());
+    mFlow.put(TranCond.ASSIGN, State.FLOW);
+    mFlow.put(TranCond.LOAD, State.FLOW);
+    mFlow.put(TranCond.STORE, State.IFLOW);
+    mFlow.put(TranCond.ISTORE, State.IFLOW);
+    mFlow.put(TranCond.NEW, State.FLOW);
 
-        Map<TranCond, State> mIFlow = transitionFunc.computeIfAbsent(State.IFLOW, k -> new HashMap<>());
-        mIFlow.put(TranCond.IASSIGN, State.IFLOW);
-        mIFlow.put(TranCond.ILOAD, State.IFLOW);
-        mIFlow.put(TranCond.IPARAM, State.E);
-        mIFlow.put(TranCond.INEW, State.IFLOW);
-        mIFlow.put(TranCond.CSLIKELY, State.FLOW);
-    }
+    Map<TranCond, State> mIFlow = transitionFunc.computeIfAbsent(State.IFLOW, k -> new HashMap<>());
+    mIFlow.put(TranCond.IASSIGN, State.IFLOW);
+    mIFlow.put(TranCond.ILOAD, State.IFLOW);
+    mIFlow.put(TranCond.IPARAM, State.E);
+    mIFlow.put(TranCond.INEW, State.IFLOW);
+    mIFlow.put(TranCond.CSLIKELY, State.FLOW);
+  }
 
-    public static State nextState(State curr, TranCond tranCond) {
-        return transitionFunc.getOrDefault(curr, Collections.emptyMap()).getOrDefault(tranCond, State.ERROR);
-    }
+  public static State nextState(State curr, TranCond tranCond) {
+    return transitionFunc
+        .getOrDefault(curr, Collections.emptyMap())
+        .getOrDefault(tranCond, State.ERROR);
+  }
 }

@@ -23,7 +23,6 @@ package soot.util;
  */
 
 import heros.ThreadSafe;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,20 +34,20 @@ import java.util.Map;
 @ThreadSafe
 public class StringNumberer extends ArrayNumberer<NumberedString> {
 
-    private final Map<String, NumberedString> stringToNumbered = new HashMap<String, NumberedString>(1024);
+  private final Map<String, NumberedString> stringToNumbered =
+      new HashMap<String, NumberedString>(1024);
 
-    public synchronized NumberedString findOrAdd(String s) {
-        NumberedString ret = stringToNumbered.get(s);
-        if (ret == null) {
-            ret = new NumberedString(s);
-            stringToNumbered.put(s, ret);
-            add(ret);
-        }
-        return ret;
+  public synchronized NumberedString findOrAdd(String s) {
+    NumberedString ret = stringToNumbered.get(s);
+    if (ret == null) {
+      ret = new NumberedString(s);
+      stringToNumbered.put(s, ret);
+      add(ret);
     }
+    return ret;
+  }
 
-    public NumberedString find(String s) {
-        return stringToNumbered.get(s);
-    }
+  public NumberedString find(String s) {
+    return stringToNumbered.get(s);
+  }
 }
-

@@ -29,24 +29,23 @@ import sootup.core.types.ClassType;
  * Thus it will make qilin.spark less precise than its counterpart in Doop.
  * */
 public class JavaLangSystemArraycopyNative extends NativeMethod {
-    public JavaLangSystemArraycopyNative(SootMethod method) {
-        super(method);
-    }
+  public JavaLangSystemArraycopyNative(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * never make a[] = b[], it violates the principle of jimple statement. make a
-     * temporary variable.
-     */
-    public void simulate() {
-//        Value srcArr = getPara(0);
-//        Value dstArr = getPara(2);
-        ClassType objType = PTAUtils.getClassType("java.lang.Object");
-        Value srcArr = getPara(0, new ArrayType(objType, 1));
-        Value dstArr = getPara(2, new ArrayType(objType, 1));
-        Value src = getArrayRef(srcArr);
-        Value dst = getArrayRef(dstArr);
-        Value temp = getNextLocal(objType);
-        addAssign(temp, src);
-        addAssign(dst, temp);
-    }
+  /**
+   * never make a[] = b[], it violates the principle of jimple statement. make a temporary variable.
+   */
+  protected void simulateImpl() {
+    //        Value srcArr = getPara(0);
+    //        Value dstArr = getPara(2);
+    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    Value srcArr = getPara(0, new ArrayType(objType, 1));
+    Value dstArr = getPara(2, new ArrayType(objType, 1));
+    Value src = getArrayRef(srcArr);
+    Value dst = getArrayRef(dstArr);
+    Value temp = getNextLocal(objType);
+    addAssign(temp, src);
+    addAssign(dst, temp);
+  }
 }

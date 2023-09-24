@@ -18,42 +18,46 @@
 
 package driver;
 
-import qilin.util.Util;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import qilin.util.Util;
 
 public enum ContextKind {
-    INSENS, CALLSITE, OBJECT, TYPE, HYBOBJ, HYBTYPE;
-    static final Map<String, ContextKind> contextKinds = new HashMap<>();
+  INSENS,
+  CALLSITE,
+  OBJECT,
+  TYPE,
+  HYBOBJ,
+  HYBTYPE;
+  static final Map<String, ContextKind> contextKinds = new HashMap<>();
 
-    static {
-        Util.add(contextKinds, INSENS, "insensitive", "insens", "ci");
-        Util.add(contextKinds, CALLSITE, "callsite", "call", "c");
-        Util.add(contextKinds, OBJECT, "object", "obj", "o");
-        Util.add(contextKinds, HYBOBJ, "hybobj", "ho", "h");
-        Util.add(contextKinds, HYBTYPE, "hybtype", "ht");
-        Util.add(contextKinds, TYPE, "type", "t");
-    }
+  static {
+    Util.add(contextKinds, INSENS, "insensitive", "insens", "ci");
+    Util.add(contextKinds, CALLSITE, "callsite", "call", "c");
+    Util.add(contextKinds, OBJECT, "object", "obj", "o");
+    Util.add(contextKinds, HYBOBJ, "hybobj", "ho", "h");
+    Util.add(contextKinds, HYBTYPE, "hybtype", "ht");
+    Util.add(contextKinds, TYPE, "type", "t");
+  }
 
-    public static Collection<String> contextAliases() {
-        return contextKinds.keySet();
-    }
+  public static Collection<String> contextAliases() {
+    return contextKinds.keySet();
+  }
 
-    public static ContextKind toCtxKind(String name) {
-        return contextKinds.getOrDefault(name, INSENS);
-    }
+  public static ContextKind toCtxKind(String name) {
+    return contextKinds.getOrDefault(name, INSENS);
+  }
 
-    @Override
-    public String toString() {
-        return switch (this) {
-            case CALLSITE -> "callsite";
-            case OBJECT -> "object";
-            case HYBOBJ -> "hybobj";
-            case HYBTYPE -> "hybtype";
-            case TYPE -> "type";
-            default -> "insensitive";
-        };
-    }
+  @Override
+  public String toString() {
+    return switch (this) {
+      case CALLSITE -> "callsite";
+      case OBJECT -> "object";
+      case HYBOBJ -> "hybobj";
+      case HYBTYPE -> "hybtype";
+      case TYPE -> "type";
+      default -> "insensitive";
+    };
+  }
 }

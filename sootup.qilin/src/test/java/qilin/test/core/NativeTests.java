@@ -23,69 +23,69 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class NativeTests extends JunitTests {
-    @Test
-    public void testArrayCopy() {
-        checkAssertions(run("qilin.microben.core.natives.ArrayCopy"));
-    }
+  @Test
+  public void testArrayCopy() {
+    checkAssertions(run("qilin.microben.core.natives.ArrayCopy"));
+  }
 
-    @Test
-    public void testObjectClone() {
-        checkAssertions(run("qilin.microben.core.natives.ObjectClone"));
-    }
+  @Test
+  public void testObjectClone() {
+    checkAssertions(run("qilin.microben.core.natives.ObjectClone"));
+  }
 
-    @Test
-    public void testPrivilegedActions0() {
-        checkAssertions(run("qilin.microben.core.natives.PrivilegedActions0"));
-    }
+  @Test
+  public void testPrivilegedActions0() {
+    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions0"));
+  }
 
-    @Test
-    public void testPrivilegedActions1() {
-        checkAssertions(run("qilin.microben.core.natives.PrivilegedActions1"));
-    }
+  @Test
+  public void testPrivilegedActions1() {
+    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions1"));
+  }
 
-    @Test
-    public void testPrivilegedActions2() {
-        checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", "2o"));
-    }
+  @Test
+  public void testPrivilegedActions2() {
+    checkAssertions(run("qilin.microben.core.natives.PrivilegedActions2", "2o"));
+  }
 
-    @Test
-    public void testSystemIn() {
-        checkAssertions(run("qilin.microben.core.natives.SystemIn"));
-    }
+  @Test
+  public void testSystemIn() {
+    checkAssertions(run("qilin.microben.core.natives.SystemIn"));
+  }
 
-    @Test
-    public void testSystemOut() {
-        checkAssertions(run("qilin.microben.core.natives.SystemOut"));
-    }
+  @Test
+  public void testSystemOut() {
+    checkAssertions(run("qilin.microben.core.natives.SystemOut"));
+  }
 
-    @Test
-    public void testSystemErr() {
-        checkAssertions(run("qilin.microben.core.natives.SystemErr"));
-    }
+  @Test
+  public void testSystemErr() {
+    checkAssertions(run("qilin.microben.core.natives.SystemErr"));
+  }
 
-    @Test
-    public void testFinalize() {
-        checkAssertions(run("qilin.microben.core.natives.Finalize"));
-    }
+  @Test
+  public void testFinalize() {
+    checkAssertions(run("qilin.microben.core.natives.Finalize"));
+  }
 
-    @Test
-    public void testTreadRun() {
-        checkAssertions(run("qilin.microben.core.natives.TreadRun"));
-    }
+  @Test
+  public void testTreadRun() {
+    checkAssertions(run("qilin.microben.core.natives.TreadRun"));
+  }
 
-    @Test
-    @Ignore
-    public void testCurrentThread() {
-        checkAssertions(run("qilin.microben.core.natives.CurrentThread"));
-    }
+  @Test
+  @Ignore
+  public void testCurrentThread() {
+    checkAssertions(run("qilin.microben.core.natives.CurrentThread"));
+  }
 
-    @Test
-    public void testRefArrayGet() {
-        checkAssertions(run("qilin.microben.core.natives.RefArrayGet"));
-    }
+  @Test
+  public void testRefArrayGet() {
+    checkAssertions(run("qilin.microben.core.natives.RefArrayGet"));
+  }
 
-    @Test
-    public void testRefArraySet() {
-        checkAssertions(run("qilin.microben.core.natives.RefArraySet"));
-    }
+  @Test
+  public void testRefArraySet() {
+    checkAssertions(run("qilin.microben.core.natives.RefArraySet"));
+  }
 }

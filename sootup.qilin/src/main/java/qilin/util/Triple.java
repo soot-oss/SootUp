@@ -21,45 +21,45 @@ package qilin.util;
 import java.util.Objects;
 
 public class Triple<T1, T2, T3> {
-    private final T1 first;
-    private final T2 second;
-    private final T3 third;
+  private final T1 first;
+  private final T2 second;
+  private final T3 third;
 
-    public Triple(final T1 first, final T2 second, final T3 third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
-    }
+  public Triple(final T1 first, final T2 second, final T3 third) {
+    this.first = first;
+    this.second = second;
+    this.third = third;
+  }
 
-    public T1 getFirst() {
-        return this.first;
-    }
+  public T1 getFirst() {
+    return this.first;
+  }
 
-    public T2 getSecond() {
-        return this.second;
-    }
+  public T2 getSecond() {
+    return this.second;
+  }
 
-    public T3 getThird() {
-        return this.third;
-    }
+  public T3 getThird() {
+    return this.third;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.first, this.second, this.third);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.first, this.second, this.third);
+  }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (o instanceof final Triple<?, ?, ?> anoTriple) {
-            return Objects.equals(this.first, anoTriple.first) && Objects.equals(this.second, anoTriple.second)
-                    && Objects.equals(this.third, anoTriple.third);
-        }
-        return false;
+  @Override
+  public boolean equals(final Object o) {
+    if (o instanceof final Triple<?, ?, ?> anoTriple) {
+      return Objects.equals(this.first, anoTriple.first)
+          && Objects.equals(this.second, anoTriple.second)
+          && Objects.equals(this.third, anoTriple.third);
     }
+    return false;
+  }
 
-    @Override
-    public String toString() {
-        return "<" + this.first + ", " + this.second + ", "
-                + this.third + ">";
-    }
+  @Override
+  public String toString() {
+    return "<" + this.first + ", " + this.second + ", " + this.third + ">";
+  }
 }

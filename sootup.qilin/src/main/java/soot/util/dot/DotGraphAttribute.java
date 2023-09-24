@@ -29,25 +29,24 @@ package soot.util.dot;
  */
 public class DotGraphAttribute {
 
-    private final String id;
-    private final String value;
+  private final String id;
+  private final String value;
 
-    public DotGraphAttribute(String id, String v) {
-        this.id = id;
-        this.value = v;
-    }
+  public DotGraphAttribute(String id, String v) {
+    this.id = id;
+    this.value = v;
+  }
 
-    @Override
-    public String toString() {
-        return this.id + '=' + this.value;
-    }
+  @Override
+  public String toString() {
+    return this.id + '=' + this.value;
+  }
 
-    public String getID() {
-        return this.id;
-    }
+  public String getID() {
+    return this.id;
+  }
 
-    public String getValue() {
-        return this.value;
-    }
+  public String getValue() {
+    return this.value;
+  }
 }
-

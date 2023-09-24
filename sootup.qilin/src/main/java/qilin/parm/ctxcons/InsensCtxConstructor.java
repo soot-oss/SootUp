@@ -26,8 +26,12 @@ import sootup.core.model.SootMethod;
 
 public class InsensCtxConstructor implements CtxConstructor {
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        return emptyContext;
-    }
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    return emptyContext;
+  }
 }

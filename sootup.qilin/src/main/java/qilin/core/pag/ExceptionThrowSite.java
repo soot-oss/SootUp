@@ -18,44 +18,45 @@
 
 package qilin.core.pag;
 
+import java.util.Objects;
 import soot.MethodOrMethodContext;
 import sootup.core.jimple.common.stmt.Stmt;
 
-import java.util.Objects;
-
 public class ExceptionThrowSite {
-    private final Stmt unit;
-    private final VarNode throwNode;
-    private final MethodOrMethodContext container;
+  private final Stmt unit;
+  private final VarNode throwNode;
+  private final MethodOrMethodContext container;
 
-    public ExceptionThrowSite(VarNode throwNode, Stmt unit, MethodOrMethodContext container) {
-        this.unit = unit;
-        this.container = container;
-        this.throwNode = throwNode;
-    }
+  public ExceptionThrowSite(VarNode throwNode, Stmt unit, MethodOrMethodContext container) {
+    this.unit = unit;
+    this.container = container;
+    this.throwNode = throwNode;
+  }
 
-    public MethodOrMethodContext container() {
-        return container;
-    }
+  public MethodOrMethodContext container() {
+    return container;
+  }
 
-    public VarNode getThrowNode() {
-        return throwNode;
-    }
+  public VarNode getThrowNode() {
+    return throwNode;
+  }
 
-    public Stmt getUnit() {
-        return unit;
-    }
+  public Stmt getUnit() {
+    return unit;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ExceptionThrowSite that = (ExceptionThrowSite) o;
-        return Objects.equals(unit, that.unit) && Objects.equals(throwNode, that.throwNode) && Objects.equals(container, that.container);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ExceptionThrowSite that = (ExceptionThrowSite) o;
+    return Objects.equals(unit, that.unit)
+        && Objects.equals(throwNode, that.throwNode)
+        && Objects.equals(container, that.container);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(unit, throwNode, container);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(unit, throwNode, container);
+  }
 }

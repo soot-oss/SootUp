@@ -22,19 +22,18 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class CallTests extends JunitTests {
-    @Test
-    public void testVirtualCall0() {
-        checkAssertions(run("qilin.microben.core.call.VirtualCall0"));
-    }
+  @Test
+  public void testVirtualCall0() {
+    checkAssertions(run("qilin.microben.core.call.VirtualCall0"));
+  }
 
-    @Test
-    public void testVirtualCall1() {
-        checkAssertions(run("qilin.microben.core.call.VirtualCall1"));
-    }
+  @Test
+  public void testVirtualCall1() {
+    checkAssertions(run("qilin.microben.core.call.VirtualCall1"));
+  }
 
-    @Test
-    public void testStaticCall() {
-        checkAssertions(run("qilin.microben.core.call.StaticCall"));
-    }
-
+  @Test
+  public void testStaticCall() {
+    checkAssertions(run("qilin.microben.core.call.StaticCall"));
+  }
 }

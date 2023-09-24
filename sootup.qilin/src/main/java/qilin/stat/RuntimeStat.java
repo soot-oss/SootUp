@@ -21,20 +21,20 @@ package qilin.stat;
 import java.util.Date;
 
 public class RuntimeStat implements AbstractStat {
-    private Date startTime;
-    private long elapsedTime;
+  private Date startTime;
+  private long elapsedTime;
 
-    public void begin() {
-        startTime = new Date();
-    }
+  public void begin() {
+    startTime = new Date();
+  }
 
-    public void end() {
-        Date endTime = new Date();
-        elapsedTime = endTime.getTime() - startTime.getTime();
-    }
+  public void end() {
+    Date endTime = new Date();
+    elapsedTime = endTime.getTime() - startTime.getTime();
+  }
 
-    @Override
-    public void export(Exporter exporter) {
-        exporter.collectMetric("Time (sec):", String.valueOf(((double) elapsedTime) / 1000.0));
-    }
+  @Override
+  public void export(Exporter exporter) {
+    exporter.collectMetric("Time (sec):", String.valueOf(((double) elapsedTime) / 1000.0));
+  }
 }

@@ -28,26 +28,27 @@ import sootup.core.model.SootMethod;
 
 public class HeuristicSelector extends CtxSelector {
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        if (PTAUtils.isThrowable(heap.getType()) || PTAUtils.subtypeOfAbstractStringBuilder(heap.getType())) {
-            return CtxConstructor.emptyContext;
-        }
-        return context;
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    if (PTAUtils.isThrowable(heap.getType())
+        || PTAUtils.subtypeOfAbstractStringBuilder(heap.getType())) {
+      return CtxConstructor.emptyContext;
     }
+    return context;
+  }
 }

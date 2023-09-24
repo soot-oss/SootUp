@@ -18,6 +18,9 @@
 
 package qilin.pta.toolkits.common;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
@@ -28,57 +31,53 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 public class ToolUtil {
-    public static VarNode getThis(PAG pag, SootMethod m) {
-        MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
-        return mthdNF.caseThis();
-    }
+  public static VarNode getThis(PAG pag, SootMethod m) {
+    MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
+    return mthdNF.caseThis();
+  }
 
-    public static Set<VarNode> getParameters(PAG pag, SootMethod m) {
-        MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
-        Set<qilin.core.pag.VarNode> ret = new HashSet<>();
-        for (int i = 0; i < m.getParameterCount(); ++i) {
-            if (m.getParameterType(i) instanceof ReferenceType) {
-                qilin.core.pag.VarNode param = mthdNF.caseParm(i);
-                ret.add(param);
-            }
-        }
-        return ret;
+  public static Set<VarNode> getParameters(PAG pag, SootMethod m) {
+    MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
+    Set<qilin.core.pag.VarNode> ret = new HashSet<>();
+    for (int i = 0; i < m.getParameterCount(); ++i) {
+      if (m.getParameterType(i) instanceof ReferenceType) {
+        qilin.core.pag.VarNode param = mthdNF.caseParm(i);
+        ret.add(param);
+      }
     }
+    return ret;
+  }
 
-    public static Set<VarNode> getRetVars(PAG pag, SootMethod m) {
-        MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
-        if (m.getReturnType() instanceof ReferenceType) {
-            VarNode ret = mthdNF.caseRet();
-            return Collections.singleton(ret);
-        }
-        return Collections.emptySet();
+  public static Set<VarNode> getRetVars(PAG pag, SootMethod m) {
+    MethodNodeFactory mthdNF = pag.getMethodPAG(m).nodeFactory();
+    if (m.getReturnType() instanceof ReferenceType) {
+      VarNode ret = mthdNF.caseRet();
+      return Collections.singleton(ret);
     }
+    return Collections.emptySet();
+  }
 
-    public static int pointsToSetSizeOf(final PTA pta, VarNode var) {
-        return pta.reachingObjects(var).toCIPointsToSet().size();
-    }
+  public static int pointsToSetSizeOf(final PTA pta, VarNode var) {
+    return pta.reachingObjects(var).toCIPointsToSet().size();
+  }
 
-    /**
-     * @param pInner potential inner class
-     * @param pOuter potential outer class
-     * @return whether pInner is an inner class of pOuter
-     */
-    public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
-        final String pInnerStr = pInner.toString();
-        while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
-            SootClass sc = (SootClass) PTAScene.v().getView().getClass(pOuter).get();
-            if (sc.hasSuperclass()) {
-                SootClass otsuper = (SootClass) sc.getSuperclass().get();
-                pOuter = otsuper.getType();
-            } else {
-                return false;
-            }
-        }
-        return true;
+  /**
+   * @param pInner potential inner class
+   * @param pOuter potential outer class
+   * @return whether pInner is an inner class of pOuter
+   */
+  public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
+    final String pInnerStr = pInner.toString();
+    while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
+      SootClass sc = (SootClass) PTAScene.v().getView().getClass(pOuter).get();
+      if (sc.hasSuperclass()) {
+        SootClass otsuper = (SootClass) sc.getSuperclass().get();
+        pOuter = otsuper.getType();
+      } else {
+        return false;
+      }
     }
+    return true;
+  }
 }

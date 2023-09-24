@@ -27,60 +27,56 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 
 public class ContextField extends ValNode {
-    protected Context context;
-    protected SparkField field;
+  protected Context context;
+  protected SparkField field;
 
-    public ContextField(Context context, SparkField field) {
-        super(refineFieldType(context, field));
-        this.context = context;
-        this.field = field;
+  public ContextField(Context context, SparkField field) {
+    super(refineFieldType(context, field));
+    this.context = context;
+    this.field = field;
+  }
+
+  private static Type refineFieldType(Context context, SparkField field) {
+    if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
+      return PTAUtils.getClassType("java.lang.Object");
     }
-
-    private static Type refineFieldType(Context context, SparkField field) {
-        if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
-            return PTAUtils.getClassType("java.lang.Object");
+    if (field instanceof ArrayElement) {
+      ContextElement[] contextElements = ((ContextElements) context).getElements();
+      if (contextElements.length > 0) {
+        Type baseHeapType = ((AllocNode) ((ContextElements) context).getElements()[0]).getType();
+        if (baseHeapType instanceof ArrayType arrayType) {
+          return arrayType.getArrayElementType();
+        } else {
+          throw new RuntimeException(baseHeapType + " is not an array type.");
         }
-        if (field instanceof ArrayElement) {
-            ContextElement[] contextElements = ((ContextElements) context).getElements();
-            if (contextElements.length > 0) {
-                Type baseHeapType = ((AllocNode) ((ContextElements) context).getElements()[0]).getType();
-                if (baseHeapType instanceof ArrayType arrayType) {
-                    return arrayType.getArrayElementType();
-                } else {
-                    throw new RuntimeException(baseHeapType + " is not an array type.");
-                }
-            } else {
-                throw new RuntimeException("Context does not have any elements:" + context + ";" + field);
-            }
-        }
-        return field.getType();
+      } else {
+        throw new RuntimeException("Context does not have any elements:" + context + ";" + field);
+      }
     }
+    return field.getType();
+  }
 
-    /**
-     * Returns the base AllocNode.
-     */
-    public Context getContext() {
-        return context;
-    }
+  /** Returns the base AllocNode. */
+  public Context getContext() {
+    return context;
+  }
 
-    public boolean hasBase() {
-        ContextElements ctxs = (ContextElements) context;
-        return ctxs.size() > 0;
-    }
+  public boolean hasBase() {
+    ContextElements ctxs = (ContextElements) context;
+    return ctxs.size() > 0;
+  }
 
-    public AllocNode getBase() {
-        ContextElements ctxs = (ContextElements) context;
-        return (AllocNode) ctxs.getElements()[0];
-    }
+  public AllocNode getBase() {
+    ContextElements ctxs = (ContextElements) context;
+    return (AllocNode) ctxs.getElements()[0];
+  }
 
-    /**
-     * Returns the field of this node.
-     */
-    public SparkField getField() {
-        return field;
-    }
+  /** Returns the field of this node. */
+  public SparkField getField() {
+    return field;
+  }
 
-    public String toString() {
-        return "ContextField " + getNumber() + " " + getBase() + "." + field;
-    }
+  public String toString() {
+    return "ContextField " + getNumber() + " " + getBase() + "." + field;
+  }
 }

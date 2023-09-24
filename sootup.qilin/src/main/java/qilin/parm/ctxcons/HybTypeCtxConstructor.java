@@ -30,31 +30,35 @@ import sootup.core.model.SootMethod;
 // implementation of selective hybrid context...(Yannis pldi'13)
 public class HybTypeCtxConstructor implements CtxConstructor {
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        Context callerContext = caller.context();
-        if (receiverNode == null) { // static invoke
-            assert callerContext instanceof ContextElements;
-            ContextElements callerCtxs = (ContextElements) callerContext;
-            ContextElement[] cxtAllocs = callerCtxs.getElements();
-            int s = callerCtxs.size();
-            ContextElement[] array = new ContextElement[s + 1];
-            array[1] = callSite;
-            array[0] = cxtAllocs[0];
-            if (s > 1) {
-                System.arraycopy(cxtAllocs, 1, array, 2, s - 1);
-            }
-            return new ContextElements(array, s + 1);
-        } else {
-            Context context = receiverNode.context();
-            assert context instanceof ContextElements;
-            ContextElements ctx = (ContextElements) context;
-            int s = ctx.size();
-            ContextElement[] cxtAllocs = ctx.getElements();
-            ContextElement[] array = new ContextElement[s + 1];
-            array[0] = TypeContextElement.getTypeContextElement(receiverNode.base());
-            System.arraycopy(cxtAllocs, 0, array, 1, s);
-            return new ContextElements(array, s + 1);
-        }
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    Context callerContext = caller.context();
+    if (receiverNode == null) { // static invoke
+      assert callerContext instanceof ContextElements;
+      ContextElements callerCtxs = (ContextElements) callerContext;
+      ContextElement[] cxtAllocs = callerCtxs.getElements();
+      int s = callerCtxs.size();
+      ContextElement[] array = new ContextElement[s + 1];
+      array[1] = callSite;
+      array[0] = cxtAllocs[0];
+      if (s > 1) {
+        System.arraycopy(cxtAllocs, 1, array, 2, s - 1);
+      }
+      return new ContextElements(array, s + 1);
+    } else {
+      Context context = receiverNode.context();
+      assert context instanceof ContextElements;
+      ContextElements ctx = (ContextElements) context;
+      int s = ctx.size();
+      ContextElement[] cxtAllocs = ctx.getElements();
+      ContextElement[] array = new ContextElement[s + 1];
+      array[0] = TypeContextElement.getTypeContextElement(receiverNode.base());
+      System.arraycopy(cxtAllocs, 0, array, 1, s);
+      return new ContextElements(array, s + 1);
     }
+  }
 }

@@ -18,58 +18,61 @@
 
 package qilin.stat;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class BenchmarkStat implements AbstractStat {
-    private final PTA pta;
+  private final PTA pta;
 
-    private int classes = 0;
-    private int appClasses = 0;
-    private int phantomClasses = 0;
-    private int libClasses = 0;
-    private Set<SootClass> reachableClasses;
-    private Set<SootClass> reachableAppClasses;
-    int libReachableClasses = 0;
+  private int classes = 0;
+  private int appClasses = 0;
+  private int phantomClasses = 0;
+  private int libClasses = 0;
+  private Set<SootClass> reachableClasses;
+  private Set<SootClass> reachableAppClasses;
+  int libReachableClasses = 0;
 
-    public BenchmarkStat(PTA pta) {
-        this.pta = pta;
-        init();
+  public BenchmarkStat(PTA pta) {
+    this.pta = pta;
+    init();
+  }
+
+  private void init() {
+    reachableClasses =
+        pta.getNakedReachableMethods().stream()
+            .map(
+                m -> {
+                  ClassType classType = m.getDeclaringClassType();
+                  return (SootClass) PTAScene.v().getView().getClass(classType).get();
+                })
+            .collect(Collectors.toSet());
+    reachableAppClasses =
+        reachableClasses.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
+
+    classes = PTAScene.v().getClasses().size();
+    appClasses = PTAScene.v().getApplicationClasses().size();
+    phantomClasses = PTAScene.v().getPhantomClasses().size();
+    libClasses = classes - appClasses - phantomClasses;
+    libReachableClasses = (reachableClasses.size() - reachableAppClasses.size() - 1); // -FakeMain
+  }
+
+  @Override
+  public void export(Exporter exporter) {
+    exporter.collectMetric("#Class:", String.valueOf(classes));
+    exporter.collectMetric("#Appclass:", String.valueOf(appClasses));
+    exporter.collectMetric("#Libclass:", String.valueOf(libClasses));
+    exporter.collectMetric("#Phantomclass:", String.valueOf(phantomClasses));
+    exporter.collectMetric("#Class(reachable):", String.valueOf(reachableClasses.size()));
+    exporter.collectMetric("#Appclass(reachable):", String.valueOf(reachableAppClasses.size()));
+    exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
+
+    if (CoreConfig.v().getOutConfig().dumpStats) {
+      exporter.dumpClassTypes(PTAScene.v().getClasses());
     }
-
-    private void init() {
-        reachableClasses = pta.getNakedReachableMethods().stream().map(m -> {
-            ClassType classType = m.getDeclaringClassType();
-            return (SootClass) PTAScene.v().getView().getClass(classType).get();
-        }).collect(Collectors.toSet());
-        reachableAppClasses = reachableClasses.stream().filter(SootClass::isApplicationClass)
-                .collect(Collectors.toSet());
-
-        classes = PTAScene.v().getClasses().size();
-        appClasses = PTAScene.v().getApplicationClasses().size();
-        phantomClasses = PTAScene.v().getPhantomClasses().size();
-        libClasses = classes - appClasses - phantomClasses;
-        libReachableClasses = (reachableClasses.size() - reachableAppClasses.size() - 1); // -FakeMain
-    }
-
-    @Override
-    public void export(Exporter exporter) {
-        exporter.collectMetric("#Class:", String.valueOf(classes));
-        exporter.collectMetric("#Appclass:", String.valueOf(appClasses));
-        exporter.collectMetric("#Libclass:", String.valueOf(libClasses));
-        exporter.collectMetric("#Phantomclass:", String.valueOf(phantomClasses));
-        exporter.collectMetric("#Class(reachable):", String.valueOf(reachableClasses.size()));
-        exporter.collectMetric("#Appclass(reachable):", String.valueOf(reachableAppClasses.size()));
-        exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
-
-        if (CoreConfig.v().getOutConfig().dumpStats) {
-            exporter.dumpClassTypes(PTAScene.v().getClasses());
-        }
-    }
+  }
 }

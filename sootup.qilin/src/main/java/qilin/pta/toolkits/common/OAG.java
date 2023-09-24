@@ -18,6 +18,7 @@
 
 package qilin.pta.toolkits.common;
 
+import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.AllocNode;
@@ -29,134 +30,130 @@ import qilin.util.graph.DirectedGraph;
 import soot.util.queue.QueueReader;
 import sootup.core.model.SootMethod;
 
-import java.util.*;
-
-/**
- * Implementation of Object Allocation Graph (OAG).
- */
+/** Implementation of Object Allocation Graph (OAG). */
 public class OAG implements DirectedGraph<AllocNode> {
-    protected final PTA pta;
-    protected final Map<AllocNode, Set<AllocNode>> successors;
-    protected final Map<AllocNode, Set<AllocNode>> predecessors;
-    protected final Set<AllocNode> nodes = new HashSet<>();
-    protected Collection<AllocNode> rootNodes;
-    protected Collection<AllocNode> tailNodes;
+  protected final PTA pta;
+  protected final Map<AllocNode, Set<AllocNode>> successors;
+  protected final Map<AllocNode, Set<AllocNode>> predecessors;
+  protected final Set<AllocNode> nodes = new HashSet<>();
+  protected Collection<AllocNode> rootNodes;
+  protected Collection<AllocNode> tailNodes;
 
-    public OAG(PTA prePta) {
-        this.pta = prePta;
-        this.predecessors = new HashMap<>();
-        this.successors = new HashMap<>();
+  public OAG(PTA prePta) {
+    this.pta = prePta;
+    this.predecessors = new HashMap<>();
+    this.successors = new HashMap<>();
+  }
+
+  public void build() {
+    buildOAG();
+    rootNodes = computeRootNodes();
+    tailNodes = computeTailNodes();
+  }
+
+  @Override
+  public Collection<AllocNode> allNodes() {
+    return nodes;
+  }
+
+  @Override
+  public Collection<AllocNode> predsOf(AllocNode p) {
+    return getPredsOf(p);
+  }
+
+  @Override
+  public Collection<AllocNode> succsOf(AllocNode p) {
+    return getSuccsOf(p);
+  }
+
+  public Collection<AllocNode> rootNodes() {
+    return rootNodes;
+  }
+
+  public Collection<AllocNode> tailNodes() {
+    return tailNodes;
+  }
+
+  public Set<AllocNode> getPredsOf(AllocNode n) {
+    return predecessors.getOrDefault(n, Collections.emptySet());
+  }
+
+  public Set<AllocNode> getSuccsOf(AllocNode n) {
+    return successors.getOrDefault(n, Collections.emptySet());
+  }
+
+  public int getInDegreeOf(AllocNode n) {
+    return getPredsOf(n).size();
+  }
+
+  /**
+   * @param source
+   * @param dest
+   * @return whether there is a path from source to target in the OAG
+   */
+  Map<AllocNode, Collection<AllocNode>> reachableMap = new HashMap<>();
+
+  public boolean reaches(AllocNode source, AllocNode dest) {
+    Collection<AllocNode> reachableNodes = reachableMap.get(source);
+    if (reachableNodes == null) {
+      reachableNodes = computeReachableNodes(source);
+      reachableMap.put(source, reachableNodes);
     }
+    return reachableNodes.contains(dest);
+  }
 
-    public void build() {
-        buildOAG();
-        rootNodes = computeRootNodes();
-        tailNodes = computeTailNodes();
-    }
-
-    @Override
-    public Collection<AllocNode> allNodes() {
-        return nodes;
-    }
-
-    @Override
-    public Collection<AllocNode> predsOf(AllocNode p) {
-        return getPredsOf(p);
-    }
-
-    @Override
-    public Collection<AllocNode> succsOf(AllocNode p) {
-        return getSuccsOf(p);
-    }
-
-    public Collection<AllocNode> rootNodes() {
-        return rootNodes;
-    }
-
-    public Collection<AllocNode> tailNodes() {
-        return tailNodes;
-    }
-
-    public Set<AllocNode> getPredsOf(AllocNode n) {
-        return predecessors.getOrDefault(n, Collections.emptySet());
-    }
-
-    public Set<AllocNode> getSuccsOf(AllocNode n) {
-        return successors.getOrDefault(n, Collections.emptySet());
-    }
-
-    public int getInDegreeOf(AllocNode n) {
-        return getPredsOf(n).size();
-    }
-
-    /**
-     * @param source
-     * @param dest
-     * @return whether there is a path from source to target in the OAG
-     */
-    Map<AllocNode, Collection<AllocNode>> reachableMap = new HashMap<>();
-
-    public boolean reaches(AllocNode source, AllocNode dest) {
-        Collection<AllocNode> reachableNodes = reachableMap.get(source);
-        if (reachableNodes == null) {
-            reachableNodes = computeReachableNodes(source);
-            reachableMap.put(source, reachableNodes);
-        }
-        return reachableNodes.contains(dest);
-    }
-
-    protected void buildOAG() {
-        Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
-        for (SootMethod method : this.pta.getNakedReachableMethods()) {
-            if (!method.isConcrete()) {
-                continue;
+  protected void buildOAG() {
+    Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(this.pta);
+    for (SootMethod method : this.pta.getNakedReachableMethods()) {
+      if (!method.isConcrete()) {
+        continue;
+      }
+      MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
+      MethodNodeFactory srcnf = srcmpag.nodeFactory();
+      LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
+      QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
+      while (reader.hasNext()) {
+        qilin.core.pag.Node from = reader.next(), to = reader.next();
+        if (from instanceof AllocNode tgt) {
+          if (PTAUtils.isFakeMainMethod(method)) {
+            // special treatment for fake main
+            AllocNode src = pta.getRootNode();
+            addEdge(src, tgt);
+          } else if (method.isStatic()) {
+            pts.getOrDefault(thisRef, Collections.emptySet())
+                .forEach(
+                    src -> {
+                      addEdge(src, tgt);
+                    });
+          } else {
+            PointsToSet thisPts = pta.reachingObjects(thisRef).toCIPointsToSet();
+            for (Iterator<AllocNode> it = thisPts.iterator(); it.hasNext(); ) {
+              AllocNode src = it.next();
+              addEdge(src, tgt);
             }
-            MethodPAG srcmpag = pta.getPag().getMethodPAG(method);
-            MethodNodeFactory srcnf = srcmpag.nodeFactory();
-            LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
-            QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
-            while (reader.hasNext()) {
-                qilin.core.pag.Node from = reader.next(), to = reader.next();
-                if (from instanceof AllocNode tgt) {
-                    if (PTAUtils.isFakeMainMethod(method)) {
-                        // special treatment for fake main
-                        AllocNode src = pta.getRootNode();
-                        addEdge(src, tgt);
-                    } else if (method.isStatic()) {
-                        pts.getOrDefault(thisRef, Collections.emptySet()).forEach(src -> {
-                            addEdge(src, tgt);
-                        });
-                    } else {
-                        PointsToSet thisPts = pta.reachingObjects(thisRef).toCIPointsToSet();
-                        for (Iterator<AllocNode> it = thisPts.iterator(); it.hasNext(); ) {
-                            AllocNode src = it.next();
-                            addEdge(src, tgt);
-                        }
-                    }
-                }
-            }
+          }
         }
+      }
     }
+  }
 
-    /**
-     * Add a directed object allocation edge to the OAG.
-     */
-    protected void addEdge(AllocNode src, AllocNode tgt) {
-        nodes.add(src);
-        nodes.add(tgt);
-        this.predecessors.computeIfAbsent(tgt, k -> new HashSet<>()).add(src);
-        this.successors.computeIfAbsent(src, k -> new HashSet<>()).add(tgt);
-    }
+  /** Add a directed object allocation edge to the OAG. */
+  protected void addEdge(AllocNode src, AllocNode tgt) {
+    nodes.add(src);
+    nodes.add(tgt);
+    this.predecessors.computeIfAbsent(tgt, k -> new HashSet<>()).add(src);
+    this.successors.computeIfAbsent(src, k -> new HashSet<>()).add(tgt);
+  }
 
-    public int nodeSize() {
-        return this.nodes.size();
-    }
+  public int nodeSize() {
+    return this.nodes.size();
+  }
 
-    public int edgeSize() {
-        int ret = 0;
-        for (AllocNode obj : predecessors.keySet()) {
-            ret += predecessors.get(obj).size();
-        }
-        return ret;
+  public int edgeSize() {
+    int ret = 0;
+    for (AllocNode obj : predecessors.keySet()) {
+      ret += predecessors.get(obj).size();
     }
+    return ret;
+  }
 }

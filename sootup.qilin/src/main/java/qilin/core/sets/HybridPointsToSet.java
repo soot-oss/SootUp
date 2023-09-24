@@ -18,181 +18,170 @@
 
 package qilin.core.sets;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import soot.util.BitSetIterator;
 import soot.util.BitVector;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 /**
- * Hybrid implementation of points-to set, which uses an explicit array for small sets, and a bit vector for large sets.
+ * Hybrid implementation of points-to set, which uses an explicit array for small sets, and a bit
+ * vector for large sets.
  *
  * @author Ondrej Lhotak
  */
 public final class HybridPointsToSet extends PointsToSetInternal {
-    private static HybridPointsToSet emptySet = null;
+  private static HybridPointsToSet emptySet = null;
 
-    public static HybridPointsToSet getEmptySet() {
-        if (emptySet == null) {
-            emptySet = new HybridPointsToSet();
-        }
-        return emptySet;
+  public static HybridPointsToSet getEmptySet() {
+    if (emptySet == null) {
+      emptySet = new HybridPointsToSet();
     }
+    return emptySet;
+  }
 
-    private final int[] nodeIdxs = new int[16];
-    private BitVector bits = null;
-    private int size = 0;
+  private final int[] nodeIdxs = new int[16];
+  private BitVector bits = null;
+  private int size = 0;
 
-    private boolean empty = true;
+  private boolean empty = true;
 
-    /**
-     * Returns true if this set contains no run-time objects.
-     */
-    @Override
-    public boolean isEmpty() {
-        return empty;
+  /** Returns true if this set contains no run-time objects. */
+  @Override
+  public boolean isEmpty() {
+    return empty;
+  }
+
+  @Override
+  public void clear() {
+    Arrays.fill(nodeIdxs, 0);
+    bits = null;
+    empty = true;
+    size = 0;
+  }
+
+  private boolean nativeAddAll(HybridPointsToSet other, PointsToSetInternal exclude) {
+    boolean ret = false;
+    for (Iterator<Integer> it = other.iterator(); it.hasNext(); ) {
+      int idx = it.next();
+      if (exclude == null || !exclude.contains(idx)) {
+        ret |= add(idx);
+      }
     }
+    return ret;
+  }
 
-    @Override
-    public void clear() {
-        Arrays.fill(nodeIdxs, 0);
-        bits = null;
-        empty = true;
-        size = 0;
+  /** Adds contents of other into this set, returns true if this set changed. */
+  public boolean addAll(final PointsToSetInternal other, final PointsToSetInternal exclude) {
+    if (other == null) {
+      return false;
     }
-
-    private boolean nativeAddAll(HybridPointsToSet other, PointsToSetInternal exclude) {
-        boolean ret = false;
-        for (Iterator<Integer> it = other.iterator(); it.hasNext(); ) {
-            int idx = it.next();
-            if (exclude == null || !exclude.contains(idx)) {
-                ret |= add(idx);
-            }
-        }
-        return ret;
+    if (other instanceof DoublePointsToSet dpts) {
+      return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
     }
+    return nativeAddAll((HybridPointsToSet) other, exclude);
+  }
 
-    /**
-     * Adds contents of other into this set, returns true if this set changed.
-     */
-    public boolean addAll(final PointsToSetInternal other, final PointsToSetInternal exclude) {
-        if (other == null) {
-            return false;
-        }
-        if (other instanceof DoublePointsToSet dpts) {
-            return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
-        }
-        return nativeAddAll((HybridPointsToSet) other, exclude);
-    }
+  private class HybridPTSIterator implements Iterator<Integer> {
+    private BitSetIterator it;
+    private int idx;
 
-    private class HybridPTSIterator implements Iterator<Integer> {
-        private BitSetIterator it;
-        private int idx;
-
-        public HybridPTSIterator() {
-            if (bits == null) {
-                idx = 0;
-            } else {
-                it = bits.iterator();
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (bits == null) {
-                return idx < nodeIdxs.length && nodeIdxs[idx] != 0;
-            } else {
-                return it.hasNext();
-            }
-        }
-
-        @Override
-        public Integer next() {
-            if (bits == null) {
-                return nodeIdxs[idx++];
-            } else {
-                return it.next();
-            }
-        }
+    public HybridPTSIterator() {
+      if (bits == null) {
+        idx = 0;
+      } else {
+        it = bits.iterator();
+      }
     }
 
     @Override
-    public Iterator<Integer> iterator() {
-        return new HybridPTSIterator();
+    public boolean hasNext() {
+      if (bits == null) {
+        return idx < nodeIdxs.length && nodeIdxs[idx] != 0;
+      } else {
+        return it.hasNext();
+      }
     }
 
     @Override
-    public int size() {
-        return size;
+    public Integer next() {
+      if (bits == null) {
+        return nodeIdxs[idx++];
+      } else {
+        return it.next();
+      }
     }
+  }
 
-    /**
-     * Calls v's visit method on all nodes in this set.
-     */
-    public boolean forall(P2SetVisitor v) {
-        if (bits == null) {
-            for (int nodeIdx : nodeIdxs) {
-                if (nodeIdx == 0) {
-                    return v.getReturnValue();
-                }
-                v.visit(nodeIdx);
-            }
-        } else {
-            for (BitSetIterator it = bits.iterator(); it.hasNext(); ) {
-                v.visit(it.next());
-            }
+  @Override
+  public Iterator<Integer> iterator() {
+    return new HybridPTSIterator();
+  }
+
+  @Override
+  public int size() {
+    return size;
+  }
+
+  /** Calls v's visit method on all nodes in this set. */
+  public boolean forall(P2SetVisitor v) {
+    if (bits == null) {
+      for (int nodeIdx : nodeIdxs) {
+        if (nodeIdx == 0) {
+          return v.getReturnValue();
         }
-        return v.getReturnValue();
+        v.visit(nodeIdx);
+      }
+    } else {
+      for (BitSetIterator it = bits.iterator(); it.hasNext(); ) {
+        v.visit(it.next());
+      }
     }
+    return v.getReturnValue();
+  }
 
-    /**
-     * Returns true iff the set contains node idx.
-     */
-    public boolean contains(int idx) {
-        if (bits == null) {
-            for (int nodeIdx : nodeIdxs) {
-                if (idx == nodeIdx) {
-                    return true;
-                }
-                if (nodeIdx == 0) {
-                    break;
-                }
-            }
-            return false;
-        } else {
-            return bits.get(idx);
+  /** Returns true iff the set contains node idx. */
+  public boolean contains(int idx) {
+    if (bits == null) {
+      for (int nodeIdx : nodeIdxs) {
+        if (idx == nodeIdx) {
+          return true;
         }
+        if (nodeIdx == 0) {
+          break;
+        }
+      }
+      return false;
+    } else {
+      return bits.get(idx);
     }
+  }
 
-    /**
-     * Adds idx to this set, returns true if idx was not already in this set.
-     */
-    public boolean add(int idx) {
-        if (bits == null) {
-            for (int i = 0; i < nodeIdxs.length; i++) {
-                if (nodeIdxs[i] == 0) {
-                    empty = false;
-                    nodeIdxs[i] = idx;
-                    ++size;
-                    return true;
-                } else if (nodeIdxs[i] == idx) {
-                    return false;
-                }
-            }
-            // convert to Bits
-            bits = new BitVector();
-            for (int nodeIdx : nodeIdxs) {
-                if (nodeIdx != 0) {
-                    bits.set(nodeIdx);
-                }
-            }
+  /** Adds idx to this set, returns true if idx was not already in this set. */
+  public boolean add(int idx) {
+    if (bits == null) {
+      for (int i = 0; i < nodeIdxs.length; i++) {
+        if (nodeIdxs[i] == 0) {
+          empty = false;
+          nodeIdxs[i] = idx;
+          ++size;
+          return true;
+        } else if (nodeIdxs[i] == idx) {
+          return false;
         }
-        boolean ret = bits.set(idx);
-        if (ret) {
-            ++size;
-            empty = false;
+      }
+      // convert to Bits
+      bits = new BitVector();
+      for (int nodeIdx : nodeIdxs) {
+        if (nodeIdx != 0) {
+          bits.set(nodeIdx);
         }
-        return ret;
+      }
     }
-
+    boolean ret = bits.set(idx);
+    if (ret) {
+      ++size;
+      empty = false;
+    }
+    return ret;
+  }
 }

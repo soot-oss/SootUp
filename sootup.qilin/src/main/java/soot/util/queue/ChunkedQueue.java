@@ -23,75 +23,75 @@ package soot.util.queue;
  */
 
 /**
- * A queue of Object's. One can add objects to the queue, and they are later read by a QueueReader. One can create arbitrary
- * numbers of QueueReader's for a queue, and each one receives all the Object's that are added. Only objects that have not
- * been read by all the QueueReader's are kept. A QueueReader only receives the Object's added to the queue <b>after</b> the
- * QueueReader was created.
+ * A queue of Object's. One can add objects to the queue, and they are later read by a QueueReader.
+ * One can create arbitrary numbers of QueueReader's for a queue, and each one receives all the
+ * Object's that are added. Only objects that have not been read by all the QueueReader's are kept.
+ * A QueueReader only receives the Object's added to the queue <b>after</b> the QueueReader was
+ * created.
  *
  * @author Ondrej Lhotak
  */
 @SuppressWarnings("unchecked")
 public class ChunkedQueue<E> {
 
-    protected static final Object NULL_CONST = new Object();
-    protected static final Object DELETED_CONST = new Object();
+  protected static final Object NULL_CONST = new Object();
+  protected static final Object DELETED_CONST = new Object();
 
-    protected static final int LENGTH = 60;
-    protected Object[] q;
-    protected int index;
+  protected static final int LENGTH = 60;
+  protected Object[] q;
+  protected int index;
 
-    public ChunkedQueue() {
-        q = new Object[LENGTH];
-        index = 0;
+  public ChunkedQueue() {
+    q = new Object[LENGTH];
+    index = 0;
+  }
+
+  /** Add an object to the queue. */
+  public void add(E o) {
+    if (o == null) {
+      o = (E) NULL_CONST;
     }
-
-    /** Add an object to the queue. */
-    public void add(E o) {
-        if (o == null) {
-            o = (E) NULL_CONST;
-        }
-        if (index == LENGTH - 1) {
-            Object[] temp = new Object[LENGTH];
-            q[index] = temp;
-            q = temp;
-            index = 0;
-        }
-        q[index++] = o;
+    if (index == LENGTH - 1) {
+      Object[] temp = new Object[LENGTH];
+      q[index] = temp;
+      q = temp;
+      index = 0;
     }
+    q[index++] = o;
+  }
 
-    /** Create reader which will read objects from the queue. */
-    public QueueReader<E> reader() {
-        return new QueueReader<E>((E[]) q, index);
+  /** Create reader which will read objects from the queue. */
+  public QueueReader<E> reader() {
+    return new QueueReader<E>((E[]) q, index);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    boolean isFirst = true;
+
+    int idx = index;
+    Object[] curArray = q;
+    while (idx < curArray.length) {
+      Object curObj = curArray[idx];
+      if (curObj == null) {
+        break;
+      }
+      if (isFirst) {
+        isFirst = false;
+      } else {
+        sb.append(", ");
+      }
+      if (curObj instanceof Object[]) {
+        curArray = (Object[]) curObj;
+        idx = 0;
+      } else {
+        sb.append(curObj.toString());
+        idx++;
+      }
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        boolean isFirst = true;
-
-        int idx = index;
-        Object[] curArray = q;
-        while (idx < curArray.length) {
-            Object curObj = curArray[idx];
-            if (curObj == null) {
-                break;
-            }
-            if (isFirst) {
-                isFirst = false;
-            } else {
-                sb.append(", ");
-            }
-            if (curObj instanceof Object[]) {
-                curArray = (Object[]) curObj;
-                idx = 0;
-            } else {
-                sb.append(curObj.toString());
-                idx++;
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
+    sb.append("]");
+    return sb.toString();
+  }
 }

@@ -18,12 +18,11 @@
 
 package qilin.pta.toolkits.conch;
 
-import qilin.core.pag.AllocNode;
-import qilin.util.graph.DirectedGraphImpl;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import qilin.core.pag.AllocNode;
+import qilin.util.graph.DirectedGraphImpl;
 
 /*
  * context-sensitivity dependent graph:
@@ -34,30 +33,30 @@ import java.util.Set;
  * To efficiently check Obs 3(b) (lines 18-23 in Algorithm 1), we introduce this graph structure.
  * */
 public class CSDG extends DirectedGraphImpl<AllocNode> {
-    /*
-     * Remove node on the graph that does not have successor.
-     * */
-    public void removeNode(final AllocNode to) {
-        if (succs.containsKey(to) && !succs.get(to).isEmpty()) {
-            return;
-        }
-        succs.remove(to);
-        if (preds.containsKey(to)) {
-            for (AllocNode from : preds.get(to)) {
-                succs.get(from).remove(to);
-            }
-            preds.remove(to);
-        }
-        nodes.remove(to);
+  /*
+   * Remove node on the graph that does not have successor.
+   * */
+  public void removeNode(final AllocNode to) {
+    if (succs.containsKey(to) && !succs.get(to).isEmpty()) {
+      return;
     }
+    succs.remove(to);
+    if (preds.containsKey(to)) {
+      for (AllocNode from : preds.get(to)) {
+        succs.get(from).remove(to);
+      }
+      preds.remove(to);
+    }
+    nodes.remove(to);
+  }
 
-    public Set<AllocNode> noOutDegreeNodes() {
-        Set<AllocNode> ret = new HashSet<>();
-        for (AllocNode node : allNodes()) {
-            if (succs.getOrDefault(node, Collections.emptySet()).isEmpty()) {
-                ret.add(node);
-            }
-        }
-        return ret;
+  public Set<AllocNode> noOutDegreeNodes() {
+    Set<AllocNode> ret = new HashSet<>();
+    for (AllocNode node : allNodes()) {
+      if (succs.getOrDefault(node, Collections.emptySet()).isEmpty()) {
+        ret.add(node);
+      }
     }
+    return ret;
+  }
 }

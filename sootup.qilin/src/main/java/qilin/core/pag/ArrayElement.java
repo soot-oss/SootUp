@@ -27,29 +27,29 @@ import sootup.core.types.Type;
  * @author Ondrej Lhotak
  */
 public class ArrayElement implements SparkField {
-    private static ArrayElement instance = null;
-    private int number = 0;
+  private static ArrayElement instance = null;
+  private int number = 0;
 
-    public static ArrayElement v() {
+  public static ArrayElement v() {
+    if (instance == null) {
+      synchronized (ArrayElement.class) {
         if (instance == null) {
-            synchronized (ArrayElement.class) {
-                if (instance == null) {
-                    instance = new ArrayElement();
-                }
-            }
+          instance = new ArrayElement();
         }
-        return instance;
+      }
     }
+    return instance;
+  }
 
-    public final int getNumber() {
-        return number;
-    }
+  public final int getNumber() {
+    return number;
+  }
 
-    public final void setNumber(int number) {
-        this.number = number;
-    }
+  public final void setNumber(int number) {
+    this.number = number;
+  }
 
-    public Type getType() {
-        return PTAUtils.getClassType("java.lang.Object");
-    }
+  public Type getType() {
+    return PTAUtils.getClassType("java.lang.Object");
+  }
 }

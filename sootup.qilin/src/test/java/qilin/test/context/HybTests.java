@@ -22,18 +22,18 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class HybTests extends JunitTests {
-    @Test
-    public void testHyb0() {
-        checkAssertions(run("qilin.microben.context.hyb.Hyb0", "1h"));
-    }
+  @Test
+  public void testHyb0() {
+    checkAssertions(run("qilin.microben.context.hyb.Hyb0", "1h"));
+  }
 
-    @Test
-    public void testHyb1() {
-        checkAssertions(run("qilin.microben.context.hyb.Hyb1", "1h"));
-    }
+  @Test
+  public void testHyb1() {
+    checkAssertions(run("qilin.microben.context.hyb.Hyb1", "1h"));
+  }
 
-    @Test
-    public void testHyb2() {
-        checkAssertions(run("qilin.microben.context.hyb.Hyb2", "2h"));
-    }
+  @Test
+  public void testHyb2() {
+    checkAssertions(run("qilin.microben.context.hyb.Hyb2", "2h"));
+  }
 }

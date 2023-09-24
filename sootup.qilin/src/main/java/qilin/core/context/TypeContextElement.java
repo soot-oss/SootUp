@@ -25,59 +25,54 @@ import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
-/**
- * Type based context element in the points to analysis.
- */
+/** Type based context element in the points to analysis. */
 public class TypeContextElement implements ContextElement {
 
-    private final Type type;
+  private final Type type;
 
-    private TypeContextElement(Type type) {
-        this.type = type;
-    }
+  private TypeContextElement(Type type) {
+    this.type = type;
+  }
 
-    public static TypeContextElement getTypeContextElement(AllocNode a) {
-        SootMethod declaringMethod = a.getMethod();
-        Type declType = PTAUtils.getClassType("java.lang.Object");
-        if (declaringMethod != null) {
-            declType = declaringMethod.getDeclaringClassType();
-        } else if (a instanceof ClassConstantNode) {
-            declType = PTAUtils.getClassType("java.lang.System");
-        } else if (a instanceof StringConstantNode) {
-            declType = PTAUtils.getClassType("java.lang.String");
-        }
-        return new TypeContextElement(declType);
+  public static TypeContextElement getTypeContextElement(AllocNode a) {
+    SootMethod declaringMethod = a.getMethod();
+    Type declType = PTAUtils.getClassType("java.lang.Object");
+    if (declaringMethod != null) {
+      declType = declaringMethod.getDeclaringClassType();
+    } else if (a instanceof ClassConstantNode) {
+      declType = PTAUtils.getClassType("java.lang.System");
+    } else if (a instanceof StringConstantNode) {
+      declType = PTAUtils.getClassType("java.lang.String");
     }
+    return new TypeContextElement(declType);
+  }
 
-    public Type getType() {
-        return type;
-    }
+  public Type getType() {
+    return type;
+  }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        TypeContextElement other = (TypeContextElement) obj;
-        if (type == null) {
-            return other.type == null;
-        } else {
-            return type.equals(other.type);
-        }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    TypeContextElement other = (TypeContextElement) obj;
+    if (type == null) {
+      return other.type == null;
+    } else {
+      return type.equals(other.type);
     }
+  }
 
-    public String toString() {
-        return "TypeContext: " + type;
-    }
+  public String toString() {
+    return "TypeContext: " + type;
+  }
 }

@@ -18,6 +18,10 @@
 
 package qilin.stat;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
@@ -28,77 +32,72 @@ import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 public class YummyStat implements AbstractStat {
-    private final PTA pta;
-    private long singleCallCnt;
-    private long singleReceiverCnt;
-    private long singleCallSingleReceiverCnt;
-    private final Set<SootMethod> singleCalls = new HashSet<>();
-    private final Set<SootMethod> singleReceivers = new HashSet<>();
-    private final Set<SootMethod> singleCallSingleReceivers = new HashSet<>();
+  private final PTA pta;
+  private long singleCallCnt;
+  private long singleReceiverCnt;
+  private long singleCallSingleReceiverCnt;
+  private final Set<SootMethod> singleCalls = new HashSet<>();
+  private final Set<SootMethod> singleReceivers = new HashSet<>();
+  private final Set<SootMethod> singleCallSingleReceivers = new HashSet<>();
 
-    public YummyStat(PTA pta) {
-        this.pta = pta;
-        init();
+  public YummyStat(PTA pta) {
+    this.pta = pta;
+    init();
+  }
+
+  private void init() {
+    Map<SootMethod, Set<Stmt>> target2callsites = new HashMap<>();
+    CallGraph ciCallGraph = pta.getCallGraph();
+    for (Edge edge : ciCallGraph) {
+      Stmt callUnit = edge.srcUnit();
+      SootMethod target = edge.tgt();
+      if (callUnit != null && target != null) {
+        target2callsites.computeIfAbsent(target, k -> new HashSet<>()).add(callUnit);
+      }
     }
 
-    private void init() {
-        Map<SootMethod, Set<Stmt>> target2callsites = new HashMap<>();
-        CallGraph ciCallGraph = pta.getCallGraph();
-        for (Edge edge : ciCallGraph) {
-            Stmt callUnit = edge.srcUnit();
-            SootMethod target = edge.tgt();
-            if (callUnit != null && target != null) {
-                target2callsites.computeIfAbsent(target, k -> new HashSet<>()).add(callUnit);
-            }
-        }
+    target2callsites.entrySet().stream()
+        .filter(e -> e.getValue().size() == 1)
+        .map(Map.Entry::getKey)
+        .filter(m -> !m.isStatic())
+        .forEach(singleCalls::add);
 
-        target2callsites.entrySet().stream()
-                .filter(e -> e.getValue().size() == 1)
-                .map(Map.Entry::getKey).filter(m -> !m.isStatic())
-                .forEach(singleCalls::add);
+    singleCallCnt = singleCalls.size();
 
-        singleCallCnt = singleCalls.size();
-
-
-        Set<SootMethod> instanceReachables = new HashSet<>();
-        for (final MethodOrMethodContext momc : pta.getReachableMethods()) {
-            SootMethod method = momc.method();
-            if (method.isConcrete() && !method.isStatic()) {
-                instanceReachables.add(method);
-            }
-        }
-
-        for (SootMethod method : instanceReachables) {
-            MethodNodeFactory nf = pta.getPag().getMethodPAG(method).nodeFactory();
-            PointsToSet pts = pta.reachingObjects(nf.caseThis()).toCIPointsToSet();
-            int ptSize = pts.size();
-            if (ptSize == 1) {
-                singleReceivers.add(method);
-            }
-        }
-
-        singleReceiverCnt = singleReceivers.size();
-
-        singleCalls.stream().filter(singleReceivers::contains).forEach(singleCallSingleReceivers::add);
-        singleCallSingleReceiverCnt = singleCallSingleReceivers.size();
+    Set<SootMethod> instanceReachables = new HashSet<>();
+    for (final MethodOrMethodContext momc : pta.getReachableMethods()) {
+      SootMethod method = momc.method();
+      if (method.isConcrete() && !method.isStatic()) {
+        instanceReachables.add(method);
+      }
     }
 
-
-    @Override
-    public void export(Exporter exporter) {
-        exporter.collectMetric("#Single-Call Methods:", String.valueOf(singleCallCnt));
-        exporter.collectMetric("#Single-Receiver Methods:", String.valueOf(singleReceiverCnt));
-        exporter.collectMetric("#Single-Call-Single-Receiver Methods:", String.valueOf(singleCallSingleReceiverCnt));
-        if (CoreConfig.v().getOutConfig().dumpStats) {
-            exporter.dumpSingleCallMethods(singleCalls);
-            exporter.dumpSingleReceiverMethods(singleReceivers);
-            exporter.dumpSingleCallSingleReceiverMethods(singleCallSingleReceivers);
-        }
+    for (SootMethod method : instanceReachables) {
+      MethodNodeFactory nf = pta.getPag().getMethodPAG(method).nodeFactory();
+      PointsToSet pts = pta.reachingObjects(nf.caseThis()).toCIPointsToSet();
+      int ptSize = pts.size();
+      if (ptSize == 1) {
+        singleReceivers.add(method);
+      }
     }
+
+    singleReceiverCnt = singleReceivers.size();
+
+    singleCalls.stream().filter(singleReceivers::contains).forEach(singleCallSingleReceivers::add);
+    singleCallSingleReceiverCnt = singleCallSingleReceivers.size();
+  }
+
+  @Override
+  public void export(Exporter exporter) {
+    exporter.collectMetric("#Single-Call Methods:", String.valueOf(singleCallCnt));
+    exporter.collectMetric("#Single-Receiver Methods:", String.valueOf(singleReceiverCnt));
+    exporter.collectMetric(
+        "#Single-Call-Single-Receiver Methods:", String.valueOf(singleCallSingleReceiverCnt));
+    if (CoreConfig.v().getOutConfig().dumpStats) {
+      exporter.dumpSingleCallMethods(singleCalls);
+      exporter.dumpSingleReceiverMethods(singleReceivers);
+      exporter.dumpSingleCallSingleReceiverMethods(singleCallSingleReceivers);
+    }
+  }
 }

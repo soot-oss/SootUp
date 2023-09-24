@@ -30,93 +30,91 @@ import sootup.core.model.SootMethod;
  * This represents a parameterized PTA which could be concreted to many pointer analyses.
  * */
 public abstract class CorePTA extends PTA {
-    /*
-     * The following three parameterized functions must be initialized before doing the pointer analysis.
-     * */
-    protected CtxConstructor ctxCons;
-    protected CtxSelector ctxSel;
-    protected HeapAbstractor heapAbst;
+  /*
+   * The following three parameterized functions must be initialized before doing the pointer analysis.
+   * */
+  protected CtxConstructor ctxCons;
+  protected CtxSelector ctxSel;
+  protected HeapAbstractor heapAbst;
 
-    public CtxSelector ctxSelector() {
-        return ctxSel;
+  public CtxSelector ctxSelector() {
+    return ctxSel;
+  }
+
+  public void setContextSelector(CtxSelector ctxSelector) {
+    this.ctxSel = ctxSelector;
+  }
+
+  public CtxConstructor ctxConstructor() {
+    return ctxCons;
+  }
+
+  public HeapAbstractor heapAbstractor() {
+    return this.heapAbst;
+  }
+
+  public abstract Propagator getPropagator();
+
+  @Override
+  public Context createCalleeCtx(
+      MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
+  }
+
+  public Context emptyContext() {
+    return CtxConstructor.emptyContext;
+  }
+
+  @Override
+  public Node parameterize(Node n, Context context) {
+    if (context == null) {
+      throw new RuntimeException("null context!!!");
     }
-
-    public void setContextSelector(CtxSelector ctxSelector) {
-        this.ctxSel = ctxSelector;
+    if (n instanceof LocalVarNode lvn) {
+      return parameterize(lvn, context);
     }
-
-    public CtxConstructor ctxConstructor() {
-        return ctxCons;
+    if (n instanceof FieldRefNode frn) {
+      return parameterize(frn, context);
     }
-
-    public HeapAbstractor heapAbstractor() {
-        return this.heapAbst;
+    if (n instanceof AllocNode an) {
+      return parameterize(an, context);
     }
-
-    public abstract Propagator getPropagator();
-
-    @Override
-    public Context createCalleeCtx(MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
-        return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
+    if (n instanceof FieldValNode fvn) {
+      return parameterize(fvn, context);
     }
-
-    public Context emptyContext() {
-        return CtxConstructor.emptyContext;
+    if (n instanceof GlobalVarNode gvn) {
+      return pag.makeContextVarNode(gvn, emptyContext());
     }
+    throw new RuntimeException("cannot parameterize this node: " + n);
+  }
 
-    @Override
-    public Node parameterize(Node n, Context context) {
-        if (context == null) {
-            throw new RuntimeException("null context!!!");
-        }
-        if (n instanceof LocalVarNode lvn) {
-            return parameterize(lvn, context);
-        }
-        if (n instanceof FieldRefNode frn) {
-            return parameterize(frn, context);
-        }
-        if (n instanceof AllocNode an) {
-            return parameterize(an, context);
-        }
-        if (n instanceof FieldValNode fvn) {
-            return parameterize(fvn, context);
-        }
-        if (n instanceof GlobalVarNode gvn) {
-            return pag.makeContextVarNode(gvn, emptyContext());
-        }
-        throw new RuntimeException("cannot parameterize this node: " + n);
+  public ContextField parameterize(FieldValNode fvn, Context context) {
+    Context ctx = ctxSel.select(fvn, context);
+    return pag.makeContextField(ctx, fvn);
+  }
 
-    }
+  protected ContextVarNode parameterize(LocalVarNode vn, Context context) {
+    Context ctx = ctxSel.select(vn, context);
+    return pag.makeContextVarNode(vn, ctx);
+  }
 
-    public ContextField parameterize(FieldValNode fvn, Context context) {
-        Context ctx = ctxSel.select(fvn, context);
-        return pag.makeContextField(ctx, fvn);
-    }
+  protected FieldRefNode parameterize(FieldRefNode frn, Context context) {
+    return pag.makeFieldRefNode((VarNode) parameterize(frn.getBase(), context), frn.getField());
+  }
 
-    protected ContextVarNode parameterize(LocalVarNode vn, Context context) {
-        Context ctx = ctxSel.select(vn, context);
-        return pag.makeContextVarNode(vn, ctx);
-    }
+  protected ContextAllocNode parameterize(AllocNode node, Context context) {
+    Context ctx = ctxSel.select(node, context);
+    return pag.makeContextAllocNode(node, ctx);
+  }
 
-    protected FieldRefNode parameterize(FieldRefNode frn, Context context) {
-        return pag.makeFieldRefNode((VarNode) parameterize(frn.getBase(), context), frn.getField());
-    }
+  /** Finds or creates the ContextMethod for method and context. */
+  @Override
+  public MethodOrMethodContext parameterize(SootMethod method, Context context) {
+    Context ctx = ctxSel.select(method, context);
+    return pag.makeContextMethod(ctx, method);
+  }
 
-    protected ContextAllocNode parameterize(AllocNode node, Context context) {
-        Context ctx = ctxSel.select(node, context);
-        return pag.makeContextAllocNode(node, ctx);
-    }
-
-    /**
-     * Finds or creates the ContextMethod for method and context.
-     */
-    @Override
-    public MethodOrMethodContext parameterize(SootMethod method, Context context) {
-        Context ctx = ctxSel.select(method, context);
-        return pag.makeContextMethod(ctx, method);
-    }
-
-    public AllocNode getRootNode() {
-        return rootNode;
-    }
+  public AllocNode getRootNode() {
+    return rootNode;
+  }
 }

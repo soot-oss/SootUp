@@ -23,35 +23,35 @@ import soot.MethodOrMethodContext;
 import sootup.core.model.SootMethod;
 
 public final class ContextMethod implements MethodOrMethodContext {
-    private final SootMethod method;
-    private final Context context;
+  private final SootMethod method;
+  private final Context context;
 
-    public SootMethod method() {
-        return this.method;
-    }
+  public SootMethod method() {
+    return this.method;
+  }
 
-    public Context context() {
-        return this.context;
-    }
+  public Context context() {
+    return this.context;
+  }
 
-    public ContextMethod(SootMethod method, Context context) {
-        this.method = method;
-        this.context = context;
-    }
+  public ContextMethod(SootMethod method, Context context) {
+    this.method = method;
+    this.context = context;
+  }
 
-    public int hashCode() {
-        return this.method.hashCode() + this.context.hashCode();
-    }
+  public int hashCode() {
+    return this.method.hashCode() + this.context.hashCode();
+  }
 
-    public boolean equals(Object o) {
-        if (!(o instanceof ContextMethod other)) {
-            return false;
-        } else {
-            return this.method.equals(other.method) && this.context.equals(other.context);
-        }
+  public boolean equals(Object o) {
+    if (!(o instanceof ContextMethod other)) {
+      return false;
+    } else {
+      return this.method.equals(other.method) && this.context.equals(other.context);
     }
+  }
 
-    public String toString() {
-        return "Method " + this.method + " in context " + this.context;
-    }
+  public String toString() {
+    return "Method " + this.method + " in context " + this.context;
+  }
 }

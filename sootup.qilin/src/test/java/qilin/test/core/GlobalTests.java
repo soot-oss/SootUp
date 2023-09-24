@@ -22,18 +22,18 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class GlobalTests extends JunitTests {
-    @Test
-    public void testStaticLoad() {
-        checkAssertions(run("qilin.microben.core.global.StaticLoad"));
-    }
+  @Test
+  public void testStaticLoad() {
+    checkAssertions(run("qilin.microben.core.global.StaticLoad"));
+  }
 
-    @Test
-    public void testStaticStore() {
-        checkAssertions(run("qilin.microben.core.global.StaticStore"));
-    }
+  @Test
+  public void testStaticStore() {
+    checkAssertions(run("qilin.microben.core.global.StaticStore"));
+  }
 
-    @Test
-    public void testStringConstant() {
-        checkAssertions(run("qilin.microben.core.global.StringConstant"));
-    }
+  @Test
+  public void testStringConstant() {
+    checkAssertions(run("qilin.microben.core.global.StringConstant"));
+  }
 }

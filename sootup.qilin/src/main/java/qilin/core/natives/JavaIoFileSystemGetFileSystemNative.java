@@ -23,21 +23,20 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootMethod;
 
 public class JavaIoFileSystemGetFileSystemNative extends NativeMethod {
-    public JavaIoFileSystemGetFileSystemNative(SootMethod method) {
-        super(method);
-    }
+  public JavaIoFileSystemGetFileSystemNative(SootMethod method) {
+    super(method);
+  }
 
-    /************************ java.io.FileSystem ***********************/
-    /**
-     * Returns a variable pointing to the file system constant
-     * <p>
-     * public static native java.io.FileSystem getFileSystem();
-     * only exists in old version of JDK(e.g., JDK6).
-     */
-    public void simulate() {
-        Local newLocal0 = getNew(PTAUtils.getClassType("java.io.UnixFileSystem"));
-        addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
-        addReturn(newLocal0);
-
-    }
+  /** ********************** java.io.FileSystem ********************** */
+  /**
+   * Returns a variable pointing to the file system constant
+   *
+   * <p>public static native java.io.FileSystem getFileSystem(); only exists in old version of
+   * JDK(e.g., JDK6).
+   */
+  protected void simulateImpl() {
+    Local newLocal0 = getNew(PTAUtils.getClassType("java.io.UnixFileSystem"));
+    addInvoke(newLocal0, "<java.io.UnixFileSystem: void <init>()>");
+    addReturn(newLocal0);
+  }
 }

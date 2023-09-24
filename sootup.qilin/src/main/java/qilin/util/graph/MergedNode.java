@@ -24,42 +24,42 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MergedNode<N> {
-    private Set<MergedNode<N>> preds;
-    private Set<MergedNode<N>> succs;
-    private final Set<N> content;
+  private Set<MergedNode<N>> preds;
+  private Set<MergedNode<N>> succs;
+  private final Set<N> content;
 
-    public MergedNode(final Collection<N> content) {
-        this.content = new HashSet<>(content);
-    }
+  public MergedNode(final Collection<N> content) {
+    this.content = new HashSet<>(content);
+  }
 
-    public void addPred(final MergedNode<N> pred) {
-        if (this.preds == null) {
-            this.preds = new HashSet<>(4);
-        }
-        this.preds.add(pred);
+  public void addPred(final MergedNode<N> pred) {
+    if (this.preds == null) {
+      this.preds = new HashSet<>(4);
     }
+    this.preds.add(pred);
+  }
 
-    public Set<MergedNode<N>> getPreds() {
-        return (this.preds == null) ? Collections.emptySet() : this.preds;
-    }
+  public Set<MergedNode<N>> getPreds() {
+    return (this.preds == null) ? Collections.emptySet() : this.preds;
+  }
 
-    public void addSucc(final MergedNode<N> succ) {
-        if (this.succs == null) {
-            this.succs = new HashSet<>(4);
-        }
-        this.succs.add(succ);
+  public void addSucc(final MergedNode<N> succ) {
+    if (this.succs == null) {
+      this.succs = new HashSet<>(4);
     }
+    this.succs.add(succ);
+  }
 
-    public Set<MergedNode<N>> getSuccs() {
-        return (this.succs == null) ? Collections.emptySet() : this.succs;
-    }
+  public Set<MergedNode<N>> getSuccs() {
+    return (this.succs == null) ? Collections.emptySet() : this.succs;
+  }
 
-    public Set<N> getContent() {
-        return this.content;
-    }
+  public Set<N> getContent() {
+    return this.content;
+  }
 
-    @Override
-    public String toString() {
-        return this.content.toString();
-    }
+  @Override
+  public String toString() {
+    return this.content.toString();
+  }
 }

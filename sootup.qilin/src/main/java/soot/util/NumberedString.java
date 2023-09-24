@@ -29,60 +29,60 @@ package soot.util;
  */
 public final class NumberedString implements Numberable {
 
-    private final String s;
-    private volatile int number;
+  private final String s;
+  private volatile int number;
 
-    public NumberedString(String s) {
-        this.s = s;
-    }
+  public NumberedString(String s) {
+    this.s = s;
+  }
 
-    @Override
-    public final void setNumber(int number) {
-        this.number = number;
-    }
+  @Override
+  public final void setNumber(int number) {
+    this.number = number;
+  }
 
-    @Override
-    public final int getNumber() {
-        return number;
-    }
+  @Override
+  public final int getNumber() {
+    return number;
+  }
 
-    @Override
-    public final String toString() {
-        return getString();
-    }
+  @Override
+  public final String toString() {
+    return getString();
+  }
 
-    public final String getString() {
-        if (number == 0) {
-            throw new RuntimeException("oops");
-        }
-        return s;
+  public final String getString() {
+    if (number == 0) {
+      throw new RuntimeException("oops");
     }
+    return s;
+  }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + number;
-        result = prime * result + ((s == null) ? 0 : s.hashCode());
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + number;
+    result = prime * result + ((s == null) ? 0 : s.hashCode());
+    return result;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || this.getClass() != obj.getClass()) {
-            return false;
-        }
-        NumberedString other = (NumberedString) obj;
-        if (this.number != other.number) {
-            return false;
-        }
-        if (this.s == null) {
-            return other.s == null;
-        } else {
-            return this.s.equals(other.s);
-        }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
+    if (obj == null || this.getClass() != obj.getClass()) {
+      return false;
+    }
+    NumberedString other = (NumberedString) obj;
+    if (this.number != other.number) {
+      return false;
+    }
+    if (this.s == null) {
+      return other.s == null;
+    } else {
+      return this.s.equals(other.s);
+    }
+  }
 }

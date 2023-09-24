@@ -21,39 +21,39 @@ package qilin.util.graph;
 import java.util.*;
 
 public class DirectedGraphImpl<N> implements DirectedGraph<N> {
-    protected Set<N> nodes;
-    protected Map<N, Set<N>> preds;
-    protected Map<N, Set<N>> succs;
+  protected Set<N> nodes;
+  protected Map<N, Set<N>> preds;
+  protected Map<N, Set<N>> succs;
 
-    public DirectedGraphImpl() {
-        this.nodes = new HashSet<>();
-        this.preds = new HashMap<>();
-        this.succs = new HashMap<>();
-    }
+  public DirectedGraphImpl() {
+    this.nodes = new HashSet<>();
+    this.preds = new HashMap<>();
+    this.succs = new HashMap<>();
+  }
 
-    public void addNode(final N node) {
-        this.nodes.add(node);
-    }
+  public void addNode(final N node) {
+    this.nodes.add(node);
+  }
 
-    public void addEdge(final N from, final N to) {
-        this.addNode(from);
-        this.addNode(to);
-        this.preds.computeIfAbsent(to, k -> new HashSet<>()).add(from);
-        this.succs.computeIfAbsent(from, k -> new HashSet<>()).add(to);
-    }
+  public void addEdge(final N from, final N to) {
+    this.addNode(from);
+    this.addNode(to);
+    this.preds.computeIfAbsent(to, k -> new HashSet<>()).add(from);
+    this.succs.computeIfAbsent(from, k -> new HashSet<>()).add(to);
+  }
 
-    @Override
-    public Collection<N> allNodes() {
-        return this.nodes;
-    }
+  @Override
+  public Collection<N> allNodes() {
+    return this.nodes;
+  }
 
-    @Override
-    public Collection<N> predsOf(final N n) {
-        return this.preds.getOrDefault(n, Collections.emptySet());
-    }
+  @Override
+  public Collection<N> predsOf(final N n) {
+    return this.preds.getOrDefault(n, Collections.emptySet());
+  }
 
-    @Override
-    public Collection<N> succsOf(final N n) {
-        return this.succs.getOrDefault(n, Collections.emptySet());
-    }
+  @Override
+  public Collection<N> succsOf(final N n) {
+    return this.succs.getOrDefault(n, Collections.emptySet());
+  }
 }

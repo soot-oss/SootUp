@@ -19,5 +19,5 @@
 package qilin.test.util;
 
 public interface IAssertion {
-    boolean check();
+  boolean check();
 }

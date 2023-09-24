@@ -24,79 +24,70 @@ import qilin.core.pag.Node;
  * This is the path edge defined as the standard in IFDS algorithm.
  * */
 public class PathEdge {
-    final Node srcNode;
-    final DFA.State srcState;
-    final Node tgtNode;
-    final DFA.State tgtState;
-    final int hashCode;
+  final Node srcNode;
+  final DFA.State srcState;
+  final Node tgtNode;
+  final DFA.State tgtState;
+  final int hashCode;
 
-    public PathEdge(Node srcNode, DFA.State srcState, Node tgtNode, DFA.State tgtState) {
-        this.srcNode = srcNode;
-        this.srcState = srcState;
-        this.tgtNode = tgtNode;
-        this.tgtState = tgtState;
+  public PathEdge(Node srcNode, DFA.State srcState, Node tgtNode, DFA.State tgtState) {
+    this.srcNode = srcNode;
+    this.srcState = srcState;
+    this.tgtNode = tgtNode;
+    this.tgtState = tgtState;
 
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((srcNode == null) ? 0 : srcNode.hashCode());
-        result = prime * result + ((srcState == null) ? 0 : srcState.hashCode());
-        result = prime * result + ((tgtNode == null) ? 0 : tgtNode.hashCode());
-        result = prime * result + ((tgtState == null) ? 0 : tgtState.hashCode());
-        this.hashCode = result;
-    }
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((srcNode == null) ? 0 : srcNode.hashCode());
+    result = prime * result + ((srcState == null) ? 0 : srcState.hashCode());
+    result = prime * result + ((tgtNode == null) ? 0 : tgtNode.hashCode());
+    result = prime * result + ((tgtState == null) ? 0 : tgtState.hashCode());
+    this.hashCode = result;
+  }
 
-    public Node getSrcNode() {
-        return srcNode;
-    }
+  public Node getSrcNode() {
+    return srcNode;
+  }
 
-    public DFA.State getSrcState() {
-        return srcState;
-    }
+  public DFA.State getSrcState() {
+    return srcState;
+  }
 
-    public Node getTgtNode() {
-        return tgtNode;
-    }
+  public Node getTgtNode() {
+    return tgtNode;
+  }
 
-    public DFA.State getTgtState() {
-        return tgtState;
-    }
+  public DFA.State getTgtState() {
+    return tgtState;
+  }
 
-    @Override
-    public int hashCode() {
-        return hashCode;
-    }
+  @Override
+  public int hashCode() {
+    return hashCode;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        PathEdge other = (PathEdge) obj;
-        if (srcNode == null) {
-            if (other.srcNode != null)
-                return false;
-        } else if (!srcNode.equals(other.srcNode))
-            return false;
-        if (tgtNode == null) {
-            if (other.tgtNode != null)
-                return false;
-        } else if (!tgtNode.equals(other.tgtNode))
-            return false;
-        if (srcState == null) {
-            if (other.srcState != null)
-                return false;
-        } else if (!srcState.equals(other.srcState))
-            return false;
-        if (tgtState == null) {
-            return other.tgtState == null;
-        } else return tgtState.equals(other.tgtState);
-    }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    PathEdge other = (PathEdge) obj;
+    if (srcNode == null) {
+      if (other.srcNode != null) return false;
+    } else if (!srcNode.equals(other.srcNode)) return false;
+    if (tgtNode == null) {
+      if (other.tgtNode != null) return false;
+    } else if (!tgtNode.equals(other.tgtNode)) return false;
+    if (srcState == null) {
+      if (other.srcState != null) return false;
+    } else if (!srcState.equals(other.srcState)) return false;
+    if (tgtState == null) {
+      return other.tgtState == null;
+    } else return tgtState.equals(other.tgtState);
+  }
 
-    @Override
-    public String toString() {
-        return "(" + srcNode + "," + srcState + ")\n\t" + "-->" + "(" + tgtNode + "," + tgtState + ")";
-    }
+  @Override
+  public String toString() {
+    return "(" + srcNode + "," + srcState + ")\n\t" + "-->" + "(" + tgtNode + "," + tgtState + ")";
+  }
 }

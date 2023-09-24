@@ -31,21 +31,25 @@ import sootup.core.model.SootMethod;
 // implementation of type context...(Yannis popl'11)
 public class TypeCtxConstructor implements CtxConstructor {
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        Context callerContext = caller.context();
-        if (receiverNode == null) { // static invoke
-            return callerContext;
-        }
-        Context context = receiverNode.context();
-        assert context instanceof ContextElements;
-        ContextElements ctxElems = (ContextElements) context;
-        int s = ctxElems.size();
-        ContextElement[] cxtAllocs = ctxElems.getElements();
-        ContextElement[] array = new ContextElement[s + 1];
-        AllocNode base = receiverNode.base();
-        array[0] = TypeContextElement.getTypeContextElement(base);
-        System.arraycopy(cxtAllocs, 0, array, 1, s);
-        return new ContextElements(array, s + 1);
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    Context callerContext = caller.context();
+    if (receiverNode == null) { // static invoke
+      return callerContext;
     }
+    Context context = receiverNode.context();
+    assert context instanceof ContextElements;
+    ContextElements ctxElems = (ContextElements) context;
+    int s = ctxElems.size();
+    ContextElement[] cxtAllocs = ctxElems.getElements();
+    ContextElement[] array = new ContextElement[s + 1];
+    AllocNode base = receiverNode.base();
+    array[0] = TypeContextElement.getTypeContextElement(base);
+    System.arraycopy(cxtAllocs, 0, array, 1, s);
+    return new ContextElements(array, s + 1);
+  }
 }

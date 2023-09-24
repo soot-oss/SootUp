@@ -18,27 +18,32 @@
 
 package qilin.core.natives;
 
+import java.util.Collections;
 import qilin.core.ArtificialMethod;
+import qilin.core.PTAScene;
+import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
-import java.util.Collections;
-
 public abstract class NativeMethod extends ArtificialMethod {
-    NativeMethod(SootMethod method) {
-        this.method = method;
-        if (method.isConcrete()) {
-            Body body = method.getBody();
-            this.bodyBuilder = Body.builder(body, Collections.emptySet());
-        } else {
-            this.bodyBuilder = Body.builder();
-        }
-        int paraCount = method.getParameterCount();
-        paraLocals = new Local[paraCount];
-        this.paraStart = method.isStatic() ? 0 : 1;
-        this.localStart = this.paraStart + paraCount;
-    }
+  NativeMethod(SootMethod method) {
+    super(PTAScene.v().getView());
+    this.method = method;
+    Body body = PTAUtils.getMethodBody(method);
+    this.bodyBuilder = Body.builder(body, Collections.emptySet());
+    int paraCount = method.getParameterCount();
+    paraLocals = new Local[paraCount];
+    this.paraStart = method.isStatic() ? 0 : 1;
+    this.localStart = this.paraStart + paraCount;
+  }
 
-    abstract void simulate();
+  protected abstract void simulateImpl();
+
+  public void simulate() {
+    simulateImpl();
+    bodyBuilder.getStmtGraph().addBlock(stmtList);
+    bodyBuilder.getStmtGraph().setStartingStmt(stmtList.get(0));
+    PTAUtils.updateMethodBody(method, bodyBuilder.build());
+  }
 }

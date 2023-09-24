@@ -18,53 +18,52 @@
 
 package qilin.pta.toolkits.conch;
 
-import qilin.core.pag.Node;
-
 import java.util.Objects;
+import qilin.core.pag.Node;
 
 /*
  * Transition edges used in define our DFAs.
  * */
 public class TranEdge {
-    private final Node src;
-    private final Node dst;
-    private final DFA.TranCond tranCond;
+  private final Node src;
+  private final Node dst;
+  private final DFA.TranCond tranCond;
 
-    public TranEdge(Node s, Node d, DFA.TranCond tran) {
-        this.src = s;
-        this.dst = d;
-        this.tranCond = tran;
-    }
+  public TranEdge(Node s, Node d, DFA.TranCond tran) {
+    this.src = s;
+    this.dst = d;
+    this.tranCond = tran;
+  }
 
-    public Node getSource() {
-        return src;
-    }
+  public Node getSource() {
+    return src;
+  }
 
-    public Node getTarget() {
-        return dst;
-    }
+  public Node getTarget() {
+    return dst;
+  }
 
-    public DFA.TranCond getTranCond() {
-        return tranCond;
-    }
+  public DFA.TranCond getTranCond() {
+    return tranCond;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TranEdge tranEdge = (TranEdge) o;
-        return Objects.equals(src, tranEdge.src) &&
-                Objects.equals(dst, tranEdge.dst) &&
-                tranCond == tranEdge.tranCond;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TranEdge tranEdge = (TranEdge) o;
+    return Objects.equals(src, tranEdge.src)
+        && Objects.equals(dst, tranEdge.dst)
+        && tranCond == tranEdge.tranCond;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(src, dst, tranCond);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(src, dst, tranCond);
+  }
 
-    @Override
-    public String toString() {
-        return src + "\n\t--" + tranCond + "-->\n\t" + dst;
-    }
+  @Override
+  public String toString() {
+    return src + "\n\t--" + tranCond + "-->\n\t" + dst;
+  }
 }

@@ -29,55 +29,45 @@ import sootup.core.model.SootField;
  *
  * @author Ondrej Lhotak
  */
-
 public interface PointsToAnalysis {
 
-    int THIS_NODE = -1;
-    int RETURN_NODE = -2;
-    int THROW_NODE = -3;
-    String STRING_NODE = "STRING_NODE";
-    String EXCEPTION_NODE = "EXCEPTION_NODE";
-    String MAIN_THREAD_GROUP_NODE_LOCAL = "MAIN_THREAD_GROUP_NODE_LOCAL";
+  int THIS_NODE = -1;
+  int RETURN_NODE = -2;
+  int THROW_NODE = -3;
+  String STRING_NODE = "STRING_NODE";
+  String EXCEPTION_NODE = "EXCEPTION_NODE";
+  String MAIN_THREAD_GROUP_NODE_LOCAL = "MAIN_THREAD_GROUP_NODE_LOCAL";
 
-    /**
-     * Returns the set of objects pointed to by variable l.
-     */
-    PointsToSet reachingObjects(Local l);
+  /** Returns the set of objects pointed to by variable l. */
+  PointsToSet reachingObjects(Local l);
 
-    PointsToSet reachingObjects(Node n);
+  PointsToSet reachingObjects(Node n);
 
-    /**
-     * Returns the set of objects pointed to by variable l in context c.
-     */
-    PointsToSet reachingObjects(Context c, Local l);
+  /** Returns the set of objects pointed to by variable l in context c. */
+  PointsToSet reachingObjects(Context c, Local l);
 
-    /**
-     * Returns the set of objects pointed to by static field f.
-     */
-    PointsToSet reachingObjects(SootField f);
+  /** Returns the set of objects pointed to by static field f. */
+  PointsToSet reachingObjects(SootField f);
 
-    /**
-     * Returns the set of objects pointed to by instance field f of the objects in the PointsToSet s.
-     */
-    PointsToSet reachingObjects(PointsToSet s, SootField f);
+  /**
+   * Returns the set of objects pointed to by instance field f of the objects in the PointsToSet s.
+   */
+  PointsToSet reachingObjects(PointsToSet s, SootField f);
 
-    /**
-     * Returns the set of objects pointed to by instance field f of the objects pointed to by l.
-     */
-    PointsToSet reachingObjects(Local l, SootField f);
+  /** Returns the set of objects pointed to by instance field f of the objects pointed to by l. */
+  PointsToSet reachingObjects(Local l, SootField f);
 
-    /**
-     * Returns the set of objects pointed to by instance field f of the objects pointed to by l in context c.
-     */
-    PointsToSet reachingObjects(Context c, Local l, SootField f);
+  /**
+   * Returns the set of objects pointed to by instance field f of the objects pointed to by l in
+   * context c.
+   */
+  PointsToSet reachingObjects(Context c, Local l, SootField f);
 
-    /**
-     * Returns the set of objects pointed to by elements of the arrays in the PointsToSet s.
-     */
-    PointsToSet reachingObjectsOfArrayElement(PointsToSet s);
+  /** Returns the set of objects pointed to by elements of the arrays in the PointsToSet s. */
+  PointsToSet reachingObjectsOfArrayElement(PointsToSet s);
 
-    /*
-     * Return true if l1 and l2 are aliases.
-     * */
-    boolean mayAlias(Local l1, Local l2);
+  /*
+   * Return true if l1 and l2 are aliases.
+   * */
+  boolean mayAlias(Local l1, Local l2);
 }

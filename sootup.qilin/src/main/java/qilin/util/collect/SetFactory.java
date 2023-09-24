@@ -23,16 +23,16 @@ import java.util.Map;
 import java.util.Set;
 
 public class SetFactory<T> {
-    private final Map<Set<T>, Set<T>> sets;
+  private final Map<Set<T>, Set<T>> sets;
 
-    public SetFactory() {
-        this.sets = new HashMap<>();
-    }
+  public SetFactory() {
+    this.sets = new HashMap<>();
+  }
 
-    public Set<T> get(final Set<T> set) {
-        if (!this.sets.containsKey(set)) {
-            this.sets.put(set, set);
-        }
-        return this.sets.get(set);
+  public Set<T> get(final Set<T> set) {
+    if (!this.sets.containsKey(set)) {
+      this.sets.put(set, set);
     }
+    return this.sets.get(set);
+  }
 }

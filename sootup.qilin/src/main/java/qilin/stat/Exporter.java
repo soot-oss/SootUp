@@ -18,6 +18,11 @@
 
 package qilin.stat;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
@@ -36,262 +41,269 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-
 public class Exporter {
-    private final String metrics = "Metrics.csv";
-    private final String staticFPTs = "StaticFieldPointsTo.csv";
+  private final String metrics = "Metrics.csv";
+  private final String staticFPTs = "StaticFieldPointsTo.csv";
 
-    private static final int STATLENGTH = 50;
-    private final StringBuffer report = new StringBuffer();
+  private static final int STATLENGTH = 50;
+  private final StringBuffer report = new StringBuffer();
 
-    public void addLine(String str) {
-        report.append(str).append('\n');
+  public void addLine(String str) {
+    report.append(str).append('\n');
+  }
+
+  private String makeUp(String string) {
+    final String makeUpString = " ";
+    String tmp = "";
+    for (int i = 0; i < Math.max(0, STATLENGTH - string.length()); ++i) {
+      tmp = tmp.concat(makeUpString);
     }
+    //        StringBuilder ret = new StringBuilder();
+    //        ret.append(makeUpString.repeat(Math.max(0, STATLENGTH - string.length())));
+    return string + tmp;
+  }
 
-    private String makeUp(String string) {
-        final String makeUpString = " ";
-        String tmp = "";
-        for (int i = 0; i < Math.max(0, STATLENGTH - string.length()); ++i) {
-            tmp = tmp.concat(makeUpString);
-        }
-//        StringBuilder ret = new StringBuilder();
-//        ret.append(makeUpString.repeat(Math.max(0, STATLENGTH - string.length())));
-        return string + tmp;
+  public void collectMetric(String desc, String value) {
+    addLine(makeUp(desc) + value);
+  }
+
+  private String getFilePath(String fileName) {
+    String finalPath = CoreConfig.v().getOutConfig().outDir;
+    finalPath =
+        finalPath
+            + File.separator
+            + CoreConfig.v().getAppConfig().MAIN_CLASS
+            + File.separator
+            + CoreConfig.v().getPtaConfig().ptaName
+            + File.separator;
+    File file = new File(finalPath);
+    if (!file.exists()) {
+      file.mkdirs();
     }
+    finalPath = finalPath + fileName;
+    return finalPath;
+  }
 
-    public void collectMetric(String desc, String value) {
-        addLine(makeUp(desc) + value);
+  private void dumpMethods(Collection<SootMethod> methods, String fileName) {
+    StringBuilder builder = new StringBuilder();
+    for (SootMethod sm : methods) {
+      String sig = sm.getSignature().toString();
+      sig = Util.stripQuotes(sig);
+      builder.append(sig);
+      builder.append("\n");
     }
+    String finalPath = getFilePath(fileName);
+    Util.writeToFile(finalPath, builder.toString());
+  }
 
-    private String getFilePath(String fileName) {
-        String finalPath = CoreConfig.v().getOutConfig().outDir;
-        finalPath = finalPath + File.separator + CoreConfig.v().getAppConfig().MAIN_CLASS + File.separator + CoreConfig.v().getPtaConfig().ptaName + File.separator;
-        File file = new File(finalPath);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        finalPath = finalPath + fileName;
-        return finalPath;
+  public void dumpReachableMethods(Collection<SootMethod> reachables) {
+    String reachMethods = "Reachable.csv";
+    dumpMethods(reachables, reachMethods);
+  }
+
+  public void dumpAppReachableMethods(Collection<SootMethod> appReachables) {
+    String appReachMethods = "AppReachable.csv";
+    dumpMethods(appReachables, appReachMethods);
+  }
+
+  public void dumpSingleCallMethods(Collection<SootMethod> singleCallMs) {
+    String singleCalls = "SingleCallMethods.csv";
+    dumpMethods(singleCallMs, singleCalls);
+  }
+
+  public void dumpSingleReceiverMethods(Collection<SootMethod> singleReceiverMs) {
+    String singleReceivers = "SingleReceiverMethods.csv";
+    dumpMethods(singleReceiverMs, singleReceivers);
+  }
+
+  public void dumpSingleCallSingleReceiverMethods(
+      Collection<SootMethod> singleCallSingleReceiverMs) {
+    String singleCallSingleReceivers = "SingleCallSingleReceiverMethods.csv";
+    dumpMethods(singleCallSingleReceiverMs, singleCallSingleReceivers);
+  }
+
+  public void dumpClassTypes(Collection<SootClass> classes) {
+    StringBuilder builder = new StringBuilder();
+    for (SootClass sc : classes) {
+      builder.append(sc.getName());
+      builder.append("\n");
     }
+    String classTypes = "ClassType.csv";
+    String finalPath = getFilePath(classTypes);
+    Util.writeToFile(finalPath, builder.toString());
+  }
 
-    private void dumpMethods(Collection<SootMethod> methods, String fileName) {
-        StringBuilder builder = new StringBuilder();
-        for (SootMethod sm : methods) {
-            String sig = sm.getSignature().toString();
-            sig = Util.stripQuotes(sig);
-            builder.append(sig);
-            builder.append("\n");
-        }
-        String finalPath = getFilePath(fileName);
-        Util.writeToFile(finalPath, builder.toString());
+  public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
+    StringBuilder builder = new StringBuilder();
+    for (AbstractInvokeExpr ie : polys.keySet()) {
+      SootMethod tgt = (SootMethod) PTAScene.v().getView().getMethod(ie.getMethodSignature()).get();
+      String polySig =
+          polys.get(ie).getSignature()
+              + "/"
+              + tgt.getDeclaringClassType()
+              + "."
+              + tgt.getName()
+              + "\n";
+      builder.append(polySig);
     }
+    String polyCalls = "PolyCalls.csv";
+    String finalPath = getFilePath(polyCalls);
+    Util.writeToFile(finalPath, builder.toString());
+  }
 
-    public void dumpReachableMethods(Collection<SootMethod> reachables) {
-        String reachMethods = "Reachable.csv";
-        dumpMethods(reachables, reachMethods);
+  public void dumpMayFailCasts(Map<SootMethod, Set<Stmt>> casts) {
+    StringBuilder builder = new StringBuilder();
+    for (SootMethod sm : casts.keySet()) {
+      for (Stmt stmt : casts.get(sm)) {
+        JAssignStmt as = (JAssignStmt) stmt;
+        JCastExpr ce = (JCastExpr) as.getRightOp();
+        final Type targetType = ce.getType();
+        builder.append(sm.toString());
+        builder.append("\t");
+        builder.append(targetType.toString());
+        builder.append("\t");
+        builder.append(sm).append("/").append(ce.getOp().toString());
+        builder.append("\t");
+        builder.append(sm).append("/").append(as.getLeftOp().toString());
+        builder.append("\n");
+      }
     }
+    String mayFailCasts = "MayFailCasts.csv";
+    String finalPath = getFilePath(mayFailCasts);
+    Util.writeToFile(finalPath, builder.toString());
+  }
 
-    public void dumpAppReachableMethods(Collection<SootMethod> appReachables) {
-        String appReachMethods = "AppReachable.csv";
-        dumpMethods(appReachables, appReachMethods);
-    }
-
-    public void dumpSingleCallMethods(Collection<SootMethod> singleCallMs) {
-        String singleCalls = "SingleCallMethods.csv";
-        dumpMethods(singleCallMs, singleCalls);
-    }
-
-    public void dumpSingleReceiverMethods(Collection<SootMethod> singleReceiverMs) {
-        String singleReceivers = "SingleReceiverMethods.csv";
-        dumpMethods(singleReceiverMs, singleReceivers);
-    }
-
-    public void dumpSingleCallSingleReceiverMethods(Collection<SootMethod> singleCallSingleReceiverMs) {
-        String singleCallSingleReceivers = "SingleCallSingleReceiverMethods.csv";
-        dumpMethods(singleCallSingleReceiverMs, singleCallSingleReceivers);
-    }
-
-    public void dumpClassTypes(Collection<SootClass> classes) {
-        StringBuilder builder = new StringBuilder();
-        for (SootClass sc : classes) {
-            builder.append(sc.getName());
-            builder.append("\n");
-        }
-        String classTypes = "ClassType.csv";
-        String finalPath = getFilePath(classTypes);
-        Util.writeToFile(finalPath, builder.toString());
-    }
-
-    public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
-        StringBuilder builder = new StringBuilder();
-        for (AbstractInvokeExpr ie : polys.keySet()) {
-            SootMethod tgt = (SootMethod) PTAScene.v().getView().getMethod(ie.getMethodSignature()).get();
-            String polySig = polys.get(ie).getSignature() + "/" + tgt.getDeclaringClassType() + "." + tgt.getName() + "\n";
-            builder.append(polySig);
-        }
-        String polyCalls = "PolyCalls.csv";
-        String finalPath = getFilePath(polyCalls);
-        Util.writeToFile(finalPath, builder.toString());
-    }
-
-    public void dumpMayFailCasts(Map<SootMethod, Set<Stmt>> casts) {
-        StringBuilder builder = new StringBuilder();
-        for (SootMethod sm : casts.keySet()) {
-            for (Stmt stmt : casts.get(sm)) {
-                JAssignStmt as = (JAssignStmt) stmt;
-                JCastExpr ce = (JCastExpr) as.getRightOp();
-                final Type targetType = ce.getType();
-                builder.append(sm.toString());
-                builder.append("\t");
-                builder.append(targetType.toString());
-                builder.append("\t");
-                builder.append(sm).append("/").append(ce.getOp().toString());
-                builder.append("\t");
-                builder.append(sm).append("/").append(as.getLeftOp().toString());
-                builder.append("\n");
-            }
-        }
-        String mayFailCasts = "MayFailCasts.csv";
-        String finalPath = getFilePath(mayFailCasts);
-        Util.writeToFile(finalPath, builder.toString());
-    }
-
-    public void dumpMethodThrowPointsto(Map<SootMethod, PointsToSet> m2pts) {
-        String methodThrowPts = "MethodThrowPointsTo.csv";
-        String finalPath = getFilePath(methodThrowPts);
-        try {
-            File mfile = new File(finalPath);
-            mfile.delete();
-            mfile.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-            for (SootMethod sm : m2pts.keySet()) {
-                PointsToSet pts = m2pts.get(sm).toCIPointsToSet();
-                for (Iterator<AllocNode> it = pts.iterator(); it.hasNext(); ) {
-                    AllocNode n = it.next();
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(n.toString());
-                    builder.append("\t");
-                    String sig = Util.stripQuotes(sm.getSignature().toString());
-                    builder.append(sig);
-                    builder.append("\n");
-                    try {
-                        writer.write(builder.toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
+  public void dumpMethodThrowPointsto(Map<SootMethod, PointsToSet> m2pts) {
+    String methodThrowPts = "MethodThrowPointsTo.csv";
+    String finalPath = getFilePath(methodThrowPts);
+    try {
+      File mfile = new File(finalPath);
+      mfile.delete();
+      mfile.createNewFile();
+      BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
+      for (SootMethod sm : m2pts.keySet()) {
+        PointsToSet pts = m2pts.get(sm).toCIPointsToSet();
+        for (Iterator<AllocNode> it = pts.iterator(); it.hasNext(); ) {
+          AllocNode n = it.next();
+          StringBuilder builder = new StringBuilder();
+          builder.append(n.toString());
+          builder.append("\t");
+          String sig = Util.stripQuotes(sm.getSignature().toString());
+          builder.append(sig);
+          builder.append("\n");
+          try {
+            writer.write(builder.toString());
+          } catch (IOException e) {
             e.printStackTrace();
+          }
         }
+      }
+      writer.flush();
+      writer.close();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    public void dumpInsensCallGraph(CallGraph ciCallGraph) {
-        String insensCallGraphEdges = "InsensCallGraphEdges.csv";
-        String finalPath = getFilePath(insensCallGraphEdges);
-        try {
-            File mfile = new File(finalPath);
-            mfile.delete();
-            mfile.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-            for (Edge edge : ciCallGraph) {
-                String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
-                String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
-                String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
-                writer.write(str);
-            }
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+  public void dumpInsensCallGraph(CallGraph ciCallGraph) {
+    String insensCallGraphEdges = "InsensCallGraphEdges.csv";
+    String finalPath = getFilePath(insensCallGraphEdges);
+    try {
+      File mfile = new File(finalPath);
+      mfile.delete();
+      mfile.createNewFile();
+      BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
+      for (Edge edge : ciCallGraph) {
+        String srcSig = Util.stripQuotes(edge.src().getSignature().toString());
+        String dstSig = Util.stripQuotes(edge.tgt().getSignature().toString());
+        String str = edge.srcStmt() + " in method " + srcSig + "\t" + dstSig + "\n";
+        writer.write(str);
+      }
+      writer.flush();
+      writer.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void dumpReachableLocalVars(Collection<LocalVarNode> lvns) {
+    StringBuilder builder = new StringBuilder();
+    for (LocalVarNode lvn : lvns) {
+      String varName = getDoopVarName(lvn);
+      builder.append(varName).append("\n");
+    }
+    String insensReachVars = "InsensReachVars.csv";
+    String finalPath = getFilePath(insensReachVars);
+    Util.writeToFile(finalPath, builder.toString());
+  }
+
+  public void dumpReachableLocalVarsNoNative(Collection<LocalVarNode> lvns) {
+    StringBuilder builder = new StringBuilder();
+    for (LocalVarNode lvn : lvns) {
+      String varName = getDoopVarName(lvn);
+      builder.append(varName).append("\n");
+    }
+    String insensReachVars = "InsensReachVarsNoNatives.csv";
+    String finalPath = getFilePath(insensReachVars);
+    Util.writeToFile(finalPath, builder.toString());
+  }
+
+  private String getDoopVarName(LocalVarNode lvn) {
+    SootMethod m = lvn.getMethod();
+    Object v = lvn.getVariable();
+    String varName = v.toString();
+    if (v instanceof Parm parm) {
+      if (parm.isThis()) {
+        varName = "@this";
+      } else if (parm.isReturn()) {
+
+      } else if (parm.isThrowRet()) {
+
+      } else {
+        varName = "@parameter" + parm.getIndex();
+      }
+    }
+    return m.getSignature() + "/" + varName;
+  }
+
+  public void dumpInsensPointsTo(Collection<LocalVarNode> lvns, PTA pta) {
+    String insensVarPTs = "InsensVarPointsTo.csv";
+    String finalPath = getFilePath(insensVarPTs);
+    try {
+      File mfile = new File(finalPath);
+      mfile.delete();
+      mfile.createNewFile();
+      BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
+      for (LocalVarNode lvn : lvns) {
+        String varName = getDoopVarName(lvn);
+        final Set<AllocNode> callocSites = new HashSet<>();
+        PointsToSet cpts = pta.reachingObjects(lvn).toCIPointsToSet();
+        for (Iterator<AllocNode> it = cpts.iterator(); it.hasNext(); ) {
+          AllocNode heap = it.next();
+          callocSites.add(heap);
         }
-    }
-
-    public void dumpReachableLocalVars(Collection<LocalVarNode> lvns) {
-        StringBuilder builder = new StringBuilder();
-        for (LocalVarNode lvn : lvns) {
-            String varName = getDoopVarName(lvn);
-            builder.append(varName).append("\n");
+        for (AllocNode heap : callocSites) {
+          String str = heap.getNewExpr() + "\t" + varName + "\n";
+          if (heap.getMethod() != null) {
+            str = heap.getMethod() + "/" + heap.getNewExpr() + "\t" + varName + "\n";
+          }
+          writer.write(str);
         }
-        String insensReachVars = "InsensReachVars.csv";
-        String finalPath = getFilePath(insensReachVars);
-        Util.writeToFile(finalPath, builder.toString());
+      }
+      writer.flush();
+      writer.close();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    public void dumpReachableLocalVarsNoNative(Collection<LocalVarNode> lvns) {
-        StringBuilder builder = new StringBuilder();
-        for (LocalVarNode lvn : lvns) {
-            String varName = getDoopVarName(lvn);
-            builder.append(varName).append("\n");
-        }
-        String insensReachVars = "InsensReachVarsNoNatives.csv";
-        String finalPath = getFilePath(insensReachVars);
-        Util.writeToFile(finalPath, builder.toString());
+  public String report() {
+    String tmp = report.toString();
+    if (CoreConfig.v().getOutConfig().dumpStats) {
+      String statistics = "Statistics.txt";
+      String finalPath = getFilePath(statistics);
+      Util.writeToFile(finalPath, tmp);
     }
-
-    private String getDoopVarName(LocalVarNode lvn) {
-        SootMethod m = lvn.getMethod();
-        Object v = lvn.getVariable();
-        String varName = v.toString();
-        if (v instanceof Parm parm) {
-            if (parm.isThis()) {
-                varName = "@this";
-            } else if (parm.isReturn()) {
-
-            } else if (parm.isThrowRet()) {
-
-            } else {
-                varName = "@parameter" + parm.getIndex();
-            }
-        }
-        return m.getSignature() + "/" + varName;
-    }
-
-    public void dumpInsensPointsTo(Collection<LocalVarNode> lvns, PTA pta) {
-        String insensVarPTs = "InsensVarPointsTo.csv";
-        String finalPath = getFilePath(insensVarPTs);
-        try {
-            File mfile = new File(finalPath);
-            mfile.delete();
-            mfile.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(mfile, true));
-            for (LocalVarNode lvn : lvns) {
-                String varName = getDoopVarName(lvn);
-                final Set<AllocNode> callocSites = new HashSet<>();
-                PointsToSet cpts = pta.reachingObjects(lvn).toCIPointsToSet();
-                for (Iterator<AllocNode> it = cpts.iterator(); it.hasNext(); ) {
-                    AllocNode heap = it.next();
-                    callocSites.add(heap);
-                }
-                for (AllocNode heap : callocSites) {
-                    String str = heap.getNewExpr() + "\t" + varName + "\n";
-                    if (heap.getMethod() != null) {
-                        str = heap.getMethod() + "/" + heap.getNewExpr() + "\t" + varName + "\n";
-                    }
-                    writer.write(str);
-                }
-            }
-            writer.flush();
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String report() {
-        String tmp = report.toString();
-        if (CoreConfig.v().getOutConfig().dumpStats) {
-            String statistics = "Statistics.txt";
-            String finalPath = getFilePath(statistics);
-            Util.writeToFile(finalPath, tmp);
-        }
-        return tmp;
-    }
+    return tmp;
+  }
 }

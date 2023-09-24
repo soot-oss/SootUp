@@ -22,7 +22,6 @@ package qilin.core.pag;
  * #L%
  */
 
-import soot.util.Numberable;
 import sootup.core.types.Type;
 
 /**
@@ -30,8 +29,7 @@ import sootup.core.types.Type;
  *
  * @author Ondrej Lhotak
  */
-//public interface SparkField extends Numberable {
+// public interface SparkField extends Numberable {
 public interface SparkField {
-    public Type getType();
+  public Type getType();
 }
-

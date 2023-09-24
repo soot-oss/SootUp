@@ -27,15 +27,15 @@ import sootup.core.jimple.common.constant.ClassConstant;
  * @author Ondrej Lhotak
  */
 public class ClassConstantNode extends ConstantNode {
-    public ClassConstantNode(ClassConstant cc) {
-        super(cc, PTAUtils.getClassType("java.lang.Class"), null);
-    }
+  public ClassConstantNode(ClassConstant cc) {
+    super(cc, PTAUtils.getClassType("java.lang.Class"), null);
+  }
 
-    public String toString() {
-        return "ClassConstantNode " + getNumber() + " " + newExpr;
-    }
+  public String toString() {
+    return "ClassConstantNode " + getNumber() + " " + newExpr;
+  }
 
-    public ClassConstant getClassConstant() {
-        return (ClassConstant) newExpr;
-    }
+  public ClassConstant getClassConstant() {
+    return (ClassConstant) newExpr;
+  }
 }

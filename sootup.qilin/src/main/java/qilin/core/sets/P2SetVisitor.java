@@ -27,22 +27,21 @@ import qilin.core.pag.Node;
  * @author Ondrej Lhotak
  */
 public abstract class P2SetVisitor {
-    protected boolean returnValue = false;
-    protected final PTA pta;
+  protected boolean returnValue = false;
+  protected final PTA pta;
 
-    protected P2SetVisitor(PTA pta) {
-        this.pta = pta;
-    }
+  protected P2SetVisitor(PTA pta) {
+    this.pta = pta;
+  }
 
+  protected abstract void visit(Node n);
 
-    protected abstract void visit(Node n);
+  public void visit(long idx) {
+    Node node = pta.getPag().getAllocNodeNumberer().get(idx);
+    visit(node);
+  }
 
-    public void visit(long idx) {
-        Node node = pta.getPag().getAllocNodeNumberer().get(idx);
-        visit(node);
-    }
-
-    public boolean getReturnValue() {
-        return returnValue;
-    }
+  public boolean getReturnValue() {
+    return returnValue;
+  }
 }

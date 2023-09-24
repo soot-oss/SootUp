@@ -25,15 +25,15 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
 public class JavaLangThreadCurrentThread extends NativeMethod {
-    JavaLangThreadCurrentThread(SootMethod method) {
-        super(method);
-    }
+  JavaLangThreadCurrentThread(SootMethod method) {
+    super(method);
+  }
 
-    @Override
-    void simulate() {
-        Local lv = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
-        Value rv = PTAScene.v().getFieldCurrentThread();
-        addAssign(lv, rv);
-        addReturn(lv);
-    }
+  @Override
+  protected void simulateImpl() {
+    Local lv = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
+    Value rv = PTAScene.v().getFieldCurrentThread();
+    addAssign(lv, rv);
+    addReturn(lv);
+  }
 }

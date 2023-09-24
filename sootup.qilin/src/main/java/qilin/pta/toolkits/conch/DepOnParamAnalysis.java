@@ -18,6 +18,11 @@
 
 package qilin.pta.toolkits.conch;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
@@ -26,12 +31,6 @@ import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * It try to answer where the value of a variable comes from.
@@ -44,116 +43,117 @@ import java.util.concurrent.ConcurrentHashMap;
  * */
 
 public class DepOnParamAnalysis extends AbstractPAG {
-    private final Map<Node, Set<Node>> pathEdges = new ConcurrentHashMap<>();
-    private final Set<Node> initialSeeds = ConcurrentHashMap.newKeySet();
+  private final Map<Node, Set<Node>> pathEdges = new ConcurrentHashMap<>();
+  private final Set<Node> initialSeeds = ConcurrentHashMap.newKeySet();
 
-    public DepOnParamAnalysis(PTA prePTA) {
-        super(prePTA);
-        build();
-        solve();
+  public DepOnParamAnalysis(PTA prePTA) {
+    super(prePTA);
+    build();
+    solve();
+  }
+
+  protected void solve() {
+    System.out.println("start analysis!");
+    super.solve();
+    System.out.println("finish PFG analysis!");
+  }
+
+  protected void addParamEdge(LocalVarNode param) {
+    super.addParamEdge(param);
+    initialSeeds.add(param);
+  }
+
+  protected void addNewEdge(AllocNode from, LocalVarNode to) {
+    super.addNewEdge(from, to);
+    initialSeeds.add(from);
+  }
+
+  protected void submitInitialSeeds() {
+    for (Node node : initialSeeds) {
+      propagate(node, node);
+    }
+  }
+
+  private void propagate(Node srcParam, Node currNode) {
+    Set<Node> fromParams = pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
+    if (!fromParams.contains(srcParam)) {
+      executor.execute(new PathEdgeProcessingTask(srcParam, currNode));
+    }
+  }
+
+  private class PathEdgeProcessingTask implements Runnable {
+    private final Node sourceParam;
+    private final Node currNode;
+
+    public PathEdgeProcessingTask(Node param, Node node) {
+      this.sourceParam = param;
+      this.currNode = node;
     }
 
-    protected void solve() {
-        System.out.println("start analysis!");
-        super.solve();
-        System.out.println("finish PFG analysis!");
-    }
-
-    protected void addParamEdge(LocalVarNode param) {
-        super.addParamEdge(param);
-        initialSeeds.add(param);
-    }
-
-    protected void addNewEdge(AllocNode from, LocalVarNode to) {
-        super.addNewEdge(from, to);
-        initialSeeds.add(from);
-    }
-
-    protected void submitInitialSeeds() {
-        for (Node node : initialSeeds) {
-            propagate(node, node);
+    @Override
+    public void run() {
+      pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet()).add(sourceParam);
+      for (TranEdge e : outAndSummaryEdges(currNode)) {
+        Node nextNode = e.getTarget();
+        DFA.TranCond tranCond = e.getTranCond();
+        DFA.State nextState = DFA.nextState2(tranCond);
+        if (nextState == DFA.State.ERROR) {
+          continue;
         }
-    }
+        propagate(sourceParam, nextNode);
+        if (nextState == DFA.State.E) {
+          // do something.
+          SootMethod containingMethod;
+          if (sourceParam instanceof LocalVarNode pj) {
+            containingMethod = pj.getMethod();
+          } else {
+            AllocNode heap = (AllocNode) sourceParam;
+            containingMethod = heap.getMethod();
+          }
 
-    private void propagate(Node srcParam, Node currNode) {
-        Set<Node> fromParams = pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet());
-        if (!fromParams.contains(srcParam)) {
-            executor.execute(new PathEdgeProcessingTask(srcParam, currNode));
-        }
-    }
+          Iterator<Edge> it =
+              callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
+          while (it.hasNext()) {
+            Edge edge = it.next();
+            SootMethod srcMethod = edge.src();
+            MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
+            MethodNodeFactory srcnf = srcmpag.nodeFactory();
+            Stmt invokeStmt = edge.srcUnit();
+            if (invokeStmt instanceof JAssignStmt assignStmt) {
 
-    private class PathEdgeProcessingTask implements Runnable {
-        private final Node sourceParam;
-        private final Node currNode;
-
-        public PathEdgeProcessingTask(Node param, Node node) {
-            this.sourceParam = param;
-            this.currNode = node;
-        }
-
-        @Override
-        public void run() {
-            pathEdges.computeIfAbsent(currNode, k -> ConcurrentHashMap.newKeySet()).add(sourceParam);
-            for (TranEdge e : outAndSummaryEdges(currNode)) {
-                Node nextNode = e.getTarget();
-                DFA.TranCond tranCond = e.getTranCond();
-                DFA.State nextState = DFA.nextState2(tranCond);
-                if (nextState == DFA.State.ERROR) {
-                    continue;
+              VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
+              if (sourceParam instanceof LocalVarNode pj) {
+                VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
+                if (aj != null) {
+                  addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
                 }
-                propagate(sourceParam, nextNode);
-                if (nextState == DFA.State.E) {
-                    // do something.
-                    SootMethod containingMethod;
-                    if (sourceParam instanceof LocalVarNode pj) {
-                        containingMethod = pj.getMethod();
-                    } else {
-                        AllocNode heap = (AllocNode) sourceParam;
-                        containingMethod = heap.getMethod();
-                    }
-
-                    Iterator<Edge> it = callGraph.edgesInto(new ContextMethod(containingMethod, prePTA.emptyContext()));
-                    while (it.hasNext()) {
-                        Edge edge = it.next();
-                        SootMethod srcMethod = edge.src();
-                        MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-                        MethodNodeFactory srcnf = srcmpag.nodeFactory();
-                        Stmt invokeStmt = edge.srcUnit();
-                        if (invokeStmt instanceof JAssignStmt assignStmt) {
-
-                            VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
-                            if (sourceParam instanceof LocalVarNode pj) {
-                                VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
-                                if (aj != null) {
-                                    addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
-                                }
-                            } else {
-                                AllocNode symbolHeap = getSymbolicHeapOf(srcMethod, invokeStmt);
-                                addSummaryEdge(new TranEdge(symbolHeap, r, DFA.TranCond.NEW));
-                                propagate(symbolHeap, symbolHeap);
-                            }
-                        }
-                    }
-                }
+              } else {
+                AllocNode symbolHeap = getSymbolicHeapOf(srcMethod, invokeStmt);
+                addSummaryEdge(new TranEdge(symbolHeap, r, DFA.TranCond.NEW));
+                propagate(symbolHeap, symbolHeap);
+              }
             }
+          }
         }
+      }
     }
+  }
 
-    private void addSummaryEdge(TranEdge tranEdge) {
-        Node src = tranEdge.getSource();
-        Node tgt = tranEdge.getTarget();
-        DFA.TranCond tranCond = tranEdge.getTranCond();
-        sumEdges.computeIfAbsent(src, k -> ConcurrentHashMap.newKeySet()).add(tranEdge);
-        for (Node srcParam : pathEdges.getOrDefault(src, Collections.emptySet())) {
-            DFA.State nextState = DFA.nextState2(tranCond);
-            if (nextState == DFA.State.ERROR) {
-                continue;
-            }
-            propagate(srcParam, tgt);
-        }
+  private void addSummaryEdge(TranEdge tranEdge) {
+    Node src = tranEdge.getSource();
+    Node tgt = tranEdge.getTarget();
+    DFA.TranCond tranCond = tranEdge.getTranCond();
+    sumEdges.computeIfAbsent(src, k -> ConcurrentHashMap.newKeySet()).add(tranEdge);
+    for (Node srcParam : pathEdges.getOrDefault(src, Collections.emptySet())) {
+      DFA.State nextState = DFA.nextState2(tranCond);
+      if (nextState == DFA.State.ERROR) {
+        continue;
+      }
+      propagate(srcParam, tgt);
     }
+  }
 
-    public Set<Node> fetchReachableParamsOf(Node node) {
-        return pathEdges.getOrDefault(node, Collections.emptySet());
-    }
+  public Set<Node> fetchReachableParamsOf(Node node) {
+    return pathEdges.getOrDefault(node, Collections.emptySet());
+  }
 }

@@ -18,47 +18,43 @@
 
 package qilin.pta.toolkits.selectx;
 
-import qilin.core.pag.Node;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
+import qilin.core.pag.Node;
 
-
-/**
- * local nodes
- */
+/** local nodes */
 public abstract class I extends BNode {
-    private final Set<I> outIs = new HashSet<>();
-    protected Set<L> paras = new HashSet<>();
+  private final Set<I> outIs = new HashSet<>();
+  protected Set<L> paras = new HashSet<>();
 
-    I(Node origin) {
-        super(origin);
-    }
+  I(Node origin) {
+    super(origin);
+  }
 
-    public void clearParas() {
-        this.paras.clear();
-    }
+  public void clearParas() {
+    this.paras.clear();
+  }
 
-    boolean update(I another) {
-        return this.paras.addAll(another.paras);
-    }
+  boolean update(I another) {
+    return this.paras.addAll(another.paras);
+  }
 
-    public boolean addOutEdge(I to) {
-        return outIs.add(to);
-    }
+  public boolean addOutEdge(I to) {
+    return outIs.add(to);
+  }
 
-    @Override
-    public boolean addOutEdge(BNode toE) {
-        return addOutEdge((I) toE);
-    }
+  @Override
+  public boolean addOutEdge(BNode toE) {
+    return addOutEdge((I) toE);
+  }
 
-    @Override
-    public Stream<? extends BNode> forwardTargets() {
-        return outIs.stream();
-    }
+  @Override
+  public Stream<? extends BNode> forwardTargets() {
+    return outIs.stream();
+  }
 
-    public Set<I> getOutTargets() {
-        return this.outIs;
-    }
+  public Set<I> getOutTargets() {
+    return this.outIs;
+  }
 }

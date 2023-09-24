@@ -34,19 +34,19 @@ import qilin.pta.toolkits.dd.TunnelingConstructor;
  * not show the claimed effectiveness. Maybe we should train the benchmarks to get new formulas?
  * */
 public class TunnelingPTA extends BasePTA {
-    public TunnelingPTA(CtxConstructor ctxCons, int k, int hk) {
-        this.ctxCons = new TunnelingConstructor(ctxCons);
-        CtxSelector us = new UniformSelector(k, hk);
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("context-tunneling ...");
+  public TunnelingPTA(CtxConstructor ctxCons, int k, int hk) {
+    this.ctxCons = new TunnelingConstructor(ctxCons);
+    CtxSelector us = new UniformSelector(k, hk);
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("context-tunneling ...");
+  }
 }

@@ -21,37 +21,36 @@ package qilin.core.pag;
 import soot.Context;
 
 public class ContextVarNode extends VarNode {
-    private final Context context;
-    private final VarNode base;
+  private final Context context;
+  private final VarNode base;
 
-    public ContextVarNode(VarNode base, Context context) {
-        super(base.getVariable(), base.getType());
-        this.context = context;
-        this.base = base;
-    }
+  public ContextVarNode(VarNode base, Context context) {
+    super(base.getVariable(), base.getType());
+    this.context = context;
+    this.base = base;
+  }
 
+  @Override
+  public boolean isInterProcTarget() {
+    return base.isInterProcTarget();
+  }
 
-    @Override
-    public boolean isInterProcTarget() {
-        return base.isInterProcTarget();
-    }
+  @Override
+  public boolean isInterProcSource() {
+    return base.isInterProcSource();
+  }
 
-    @Override
-    public boolean isInterProcSource() {
-        return base.isInterProcSource();
-    }
+  @Override
+  public Context context() {
+    return context;
+  }
 
-    @Override
-    public Context context() {
-        return context;
-    }
+  @Override
+  public VarNode base() {
+    return base;
+  }
 
-    @Override
-    public VarNode base() {
-        return base;
-    }
-
-    public String toString() {
-        return "ContextVarNode " + getNumber() + "(" + base + ", " + context + ")";
-    }
+  public String toString() {
+    return "ContextVarNode " + getNumber() + "(" + base + ", " + context + ")";
+  }
 }

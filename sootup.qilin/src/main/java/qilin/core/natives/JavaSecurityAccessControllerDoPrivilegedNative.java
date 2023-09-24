@@ -21,19 +21,18 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootMethod;
 
 public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod {
-    public JavaSecurityAccessControllerDoPrivilegedNative(SootMethod method) {
-        super(method);
-    }
+  public JavaSecurityAccessControllerDoPrivilegedNative(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * public static native java.lang.Object
-     * doPrivileged(java.security.PrivilegedAction) public static native
-     * java.lang.Object
-     * doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)
-     */
-    public void simulate() {
-        Local r0 = getPara(0);
-        Local r1 = getInvoke(r0, "<java.security.PrivilegedAction: java.lang.Object run()>");
-        addReturn(r1);
-    }
+  /**
+   * public static native java.lang.Object doPrivileged(java.security.PrivilegedAction) public
+   * static native java.lang.Object
+   * doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)
+   */
+  protected void simulateImpl() {
+    Local r0 = getPara(0);
+    Local r1 = getInvoke(r0, "<java.security.PrivilegedAction: java.lang.Object run()>");
+    addReturn(r1);
+  }
 }

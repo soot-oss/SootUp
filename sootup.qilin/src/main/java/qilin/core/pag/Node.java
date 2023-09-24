@@ -29,41 +29,37 @@ import sootup.core.types.Type;
  * @author Ondrej Lhotak
  */
 public class Node implements Numberable {
-    protected Type type;
-    protected DoublePointsToSet p2set;
-    private int number = 0;
+  protected Type type;
+  protected DoublePointsToSet p2set;
+  private int number = 0;
 
-    /**
-     * Creates a new node of pointer assignment graph pag, with type type.
-     */
-    protected Node(Type type) {
-        if (PTAUtils.isUnresolved(type)) {
-            throw new RuntimeException("Unresolved type " + type);
-        }
-        this.type = type;
+  /** Creates a new node of pointer assignment graph pag, with type type. */
+  protected Node(Type type) {
+    if (PTAUtils.isUnresolved(type)) {
+      throw new RuntimeException("Unresolved type " + type);
     }
+    this.type = type;
+  }
 
-    @Override
-    public final int hashCode() {
-        return number;
-    }
+  @Override
+  public final int hashCode() {
+    return number;
+  }
 
-    public final boolean equals(Object other) {
-        return this == other;
-    }
+  public final boolean equals(Object other) {
+    return this == other;
+  }
 
-    /**
-     * Returns the declared type of this node, null for unknown.
-     */
-    public Type getType() {
-        return type;
-    }
+  /** Returns the declared type of this node, null for unknown. */
+  public Type getType() {
+    return type;
+  }
 
-    public final int getNumber() {
-        return number;
-    }
+  public final int getNumber() {
+    return number;
+  }
 
-    public final void setNumber(int number) {
-        this.number = number;
-    }
+  public final void setNumber(int number) {
+    this.number = number;
+  }
 }

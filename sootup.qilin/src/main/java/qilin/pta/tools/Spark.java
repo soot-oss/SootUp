@@ -28,14 +28,14 @@ import qilin.pta.PTAConfig;
  * refer to "Scaling Java Points-To Analysis using SPARK" (CC'03)
  * */
 public class Spark extends BasePTA {
-    public Spark() {
-        this.ctxCons = new InsensCtxConstructor();
-        this.ctxSel = new InsenSelector();
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("Context-Insensitive ...");
+  public Spark() {
+    this.ctxCons = new InsensCtxConstructor();
+    this.ctxSel = new InsenSelector();
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
     }
+    System.out.println("Context-Insensitive ...");
+  }
 }

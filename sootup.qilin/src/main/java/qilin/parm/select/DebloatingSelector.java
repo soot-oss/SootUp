@@ -18,6 +18,7 @@
 
 package qilin.parm.select;
 
+import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
@@ -25,38 +26,36 @@ import qilin.parm.ctxcons.CtxConstructor;
 import soot.Context;
 import sootup.core.model.SootMethod;
 
-import java.util.Set;
-
 public class DebloatingSelector extends CtxSelector {
 
-    protected final Set<Object> ctxDepHeaps;
+  protected final Set<Object> ctxDepHeaps;
 
-    public DebloatingSelector(Set<Object> ctxDepHeaps) {
-        this.ctxDepHeaps = ctxDepHeaps;
-    }
+  public DebloatingSelector(Set<Object> ctxDepHeaps) {
+    this.ctxDepHeaps = ctxDepHeaps;
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        Object ir = heap.getNewExpr();
-        if (ctxDepHeaps.contains(ir)) {
-            return context;
-        } else {
-            return CtxConstructor.emptyContext;
-        }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    Object ir = heap.getNewExpr();
+    if (ctxDepHeaps.contains(ir)) {
+      return context;
+    } else {
+      return CtxConstructor.emptyContext;
     }
+  }
 }

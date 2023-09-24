@@ -18,19 +18,18 @@
 
 package qilin.pta.toolkits.selectx;
 
-import qilin.core.pag.AllocNode;
-
 import java.util.HashMap;
 import java.util.Map;
+import qilin.core.pag.AllocNode;
 
 public class O extends I {
-    public static Map<AllocNode, O> o2O = new HashMap<>();
+  public static Map<AllocNode, O> o2O = new HashMap<>();
 
-    public static O v(AllocNode origin) {
-        return o2O.computeIfAbsent(origin, k -> new O(origin));
-    }
+  public static O v(AllocNode origin) {
+    return o2O.computeIfAbsent(origin, k -> new O(origin));
+  }
 
-    public O(AllocNode origin) {
-        super(origin);
-    }
+  public O(AllocNode origin) {
+    super(origin);
+  }
 }

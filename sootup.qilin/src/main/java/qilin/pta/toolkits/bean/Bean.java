@@ -18,6 +18,9 @@
 
 package qilin.pta.toolkits.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import qilin.core.PTA;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
@@ -26,52 +29,64 @@ import qilin.util.ANSIColor;
 import qilin.util.Pair;
 import qilin.util.Stopwatch;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public class Bean {
-    public static void run(PTA pta, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
-        System.out.println("Constructing object allocation graph (OAG) ...");
-        Stopwatch timer = Stopwatch.newAndStart("OAG construction");
-        OAG oag = new OAG(pta);
-        oag.build();
-        timer.stop();
-        System.out.print(ANSIColor.BOLD + "OAG construction: " + ANSIColor.GREEN +
-                String.format("%.2fs", timer.elapsed()) + ANSIColor.RESET + "\n");
+  public static void run(PTA pta, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
+    System.out.println("Constructing object allocation graph (OAG) ...");
+    Stopwatch timer = Stopwatch.newAndStart("OAG construction");
+    OAG oag = new OAG(pta);
+    oag.build();
+    timer.stop();
+    System.out.print(
+        ANSIColor.BOLD
+            + "OAG construction: "
+            + ANSIColor.GREEN
+            + String.format("%.2fs", timer.elapsed())
+            + ANSIColor.RESET
+            + "\n");
 
-        System.out.println("Computing contexts...");
-        timer.restart();
-        // The depth indicates the depth of heap context.
-        // The method context has 1 more level than heap context.
-        // Here depth is 1 which corresponds to 2-object-sensitive analysis
-        // with 1 heap context.
-        ContextSelector cs = new RepresentativeContextSelector(oag, 1);
-        timer.stop();
-        System.out.print(ANSIColor.BOLD + "Context computation: " + ANSIColor.GREEN +
-                String.format("%.2fs", timer.elapsed()) + ANSIColor.RESET + "\n");
+    System.out.println("Computing contexts...");
+    timer.restart();
+    // The depth indicates the depth of heap context.
+    // The method context has 1 more level than heap context.
+    // Here depth is 1 which corresponds to 2-object-sensitive analysis
+    // with 1 heap context.
+    ContextSelector cs = new RepresentativeContextSelector(oag, 1);
+    timer.stop();
+    System.out.print(
+        ANSIColor.BOLD
+            + "Context computation: "
+            + ANSIColor.GREEN
+            + String.format("%.2fs", timer.elapsed())
+            + ANSIColor.RESET
+            + "\n");
 
-        writeContext(cs, oag, beanNexCtxMap);
-    }
+    writeContext(cs, oag, beanNexCtxMap);
+  }
 
-    /*
-     * Should be generalized for k >= 3.
-     * */
-    private static void writeContext(ContextSelector cs, OAG oag, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
-        oag.allNodes().forEach(allocator -> {
-            Set<ContextElements> ctxs = cs.contextsOf(allocator);
-            for (ContextElements ctx : ctxs) {
+  /*
+   * Should be generalized for k >= 3.
+   * */
+  private static void writeContext(
+      ContextSelector cs, OAG oag, Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap) {
+    oag.allNodes()
+        .forEach(
+            allocator -> {
+              Set<ContextElements> ctxs = cs.contextsOf(allocator);
+              for (ContextElements ctx : ctxs) {
                 AllocNode allocHctx = (AllocNode) ctx.get(0);
                 Set<Pair<ContextElements, AllocNode>> csheaps = cs.allocatedBy(ctx, allocator);
                 if (csheaps != null) {
-                    csheaps.forEach(csheap -> {
+                  csheaps.forEach(
+                      csheap -> {
                         AllocNode newHctx = (AllocNode) csheap.getFirst().get(0);
                         AllocNode heap = csheap.getSecond();
-                        beanNexCtxMap.computeIfAbsent(heap.getNewExpr(), k -> new HashMap<>()).computeIfAbsent(allocator.getNewExpr(), k -> new HashMap<>()).put(allocHctx.getNewExpr(), newHctx.getNewExpr());
-                    });
+                        beanNexCtxMap
+                            .computeIfAbsent(heap.getNewExpr(), k -> new HashMap<>())
+                            .computeIfAbsent(allocator.getNewExpr(), k -> new HashMap<>())
+                            .put(allocHctx.getNewExpr(), newHctx.getNewExpr());
+                      });
                 }
-            }
-        });
-    }
-
+              }
+            });
+  }
 }

@@ -18,88 +18,86 @@
 
 package qilin.pta.toolkits.conch;
 
+import java.util.HashSet;
+import java.util.Set;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.graph.DirectedGraphImpl;
 import qilin.util.queue.UniqueQueue;
 import soot.util.queue.QueueReader;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /*
  * a simplified method PAG with the effects of static load and store being eliminated.
  * */
 public class SMPAG extends DirectedGraphImpl<Node> {
-    MethodPAG srcmpag;
-    Set<Pair<Node, Node>> loads;
-    Set<Pair<Node, Node>> stores;
+  MethodPAG srcmpag;
+  Set<Pair<Node, Node>> loads;
+  Set<Pair<Node, Node>> stores;
 
-    public SMPAG(MethodPAG srcmpag) {
-        this.srcmpag = srcmpag;
-        init();
+  public SMPAG(MethodPAG srcmpag) {
+    this.srcmpag = srcmpag;
+    init();
+  }
+
+  private void init() {
+    loads = new HashSet<>();
+    stores = new HashSet<>();
+    QueueReader<Node> reader = srcmpag.getInternalReader().clone();
+    UniqueQueue<Node> workList = new UniqueQueue<>();
+    Set<Node> visit = new HashSet<>();
+    while (reader.hasNext()) {
+      qilin.core.pag.Node from = reader.next(), to = reader.next();
+      if (from instanceof LocalVarNode) {
+        if (to instanceof LocalVarNode) {
+          this.addEdge(from, to); // ASSIGN
+        } else if (to instanceof FieldRefNode) {
+          this.addEdge(from, to); // STORE
+        } // local-global : A.f = a;
+
+      } else if (from instanceof AllocNode) {
+        this.addEdge(from, to); // NEW
+      } else if (from instanceof FieldRefNode) {
+        this.addEdge(from, to); // LOAD
+      } else { // global-local
+        workList.add(to);
+      }
     }
-
-    private void init() {
-        loads = new HashSet<>();
-        stores = new HashSet<>();
-        QueueReader<Node> reader = srcmpag.getInternalReader().clone();
-        UniqueQueue<Node> workList = new UniqueQueue<>();
-        Set<Node> visit = new HashSet<>();
-        while (reader.hasNext()) {
-            qilin.core.pag.Node from = reader.next(), to = reader.next();
-            if (from instanceof LocalVarNode) {
-                if (to instanceof LocalVarNode) {
-                    this.addEdge(from, to); // ASSIGN
-                } else if (to instanceof FieldRefNode) {
-                    this.addEdge(from, to); // STORE
-                }  // local-global : A.f = a;
-
-
-            } else if (from instanceof AllocNode) {
-                this.addEdge(from, to); // NEW
-            } else if (from instanceof FieldRefNode) {
-                this.addEdge(from, to); // LOAD
-            } else { // global-local
-                workList.add(to);
-            }
+    while (!workList.isEmpty()) {
+      Node curr = workList.poll();
+      visit.add(curr);
+      if (this.predsOf(curr).isEmpty()) {
+        for (Node next : this.succsOf(curr)) {
+          if (!visit.contains(next)) {
+            workList.add(next);
+          }
+          this.preds.get(next).remove(curr);
         }
-        while (!workList.isEmpty()) {
-            Node curr = workList.poll();
-            visit.add(curr);
-            if (this.predsOf(curr).isEmpty()) {
-                for (Node next : this.succsOf(curr)) {
-                    if (!visit.contains(next)) {
-                        workList.add(next);
-                    }
-                    this.preds.get(next).remove(curr);
-                }
-                if (this.succs.containsKey(curr)) {
-                    this.succs.get(curr).clear();
-                }
-            }
+        if (this.succs.containsKey(curr)) {
+          this.succs.get(curr).clear();
         }
+      }
+    }
 
-        // initialize stores and loads
-        for (Node node : this.allNodes()) {
-            if (node instanceof FieldRefNode) {
-                for (Node from : this.predsOf(node)) {
-                    stores.add(new Pair<>(node, from));
-                }
-                for (Node to : this.succsOf(node)) {
-                    loads.add(new Pair<>(to, node));
-                }
-            }
+    // initialize stores and loads
+    for (Node node : this.allNodes()) {
+      if (node instanceof FieldRefNode) {
+        for (Node from : this.predsOf(node)) {
+          stores.add(new Pair<>(node, from));
         }
+        for (Node to : this.succsOf(node)) {
+          loads.add(new Pair<>(to, node));
+        }
+      }
     }
+  }
 
-    // <FieldRefNode, from>
-    public Set<Pair<Node, Node>> getStores() {
-        return stores;
-    }
+  // <FieldRefNode, from>
+  public Set<Pair<Node, Node>> getStores() {
+    return stores;
+  }
 
-    // <to, FieldRefNode>
-    public Set<Pair<Node, Node>> getLoads() {
-        return loads;
-    }
+  // <to, FieldRefNode>
+  public Set<Pair<Node, Node>> getLoads() {
+    return loads;
+  }
 }

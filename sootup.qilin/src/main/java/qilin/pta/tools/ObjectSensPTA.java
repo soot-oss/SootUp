@@ -31,20 +31,20 @@ import qilin.pta.PTAConfig;
  * refer to "Parameterized object sensitivity for points-to analysis for Java" (TSE'05)
  * */
 public class ObjectSensPTA extends BasePTA {
-    public ObjectSensPTA(int k, int hk) {
-        this.ctxCons = new ObjCtxConstructor();
-        CtxSelector us = new UniformSelector(k, hk);
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            System.out.println(".... Heuristic...");
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("k-OBJ ...");
+  public ObjectSensPTA(int k, int hk) {
+    this.ctxCons = new ObjCtxConstructor();
+    CtxSelector us = new UniformSelector(k, hk);
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      System.out.println(".... Heuristic...");
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("k-OBJ ...");
+  }
 }

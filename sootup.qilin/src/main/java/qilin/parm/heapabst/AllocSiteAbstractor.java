@@ -21,8 +21,8 @@ package qilin.parm.heapabst;
 import qilin.core.pag.AllocNode;
 
 public class AllocSiteAbstractor implements HeapAbstractor {
-    @Override
-    public AllocNode abstractHeap(AllocNode heap) {
-        return heap;
-    }
+  @Override
+  public AllocNode abstractHeap(AllocNode heap) {
+    return heap;
+  }
 }

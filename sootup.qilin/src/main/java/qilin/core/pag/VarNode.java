@@ -18,15 +18,14 @@
 
 package qilin.core.pag;
 
-import qilin.util.DataFactory;
-//import soot.AnySubType;
-import soot.Context;
-import sootup.core.types.ReferenceType;
-import sootup.core.types.Type;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import qilin.util.DataFactory;
+// import soot.AnySubType;
+import soot.Context;
+import sootup.core.types.ReferenceType;
+import sootup.core.types.Type;
 
 /**
  * Represents a simple variable node in the pointer assignment graph.
@@ -34,93 +33,88 @@ import java.util.Map;
  * @author Ondrej Lhotak
  */
 public abstract class VarNode extends ValNode {
-    protected Object variable;
-    protected Map<SparkField, FieldRefNode> fields;
+  protected Object variable;
+  protected Map<SparkField, FieldRefNode> fields;
 
-    protected boolean interProcTarget = false;
-    protected boolean interProcSource = false;
+  protected boolean interProcTarget = false;
+  protected boolean interProcSource = false;
 
-    protected VarNode(Object variable, Type t) {
-        super(t);
-        if (!(t instanceof ReferenceType) /*|| t instanceof AnySubType*/ ) {
-            throw new RuntimeException("Attempt to create VarNode of type " + t);
-        }
-        this.variable = variable;
+  protected VarNode(Object variable, Type t) {
+    super(t);
+    if (!(t instanceof ReferenceType) /*|| t instanceof AnySubType*/) {
+      throw new RuntimeException("Attempt to create VarNode of type " + t);
     }
+    this.variable = variable;
+  }
 
-    public Context context() {
-        return null;
+  public Context context() {
+    return null;
+  }
+
+  /** Returns all field ref nodes having this node as their base. */
+  public Collection<FieldRefNode> getAllFieldRefs() {
+    if (fields == null) {
+      return Collections.emptyList();
     }
+    return fields.values();
+  }
 
-    /**
-     * Returns all field ref nodes having this node as their base.
-     */
-    public Collection<FieldRefNode> getAllFieldRefs() {
+  /**
+   * Returns the field ref node having this node as its base, and field as its field; null if
+   * nonexistent.
+   */
+  public FieldRefNode dot(SparkField field) {
+    return fields == null ? null : fields.get(field);
+  }
+
+  /** Returns the underlying variable that this node represents. */
+  public Object getVariable() {
+    return variable;
+  }
+
+  /**
+   * Designates this node as the potential target of a interprocedural assignment edge which may be
+   * added during on-the-fly call graph updating.
+   */
+  public void setInterProcTarget() {
+    interProcTarget = true;
+  }
+
+  /**
+   * Returns true if this node is the potential target of a interprocedural assignment edge which
+   * may be added during on-the-fly call graph updating.
+   */
+  public boolean isInterProcTarget() {
+    return interProcTarget;
+  }
+
+  /**
+   * Designates this node as the potential source of a interprocedural assignment edge which may be
+   * added during on-the-fly call graph updating.
+   */
+  public void setInterProcSource() {
+    interProcSource = true;
+  }
+
+  /**
+   * Returns true if this node is the potential source of a interprocedural assignment edge which
+   * may be added during on-the-fly call graph updating.
+   */
+  public boolean isInterProcSource() {
+    return interProcSource;
+  }
+
+  public abstract VarNode base();
+
+  /** Registers a frn as having this node as its base. */
+  void addField(FieldRefNode frn, SparkField field) {
+    if (fields == null) {
+      synchronized (this) {
         if (fields == null) {
-            return Collections.emptyList();
+          fields = DataFactory.createMap();
         }
-        return fields.values();
+      }
     }
-
-    /**
-     * Returns the field ref node having this node as its base, and field as its field; null if nonexistent.
-     */
-    public FieldRefNode dot(SparkField field) {
-        return fields == null ? null : fields.get(field);
-    }
-
-    /**
-     * Returns the underlying variable that this node represents.
-     */
-    public Object getVariable() {
-        return variable;
-    }
-
-    /**
-     * Designates this node as the potential target of a interprocedural assignment edge which may be added during on-the-fly
-     * call graph updating.
-     */
-    public void setInterProcTarget() {
-        interProcTarget = true;
-    }
-
-    /**
-     * Returns true if this node is the potential target of a interprocedural assignment edge which may be added during
-     * on-the-fly call graph updating.
-     */
-    public boolean isInterProcTarget() {
-        return interProcTarget;
-    }
-
-    /**
-     * Designates this node as the potential source of a interprocedural assignment edge which may be added during on-the-fly
-     * call graph updating.
-     */
-    public void setInterProcSource() {
-        interProcSource = true;
-    }
-
-    /**
-     * Returns true if this node is the potential source of a interprocedural assignment edge which may be added during
-     * on-the-fly call graph updating.
-     */
-    public boolean isInterProcSource() {
-        return interProcSource;
-    }
-
-    public abstract VarNode base();
-
-    /**
-     * Registers a frn as having this node as its base.
-     */
-    void addField(FieldRefNode frn, SparkField field) {
-        if (fields == null) {
-            synchronized (this) {
-                if (fields == null) {
-                    fields = DataFactory.createMap();
-                }
-            }
-        }
-        fields.put(field, frn);
-    }
+    fields.put(field, frn);
+  }
 }

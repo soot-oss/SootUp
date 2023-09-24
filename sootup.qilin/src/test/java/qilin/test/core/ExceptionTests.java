@@ -22,18 +22,18 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class ExceptionTests extends JunitTests {
-    @Test
-    public void testSimpleException() {
-        checkAssertions(run("qilin.microben.core.exception.SimpleException"));
-    }
+  @Test
+  public void testSimpleException() {
+    checkAssertions(run("qilin.microben.core.exception.SimpleException"));
+  }
 
-    @Test
-    public void testExceptionChain() {
-        checkAssertions(run("qilin.microben.core.exception.ExceptionChain"));
-    }
+  @Test
+  public void testExceptionChain() {
+    checkAssertions(run("qilin.microben.core.exception.ExceptionChain"));
+  }
 
-    @Test
-    public void testMethodThrow() {
-        checkAssertions(run("qilin.microben.core.exception.MethodThrow"));
-    }
+  @Test
+  public void testMethodThrow() {
+    checkAssertions(run("qilin.microben.core.exception.MethodThrow"));
+  }
 }

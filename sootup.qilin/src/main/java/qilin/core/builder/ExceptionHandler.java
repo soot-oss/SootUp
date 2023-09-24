@@ -18,6 +18,7 @@
 
 package qilin.core.builder;
 
+import java.util.*;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.pag.*;
@@ -32,72 +33,74 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
-import java.util.*;
-
 public class ExceptionHandler {
-    protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
-    protected PTA pta;
-    protected PAG pag;
+  protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites =
+      DataFactory.createMap(PTAScene.v().getView().getClasses().size());
+  protected PTA pta;
+  protected PAG pag;
 
-    public ExceptionHandler(PTA pta) {
-        this.pta = pta;
-        this.pag = pta.getPag();
-    }
+  public ExceptionHandler(PTA pta) {
+    this.pta = pta;
+    this.pag = pta.getPag();
+  }
 
-    public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {
-        return throwNodeToSites.getOrDefault(throwNode, Collections.emptySet());
-    }
+  public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {
+    return throwNodeToSites.getOrDefault(throwNode, Collections.emptySet());
+  }
 
-    public boolean addThrowSite(Node throwNode, ExceptionThrowSite ets) {
-        Collection<ExceptionThrowSite> throwSites = throwNodeToSites.computeIfAbsent(throwNode, k -> DataFactory.createSet());
-        return throwSites.add(ets);
-    }
+  public boolean addThrowSite(Node throwNode, ExceptionThrowSite ets) {
+    Collection<ExceptionThrowSite> throwSites =
+        throwNodeToSites.computeIfAbsent(throwNode, k -> DataFactory.createSet());
+    return throwSites.add(ets);
+  }
 
-    public void exceptionDispatch(PointsToSetInternal p2set, ExceptionThrowSite site) {
-        p2set.forall(new P2SetVisitor(pta) {
-            public void visit(Node n) {
-                dispatch((AllocNode) n, site);
-            }
+  public void exceptionDispatch(PointsToSetInternal p2set, ExceptionThrowSite site) {
+    p2set.forall(
+        new P2SetVisitor(pta) {
+          public void visit(Node n) {
+            dispatch((AllocNode) n, site);
+          }
         });
-    }
+  }
 
-    /*
-     * dispatch the exception objects by following the exception-cath-links in Doop-ISSTA09.
-     * */
-    public void dispatch(AllocNode throwObj, ExceptionThrowSite site) {
-        Type type = throwObj.getType();
-        MethodOrMethodContext momc = site.container();
-        SootMethod sm = momc.method();
-        Context context = momc.context();
-        MethodPAG mpag = pag.getMethodPAG(sm);
-        MethodNodeFactory nodeFactory = mpag.nodeFactory();
-        VarNode throwNode = site.getThrowNode();
-        List<Trap> trapList = mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
-        for (Trap trap : trapList) {
-            if (PTAScene.v().canStoreType(type, trap.getExceptionType())) {
-                Stmt handler = trap.getHandlerStmt();
-                assert handler instanceof JIdentityStmt;
-                JIdentityStmt handlerStmt = (JIdentityStmt) handler;
-                Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());
-                Node dst = pta.parameterize(caughtParam, context);
-                pag.addEdge(throwObj, dst);
-                // record an edge from base --> caughtParam on the methodPag.
-                recordImplictEdge(throwNode, caughtParam, mpag);
-                return;
-            }
-        }
-        // No trap handle the throwable object in the method.
-        Node methodThrowNode = nodeFactory.caseMethodThrow();
-        Node dst = pta.parameterize(methodThrowNode, context);
+  /*
+   * dispatch the exception objects by following the exception-cath-links in Doop-ISSTA09.
+   * */
+  public void dispatch(AllocNode throwObj, ExceptionThrowSite site) {
+    Type type = throwObj.getType();
+    MethodOrMethodContext momc = site.container();
+    SootMethod sm = momc.method();
+    Context context = momc.context();
+    MethodPAG mpag = pag.getMethodPAG(sm);
+    MethodNodeFactory nodeFactory = mpag.nodeFactory();
+    VarNode throwNode = site.getThrowNode();
+    List<Trap> trapList =
+        mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
+    for (Trap trap : trapList) {
+      if (PTAScene.v().canStoreType(type, trap.getExceptionType())) {
+        Stmt handler = trap.getHandlerStmt();
+        assert handler instanceof JIdentityStmt;
+        JIdentityStmt handlerStmt = (JIdentityStmt) handler;
+        Node caughtParam = nodeFactory.getNode(handlerStmt.getRightOp());
+        Node dst = pta.parameterize(caughtParam, context);
         pag.addEdge(throwObj, dst);
-        // record an edge from base --> methodThrowNode on the methodPag.
-        recordImplictEdge(throwNode, methodThrowNode, mpag);
+        // record an edge from base --> caughtParam on the methodPag.
+        recordImplictEdge(throwNode, caughtParam, mpag);
+        return;
+      }
     }
+    // No trap handle the throwable object in the method.
+    Node methodThrowNode = nodeFactory.caseMethodThrow();
+    Node dst = pta.parameterize(methodThrowNode, context);
+    pag.addEdge(throwObj, dst);
+    // record an edge from base --> methodThrowNode on the methodPag.
+    recordImplictEdge(throwNode, methodThrowNode, mpag);
+  }
 
-    private void recordImplictEdge(Node src, Node dst, MethodPAG mpag) {
-        if (src instanceof ContextVarNode) {
-            src = ((ContextVarNode) src).base();
-        }
-        mpag.addExceptionEdge(src, dst);
+  private void recordImplictEdge(Node src, Node dst, MethodPAG mpag) {
+    if (src instanceof ContextVarNode) {
+      src = ((ContextVarNode) src).base();
     }
+    mpag.addExceptionEdge(src, dst);
+  }
 }

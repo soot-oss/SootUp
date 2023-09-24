@@ -28,42 +28,46 @@ import sootup.core.model.SootMethod;
 
 // implementation of selective hybrid context...(Yannis pldi'13)
 public class HybObjCtxConstructor implements CtxConstructor {
-    /*
-     * Support Sb-1obj, S-2obj+H, ...
-     * */
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        Context callerContext = caller.context();
-        if (receiverNode == null) { // static invoke
-            assert callerContext instanceof ContextElements;
-            ContextElements callerCtx = (ContextElements) callerContext;
-            ContextElement[] cxtAllocs = callerCtx.getElements();
-            int s = callerCtx.size();
-            ContextElement[] array;
-            if (s >= 1) {
-                array = new ContextElement[s + 1];
-                array[1] = callSite;
-                array[0] = cxtAllocs[0];
-                if (s > 1) {
-                    System.arraycopy(cxtAllocs, 1, array, 2, s - 1);
-                }
-                return new ContextElements(array, s + 1);
-            } else {
-                array = new ContextElement[2];
-                array[1] = callSite;
-                array[0] = null;
-                return new ContextElements(array, 2);
-            }
-        } else {
-            Context context = receiverNode.context();
-            assert context instanceof ContextElements;
-            ContextElements ctx = (ContextElements) context;
-            int s = ctx.size();
-            ContextElement[] cxtAllocs = ctx.getElements();
-            ContextElement[] array = new ContextElement[s + 1];
-            array[0] = receiverNode.base();
-            System.arraycopy(cxtAllocs, 0, array, 1, s);
-            return new ContextElements(array, s + 1);
+  /*
+   * Support Sb-1obj, S-2obj+H, ...
+   * */
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    Context callerContext = caller.context();
+    if (receiverNode == null) { // static invoke
+      assert callerContext instanceof ContextElements;
+      ContextElements callerCtx = (ContextElements) callerContext;
+      ContextElement[] cxtAllocs = callerCtx.getElements();
+      int s = callerCtx.size();
+      ContextElement[] array;
+      if (s >= 1) {
+        array = new ContextElement[s + 1];
+        array[1] = callSite;
+        array[0] = cxtAllocs[0];
+        if (s > 1) {
+          System.arraycopy(cxtAllocs, 1, array, 2, s - 1);
         }
+        return new ContextElements(array, s + 1);
+      } else {
+        array = new ContextElement[2];
+        array[1] = callSite;
+        array[0] = null;
+        return new ContextElements(array, 2);
+      }
+    } else {
+      Context context = receiverNode.context();
+      assert context instanceof ContextElements;
+      ContextElements ctx = (ContextElements) context;
+      int s = ctx.size();
+      ContextElement[] cxtAllocs = ctx.getElements();
+      ContextElement[] array = new ContextElement[s + 1];
+      array[0] = receiverNode.base();
+      System.arraycopy(cxtAllocs, 0, array, 1, s);
+      return new ContextElements(array, s + 1);
     }
+  }
 }

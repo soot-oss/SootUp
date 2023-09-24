@@ -22,40 +22,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TreeNode<D> {
-    private final D elem;
-    private TreeNode<D> parent;
-    private final Set<TreeNode<D>> children;
+  private final D elem;
+  private TreeNode<D> parent;
+  private final Set<TreeNode<D>> children;
 
-    public TreeNode(D e) {
-        this.elem = e;
-        this.children = new HashSet<>();
-    }
+  public TreeNode(D e) {
+    this.elem = e;
+    this.children = new HashSet<>();
+  }
 
-    public D getElem() {
-        return elem;
-    }
+  public D getElem() {
+    return elem;
+  }
 
-    public TreeNode<D> getParent() {
-        return parent;
-    }
+  public TreeNode<D> getParent() {
+    return parent;
+  }
 
-    public boolean isLeaf() {
-        return this.children.isEmpty();
-    }
+  public boolean isLeaf() {
+    return this.children.isEmpty();
+  }
 
-    public boolean isRoot() {
-        return this.parent == null;
-    }
+  public boolean isRoot() {
+    return this.parent == null;
+  }
 
-    public void setParent(TreeNode<D> parent) {
-        this.parent = parent;
-    }
+  public void setParent(TreeNode<D> parent) {
+    this.parent = parent;
+  }
 
-    public Set<TreeNode<D>> getChildren() {
-        return children;
-    }
+  public Set<TreeNode<D>> getChildren() {
+    return children;
+  }
 
-    public boolean addChild(TreeNode<D> child) {
-        return this.children.add(child);
-    }
+  public boolean addChild(TreeNode<D> child) {
+    return this.children.add(child);
+  }
 }

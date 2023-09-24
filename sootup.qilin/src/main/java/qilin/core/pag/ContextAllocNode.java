@@ -21,26 +21,25 @@ package qilin.core.pag;
 import soot.Context;
 
 public class ContextAllocNode extends AllocNode {
-    private final Context context;
-    private final AllocNode base;
+  private final Context context;
+  private final AllocNode base;
 
-    public ContextAllocNode(AllocNode base, Context context) {
-        super(base.getNewExpr(), base.getType(), base.getMethod());
-        this.context = context;
-        this.base = base;
-    }
+  public ContextAllocNode(AllocNode base, Context context) {
+    super(base.getNewExpr(), base.getType(), base.getMethod());
+    this.context = context;
+    this.base = base;
+  }
 
-    public Context context() {
-        return context;
-    }
+  public Context context() {
+    return context;
+  }
 
-    @Override
-    public AllocNode base() {
-        return base;
-    }
+  @Override
+  public AllocNode base() {
+    return base;
+  }
 
-    public String toString() {
-        return "ContextAllocNode " + getNumber() + "(" + base + ", " + context + ")";
-    }
-
+  public String toString() {
+    return "ContextAllocNode " + getNumber() + "(" + base + ", " + context + ")";
+  }
 }

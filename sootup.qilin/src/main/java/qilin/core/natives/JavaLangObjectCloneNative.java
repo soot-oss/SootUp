@@ -18,23 +18,21 @@
 
 package qilin.core.natives;
 
-
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootMethod;
 
 public class JavaLangObjectCloneNative extends NativeMethod {
 
-    public JavaLangObjectCloneNative(SootMethod method) {
-        super(method);
-    }
+  public JavaLangObjectCloneNative(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * Implements the abstract method simulateMethod. It distributes the request to
-     * the corresponding methods by signatures.
-     */
-    public void simulate() {
-        Local r0 = getThis();
-        addReturn(r0);
-    }
-
+  /**
+   * Implements the abstract method simulateMethod. It distributes the request to the corresponding
+   * methods by signatures.
+   */
+  protected void simulateImpl() {
+    Local r0 = getThis();
+    addReturn(r0);
+  }
 }

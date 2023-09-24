@@ -22,37 +22,30 @@ import qilin.core.sets.DoublePointsToSet;
 import soot.util.Numberable;
 import sootup.core.types.Type;
 
-/**
- * Represents a simple of pointer node in the pointer assignment graph.
- */
+/** Represents a simple of pointer node in the pointer assignment graph. */
 public class ValNode extends Node implements Comparable, Numberable {
 
-    protected ValNode(Type t) {
-        super(t);
-    }
+  protected ValNode(Type t) {
+    super(t);
+  }
 
-    public int compareTo(Object o) {
-        ValNode other = (ValNode) o;
-        return other.getNumber() - this.getNumber();
-    }
+  public int compareTo(Object o) {
+    ValNode other = (ValNode) o;
+    return other.getNumber() - this.getNumber();
+  }
 
-    /**
-     * Returns the points-to set for this node.
-     */
-    public DoublePointsToSet getP2Set() {
-        if (p2set != null) {
-            return p2set;
-        } else {
-            p2set = new DoublePointsToSet();
-            return p2set;
-        }
+  /** Returns the points-to set for this node. */
+  public DoublePointsToSet getP2Set() {
+    if (p2set != null) {
+      return p2set;
+    } else {
+      p2set = new DoublePointsToSet();
+      return p2set;
     }
+  }
 
-    /**
-     * Delete current points-to set and make a new one
-     */
-    public void discardP2Set() {
-        p2set = null;
-    }
-
+  /** Delete current points-to set and make a new one */
+  public void discardP2Set() {
+    p2set = null;
+  }
 }

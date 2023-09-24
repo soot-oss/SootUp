@@ -22,28 +22,28 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class ArrayTests extends JunitTests {
-    @Test
-    public void testArrayIndex() {
-        checkAssertions(run("qilin.microben.core.array.ArrayIndex"));
-    }
+  @Test
+  public void testArrayIndex() {
+    checkAssertions(run("qilin.microben.core.array.ArrayIndex"));
+  }
 
-    @Test
-    public void testMultiArraySimple() {
-        checkAssertions(run("qilin.microben.core.array.MultiArraySimple"));
-    }
+  @Test
+  public void testMultiArraySimple() {
+    checkAssertions(run("qilin.microben.core.array.MultiArraySimple"));
+  }
 
-    @Test
-    public void testMultiArrayComplex() {
-        checkAssertions(run("qilin.microben.core.array.MultiArrayComplex"));
-    }
+  @Test
+  public void testMultiArrayComplex() {
+    checkAssertions(run("qilin.microben.core.array.MultiArrayComplex"));
+  }
 
-    @Test
-    public void testArrayCopy() {
-        checkAssertions(run("qilin.microben.core.array.ArrayCopy"));
-    }
+  @Test
+  public void testArrayCopy() {
+    checkAssertions(run("qilin.microben.core.array.ArrayCopy"));
+  }
 
-    @Test
-    public void testArrayElemTypeFiltering() {
-        checkAssertions(run("qilin.microben.core.array.ArrayElemTypeFiltering"));
-    }
+  @Test
+  public void testArrayElemTypeFiltering() {
+    checkAssertions(run("qilin.microben.core.array.ArrayElemTypeFiltering"));
+  }
 }

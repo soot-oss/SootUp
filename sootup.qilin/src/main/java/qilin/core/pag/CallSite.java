@@ -21,48 +21,43 @@ package qilin.core.pag;
 import qilin.core.context.ContextElement;
 import sootup.core.jimple.common.stmt.Stmt;
 
-/**
- * callsite based context element in the points to analysis.
- */
+/** callsite based context element in the points to analysis. */
 public class CallSite implements ContextElement {
 
-    private final Stmt unit;
+  private final Stmt unit;
 
-    public CallSite(Stmt unit) {
-        this.unit = unit;
-    }
+  public CallSite(Stmt unit) {
+    this.unit = unit;
+  }
 
-    public Stmt getUnit() {
-        return unit;
-    }
+  public Stmt getUnit() {
+    return unit;
+  }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+    return result;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CallSite other = (CallSite) obj;
-        if (unit == null) {
-            return other.unit == null;
-        } else if (other.unit == null) {
-            return false;
-        } else {
-            return unit.equals(other.unit);
-        }
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    CallSite other = (CallSite) obj;
+    if (unit == null) {
+      return other.unit == null;
+    } else if (other.unit == null) {
+      return false;
+    } else {
+      return unit.equals(other.unit);
     }
+  }
 
-    public String toString() {
-        return "CallSite: " + unit;
-    }
+  public String toString() {
+    return "CallSite: " + unit;
+  }
 }

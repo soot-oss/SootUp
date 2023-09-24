@@ -18,6 +18,7 @@
 
 package qilin.parm.select;
 
+import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
@@ -25,58 +26,56 @@ import qilin.parm.ctxcons.CtxConstructor;
 import soot.Context;
 import sootup.core.model.SootMethod;
 
-import java.util.Set;
-
 public class PartialVarSelector extends CtxSelector {
-    private final int k;
-    private final int hk;
-    // precision-critical nodes selected by the partial-variable-level approaches, e.g., Eagle, Turner.
-    private final Set<Object> csnodes;
-    private final Set<SootMethod> pcm;
+  private final int k;
+  private final int hk;
+  // precision-critical nodes selected by the partial-variable-level approaches, e.g., Eagle,
+  // Turner.
+  private final Set<Object> csnodes;
+  private final Set<SootMethod> pcm;
 
-    public PartialVarSelector(int k, int hk, Set<Object> csnodes, Set<SootMethod> pcm) {
-        this.k = k;
-        this.hk = hk;
-        this.csnodes = csnodes;
-        this.pcm = pcm;
+  public PartialVarSelector(int k, int hk, Set<Object> csnodes, Set<SootMethod> pcm) {
+    this.k = k;
+    this.hk = hk;
+    this.csnodes = csnodes;
+    this.pcm = pcm;
+  }
+
+  @Override
+  public Context select(SootMethod m, Context context) {
+    if (pcm.contains(m)) {
+      return contextTailor(context, k);
+    } else {
+      return CtxConstructor.emptyContext;
     }
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        if (pcm.contains(m)) {
-            return contextTailor(context, k);
-        } else {
-            return CtxConstructor.emptyContext;
-        }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    Object ir = lvn.getVariable();
+    if (csnodes.contains(ir)) {
+      return contextTailor(context, k);
+    } else {
+      return CtxConstructor.emptyContext;
     }
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        Object ir = lvn.getVariable();
-        if (csnodes.contains(ir)) {
-            return contextTailor(context, k);
-        } else {
-            return CtxConstructor.emptyContext;
-        }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    if (csnodes.contains(fvn.getField())) {
+      return contextTailor(context, k);
+    } else {
+      return CtxConstructor.emptyContext;
     }
+  }
 
-
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        if (csnodes.contains(fvn.getField())) {
-            return contextTailor(context, k);
-        } else {
-            return CtxConstructor.emptyContext;
-        }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    Object ir = heap.getNewExpr();
+    if (csnodes.contains(ir)) {
+      return contextTailor(context, hk);
+    } else {
+      return CtxConstructor.emptyContext;
     }
-
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        Object ir = heap.getNewExpr();
-        if (csnodes.contains(ir)) {
-            return contextTailor(context, hk);
-        } else {
-            return CtxConstructor.emptyContext;
-        }
-    }
+  }
 }

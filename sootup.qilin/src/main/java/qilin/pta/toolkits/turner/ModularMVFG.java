@@ -18,6 +18,7 @@
 
 package qilin.pta.toolkits.turner;
 
+import java.util.Set;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
@@ -28,69 +29,66 @@ import qilin.util.graph.MergedNode;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 
-import java.util.Set;
-
 public class ModularMVFG extends AbstractMVFG {
-    public static AbstractMVFG findOrCreateMethodVFG(PTA prePTA, SootMethod method, OCG hg, MergedNode<SootMethod> sccNode) {
-        return method2VFG.computeIfAbsent(method, k -> new ModularMVFG(prePTA, method, hg, sccNode));
+  public static AbstractMVFG findOrCreateMethodVFG(
+      PTA prePTA, SootMethod method, OCG hg, MergedNode<SootMethod> sccNode) {
+    return method2VFG.computeIfAbsent(method, k -> new ModularMVFG(prePTA, method, hg, sccNode));
+  }
+
+  private final MergedNode<SootMethod> sccNode;
+
+  public ModularMVFG(PTA prePTA, SootMethod method, OCG hg, MergedNode<SootMethod> sccNode) {
+    super(prePTA, hg, method);
+    this.sccNode = sccNode;
+    buildVFG();
+  }
+
+  @Override
+  protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
+    for (SootMethod tgtmtd : targets) {
+      // the target method is in the same scc with current method.
+      if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
+        return true;
+      }
+      if (!(tgtmtd.getReturnType() instanceof ReferenceType)) {
+        continue;
+      }
+      MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
+      AbstractMVFG tgtVfg = method2VFG.get(tgtmtd);
+      assert tgtVfg != null;
+      MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
+      Node ret = tgtnf.caseRet();
+      if (tgtVfg.getCSNodes().contains(ret)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    private final MergedNode<SootMethod> sccNode;
-
-    public ModularMVFG(PTA prePTA, SootMethod method, OCG hg, MergedNode<SootMethod> sccNode) {
-        super(prePTA, hg, method);
-        this.sccNode = sccNode;
-        buildVFG();
-    }
-
-    @Override
-    protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
-        for (SootMethod tgtmtd : targets) {
-            // the target method is in the same scc with current method.
-            if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
-                return true;
-            }
-            if (!(tgtmtd.getReturnType() instanceof ReferenceType)) {
-                continue;
-            }
-            MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
-            AbstractMVFG tgtVfg = method2VFG.get(tgtmtd);
-            assert tgtVfg != null;
-            MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
-            Node ret = tgtnf.caseRet();
-            if (tgtVfg.getCSNodes().contains(ret)) {
-                return true;
-            }
+  protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
+    for (SootMethod tgtmtd : targets) {
+      // the target method is in the same scc with current method.
+      if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
+        return true;
+      }
+      MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
+      AbstractMVFG tgtVfg = method2VFG.get(tgtmtd);
+      assert tgtVfg != null;
+      MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
+      LocalVarNode parm;
+      if (paramIndex == PointsToAnalysis.THIS_NODE) {
+        parm = (LocalVarNode) tgtnf.caseThis();
+      } else {
+        if (tgtmtd.getParameterType(paramIndex) instanceof ReferenceType) {
+          parm = (LocalVarNode) tgtnf.caseParm(paramIndex);
+        } else {
+          continue;
         }
-        return false;
+      }
+      if (tgtVfg.getCSNodes().contains(parm)) {
+        return true;
+      }
     }
-
-
-    protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
-        for (SootMethod tgtmtd : targets) {
-            // the target method is in the same scc with current method.
-            if (!tgtmtd.isConcrete() || sccNode.getContent().contains(tgtmtd)) {
-                return true;
-            }
-            MethodPAG tgtmpag = prePTA.getPag().getMethodPAG(tgtmtd);
-            AbstractMVFG tgtVfg = method2VFG.get(tgtmtd);
-            assert tgtVfg != null;
-            MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
-            LocalVarNode parm;
-            if (paramIndex == PointsToAnalysis.THIS_NODE) {
-                parm = (LocalVarNode) tgtnf.caseThis();
-            } else {
-                if (tgtmtd.getParameterType(paramIndex) instanceof ReferenceType) {
-                    parm = (LocalVarNode) tgtnf.caseParm(paramIndex);
-                } else {
-                    continue;
-                }
-            }
-            if (tgtVfg.getCSNodes().contains(parm)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    return false;
+  }
 }

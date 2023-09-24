@@ -18,31 +18,29 @@
 
 package qilin.pta.tools;
 
-import qilin.pta.toolkits.selectx.Selectx;
-
 import java.util.Map;
+import qilin.pta.toolkits.selectx.Selectx;
 
 public class SelectxPTA extends PartialCallSiteSensPTA {
 
-    public SelectxPTA(int ctxLen) {
-        super(ctxLen);
-        System.out.println("selectx ... ");
-    }
+  public SelectxPTA(int ctxLen) {
+    super(ctxLen);
+    System.out.println("selectx ... ");
+  }
 
-    //=========context selector=============
+  // =========context selector=============
 
-    @Override
-    protected Map<Object, Integer> calculatingNode2Length() {
-        System.out.print("Construct transPAG...");
-        long time = System.currentTimeMillis();
+  @Override
+  protected Map<Object, Integer> calculatingNode2Length() {
+    System.out.print("Construct transPAG...");
+    long time = System.currentTimeMillis();
 
-        prePAG = prePTA.getPag();
-        Selectx selectx = new Selectx(prePTA);
+    prePAG = prePTA.getPag();
+    Selectx selectx = new Selectx(prePTA);
 
-        System.out.println((System.currentTimeMillis() - time) / 1000 + "s");
+    System.out.println((System.currentTimeMillis() - time) / 1000 + "s");
 
-        System.out.println("Propagate..");
-        return selectx.process();
-    }
-
+    System.out.println("Propagate..");
+    return selectx.process();
+  }
 }

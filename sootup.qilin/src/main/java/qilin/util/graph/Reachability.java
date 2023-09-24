@@ -21,51 +21,51 @@ package qilin.util.graph;
 import java.util.*;
 
 public class Reachability<N> {
-    private final DirectedGraph<N> graph;
-    private final Map<N, Set<N>> reachableNodes;
-    private final Map<N, Set<N>> reachToNodes;
+  private final DirectedGraph<N> graph;
+  private final Map<N, Set<N>> reachableNodes;
+  private final Map<N, Set<N>> reachToNodes;
 
-    public Reachability(final DirectedGraph<N> graph) {
-        this.reachableNodes = new HashMap<>();
-        this.reachToNodes = new HashMap<>();
-        this.graph = graph;
-    }
+  public Reachability(final DirectedGraph<N> graph) {
+    this.reachableNodes = new HashMap<>();
+    this.reachToNodes = new HashMap<>();
+    this.graph = graph;
+  }
 
-    public Set<N> reachableNodesFrom(final N source) {
-        if (!this.reachableNodes.containsKey(source)) {
-            final Set<N> visited = new HashSet<>();
-            final Deque<N> stack = new ArrayDeque<>();
-            stack.push(source);
-            while (!stack.isEmpty()) {
-                final N node = stack.pop();
-                visited.add(node);
-                this.graph.succsOf(node).stream().filter(n -> !visited.contains(n)).forEach(stack::push);
-            }
-            this.reachableNodes.put(source, visited);
-        }
-        return this.reachableNodes.get(source);
+  public Set<N> reachableNodesFrom(final N source) {
+    if (!this.reachableNodes.containsKey(source)) {
+      final Set<N> visited = new HashSet<>();
+      final Deque<N> stack = new ArrayDeque<>();
+      stack.push(source);
+      while (!stack.isEmpty()) {
+        final N node = stack.pop();
+        visited.add(node);
+        this.graph.succsOf(node).stream().filter(n -> !visited.contains(n)).forEach(stack::push);
+      }
+      this.reachableNodes.put(source, visited);
     }
+    return this.reachableNodes.get(source);
+  }
 
-    public Set<N> nodesReach(final N target) {
-        if (!this.reachToNodes.containsKey(target)) {
-            final Set<N> visited = new HashSet<>();
-            final Deque<N> stack = new ArrayDeque<>();
-            stack.push(target);
-            while (!stack.isEmpty()) {
-                final N node = stack.pop();
-                visited.add(node);
-                this.graph.predsOf(node).stream().filter(n -> !visited.contains(n)).forEach(stack::push);
-            }
-            this.reachToNodes.put(target, visited);
-        }
-        return this.reachToNodes.get(target);
+  public Set<N> nodesReach(final N target) {
+    if (!this.reachToNodes.containsKey(target)) {
+      final Set<N> visited = new HashSet<>();
+      final Deque<N> stack = new ArrayDeque<>();
+      stack.push(target);
+      while (!stack.isEmpty()) {
+        final N node = stack.pop();
+        visited.add(node);
+        this.graph.predsOf(node).stream().filter(n -> !visited.contains(n)).forEach(stack::push);
+      }
+      this.reachToNodes.put(target, visited);
     }
+    return this.reachToNodes.get(target);
+  }
 
-    public Set<N> passedNodes(final N source, final N target) {
-        final Set<N> reachableFromSource = this.reachableNodesFrom(source);
-        final Set<N> reachToTarget = this.nodesReach(target);
-        final Set<N> ret = new HashSet<>(reachableFromSource);
-        ret.retainAll(reachToTarget);
-        return ret;
-    }
+  public Set<N> passedNodes(final N source, final N target) {
+    final Set<N> reachableFromSource = this.reachableNodesFrom(source);
+    final Set<N> reachToTarget = this.nodesReach(target);
+    final Set<N> ret = new HashSet<>(reachableFromSource);
+    ret.retainAll(reachToTarget);
+    return ret;
+  }
 }

@@ -30,8 +30,7 @@ import sootup.core.model.SootMethod;
  * @author Ondrej Lhotak
  */
 public interface MethodOrMethodContext {
-    public SootMethod method();
+  public SootMethod method();
 
-    public Context context();
+  public Context context();
 }
-

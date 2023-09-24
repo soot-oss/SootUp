@@ -25,39 +25,39 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentDirectedGraphImpl<N> implements DirectedGraph<N> {
-    protected Set<N> nodes;
-    protected Map<N, Set<N>> preds;
-    protected Map<N, Set<N>> succs;
+  protected Set<N> nodes;
+  protected Map<N, Set<N>> preds;
+  protected Map<N, Set<N>> succs;
 
-    public ConcurrentDirectedGraphImpl() {
-        this.nodes = ConcurrentHashMap.newKeySet();
-        this.preds = new ConcurrentHashMap<>();
-        this.succs = new ConcurrentHashMap<>();
-    }
+  public ConcurrentDirectedGraphImpl() {
+    this.nodes = ConcurrentHashMap.newKeySet();
+    this.preds = new ConcurrentHashMap<>();
+    this.succs = new ConcurrentHashMap<>();
+  }
 
-    public void addNode(final N node) {
-        this.nodes.add(node);
-    }
+  public void addNode(final N node) {
+    this.nodes.add(node);
+  }
 
-    public void addEdge(final N from, final N to) {
-        this.addNode(from);
-        this.addNode(to);
-        this.preds.computeIfAbsent(to, k -> ConcurrentHashMap.newKeySet()).add(from);
-        this.succs.computeIfAbsent(from, k -> ConcurrentHashMap.newKeySet()).add(to);
-    }
+  public void addEdge(final N from, final N to) {
+    this.addNode(from);
+    this.addNode(to);
+    this.preds.computeIfAbsent(to, k -> ConcurrentHashMap.newKeySet()).add(from);
+    this.succs.computeIfAbsent(from, k -> ConcurrentHashMap.newKeySet()).add(to);
+  }
 
-    @Override
-    public Collection<N> allNodes() {
-        return this.nodes;
-    }
+  @Override
+  public Collection<N> allNodes() {
+    return this.nodes;
+  }
 
-    @Override
-    public Collection<N> predsOf(final N n) {
-        return this.preds.getOrDefault(n, Collections.emptySet());
-    }
+  @Override
+  public Collection<N> predsOf(final N n) {
+    return this.preds.getOrDefault(n, Collections.emptySet());
+  }
 
-    @Override
-    public Collection<N> succsOf(final N n) {
-        return this.succs.getOrDefault(n, Collections.emptySet());
-    }
+  @Override
+  public Collection<N> succsOf(final N n) {
+    return this.succs.getOrDefault(n, Collections.emptySet());
+  }
 }

@@ -18,52 +18,54 @@
 
 package qilin.pta.toolkits.turner;
 
+import java.util.Collection;
 import qilin.util.graph.DirectedGraph;
 import qilin.util.graph.DirectedGraphImpl;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import sootup.core.model.SootMethod;
 
-import java.util.Collection;
-
 public class MethodLevelCallGraph implements DirectedGraph<SootMethod> {
-    private final CallGraph callGraph;
-    private final DirectedGraphImpl<SootMethod> mcg;
+  private final CallGraph callGraph;
+  private final DirectedGraphImpl<SootMethod> mcg;
 
-    public MethodLevelCallGraph(CallGraph callGraph) {
-        this.callGraph = callGraph;
-        this.mcg = new DirectedGraphImpl<>();
-        init();
-    }
+  public MethodLevelCallGraph(CallGraph callGraph) {
+    this.callGraph = callGraph;
+    this.mcg = new DirectedGraphImpl<>();
+    init();
+  }
 
-    private void init() {
-        callGraph.iterator().forEachRemaining(edge -> {
-            SootMethod src = edge.getSrc().method();
-            SootMethod tgt = edge.getTgt().method();
-            if (src != null && tgt != null) {
+  private void init() {
+    callGraph
+        .iterator()
+        .forEachRemaining(
+            edge -> {
+              SootMethod src = edge.getSrc().method();
+              SootMethod tgt = edge.getTgt().method();
+              if (src != null && tgt != null) {
                 mcg.addEdge(src, tgt);
-            } else {
+              } else {
                 if (src != null) {
-                    mcg.addNode(src);
+                  mcg.addNode(src);
                 }
                 if (tgt != null) {
-                    mcg.addNode(tgt);
+                  mcg.addNode(tgt);
                 }
-            }
-        });
-    }
+              }
+            });
+  }
 
-    @Override
-    public Collection<SootMethod> allNodes() {
-        return mcg.allNodes();
-    }
+  @Override
+  public Collection<SootMethod> allNodes() {
+    return mcg.allNodes();
+  }
 
-    @Override
-    public Collection<SootMethod> predsOf(SootMethod n) {
-        return mcg.predsOf(n);
-    }
+  @Override
+  public Collection<SootMethod> predsOf(SootMethod n) {
+    return mcg.predsOf(n);
+  }
 
-    @Override
-    public Collection<SootMethod> succsOf(final SootMethod n) {
-        return mcg.succsOf(n);
-    }
+  @Override
+  public Collection<SootMethod> succsOf(final SootMethod n) {
+    return mcg.succsOf(n);
+  }
 }

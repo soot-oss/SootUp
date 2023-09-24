@@ -28,26 +28,26 @@ package soot.util;
  * @author xiao, generalize the interface
  */
 public interface Numberer<E> {
-    /** Tells the numberer that a new object needs to be assigned a number. */
-    public void add(E o);
+  /** Tells the numberer that a new object needs to be assigned a number. */
+  public void add(E o);
 
-    /**
-     * Removes the number for a given object.
-     *
-     * @param o
-     *          the element
-     * @return true if the removal was successful, false when not
-     */
-    public boolean remove(E o);
+  /**
+   * Removes the number for a given object.
+   *
+   * @param o the element
+   * @return true if the removal was successful, false when not
+   */
+  public boolean remove(E o);
 
-    /**
-     * Should return the number that was assigned to object o that was previously passed as an argument to add().
-     */
-    public long get(E o);
+  /**
+   * Should return the number that was assigned to object o that was previously passed as an
+   * argument to add().
+   */
+  public long get(E o);
 
-    /** Should return the object that was assigned the number. */
-    public E get(long number);
+  /** Should return the object that was assigned the number. */
+  public E get(long number);
 
-    /** Should return the number of objects that have been assigned numbers. */
-    public int size();
+  /** Should return the number of objects that have been assigned numbers. */
+  public int size();
 }

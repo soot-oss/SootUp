@@ -21,135 +21,117 @@ package qilin.core.sets;
 import java.util.Iterator;
 
 /**
- * Implementation of points-to set that holds two sets: one for new elements that have not yet been propagated, and the other
- * for elements that have already been propagated.
+ * Implementation of points-to set that holds two sets: one for new elements that have not yet been
+ * propagated, and the other for elements that have already been propagated.
  *
  * @author Ondrej Lhotak
  */
 public class DoublePointsToSet extends PointsToSetInternal {
-    protected HybridPointsToSet newSet;
-    protected HybridPointsToSet oldSet;
+  protected HybridPointsToSet newSet;
+  protected HybridPointsToSet oldSet;
 
-    public DoublePointsToSet() {
-        newSet = new HybridPointsToSet();
-        oldSet = new HybridPointsToSet();
-    }
+  public DoublePointsToSet() {
+    newSet = new HybridPointsToSet();
+    oldSet = new HybridPointsToSet();
+  }
 
-    /**
-     * Returns true if this set contains no run-time objects.
-     */
+  /** Returns true if this set contains no run-time objects. */
+  @Override
+  public boolean isEmpty() {
+    return oldSet.isEmpty() && newSet.isEmpty();
+  }
+
+  /** Returns true if this set shares some objects with other. */
+  public boolean hasNonEmptyIntersection(PointsToSetInternal other) {
+    return oldSet.hasNonEmptyIntersection(other) || newSet.hasNonEmptyIntersection(other);
+  }
+
+  @Override
+  public int size() {
+    return oldSet.size() + newSet.size();
+  }
+
+  private class DoublePTSIterator implements Iterator<Integer> {
+    private final Iterator<Integer> oldIt = oldSet.iterator();
+    private final Iterator<Integer> newIt = newSet.iterator();
+
     @Override
-    public boolean isEmpty() {
-        return oldSet.isEmpty() && newSet.isEmpty();
-    }
-
-    /**
-     * Returns true if this set shares some objects with other.
-     */
-    public boolean hasNonEmptyIntersection(PointsToSetInternal other) {
-        return oldSet.hasNonEmptyIntersection(other) || newSet.hasNonEmptyIntersection(other);
+    public boolean hasNext() {
+      return oldIt.hasNext() || newIt.hasNext();
     }
 
     @Override
-    public int size() {
-        return oldSet.size() + newSet.size();
+    public Integer next() {
+      if (oldIt.hasNext()) {
+        return oldIt.next();
+      } else {
+        return newIt.next();
+      }
     }
+  }
 
-    private class DoublePTSIterator implements Iterator<Integer> {
-        private final Iterator<Integer> oldIt = oldSet.iterator();
-        private final Iterator<Integer> newIt = newSet.iterator();
+  public Iterator<Integer> iterator() {
+    return new DoublePTSIterator();
+  }
 
-        @Override
-        public boolean hasNext() {
-            return oldIt.hasNext() || newIt.hasNext();
-        }
+  /*
+   * Empty this set.
+   * */
+  @Override
+  public void clear() {
+    oldSet.clear();
+    newSet.clear();
+  }
 
-        @Override
-        public Integer next() {
-            if (oldIt.hasNext()) {
-                return oldIt.next();
-            } else {
-                return newIt.next();
-            }
-        }
+  /** Adds contents of other into this set, returns true if this set changed. */
+  public boolean addAll(PointsToSetInternal other, PointsToSetInternal exclude) {
+    if (exclude != null) {
+      throw new RuntimeException("exclude set must be null.");
     }
+    return newSet.addAll(other, oldSet);
+  }
 
-    public Iterator<Integer> iterator() {
-        return new DoublePTSIterator();
-    }
+  /** Calls v's visit method on all nodes in this set. */
+  @Override
+  public boolean forall(P2SetVisitor v) {
+    oldSet.forall(v);
+    newSet.forall(v);
+    return v.getReturnValue();
+  }
 
-    /*
-     * Empty this set.
-     * */
-    @Override
-    public void clear() {
-        oldSet.clear();
-        newSet.clear();
+  /** Adds n to this set, returns true if idx was not already in this set. */
+  public boolean add(int idx) {
+    if (oldSet.contains(idx)) {
+      return false;
     }
+    return newSet.add(idx);
+  }
 
-    /**
-     * Adds contents of other into this set, returns true if this set changed.
-     */
-    public boolean addAll(PointsToSetInternal other, PointsToSetInternal exclude) {
-        if (exclude != null) {
-            throw new RuntimeException("exclude set must be null.");
-        }
-        return newSet.addAll(other, oldSet);
-    }
+  /** Returns set of nodes already present before last call to flushNew. */
+  public HybridPointsToSet getOldSet() {
+    return oldSet;
+  }
 
-    /**
-     * Calls v's visit method on all nodes in this set.
-     */
-    @Override
-    public boolean forall(P2SetVisitor v) {
-        oldSet.forall(v);
-        newSet.forall(v);
-        return v.getReturnValue();
-    }
+  /** Returns set of newly-added nodes since last call to flushNew. */
+  public HybridPointsToSet getNewSet() {
+    return newSet;
+  }
 
-    /**
-     * Adds n to this set, returns true if idx was not already in this set.
-     */
-    public boolean add(int idx) {
-        if (oldSet.contains(idx)) {
-            return false;
-        }
-        return newSet.add(idx);
-    }
+  public HybridPointsToSet getNewSetCopy() {
+    HybridPointsToSet newCopy = new HybridPointsToSet();
+    newCopy.addAll(newSet, null);
+    return newCopy;
+  }
 
-    /**
-     * Returns set of nodes already present before last call to flushNew.
-     */
-    public HybridPointsToSet getOldSet() {
-        return oldSet;
-    }
+  /** Sets all newly-added nodes to old nodes. */
+  public void flushNew() {
+    oldSet.addAll(newSet, null);
+    newSet = new HybridPointsToSet();
+  }
 
-    /**
-     * Returns set of newly-added nodes since last call to flushNew.
-     */
-    public HybridPointsToSet getNewSet() {
-        return newSet;
-    }
-
-    public HybridPointsToSet getNewSetCopy() {
-        HybridPointsToSet newCopy = new HybridPointsToSet();
-        newCopy.addAll(newSet, null);
-        return newCopy;
-    }
-
-    /**
-     * Sets all newly-added nodes to old nodes.
-     */
-    public void flushNew() {
-        oldSet.addAll(newSet, null);
-        newSet = new HybridPointsToSet();
-    }
-
-    /**
-     * Returns true iff the set contains idx.
-     */
-    @Override
-    public boolean contains(int idx) {
-        return oldSet.contains(idx) || newSet.contains(idx);
-    }
+  /** Returns true iff the set contains idx. */
+  @Override
+  public boolean contains(int idx) {
+    return oldSet.contains(idx) || newSet.contains(idx);
+  }
 }

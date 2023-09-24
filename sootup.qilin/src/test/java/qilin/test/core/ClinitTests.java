@@ -22,23 +22,23 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class ClinitTests extends JunitTests {
-    @Test
-    public void testClinitNewExpr() {
-        checkAssertions(run("qilin.microben.core.clinit.ClinitNewExpr"));
-    }
+  @Test
+  public void testClinitNewExpr() {
+    checkAssertions(run("qilin.microben.core.clinit.ClinitNewExpr"));
+  }
 
-    @Test
-    public void testClinitStaticCall() {
-        checkAssertions(run("qilin.microben.core.clinit.ClinitStaticCall"));
-    }
+  @Test
+  public void testClinitStaticCall() {
+    checkAssertions(run("qilin.microben.core.clinit.ClinitStaticCall"));
+  }
 
-    @Test
-    public void testClinitStaticLoad() {
-        checkAssertions(run("qilin.microben.core.clinit.ClinitStaticLoad"));
-    }
+  @Test
+  public void testClinitStaticLoad() {
+    checkAssertions(run("qilin.microben.core.clinit.ClinitStaticLoad"));
+  }
 
-    @Test
-    public void testClinitStaticStore() {
-        checkAssertions(run("qilin.microben.core.clinit.ClinitStaticStore"));
-    }
+  @Test
+  public void testClinitStaticStore() {
+    checkAssertions(run("qilin.microben.core.clinit.ClinitStaticStore"));
+  }
 }

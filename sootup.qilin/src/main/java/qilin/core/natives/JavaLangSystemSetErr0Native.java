@@ -22,19 +22,19 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
 public class JavaLangSystemSetErr0Native extends NativeMethod {
-    public JavaLangSystemSetErr0Native(SootMethod method) {
-        super(method);
-    }
+  public JavaLangSystemSetErr0Native(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * NOTE: this native method is not documented in JDK API. It should have the
-     * side effect: System.err = parameter
-     * <p>
-     * private static native void setErr0(java.io.PrintStream);
-     */
-    public void simulate() {
-        Value r1 = getPara(0);
-        Value systemErr = getStaticFieldRef("java.lang.System", "err");
-        addAssign(systemErr, r1);
-    }
+  /**
+   * NOTE: this native method is not documented in JDK API. It should have the side effect:
+   * System.err = parameter
+   *
+   * <p>private static native void setErr0(java.io.PrintStream);
+   */
+  protected void simulateImpl() {
+    Value r1 = getPara(0);
+    Value systemErr = getStaticFieldRef("java.lang.System", "err");
+    addAssign(systemErr, r1);
+  }
 }

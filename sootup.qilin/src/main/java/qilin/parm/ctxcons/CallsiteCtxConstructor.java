@@ -28,16 +28,20 @@ import sootup.core.model.SootMethod;
 
 public class CallsiteCtxConstructor implements CtxConstructor {
 
-    @Override
-    public Context constructCtx(MethodOrMethodContext caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
-        Context callerContext = caller.context();
-        assert callerContext instanceof ContextElements;
-        ContextElements ctxElems = (ContextElements) callerContext;
-        int s = ctxElems.size();
-        ContextElement[] cxt = ctxElems.getElements();
-        ContextElement[] array = new ContextElement[s + 1];
-        array[0] = callSite;
-        System.arraycopy(cxt, 0, array, 1, s);
-        return new ContextElements(array, s + 1);
-    }
+  @Override
+  public Context constructCtx(
+      MethodOrMethodContext caller,
+      ContextAllocNode receiverNode,
+      CallSite callSite,
+      SootMethod target) {
+    Context callerContext = caller.context();
+    assert callerContext instanceof ContextElements;
+    ContextElements ctxElems = (ContextElements) callerContext;
+    int s = ctxElems.size();
+    ContextElement[] cxt = ctxElems.getElements();
+    ContextElement[] array = new ContextElement[s + 1];
+    array[0] = callSite;
+    System.arraycopy(cxt, 0, array, 1, s);
+    return new ContextElements(array, s + 1);
+  }
 }

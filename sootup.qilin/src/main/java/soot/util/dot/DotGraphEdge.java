@@ -33,69 +33,62 @@ import java.util.Collection;
  */
 public class DotGraphEdge extends AbstractDotGraphElement implements Renderable {
 
-    private final DotGraphNode start;
-    private final DotGraphNode end;
-    private final boolean isDirected;
+  private final DotGraphNode start;
+  private final DotGraphNode end;
+  private final boolean isDirected;
 
-    /**
-     * Draws a directed edge.
-     *
-     * @param src,
-     *          the source node
-     * @param dst,
-     *          the end node
-     */
-    public DotGraphEdge(DotGraphNode src, DotGraphNode dst) {
-        this.start = src;
-        this.end = dst;
-        this.isDirected = true;
+  /**
+   * Draws a directed edge.
+   *
+   * @param src, the source node
+   * @param dst, the end node
+   */
+  public DotGraphEdge(DotGraphNode src, DotGraphNode dst) {
+    this.start = src;
+    this.end = dst;
+    this.isDirected = true;
+  }
+
+  /**
+   * Draws a graph edge by specifying directed or undirected.
+   *
+   * @param src, the source node
+   * @param dst, the end node
+   * @param directed, the edge is directed or not
+   */
+  public DotGraphEdge(DotGraphNode src, DotGraphNode dst, boolean directed) {
+    this.start = src;
+    this.end = dst;
+    this.isDirected = directed;
+  }
+
+  /**
+   * Sets the edge style.
+   *
+   * @param style, a style of edge
+   * @see DotGraphConstants
+   */
+  public void setStyle(String style) {
+    this.setAttribute("style", style);
+  }
+
+  @Override
+  public void render(OutputStream out, int indent) throws IOException {
+    StringBuilder line = new StringBuilder();
+    line.append(this.start.getName());
+    line.append(this.isDirected ? "->" : "--");
+    line.append(this.end.getName());
+
+    Collection<DotGraphAttribute> attrs = this.getAttributes();
+    if (!attrs.isEmpty()) {
+      line.append(" [");
+      for (DotGraphAttribute attr : attrs) {
+        line.append(attr.toString()).append(',');
+      }
+      line.append(']');
     }
+    line.append(';');
 
-    /**
-     * Draws a graph edge by specifying directed or undirected.
-     *
-     * @param src,
-     *          the source node
-     * @param dst,
-     *          the end node
-     * @param directed,
-     *          the edge is directed or not
-     */
-    public DotGraphEdge(DotGraphNode src, DotGraphNode dst, boolean directed) {
-        this.start = src;
-        this.end = dst;
-        this.isDirected = directed;
-    }
-
-    /**
-     * Sets the edge style.
-     *
-     * @param style,
-     *          a style of edge
-     * @see DotGraphConstants
-     */
-    public void setStyle(String style) {
-        this.setAttribute("style", style);
-    }
-
-    @Override
-    public void render(OutputStream out, int indent) throws IOException {
-        StringBuilder line = new StringBuilder();
-        line.append(this.start.getName());
-        line.append(this.isDirected ? "->" : "--");
-        line.append(this.end.getName());
-
-        Collection<DotGraphAttribute> attrs = this.getAttributes();
-        if (!attrs.isEmpty()) {
-            line.append(" [");
-            for (DotGraphAttribute attr : attrs) {
-                line.append(attr.toString()).append(',');
-            }
-            line.append(']');
-        }
-        line.append(';');
-
-        DotGraphUtility.renderLine(out, line.toString(), indent);
-    }
+    DotGraphUtility.renderLine(out, line.toString(), indent);
+  }
 }
-

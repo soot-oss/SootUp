@@ -18,45 +18,44 @@
 
 package qilin.parm.select;
 
+import java.util.Map;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import soot.Context;
 import sootup.core.model.SootMethod;
 
-import java.util.Map;
-
 public class FullMethodLvSelector extends CtxSelector {
-    private final int k;
-    /*
-     * Methods and its corresponding context length obtained by Data-driven (OOPSLA 2017).
-     * */
-    private final Map<SootMethod, Integer> m2len;
+  private final int k;
+  /*
+   * Methods and its corresponding context length obtained by Data-driven (OOPSLA 2017).
+   * */
+  private final Map<SootMethod, Integer> m2len;
 
-    public FullMethodLvSelector(Map<SootMethod, Integer> m2len, int k) {
-        this.m2len = m2len;
-        this.k = k;
-    }
+  public FullMethodLvSelector(Map<SootMethod, Integer> m2len, int k) {
+    this.m2len = m2len;
+    this.k = k;
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return contextTailor(context, m2len.getOrDefault(m, 0));
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return contextTailor(context, m2len.getOrDefault(m, 0));
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        SootMethod sm = lvn.getMethod();
-        return contextTailor(context, m2len.getOrDefault(sm, 0));
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    SootMethod sm = lvn.getMethod();
+    return contextTailor(context, m2len.getOrDefault(sm, 0));
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return contextTailor(context, k);
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return contextTailor(context, k);
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        SootMethod sm = heap.getMethod();
-        return contextTailor(context, Math.max(0, m2len.getOrDefault(sm, 0) - 1));
-    }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    SootMethod sm = heap.getMethod();
+    return contextTailor(context, Math.max(0, m2len.getOrDefault(sm, 0) - 1));
+  }
 }

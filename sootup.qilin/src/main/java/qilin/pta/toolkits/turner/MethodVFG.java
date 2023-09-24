@@ -18,28 +18,27 @@
 
 package qilin.pta.toolkits.turner;
 
+import java.util.Set;
 import qilin.core.PTA;
 import sootup.core.model.SootMethod;
 
-import java.util.Set;
-
 public class MethodVFG extends AbstractMVFG {
-    public static AbstractMVFG findOrCreateMethodVFG(PTA prePTA, SootMethod method, OCG hg) {
-        return method2VFG.computeIfAbsent(method, k -> new MethodVFG(prePTA, method, hg));
-    }
+  public static AbstractMVFG findOrCreateMethodVFG(PTA prePTA, SootMethod method, OCG hg) {
+    return method2VFG.computeIfAbsent(method, k -> new MethodVFG(prePTA, method, hg));
+  }
 
-    public MethodVFG(PTA prePTA, SootMethod method, OCG hg) {
-        super(prePTA, hg, method);
-        buildVFG();
-    }
+  public MethodVFG(PTA prePTA, SootMethod method, OCG hg) {
+    super(prePTA, hg, method);
+    buildVFG();
+  }
 
-    @Override
-    protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
-        return true;
-    }
+  @Override
+  protected boolean statisfyAddingLoadCondition(Set<SootMethod> targets) {
+    return true;
+  }
 
-    @Override
-    protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
-        return true;
-    }
+  @Override
+  protected boolean satisfyAddingStoreCondition(int paramIndex, Set<SootMethod> targets) {
+    return true;
+  }
 }

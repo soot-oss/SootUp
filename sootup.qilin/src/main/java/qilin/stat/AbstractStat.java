@@ -19,5 +19,5 @@
 package qilin.stat;
 
 public interface AbstractStat {
-    void export(Exporter exporter);
+  void export(Exporter exporter);
 }

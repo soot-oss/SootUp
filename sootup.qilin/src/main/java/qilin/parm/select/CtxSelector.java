@@ -28,25 +28,25 @@ import soot.Context;
 import sootup.core.model.SootMethod;
 
 public abstract class CtxSelector {
-    public abstract Context select(SootMethod m, Context context);
+  public abstract Context select(SootMethod m, Context context);
 
-    public abstract Context select(LocalVarNode lvn, Context context);
+  public abstract Context select(LocalVarNode lvn, Context context);
 
-    public abstract Context select(FieldValNode fvn, Context context);
+  public abstract Context select(FieldValNode fvn, Context context);
 
-    public abstract Context select(AllocNode heap, Context context);
+  public abstract Context select(AllocNode heap, Context context);
 
-    protected Context contextTailor(Context context, int length) {
-        if (length == 0) {
-            return CtxConstructor.emptyContext;
-        }
-        ContextElements ctx = (ContextElements) context;
-        ContextElement[] fullContexts = ctx.getElements();
-        if (length >= ctx.size()) {
-            return context;
-        }
-        ContextElement[] newContexts = new ContextElement[length];
-        System.arraycopy(fullContexts, 0, newContexts, 0, length);
-        return new ContextElements(newContexts, length);
+  protected Context contextTailor(Context context, int length) {
+    if (length == 0) {
+      return CtxConstructor.emptyContext;
     }
+    ContextElements ctx = (ContextElements) context;
+    ContextElement[] fullContexts = ctx.getElements();
+    if (length >= ctx.size()) {
+      return context;
+    }
+    ContextElement[] newContexts = new ContextElement[length];
+    System.arraycopy(fullContexts, 0, newContexts, 0, length);
+    return new ContextElements(newContexts, length);
+  }
 }

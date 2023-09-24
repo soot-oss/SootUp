@@ -19,15 +19,17 @@
 package qilin.pta.toolkits.conch;
 
 public enum Trilean {
-    TRUE, FALSE, UNKNOWN;
+  TRUE,
+  FALSE,
+  UNKNOWN;
 
-    public static Trilean OR(Trilean x1, Trilean x2) {
-        if (x1 == TRUE || x2 == TRUE) {
-            return TRUE;
-        } else if (x1 == UNKNOWN || x2 == UNKNOWN) {
-            return UNKNOWN;
-        } else {
-            return FALSE;
-        }
+  public static Trilean OR(Trilean x1, Trilean x2) {
+    if (x1 == TRUE || x2 == TRUE) {
+      return TRUE;
+    } else if (x1 == UNKNOWN || x2 == UNKNOWN) {
+      return UNKNOWN;
+    } else {
+      return FALSE;
     }
+  }
 }

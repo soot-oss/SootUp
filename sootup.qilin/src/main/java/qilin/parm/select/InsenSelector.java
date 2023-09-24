@@ -26,23 +26,23 @@ import soot.Context;
 import sootup.core.model.SootMethod;
 
 public class InsenSelector extends CtxSelector {
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return CtxConstructor.emptyContext;
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return CtxConstructor.emptyContext;
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return CtxConstructor.emptyContext;
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return CtxConstructor.emptyContext;
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return contextTailor(context, 1);
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return contextTailor(context, 1);
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        return CtxConstructor.emptyContext;
-    }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    return CtxConstructor.emptyContext;
+  }
 }

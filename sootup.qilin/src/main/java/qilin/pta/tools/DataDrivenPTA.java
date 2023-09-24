@@ -26,6 +26,7 @@ import qilin.parm.select.HeuristicSelector;
 import qilin.parm.select.PipelineSelector;
 import qilin.pta.PTAConfig;
 import qilin.pta.toolkits.dd.DataDrivenSelector;
+
 /*
  * Support Data-driven context-sensitivity for Points-to Analysis (OOPSLA 2017):
  * https://doi.org/10.1145/3133924
@@ -38,19 +39,19 @@ import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 public class DataDrivenPTA extends BasePTA {
 
-    public DataDrivenPTA(CtxConstructor ctxCons) {
-        this.ctxCons = ctxCons;
-        CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("data-driven ...");
+  public DataDrivenPTA(CtxConstructor ctxCons) {
+    this.ctxCons = ctxCons;
+    CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("data-driven ...");
+  }
 }

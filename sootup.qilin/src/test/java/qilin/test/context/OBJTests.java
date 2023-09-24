@@ -22,49 +22,48 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class OBJTests extends JunitTests {
-    @Test
-    public void testOBJ1k0() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k0", "1o"));
-    }
+  @Test
+  public void testOBJ1k0() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k0", "1o"));
+  }
 
-    @Test
-    public void testOBJ1k1() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k1", "1o"));
-    }
+  @Test
+  public void testOBJ1k1() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k1", "1o"));
+  }
 
-    @Test
-    public void testOBJ1k2() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k2", "1o"));
-    }
+  @Test
+  public void testOBJ1k2() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k2", "1o"));
+  }
 
-    @Test
-    public void testOBJ1k3() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k3", "1o"));
-    }
+  @Test
+  public void testOBJ1k3() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k3", "1o"));
+  }
 
-    @Test
-    public void testOBJ1k4() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k4", "1o"));
-    }
+  @Test
+  public void testOBJ1k4() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k4", "1o"));
+  }
 
-    @Test
-    public void testOBJ1k5() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ1k5", "1o"));
-    }
+  @Test
+  public void testOBJ1k5() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ1k5", "1o"));
+  }
 
-    @Test
-    public void testOBJ2k0() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ2k0", "2o"));
-    }
+  @Test
+  public void testOBJ2k0() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ2k0", "2o"));
+  }
 
-    @Test
-    public void testOBJ2k1() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ2k1", "2o"));
-    }
+  @Test
+  public void testOBJ2k1() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ2k1", "2o"));
+  }
 
-    @Test
-    public void testOBJ2k2() {
-        checkAssertions(run("qilin.microben.context.obj.OBJ2k2", "2o"));
-    }
-
+  @Test
+  public void testOBJ2k2() {
+    checkAssertions(run("qilin.microben.context.obj.OBJ2k2", "2o"));
+  }
 }

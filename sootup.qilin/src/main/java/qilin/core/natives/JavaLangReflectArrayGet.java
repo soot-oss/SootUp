@@ -30,17 +30,17 @@ import sootup.core.types.ClassType;
  * */
 
 public class JavaLangReflectArrayGet extends NativeMethod {
-    JavaLangReflectArrayGet(SootMethod method) {
-        super(method);
-    }
+  JavaLangReflectArrayGet(SootMethod method) {
+    super(method);
+  }
 
-    @Override
-    void simulate() {
-        ClassType objType = PTAUtils.getClassType("java.lang.Object");
-        Value arrayBase = getPara(0, new ArrayType(objType, 1));
-        Value arrayRef = getArrayRef(arrayBase);
-        Local ret = getNextLocal(objType);
-        addAssign(ret, arrayRef);
-        addReturn(ret);
-    }
+  @Override
+  protected void simulateImpl() {
+    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    Value arrayBase = getPara(0, new ArrayType(objType, 1));
+    Value arrayRef = getArrayRef(arrayBase);
+    Local ret = getNextLocal(objType);
+    addAssign(ret, arrayRef);
+    addReturn(ret);
+  }
 }

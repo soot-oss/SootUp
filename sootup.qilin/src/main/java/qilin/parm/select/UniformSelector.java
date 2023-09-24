@@ -25,31 +25,31 @@ import soot.Context;
 import sootup.core.model.SootMethod;
 
 public class UniformSelector extends CtxSelector {
-    private final int k;
-    private final int hk;
+  private final int k;
+  private final int hk;
 
-    public UniformSelector(int k, int hk) {
-        this.k = k;
-        this.hk = hk;
-    }
+  public UniformSelector(int k, int hk) {
+    this.k = k;
+    this.hk = hk;
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return contextTailor(context, k);
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return contextTailor(context, k);
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return contextTailor(context, k);
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return contextTailor(context, k);
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return contextTailor(context, k);
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return contextTailor(context, k);
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        return contextTailor(context, hk);
-    }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    return contextTailor(context, hk);
+  }
 }

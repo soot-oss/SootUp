@@ -18,6 +18,7 @@
 
 package qilin.parm.heapabst;
 
+import java.util.Set;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.MergedNewExpr;
 import qilin.core.pag.PAG;
@@ -27,26 +28,24 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
-import java.util.Set;
-
 public class HeuristicAbstractor implements HeapAbstractor {
-    private final PAG pag;
-    private final Set<Type> mergedTypes = DataFactory.createSet();
+  private final PAG pag;
+  private final Set<Type> mergedTypes = DataFactory.createSet();
 
-    public HeuristicAbstractor(PAG pag) {
-        this.pag = pag;
-        mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuffer"));
-        mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuilder"));
-    }
+  public HeuristicAbstractor(PAG pag) {
+    this.pag = pag;
+    mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuffer"));
+    mergedTypes.add(PTAUtils.getClassType("java.lang.StringBuilder"));
+  }
 
-    @Override
-    public AllocNode abstractHeap(AllocNode heap) {
-        Type type = heap.getType();
-        SootMethod m = heap.getMethod();
-        if (mergedTypes.contains(type) || (PTAUtils.isThrowable(type) && mergedTypes.add(type))) {
-            return pag.makeAllocNode(MergedNewExpr.v((ReferenceType) type), type, null);
-        } else {
-            return heap;
-        }
+  @Override
+  public AllocNode abstractHeap(AllocNode heap) {
+    Type type = heap.getType();
+    SootMethod m = heap.getMethod();
+    if (mergedTypes.contains(type) || (PTAUtils.isThrowable(type) && mergedTypes.add(type))) {
+      return pag.makeAllocNode(MergedNewExpr.v((ReferenceType) type), type, null);
+    } else {
+      return heap;
     }
+  }
 }

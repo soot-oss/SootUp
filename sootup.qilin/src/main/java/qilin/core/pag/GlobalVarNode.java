@@ -18,37 +18,36 @@
 
 package qilin.core.pag;
 
-
 import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.types.Type;
 
 /**
- * Represents a simple variable node in the pointer assignment graph that is not associated with any particular
- * method invocation.
+ * Represents a simple variable node in the pointer assignment graph that is not associated with any
+ * particular method invocation.
  *
  * @author Ondrej Lhotak
  */
 public class GlobalVarNode extends VarNode {
-    public GlobalVarNode(Object variable, Type t) {
-        super(variable, t);
+  public GlobalVarNode(Object variable, Type t) {
+    super(variable, t);
+  }
+
+  @Override
+  public VarNode base() {
+    return this;
+  }
+
+  public String toString() {
+    return "GlobalVarNode " + getNumber() + " " + variable;
+  }
+
+  public SootClass getDeclaringClass() {
+    if (variable instanceof SootField sf) {
+      return (SootClass) PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
     }
 
-    @Override
-    public VarNode base() {
-        return this;
-    }
-
-    public String toString() {
-        return "GlobalVarNode " + getNumber() + " " + variable;
-    }
-
-    public SootClass getDeclaringClass() {
-        if (variable instanceof SootField sf) {
-            return (SootClass) PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

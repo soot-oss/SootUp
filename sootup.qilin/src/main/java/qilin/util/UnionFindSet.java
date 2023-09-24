@@ -25,69 +25,70 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UnionFindSet<E> {
-    private final Map<E, Entry> entries;
-    private int nrsets;
+  private final Map<E, Entry> entries;
+  private int nrsets;
 
-    public UnionFindSet(final Collection<E> elems) {
-        this.entries = new HashMap<>();
-        elems.forEach(elem -> this.entries.put(elem, new Entry(elem)));
-        this.nrsets = this.entries.size();
+  public UnionFindSet(final Collection<E> elems) {
+    this.entries = new HashMap<>();
+    elems.forEach(elem -> this.entries.put(elem, new Entry(elem)));
+    this.nrsets = this.entries.size();
+  }
+
+  public boolean union(final E e1, final E e2) {
+    final Entry root1 = this.findRoot(this.entries.get(e1));
+    final Entry root2 = this.findRoot(this.entries.get(e2));
+    if (root1 == root2) {
+      return false;
     }
-
-    public boolean union(final E e1, final E e2) {
-        final Entry root1 = this.findRoot(this.entries.get(e1));
-        final Entry root2 = this.findRoot(this.entries.get(e2));
-        if (root1 == root2) {
-            return false;
-        }
-        if (root1.rank < root2.rank) {
-            root1.parent = root2;
-        } else if (root1.rank > root2.rank) {
-            root2.parent = root1;
-        } else {
-            root2.parent = root1;
-            ++root2.rank;
-        }
-        --this.nrsets;
-        return true;
+    if (root1.rank < root2.rank) {
+      root1.parent = root2;
+    } else if (root1.rank > root2.rank) {
+      root2.parent = root1;
+    } else {
+      root2.parent = root1;
+      ++root2.rank;
     }
+    --this.nrsets;
+    return true;
+  }
 
-    public boolean isConnected(final E e1, final E e2) {
-        final Entry root1 = this.findRoot(this.entries.get(e1));
-        final Entry root2 = this.findRoot(this.entries.get(e2));
-        return root1 == root2;
+  public boolean isConnected(final E e1, final E e2) {
+    final Entry root1 = this.findRoot(this.entries.get(e1));
+    final Entry root2 = this.findRoot(this.entries.get(e2));
+    return root1 == root2;
+  }
+
+  public E find(final E e) {
+    final Entry ent = this.findRoot(this.entries.get(e));
+    return ent.elem;
+  }
+
+  public int numberOfSets() {
+    return this.nrsets;
+  }
+
+  public Collection<Set<E>> getDisjointSets() {
+    return this.entries.keySet().stream()
+        .collect(Collectors.groupingBy(this::find, Collectors.toSet()))
+        .values();
+  }
+
+  private Entry findRoot(final Entry ent) {
+    if (ent.parent != ent) {
+      ent.parent = this.findRoot(ent.parent);
     }
+    return ent.parent;
+  }
 
-    public E find(final E e) {
-        final Entry ent = this.findRoot(this.entries.get(e));
-        return ent.elem;
+  private class Entry {
+    private final E elem;
+    private Entry parent;
+    private int rank;
+
+    private Entry(final E elem) {
+      this.elem = elem;
+      this.parent = this;
+      this.rank = 0;
     }
-
-    public int numberOfSets() {
-        return this.nrsets;
-    }
-
-    public Collection<Set<E>> getDisjointSets() {
-        return this.entries.keySet().stream()
-                .collect(Collectors.groupingBy(this::find, Collectors.toSet())).values();
-    }
-
-    private Entry findRoot(final Entry ent) {
-        if (ent.parent != ent) {
-            ent.parent = this.findRoot(ent.parent);
-        }
-        return ent.parent;
-    }
-
-    private class Entry {
-        private final E elem;
-        private Entry parent;
-        private int rank;
-
-        private Entry(final E elem) {
-            this.elem = elem;
-            this.parent = this;
-            this.rank = 0;
-        }
-    }
+  }
 }

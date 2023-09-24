@@ -33,19 +33,19 @@ import qilin.pta.PTAConfig;
 
 public class CallSiteSensPTA extends BasePTA {
 
-    public CallSiteSensPTA(int k, int hk) {
-        this.ctxCons = new CallsiteCtxConstructor();
-        CtxSelector us = new UniformSelector(k, hk);
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("k-callsite PTA ...");
+  public CallSiteSensPTA(int k, int hk) {
+    this.ctxCons = new CallsiteCtxConstructor();
+    CtxSelector us = new UniformSelector(k, hk);
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("k-callsite PTA ...");
+  }
 }

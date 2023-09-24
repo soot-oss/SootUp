@@ -26,31 +26,27 @@ import soot.util.Numberable;
  * @author Ondrej Lhotak
  */
 public class FieldRefNode extends Node implements Numberable {
-    protected VarNode base;
-    protected SparkField field;
+  protected VarNode base;
+  protected SparkField field;
 
-    public FieldRefNode(VarNode base, SparkField field) {
-        super(field.getType());
-        this.base = base;
-        this.field = field;
-        base.addField(this, field);
-    }
+  public FieldRefNode(VarNode base, SparkField field) {
+    super(field.getType());
+    this.base = base;
+    this.field = field;
+    base.addField(this, field);
+  }
 
-    /**
-     * Returns the base of this field reference.
-     */
-    public VarNode getBase() {
-        return base;
-    }
+  /** Returns the base of this field reference. */
+  public VarNode getBase() {
+    return base;
+  }
 
-    /**
-     * Returns the field of this field reference.
-     */
-    public SparkField getField() {
-        return field;
-    }
+  /** Returns the field of this field reference. */
+  public SparkField getField() {
+    return field;
+  }
 
-    public String toString() {
-        return "FieldRefNode " + getNumber() + " " + base + "." + field;
-    }
+  public String toString() {
+    return "FieldRefNode " + getNumber() + " " + base + "." + field;
+  }
 }

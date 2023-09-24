@@ -28,31 +28,31 @@ import sootup.core.model.SootMethod;
  * A pipeline context selector which selects context by firstly using ctxSelA and then ctxSelB.
  * */
 public class PipelineSelector extends CtxSelector {
-    private final CtxSelector ctxSelA;
-    private final CtxSelector ctxSelB;
+  private final CtxSelector ctxSelA;
+  private final CtxSelector ctxSelB;
 
-    public PipelineSelector(CtxSelector lenSelA, CtxSelector lenSelB) {
-        this.ctxSelA = lenSelA;
-        this.ctxSelB = lenSelB;
-    }
+  public PipelineSelector(CtxSelector lenSelA, CtxSelector lenSelB) {
+    this.ctxSelA = lenSelA;
+    this.ctxSelB = lenSelB;
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        return ctxSelB.select(m, ctxSelA.select(m, context));
-    }
+  @Override
+  public Context select(SootMethod m, Context context) {
+    return ctxSelB.select(m, ctxSelA.select(m, context));
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return ctxSelA.select(lvn, ctxSelB.select(lvn, context));
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return ctxSelA.select(lvn, ctxSelB.select(lvn, context));
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return ctxSelA.select(fvn, ctxSelB.select(fvn, context));
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return ctxSelA.select(fvn, ctxSelB.select(fvn, context));
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        return ctxSelA.select(heap, ctxSelB.select(heap, context));
-    }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    return ctxSelA.select(heap, ctxSelB.select(heap, context));
+  }
 }

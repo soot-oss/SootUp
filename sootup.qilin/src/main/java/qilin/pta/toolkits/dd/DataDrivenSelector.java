@@ -18,6 +18,8 @@
 
 package qilin.pta.toolkits.dd;
 
+import java.util.HashMap;
+import java.util.Map;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
@@ -29,67 +31,64 @@ import qilin.parm.select.CtxSelector;
 import soot.Context;
 import sootup.core.model.SootMethod;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DataDrivenSelector extends CtxSelector {
-    private final Map<SootMethod, FeaturesTrueTable> m2ftt = new HashMap<>();
-    private final Class mClass;
+  private final Map<SootMethod, FeaturesTrueTable> m2ftt = new HashMap<>();
+  private final Class mClass;
 
-    public DataDrivenSelector(Class mClass) {
-        this.mClass = mClass;
-    }
+  public DataDrivenSelector(Class mClass) {
+    this.mClass = mClass;
+  }
 
-    private FeaturesTrueTable findOrCreateFeaturesTrueTable(SootMethod sm) {
-        return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm));
-    }
+  private FeaturesTrueTable findOrCreateFeaturesTrueTable(SootMethod sm) {
+    return m2ftt.computeIfAbsent(sm, k -> new FeaturesTrueTable(sm));
+  }
 
-    @Override
-    public Context select(SootMethod m, Context context) {
-        FeaturesTrueTable ftt = findOrCreateFeaturesTrueTable(m);
-        int i = 0;
-        if (mClass == HybObjCtxConstructor.class) {
-            if (ftt.hybrid2objFormula2()) {
-                i = 2;
-            } else if (ftt.hybrid2objFormula1()) {
-                i = 1;
-            }
-        } else if (mClass == ObjCtxConstructor.class) {
-            if (ftt.twoObjFormula2()) {
-                i = 2;
-            } else if (ftt.twoObjFormula1()) {
-                i = 1;
-            }
-        } else if (mClass == CallsiteCtxConstructor.class) {
-            if (ftt.twoCFAFormula2()) {
-                i = 2;
-            } else if (ftt.twoCFAFormula1()) {
-                i = 1;
-            }
-        } else if (mClass == TypeCtxConstructor.class) {
-            if (ftt.twoTypeFormula2()) {
-                i = 2;
-            } else if (ftt.twoTypeFormula1()) {
-                i = 1;
-            }
-        } else {
-            throw new RuntimeException("unsupport data-driven pointer analysis!");
-        }
-        return contextTailor(context, i);
+  @Override
+  public Context select(SootMethod m, Context context) {
+    FeaturesTrueTable ftt = findOrCreateFeaturesTrueTable(m);
+    int i = 0;
+    if (mClass == HybObjCtxConstructor.class) {
+      if (ftt.hybrid2objFormula2()) {
+        i = 2;
+      } else if (ftt.hybrid2objFormula1()) {
+        i = 1;
+      }
+    } else if (mClass == ObjCtxConstructor.class) {
+      if (ftt.twoObjFormula2()) {
+        i = 2;
+      } else if (ftt.twoObjFormula1()) {
+        i = 1;
+      }
+    } else if (mClass == CallsiteCtxConstructor.class) {
+      if (ftt.twoCFAFormula2()) {
+        i = 2;
+      } else if (ftt.twoCFAFormula1()) {
+        i = 1;
+      }
+    } else if (mClass == TypeCtxConstructor.class) {
+      if (ftt.twoTypeFormula2()) {
+        i = 2;
+      } else if (ftt.twoTypeFormula1()) {
+        i = 1;
+      }
+    } else {
+      throw new RuntimeException("unsupport data-driven pointer analysis!");
     }
+    return contextTailor(context, i);
+  }
 
-    @Override
-    public Context select(LocalVarNode lvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(LocalVarNode lvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(FieldValNode fvn, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(FieldValNode fvn, Context context) {
+    return context;
+  }
 
-    @Override
-    public Context select(AllocNode heap, Context context) {
-        return context;
-    }
+  @Override
+  public Context select(AllocNode heap, Context context) {
+    return context;
+  }
 }

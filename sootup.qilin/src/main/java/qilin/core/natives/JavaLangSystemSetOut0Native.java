@@ -18,24 +18,23 @@
 
 package qilin.core.natives;
 
-
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
 
 public class JavaLangSystemSetOut0Native extends NativeMethod {
-    public JavaLangSystemSetOut0Native(SootMethod method) {
-        super(method);
-    }
+  public JavaLangSystemSetOut0Native(SootMethod method) {
+    super(method);
+  }
 
-    /**
-     * NOTE: this native method is not documented in JDK API. It should have the
-     * side effect: System.out = parameter
-     * <p>
-     * private static native void setOut0(java.io.PrintStream);
-     */
-    public void simulate() {
-        Value r1 = getPara(0);
-        Value systemOut = getStaticFieldRef("java.lang.System", "out");
-        addAssign(systemOut, r1);
-    }
+  /**
+   * NOTE: this native method is not documented in JDK API. It should have the side effect:
+   * System.out = parameter
+   *
+   * <p>private static native void setOut0(java.io.PrintStream);
+   */
+  protected void simulateImpl() {
+    Value r1 = getPara(0);
+    Value systemOut = getStaticFieldRef("java.lang.System", "out");
+    addAssign(systemOut, r1);
+  }
 }

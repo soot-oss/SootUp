@@ -18,91 +18,122 @@
 
 package qilin.test.util;
 
-import driver.Main;
+import static org.junit.Assert.assertTrue;
+
 import driver.PTAFactory;
 import driver.PTAOption;
 import driver.PTAPattern;
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.pta.PTAConfig;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
-import static org.junit.Assert.assertTrue;
-
 public abstract class JunitTests {
-    protected static String appPath, jrePath, refLogPath;
-    protected static boolean isSetUp = false;
-    @BeforeClass
-    public static void setUp() throws IOException {
-        if (isSetUp) {
-            return;
-        }
-        File rootDir = new File("../");
-        File testDir = new File(rootDir, "qilin.microben" + File.separator + "build" + File.separator + "classes" + File.separator + "java" + File.separator + "main");
-        appPath = testDir.getCanonicalPath();
-        System.out.println("APP_PATH:" + appPath);
-        File refLogDir = new File(rootDir, "qilin.microben" + File.separator + "src" + File.separator + "qilin" + File.separator + "microben" + File.separator + "core" + File.separator + "reflog");
-        refLogPath = refLogDir.getCanonicalPath();
-        File jreFile = new File(".." + File.separator + "artifact" + File.separator + "benchmarks" +
-                File.separator + "JREs" + File.separator + "jre1.6.0_45");
-        jrePath = jreFile.getCanonicalPath();
-        String[] args = generateArgumentsx();
-        PTAOption ptaOption = new PTAOption();
-        ptaOption.parseCommandLine(args);
-        Main.setupSoot();
-        isSetUp = true;
-    }
+  protected static String appPath, jrePath, refLogPath;
+  protected static boolean isSetUp = false;
 
-    @Before
-    public void reset() {
-        PTAScene.junitReset();
+  @BeforeClass
+  public static void setUp() throws IOException {
+    if (isSetUp) {
+      return;
     }
+    File rootDir = new File("../");
+    File testDir =
+        new File(
+            rootDir,
+            "qilin.microben"
+                + File.separator
+                + "build"
+                + File.separator
+                + "classes"
+                + File.separator
+                + "java"
+                + File.separator
+                + "main");
+    appPath = testDir.getCanonicalPath();
+    System.out.println("APP_PATH:" + appPath);
+    File refLogDir =
+        new File(
+            rootDir,
+            "qilin.microben"
+                + File.separator
+                + "src"
+                + File.separator
+                + "qilin"
+                + File.separator
+                + "microben"
+                + File.separator
+                + "core"
+                + File.separator
+                + "reflog");
+    refLogPath = refLogDir.getCanonicalPath();
+    File jreFile =
+        new File(
+            ".."
+                + File.separator
+                + "artifact"
+                + File.separator
+                + "benchmarks"
+                + File.separator
+                + "JREs"
+                + File.separator
+                + "jre1.6.0_45");
+    jrePath = jreFile.getCanonicalPath();
+    String[] args = generateArgumentsx();
+    PTAOption ptaOption = new PTAOption();
+    ptaOption.parseCommandLine(args);
+    isSetUp = true;
+  }
 
-    public PTA run(String mainClass) {
-        return run(mainClass, "insens");
-    }
+  @Before
+  public void reset() {
+    PTAScene.junitReset();
+  }
 
-    public PTA run(String mainClass, String ptaPattern) {
-        PTAConfig.v().getAppConfig().MAIN_CLASS = mainClass;
-        PTAScene.v().setMainClass(PTAScene.v().getSootClass(mainClass));
-        PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
-        PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
-        System.out.println(PTAConfig.v().getAppConfig().APP_PATH);
-        PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
-        pta.pureRun();
-        return pta;
-    }
+  public PTA run(String mainClass) {
+    return run(mainClass, "insens");
+  }
 
-    public static String[] generateArgumentsx() {
-        return new String[]{
-                "-singleentry",
-                "-apppath",
-                appPath,
-                "-mainclass",
-                "qilin.microben.core.exception.SimpleException",
-                "-se",
-                "-jre=" + jrePath,
-                "-clinit=ONFLY",
-                "-lcs",
-                "-mh",
-                "-pae",
-                "-pe",
-                "-reflectionlog",
-                refLogPath + File.separator + "Reflection.log"
-        };
-    }
+  public PTA run(String mainClass, String ptaPattern) {
+    PTAConfig.v().getAppConfig().MAIN_CLASS = mainClass;
+    PTAScene.v().setMainClass(PTAScene.v().getSootClass(mainClass));
+    PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
+    PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
+    System.out.println(PTAConfig.v().getAppConfig().APP_PATH);
+    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+    pta.pureRun();
+    return pta;
+  }
 
-    protected void checkAssertions(PTA pta) {
-        Set<IAssertion> aliasAssertionSet = AssertionsParser.retrieveQueryInfo(pta);
-        for (IAssertion mAssert : aliasAssertionSet) {
-            boolean answer = mAssert.check();
-            System.out.println("Assertion is " + answer);
-            assertTrue(answer);
-        }
+  public static String[] generateArgumentsx() {
+    return new String[] {
+      "-singleentry",
+      "-apppath",
+      appPath,
+      "-mainclass",
+      "qilin.microben.core.exception.SimpleException",
+      "-se",
+      "-jre=" + jrePath,
+      "-clinit=ONFLY",
+      "-lcs",
+      "-mh",
+      "-pae",
+      "-pe",
+      "-reflectionlog",
+      refLogPath + File.separator + "Reflection.log"
+    };
+  }
+
+  protected void checkAssertions(PTA pta) {
+    Set<IAssertion> aliasAssertionSet = AssertionsParser.retrieveQueryInfo(pta);
+    for (IAssertion mAssert : aliasAssertionSet) {
+      boolean answer = mAssert.check();
+      System.out.println("Assertion is " + answer);
+      assertTrue(answer);
     }
+  }
 }

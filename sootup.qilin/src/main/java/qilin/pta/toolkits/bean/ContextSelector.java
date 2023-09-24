@@ -18,48 +18,46 @@
 
 package qilin.pta.toolkits.bean;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.AllocNode;
 import qilin.pta.toolkits.common.OAG;
 import qilin.util.Pair;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Compute the contexts of each heap object via OAG.
- */
+/** Compute the contexts of each heap object via OAG. */
 public abstract class ContextSelector {
 
-    protected int depth; // the depth of context
-    protected Map<AllocNode, Set<ContextElements>> contextMap;
-    protected Map<Pair<ContextElements, AllocNode>, Set<Pair<ContextElements, AllocNode>>> allocation =
-            new HashMap<>();
+  protected int depth; // the depth of context
+  protected Map<AllocNode, Set<ContextElements>> contextMap;
+  protected Map<Pair<ContextElements, AllocNode>, Set<Pair<ContextElements, AllocNode>>>
+      allocation = new HashMap<>();
 
-    protected ContextSelector(OAG oag) {
-        this(oag, Integer.MAX_VALUE);
-    }
+  protected ContextSelector(OAG oag) {
+    this(oag, Integer.MAX_VALUE);
+  }
 
-    protected ContextSelector(OAG oag, int depth) {
-        this.depth = depth;
-        selectContext(oag);
-    }
+  protected ContextSelector(OAG oag, int depth) {
+    this.depth = depth;
+    selectContext(oag);
+  }
 
-    public Set<ContextElements> contextsOf(AllocNode heap) {
-        return contextMap.get(heap);
-    }
+  public Set<ContextElements> contextsOf(AllocNode heap) {
+    return contextMap.get(heap);
+  }
 
-    public Set<Pair<ContextElements, AllocNode>> allocatedBy(ContextElements ctx, AllocNode heap) {
-        return allocation.get(new Pair<>(ctx, heap));
-    }
+  public Set<Pair<ContextElements, AllocNode>> allocatedBy(ContextElements ctx, AllocNode heap) {
+    return allocation.get(new Pair<>(ctx, heap));
+  }
 
-    protected abstract void selectContext(OAG oag);
+  protected abstract void selectContext(OAG oag);
 
-    protected void addAllocation(ContextElements ctx, AllocNode heap, ContextElements newCtx, AllocNode succ) {
-        Pair<ContextElements, AllocNode> csheap = new Pair<>(ctx, heap);
-        allocation.computeIfAbsent(csheap, k -> new HashSet<>());
-        allocation.get(csheap).add(new Pair<>(newCtx, succ));
-    }
+  protected void addAllocation(
+      ContextElements ctx, AllocNode heap, ContextElements newCtx, AllocNode succ) {
+    Pair<ContextElements, AllocNode> csheap = new Pair<>(ctx, heap);
+    allocation.computeIfAbsent(csheap, k -> new HashSet<>());
+    allocation.get(csheap).add(new Pair<>(newCtx, succ));
+  }
 }

@@ -18,25 +18,24 @@
 
 package qilin.pta.tools;
 
-import qilin.pta.toolkits.turner.Turner;
-
 import java.util.Map;
+import qilin.pta.toolkits.turner.Turner;
 
 /*
  * refer to "Accelerating Object-Sensitive Pointer Analysis by Exploiting Object Containment and Reachability" (ECOOP'21)
  * */
 public class TurnerPTA extends PartialObjSensPTA {
-    private final int k;
+  private final int k;
 
-    public TurnerPTA(int k) {
-        super(k);
-        this.k = k;
-        System.out.println("Turner ...");
-    }
+  public TurnerPTA(int k) {
+    super(k);
+    this.k = k;
+    System.out.println("Turner ...");
+  }
 
-    @Override
-    protected Map<Object, Integer> calculatingNode2Length() {
-        Turner turner = new Turner(k, prePTA);
-        return turner.contxtLengthAnalysis();
-    }
+  @Override
+  protected Map<Object, Integer> calculatingNode2Length() {
+    Turner turner = new Turner(k, prePTA);
+    return turner.contxtLengthAnalysis();
+  }
 }

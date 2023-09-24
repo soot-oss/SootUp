@@ -19,16 +19,16 @@
 package qilin.core.pag;
 
 public class FieldValNode extends ValNode {
-    // note, field could only be ArrayElement or Field type.
-    // Parm should be a local variable in some methods.
-    private final SparkField field;
+  // note, field could only be ArrayElement or Field type.
+  // Parm should be a local variable in some methods.
+  private final SparkField field;
 
-    public FieldValNode(SparkField field) {
-        super(field.getType());
-        this.field = field;
-    }
+  public FieldValNode(SparkField field) {
+    super(field.getType());
+    this.field = field;
+  }
 
-    public SparkField getField() {
-        return field;
-    }
+  public SparkField getField() {
+    return field;
+  }
 }

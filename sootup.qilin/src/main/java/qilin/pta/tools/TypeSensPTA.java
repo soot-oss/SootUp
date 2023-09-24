@@ -32,19 +32,19 @@ import qilin.pta.PTAConfig;
  * */
 public class TypeSensPTA extends BasePTA {
 
-    public TypeSensPTA(int k, int hk) {
-        this.ctxCons = new TypeCtxConstructor();
-        CtxSelector us = new UniformSelector(k, hk);
-        if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-            this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
-        } else {
-            this.ctxSel = us;
-        }
-        if (PTAConfig.v().getPtaConfig().mergeHeap) {
-            this.heapAbst = new HeuristicAbstractor(pag);
-        } else {
-            this.heapAbst = new AllocSiteAbstractor();
-        }
-        System.out.println("k-type ...");
+  public TypeSensPTA(int k, int hk) {
+    this.ctxCons = new TypeCtxConstructor();
+    CtxSelector us = new UniformSelector(k, hk);
+    if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+    } else {
+      this.ctxSel = us;
     }
+    if (PTAConfig.v().getPtaConfig().mergeHeap) {
+      this.heapAbst = new HeuristicAbstractor(pag);
+    } else {
+      this.heapAbst = new AllocSiteAbstractor();
+    }
+    System.out.println("k-type ...");
+  }
 }

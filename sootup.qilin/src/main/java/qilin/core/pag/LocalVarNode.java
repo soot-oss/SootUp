@@ -18,7 +18,6 @@
 
 package qilin.core.pag;
 
-
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
@@ -26,40 +25,38 @@ import sootup.core.types.Type;
  * @author Ondrej Lhotak
  */
 public class LocalVarNode extends VarNode {
-    protected SootMethod method;
+  protected SootMethod method;
 
-    public LocalVarNode(Object variable, Type t, SootMethod m) {
-        super(variable, t);
-        this.method = m;
-    }
+  public LocalVarNode(Object variable, Type t, SootMethod m) {
+    super(variable, t);
+    this.method = m;
+  }
 
-    public SootMethod getMethod() {
-        return method;
-    }
+  public SootMethod getMethod() {
+    return method;
+  }
 
-    public String toString() {
-        return "LocalVarNode " + getNumber() + " " + variable + " " + method;
-    }
+  public String toString() {
+    return "LocalVarNode " + getNumber() + " " + variable + " " + method;
+  }
 
-    /**
-     * Returns true if this VarNode represents the THIS pointer
-     */
-    public boolean isThis() {
-        if (variable instanceof Parm parm) {
-            return parm.isThis();
-        }
-        return false;
+  /** Returns true if this VarNode represents the THIS pointer */
+  public boolean isThis() {
+    if (variable instanceof Parm parm) {
+      return parm.isThis();
     }
+    return false;
+  }
 
-    public boolean isReturn() {
-        if (variable instanceof Parm parm) {
-            return parm.isReturn();
-        }
-        return false;
+  public boolean isReturn() {
+    if (variable instanceof Parm parm) {
+      return parm.isReturn();
     }
+    return false;
+  }
 
-    @Override
-    public VarNode base() {
-        return this;
-    }
+  @Override
+  public VarNode base() {
+    return this;
+  }
 }

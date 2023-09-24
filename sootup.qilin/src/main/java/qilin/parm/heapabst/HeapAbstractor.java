@@ -21,5 +21,5 @@ package qilin.parm.heapabst;
 import qilin.core.pag.AllocNode;
 
 public interface HeapAbstractor {
-    AllocNode abstractHeap(AllocNode heap);
+  AllocNode abstractHeap(AllocNode heap);
 }

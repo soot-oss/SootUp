@@ -19,9 +19,9 @@
 package qilin.core.context;
 
 public interface ContextElement {
-    @Override
-    int hashCode();
+  @Override
+  int hashCode();
 
-    @Override
-    boolean equals(Object obj);
+  @Override
+  boolean equals(Object obj);
 }

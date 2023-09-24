@@ -26,5 +26,5 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface Renderable {
-    public void render(OutputStream device, int indent) throws IOException;
+  public void render(OutputStream device, int indent) throws IOException;
 }

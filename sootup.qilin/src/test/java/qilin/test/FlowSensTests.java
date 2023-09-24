@@ -23,33 +23,33 @@ import org.junit.Test;
 import qilin.test.util.JunitTests;
 
 public class FlowSensTests extends JunitTests {
-    @Test
-    public void testLoops() {
-        checkAssertions(run("qilin.microben.flowsens.Loops"));
-    }
+  @Test
+  public void testLoops() {
+    checkAssertions(run("qilin.microben.flowsens.Loops"));
+  }
 
-    @Ignore
-    public void testFlowSens0() {
-        checkAssertions(run("qilin.microben.flowsens.FlowSens0"));
-    }
+  @Ignore
+  public void testFlowSens0() {
+    checkAssertions(run("qilin.microben.flowsens.FlowSens0"));
+  }
 
-    @Ignore
-    public void testInstanceOf0() {
-        checkAssertions(run("qilin.microben.flowsens.InstanceOf0"));
-    }
+  @Ignore
+  public void testInstanceOf0() {
+    checkAssertions(run("qilin.microben.flowsens.InstanceOf0"));
+  }
 
-    @Ignore
-    public void testBranching1() {
-        checkAssertions(run("qilin.microben.flowsens.Branching1"));
-    }
+  @Ignore
+  public void testBranching1() {
+    checkAssertions(run("qilin.microben.flowsens.Branching1"));
+  }
 
-    @Ignore
-    public void testStrongUpdate1() {
-        checkAssertions(run("qilin.microben.flowsens.StrongUpdate1"));
-    }
+  @Ignore
+  public void testStrongUpdate1() {
+    checkAssertions(run("qilin.microben.flowsens.StrongUpdate1"));
+  }
 
-    @Ignore
-    public void testStrongUpdate2() {
-        checkAssertions(run("qilin.microben.flowsens.StrongUpdate2"));
-    }
+  @Ignore
+  public void testStrongUpdate2() {
+    checkAssertions(run("qilin.microben.flowsens.StrongUpdate2"));
+  }
 }

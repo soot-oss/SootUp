@@ -18,43 +18,41 @@
 
 package qilin.pta.toolkits.selectx;
 
+import java.util.stream.Stream;
 import qilin.core.pag.Node;
 
-import java.util.Set;
-import java.util.stream.Stream;
-
 public abstract class BNode {
-    public Node sparkNode;
-    /**
-     * visited is not overrided by para: this represents value flows in *any* contexts,
-     * this can avoid unmatched exit without missing exit from inner alloc or global
-     */
-    private boolean visited = false;
+  public Node sparkNode;
 
-    BNode(Node origin) {
-        this.sparkNode = origin;
-    }
+  /**
+   * visited is not overrided by para: this represents value flows in *any* contexts, this can avoid
+   * unmatched exit without missing exit from inner alloc or global
+   */
+  private boolean visited = false;
 
-    public void reset() {
-        visited = false;
-    }
+  BNode(Node origin) {
+    this.sparkNode = origin;
+  }
 
-    public boolean isVisited() {
-        return this.visited;
-    }
+  public void reset() {
+    visited = false;
+  }
 
-    public boolean setVisited() {
-        if (visited)
-            return false;
-        return visited = true;
-    }
+  public boolean isVisited() {
+    return this.visited;
+  }
 
-    public abstract boolean addOutEdge(BNode to);
+  public boolean setVisited() {
+    if (visited) return false;
+    return visited = true;
+  }
 
-    public abstract Stream<? extends BNode> forwardTargets();
+  public abstract boolean addOutEdge(BNode to);
 
-    @Override
-    public String toString() {
-        return this.getClass().toString() + " : " + sparkNode.toString();
-    }
+  public abstract Stream<? extends BNode> forwardTargets();
+
+  @Override
+  public String toString() {
+    return this.getClass().toString() + " : " + sparkNode.toString();
+  }
 }
