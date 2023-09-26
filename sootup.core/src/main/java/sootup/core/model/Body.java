@@ -317,8 +317,8 @@ public class Body implements Copyable {
    *
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getDefs() {
-    ArrayList<Value> defList = new ArrayList<>();
+  public Collection<LValue> getDefs() {
+    ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
       defList.addAll(stmt.getDefs());
@@ -597,18 +597,18 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Local, Collection<Stmt>> collectUses(List<Stmt> stmts) {
-    Map<Local, Collection<Stmt>> allUses = new HashMap<>();
+  public static Map<LValue, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
+    Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
       Collection<Value> uses = stmt.getUses();
       for (Value value : uses) {
-        if (value instanceof Local) {
+        if (value instanceof LValue) {
           Collection<Stmt> localUses = allUses.get(value);
           if (localUses == null) {
             localUses = new ArrayList<>();
           }
           localUses.add(stmt);
-          allUses.put((Local) value, localUses);
+          allUses.put((LValue) value, localUses);
         }
       }
     }

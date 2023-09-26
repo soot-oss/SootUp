@@ -35,6 +35,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
 
+/** FIXME: outline what this class does */
 public class CastCounter extends TypeChecker {
 
   private int castCount = 0;
@@ -133,7 +134,7 @@ public class CastCounter extends TypeChecker {
       } else {
         newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
       }
-      if (graph.containsNode(stmt)) {
+      if (newStmt != null && graph.containsNode(stmt)) {
         builder.replaceStmt(stmt, newStmt);
         this.stmt2NewStmt.put(oriStmt, newStmt);
       }

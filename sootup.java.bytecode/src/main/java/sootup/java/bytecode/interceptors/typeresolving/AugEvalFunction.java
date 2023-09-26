@@ -84,7 +84,7 @@ public class AugEvalFunction {
       @Nonnull Stmt stmt,
       @Nonnull StmtGraph<?> graph) {
 
-    // TODO: [ms] make use of the ValueVisitor..
+    // TODO: [ms] make use of the ValueVisitor
 
     if (value instanceof Immediate) {
       if (value instanceof Local) {
@@ -123,18 +123,22 @@ public class AugEvalFunction {
         } else if (value.getClass() == MethodType.class) {
           return methodTypeClassType;
         } else {
-          return null;
-          // throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value +
-          // "'.");
+          // return null;
+          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
         }
       }
     } else if (value instanceof Expr) {
       if (value instanceof AbstractBinopExpr) {
         Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, graph);
         if (tl == null) {
-          return null;
+          // return null;
+          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
         }
         Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, graph);
+        if (tr == null) {
+          // return null;
+          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
+        }
         if (value instanceof AbstractIntBinopExpr) {
           if (value instanceof AbstractConditionExpr) {
             return PrimitiveType.getBoolean();
@@ -191,9 +195,8 @@ public class AugEvalFunction {
             exceptionClass = (SootClass<?>) exceptionClassOp.get();
           } else {
             // Logger.info("ExceptionType '" + exceptionType + "' is not in the view");
-            return null;
-            // throw new RuntimeException("ExceptionType '" + exceptionType + "' is not in the
-            // view");
+            // return null;
+            throw new RuntimeException("ExceptionType '" + exceptionType + "' is not in the view");
           }
           if (exceptionClass.isPhantomClass()) {
             return throwableClassType;
@@ -204,11 +207,10 @@ public class AugEvalFunction {
           }
         }
 
-        /*
         if (type == null) {
-          return null;
-          throw new RuntimeException("inevaluatable reference in AugEvalFunction '" + value +"'.");
-        }*/
+          //          return null;
+          throw new RuntimeException("inevaluatable reference in AugEvalFunction '" + value + "'.");
+        }
         return type;
       } else if (value instanceof JArrayRef) {
         Type type = typing.getType(((JArrayRef) value).getBase());
@@ -226,9 +228,8 @@ public class AugEvalFunction {
           || value instanceof JFieldRef) {
         return value.getType();
       } else {
-        return null;
-        // throw new RuntimeException("Inevaluatable reference in AugEvalFunction '" + value +
-        // "'.");
+        // return null;
+        throw new RuntimeException("Inevaluatable reference in AugEvalFunction '" + value + "'.");
       }
     }
     return null;

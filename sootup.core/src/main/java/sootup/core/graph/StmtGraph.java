@@ -206,19 +206,19 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
                   stmt
                       + ": size of outgoing flows (i.e. "
                       + successorCount
-                      + ") does not match the amount of switch statements case labels (i.e. "
+                      + ") does not match the amount of JSwitchStmts case labels (i.e. "
                       + ((JSwitchStmt) stmt).getValueCount()
                       + ").");
             }
           } else if (stmt instanceof JIfStmt) {
             if (successorCount != 2) {
               throw new IllegalStateException(
-                  stmt + ": If must have '2' outgoing flow but has '" + successorCount + "'.");
+                  stmt + ": JIfStmt must have '2' outgoing flow but has '" + successorCount + "'.");
             }
           } else if (stmt instanceof JGotoStmt) {
             if (successorCount != 1) {
               throw new IllegalStateException(
-                  stmt + ": Goto must have '1' outgoing flow but has '" + successorCount + "'.");
+                  stmt + ": JGoto must have '1' outgoing flow but has '" + successorCount + "'.");
             }
           }
 

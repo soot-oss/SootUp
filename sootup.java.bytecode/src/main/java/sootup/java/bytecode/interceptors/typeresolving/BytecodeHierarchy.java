@@ -97,7 +97,7 @@ public class BytecodeHierarchy {
             return canStoreType((ClassType) ancestorBase, (ClassType) childBase);
           }
         } else if (ancestorArr.getDimension() < childArr.getDimension()) {
-          // TODO: [ms] check: the dimension condition check seems weird?
+          // TODO: [ms] check: the dimension condition check as it seems weird?
           return ancestorBase == objectClassType
               || ancestorBase == serializableClassType
               || ancestorBase == cloneableClassType;

@@ -128,18 +128,18 @@ public class AggregatorTest {
               public List<BodyInterceptor> getBodyInterceptors() {
                 return Arrays.asList(
                     new CastAndReturnInliner(),
-                    // new UnreachableCodeEliminator(),
-                    // new LocalSplitter(),
-                    new Aggregator()
-                    // new TypeAssigner(),
+                    new UnreachableCodeEliminator(),
+                    new LocalSplitter(),
+                    // FIXME new Aggregator()
+                    new TypeAssigner(),
                     // ms: is already called from typeassigner? new LocalNameStandardizer(),
-                    /*new CopyPropagator(),
+                    new CopyPropagator(),
                     new DeadAssignmentEliminator(),
                     new ConditionalBranchFolder(),
                     new EmptySwitchEliminator(),
                     new NopEliminator(),
                     new UnusedLocalEliminator(),
-                    new UnreachableCodeEliminator()*/ );
+                    new UnreachableCodeEliminator());
               }
             });
 
