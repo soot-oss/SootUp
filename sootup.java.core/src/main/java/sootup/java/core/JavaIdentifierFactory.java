@@ -349,7 +349,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     @Nonnull
     private static final Pattern SOOT_METHOD_SIGNATURE_PATTERN =
         Pattern.compile(
-            "^<(?<class>[^:]+):\\s+(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)>$");
+            "^<(?<class>[^:]+):\\s*(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)>$");
 
     @Nonnull
     private static final Pattern JAVADOCLIKE_METHOD_SIGNATURE_PATTERN =
