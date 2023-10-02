@@ -28,18 +28,23 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.*;
 import javax.annotation.Nonnull;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.Project;
 import sootup.core.frontend.BodySource;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
+//import sootup.java.bytecode.inputlocation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -294,6 +299,35 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         PathBasedAnalysisInputLocation.create(war, null);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
+  }
+
+
+  @Test
+  public void testBinaryFolder(){
+
+    Path pathToBinary = Paths.get("../shared-test-resources/miniTestSuite/java6/binary");
+    assertTrue("Folder does not exist", Files.exists(pathToBinary));
+  }
+
+  @Test
+  public void testClassInBinary(){
+
+    Path pathToBinary = Paths.get("../shared-test-resources/miniTestSuite/java6/binary/AbstractClass.class");
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+            PathBasedAnalysisInputLocation.create(pathToBinary, null);
+    AnalysisInputLocation<JavaSootClass> inputLocation = new JavaClassPathAnalysisInputLocation("pathBasedNamespace");
+    Project project = JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+    View view = project.createView();
+    ClassType classType = project.getIdentifierFactory().getClassType("AbstractClass");
+    MethodSignature methodSignature = project.getIdentifierFactory().getMethodSignature(classType,"abstractClass","void",Collections.emptyList());
+    SootClass<JavaSootClassSource> sootClass =
+            (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+
+    SootMethod sootMethod =
+            sootClass.getMethod(methodSignature.getSubSignature()).get();
+
+    sootMethod.getBody().getStmts();
+
   }
 
   @Test

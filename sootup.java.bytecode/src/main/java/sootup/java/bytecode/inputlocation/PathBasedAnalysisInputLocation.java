@@ -31,6 +31,7 @@ import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
+import sootup.core.model.AbstractClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
@@ -105,6 +106,8 @@ public abstract class PathBasedAnalysisInputLocation
         inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path,FileType.CLASS)) {
+        inputLocation = new SingleClassFileAnalysisInputLocation(path, srcType);
       } else {
         inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
@@ -206,7 +209,58 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-  public static class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
+
+ /* private static class SingleClassFileAnalysisInputLocation  implements  AnalysisInputLocation<AbstractClass> {
+
+  }*/
+
+
+  private static class SingleClassFileAnalysisInputLocation  extends PathBasedAnalysisInputLocation {
+    public SingleClassFileAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+      super(path, srcType);
+    }
+
+    public boolean isClassNameMatching(String className) {
+      return path.getFileName().toString().equals(className + ".class");
+    }
+
+    public Optional<Path> findClassPath(String className) {
+      return searchForClass(path.toFile(), className + ".class");
+    }
+
+    private Optional<Path> searchForClass(File dir, String classFileName) {
+      File[] files = dir.listFiles();
+      if (files != null) {
+        for (File file : files) {
+          if (file.isDirectory()) {
+            Optional<Path> found = searchForClass(file, classFileName);
+            if (found.isPresent()) {
+              return found;
+            }
+          } else if (file.getName().equals(classFileName)) {
+            return Optional.of(Paths.get(file.getAbsolutePath()));
+          }
+        }
+      }
+      return Optional.empty();
+    }
+
+    @Nonnull
+    @Override
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
+      return Optional.empty();
+    }
+
+    @Nonnull
+    @Override
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(@Nonnull View<?> view) {
+      return null;
+    }
+  }
+
+
+
+    public static class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
       implements ModuleInfoAnalysisInputLocation {
 
     @Nonnull private final int[] availableVersions;
@@ -494,7 +548,7 @@ public abstract class PathBasedAnalysisInputLocation
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
+//      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }
