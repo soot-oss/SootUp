@@ -54,6 +54,5 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor>, Copyable {
 
   StmtPositionInfo getPositionInfo();
 
-  @Nonnull
   Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse);
 }

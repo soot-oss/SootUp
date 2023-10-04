@@ -1,7 +1,5 @@
 package sootup.core.jimple.common.stmt;
 
-
-
 /** as an equivalent to BranchingStmt */
 public interface FallsThroughStmt extends Stmt {
 

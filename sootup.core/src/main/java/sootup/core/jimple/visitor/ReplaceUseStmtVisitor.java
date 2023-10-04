@@ -72,7 +72,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
 
-    // uses on the def side..
+    // uses on the def side.. e.g. a base in an JArrayRef but NOT with a simple Local!
     final Value leftOp = stmt.getLeftOp();
     if (leftOp instanceof Ref) {
       refVisitor.init(oldUse, newUse);
@@ -84,7 +84,9 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
     // rhs
     Value rValue = stmt.getRightOp();
-    if (rValue instanceof Immediate) {
+    if (rValue == oldUse) {
+      setResult(stmt.withRValue(newUse));
+    } else if (rValue instanceof Immediate) {
       if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));
       }

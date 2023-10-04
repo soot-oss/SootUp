@@ -40,7 +40,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
@@ -94,13 +94,13 @@ public class AugEvalFunction {
         if (value.getClass() == IntConstant.class) {
           int val = ((IntConstant) value).getValue();
           if (val >= 0 && val < 2) {
-            return AugIntegerTypes.getInteger1();
+            return AugmentIntegerTypes.getInteger1();
           } else if (val >= 2 && val < 128) {
-            return AugIntegerTypes.getInteger127();
+            return AugmentIntegerTypes.getInteger127();
           } else if (val >= -128 && val < 0) {
             return PrimitiveType.getByte();
           } else if (val >= 128 && val < 32768) {
-            return AugIntegerTypes.getInteger32767();
+            return AugmentIntegerTypes.getInteger32767();
           } else if (val >= -32768 && val < -128) {
             return PrimitiveType.getShort();
           } else if (val >= 32768 && val < 65536) {

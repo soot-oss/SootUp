@@ -343,7 +343,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @SuppressWarnings("unchecked")
-  <A extends AbstractStmt> A getStmt(@Nonnull AbstractInsnNode insn) {
+  <A extends Stmt> A getStmt(@Nonnull AbstractInsnNode insn) {
     return (A) insnToStmt.get(insn);
   }
 

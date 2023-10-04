@@ -80,6 +80,8 @@ public class CastCounter extends TypeChecker {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();
     Typing typing = getTyping();
+
+    // TODO: ms: move into a Subclass instead of the countOnly option/field?
     if (countOnly) {
       Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
       if (evaType == null) {
@@ -89,56 +91,58 @@ public class CastCounter extends TypeChecker {
         return;
       }
       this.castCount++;
+      return;
+    }
+
+    Stmt oriStmt = stmt;
+    Value oriValue = value;
+    Stmt updatedStmt = stmt2NewStmt.get(stmt);
+    if (updatedStmt != null) {
+      stmt = stmt2NewStmt.get(stmt);
+    }
+    Map<Value, Value> m = changedValues.get(oriStmt);
+    if (m != null) {
+      Value updatedValue = m.get(value);
+      if (updatedValue != null) {
+        value = updatedValue;
+      }
+    }
+    Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
+    if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
+      return;
+    }
+    this.castCount++;
+    // TODO: modifiers later must be added
+
+    Local old_local;
+    if (value instanceof Local) {
+      old_local = (Local) value;
     } else {
-      Stmt oriStmt = stmt;
-      Value oriValue = value;
-      Stmt updatedStmt = stmt2NewStmt.get(stmt);
-      if (updatedStmt != null) {
-        stmt = stmt2NewStmt.get(stmt);
-      }
-      Map<Value, Value> m = changedValues.get(oriStmt);
-      if (m != null) {
-        Value updatedValue = m.get(value);
-        if (updatedValue != null) {
-          value = updatedValue;
-        }
-      }
-      Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-      if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
-        return;
-      }
-      this.castCount++;
-      // TODO: modifiers later must be added
+      old_local = generateTempLocal(evaType);
+      builder.addLocal(old_local);
+      typing.set(old_local, evaType);
+      JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
+      builder.insertBefore(stmt, newAssign);
+    }
 
-      Local old_local;
-      if (value instanceof Local) {
-        old_local = (Local) value;
-      } else {
-        old_local = generateTempLocal(evaType);
-        builder.addLocal(old_local);
-        typing.set(old_local, evaType);
-        JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-        builder.insertBefore(stmt, newAssign);
-      }
-      Local new_local = generateTempLocal(stdType);
-      builder.addLocal(new_local);
-      typing.set(new_local, stdType);
-      addUpdatedValue(oriValue, new_local, oriStmt);
-      JAssignStmt newCast =
-          Jimple.newAssignStmt(
-              new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-      builder.insertBefore(stmt, newCast);
+    Local new_local = generateTempLocal(stdType);
+    builder.addLocal(new_local);
+    typing.set(new_local, stdType);
+    addUpdatedValue(oriValue, new_local, oriStmt);
+    JAssignStmt newCast =
+        Jimple.newAssignStmt(
+            new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
+    builder.insertBefore(stmt, newCast);
 
-      Stmt newStmt;
-      if (stmt.getUses().contains(value)) {
-        newStmt = stmt.withNewUse(value, new_local);
-      } else {
-        newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
-      }
-      if (graph.containsNode(stmt)) {
-        builder.replaceStmt(stmt, newStmt);
-        this.stmt2NewStmt.put(oriStmt, newStmt);
-      }
+    Stmt newStmt;
+    if (stmt.getUses().contains(value)) {
+      newStmt = stmt.withNewUse(value, new_local);
+    } else {
+      newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
+    }
+    if (graph.containsNode(stmt)) {
+      builder.replaceStmt(stmt, newStmt);
+      this.stmt2NewStmt.put(oriStmt, newStmt);
     }
   }
 

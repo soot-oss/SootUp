@@ -112,6 +112,8 @@ public class AggregatorTest {
   @Test
   public void testResource_Misuse() {
 
+    //     String classPath =
+    // "../sootup.tests/src/test/resources/bugs/664_struce-compiled/org/apache";
     String classPath = "../sootup.tests/src/test/resources/interceptor/";
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaClassPathAnalysisInputLocation(classPath);
@@ -129,12 +131,12 @@ public class AggregatorTest {
                 return Arrays.asList(
                     new CastAndReturnInliner(),
                     new UnreachableCodeEliminator(),
-                    new LocalSplitter(),
+                    new LocalSplitter(), // FIXME:
                     // FIXME new Aggregator()
                     new TypeAssigner(),
                     // ms: is already called from typeassigner? new LocalNameStandardizer(),
                     new CopyPropagator(),
-                    new DeadAssignmentEliminator(),
+                    new DeadAssignmentEliminator(), // FIXME: removes a branch wrongfully
                     new ConditionalBranchFolder(),
                     new EmptySwitchEliminator(),
                     new NopEliminator(),

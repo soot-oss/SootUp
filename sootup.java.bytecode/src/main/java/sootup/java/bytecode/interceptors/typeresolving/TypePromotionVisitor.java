@@ -31,7 +31,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 
 public class TypePromotionVisitor extends TypeChecker {
 
@@ -63,9 +63,9 @@ public class TypePromotionVisitor extends TypeChecker {
   }
 
   public static boolean isIntermediateType(Type type) {
-    return type.equals(AugIntegerTypes.getInteger1())
-        || type.equals(AugIntegerTypes.getInteger127())
-        || type.equals(AugIntegerTypes.getInteger32767());
+    return type.equals(AugmentIntegerTypes.getInteger1())
+        || type.equals(AugmentIntegerTypes.getInteger127())
+        || type.equals(AugmentIntegerTypes.getInteger32767());
   }
 
   public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
@@ -98,37 +98,37 @@ public class TypePromotionVisitor extends TypeChecker {
   private Type promote(Type low, Type high) {
     Class<?> lowClass = low.getClass();
     Class<?> highClass = high.getClass();
-    if (lowClass == AugIntegerTypes.Integer1Type.class) {
+    if (lowClass == AugmentIntegerTypes.Integer1Type.class) {
       if (highClass == PrimitiveType.IntType.class) {
-        return AugIntegerTypes.getInteger127();
+        return AugmentIntegerTypes.getInteger127();
       } else if (highClass == PrimitiveType.ShortType.class) {
         return PrimitiveType.getByte();
       } else if (highClass == PrimitiveType.BooleanType.class
           || highClass == PrimitiveType.ByteType.class
           || highClass == PrimitiveType.CharType.class
-          || highClass == AugIntegerTypes.Integer127Type.class
-          || highClass == AugIntegerTypes.Integer32767Type.class) {
+          || highClass == AugmentIntegerTypes.Integer127Type.class
+          || highClass == AugmentIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
         logger.error(low + " cannot be promoted with the supertype " + high + "!");
         return null;
       }
-    } else if (lowClass == AugIntegerTypes.Integer127Type.class) {
+    } else if (lowClass == AugmentIntegerTypes.Integer127Type.class) {
       if (highClass == PrimitiveType.ShortType.class) {
         return PrimitiveType.getByte();
       } else if (highClass == PrimitiveType.IntType.class) {
-        return AugIntegerTypes.getInteger127();
+        return AugmentIntegerTypes.getInteger127();
       } else if (highClass == PrimitiveType.ByteType.class
           || highClass == PrimitiveType.CharType.class
-          || highClass == AugIntegerTypes.Integer32767Type.class) {
+          || highClass == AugmentIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
         logger.error(low + " cannot be promoted with the supertype " + high + "!");
         return null;
       }
-    } else if (lowClass == AugIntegerTypes.Integer32767Type.class) {
+    } else if (lowClass == AugmentIntegerTypes.Integer32767Type.class) {
       if (highClass == PrimitiveType.IntType.class) {
-        return AugIntegerTypes.getInteger32767();
+        return AugmentIntegerTypes.getInteger32767();
       } else if (highClass == PrimitiveType.ShortType.class
           || highClass == PrimitiveType.CharType.class) {
         return high;

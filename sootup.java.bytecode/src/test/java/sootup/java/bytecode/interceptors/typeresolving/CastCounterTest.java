@@ -11,7 +11,7 @@ import org.junit.experimental.categories.Category;
 import sootup.core.model.Body;
 import sootup.core.types.*;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 
 @Category(Java8Test.class)
 public class CastCounterTest extends TypeAssignerTestSuite {
@@ -59,7 +59,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     count = counter.getCastCount(typing);
     Assert.assertEquals(3, count);
 
-    map.replace("l2", AugIntegerTypes.getInteger127());
+    map.replace("l2", AugmentIntegerTypes.getInteger127());
     typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
     Assert.assertEquals(1, count);
