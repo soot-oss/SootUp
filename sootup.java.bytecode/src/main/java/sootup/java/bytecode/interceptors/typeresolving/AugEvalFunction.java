@@ -189,18 +189,11 @@ public class AugEvalFunction {
         Set<ClassType> exceptionTypes = getExceptionTypeCandidates(stmt, graph);
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
-          Optional<?> exceptionClassOp = view.getClass(exceptionType);
-          SootClass<?> exceptionClass;
-          if (exceptionClassOp.isPresent()) {
-            exceptionClass = (SootClass<?>) exceptionClassOp.get();
-          } else {
-            // Logger.info("ExceptionType '" + exceptionType + "' is not in the view");
-            // return null;
-            throw new RuntimeException("ExceptionType '" + exceptionType + "' is not in the view");
-          }
-          if (exceptionClass.isPhantomClass()) {
+          Optional<?> exceptionClassOpt = view.getClass(exceptionType);
+          if (!exceptionClassOpt.isPresent()) {
             return throwableClassType;
-          } else if (type == null) {
+          }
+          if (type == null) {
             type = exceptionType;
           } else {
             type = getLeastCommonExceptionType(type, exceptionType);
