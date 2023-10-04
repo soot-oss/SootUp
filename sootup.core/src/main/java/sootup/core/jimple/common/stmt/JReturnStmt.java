@@ -22,20 +22,25 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A statement that ends the method, returning a value. */
-public final class JReturnStmt extends AbstractOpStmt implements Copyable {
+public final class JReturnStmt extends AbstractStmt {
+
+  protected final Immediate op;
 
   public JReturnStmt(@Nonnull Immediate returnValue, @Nonnull StmtPositionInfo positionInfo) {
-    super(returnValue, positionInfo);
+    super(positionInfo);
+    this.op = returnValue;
   }
 
   @Override
@@ -68,6 +73,25 @@ public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   @Override
   public int getExpectedSuccessorCount() {
     return 0;
+  }
+
+  @Nonnull
+  public Immediate getOp() {
+    return op;
+  }
+
+  @Override
+  @Nonnull
+  public final List<Value> getUses() {
+    final List<Value> uses = op.getUses();
+    List<Value> list = new ArrayList<>(uses.size() + 1);
+    list.add(op);
+    return list;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return op.equivHashCode();
   }
 
   @Override

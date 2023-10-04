@@ -28,9 +28,10 @@ import java.util.List;
 import java.util.Set;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.AbstractStmt;
 
 /**
- * @param <N> Nodes in the CFG, e.g. {@link sootup.core.jimple.common.stmt.Stmt}
+ * @param <N> Nodes in the CFG, e.g. {@link AbstractStmt}
  * @param <M> Method representation, e.g. {@link sootup.core.model.SootMethod}
  */
 public interface BiDiInterproceduralCFG<N, M> extends InterproceduralCFG<N, M> {

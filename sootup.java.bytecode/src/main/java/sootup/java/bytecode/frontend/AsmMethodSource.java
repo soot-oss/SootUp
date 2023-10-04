@@ -343,7 +343,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @SuppressWarnings("unchecked")
-  <A extends Stmt> A getStmt(@Nonnull AbstractInsnNode insn) {
+  <A extends AbstractStmt> A getStmt(@Nonnull AbstractInsnNode insn) {
     return (A) insnToStmt.get(insn);
   }
 
@@ -919,7 +919,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       StackFrame frame = operandStack.getOrCreateStackframe(insn);
       if (!insnToStmt.containsKey(insn)) {
         Operand opr = operandStack.popStackConst();
-        AbstractOpStmt ts =
+        Stmt ts =
             op == MONITORENTER
                 ? Jimple.newEnterMonitorStmt((Immediate) opr.stackOrValue(), getStmtPositionInfo())
                 : Jimple.newExitMonitorStmt((Immediate) opr.stackOrValue(), getStmtPositionInfo());

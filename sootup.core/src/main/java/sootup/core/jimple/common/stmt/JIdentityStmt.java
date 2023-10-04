@@ -28,10 +28,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
+public final class JIdentityStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
 
   @Nonnull final Local leftOp;
   @Nonnull final IdentityRef rightOp;
@@ -59,6 +58,16 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   @Override
   public IdentityRef getRightOp() {
     return rightOp;
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
   }
 
   @Override

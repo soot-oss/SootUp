@@ -1,6 +1,7 @@
 package sootup.core.graph;
 
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -653,7 +654,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return false;
     }
     final List<MutableBasicBlock> fBlocksuccessors = firstBlock.getSuccessors();
-    if (fBlocksuccessors.size() != 1 || fBlocksuccessors.get(0) != followingBlock) {
+    if (fBlocksuccessors.size() > 1
+        || (fBlocksuccessors.size() == 1 && fBlocksuccessors.get(0) != followingBlock)) {
       return false;
     }
     // if we are here the datastructure should have managed that the next if is true..
@@ -833,14 +835,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // merge blocks - performance hint: if exceptionMap equals the current blocks exception and
       // the stmts have only fallsthrough Stmts there could be some allocation/deallocation be saved
       final MutableBasicBlock predecessorBlock = addBlockInternal(stmts, exceptionMap);
-      for (MutableBasicBlock predecessor : block.getPredecessors()) {
+      for (MutableBasicBlock predecessor : Lists.newArrayList(block.getPredecessors())) {
         // cleanup old
         predecessor.removeSuccessorBlock(block);
         block.removePredecessorBlock(predecessor);
         // add new link
         linkBlocks(predecessor, predecessorBlock);
       }
-      tryMergeBlocks(predecessorBlock, block);
+
+      if (!tryMergeBlocks(predecessorBlock, block)) {
+        // hint: ms: this could be bad/unintuitive behaviour for a branching stmt for branching
+        predecessorBlock.addSuccessorBlock(block);
+        block.addPredecessorBlock(predecessorBlock);
+      }
     } else {
       final MutableBasicBlock successorBlock = block.splitBlockLinked(beforeStmt, true);
       exceptionMap.forEach(

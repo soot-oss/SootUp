@@ -124,20 +124,23 @@ public class AugEvalFunction {
           return methodTypeClassType;
         } else {
           // return null;
-          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
+          throw new RuntimeException(
+              "can't evaluatable constant in AugEvalFunction '" + value + "'.");
         }
       }
     } else if (value instanceof Expr) {
       if (value instanceof AbstractBinopExpr) {
         Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, graph);
         if (tl == null) {
-          // return null;
-          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
+          return null;
+          // throw new RuntimeException("can't evaluatable constant in AugEvalFunction '" + value +
+          // "'.");
         }
         Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, graph);
         if (tr == null) {
-          // return null;
-          throw new RuntimeException("Inevaluatable constant in AugEvalFunction '" + value + "'.");
+          return null;
+          // throw new RuntimeException("can't evaluatable constant in AugEvalFunction '" + value +
+          // "'.");
         }
         if (value instanceof AbstractIntBinopExpr) {
           if (value instanceof AbstractConditionExpr) {
@@ -162,8 +165,9 @@ public class AugEvalFunction {
               } else {
                 Collection<Type> lca = PrimitiveHierarchy.getLeastCommonAncestor(tl, tr);
                 if (lca.isEmpty()) {
-                  throw new RuntimeException(
-                      "Invaluable expression by using AugEvalFunction '" + value + "'.");
+                  // throw new RuntimeException("can't evaluate expression by using AugEvalFunction
+                  // '" + value + "'.");
+                  return null;
                 }
                 return lca.iterator().next();
               }
@@ -201,8 +205,9 @@ public class AugEvalFunction {
         }
 
         if (type == null) {
-          //          return null;
-          throw new RuntimeException("inevaluatable reference in AugEvalFunction '" + value + "'.");
+          return null;
+          // throw new RuntimeException("can't evaluatable reference in AugEvalFunction '" + value +
+          // "'.");
         }
         return type;
       } else if (value instanceof JArrayRef) {
@@ -221,8 +226,9 @@ public class AugEvalFunction {
           || value instanceof JFieldRef) {
         return value.getType();
       } else {
-        // return null;
-        throw new RuntimeException("Inevaluatable reference in AugEvalFunction '" + value + "'.");
+        return null;
+        // throw new RuntimeException("can't evaluatable reference in AugEvalFunction '" + value +
+        // "'.");
       }
     }
     return null;
@@ -241,6 +247,7 @@ public class AugEvalFunction {
    * This function is used to retrieve the path from the type "Throwable" to the given exception
    * type
    */
+  // TODO: ms: simplify - use the typehiararchy directly!
   private Deque<ClassType> getExceptionPath(@Nonnull ClassType exceptionType) {
     Deque<ClassType> path = new ArrayDeque<>();
     path.push(exceptionType);
@@ -249,6 +256,7 @@ public class AugEvalFunction {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
       if (!superclassOpt.isPresent()) {
+        // TODO: ms: don't fail completely.. work as far as information exists and warn.
         throw new IllegalStateException(
             "The path from '" + exceptionType + "' to java.lang.Throwable cannot be found!");
       }

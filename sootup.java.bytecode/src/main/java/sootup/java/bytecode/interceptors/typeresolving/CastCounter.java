@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -69,7 +70,7 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = false;
     setTyping(typing);
-    for (Stmt stmt : builder.getStmts()) {
+    for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
       stmt.accept(this);
     }
   }
@@ -103,7 +104,7 @@ public class CastCounter extends TypeChecker {
         }
       }
       Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-      if (hierarchy.isAncestor(stdType, evaType)) {
+      if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
       this.castCount++;
@@ -134,7 +135,7 @@ public class CastCounter extends TypeChecker {
       } else {
         newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
       }
-      if (newStmt != null && graph.containsNode(stmt)) {
+      if (graph.containsNode(stmt)) {
         builder.replaceStmt(stmt, newStmt);
         this.stmt2NewStmt.put(oriStmt, newStmt);
       }

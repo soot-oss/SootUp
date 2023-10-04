@@ -25,24 +25,23 @@ package sootup.core.jimple.javabytecode.stmt;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.AbstractStmt;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /*
  * Switch Statements (combining LookupSwitch/TableSwitch)
  * @author Markus Schmidt
  */
-public class JSwitchStmt extends BranchingStmt implements Copyable {
+public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   private final Immediate key;
   private List<IntConstant> values;
@@ -104,6 +103,11 @@ public class JSwitchStmt extends BranchingStmt implements Copyable {
   @Override
   public boolean fallsThrough() {
     return false;
+  }
+
+  @Override
+  public boolean branches() {
+    return true;
   }
 
   @Override

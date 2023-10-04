@@ -32,7 +32,6 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
@@ -40,7 +39,7 @@ import sootup.core.util.printer.StmtPrinter;
  * successor (index=0) is the fallsthrough Stmt and the second successor (index=1) is the rbanching
  * one.
  */
-public final class JIfStmt extends BranchingStmt implements Copyable {
+public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsThroughStmt {
 
   @Nonnull private final AbstractConditionExpr condition;
 
@@ -98,6 +97,11 @@ public final class JIfStmt extends BranchingStmt implements Copyable {
 
   @Override
   public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
     return true;
   }
 

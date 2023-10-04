@@ -67,7 +67,7 @@ public class TypeResolver {
       return false;
     }
     Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
-    if (this.castCount != 0) {
+    if (this.castCount > 0) {
       CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
       castCounter.insertCastStmts(minCastsTyping);
     }
@@ -78,7 +78,11 @@ public class TypeResolver {
       return false;
     } else {
       for (Local local : locals) {
-        Type convertedType = convertType(promotedTyping.getType(local));
+        final Type type = promotedTyping.getType(local);
+        if (type == null) {
+          continue;
+        }
+        Type convertedType = convertType(type);
         if (convertedType != null) {
           promotedTyping.set(local, convertedType);
         }
@@ -88,7 +92,7 @@ public class TypeResolver {
     for (Local local : locals) {
       Type oldType = local.getType();
       Type newType = promotedTyping.getType(local);
-      if (oldType.equals(newType)) {
+      if (newType == null || oldType.equals(newType)) {
         continue;
       }
       Local newLocal = local.withType(newType);

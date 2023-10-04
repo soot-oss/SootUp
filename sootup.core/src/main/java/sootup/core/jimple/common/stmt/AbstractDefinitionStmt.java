@@ -31,7 +31,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.types.Type;
 
-public abstract class AbstractDefinitionStmt extends Stmt {
+public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
   AbstractDefinitionStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);

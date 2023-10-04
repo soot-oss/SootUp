@@ -31,11 +31,10 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
+public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
 
   @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
@@ -189,21 +188,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withVariable(@Nonnull LValue variable) {
-    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
-  }
-
-  @Nonnull
-  public JAssignStmt withRValue(@Nonnull Value rValue) {
-    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
-  }
-
-  @Nonnull
-  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
-  }
-
-  @Nonnull
   @Override
   public LValue getLeftOp() {
     return leftOp;
@@ -215,9 +199,19 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
     return rightOp;
   }
 
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
+
   @Nonnull
   @Override
-  public Stmt withNewDef(@Nonnull Local newLocal) {
+  public JAssignStmt withNewDef(@Nonnull Local newLocal) {
     // "ReplaceDefVisitor"
     final Value leftOp = getLeftOp();
     LValue newVal;
@@ -231,9 +225,24 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
         return this;
       }
     } else {
-      // its a Local..
+      // it's a Local
       newVal = newLocal;
     }
     return withVariable(newVal);
+  }
+
+  @Nonnull
+  public JAssignStmt withVariable(@Nonnull LValue variable) {
+    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withRValue(@Nonnull Value rValue) {
+    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }
