@@ -166,9 +166,9 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
               if (s instanceof JAssignStmt) {
                 Value value = ((JAssignStmt) s).getRightOp();
                 if (value instanceof JNewArrayExpr) {
-                  sel = selectType(sel, ((JNewArrayExpr) value).getBaseType(), s);
+                  sel = selectArrayType(sel, ((JNewArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof JNewMultiArrayExpr) {
-                  sel = selectType(sel, ((JNewMultiArrayExpr) value).getBaseType(), s);
+                  sel = selectArrayType(sel, ((JNewMultiArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof Local) {
                   worklist.add(new StmtLocalPair(s, (Local) value));
                 } else if (value instanceof JCastExpr) {
@@ -311,16 +311,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   // select the type with bigger bit size
-  public Type selectType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
+  public Type selectArrayType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
     if (preType == null || preType.equals(newType)) {
       return newType;
     }
-    Type sel;
-    if (Type.getValueBitSize(newType) > Type.getValueBitSize(preType)) {
-      sel = newType;
-    } else {
-      sel = preType;
-    }
+    Type sel = Type.getValueBitSize(newType) > Type.getValueBitSize(preType) ? newType : preType;
+
     logger.warn(
         "Conflicting array types at "
             + stmt
@@ -330,7 +326,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             + preType
             + " or "
             + newType
-            + ". Select: "
+            + ". Selecting: "
             + sel);
     return sel;
   }

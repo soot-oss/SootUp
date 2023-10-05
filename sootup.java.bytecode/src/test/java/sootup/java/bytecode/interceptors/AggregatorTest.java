@@ -129,19 +129,20 @@ public class AggregatorTest {
               @Override
               public List<BodyInterceptor> getBodyInterceptors() {
                 return Arrays.asList(
-                    new CastAndReturnInliner(),
+                    /*                    new CastAndReturnInliner(),
                     new UnreachableCodeEliminator(),
                     new LocalSplitter(), // FIXME:
-                    // FIXME new Aggregator()
-                    new TypeAssigner(),
+                    // FIXME new Aggregator() */
+                    new TypeAssigner()
                     // ms: is already called from typeassigner? new LocalNameStandardizer(),
-                    new CopyPropagator(),
-                    new DeadAssignmentEliminator(), // FIXME: removes a branch wrongfully
-                    new ConditionalBranchFolder(),
-                    new EmptySwitchEliminator(),
-                    new NopEliminator(),
-                    new UnusedLocalEliminator(),
-                    new UnreachableCodeEliminator());
+                    /*  new CopyPropagator(),
+                        new DeadAssignmentEliminator(), // FIXME: removes a branch wrongfully
+                        new ConditionalBranchFolder(),
+                        new EmptySwitchEliminator(),
+                        new NopEliminator(),
+                        new UnusedLocalEliminator(),
+                        new UnreachableCodeEliminator()
+                    */ );
               }
             });
 
