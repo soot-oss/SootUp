@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.checkerframework.checker.signature.qual.Identifier;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,10 +41,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -85,6 +84,10 @@ public abstract class PathBasedAnalysisInputLocation
     this.path = path;
     this.sourceType = srcType;
   }
+  protected PathBasedAnalysisInputLocation(Path path) {
+    this.path = path;
+    this.sourceType = null;
+  }
 
   @Nullable
   @Override
@@ -106,9 +109,11 @@ public abstract class PathBasedAnalysisInputLocation
         inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
-      } else if (PathUtils.hasExtension(path,FileType.CLASS)) {
-        inputLocation = new SingleClassFileAnalysisInputLocation(path, srcType);
-      } else {
+      } else if(PathUtils.hasExtension(path,FileType.CLASS)){
+        inputLocation= new ClassFileBasedAnalysisInputLocation(path);
+      }
+
+      else {
         inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
     } else {
@@ -143,6 +148,23 @@ public abstract class PathBasedAnalysisInputLocation
 
     return false;
   }
+  @Nonnull
+  Optional<? extends AbstractClassSource<JavaSootClass>> createClassSourceForPath(
+          @Nonnull Path classFilePath,
+          @Nonnull IdentifierFactory factory,
+          @Nonnull ClassProvider<JavaSootClass> classProvider) {
+    final FileType handledFileType = classProvider.getHandledFileType();
+    final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
+
+    // Check if the file has the correct extension and is not a module info file
+    if (PathUtils.hasExtension(classFilePath, handledFileType)
+            && !classFilePath.toString().endsWith(moduleInfoFilename)) {
+      return classProvider.createClassSource(this, classFilePath, factory.fromPath(classFilePath.getParent(), classFilePath));
+    }
+    return Optional.empty();
+
+  }
+
 
   @Nonnull
   Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
@@ -188,6 +210,43 @@ public abstract class PathBasedAnalysisInputLocation
     return classProvider.createClassSource(this, pathToClass, signature);
   }
 
+  public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+
+    public ClassFileBasedAnalysisInputLocation(Path classFilePath) {
+      super(classFilePath);
+      if (!classFilePath.toString().endsWith(".class")) {
+        throw new IllegalArgumentException("Provided path is not a .class file.");
+      }
+    }
+
+    public boolean doesClassExist() {
+      return Files.exists(path) && Files.isRegularFile(path);
+    }
+
+   @Override
+   @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
+      return getClassSourceInternal((JavaClassType) type, path, new AsmJavaClassProvider(view));
+    }
+
+    @Nonnull
+    @Override
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(@Nonnull View<?> view) {
+      return null;
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
@@ -209,58 +268,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-
- /* private static class SingleClassFileAnalysisInputLocation  implements  AnalysisInputLocation<AbstractClass> {
-
-  }*/
-
-
-  private static class SingleClassFileAnalysisInputLocation  extends PathBasedAnalysisInputLocation {
-    public SingleClassFileAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-      super(path, srcType);
-    }
-
-    public boolean isClassNameMatching(String className) {
-      return path.getFileName().toString().equals(className + ".class");
-    }
-
-    public Optional<Path> findClassPath(String className) {
-      return searchForClass(path.toFile(), className + ".class");
-    }
-
-    private Optional<Path> searchForClass(File dir, String classFileName) {
-      File[] files = dir.listFiles();
-      if (files != null) {
-        for (File file : files) {
-          if (file.isDirectory()) {
-            Optional<Path> found = searchForClass(file, classFileName);
-            if (found.isPresent()) {
-              return found;
-            }
-          } else if (file.getName().equals(classFileName)) {
-            return Optional.of(Paths.get(file.getAbsolutePath()));
-          }
-        }
-      }
-      return Optional.empty();
-    }
-
-    @Nonnull
-    @Override
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(@Nonnull ClassType type, @Nonnull View<?> view) {
-      return Optional.empty();
-    }
-
-    @Nonnull
-    @Override
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(@Nonnull View<?> view) {
-      return null;
-    }
-  }
-
-
-
-    public static class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
+  public static class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
       implements ModuleInfoAnalysisInputLocation {
 
     @Nonnull private final int[] availableVersions;
@@ -548,7 +556,7 @@ public abstract class PathBasedAnalysisInputLocation
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-//      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
+      //Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }
