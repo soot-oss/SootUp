@@ -145,7 +145,6 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
     final Body body = builder.build();
     List<String> actualStmts = Utils.filterJimple(body.toString());
-    System.out.println(Utils.generateJimpleTest(actualStmts));
 
     Assert.assertEquals(
         Stream.of(

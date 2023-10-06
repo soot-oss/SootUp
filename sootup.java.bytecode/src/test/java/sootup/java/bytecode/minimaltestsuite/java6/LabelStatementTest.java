@@ -38,18 +38,18 @@ public class LabelStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: LabelStatement",
-            "l1 = 20",
-            "l2 = 1",
+            "$l0 := @this: LabelStatement",
+            "$l1 = 20",
+            "$l2 = 1",
             "label1:",
-            "$stack5 = l2",
-            "$stack4 = l1",
+            "$stack5 = $l2",
+            "$stack4 = $l1",
             "if $stack5 >= $stack4 goto label3",
-            "$stack3 = l2 % 10",
+            "$stack3 = $l2 % 10",
             "if $stack3 != 0 goto label2",
             "goto label3",
             "label2:",
-            "l2 = l2 + 1",
+            "$l2 = $l2 + 1",
             "goto label1",
             "label3:",
             "return")

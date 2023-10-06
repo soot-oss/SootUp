@@ -47,11 +47,11 @@ public class AbstractClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AbstractClass",
+            "$l0 := @this: AbstractClass",
             "$stack2 = new AbstractClass",
             "specialinvoke $stack2.<AbstractClass: void <init>()>()",
-            "l1 = $stack2",
-            "virtualinvoke l1.<A: void a()>()",
+            "$l1 = $stack2",
+            "virtualinvoke $l1.<A: void a()>()",
             "return")
         .collect(Collectors.toList());
   }

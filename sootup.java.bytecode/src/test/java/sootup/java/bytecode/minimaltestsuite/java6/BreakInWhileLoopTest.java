@@ -37,14 +37,14 @@ public class BreakInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: BreakInWhileLoop",
-            "l1 = 10",
-            "l2 = 5",
+            "$l0 := @this: BreakInWhileLoop",
+            "$l1 = 10",
+            "$l2 = 5",
             "label1:",
-            "$stack3 = l1",
+            "$stack3 = $l1",
             "if $stack3 <= 0 goto label2",
-            "l1 = l1 + -1",
-            "if l1 != l2 goto label1",
+            "$l1 = $l1 + -1",
+            "if $l1 != $l2 goto label1",
             "goto label2",
             "label2:",
             "return")
