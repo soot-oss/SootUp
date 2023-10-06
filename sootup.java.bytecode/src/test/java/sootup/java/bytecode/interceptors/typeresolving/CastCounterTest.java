@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.types.*;
 import sootup.core.util.Utils;
@@ -38,10 +39,10 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
-    map.put("l1", super1);
-    map.put("l2", PrimitiveType.getInt());
-    map.put("l3", sub2);
+    map.put("$l0", classType);
+    map.put("$l1", super1);
+    map.put("$l2", PrimitiveType.getInt());
+    map.put("$l3", sub2);
     map.put("$stack4", sub1);
     map.put("$stack5", sub2);
     Typing typing = createTyping(builder.getLocals(), map);
@@ -69,9 +70,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testAssignStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
-    map.put("l1", Type.createArrayType(super1, 1));
-    map.put("l2", super1);
+    map.put("$l0", classType);
+    map.put("$l1", Type.createArrayType(super1, 1));
+    map.put("$l2", super1);
     map.put("$stack3", sub1);
     Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
@@ -88,13 +89,16 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testInvokeStmtWithNewCasts() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
-    map.put("l1", super1);
-    map.put("l2", PrimitiveType.getLong());
-    map.put("l3", super2);
+    map.put("$l0", classType);
+    map.put("$l1", super1);
+    map.put("$l2", PrimitiveType.getLong());
+    map.put("$l3", super2);
     map.put("$stack4", sub1);
     map.put("$stack5", sub2);
-    Typing typing = createTyping(builder.getLocals(), map);
+
+    final Set<Local> locals = builder.getLocals();
+
+    Typing typing = createTyping(locals, map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     Assert.assertEquals(3, counter.getCastCount(typing));
     counter.insertCastStmts(typing);
@@ -129,9 +133,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testAssignStmtWithNewCasts() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
-    map.put("l1", object);
-    map.put("l2", super1);
+    map.put("$l0", classType);
+    map.put("$l1", object);
+    map.put("$l2", super1);
     map.put("$stack3", sub1);
 
     Typing typing = createTyping(builder.getLocals(), map);

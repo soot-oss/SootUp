@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.junit.Assert;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -51,6 +52,14 @@ public class TypeAssignerTestSuite {
   }
 
   public Typing createTyping(Set<Local> locals, Map<String, Type> map) {
+
+    final Optional<Local> foundOpt =
+        locals.stream()
+            .filter(local -> !map.containsKey(local.toString()))
+            .peek(i -> System.out.println("TEST: missing mapping for: " + i))
+            .findAny();
+    Assert.assertFalse(foundOpt.isPresent());
+
     Typing typing = new Typing(locals);
     for (Local l : typing.getLocals()) {
       if (map.containsKey(l.getName())) {
