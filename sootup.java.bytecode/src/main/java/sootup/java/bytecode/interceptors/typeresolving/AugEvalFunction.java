@@ -89,8 +89,7 @@ public class AugEvalFunction {
     if (value instanceof Immediate) {
       if (value instanceof Local) {
         return typing.getType((Local) value);
-        // if value instanceof Constant
-      } else {
+      } else if (value instanceof Constant) {
         if (value.getClass() == IntConstant.class) {
           int val = ((IntConstant) value).getValue();
           if (val >= 0 && val < 2) {
@@ -123,9 +122,7 @@ public class AugEvalFunction {
         } else if (value.getClass() == MethodType.class) {
           return methodTypeClassType;
         } else {
-          // return null;
-          throw new RuntimeException(
-              "can't evaluatable constant in AugEvalFunction '" + value + "'.");
+          throw new IllegalStateException("can't evaluate this type of Constant '" + value + "'.");
         }
       }
     } else if (value instanceof Expr) {
@@ -202,12 +199,6 @@ public class AugEvalFunction {
           } else {
             type = getLeastCommonExceptionType(type, exceptionType);
           }
-        }
-
-        if (type == null) {
-          return null;
-          // throw new RuntimeException("can't evaluatable reference in AugEvalFunction '" + value +
-          // "'.");
         }
         return type;
       } else if (value instanceof JArrayRef) {

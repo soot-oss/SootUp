@@ -73,7 +73,7 @@ public class TypePromotionVisitor extends TypeChecker {
     BytecodeHierarchy hierarchy = getHierarchy();
     Typing typing = getTyping();
     Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-    if (evaType.equals(stdType)) {
+    if (evaType == null || evaType.equals(stdType)) {
       return;
     }
     if (!hierarchy.isAncestor(stdType, evaType)) {
