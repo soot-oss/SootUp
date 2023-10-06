@@ -1,9 +1,11 @@
 package sootup.java.bytecode;
 
+import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
@@ -15,6 +17,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class Soot1580 {
   final Path jar = Paths.get("../shared-test-resources/soot-1580/jpush-android_v3.0.5.jar");
 
