@@ -21,14 +21,16 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractBinopExpr;
@@ -69,11 +71,11 @@ public class Aggregator implements BodyInterceptor {
    */
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-
     StmtGraph<?> graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
+    Map<LValue, Collection<Stmt>> usesMap = Body.collectUses(stmts);
 
-    for (Stmt stmt : Lists.newArrayList(stmts)) {
+    for (Stmt stmt : stmts) {
       if (!(stmt instanceof JAssignStmt)) {
         continue;
       }
@@ -88,6 +90,10 @@ public class Aggregator implements BodyInterceptor {
       }
       for (Value val : assignStmt.getUses()) {
         if (!(val instanceof Local)) {
+          continue;
+        }
+        if (usesMap.get(val).size() > 1) {
+          // there are other uses, so it can't be aggregated
           continue;
         }
         List<AbstractDefinitionStmt> defs = ((Local) val).getDefs(stmts);

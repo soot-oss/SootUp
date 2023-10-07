@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -27,6 +28,7 @@ import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class AggregatorTest {
@@ -75,6 +77,38 @@ public class AggregatorTest {
     for (int i = 0; i < processedStmts.size(); i++) {
       assertEquals(originalStmts.get(i).toString(), processedStmts.get(i).toString());
     }
+  }
+
+  @Test
+  public void noAggregationWithUse() {
+    Body.BodyBuilder builder = Body.builder();
+
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+
+    JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
+
+    Local a = JavaJimple.newLocal("a", fileType);
+    Local b = JavaJimple.newLocal("b", fileType);
+
+    Stmt assignA = JavaJimple.newAssignStmt(a, JavaJimple.newNewExpr(fileType), noPositionInfo);
+    // this use of `a` should prevent the aggregator from changing anything
+    Stmt useA = JavaJimple.newInvokeStmt(Jimple.newSpecialInvokeExpr(a, JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")), noPositionInfo);
+    Stmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
+
+    builder.setStartingStmt(assignA);
+    builder.addFlow(assignA, useA);
+    builder.addFlow(useA, assignB);
+    builder.addFlow(assignB, ret);
+
+    builder.setMethodSignature(
+            JavaIdentifierFactory.getInstance()
+                    .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+
+    new Aggregator().interceptBody(builder, null);
+
+    // ensure that the assigner doesn't remove any statements
+    assertEquals(4, builder.getStmts().size());
   }
 
   private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
