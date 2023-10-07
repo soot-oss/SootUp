@@ -59,7 +59,15 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
     try {
-      AsmUtil.initAsmClassSource(sourcePath, classNode);
+      final String actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
+      if (!actualClassSignature.replace('/', '.').equals(classType.toString())) {
+        throw new IllegalArgumentException(
+            "The given Classtype '"
+                + classType
+                + "' did not match the found ClassType in the compilation unit '"
+                + actualClassSignature
+                + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
+      }
     } catch (IOException | IllegalArgumentException exception) {
       logger.warn(
           "ASM could not resolve class source of "
@@ -72,6 +80,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     }
 
     JavaClassType klassType = (JavaClassType) classType;
+
     if (klassType instanceof ModuleJavaClassType
         && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       logger.warn("Can not create ClassSource from a module info descriptor! path:" + sourcePath);
