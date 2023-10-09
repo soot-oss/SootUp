@@ -111,7 +111,7 @@ public class OperandStack {
     Value v = o.value;
     Local l = o.stackLocal;
     if (l == null && !(v instanceof Local)) {
-      l = o.stackLocal = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal(v.getType());
       methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
       o.updateUsages();
     }
@@ -123,7 +123,7 @@ public class OperandStack {
     Value v = o.value;
     Local l = o.stackLocal;
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
-      l = o.stackLocal = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal(v.getType());
       methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
       o.updateUsages();
     }
@@ -135,7 +135,7 @@ public class OperandStack {
     Value v = o.value;
     Local l = o.stackLocal;
     if (l == null && !(v instanceof Constant)) {
-      l = o.stackLocal = methodSource.newStackLocal();
+      l = o.stackLocal = methodSource.newStackLocal(v.getType());
       methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
       o.updateUsages();
     }

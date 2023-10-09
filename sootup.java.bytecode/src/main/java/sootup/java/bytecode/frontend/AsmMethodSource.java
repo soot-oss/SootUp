@@ -335,8 +335,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  Local newStackLocal() {
+  Local newStackLocal(@Nonnull Type type) {
     int idx = nextLocal++;
+    // TODO: [ms] I added the type as parameter into the method already - check if we can
+    // incorporate the type here - should be possible if the stacklocals are not reused by another
+    // assignment..
     JavaLocal l =
         JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
     locals.set(idx, l);
@@ -387,7 +390,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         continue;
       }
 
-      Local stackLocal = newStackLocal();
+      Local stackLocal = newStackLocal(opValue.getType());
       operand.stackLocal = stackLocal;
       JAssignStmt<Local, ?> asssignStmt =
           Jimple.newAssignStmt(stackLocal, opValue, getStmtPositionInfo());
@@ -1573,6 +1576,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     if (!insnToStmt.containsKey(insn)) {
       AbstractDefinitionStmt<Local, ?> as =
           Jimple.newAssignStmt(local, opr.stackOrValue(), getStmtPositionInfo());
+      opr.stackLocal = local;
       frame.setIn(opr);
       setStmt(insn, as);
       opr.addUsageInStmt(as);
@@ -1620,7 +1624,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand opr;
     if (out == null) {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
-      Local stack = newStackLocal();
+      Local stack = newStackLocal(ref.getType());
       AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
           Jimple.newIdentityStmt(stack, ref, getStmtPositionInfo());
       opr = new Operand(ln, ref, this);
@@ -1701,7 +1705,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (inlineExceptionLabels.contains(handlerNode)) {
         // Catch the exception
         JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
-        Local local = newStackLocal();
+        Local local = newStackLocal(ref.getType());
         AbstractDefinitionStmt<Local, JCaughtExceptionRef> as =
             Jimple.newIdentityStmt(local, ref, getStmtPositionInfo());
 
@@ -2110,10 +2114,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     replacedStmt.put(oldStmt, newStmt);
 
     if (oldStmt instanceof BranchingStmt) {
-      List<LabelNode> branchLabels = stmtsThatBranchToLabel.get((BranchingStmt) oldStmt);
+      final BranchingStmt oldBranchingStmt = (BranchingStmt) oldStmt;
+      List<LabelNode> branchLabels = stmtsThatBranchToLabel.get(oldBranchingStmt);
       if (branchLabels != null) {
         branchLabels.forEach(bl -> stmtsThatBranchToLabel.put((BranchingStmt) newStmt, bl));
-        stmtsThatBranchToLabel.removeAll(oldStmt);
+        stmtsThatBranchToLabel.removeAll(oldBranchingStmt);
       }
     }
   }

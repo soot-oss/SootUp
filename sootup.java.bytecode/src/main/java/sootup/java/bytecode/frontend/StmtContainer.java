@@ -32,9 +32,9 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
- * A psuedo stmt containing different stmts.
+ * A pseudo stmt containing different stmts.
  *
- * <p>basically its used to map more than one Stmt to a single AbstractInsNode - used in a Map of
+ * <p>its used to map more than one Stmt to a single AbstractInsNode - used in a Map of
  * AsmMethodSource
  *
  * @author Aaloan Miftah

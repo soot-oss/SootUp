@@ -32,6 +32,7 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.UnknownType;
 
 /**
  * Frame of stack for an instruction. (see <a
@@ -39,7 +40,7 @@ import sootup.core.jimple.common.stmt.Stmt;
  *
  * @author Aaloan Miftah
  */
-final class StackFrame {
+public final class StackFrame {
 
   @Nullable private Operand[] out = null;
   @Nullable private Local[] inStackLocals = null;
@@ -118,8 +119,7 @@ final class StackFrame {
           if (stack != rvalue) {
             JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
             src.mergeStmts(newOp.insn, as);
-            newOp.addUsageInStmt(
-                as); // [ms] necessary? added it as an equivalent existed in soot as well..
+            newOp.addUsageInStmt(as);
           }
         }
       } else {
@@ -132,7 +132,7 @@ final class StackFrame {
         if (stack == null) {
           stack = newOp.stackLocal;
           if (stack == null) {
-            stack = src.newStackLocal();
+            stack = src.newStackLocal(UnknownType.getInstance());
           }
         }
         /* add assign statement for prevOp */

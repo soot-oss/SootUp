@@ -36,7 +36,7 @@ import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
  *
  * @author Aaloan Miftah
  */
-class Operand {
+public class Operand {
 
   @SuppressWarnings("ConstantConditions")
   static final Operand DWORD_DUMMY = new Operand(null, null, null);

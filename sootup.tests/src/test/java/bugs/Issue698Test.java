@@ -20,7 +20,7 @@ import sootup.java.core.views.JavaView;
 @Category(Java8Test.class)
 public class Issue698Test {
   @Test
-  public void testJar_missing_if_flows() {
+  public void test_missing_local_assignments_from_virtualinvoke() {
 
     // https://repo1.maven.org/maven2/cn/hutool/hutool-db/5.7.18/hutool-db-5.7.18.jar.
     JavaProject applicationProject =
