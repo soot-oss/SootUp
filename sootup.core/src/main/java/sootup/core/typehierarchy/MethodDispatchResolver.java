@@ -184,7 +184,7 @@ public final class MethodDispatchResolver {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
     ClassType superClassType = m.getDeclClassType();
     SootClass<?> startClass = view.getClass(superClassType).orElse(null);
-    ArrayList<SootClass<?>> classesInHierachyOrder = new ArrayList<>();
+    ArrayList<SootClass<?>> classesInHierarchyOrder = new ArrayList<>();
 
     // search concrete method in the class itself and its super classes
     do {
@@ -196,7 +196,7 @@ public final class MethodDispatchResolver {
                       new ResolveException(
                           "Did not find class " + finalSuperClassType + " in View"));
 
-      classesInHierachyOrder.add(superClass);
+      classesInHierarchyOrder.add(superClass);
 
       SootMethod concreteMethod = superClass.getMethod(m.getSubSignature()).orElse(null);
       if (concreteMethod != null && !concreteMethod.isAbstract()) {
@@ -209,7 +209,7 @@ public final class MethodDispatchResolver {
           // A not implemented method of an abstract class results into an abstract method
           return Optional.empty();
         }
-        // found method is abstract and the startclass is not abstract
+        // found method is abstract and the start class is not abstract
         throw new ResolveException(
             "Could not find concrete method for " + m + " because the method is abstract");
       }
@@ -220,7 +220,7 @@ public final class MethodDispatchResolver {
     // No super class contains the implemented method, search the concrete method in interfaces
     // first collect all interfaces and super interfaces
     List<SootClass<?>> worklist =
-        classesInHierachyOrder.stream()
+            classesInHierarchyOrder.stream()
             .flatMap(sootClass -> getSootClassesOfInterfaces(view, sootClass).stream())
             .collect(Collectors.toList());
     ArrayList<SootClass<?>> processedInterface = new ArrayList<>();
