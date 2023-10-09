@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class MethodDispatchResolver {
   private MethodDispatchResolver() {}
@@ -174,6 +175,19 @@ public final class MethodDispatchResolver {
   }
 
   /**
+   * Returns all superclasses of <code>classType</code>(inclusive) up to <code>java.lang.Object</code>, which
+   * will be the last entry in the list, or till one of the superclasses is not contained in view.
+   */
+  private static List<SootClass<?>> findSuperClassesInclusive(
+          View<? extends SootClass<?>> view, ClassType classType) {
+    return Stream.concat(
+                    Stream.of(classType),
+                    view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream()
+            ).flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
+            .collect(Collectors.toList());
+  }
+
+  /**
    * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
@@ -182,23 +196,12 @@ public final class MethodDispatchResolver {
   public static Optional<MethodSignature> resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
-    ClassType superClassType = m.getDeclClassType();
-    SootClass<?> startClass = view.getClass(superClassType).orElse(null);
-    ArrayList<SootClass<?>> classesInHierarchyOrder = new ArrayList<>();
+    ClassType current = m.getDeclClassType();
+    SootClass<?> startClass = view.getClass(current).orElse(null);
+    List<SootClass<?>> classesInHierarchyOrder = findSuperClassesInclusive(view, current);
 
-    // search concrete method in the class itself and its super classes
-    do {
-      ClassType finalSuperClassType = superClassType;
-      SootClass<?> superClass =
-          view.getClass(superClassType)
-              .orElseThrow(
-                  () ->
-                      new ResolveException(
-                          "Did not find class " + finalSuperClassType + " in View"));
-
-      classesInHierarchyOrder.add(superClass);
-
-      SootMethod concreteMethod = superClass.getMethod(m.getSubSignature()).orElse(null);
+    for (SootClass<?> currentClass : classesInHierarchyOrder) {
+      SootMethod concreteMethod = currentClass.getMethod(m.getSubSignature()).orElse(null);
       if (concreteMethod != null && !concreteMethod.isAbstract()) {
         // found method is not abstract
         return Optional.of(concreteMethod.getSignature());
@@ -209,13 +212,12 @@ public final class MethodDispatchResolver {
           // A not implemented method of an abstract class results into an abstract method
           return Optional.empty();
         }
-        // found method is abstract and the start class is not abstract
+        // found method is abstract and the startClass is not abstract
         throw new ResolveException(
             "Could not find concrete method for " + m + " because the method is abstract");
       }
+    }
 
-      superClassType = hierarchy.superClassOf(superClassType);
-    } while (superClassType != null);
 
     // No super class contains the implemented method, search the concrete method in interfaces
     // first collect all interfaces and super interfaces
