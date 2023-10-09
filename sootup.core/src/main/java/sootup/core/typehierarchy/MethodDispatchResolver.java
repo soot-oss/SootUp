@@ -22,12 +22,6 @@ package sootup.core.typehierarchy;
  */
 
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.Method;
@@ -36,6 +30,13 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class MethodDispatchResolver {
   private MethodDispatchResolver() {}
