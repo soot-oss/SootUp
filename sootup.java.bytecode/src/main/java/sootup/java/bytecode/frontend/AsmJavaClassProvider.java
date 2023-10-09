@@ -59,13 +59,15 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
     try {
-      final String actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-      if (!actualClassSignature.replace('/', '.').equals(classType.toString())) {
+      final String actualClassSignatureStr =
+          AsmUtil.initAsmClassSource(sourcePath, classNode).replace('/', '.');
+      if (!actualClassSignatureStr.equals(
+          classType.getFullyQualifiedName())) { // in >Java9 omit the module part of the signature
         throw new IllegalArgumentException(
             "The given Classtype '"
                 + classType
                 + "' did not match the found ClassType in the compilation unit '"
-                + actualClassSignature
+                + actualClassSignatureStr
                 + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
       }
     } catch (IOException | IllegalArgumentException exception) {
