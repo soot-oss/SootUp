@@ -35,16 +35,15 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.UnknownType;
 
 /**
- * Frame of stack for an instruction. (see <a
- * href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6">...</a> )
+ * Frame of stack for an instruction.
  *
  * @author Aaloan Miftah
  */
 public final class StackFrame {
 
   @Nullable private Operand[] out = null;
-  @Nullable private Local[] inStackLocals = null;
-  @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
+  @Nullable private Local[] incomingStackLocals = null;
+  @Nonnull private final ArrayList<Operand[]> incomingOperands = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
@@ -61,10 +60,10 @@ public final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void setIn(@Nonnull Operand... oprs) {
-    in.clear();
-    in.add(oprs);
-    inStackLocals = new Local[oprs.length];
+  void setIncomingOperands(@Nonnull Operand... oprs) {
+    incomingOperands.clear();
+    incomingOperands.add(oprs);
+    incomingStackLocals = new Local[oprs.length];
   }
 
   /**
@@ -90,7 +89,7 @@ public final class StackFrame {
    *     old operands.
    */
   void mergeIn(int lineNumber, @Nonnull Operand... oprs) {
-    if (in.get(0).length != oprs.length) {
+    if (incomingOperands.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid Operand length!");
     }
 
@@ -101,12 +100,12 @@ public final class StackFrame {
       positionInfo = StmtPositionInfo.createNoStmtPositionInfo();
     }
 
-    final int nrIn = in.size();
+    final int nrIn = incomingOperands.size();
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
       /* merge, since prevOp != newOp */
-      Local stack = inStackLocals[i];
+      Local stack = incomingStackLocals[i];
       if (stack != null) {
         if (newOp.stackLocal == null) {
           newOp.stackLocal = stack;
@@ -124,7 +123,7 @@ public final class StackFrame {
         }
       } else {
         for (int j = 0; j < nrIn; j++) {
-          stack = in.get(j)[i].stackLocal;
+          stack = incomingOperands.get(j)[i].stackLocal;
           if (stack != null) {
             break;
           }
@@ -137,7 +136,7 @@ public final class StackFrame {
         }
         /* add assign statement for prevOp */
         for (int j = 0; j != nrIn; j++) {
-          Operand prevOp = in.get(j)[i];
+          Operand prevOp = incomingOperands.get(j)[i];
           if (prevOp.stackLocal == stack) {
             continue;
           }
@@ -174,7 +173,7 @@ public final class StackFrame {
           }
           newOp.updateUsages();
         }
-        inStackLocals[i] = stack;
+        incomingStackLocals[i] = stack;
       }
 
       /*
@@ -194,7 +193,7 @@ public final class StackFrame {
     }
     // add if there is a difference
     if (0 < oprs.length) {
-      in.add(oprs);
+      incomingOperands.add(oprs);
     }
   }
 }

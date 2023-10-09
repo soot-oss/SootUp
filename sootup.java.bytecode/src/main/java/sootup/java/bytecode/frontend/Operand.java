@@ -91,7 +91,9 @@ public class Operand {
           .forEach(usedByStmts::add);
     }
 
-    if (value == stackOrValue()) return;
+    if (value == stackOrValue()) {
+      return;
+    }
 
     ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
 
