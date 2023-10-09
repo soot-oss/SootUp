@@ -22,6 +22,13 @@ package sootup.core.typehierarchy;
  */
 
 import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.Method;
@@ -30,14 +37,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class MethodDispatchResolver {
   private MethodDispatchResolver() {}
@@ -87,7 +86,7 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-            .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
+        .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -113,7 +112,7 @@ public final class MethodDispatchResolver {
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .filter(c -> classes.contains(c.getType()))
-            .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
+        .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -175,16 +174,17 @@ public final class MethodDispatchResolver {
   }
 
   /**
-   * Returns all superclasses of <code>classType</code>(inclusive) up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list, or till one of the superclasses is not contained in view.
+   * Returns all superclasses of <code>classType</code>(inclusive) up to <code>java.lang.Object
+   * </code>, which will be the last entry in the list, or till one of the superclasses is not
+   * contained in view.
    */
   private static List<SootClass<?>> findSuperClassesInclusive(
-          View<? extends SootClass<?>> view, ClassType classType) {
+      View<? extends SootClass<?>> view, ClassType classType) {
     return Stream.concat(
-                    Stream.of(classType),
-                    view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream()
-            ).flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
-            .collect(Collectors.toList());
+            Stream.of(classType),
+            view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream())
+        .flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -218,11 +218,10 @@ public final class MethodDispatchResolver {
       }
     }
 
-
     // No super class contains the implemented method, search the concrete method in interfaces
     // first collect all interfaces and super interfaces
     List<SootClass<?>> worklist =
-            classesInHierarchyOrder.stream()
+        classesInHierarchyOrder.stream()
             .flatMap(sootClass -> getSootClassesOfInterfaces(view, sootClass).stream())
             .collect(Collectors.toList());
     ArrayList<SootClass<?>> processedInterface = new ArrayList<>();
@@ -236,7 +235,7 @@ public final class MethodDispatchResolver {
 
       // add found default method to possibleDefaultMethods
       Optional<? extends SootMethod> concreteMethod =
-              currentInterface.getMethod(m.getSubSignature());
+          currentInterface.getMethod(m.getSubSignature());
       concreteMethod.ifPresent(possibleDefaultMethods::add);
 
       // if no default message is found search the default message in super interfaces
