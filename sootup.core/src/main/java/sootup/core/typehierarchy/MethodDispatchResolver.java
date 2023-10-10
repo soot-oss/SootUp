@@ -201,20 +201,21 @@ public final class MethodDispatchResolver {
     List<SootClass<?>> classesInHierarchyOrder = findSuperClassesInclusive(view, current);
 
     for (SootClass<?> currentClass : classesInHierarchyOrder) {
-      SootMethod concreteMethod = currentClass.getMethod(m.getSubSignature()).orElse(null);
-      if (concreteMethod != null && !concreteMethod.isAbstract()) {
-        // found method is not abstract
-        return Optional.of(concreteMethod.getSignature());
-      }
-      if (concreteMethod != null && concreteMethod.isAbstract()) {
-        if (startClass.isAbstract()
-            && !startClass.getType().equals(concreteMethod.getDeclaringClassType())) {
-          // A not implemented method of an abstract class results into an abstract method
-          return Optional.empty();
+      SootMethod method = currentClass.getMethod(m.getSubSignature()).orElse(null);
+      if (method != null) {
+        if (!method.isAbstract()) {
+          // found method is not abstract
+          return Optional.of(method.getSignature());
+        } else {
+          if (startClass.isAbstract()
+              && !startClass.getType().equals(method.getDeclaringClassType())) {
+            // A not implemented method of an abstract class results into an abstract method
+            return Optional.empty();
+          }
+          // found method is abstract and the startClass is not abstract
+          throw new ResolveException(
+              "Could not find concrete method for " + m + " because the method is abstract");
         }
-        // found method is abstract and the startClass is not abstract
-        throw new ResolveException(
-            "Could not find concrete method for " + m + " because the method is abstract");
       }
     }
 
