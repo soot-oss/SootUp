@@ -974,8 +974,30 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return false;
     }
 
-    // divide block if from and to are from the same block
-    if (blockOfFrom == blockOfTo) {
+    if (blockOfFrom.getTail() == from && blockOfTo.getHead() == to) {
+      // `from` and `to` are the tail and head of their respective blocks,
+      // meaning they either connect different blocks,
+      // or are a loop of the same block
+
+      // remove the connection between the blocks
+      boolean predecessorRemoved = blockOfTo.removePredecessorBlock(blockOfFrom);
+      boolean successorRemoved = blockOfFrom.removeSuccessorBlock(blockOfTo);
+      assert predecessorRemoved == successorRemoved;
+
+      if (!predecessorRemoved) {
+        // the blocks weren't connected
+        return false;
+      }
+
+      // the removal of the edge between `from` and `to` might have created blocks that can be merged
+      tryMergeWithPredecessorBlock(blockOfTo);
+      tryMergeWithSuccessorBlock(blockOfFrom);
+
+      return true;
+    } else if (blockOfFrom == blockOfTo) {
+      // `from` and `to` are part of the same block but aren't the tail and head,
+      // which means they are "inner" statements in the block and the block needs to be divided
+
       // divide block and don't link them
       final List<Stmt> stmtsOfBlock = blockOfFrom.getStmts();
       int toIdx = stmtsOfBlock.indexOf(from) + 1;
@@ -993,29 +1015,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         return false;
       }
     } else {
-      // `from` and `to` are part of different blocks
-
-      if (blockOfFrom.getTail() != from || blockOfTo.getHead() != to) {
-        // `from` and `to` aren't the tail and head of their respective blocks,
-        // which means they aren't connected
-        return false;
-      }
-
-      // remove the connection between the two blocks
-      boolean predecessorRemoved = blockOfTo.removePredecessorBlock(blockOfFrom);
-      boolean successorRemoved = blockOfFrom.removeSuccessorBlock(blockOfTo);
-      assert predecessorRemoved == successorRemoved;
-
-      if (!predecessorRemoved) {
-        // the blocks weren't connected
-        return false;
-      }
-
-      // the removal of the edge between `from` and `to` might have created blocks that can be merged
-      tryMergeWithPredecessorBlock(blockOfTo);
-      tryMergeWithSuccessorBlock(blockOfFrom);
-
-      return true;
+      // `from` and `to` are part of different blocks,
+      // and aren't tail and head of their respective block,
+      // which means they aren't connected
+      return false;
     }
   }
 
