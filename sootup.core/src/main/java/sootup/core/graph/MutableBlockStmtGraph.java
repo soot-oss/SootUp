@@ -1005,7 +1005,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (toIdx < stmtsOfBlock.size() && stmtsOfBlock.get(toIdx) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
-        blockOfFrom.getSuccessors().forEach(newBlock::addSuccessorBlock);
+        blockOfFrom.getSuccessors().forEach(successor -> {
+            successor.removePredecessorBlock(blockOfFrom);
+            newBlock.addSuccessorBlock(successor);
+            successor.addPredecessorBlock(newBlock);
+        });
         blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
