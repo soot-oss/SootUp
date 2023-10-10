@@ -965,19 +965,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
-    // FIXME: how to handle "partial" removals of targets of flows starting from a Branching Stmt..
-    // e.g. because one of the targets are removed.. that changes the whole logic there..
-
+  public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     MutableBasicBlock blockOfFrom = stmtToBlock.get(from);
     MutableBasicBlock blockOfTo = stmtToBlock.get(to);
 
     if (blockOfFrom == null || blockOfTo == null) {
       // one of the Stmts is not existing anymore in this graph - so neither a connection.
-      return;
+      return false;
     }
-
-    removeBlockBorderEdgesInternal(from, blockOfFrom);
 
     // divide block if from and to are from the same block
     if (blockOfFrom == blockOfTo) {
@@ -992,61 +987,35 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
+        return true;
       } else {
-        // throw new IllegalArgumentException("Can't seperate the flow from '"+from+"' to '"+to+"'.
-        // The Stmts are not connected in this graph!");
+        // `from` and `to` are not successive statements in the block
+        return false;
       }
-    }
-  }
+    } else {
+      // `from` and `to` are part of different blocks
 
-  protected void removeBlockBorderEdgesInternal(
-      @Nonnull Stmt from, @Nonnull MutableBasicBlock blockOfFrom) {
-    // TODO: is it intuitive to remove connections to the BasicBlock in the case we cant merge the
-    // blocks?
-    // TODO: reuse tryMerge*Block?
-
-    // add BlockB to BlockA if blockA has no branchingstmt as tail && same traps
-    if (!blockOfFrom.getStmts().isEmpty() && from == blockOfFrom.getTail()) {
-      if (blockOfFrom.getPredecessors().size() == 1) {
-        MutableBasicBlock singlePreviousBlock = blockOfFrom.getPredecessors().get(0);
-        if (!singlePreviousBlock.getTail().branches() && singlePreviousBlock != blockOfFrom) {
-          if (singlePreviousBlock
-              .getExceptionalSuccessors()
-              .equals(blockOfFrom.getExceptionalSuccessors())) {
-            blockOfFrom
-                .getStmts()
-                .forEach(
-                    k -> {
-                      addNodeToBlock(blockOfFrom, k);
-                    });
-            return;
-          }
-        }
+      if (blockOfFrom.getTail() != from || blockOfTo.getHead() != to) {
+        // `from` and `to` aren't the tail and head of their respective blocks,
+        // which means they aren't connected
+        return false;
       }
 
-      // remove outgoing connections from blockA if from stmt is the tail
-      if (!from.branches()) {
-        if (!blockOfFrom.getStmts().isEmpty() && blockOfFrom.getSuccessors().size() == 1) {
-          // merge previous block if possible i.e. no branchingstmt as tail && same traps && no
-          // other predesccorblocks
-          MutableBasicBlock singleSuccessorBlock = blockOfFrom.getSuccessors().get(0);
-          if (singleSuccessorBlock.getPredecessors().size() == 1
-              && singleSuccessorBlock.getPredecessors().get(0) == blockOfFrom) {
-            if (singleSuccessorBlock
-                .getExceptionalSuccessors()
-                .equals(blockOfFrom.getExceptionalSuccessors())) {
-              singleSuccessorBlock
-                  .getStmts()
-                  .forEach(
-                      k -> {
-                        addNodeToBlock(blockOfFrom, k);
-                      });
-            }
-          }
-        }
-      } else {
-        blockOfFrom.clearSuccessorBlocks();
+      // remove the connection between the two blocks
+      boolean predecessorRemoved = blockOfTo.removePredecessorBlock(blockOfFrom);
+      boolean successorRemoved = blockOfFrom.removeSuccessorBlock(blockOfTo);
+      assert predecessorRemoved == successorRemoved;
+
+      if (!predecessorRemoved) {
+        // the blocks weren't connected
+        return false;
       }
+
+      // the removal of the edge between `from` and `to` might have created blocks that can be merged
+      tryMergeWithPredecessorBlock(blockOfTo);
+      tryMergeWithSuccessorBlock(blockOfFrom);
+
+      return true;
     }
   }
 

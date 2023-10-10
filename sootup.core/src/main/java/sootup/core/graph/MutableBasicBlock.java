@@ -82,12 +82,12 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     successorBlocks.add(block);
   }
 
-  public void removePredecessorBlock(@Nonnull MutableBasicBlock b) {
-    predecessorBlocks.remove(b);
+  public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
+    return predecessorBlocks.remove(b);
   }
 
-  public void removeSuccessorBlock(@Nonnull MutableBasicBlock b) {
-    successorBlocks.remove(b);
+  public boolean removeSuccessorBlock(@Nonnull MutableBasicBlock b) {
+    return successorBlocks.remove(b);
   }
 
   public void addExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
