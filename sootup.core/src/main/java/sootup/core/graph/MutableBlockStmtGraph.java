@@ -721,54 +721,70 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     removeNode(stmt, true);
   }
 
+  /**
+   * Removes a Stmt from the StmtGraph.
+   * <p>
+   * It can optionally keep the flow (edges) of the statement
+   * by connecting the predecessors of the statement with successors of the statement.
+   * Keeping the flow does not work when the statement has multiple successors.
+   *
+   * @param stmt the Stmt to be removed
+   * @param keepFlow flag indicating whether to keep the flow or not
+   * @throws IllegalArgumentException if keepFlow is true but the stmt has multiple successors
+   */
   public void removeNode(@Nonnull Stmt stmt, boolean keepFlow) {
-
-    MutableBasicBlock blockOfRemovedStmt = stmtToBlock.remove(stmt);
-    if (blockOfRemovedStmt == null) {
-      throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
+    if (keepFlow && successors(stmt).size() > 1) {
+      // Branching statements can have multiple targets/successors,
+      // and there is no obvious way to connect the predecessor and successors of the statement.
+      throw new IllegalArgumentException("can't remove a statement with multiple successors while keeping the flow");
     }
 
     if (stmt == startingStmt) {
       startingStmt = null;
     }
 
-    final boolean isHead = blockOfRemovedStmt.getHead() == stmt;
-    final boolean isTail = blockOfRemovedStmt.getTail() == stmt;
-
-    // do edges from or to this node exist -> remove them?
-    if (isHead && !keepFlow) {
-      final MutableBasicBlock finalBlockOfRemovedStmt = blockOfRemovedStmt;
-      blockOfRemovedStmt
-          .getPredecessors()
-          .forEach(
-              b -> {
-                b.removeSuccessorBlock(finalBlockOfRemovedStmt);
-                finalBlockOfRemovedStmt.removePredecessorBlock(b);
-              });
-      blockOfRemovedStmt.clearPredecessorBlocks();
-    }
-
-    if (isTail) {
-      if (stmt.branches() && !keepFlow) {
-        blockOfRemovedStmt.clearSuccessorBlocks();
+    if (!keepFlow) {
+      for (Stmt predecessor : predecessors(stmt)) {
+        removeEdge(predecessor, stmt);
+      }
+      for (Stmt successor : successors(stmt)) {
+        removeEdge(stmt, successor);
       }
     }
 
-    // cleanup or merge blocks if necesssary (stmt itself is not removed from the block yet)
+    MutableBasicBlock blockOfRemovedStmt = stmtToBlock.remove(stmt);
+    if (blockOfRemovedStmt == null) {
+      throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
+    }
+
     if (blockOfRemovedStmt.getStmtCount() > 1) {
+      // Removing the statement from the block will keep the flow automatically,
+      // because the flow inside a block is implicit (from one statement to the next)
+      // and connections between blocks are kept.
       blockOfRemovedStmt.removeStmt(stmt);
-
-      if (isHead) {
-        blockOfRemovedStmt = tryMergeWithPredecessorBlock(blockOfRemovedStmt);
-      }
-      if (isTail) {
-        tryMergeWithSuccessorBlock(blockOfRemovedStmt);
-      }
-
     } else {
       // cleanup block (i.e. remove!) as its not needed in the graph anymore if it only contains
       // stmt - which is
       // now deleted
+
+      if (keepFlow) {
+        // this is always true because of the check at the start of the method
+        assert blockOfRemovedStmt.getSuccessors().size() <= 1;
+
+        // connect predecessors to the successor of the statement to keep the flow
+        if (blockOfRemovedStmt.getSuccessors().size() == 1) {
+          MutableBasicBlock successor = blockOfRemovedStmt.getSuccessors().get(0);
+
+          for (MutableBasicBlock predecessor : blockOfRemovedStmt.getPredecessors()) {
+            predecessor.removeSuccessorBlock(blockOfRemovedStmt);
+            predecessor.addSuccessorBlock(successor);
+
+            successor.removePredecessorBlock(blockOfRemovedStmt);
+            successor.addPredecessorBlock(predecessor);
+          }
+        }
+      }
+
       blocks.remove(blockOfRemovedStmt);
       blockOfRemovedStmt.clearPredecessorBlocks();
       blockOfRemovedStmt.clearSuccessorBlocks();

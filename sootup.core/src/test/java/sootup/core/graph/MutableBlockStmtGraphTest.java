@@ -201,7 +201,7 @@ public class MutableBlockStmtGraphTest {
     graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
     assertEquals(3, graph.getBlocksSorted().size());
 
-    graph.removeNode(conditionalStmt);
+    graph.removeNode(conditionalStmt, false);
     final List<? extends BasicBlock<?>> blocksSorted = graph.getBlocksSorted();
     assertEquals(
         Collections.singletonList(firstNop).toString(), blocksSorted.get(0).getStmts().toString());
