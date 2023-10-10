@@ -279,6 +279,25 @@ public class MutableBlockStmtGraphTest {
   }
 
   @Test
+  public void removeEdgeMerge() {
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+
+    graph.addNode(firstNop);
+    graph.setStartingStmt(firstNop);
+    graph.putEdge(firstNop, secondNop);
+    graph.putEdge(secondNop, conditionalStmt);
+
+    assertEquals(1, graph.getBlocks().size());
+    // this edge splits the block between the first and second Nop
+    graph.putEdge(conditionalStmt, secondNop);
+    assertEquals(2, graph.getBlocks().size());
+
+    // this edge removal should merge both blocks together again
+    graph.removeEdge(conditionalStmt, secondNop);
+    assertEquals(1, graph.getBlocks().size());
+  }
+
+  @Test
   public void removeStmtInBetweenBlock() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
