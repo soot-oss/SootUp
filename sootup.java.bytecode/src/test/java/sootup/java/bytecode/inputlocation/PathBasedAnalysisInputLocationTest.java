@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +38,7 @@ import javax.annotation.Nonnull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Project;
 import sootup.core.frontend.BodySource;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
@@ -282,21 +279,16 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testSingleClass() {
-    Path classFilePath = Paths.get("../shared-test-resources/miniTestSuite/java6/binary/AbstractClass.class");
-    PathBasedAnalysisInputLocation location = new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(classFilePath);
-    assertTrue("The .class file does not exist", ((PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation) location).doesClassExist());
-
-
-
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(cls, null);
+    final ClassType mainClass = getIdentifierFactory().getClassType("AssertStatement");
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1);
   }
-
-
 
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(jar, null);
-
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
