@@ -73,7 +73,6 @@ import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInstanceOfExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
@@ -1387,19 +1386,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
-      final boolean isStaticInvokeExpr = expr instanceof JStaticInvokeExpr;
-      if (isStaticInvokeExpr) {
-        oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
-      } else {
-        oprs = new Operand[nrArgs + 1];
-      }
+      oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
       if (oprs != null) {
         while (nrArgs > 0) {
           nrArgs--;
           oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
-        }
-        if (!isStaticInvokeExpr) {
-          oprs[oprs.length - 1] = operandStack.pop();
         }
         frame.mergeIn(currentLineNumber, oprs);
       }
