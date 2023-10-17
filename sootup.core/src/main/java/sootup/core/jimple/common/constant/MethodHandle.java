@@ -148,6 +148,10 @@ public class MethodHandle implements Constant {
     return type;
   }
 
+  public Kind getKind() {
+    return kind;
+  }
+
   public SootClassMemberSignature<? extends SootClassMemberSubSignature> getReferenceSignature() {
     return referenceSignature;
   }
