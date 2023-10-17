@@ -94,22 +94,22 @@ public class MutableBlockStmtGraphTest {
   public void addNodeTest() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    assertEquals(0, graph.getBlocksSorted().size());
+    assertEquals(0, graph.getBlocks().size());
     graph.addNode(firstNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
 
     // test duplicate insertion of the same node
     graph.addNode(firstNop);
-    assertEquals(1, graph.getBlocksSorted().size());
-    assertEquals(1, graph.getBlocksSorted().get(0).getStmts().size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlockOf(firstNop).getStmts().size());
 
     graph.addNode(secondNop);
-    assertEquals(2, graph.getBlocksSorted().size());
-    assertEquals(1, graph.getBlocksSorted().get(1).getStmts().size());
+    assertEquals(2, graph.getBlocks().size());
+    assertEquals(1, graph.getBlockOf(firstNop).getStmts().size());
 
     graph.removeNode(firstNop);
-    assertEquals(1, graph.getBlocksSorted().size());
-    assertEquals(1, graph.getBlocksSorted().get(0).getStmts().size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlockOf(secondNop).getStmts().size());
 
     // removal of not existing
     try {
@@ -117,10 +117,10 @@ public class MutableBlockStmtGraphTest {
       fail("should not be reachable due to exception");
     } catch (Exception ignored) {
     }
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
 
     graph.removeNode(secondNop);
-    assertEquals(0, graph.getBlocksSorted().size());
+    assertEquals(0, graph.getBlocks().size());
   }
 
   @Test
@@ -129,10 +129,10 @@ public class MutableBlockStmtGraphTest {
     graph.setStartingStmt(firstNop);
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
-    assertEquals(3, graph.getBlocksSorted().get(0).getStmts().size());
+    assertEquals(3, graph.getBlockOf(firstNop).getStmts().size());
 
     graph.removeNode(secondNop);
-    assertEquals(Arrays.asList(firstNop, thirdNop), graph.getBlocksSorted().get(0).getStmts());
+    assertEquals(Arrays.asList(firstNop, thirdNop), graph.getBlockOf(firstNop).getStmts());
   }
 
   @Test
@@ -143,7 +143,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(secondNop, thirdNop);
 
     graph.removeNode(thirdNop);
-    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlocksSorted().get(0).getStmts());
+    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlockOf(firstNop).getStmts());
   }
 
   @Test
@@ -156,7 +156,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(secondNop, thirdNop);
 
     graph.removeNode(firstNop);
-    assertEquals(Arrays.asList(secondNop, thirdNop), graph.getBlocksSorted().get(0).getStmts());
+    assertEquals(Arrays.asList(secondNop, thirdNop), graph.getBlockOf(secondNop).getStmts());
   }
 
   @Test
@@ -167,7 +167,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(secondNop, conditionalStmt);
 
     graph.removeNode(conditionalStmt);
-    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlocksSorted().get(0).getStmts());
+    assertEquals(Arrays.asList(firstNop, secondNop), graph.getBlockOf(firstNop).getStmts());
   }
 
   @Test
@@ -176,10 +176,10 @@ public class MutableBlockStmtGraphTest {
     graph.setStartingStmt(firstNop);
     graph.setEdges(firstNop, Collections.singletonList(conditionalStmt));
     assertEquals(
-        Arrays.asList(firstNop, conditionalStmt), graph.getBlocksSorted().get(0).getStmts());
+        Arrays.asList(firstNop, conditionalStmt), graph.getBlockOf(firstNop).getStmts());
 
     graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
-    assertEquals(3, graph.getBlocksSorted().size());
+    assertEquals(3, graph.getBlocks().size());
 
     assertEquals(
         Arrays.asList(firstNop, conditionalStmt).toString(),
@@ -199,54 +199,53 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, conditionalStmt);
 
     graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
-    assertEquals(3, graph.getBlocksSorted().size());
+    assertEquals(3, graph.getBlocks().size());
 
     graph.removeNode(conditionalStmt, false);
-    final List<? extends BasicBlock<?>> blocksSorted = graph.getBlocksSorted();
     assertEquals(
-        Collections.singletonList(firstNop).toString(), blocksSorted.get(0).getStmts().toString());
+        Collections.singletonList(firstNop).toString(), graph.getBlockOf(firstNop).getStmts().toString());
     assertEquals(
-        Collections.singletonList(secondNop).toString(), blocksSorted.get(1).getStmts().toString());
+        Collections.singletonList(secondNop).toString(), graph.getBlockOf(secondNop).getStmts().toString());
     assertEquals(
-        Collections.singletonList(thirdNop).toString(), blocksSorted.get(2).getStmts().toString());
+        Collections.singletonList(thirdNop).toString(), graph.getBlockOf(thirdNop).getStmts().toString());
   }
 
   @Test
   public void modifyStmtToBlockAtTail() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    assertEquals(0, graph.getBlocksSorted().size());
+    assertEquals(0, graph.getBlocks().size());
     assertEquals(0, graph.getNodes().size());
 
     graph.addNode(firstNop);
     graph.setStartingStmt(firstNop);
     assertEquals(1, graph.getNodes().size());
-    assertEquals(1, graph.getBlocksSorted().size());
-    assertEquals(1, graph.getBlocksSorted().get(0).getStmts().size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlockOf(firstNop).getStmts().size());
 
     graph.putEdge(firstNop, secondNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(2, graph.getNodes().size());
 
     graph.putEdge(secondNop, thirdNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(3, graph.getNodes().size());
 
     // insert branchingstmt at end
     graph.putEdge(thirdNop, conditionalStmt);
     assertEquals(4, graph.getNodes().size());
-    assertEquals(1, graph.getBlocksSorted().size());
-    assertEquals(0, graph.getBlocksSorted().get(0).getPredecessors().size());
-    assertEquals(0, graph.getBlocksSorted().get(0).getSuccessors().size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(0, graph.getBlockOf(firstNop).getPredecessors().size());
+    assertEquals(0, graph.getBlockOf(firstNop).getSuccessors().size());
 
     // add connection between branchingstmt and first stmt
     graph.putEdge(conditionalStmt, firstNop);
-    assertEquals(1, graph.getBlocksSorted().size());
-    assertEquals(1, graph.getBlocksSorted().get(0).getPredecessors().size());
-    assertEquals(1, graph.getBlocksSorted().get(0).getSuccessors().size());
+    assertEquals(1, graph.getBlocks().size());
+    assertEquals(1, graph.getBlockOf(firstNop).getPredecessors().size());
+    assertEquals(1, graph.getBlockOf(firstNop).getSuccessors().size());
 
     // add connection between branchingstmt and second stmt
     graph.putEdge(conditionalStmt, secondNop);
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
 
     assertEquals(3, graph.getBlockOf(conditionalStmt).getStmts().size());
     assertEquals(2, graph.getBlockOf(conditionalStmt).getPredecessors().size());
@@ -258,11 +257,11 @@ public class MutableBlockStmtGraphTest {
 
     // remove non-existing edge
     assertFalse(graph.removeEdge(firstNop, conditionalStmt));
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
 
     // remove branchingstmt at end -> edge across blocks
     assertTrue(graph.removeEdge(conditionalStmt, firstNop));
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
 
     assertEquals(4, graph.getNodes().size());
     graph.removeNode(firstNop);
@@ -270,12 +269,12 @@ public class MutableBlockStmtGraphTest {
 
     // remove branchingstmt at head
     assertTrue(graph.removeEdge(conditionalStmt, secondNop));
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(3, graph.getNodes().size());
 
     graph.removeNode(secondNop);
     assertEquals(2, graph.getNodes().size());
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
   }
 
   @Test
@@ -299,13 +298,12 @@ public class MutableBlockStmtGraphTest {
 
   @Test
   public void removeStmtInBetweenBlock() {
-
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
     graph.removeNode(secondNop);
 
-    assertEquals(graph.getBlocksSorted().get(0).getStmts(), Arrays.asList(firstNop, thirdNop));
+    assertEquals(graph.getBlockOf(firstNop).getStmts(), Arrays.asList(firstNop, thirdNop));
   }
 
   @Test
@@ -360,7 +358,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(conditionalStmt, secondNop);
     graph.putEdge(conditionalStmt, secondNop);
 
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
 
     assertEquals(0, graph.outDegree(secondNop));
     assertEquals(2, graph.inDegree(secondNop));
@@ -378,13 +376,13 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(conditionalStmt, secondNop);
     graph.putEdge(conditionalStmt, thirdNop);
 
-    assertEquals(3, graph.getBlocksSorted().size());
+    assertEquals(3, graph.getBlocks().size());
   }
 
   @Test
   public void addBlockDirectly() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    assertEquals(0, graph.getBlocksSorted().size());
+    assertEquals(0, graph.getBlocks().size());
 
     MutableBasicBlock blockA = new MutableBasicBlock();
     blockA.addStmt(firstNop);
@@ -394,10 +392,10 @@ public class MutableBlockStmtGraphTest {
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
 
     graph.addBlock(blockB.getStmts(), Collections.emptyMap());
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
   }
 
   @Test
@@ -418,27 +416,27 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
 
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(1, graph.successors(secondNop).size());
 
     assertTrue(graph.removeEdge(secondNop, thirdNop));
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(secondNop).size());
 
     assertFalse(graph.removeEdge(secondNop, thirdNop)); // empty operation
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(secondNop).size());
 
     assertFalse(graph.removeEdge(firstNop, thirdNop)); // empty operation
-    assertEquals(2, graph.getBlocksSorted().size());
+    assertEquals(2, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(secondNop).size());
 
     assertTrue(graph.removeEdge(firstNop, secondNop));
-    assertEquals(3, graph.getBlocksSorted().size());
+    assertEquals(3, graph.getBlocks().size());
   }
 
   @Test
@@ -447,7 +445,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
     graph.removeNode(firstNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.successors(secondNop).size());
     assertEquals(0, graph.successors(thirdNop).size());
     assertEquals(0, graph.predecessors(secondNop).size());
@@ -460,7 +458,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
     graph.removeNode(secondNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(thirdNop).size());
     assertEquals(0, graph.predecessors(firstNop).size());
@@ -473,7 +471,7 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstNop, secondNop);
     graph.putEdge(secondNop, thirdNop);
     graph.removeNode(thirdNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.successors(firstNop).size());
     assertEquals(0, graph.successors(secondNop).size());
     assertEquals(0, graph.predecessors(firstNop).size());
@@ -533,7 +531,7 @@ public class MutableBlockStmtGraphTest {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(firstNop, secondNop);
-    assertEquals(1, graph.getBlocksSorted().size());
+    assertEquals(1, graph.getBlocks().size());
     // graph.addTrap(throwableSig, secondNop, secondNop, firstHandlerStmt);
   }
 

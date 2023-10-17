@@ -391,11 +391,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   @Override
   @Nonnull
   public Set<? extends BasicBlock<?>> getBlocks() {
-    return blocks.stream().map(ForwardingBasicBlock::new).collect(Collectors.toSet());
+    return blocks;
   }
 
   @Nonnull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
+    // TODO this implementation is incorrect; it doesn't return a consistent order
     return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(blocks.iterator(), Spliterator.ORDERED), false)
         .map(ForwardingBasicBlock::new)
