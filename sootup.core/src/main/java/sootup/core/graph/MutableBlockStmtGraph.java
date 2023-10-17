@@ -724,9 +724,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   /**
    * Removes a Stmt from the StmtGraph.
-   * <p>
-   * It can optionally keep the flow (edges) of the statement
-   * by connecting the predecessors of the statement with successors of the statement.
+   *
+   * <p>It can optionally keep the flow (edges) of the statement by connecting the predecessors of
+   * the statement with successors of the statement.
    * Keeping the flow does not work when the statement has multiple successors.
    *
    * @param stmt the Stmt to be removed
@@ -737,7 +737,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (keepFlow && successors(stmt).size() > 1) {
       // Branching statements can have multiple targets/successors,
       // and there is no obvious way to connect the predecessor and successors of the statement.
-      throw new IllegalArgumentException("can't remove a statement with multiple successors while keeping the flow");
+      throw new IllegalArgumentException(
+          "can't remove a statement with multiple successors while keeping the flow");
     }
 
     if (stmt == startingStmt) {
@@ -1006,7 +1007,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         return false;
       }
 
-      // the removal of the edge between `from` and `to` might have created blocks that can be merged
+      // the removal of the edge between `from` and `to` might have created blocks that can be
+      // merged
       tryMergeWithPredecessorBlock(blockOfTo);
       tryMergeWithSuccessorBlock(blockOfFrom);
 
@@ -1022,11 +1024,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (toIdx < stmtsOfBlock.size() && stmtsOfBlock.get(toIdx) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
-        blockOfFrom.getSuccessors().forEach(successor -> {
-            successor.removePredecessorBlock(blockOfFrom);
-            newBlock.addSuccessorBlock(successor);
-            successor.addPredecessorBlock(newBlock);
-        });
+        blockOfFrom
+            .getSuccessors()
+            .forEach(
+                successor -> {
+                  successor.removePredecessorBlock(blockOfFrom);
+                  newBlock.addSuccessorBlock(successor);
+                  successor.addPredecessorBlock(newBlock);
+                });
         blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));

@@ -175,8 +175,7 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     graph.setStartingStmt(firstNop);
     graph.setEdges(firstNop, Collections.singletonList(conditionalStmt));
-    assertEquals(
-        Arrays.asList(firstNop, conditionalStmt), graph.getBlockOf(firstNop).getStmts());
+    assertEquals(Arrays.asList(firstNop, conditionalStmt), graph.getBlockOf(firstNop).getStmts());
 
     graph.setEdges(conditionalStmt, Arrays.asList(secondNop, thirdNop));
     assertEquals(3, graph.getBlocks().size());
@@ -203,11 +202,14 @@ public class MutableBlockStmtGraphTest {
 
     graph.removeNode(conditionalStmt, false);
     assertEquals(
-        Collections.singletonList(firstNop).toString(), graph.getBlockOf(firstNop).getStmts().toString());
+        Collections.singletonList(firstNop).toString(),
+        graph.getBlockOf(firstNop).getStmts().toString());
     assertEquals(
-        Collections.singletonList(secondNop).toString(), graph.getBlockOf(secondNop).getStmts().toString());
+        Collections.singletonList(secondNop).toString(),
+        graph.getBlockOf(secondNop).getStmts().toString());
     assertEquals(
-        Collections.singletonList(thirdNop).toString(), graph.getBlockOf(thirdNop).getStmts().toString());
+        Collections.singletonList(thirdNop).toString(),
+        graph.getBlockOf(thirdNop).getStmts().toString());
   }
 
   @Test
