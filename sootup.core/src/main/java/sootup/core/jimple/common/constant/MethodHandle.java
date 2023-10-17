@@ -94,19 +94,7 @@ public class MethodHandle implements Constant {
       @Nonnull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
       int tag,
       @Nonnull Type type) {
-    this.kind = Kind.getKind(tag);
-    this.type = type;
-    this.referenceSignature = referenceSignature;
-    if ((this.isMethodRef() && !(referenceSignature instanceof MethodSignature))
-        || (this.isFieldRef() && !(referenceSignature instanceof FieldSignature))) {
-      throw new IllegalArgumentException(
-          "Tag:"
-              + tag
-              + " "
-              + kind.valStr
-              + " does not match with the given signature:"
-              + referenceSignature.getClass());
-    }
+    this(referenceSignature, Kind.getKind(tag), type);
   }
 
   public MethodHandle(
