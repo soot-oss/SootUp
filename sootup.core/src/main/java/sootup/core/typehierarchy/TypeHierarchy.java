@@ -154,7 +154,7 @@ public interface TypeHierarchy {
         return (supertypeName.equals("java.lang.Object")
                 && !potentialSubtypeName.equals("java.lang.Object"))
             || supertype.equals(superClassOf((ClassType) potentialSubtype))
-            || superClassesOf((ClassType) potentialSubtype).contains(supertype)
+            || incompleteSuperClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable

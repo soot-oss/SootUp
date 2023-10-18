@@ -130,11 +130,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
 
     Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
         getAbstractClass(type);
-    if (!abstractClass.isPresent()) {
-      return Optional.empty();
-    }
-
-    return buildClassFrom(abstractClass.get());
+    return abstractClass.flatMap(this::buildClassFrom);
   }
 
   /** Returns the amount of classes that are currently stored in the cache. */
