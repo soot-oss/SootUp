@@ -20,6 +20,8 @@ import sootup.java.core.types.JavaClassType;
 public class DeadAssignmentEliminatorTest {
 
   /**
+   *
+   *
    * <pre>
    *     void test() {
    *       if (10 < 20) {
@@ -39,8 +41,8 @@ public class DeadAssignmentEliminatorTest {
    *     }
    * </pre>
    *
-   * There used to be a bug that would result in an invalid statement graph because the whole block containing
-   * `int a = 42;` gets deleted.
+   * There used to be a bug that would result in an invalid statement graph because the whole block
+   * containing `int a = 42;` gets deleted.
    */
   @Test
   public void conditionalToRemovedBlock() {
@@ -49,15 +51,18 @@ public class DeadAssignmentEliminatorTest {
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Set<Local> locals = ImmutableUtils.immutableSet(a);
 
-    Stmt conditional = JavaJimple.newIfStmt(JavaJimple.newLtExpr(IntConstant.getInstance(10), IntConstant.getInstance(20)), noPositionInfo);
+    Stmt conditional =
+        JavaJimple.newIfStmt(
+            JavaJimple.newLtExpr(IntConstant.getInstance(10), IntConstant.getInstance(20)),
+            noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
     Stmt intToA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(42), noPositionInfo);
 
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(conditional);
     builder.setMethodSignature(
-            JavaIdentifierFactory.getInstance()
-                    .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());
@@ -70,7 +75,9 @@ public class DeadAssignmentEliminatorTest {
     new DeadAssignmentEliminator().interceptBody(builder, null);
     Body afterBody = builder.build();
 
-    assertEquals(beforeBody.getStmtGraph().getNodes().size() - 1, afterBody.getStmtGraph().getNodes().size());
+    assertEquals(
+        beforeBody.getStmtGraph().getNodes().size() - 1,
+        afterBody.getStmtGraph().getNodes().size());
   }
 
   @Test

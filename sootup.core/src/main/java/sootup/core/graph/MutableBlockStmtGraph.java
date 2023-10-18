@@ -726,8 +726,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * Removes a Stmt from the StmtGraph.
    *
    * <p>It can optionally keep the flow (edges) of the statement by connecting the predecessors of
-   * the statement with successors of the statement.
-   * Keeping the flow does not work when the statement has multiple successors.
+   * the statement with successors of the statement. Keeping the flow does not work when the
+   * statement has multiple successors.
    *
    * @param stmt the Stmt to be removed
    * @param keepFlow flag indicating whether to keep the flow or not

@@ -92,7 +92,12 @@ public class AggregatorTest {
 
     Stmt assignA = JavaJimple.newAssignStmt(a, JavaJimple.newNewExpr(fileType), noPositionInfo);
     // this use of `a` should prevent the aggregator from changing anything
-    Stmt useA = JavaJimple.newInvokeStmt(Jimple.newSpecialInvokeExpr(a, JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")), noPositionInfo);
+    Stmt useA =
+        JavaJimple.newInvokeStmt(
+            Jimple.newSpecialInvokeExpr(
+                a,
+                JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")),
+            noPositionInfo);
     Stmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
 
@@ -102,8 +107,8 @@ public class AggregatorTest {
     builder.addFlow(assignB, ret);
 
     builder.setMethodSignature(
-            JavaIdentifierFactory.getInstance()
-                    .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     new Aggregator().interceptBody(builder, null);
 
