@@ -96,8 +96,12 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
     setEdges(from, Arrays.asList(targets));
   }
 
-  /** removes the current outgoing flows of "from" to "targets" */
-  public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  /**
+   * removes the current outgoing flows of "from" to "to"
+   *
+   * @return true if the edge existed and was removed; false if the edge didn't exist
+   */
+  public abstract boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /** Modifications of exceptional flows removes all exceptional flows from "stmt" */
   public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);
