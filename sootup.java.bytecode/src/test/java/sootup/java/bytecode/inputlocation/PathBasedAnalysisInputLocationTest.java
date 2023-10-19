@@ -281,8 +281,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(cls, null);
-    final ClassType mainClass = getIdentifierFactory().getClassType("AssertStatement");
-    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("ClassHierarchyAnalysisAlgorithm", "sootup.callgraph"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
   @Test

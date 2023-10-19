@@ -223,6 +223,9 @@ public abstract class PathBasedAnalysisInputLocation
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classPath, @Nonnull SourceType srcType) {
       super(classPath, srcType);
+      if (!Files.exists(classPath)) {
+        throw new IllegalArgumentException("The provided .class file does not exist.");
+      }
     }
 
     @Override
