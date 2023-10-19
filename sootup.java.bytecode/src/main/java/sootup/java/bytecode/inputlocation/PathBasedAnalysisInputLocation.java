@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
+import com.googlecode.dex2jar.tools.Dex2jarCmd;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
