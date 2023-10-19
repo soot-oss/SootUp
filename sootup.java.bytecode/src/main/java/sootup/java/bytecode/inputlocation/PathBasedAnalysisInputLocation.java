@@ -494,7 +494,7 @@ public abstract class PathBasedAnalysisInputLocation
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
+//      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }

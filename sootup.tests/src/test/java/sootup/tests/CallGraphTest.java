@@ -3,6 +3,9 @@ package sootup.tests;
 import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -222,6 +225,12 @@ public class CallGraphTest {
     assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementation));
     assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
     assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
+  }
+
+  @Test
+  public void dummyTest(){
+    algorithmName = "CHA";
+    CallGraph cg = loadCallGraph();
   }
 
   @Test
