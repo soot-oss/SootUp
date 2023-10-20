@@ -33,7 +33,8 @@ import sootup.core.types.ClassType;
 
 public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final ArrayList<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
-  private MutableBasicBlock[] successorBlocks = null;
+  private MutableBasicBlock[] successorBlocks =
+      new MutableBasicBlock[1]; // 1 := most propable amount of successors/elements
 
   @Nonnull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
 
@@ -58,21 +59,16 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void addStmt(@Nonnull Stmt newStmt) {
-    final Stmt tail = getTail();
-    if (getStmtCount() > 0 && tail instanceof BranchingStmt) {
+    if (getStmtCount() > 0 && getTail() instanceof BranchingStmt) {
       throw new IllegalArgumentException(
           "Can't add another Stmt to a Block after a BranchingStmt.");
     }
     stmts.add(newStmt);
-    updateSuccessorContainer(newStmt);
   }
 
   public void removeStmt(@Nonnull Stmt stmt) {
     final int idx = stmts.indexOf(stmt);
     stmts.remove(idx);
-    if (idx == stmts.size() - 1) {
-      updateSuccessorContainer(getTail());
-    }
   }
 
   public void replaceStmt(Stmt oldStmt, Stmt newStmt) {
@@ -81,10 +77,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       throw new IllegalArgumentException("oldStmt does not exist in this Block!");
     }
     stmts.set(idx, newStmt);
-    // did the last stmt change?
-    if (idx == stmts.size() - 1) {
-      updateSuccessorContainer(newStmt);
-    }
   }
 
   protected void updateSuccessorContainer(@Nonnull Stmt newStmt) {
@@ -103,15 +95,15 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public boolean setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block) {
-    if (successorBlocks == null) {
-      successorBlocks = new MutableBasicBlock[block.getTail().getExpectedSuccessorCount()];
-    }
+    updateSuccessorContainer(getTail());
     if (successorIdx >= successorBlocks.length) {
       throw new IndexOutOfBoundsException(
           "successorIdx '"
               + successorIdx
               + "' is out of bounds ('"
               + successorBlocks.length
+              + " for "
+              + getTail()
               + "')");
     }
     successorBlocks[successorIdx] = block;
@@ -119,9 +111,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
-    if (successorBlocks == null) {
-      return false;
-    }
     return predecessorBlocks.remove(b);
   }
 
@@ -167,7 +156,13 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull
   @Override
   public List<MutableBasicBlock> getSuccessors() {
-    return Arrays.stream(successorBlocks).filter(Objects::isNull).collect(Collectors.toList());
+    if (stmts.isEmpty()) {
+      return Collections.emptyList();
+    }
+    if (getTail().getExpectedSuccessorCount() != successorBlocks.length) {
+      return Collections.emptyList();
+    }
+    return Arrays.stream(successorBlocks).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   @Override
@@ -258,7 +253,6 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     if (splitIdx < stmts.size()) {
       stmts.subList(splitIdx, stmts.size()).clear();
     }
-
     return secondBlock;
   }
 
@@ -285,18 +279,20 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     MutableBasicBlock newBlock = splitBlockUnlinked(splitIdx);
     for (int i = 0; i < successorBlocks.length; i++) {
       MutableBasicBlock succBlock = successorBlocks[i]; // copy successors to the newBlock
+      if (succBlock == null) {
+        continue;
+      }
       newBlock.setSuccessorBlock(i, succBlock);
       // and relink predecessors of the successors to newblock as well
       succBlock.removePredecessorBlock(this);
       succBlock.addPredecessorBlock(newBlock);
     }
-    successorBlocks = null;
+    successorBlocks = new MutableBasicBlock[1];
 
     newBlock.addPredecessorBlock(this);
     setSuccessorBlock(
-        0,
-        newBlock); // 0 as this can only be a block if the Stmts before the last Stmt are
-                   // FallsThroughStmt
+        0, newBlock); // 0 as this can only be a block if the Stmts before the last Stmt are
+    // FallsThroughStmt
 
     return newBlock;
   }
@@ -308,8 +304,10 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void clearSuccessorBlocks() {
-    Stream.of(successorBlocks).forEach(b -> b.removePredecessorBlock(this));
-    successorBlocks = null;
+    Stream.of(successorBlocks)
+        .filter(Objects::nonNull)
+        .forEach(b -> b.removePredecessorBlock(this));
+    successorBlocks = new MutableBasicBlock[1];
   }
 
   public void clearExceptionalSuccessorBlocks() {

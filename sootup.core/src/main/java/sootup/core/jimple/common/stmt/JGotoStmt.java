@@ -33,6 +33,7 @@ import sootup.core.util.printer.StmtPrinter;
 
 /** Unconditionally jumps to a target Stmt */
 public class JGotoStmt extends AbstractStmt implements BranchingStmt {
+  public static final int BRANCH_IDX = 0;
 
   public JGotoStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);

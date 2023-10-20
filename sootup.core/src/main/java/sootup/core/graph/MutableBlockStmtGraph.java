@@ -63,7 +63,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   /** copies a StmtGraph into this Mutable instance */
   public MutableBlockStmtGraph(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
-    setStartingStmt(graph.getStartingStmt());
+    final Stmt startStmt = graph.getStartingStmt();
+    if (startStmt != null) {
+      setStartingStmt(startStmt);
+    }
     // copy blocks into this graph
     graph
         .getBlocks()
@@ -923,11 +926,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // one
       if (blockB == null) {
         blockB = createStmtsBlock(stmtB);
-        linkBlocks(blockA, blockB);
+        blockA.setSuccessorBlock(succesorIdx, blockB);
+        blockB.addPredecessorBlock(blockA);
       } else {
         if (blockB.getHead() == stmtB) {
           // stmtB is at the beginning of the second Block -> connect blockA and blockB
-          linkBlocks(blockA, blockB);
+
+          blockA.setSuccessorBlock(succesorIdx, blockB);
+          blockB.addPredecessorBlock(blockA);
         } else {
 
           MutableBasicBlock newBlock = blockB.splitBlockLinked(stmtB, true);
@@ -939,9 +945,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             // successor of block is the origin: end of block flows to beginning of new splitted
             // block (i.e.
             // the same block)
-            linkBlocks(newBlock, newBlock);
+            newBlock.setSuccessorBlock(succesorIdx, newBlock);
+            newBlock.addPredecessorBlock(newBlock);
+
           } else {
-            linkBlocks(blockA, newBlock);
+            blockA.setSuccessorBlock(succesorIdx, newBlock);
+            newBlock.addPredecessorBlock(blockA);
           }
         }
       }
@@ -965,7 +974,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           } else {
             // stmtA does not branch but stmtB is already a branch target or has different traps =>
             // link blocks
-            linkBlocks(blockA, blockB);
+            blockA.setSuccessorBlock(succesorIdx, blockB);
+            blockB.addPredecessorBlock(blockA);
           }
         } else {
           throw new IllegalArgumentException(
@@ -979,7 +989,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   /**
    * makes blockA the predecessor of BlockB and BlockB the Successor of BlockA in a combined Method
+   * Deprecated: can only assume (bad - it could be otherwise) which successorIdx shall be chosen to
+   * link the block in case of branching stmts
    */
+  @Deprecated
   private void linkBlocks(@Nonnull MutableBasicBlock blockA, @Nonnull MutableBasicBlock blockB) {
     final int idx;
     if (blockA.getTail() instanceof FallsThroughStmt) {

@@ -363,6 +363,7 @@ public class MutableBlockStmtGraphTest {
     assertEquals(2, graph.inDegree(secondNop));
     assertEquals(Arrays.asList(conditionalStmt, conditionalStmt), graph.predecessors(secondNop));
     assertEquals(2, graph.outDegree(conditionalStmt));
+
     assertEquals(Arrays.asList(secondNop, secondNop), graph.successors(conditionalStmt));
     assertTrue(graph.hasEdgeConnecting(conditionalStmt, secondNop));
     assertFalse(graph.hasEdgeConnecting(secondNop, conditionalStmt));
@@ -607,8 +608,8 @@ public class MutableBlockStmtGraphTest {
     graph0.addNode(stmt1, Collections.singletonMap(exception1, catchStmt1));
     graph0.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
 
-    graph0.putEdge(stmt1, JIfStmt.FALSE_BRANCH_IDX, stmt2);
-    graph0.putEdge(stmt2, JIfStmt.TRUE_BRANCH_IDX, returnStmt);
+    graph0.putEdge(stmt1, 0, stmt2);
+    graph0.putEdge(stmt2, 0, returnStmt);
 
     {
       final List<Trap> traps = graph0.getTraps();
@@ -621,13 +622,13 @@ public class MutableBlockStmtGraphTest {
     // test merging traps from sequential blocks with the same trap
     MutableBlockStmtGraph graph1 = new MutableBlockStmtGraph();
     graph1.setStartingStmt(stmt1);
-    graph1.putEdge(stmt1, JIfStmt.FALSE_BRANCH_IDX, stmt2);
+    graph1.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
     graph1.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
     graph1.addNode(stmt3, Collections.singletonMap(exception1, catchStmt1));
 
-    graph1.putEdge(stmt2, JIfStmt.FALSE_BRANCH_IDX, returnStmt);
-    graph1.putEdge(stmt3, JIfStmt.FALSE_BRANCH_IDX, returnStmt);
-    graph1.putEdge(catchStmt1, JIfStmt.FALSE_BRANCH_IDX, stmt3);
+    graph1.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
+    graph1.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
+    graph1.putEdge(catchStmt1, JGotoStmt.BRANCH_IDX, stmt3);
 
     {
       final List<Trap> traps = graph1.getTraps();
@@ -642,10 +643,10 @@ public class MutableBlockStmtGraphTest {
     graph2.addNode(stmt1, Collections.singletonMap(exception1, catchStmt1));
     graph2.addNode(stmt2, Collections.singletonMap(exception1, catchStmt2));
 
-    graph2.putEdge(stmt1, 0, stmt2);
+    graph2.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
     assertEquals(4, graph2.getBlocks().size());
 
-    graph2.putEdge(stmt2, 0, returnStmt);
+    graph2.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
     {
       assertEquals(5, graph2.getBlocks().size());
       final List<Trap> traps = graph2.getTraps();
@@ -659,9 +660,9 @@ public class MutableBlockStmtGraphTest {
     graph3.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
     graph3.addNode(stmt3, Collections.emptyMap());
 
-    graph3.putEdge(stmt1, 0, stmt2);
-    graph3.putEdge(stmt2, 0, stmt3);
-    graph3.putEdge(stmt3, 0, returnStmt);
+    graph3.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
+    graph3.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
+    graph3.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
       final List<Trap> traps = graph3.getTraps();
@@ -684,9 +685,9 @@ public class MutableBlockStmtGraphTest {
     graph4.addNode(stmt2, Collections.singletonMap(exception1, catchStmt1));
     graph4.addNode(stmt3, Collections.emptyMap());
 
-    graph4.putEdge(stmt1, 0, stmt2);
-    graph4.putEdge(stmt2, 0, stmt3);
-    graph4.putEdge(stmt3, 0, returnStmt);
+    graph4.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
+    graph4.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
+    graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     assertEquals(3, graph4.getTraps().size());
 
@@ -718,9 +719,9 @@ public class MutableBlockStmtGraphTest {
           }
         });
 
-    graph5.putEdge(stmt1, 0, stmt2);
-    graph5.putEdge(stmt2, 0, stmt3);
-    graph5.putEdge(stmt3, 0, returnStmt);
+    graph5.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
+    graph5.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
+    graph5.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
       final List<Trap> traps = graph5.getTraps();
@@ -755,9 +756,9 @@ public class MutableBlockStmtGraphTest {
           }
         });
 
-    graph6.putEdge(stmt1, 0, stmt2);
-    graph6.putEdge(stmt2, 0, stmt3);
-    graph6.putEdge(stmt3, 0, returnStmt);
+    graph6.putEdge(stmt1, JGotoStmt.BRANCH_IDX, stmt2);
+    graph6.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
+    graph6.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
     {
       final List<Trap> traps = graph6.getTraps();
       assertEquals(5, traps.size());
