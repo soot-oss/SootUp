@@ -399,15 +399,17 @@ public class Body implements Copyable {
       return cachedLinearizedStmts;
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
-    public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
-    }
-
-    @Nonnull
+    @Deprecated
     public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
       graph.setStartingStmt(startingStmt);
       return this;
+    }
+
+    @Nonnull
+    public Set<Local> getLocals() {
+      return Collections.unmodifiableSet(locals);
     }
 
     @Nonnull
@@ -448,22 +450,34 @@ public class Body implements Copyable {
       }
     }
 
-    /** replace the oldStmt with newStmt in stmtGraph and branches */
+    /**
+     * replace the oldStmt with newStmt in stmtGraph and branches
+     *
+     * <p>Deprecated: please use methods of getStmtGraph() directly
+     */
     @Nonnull
+    @Deprecated
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       graph.replaceNode(oldStmt, newStmt);
       return this;
     }
 
-    /** remove the a stmt from the graph and stmt */
+    /**
+     * remove the a stmt from the graph and stmt
+     *
+     * <p>Deprecated: please use methods of getStmtGraph() directly
+     */
     @Nonnull
+    @Deprecated
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       graph.removeNode(stmt);
       cachedLinearizedStmts = null;
       return this;
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
+    @Deprecated
     public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
       graph.clearExceptionalEdges(stmt);
       return this;
@@ -475,16 +489,11 @@ public class Body implements Copyable {
       return graph.getTraps();
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
+    @Deprecated
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
       graph.putEdge(fromStmt, 0, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    @Nonnull
-    public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.removeEdge(fromStmt, toStmt);
       cachedLinearizedStmts = null;
       return this;
     }
