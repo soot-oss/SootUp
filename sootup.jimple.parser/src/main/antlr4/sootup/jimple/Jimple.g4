@@ -280,6 +280,9 @@ grammar Jimple;
     /*local*/    local=identifier |
     /*constant*/ constant;
 
+  methodhandle:
+    'methodhandle: ' STRING_CONSTANT (method_signature|field_signature);
+
   constant :
     /*boolean*/ BOOL_CONSTANT |
     /*integer*/ integer_constant |
@@ -287,7 +290,7 @@ grammar Jimple;
     /*string*/  STRING_CONSTANT |
     /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL |
-                methodhandle='handle:' method_signature |
+                methodhandle |
                 methodtype='methodtype:' method_subsignature ;
 
   binop :

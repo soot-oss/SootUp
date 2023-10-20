@@ -25,7 +25,6 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
-    System.out.println(getDeclaredClassSignature());
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "switchSomething", "void", Collections.emptyList());
   }
