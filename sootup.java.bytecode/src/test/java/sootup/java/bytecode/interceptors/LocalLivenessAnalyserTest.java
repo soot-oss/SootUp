@@ -5,10 +5,13 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
@@ -37,12 +40,14 @@ public class LocalLivenessAnalyserTest {
   Local b = JavaJimple.newLocal("b", intType);
   Local c = JavaJimple.newLocal("c", intType);
 
-  Stmt aeq0 = JavaJimple.newAssignStmt(a, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt beqaplus1 =
+  FallsThroughStmt aeq0 =
+      JavaJimple.newAssignStmt(a, IntConstant.getInstance(0), noStmtPositionInfo);
+  FallsThroughStmt beqaplus1 =
       JavaJimple.newAssignStmt(
           b, JavaJimple.newAddExpr(a, IntConstant.getInstance(0)), noStmtPositionInfo);
-  Stmt ceqcplusb = JavaJimple.newAssignStmt(c, JavaJimple.newAddExpr(c, b), noStmtPositionInfo);
-  Stmt aeqbplus2 =
+  FallsThroughStmt ceqcplusb =
+      JavaJimple.newAssignStmt(c, JavaJimple.newAddExpr(c, b), noStmtPositionInfo);
+  FallsThroughStmt aeqbplus2 =
       JavaJimple.newAssignStmt(
           a, JavaJimple.newAddExpr(b, IntConstant.getInstance(2)), noStmtPositionInfo);
   Stmt ifalt9 =
@@ -87,6 +92,7 @@ public class LocalLivenessAnalyserTest {
   private Body createBody() {
 
     Body.BodyBuilder builder = Body.builder();
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     builder.setMethodSignature(methodSignature);
 
     // build set locals
@@ -95,12 +101,12 @@ public class LocalLivenessAnalyserTest {
     builder.setLocals(locals);
 
     // set graph
-    builder.addFlow(aeq0, beqaplus1);
-    builder.addFlow(beqaplus1, ceqcplusb);
-    builder.addFlow(ceqcplusb, aeqbplus2);
-    builder.addFlow(aeqbplus2, ifalt9);
-    builder.addFlow(ifalt9, ret);
-    builder.addFlow(ifalt9, beqaplus1);
+    stmtGraph.putEdge(aeq0, beqaplus1);
+    stmtGraph.putEdge(beqaplus1, ceqcplusb);
+    stmtGraph.putEdge(ceqcplusb, aeqbplus2);
+    stmtGraph.putEdge(aeqbplus2, ifalt9);
+    stmtGraph.putEdge(ifalt9, JIfStmt.FALSE_BRANCH_IDX, ret);
+    stmtGraph.putEdge(ifalt9, JIfStmt.TRUE_BRANCH_IDX, beqaplus1);
 
     // set first stmt
     builder.setStartingStmt(aeq0);

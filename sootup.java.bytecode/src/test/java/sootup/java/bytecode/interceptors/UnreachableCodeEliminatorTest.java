@@ -15,6 +15,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -51,20 +52,24 @@ public class UnreachableCodeEliminatorTest {
   IdentityRef idRef = javaJimple.newCaughtExceptionRef();
 
   // build stmts
-  Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-  Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
+  FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
+  FallsThroughStmt stmt1 =
+      JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+  FallsThroughStmt stmt2 =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
 
-  Stmt stmt3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
+  FallsThroughStmt stmt3 =
+      JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
 
-  Stmt jump = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  Stmt jGotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   Stmt ret1 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   Stmt ret2 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
-  Stmt handlerStmt = JavaJimple.newIdentityStmt(stack0, idRef, noStmtPositionInfo);
-  Stmt beginStmt = JavaJimple.newAssignStmt(l3, stack0, noStmtPositionInfo);
-  Stmt endStmt = JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
+  FallsThroughStmt handlerStmt = JavaJimple.newIdentityStmt(stack0, idRef, noStmtPositionInfo);
+  FallsThroughStmt beginStmt = JavaJimple.newAssignStmt(l3, stack0, noStmtPositionInfo);
+  FallsThroughStmt endStmt =
+      JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
 
   Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
 
@@ -193,8 +198,8 @@ public class UnreachableCodeEliminatorTest {
     // build stmtsGraph for the builder
     graph.addBlock(
         Arrays.asList(startingStmt, stmt1, ret1), Collections.singletonMap(exception, handlerStmt));
-    graph.addBlock(Arrays.asList(handlerStmt, jump));
-    graph.putEdge(jump, ret1);
+    graph.addBlock(Arrays.asList(handlerStmt, jGotoStmt));
+    graph.putEdge(jGotoStmt, 0, ret1);
 
     // set startingStmt
     graph.setStartingStmt(startingStmt);

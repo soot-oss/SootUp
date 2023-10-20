@@ -87,8 +87,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               // getBlockOf is necessary to find the new existing/copied block which are refering to
               // the same a immutable Stmt
               final MutableBasicBlock blockOf = stmtToBlock.get(b.getTail());
-              b.getSuccessors()
-                  .forEach(succ -> linkBlocks(blockOf, stmtToBlock.get(succ.getHead())));
+              List<? extends BasicBlock<?>> successors = b.getSuccessors();
+              for (int i = 0; i < successors.size(); i++) {
+                BasicBlock<?> succ = successors.get(i);
+                linkBlocks(blockOf, i, stmtToBlock.get(succ.getHead()));
+              }
             });
   }
 
@@ -105,11 +108,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     final Stmt lastStmt = stmts.get(stmts.size() - 1);
-    if (lastStmt.fallsThrough()) {
+    if (lastStmt instanceof FallsThroughStmt) {
       throw new IllegalArgumentException(
-          "Theres a fallsthrough Stmt at the end of the list of stmts ('"
+          "Theres FallsthroughStmt at the end of the list of stmts ('"
               + lastStmt
-              + "') which has no sucessor - which means it currently falls into the abyss i.e. it can't fall through to another Stmt.");
+              + "') which has no successor - which means it currently falls into the abyss i.e. it can't fall through to another Stmt.");
     }
 
     HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
@@ -227,8 +230,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (stmt instanceof BranchingStmt) {
         // => end of Block
         final List<Stmt> targets = branchingMap.get(stmt);
-        int expectedBranchEntries =
-            stmt.getExpectedSuccessorCount() - (stmt.fallsThrough() ? 1 : 0);
+        int idxOffset = (stmt instanceof FallsThroughStmt) ? 1 : 0;
+        int expectedBranchEntries = stmt.getExpectedSuccessorCount() - idxOffset;
         if (targets == null || targets.size() != expectedBranchEntries) {
           int targetCount;
           if (targets == null) {
@@ -246,11 +249,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   + targetCount
                   + ".");
         }
-
         for (int j = 0; j < targets.size(); j++) {
           Stmt target = targets.get(j);
           // a possible fallsthrough (i.e. from IfStmt) is not in branchingMap
-          putEdge(stmt, j, target);
+          putEdge(stmt, j + idxOffset, target);
         }
       }
     }
@@ -459,7 +461,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             // try to merge
             if (!tryMergeBlocks(block, overwrittenBlock)) {
               // otherwise link them
-              linkBlocks(block, overwrittenBlock);
+              linkBlocks(block, 0, overwrittenBlock);
             }
           } else {
             throw new IllegalArgumentException(
@@ -552,7 +554,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         blocks.add(excludedFromOrigBlock);
       }
 
-      if (stmtIdx + 1 < blockStmts.size()) {
+      if (stmtIdx + 1 < blockStmts.size()) { // ms: equivalent to: block.getTail() != splitStmt
         // "third"/after/leftover block is necessary as there are stmts after the splitElement
         final MutableBasicBlock restOfOrigBlock = new MutableBasicBlock();
         for (int i = stmtIdx + 1; i < blockStmts.size(); i++) {
@@ -561,16 +563,15 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
 
         // copy successors of block which are now the successors of the "third"/leftover block
-        block
-            .getSuccessors()
-            .forEach(
-                successor -> {
-                  linkBlocks(restOfOrigBlock, successor);
-                });
+        List<MutableBasicBlock> successors = block.getSuccessors();
+        for (int i = 0; i < successors.size(); i++) {
+          MutableBasicBlock successor = successors.get(i);
+          linkBlocks(restOfOrigBlock, i, successor);
+        }
         block.clearSuccessorBlocks();
 
         // link third/leftover block with previous stmts from the separated block
-        linkBlocks(excludedFromOrigBlock, restOfOrigBlock);
+        linkBlocks(excludedFromOrigBlock, 0, restOfOrigBlock);
         block.clearSuccessorBlocks();
 
         // add blocks exceptional flows
@@ -584,22 +585,25 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
         blocks.add(restOfOrigBlock);
 
+        // cleanup original block -> "beforeBlock" -> remove now copied Stmts
+        for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
+          block.removeStmt(blockStmts.get(i));
+        }
+
       } else {
         // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
         // copy origin successors to second block as its now the last part of the origin block
-        block
-            .getSuccessors()
-            .forEach(
-                successorBlock -> {
-                  linkBlocks(excludedFromOrigBlock, successorBlock);
-                });
+        List<MutableBasicBlock> successors = block.getSuccessors();
+        for (int i = 0; i < successors.size(); i++) {
+          MutableBasicBlock successorBlock = successors.get(i);
+          linkBlocks(excludedFromOrigBlock, i, successorBlock);
+        }
         block.clearSuccessorBlocks();
-        linkBlocks(block, excludedFromOrigBlock);
-      }
-
-      // cleanup original block -> "beforeBlock" -> remove now copied Stmts
-      for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
-        block.removeStmt(blockStmts.get(i));
+        // cleanup original block -> "beforeBlock" -> remove now copied Stmts
+        for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
+          block.removeStmt(blockStmts.get(i));
+        }
+        linkBlocks(block, 0, excludedFromOrigBlock);
       }
 
       return excludedFromOrigBlock;
@@ -685,7 +689,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       // update linking info into firstBlock
       // done in clearPredecessorBlock      firstBlock.removeSuccessorBlock(followingBlock);
-      followingBlock.getSuccessors().forEach(succ -> linkBlocks(firstBlock, succ));
+      List<MutableBasicBlock> successors = followingBlock.getSuccessors();
+      for (int i = 0; i < successors.size(); i++) {
+        MutableBasicBlock succ = successors.get(i);
+        linkBlocks(firstBlock, i, succ);
+      }
       followingBlock.clearSuccessorBlocks();
 
       blocks.remove(followingBlock);
@@ -891,7 +899,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void putEdge(@Nonnull Stmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
-    // FIXME: implement succesorIdx handling
+
     MutableBasicBlock blockA = stmtToBlock.get(stmtA);
     MutableBasicBlock blockB = stmtToBlock.get(stmtB);
 
@@ -993,16 +1001,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * link the block in case of branching stmts
    */
   @Deprecated
-  private void linkBlocks(@Nonnull MutableBasicBlock blockA, @Nonnull MutableBasicBlock blockB) {
-    final int idx;
-    if (blockA.getTail() instanceof FallsThroughStmt) {
-      idx = 0;
-    } else {
-      throw new IllegalStateException(
-          "its not clear which successorIdx should be chosen to link these.");
-    }
-
-    blockA.setSuccessorBlock(idx, blockB);
+  private void linkBlocks(
+      @Nonnull MutableBasicBlock blockA, int successorIdx, @Nonnull MutableBasicBlock blockB) {
+    blockA.setSuccessorBlock(successorIdx, blockB);
     blockB.addPredecessorBlock(blockA);
   }
 

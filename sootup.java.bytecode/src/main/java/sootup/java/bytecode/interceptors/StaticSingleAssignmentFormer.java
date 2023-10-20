@@ -91,7 +91,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     // decide which block should be add a phi assignStmt, and store such info in a map
     // key: Block which contains phiStmts. Values : a set of phiStmts which contained by
     // corresponding Block
-    Map<BasicBlock<?>, Set<Stmt>> blockToPhiStmts =
+    Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts =
         decideBlockToPhiStmts(builder, dominanceFinder, blockToDefs, localToBlocks);
 
     // delete meaningless phiStmts and add other phiStmts into stmtGraph
@@ -111,7 +111,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     // rename each def-local and its corresponding name and add args and blocks into phiStmts
     for (BasicBlock<?> block : treeNodes) {
       // replace use and def in each stmts in the current block
-      Set<Stmt> newPhiStmts = new HashSet<>();
+      Set<FallsThroughStmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
         final List<Value> uses = stmt.getUses();
@@ -133,7 +133,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           newLocals.add(newDef);
           nextFreeIdx++;
           localToNameStack.get(def).push(newDef);
-          Stmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
+          FallsThroughStmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
           stmtGraph.replaceNode(stmt, newStmt);
           if (constainsPhiExpr(newStmt)) {
             newPhiStmts.add(newStmt);
@@ -151,14 +151,14 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       succs.addAll(block.getExceptionalSuccessors().values());
       for (BasicBlock<?> succ : succs) {
         if (blockToPhiStmts.containsKey(succ)) {
-          Set<Stmt> phiStmts = blockToPhiStmts.get(succ);
+          Set<FallsThroughStmt> phiStmts = blockToPhiStmts.get(succ);
           newPhiStmts = new HashSet<>(phiStmts);
           for (Stmt phiStmt : phiStmts) {
             Local def = (Local) phiStmt.getDefs().get(0);
             Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
             if (!localToNameStack.get(oriDef).isEmpty()) {
               Local arg = localToNameStack.get(oriDef).peek();
-              Stmt newPhiStmt = addNewArgToPhi(phiStmt, arg, block);
+              FallsThroughStmt newPhiStmt = addNewArgToPhi(phiStmt, arg, block);
               newPhiStmts.remove(phiStmt);
               newPhiStmts.add(newPhiStmt);
               stmtGraph.replaceNode(phiStmt, newPhiStmt);
@@ -205,12 +205,12 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
    * @return a map, key: block, value: a set of phiStmts that are added in front of the
    *     corresponding block
    */
-  private Map<BasicBlock<?>, Set<Stmt>> decideBlockToPhiStmts(
+  private Map<BasicBlock<?>, Set<FallsThroughStmt>> decideBlockToPhiStmts(
       Body.BodyBuilder builder,
       DominanceFinder dominanceFinder,
       Map<BasicBlock<?>, Set<Local>> blockToDefs,
       Map<Local, Set<BasicBlock<?>>> localToBlocks) {
-    Map<BasicBlock<?>, Set<Stmt>> blockToPhiStmts = new HashMap<>();
+    Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts = new HashMap<>();
     Map<BasicBlock<?>, Set<Local>> blockToPhiLocals = new HashMap<>();
     Map<Local, Set<BasicBlock<?>>> localToPhiBlocks = new HashMap<>();
 
@@ -234,7 +234,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
               blockToPhiStmts.get(df).add(phiStmt);
               blockToPhiLocals.get(df).add(local);
             } else {
-              Set<Stmt> phiStmts = new LinkedHashSet<>();
+              Set<FallsThroughStmt> phiStmts = new LinkedHashSet<>();
               phiStmts.add(phiStmt);
               blockToPhiStmts.put(df, phiStmts);
               Set<Local> phiLocals = new HashSet<>();
@@ -353,9 +353,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     throw new RuntimeException(local + " has no original local!");
   }
 
-  private Stmt addNewArgToPhi(Stmt phiStmt, Local arg, BasicBlock<?> block) {
+  private FallsThroughStmt addNewArgToPhi(Stmt phiStmt, Local arg, BasicBlock<?> block) {
 
-    Stmt newPhiStmt = null;
+    FallsThroughStmt newPhiStmt = null;
     for (Value use : phiStmt.getUses()) {
       if (use instanceof JPhiExpr) {
         JPhiExpr newPhiExpr = (JPhiExpr) use;

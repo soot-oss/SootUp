@@ -159,9 +159,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     if (stmts.isEmpty()) {
       return Collections.emptyList();
     }
-    if (getTail().getExpectedSuccessorCount() != successorBlocks.length) {
-      return Collections.emptyList();
-    }
+    final int expectedSuccessorCount = getTail().getExpectedSuccessorCount();
     return Arrays.stream(successorBlocks).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
@@ -277,6 +275,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     }
 
     MutableBasicBlock newBlock = splitBlockUnlinked(splitIdx);
+
     for (int i = 0; i < successorBlocks.length; i++) {
       MutableBasicBlock succBlock = successorBlocks[i]; // copy successors to the newBlock
       if (succBlock == null) {

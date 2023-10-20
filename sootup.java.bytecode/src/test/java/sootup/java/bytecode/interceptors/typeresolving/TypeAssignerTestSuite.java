@@ -35,7 +35,7 @@ public class TypeAssignerTestSuite {
             .addInputLocation(analysisInputLocation)
             .addInputLocation(rtJar)
             .build();
-    view = project.createOnDemandView();
+    view = project.createView();
     classType = identifierFactory.getClassType(className);
     clazz = view.getClass(classType).get();
   }

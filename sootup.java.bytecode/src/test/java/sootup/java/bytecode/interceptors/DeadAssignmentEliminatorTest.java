@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import org.junit.Test;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -56,7 +59,8 @@ public class DeadAssignmentEliminatorTest {
             JavaJimple.newLtExpr(IntConstant.getInstance(10), IntConstant.getInstance(20)),
             noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
-    Stmt intToA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(42), noPositionInfo);
+    FallsThroughStmt intToA =
+        JavaJimple.newAssignStmt(a, IntConstant.getInstance(42), noPositionInfo);
 
     Body.BodyBuilder builder = Body.builder();
     builder.setStartingStmt(conditional);
@@ -65,11 +69,11 @@ public class DeadAssignmentEliminatorTest {
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     builder.setLocals(locals);
-    builder.setPosition(NoPositionInformation.getInstance());
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
-    builder.addFlow(conditional, intToA);
-    builder.addFlow(conditional, ret);
-    builder.addFlow(intToA, ret);
+    stmtGraph.putEdge(conditional, JIfStmt.FALSE_BRANCH_IDX, intToA);
+    stmtGraph.putEdge(conditional, JIfStmt.TRUE_BRANCH_IDX, ret);
+    stmtGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
     new DeadAssignmentEliminator().interceptBody(builder, null);
@@ -115,25 +119,29 @@ public class DeadAssignmentEliminatorTest {
     Local b = JavaJimple.newLocal("b", objectType);
     Local c = JavaJimple.newLocal("c", PrimitiveType.getInt());
 
-    Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    FallsThroughStmt strToA =
+        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(strToA);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
     if (essentialOption) {
-      Stmt newToB = JavaJimple.newAssignStmt(b, JavaJimple.newNewExpr(objectType), noPositionInfo);
-      builder.addFlow(strToA, newToB);
-      builder.addFlow(newToB, ret);
+      FallsThroughStmt newToB =
+          JavaJimple.newAssignStmt(b, JavaJimple.newNewExpr(objectType), noPositionInfo);
+      stmtGraph.putEdge(strToA, newToB);
+      stmtGraph.putEdge(newToB, ret);
     } else {
-      Stmt intToC = JavaJimple.newAssignStmt(c, IntConstant.getInstance(42), noPositionInfo);
-      builder.addFlow(strToA, intToC);
-      builder.addFlow(intToC, ret);
+      FallsThroughStmt intToC =
+          JavaJimple.newAssignStmt(c, IntConstant.getInstance(42), noPositionInfo);
+      stmtGraph.putEdge(strToA, intToC);
+      stmtGraph.putEdge(intToC, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

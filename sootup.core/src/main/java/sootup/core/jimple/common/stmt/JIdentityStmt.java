@@ -109,7 +109,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Falls
 
   @Nonnull
   @Override
-  public Stmt withNewDef(@Nonnull Local newLocal) {
+  public FallsThroughStmt withNewDef(@Nonnull Local newLocal) {
     return withLocal(newLocal);
   }
 }

@@ -8,11 +8,14 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JEqExpr;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -89,9 +92,9 @@ public class ConditionalBranchFolderTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     StringConstant stringConstant = javaJimple.newStringConstant("str");
-    Stmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
+    FallsThroughStmt strToA = JavaJimple.newAssignStmt(a, stringConstant, noPositionInfo);
 
-    Stmt strToB;
+    FallsThroughStmt strToB;
     StringConstant anotherStringConstant;
     JEqExpr jEqExpr;
     switch (constantCondition) {
@@ -132,12 +135,13 @@ public class ConditionalBranchFolderTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder bodyBuilder = Body.builder();
+    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
     bodyBuilder.setLocals(locals);
     bodyBuilder.setStartingStmt(strToA);
-    bodyBuilder.addFlow(strToA, strToB);
-    bodyBuilder.addFlow(strToB, ifStmt);
-    bodyBuilder.addFlow(ifStmt, reta);
-    bodyBuilder.addFlow(ifStmt, retb);
+    stmtGraph.putEdge(strToA, strToB);
+    stmtGraph.putEdge(strToB, ifStmt);
+    stmtGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, reta);
+    stmtGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, retb);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));

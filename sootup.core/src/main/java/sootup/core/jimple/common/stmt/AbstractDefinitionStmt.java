@@ -80,5 +80,5 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   }
 
   @Nonnull
-  public abstract Stmt withNewDef(@Nonnull Local newLocal);
+  public abstract FallsThroughStmt withNewDef(@Nonnull Local newLocal);
 }
