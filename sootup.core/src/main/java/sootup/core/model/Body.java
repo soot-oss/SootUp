@@ -469,15 +469,6 @@ public class Body implements Copyable {
       return this;
     }
 
-    /*
-     * Note: if there is a stmt branching to successor this is not updated to the new stmt
-     * */
-    @Nonnull
-    public BodyBuilder insertBefore(@Nonnull Stmt beforeStmt, Stmt newstmt) {
-      graph.insertBefore(beforeStmt, newstmt);
-      return this;
-    }
-
     @Nonnull
     @Deprecated
     public List<Trap> getTraps() {
@@ -486,7 +477,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
+      graph.putEdge(fromStmt, 0, toStmt);
       cachedLinearizedStmts = null;
       return this;
     }

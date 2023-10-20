@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -114,6 +115,7 @@ public class CastCounter extends TypeChecker {
     this.castCount++;
     // TODO: modifiers later must be added
 
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     Local old_local;
     if (value instanceof Local) {
       old_local = (Local) value;
@@ -122,7 +124,7 @@ public class CastCounter extends TypeChecker {
       builder.addLocal(old_local);
       typing.set(old_local, evaType);
       JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-      builder.insertBefore(stmt, newAssign);
+      stmtGraph.insertBefore(stmt, newAssign);
     }
 
     Local new_local = generateTempLocal(stdType);
@@ -132,7 +134,7 @@ public class CastCounter extends TypeChecker {
     JAssignStmt newCast =
         Jimple.newAssignStmt(
             new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-    builder.insertBefore(stmt, newCast);
+    stmtGraph.insertBefore(stmt, newCast);
 
     Stmt newStmt;
     if (stmt.getUses().contains(value)) {

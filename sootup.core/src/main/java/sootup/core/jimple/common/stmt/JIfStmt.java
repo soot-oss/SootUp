@@ -41,6 +41,9 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsThroughStmt {
 
+  public static final int FALSE_BRANCH_IDX = 0;
+  public static final int TRUE_BRANCH_IDX = 1;
+
   @Nonnull private final AbstractConditionExpr condition;
 
   public JIfStmt(@Nonnull AbstractConditionExpr condition, @Nonnull StmtPositionInfo positionInfo) {

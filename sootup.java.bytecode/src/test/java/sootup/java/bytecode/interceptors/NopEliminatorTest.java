@@ -6,10 +6,12 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -81,7 +83,8 @@ public class NopEliminatorTest {
     Local b = JavaJimple.newLocal("b", stringType);
 
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-    Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
+    FallsThroughStmt bToA =
+        JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
@@ -96,12 +99,13 @@ public class NopEliminatorTest {
     builder.addFlow(strToA, jump);
     builder.addFlow(jump, bToA);
     builder.addFlow(bToA, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     if (withNop) {
       // strToA, jump, bToA, nop, ret;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      builder.removeFlow(bToA, ret);
-      builder.addFlow(bToA, nop);
-      builder.addFlow(nop, ret);
+      stmtGraph.removeEdge(bToA, ret);
+      stmtGraph.putEdge(bToA, nop);
+      stmtGraph.putEdge(nop, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

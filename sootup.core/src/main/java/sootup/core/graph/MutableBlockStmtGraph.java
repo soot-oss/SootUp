@@ -14,6 +14,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSignature;
@@ -217,7 +218,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       if (stmt.fallsThrough()) {
         // hint: possible bad performance if stmts is not instanceof RandomAccess
-        putEdge(stmt, stmts.get(i + 1));
+        putEdge(stmt, 0, stmts.get(i + 1));
       }
 
       if (stmt instanceof BranchingStmt) {
@@ -243,9 +244,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   + ".");
         }
 
-        for (Stmt target : targets) {
+        for (int j = 0; j < targets.size(); j++) {
+          Stmt target = targets.get(j);
           // a possible fallsthrough (i.e. from IfStmt) is not in branchingMap
-          putEdge(stmt, target);
+          putEdge(stmt, j, target);
         }
       }
     }
@@ -418,8 +420,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * @param trapMap
    */
   private MutableBasicBlock addBlockInternal(
-      @Nonnull List<Stmt> stmts, Map<ClassType, Stmt> trapMap) {
-    final Iterator<Stmt> iterator = stmts.iterator();
+      @Nonnull List<? extends Stmt> stmts, Map<ClassType, Stmt> trapMap) {
+    final Iterator<? extends Stmt> iterator = stmts.iterator();
     final Stmt node = iterator.next();
     MutableBasicBlock block = getOrCreateBlock(node);
     if (block.getHead() != node || !block.getSuccessors().isEmpty()) {
@@ -776,11 +778,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           MutableBasicBlock successor = blockOfRemovedStmt.getSuccessors().get(0);
 
           for (MutableBasicBlock predecessor : blockOfRemovedStmt.getPredecessors()) {
-            predecessor.removeSuccessorBlock(blockOfRemovedStmt);
-            predecessor.addSuccessorBlock(successor);
-
-            successor.removePredecessorBlock(blockOfRemovedStmt);
-            successor.addPredecessorBlock(predecessor);
+            predecessor.replaceSuccessorBlock(blockOfRemovedStmt, successor);
+            successor.replacePredecessorBlock(blockOfRemovedStmt, predecessor);
           }
         }
       }
@@ -828,15 +827,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  /**
+  /*
+   * Note: if there is a stmt branching to successor this is not updated to the new stmt
+   *
    * @param beforeStmt the Stmt which succeeds the inserted Stmts (its NOT preceeding as this
-   *     simplifies the handling of BranchingStmts)
-   * @param stmts can only allow fallsthrough Stmts except for the last Stmt in the List there is a
-   *     single BranchingStmt allowed!
+   *                   simplifies the handling of BranchingStmts)
+   * @param stmts      can only allow fallsthrough Stmts except for the last Stmt in the List there is a
+   *                   single BranchingStmt allowed!
    */
   public void insertBefore(
       @Nonnull Stmt beforeStmt,
-      @Nonnull List<Stmt> stmts,
+      @Nonnull List<FallsThroughStmt> stmts,
       @Nonnull Map<ClassType, Stmt> exceptionMap) {
     if (stmts.isEmpty()) {
       return;
@@ -852,18 +853,18 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // the stmts have only fallsthrough Stmts there could be some allocation/deallocation be saved
       final MutableBasicBlock predecessorBlock = addBlockInternal(stmts, exceptionMap);
       for (MutableBasicBlock predecessor : Lists.newArrayList(block.getPredecessors())) {
-        // cleanup old
-        predecessor.removeSuccessorBlock(block);
+        // cleanup old & add new link
+        predecessor.replaceSuccessorBlock(block, predecessorBlock);
         block.removePredecessorBlock(predecessor);
-        // add new link
-        linkBlocks(predecessor, predecessorBlock);
+        predecessorBlock.addPredecessorBlock(predecessor);
       }
 
       if (!tryMergeBlocks(predecessorBlock, block)) {
-        // hint: ms: this could be bad/unintuitive behaviour for a branching stmt for branching
-        predecessorBlock.addSuccessorBlock(block);
+        // all inserted Stmts are FallingThrough: so successorIdx = 0
+        predecessorBlock.setSuccessorBlock(0, block);
         block.addPredecessorBlock(predecessorBlock);
       }
+
     } else {
       final MutableBasicBlock successorBlock = block.splitBlockLinked(beforeStmt, true);
       exceptionMap.forEach(
@@ -882,8 +883,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  @Override
-  public void putEdge(@Nonnull Stmt stmtA, @Nonnull Stmt stmtB) {
+  public void putEdge(@Nonnull FallsThroughStmt stmtA, @Nonnull Stmt stmtB) {
+    putEdge(stmtA, 0, stmtB);
+  }
+
+  public void putEdge(@Nonnull Stmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
+    // FIXME: implement succesorIdx handling
     MutableBasicBlock blockA = stmtToBlock.get(stmtA);
     MutableBasicBlock blockB = stmtToBlock.get(stmtB);
 
@@ -976,7 +981,15 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * makes blockA the predecessor of BlockB and BlockB the Successor of BlockA in a combined Method
    */
   private void linkBlocks(@Nonnull MutableBasicBlock blockA, @Nonnull MutableBasicBlock blockB) {
-    blockA.addSuccessorBlock(blockB);
+    final int idx;
+    if (blockA.getTail() instanceof FallsThroughStmt) {
+      idx = 0;
+    } else {
+      throw new IllegalStateException(
+          "its not clear which successorIdx should be chosen to link these.");
+    }
+
+    blockA.setSuccessorBlock(idx, blockB);
     blockB.addPredecessorBlock(blockA);
   }
 
@@ -997,7 +1010,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       // remove the connection between the blocks
       boolean predecessorRemoved = blockOfTo.removePredecessorBlock(blockOfFrom);
-      boolean successorRemoved = blockOfFrom.removeSuccessorBlock(blockOfTo);
+      boolean successorRemoved = blockOfFrom.replaceSuccessorBlock(blockOfTo, null);
       assert predecessorRemoved == successorRemoved;
 
       if (!predecessorRemoved) {
@@ -1022,14 +1035,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (toIdx < stmtsOfBlock.size() && stmtsOfBlock.get(toIdx) == to) {
         MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked(from, to);
         newBlock.copyExceptionalFlowFrom(blockOfFrom);
-        blockOfFrom
-            .getSuccessors()
-            .forEach(
-                successor -> {
-                  successor.removePredecessorBlock(blockOfFrom);
-                  newBlock.addSuccessorBlock(successor);
-                  successor.addPredecessorBlock(newBlock);
-                });
+        List<MutableBasicBlock> successors = blockOfFrom.getSuccessors();
+        for (int i = 0; i < successors.size(); i++) {
+          MutableBasicBlock successor = successors.get(i);
+          successor.removePredecessorBlock(blockOfFrom);
+          newBlock.setSuccessorBlock(i, successor);
+          successor.addPredecessorBlock(newBlock);
+        }
         blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
@@ -1057,7 +1069,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // cleanup existing edges
       fromBlock.clearSuccessorBlocks();
     }
-    targets.forEach(target -> putEdge(fromStmt, target));
+    for (int i = 0; i < targets.size(); i++) {
+      Stmt target = targets.get(i);
+      putEdge(fromStmt, i, target);
+    }
   }
 
   @Nullable

@@ -2033,7 +2033,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       // connect tail of stmtList with its target
       Stmt targetStmt = insnToStmt.get(entry.getKey());
-      graph.putEdge(gotoStmt, targetStmt);
+      graph.putEdge(gotoStmt, 0, targetStmt);
     }
   }
 

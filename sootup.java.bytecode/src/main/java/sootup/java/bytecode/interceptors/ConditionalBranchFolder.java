@@ -83,15 +83,16 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
       // link previous stmt with always-reached successor of the if-Stmt
       for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        builder.removeFlow(predecessor, ifStmt);
-        builder.addFlow(predecessor, tautologicSuccessor);
+        stmtGraph.removeEdge(predecessor, ifStmt);
+        // FIXME: [ms] fix successorIdx
+        stmtGraph.putEdge(predecessor, 0, tautologicSuccessor);
       }
 
       // removeFlow calls should be obsolete as of following removeStmt
-      builder.removeFlow(ifStmt, tautologicSuccessor);
-      builder.removeFlow(ifStmt, neverReachedSucessor);
+      stmtGraph.removeEdge(ifStmt, tautologicSuccessor);
+      stmtGraph.removeEdge(ifStmt, neverReachedSucessor);
 
-      builder.removeStmt(ifStmt);
+      stmtGraph.removeNode(ifStmt);
 
       pruneExclusivelyReachableStmts(stmtGraph, neverReachedSucessor);
     }

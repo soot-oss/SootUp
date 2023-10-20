@@ -34,6 +34,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.JPhiExpr;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -268,12 +269,12 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
    * @param blockToDefs maps each block to the set of defs' local in itself
    */
   private void addPhiStmts(
-      Map<BasicBlock<?>, Set<Stmt>> blockToPhiStmts,
+      Map<BasicBlock<?>, Set<FallsThroughStmt>> blockToPhiStmts,
       MutableStmtGraph blockGraph,
       Map<BasicBlock<?>, Set<Local>> blockToDefs) {
 
     // key: phiStmt  value: size of phiStmt's arguments
-    Map<Stmt, Integer> phiToNum = new HashMap();
+    Map<Stmt, Integer> phiToNum = new HashMap<>();
 
     // determine the arguments' size of each phiStmt
     for (BasicBlock<?> block : blockGraph.getBlocks()) {
@@ -300,14 +301,14 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     // if the arguments' size of a phiStmt is less than 2, delete it from blockToPhiStmts map
     // add other phiStmts into corresponding block
     for (BasicBlock<?> block : blockToPhiStmts.keySet()) {
-      Set<Stmt> phis = blockToPhiStmts.get(block);
-      Set<Stmt> checkedPhis = new HashSet<>(blockToPhiStmts.get(block));
-      for (Stmt cphi : checkedPhis) {
+      Set<FallsThroughStmt> phis = blockToPhiStmts.get(block);
+      Set<FallsThroughStmt> checkedPhis = new HashSet<>(blockToPhiStmts.get(block));
+      for (FallsThroughStmt cphi : checkedPhis) {
         if (phiToNum.get(cphi) < 2) {
           phis.remove(cphi);
         }
       }
-      for (Stmt phi : phis) {
+      for (FallsThroughStmt phi : phis) {
         blockGraph.insertBefore(block.getHead(), phi);
       }
     }

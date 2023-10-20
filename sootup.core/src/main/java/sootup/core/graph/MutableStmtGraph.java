@@ -23,6 +23,7 @@ package sootup.core.graph;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -65,14 +66,14 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void insertBefore(
       @Nonnull Stmt beforeStmt,
-      @Nonnull List<Stmt> stmts,
+      @Nonnull List<FallsThroughStmt> stmts,
       @Nonnull Map<ClassType, Stmt> exceptionMap);
 
   /**
    * inserts the "newStmt" before the position of "beforeStmt" i.e.
    * newStmt.successors().contains(beforeStmt) will be true
    */
-  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull Stmt newStmt) {
+  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull FallsThroughStmt newStmt) {
     insertBefore(beforeStmt, Collections.singletonList(newStmt), Collections.emptyMap());
   }
 
@@ -86,7 +87,9 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
    * StmtGraph it will be added. if "to" needs to be added to the StmtGraph i.e. "to" is not already
    * in the StmtGraph the method assumes "to" has the same exceptional flows as "from".
    */
-  public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  public abstract void putEdge(@Nonnull FallsThroughStmt from, @Nonnull Stmt to);
+
+  public abstract void putEdge(@Nonnull Stmt from, int successorIdx, @Nonnull Stmt to);
 
   /** replaces the current outgoing flows of "from" to "targets" */
   public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
