@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ResolveException;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -155,7 +154,7 @@ public interface TypeHierarchy {
         return (supertypeName.equals("java.lang.Object")
                 && !potentialSubtypeName.equals("java.lang.Object"))
             || supertype.equals(superClassOf((ClassType) potentialSubtype))
-            || superClassesOf((ClassType) potentialSubtype).contains(supertype)
+            || incompleteSuperClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
@@ -199,7 +198,7 @@ public interface TypeHierarchy {
         superClasses.add(currentSuperClass);
         currentSuperClass = superClassOf(currentSuperClass);
       }
-    } catch (ResolveException ex) {
+    } catch (IllegalArgumentException ex) {
       logger.warn(
           "Could not find "
               + (currentSuperClass != null ? currentSuperClass : classType)

@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
@@ -234,24 +233,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public JavaClassType fromPath(@Nonnull final Path rootDirectory, @Nonnull final Path file) {
-    String path = file.toString();
-    String separator = file.getFileSystem().getSeparator();
-
-    // for multi release jars, remove beginning of path
-    // /META-INF/versions/15/de/upb...
-    // we only want /de/upb...
-    if (path.startsWith("/META-INF/")) {
-      // start at 4th separator
-      int index = StringUtils.ordinalIndexOf(path, separator, 4);
-      path = path.substring(index);
-    }
 
     final int nameCountBaseDir =
         rootDirectory.toString().isEmpty() ? 0 : rootDirectory.getNameCount();
 
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
-            file.subpath(nameCountBaseDir, file.getNameCount()).toString().replace(separator, "."));
+            file.subpath(nameCountBaseDir, file.getNameCount())
+                .toString()
+                .replace(file.getFileSystem().getSeparator(), "."));
 
     return getClassType(fullyQualifiedName);
   }
@@ -524,7 +514,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
                       return true;
                     })
-                .map(typeName -> getType(typeName))
+                .map(this::getType)
                 .collect(Collectors.toList());
 
     return getMethodSubSignature(methodName, getType(returnName), argsList);

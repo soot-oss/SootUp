@@ -85,8 +85,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -126,7 +125,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
       }
     }
 
-    return Optional.of(classProvider.createClassSource(this, pathToClass, type));
+    return classProvider.createClassSource(this, pathToClass, type);
   }
 
   @Override

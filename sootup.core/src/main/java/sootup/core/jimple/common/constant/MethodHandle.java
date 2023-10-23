@@ -4,7 +4,7 @@ package sootup.core.jimple.common.constant;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2005-2020 Jennifer Lhotak, Andreas Dann, Linghui Luo and others
+ * Copyright (C) 2005-2023 Jennifer Lhotak, Andreas Dann, Linghui, Luo Jonas Klauke and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,14 +23,16 @@ package sootup.core.jimple.common.constant;
  */
 
 import javax.annotation.Nonnull;
-import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.ConstantVisitor;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.SootClassMemberSignature;
+import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.types.Type;
 
 public class MethodHandle implements Constant {
 
-  private final Type type;
+  @Nonnull private final Type type;
 
   public enum Kind {
     REF_GET_FIELD(1, "REF_GET_FIELD"),
@@ -60,6 +62,10 @@ public class MethodHandle implements Constant {
       return val;
     }
 
+    public String getValueName() {
+      return valStr;
+    }
+
     public static Kind getKind(int kind) {
       for (Kind k : Kind.values()) {
         if (k.getValue() == kind) {
@@ -69,48 +75,71 @@ public class MethodHandle implements Constant {
       throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
     }
 
-    public static Kind getKind(String kind) {
+    public static Kind getKind(String kindName) {
       for (Kind k : Kind.values()) {
-        if (k.toString().equals(kind)) {
+        if (k.getValueName().equals(kindName)) {
           return k;
         }
       }
-      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
+      throw new RuntimeException("Error: No method handle kind for value name '" + kindName + "'.");
     }
   }
 
-  private final MethodSignature methodSignature;
-  private final JFieldRef fieldRef;
+  @Nonnull
+  private final SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature;
 
-  public int tag;
+  @Nonnull private final Kind kind;
 
-  public MethodHandle(MethodSignature methodSignature, int tag, Type type) {
-    this.methodSignature = methodSignature;
-    this.tag = tag;
-    this.fieldRef = null;
-    this.type = type;
+  public MethodHandle(
+      @Nonnull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      int tag,
+      @Nonnull Type type) {
+    this(referenceSignature, Kind.getKind(tag), type);
   }
 
-  public MethodHandle(JFieldRef ref, int tag, Type type) {
-    this.fieldRef = ref;
-    this.tag = tag;
-    this.methodSignature = null;
+  public MethodHandle(
+      @Nonnull SootClassMemberSignature<? extends SootClassMemberSubSignature> referenceSignature,
+      @Nonnull MethodHandle.Kind kind,
+      @Nonnull Type type) {
+    this.kind = kind;
     this.type = type;
+    this.referenceSignature = referenceSignature;
+    if ((this.isMethodRef() && !(referenceSignature instanceof MethodSignature))
+        || (this.isFieldRef() && !(referenceSignature instanceof FieldSignature))) {
+      throw new IllegalArgumentException(
+          "Kind:"
+              + kind.valStr
+              + " does not match with the given signature:"
+              + referenceSignature.getClass());
+    }
   }
 
-  public static boolean isMethodRef(int kind) {
-    return kind == Kind.REF_INVOKE_VIRTUAL.getValue()
-        || kind == Kind.REF_INVOKE_STATIC.getValue()
-        || kind == Kind.REF_INVOKE_SPECIAL.getValue()
-        || kind == Kind.REF_INVOKE_CONSTRUCTOR.getValue()
-        || kind == Kind.REF_INVOKE_INTERFACE.getValue();
+  public static boolean isMethodRef(int tag) {
+    return tag == Kind.REF_INVOKE_VIRTUAL.getValue()
+        || tag == Kind.REF_INVOKE_STATIC.getValue()
+        || tag == Kind.REF_INVOKE_SPECIAL.getValue()
+        || tag == Kind.REF_INVOKE_CONSTRUCTOR.getValue()
+        || tag == Kind.REF_INVOKE_INTERFACE.getValue();
+  }
+
+  public static boolean isFieldRef(int tag) {
+    return tag == Kind.REF_GET_FIELD.getValue()
+        || tag == Kind.REF_PUT_FIELD.getValue()
+        || tag == Kind.REF_PUT_FIELD_STATIC.getValue()
+        || tag == Kind.REF_GET_FIELD_STATIC.getValue();
+  }
+
+  public boolean isMethodRef() {
+    return MethodHandle.isMethodRef(this.kind.getValue());
+  }
+
+  public boolean isFieldRef() {
+    return MethodHandle.isFieldRef(this.kind.getValue());
   }
 
   @Override
-  // FIXME: [ms] serialize in a way it can be restored with the same parameters; adapt Jimple.g4 and
-  // JimpleConverter.java
   public String toString() {
-    return "handle: " + methodSignature;
+    return "methodhandle: \"" + kind.valStr + "\" " + referenceSignature;
   }
 
   @Nonnull
@@ -119,8 +148,12 @@ public class MethodHandle implements Constant {
     return type;
   }
 
-  public MethodSignature getMethodSignature() {
-    return methodSignature;
+  public Kind getKind() {
+    return kind;
+  }
+
+  public SootClassMemberSignature<? extends SootClassMemberSubSignature> getReferenceSignature() {
+    return referenceSignature;
   }
 
   @Override
@@ -130,9 +163,9 @@ public class MethodHandle implements Constant {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((methodSignature == null) ? 0 : methodSignature.hashCode());
+    int result = type.hashCode();
+    result = 31 * result + referenceSignature.hashCode();
+    result = 31 * result + kind.hashCode();
     return result;
   }
 
@@ -148,10 +181,6 @@ public class MethodHandle implements Constant {
       return false;
     }
     MethodHandle other = (MethodHandle) obj;
-    if (methodSignature == null) {
-      return other.methodSignature == null;
-    } else {
-      return methodSignature.equals(other.methodSignature);
-    }
+    return referenceSignature.equals(other.referenceSignature);
   }
 }
