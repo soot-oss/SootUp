@@ -23,6 +23,7 @@ package sootup.core.graph;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
@@ -89,13 +90,16 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
    */
   public abstract void putEdge(@Nonnull FallsThroughStmt from, @Nonnull Stmt to);
 
-  public abstract void putEdge(@Nonnull Stmt from, int successorIdx, @Nonnull Stmt to);
+  public abstract void putEdge(@Nonnull BranchingStmt from, int successorIdx, @Nonnull Stmt to);
+
+  public abstract boolean replaceSucessorEdge(
+      @Nonnull Stmt from, @Nonnull Stmt oldTo, @Nonnull Stmt newTo);
 
   /** replaces the current outgoing flows of "from" to "targets" */
-  public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
+  public abstract void setEdges(@Nonnull BranchingStmt from, @Nonnull List<Stmt> targets);
 
   /** replaces the current outgoing flows of "from" to each target of "targets" */
-  public void setEdges(@Nonnull Stmt from, @Nonnull Stmt... targets) {
+  public void setEdges(@Nonnull BranchingStmt from, @Nonnull Stmt... targets) {
     setEdges(from, Arrays.asList(targets));
   }
 

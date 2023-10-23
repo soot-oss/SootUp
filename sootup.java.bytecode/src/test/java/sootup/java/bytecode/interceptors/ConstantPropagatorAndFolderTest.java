@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -81,9 +83,11 @@ public class ConstantPropagatorAndFolderTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
 
-    Stmt assignA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(3), noPositionInfo);
-    Stmt assignB = JavaJimple.newAssignStmt(b, IntConstant.getInstance(4), noPositionInfo);
-    Stmt assignC;
+    FallsThroughStmt assignA =
+        JavaJimple.newAssignStmt(a, IntConstant.getInstance(3), noPositionInfo);
+    FallsThroughStmt assignB =
+        JavaJimple.newAssignStmt(b, IntConstant.getInstance(4), noPositionInfo);
+    FallsThroughStmt assignC;
     if (constantFolding) {
       assignC =
           JavaJimple.newAssignStmt(
@@ -96,14 +100,15 @@ public class ConstantPropagatorAndFolderTest {
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(assignA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
-    builder.addFlow(assignA, assignB);
-    builder.addFlow(assignB, assignC);
-    builder.addFlow(assignC, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(assignA);
+    stmtGraph.putEdge(assignA, assignB);
+    stmtGraph.putEdge(assignB, assignC);
+    stmtGraph.putEdge(assignC, ret);
 
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

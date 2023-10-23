@@ -84,18 +84,18 @@ public class CopyPropagatorTest {
       JavaJimple.newAssignStmt(i2, IntConstant.getInstance(0), noStmtPositionInfo);
   // if i2 > i1 goto
   AbstractConditionExpr condition = JavaJimple.newGtExpr(i2, i1);
-  Stmt ifStmt7 = JavaJimple.newIfStmt(condition, noStmtPositionInfo);
+  BranchingStmt ifStmt7 = JavaJimple.newIfStmt(condition, noStmtPositionInfo);
   // i3 = i1 + 1
   Expr add1 = JavaJimple.newAddExpr(i1, IntConstant.getInstance(1));
   FallsThroughStmt stmt8 = JavaJimple.newAssignStmt(i3, add1, noStmtPositionInfo);
   // i2 = i2 + 1
   Expr add2 = JavaJimple.newAddExpr(i2, IntConstant.getInstance(1));
   FallsThroughStmt stmt9 = JavaJimple.newAssignStmt(i2, add2, noStmtPositionInfo);
-  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   // if i2 > 5 goto
   AbstractConditionExpr econdition = JavaJimple.newGtExpr(i2, IntConstant.getInstance(5));
-  Stmt eifstmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
+  BranchingStmt eifstmt7 = JavaJimple.newIfStmt(econdition, noStmtPositionInfo);
   // i3 = 5 + 1
   Expr eadd1 = JavaJimple.newAddExpr(IntConstant.getInstance(5), IntConstant.getInstance(1));
   FallsThroughStmt estmt8 = JavaJimple.newAssignStmt(i3, eadd1, noStmtPositionInfo);

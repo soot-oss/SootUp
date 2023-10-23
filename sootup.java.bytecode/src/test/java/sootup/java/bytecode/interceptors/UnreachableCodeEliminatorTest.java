@@ -15,7 +15,9 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -61,7 +63,7 @@ public class UnreachableCodeEliminatorTest {
   FallsThroughStmt stmt3 =
       JavaJimple.newAssignStmt(l3, IntConstant.getInstance(3), noStmtPositionInfo);
 
-  Stmt jGotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt jGotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   Stmt ret1 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   Stmt ret2 = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
@@ -90,14 +92,15 @@ public class UnreachableCodeEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    builder.addFlow(startingStmt, stmt1);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.putEdge(startingStmt, stmt1);
 
-    builder.addFlow(stmt1, ret1);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, ret2);
+    stmtGraph.putEdge(stmt1, ret1);
+    stmtGraph.putEdge(stmt2, stmt3);
+    stmtGraph.putEdge(stmt3, ret2);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -199,7 +202,7 @@ public class UnreachableCodeEliminatorTest {
     graph.addBlock(
         Arrays.asList(startingStmt, stmt1, ret1), Collections.singletonMap(exception, handlerStmt));
     graph.addBlock(Arrays.asList(handlerStmt, jGotoStmt));
-    graph.putEdge(jGotoStmt, 0, ret1);
+    graph.putEdge(jGotoStmt, JGotoStmt.BRANCH_IDX, ret1);
 
     // set startingStmt
     graph.setStartingStmt(startingStmt);

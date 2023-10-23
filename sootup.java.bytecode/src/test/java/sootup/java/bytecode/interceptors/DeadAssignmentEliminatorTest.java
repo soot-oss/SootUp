@@ -10,6 +10,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -54,7 +55,7 @@ public class DeadAssignmentEliminatorTest {
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Set<Local> locals = ImmutableUtils.immutableSet(a);
 
-    Stmt conditional =
+    BranchingStmt conditional =
         JavaJimple.newIfStmt(
             JavaJimple.newLtExpr(IntConstant.getInstance(10), IntConstant.getInstance(20)),
             noPositionInfo);
@@ -63,7 +64,6 @@ public class DeadAssignmentEliminatorTest {
         JavaJimple.newAssignStmt(a, IntConstant.getInstance(42), noPositionInfo);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(conditional);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
@@ -71,6 +71,7 @@ public class DeadAssignmentEliminatorTest {
     builder.setLocals(locals);
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
+    stmtGraph.setStartingStmt(conditional);
     stmtGraph.putEdge(conditional, JIfStmt.FALSE_BRANCH_IDX, intToA);
     stmtGraph.putEdge(conditional, JIfStmt.TRUE_BRANCH_IDX, ret);
     stmtGraph.putEdge(intToA, ret);

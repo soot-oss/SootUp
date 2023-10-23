@@ -82,7 +82,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
   }
 
   @Nonnull
-  public Optional<Stmt> getDefaultTarget(Body body) {
+  public Optional<Stmt> getDefaultTarget(@Nonnull Body body) {
     return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
   }
 

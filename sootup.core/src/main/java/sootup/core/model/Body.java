@@ -353,8 +353,8 @@ public class Body implements Copyable {
    * Body.BodyBuilder builder = Body.builder();
    * builder.setMethodSignature( ... );
    * builder.setStartingStmt(stmt1);
-   * builder.addFlow(stmt1,stmt2);
-   * builder.addFlow(stmt2,stmt3);
+   * stmtGraph.putEdge(stmt1,stmt2);
+   * stmtGraph.putEdge(stmt2,stmt3);
    * ...
    * Body body = builder.build();
    *
@@ -492,8 +492,8 @@ public class Body implements Copyable {
     /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
     @Deprecated
-    public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, 0, toStmt);
+    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
+      graph.putEdge(fromStmt, toStmt);
       cachedLinearizedStmts = null;
       return this;
     }

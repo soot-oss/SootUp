@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import org.junit.Test;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.Jimple;
@@ -16,6 +17,7 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -90,21 +92,23 @@ public class AggregatorTest {
     Local a = JavaJimple.newLocal("a", fileType);
     Local b = JavaJimple.newLocal("b", fileType);
 
-    Stmt assignA = JavaJimple.newAssignStmt(a, JavaJimple.newNewExpr(fileType), noPositionInfo);
+    FallsThroughStmt assignA =
+        JavaJimple.newAssignStmt(a, JavaJimple.newNewExpr(fileType), noPositionInfo);
     // this use of `a` should prevent the aggregator from changing anything
-    Stmt useA =
+    FallsThroughStmt useA =
         JavaJimple.newInvokeStmt(
             Jimple.newSpecialInvokeExpr(
                 a,
                 JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")),
             noPositionInfo);
-    Stmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
+    FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
-    builder.setStartingStmt(assignA);
-    builder.addFlow(assignA, useA);
-    builder.addFlow(useA, assignB);
-    builder.addFlow(assignB, ret);
+    stmtGraph.setStartingStmt(assignA);
+    stmtGraph.putEdge(assignA, useA);
+    stmtGraph.putEdge(useA, assignB);
+    stmtGraph.putEdge(assignB, ret);
 
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
@@ -122,8 +126,9 @@ public class AggregatorTest {
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());
 
-    Stmt intToA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(7), noPositionInfo);
-    Stmt intToB;
+    FallsThroughStmt intToA =
+        JavaJimple.newAssignStmt(a, IntConstant.getInstance(7), noPositionInfo);
+    FallsThroughStmt intToB;
     if (withAggregation) {
       intToB =
           JavaJimple.newAssignStmt(b, new JAddExpr(a, IntConstant.getInstance(4)), noPositionInfo);
@@ -135,13 +140,13 @@ public class AggregatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(intToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
-
-    builder.addFlow(intToA, intToB);
-    builder.addFlow(intToB, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(intToA);
+    stmtGraph.putEdge(intToA, intToB);
+    stmtGraph.putEdge(intToB, ret);
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());
 

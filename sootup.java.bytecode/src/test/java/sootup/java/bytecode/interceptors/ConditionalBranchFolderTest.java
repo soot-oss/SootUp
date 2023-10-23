@@ -14,6 +14,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JEqExpr;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -128,7 +129,7 @@ public class ConditionalBranchFolderTest {
         throw new IllegalArgumentException();
     }
 
-    Stmt ifStmt = Jimple.newIfStmt(jEqExpr, noPositionInfo);
+    BranchingStmt ifStmt = Jimple.newIfStmt(jEqExpr, noPositionInfo);
     Stmt reta = JavaJimple.newReturnStmt(a, noPositionInfo);
     Stmt retb = JavaJimple.newReturnStmt(b, noPositionInfo);
 
@@ -137,11 +138,11 @@ public class ConditionalBranchFolderTest {
     Body.BodyBuilder bodyBuilder = Body.builder();
     final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setStartingStmt(strToA);
     stmtGraph.putEdge(strToA, strToB);
     stmtGraph.putEdge(strToB, ifStmt);
     stmtGraph.putEdge(ifStmt, JIfStmt.FALSE_BRANCH_IDX, reta);
     stmtGraph.putEdge(ifStmt, JIfStmt.TRUE_BRANCH_IDX, retb);
+    stmtGraph.setStartingStmt(strToA);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));

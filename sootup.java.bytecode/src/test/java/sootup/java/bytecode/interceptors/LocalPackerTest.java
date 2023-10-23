@@ -14,10 +14,7 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.JIfStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
@@ -77,9 +74,8 @@ public class LocalPackerTest {
   FallsThroughStmt stmt5 =
       JavaJimple.newAssignStmt(
           l1hash5, JavaJimple.newAddExpr(l1hash5, IntConstant.getInstance(1)), noStmtPositionInfo);
-  FallsThroughStmt stmt6 =
-      JavaJimple.newIfStmt(JavaJimple.newGtExpr(l1hash5, l3), noStmtPositionInfo);
-  Stmt gt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt stmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l1hash5, l3), noStmtPositionInfo);
+  BranchingStmt gt = JavaJimple.newGotoStmt(noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
   FallsThroughStmt trapHandler =
       JavaJimple.newIdentityStmt(l4, caughtExceptionRef, noStmtPositionInfo);
@@ -100,7 +96,7 @@ public class LocalPackerTest {
   FallsThroughStmt estmt5 =
       JavaJimple.newAssignStmt(
           l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
-  FallsThroughStmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
+  BranchingStmt estmt6 = JavaJimple.newIfStmt(JavaJimple.newGtExpr(l2, l1), noStmtPositionInfo);
   FallsThroughStmt etrapHandler =
       JavaJimple.newIdentityStmt(el4, caughtExceptionRef, noStmtPositionInfo);
   Stmt ethrowStmt = JavaJimple.newThrowStmt(el4, noStmtPositionInfo);
@@ -265,7 +261,7 @@ public class LocalPackerTest {
     graph.putEdge(gt, JGotoStmt.BRANCH_IDX, stmt5);
     graph.putEdge(stmt6, JIfStmt.TRUE_BRANCH_IDX, ret);
 
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder;
   }
@@ -299,7 +295,7 @@ public class LocalPackerTest {
     graph.putEdge(gt, JGotoStmt.BRANCH_IDX, estmt5);
     graph.putEdge(estmt6, JIfStmt.TRUE_BRANCH_IDX, ret);
 
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
     Position position = NoPositionInformation.getInstance();
@@ -337,12 +333,12 @@ public class LocalPackerTest {
     graph.putEdge(stmt3, stmt4);
     graph.putEdge(stmt4, stmt5);
     graph.putEdge(stmt5, stmt6);
-    graph.putEdge(stmt6, gt);
+    graph.putEdge(stmt6, JIfStmt.FALSE_BRANCH_IDX, gt);
     graph.putEdge(gt, JGotoStmt.BRANCH_IDX, stmt5);
-    graph.putEdge(stmt6, ret);
+    graph.putEdge(stmt6, JIfStmt.TRUE_BRANCH_IDX, ret);
     graph.putEdge(trapHandler, throwStmt);
 
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder;
   }
@@ -373,12 +369,12 @@ public class LocalPackerTest {
     graph.addNode(estmt5, Collections.singletonMap(exception, etrapHandler));
     graph.putEdge(estmt4, estmt5);
 
-    graph.putEdge(estmt6, gt);
+    graph.putEdge(estmt6, JIfStmt.FALSE_BRANCH_IDX, gt);
     graph.putEdge(gt, JGotoStmt.BRANCH_IDX, estmt5);
-    graph.putEdge(estmt6, ret);
+    graph.putEdge(estmt6, JIfStmt.TRUE_BRANCH_IDX, ret);
     graph.putEdge(etrapHandler, ethrowStmt);
 
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder;
   }

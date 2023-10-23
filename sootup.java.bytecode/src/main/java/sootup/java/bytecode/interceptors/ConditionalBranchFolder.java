@@ -28,6 +28,7 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -85,7 +86,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
         stmtGraph.removeEdge(predecessor, ifStmt);
         // FIXME: [ms] fix successorIdx
-        stmtGraph.putEdge(predecessor, 0, tautologicSuccessor);
+        stmtGraph.putEdge((FallsThroughStmt) predecessor, tautologicSuccessor);
       }
 
       // removeFlow calls should be obsolete as of following removeStmt

@@ -222,9 +222,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       addNode(stmt, exceptionToHandlerMap);
 
-      if (stmt.fallsThrough()) {
+      if (stmt instanceof FallsThroughStmt) {
         // hint: possible bad performance if stmts is not instanceof RandomAccess
-        putEdge(stmt, 0, stmts.get(i + 1));
+        putEdge((FallsThroughStmt) stmt, stmts.get(i + 1));
       }
 
       if (stmt instanceof BranchingStmt) {
@@ -249,10 +249,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
                   + targetCount
                   + ".");
         }
+        final BranchingStmt bStmt = (BranchingStmt) stmt;
         for (int j = 0; j < targets.size(); j++) {
           Stmt target = targets.get(j);
           // a possible fallsthrough (i.e. from IfStmt) is not in branchingMap
-          putEdge(stmt, j + idxOffset, target);
+          putEdge(bStmt, j + idxOffset, target);
         }
       }
     }
@@ -894,11 +895,37 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
   }
 
-  public void putEdge(@Nonnull FallsThroughStmt stmtA, @Nonnull Stmt stmtB) {
-    putEdge(stmtA, 0, stmtB);
+  /** Replaces all SuccessorEdge(s) of from to oldTo by mewTo */
+  @Override
+  public boolean replaceSucessorEdge(@Nonnull Stmt from, @Nonnull Stmt oldTo, @Nonnull Stmt newTo) {
+    final MutableBasicBlock mutableBasicBlock = stmtToBlock.get(from);
+    if (mutableBasicBlock == null) {
+      throw new IllegalArgumentException("stmt '" + from + "' does not exist in this StmtGraph!");
+    }
+    final MutableBasicBlock oldTargetBlock = stmtToBlock.get(oldTo);
+
+    boolean found = false;
+    for (ListIterator<MutableBasicBlock> iterator =
+            mutableBasicBlock.getSuccessors().listIterator();
+        iterator.hasNext(); ) {
+      MutableBasicBlock block = iterator.next();
+      if (block == oldTargetBlock) {
+        iterator.set(getOrCreateBlock(newTo));
+        found = true;
+      }
+    }
+    return found;
   }
 
-  public void putEdge(@Nonnull Stmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
+  public void putEdge(@Nonnull FallsThroughStmt stmtA, @Nonnull Stmt stmtB) {
+    putEdge_internal(stmtA, 0, stmtB);
+  }
+
+  public void putEdge(@Nonnull BranchingStmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
+    putEdge_internal(stmtA, succesorIdx, stmtB);
+  }
+
+  protected void putEdge_internal(@Nonnull Stmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
 
     MutableBasicBlock blockA = stmtToBlock.get(stmtA);
     MutableBasicBlock blockB = stmtToBlock.get(stmtB);
@@ -919,15 +946,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
     }
 
-    if (blockA.getSuccessors().size() >= stmtA.getExpectedSuccessorCount()) {
-      throw new IllegalArgumentException(
-          "Can't add another flow - there are already enough flows i.e. "
-              + stmtA.getExpectedSuccessorCount()
-              + " outgoing from StmtA '"
-              + stmtA
-              + "'");
-    }
-
+    // TODO: [ms] check to refactor this directly into putEdge - Attention: JIfStmt is
+    // FallsThroughStmt AND BranchingStmt
     if (stmtA.branches()) {
       // branching Stmt A indicates the end of BlockA and connects to another BlockB: reuse or
       // create new
@@ -1073,7 +1093,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public void setEdges(@Nonnull Stmt fromStmt, @Nonnull List<Stmt> targets) {
+  public void setEdges(@Nonnull BranchingStmt fromStmt, @Nonnull List<Stmt> targets) {
     if (fromStmt.getExpectedSuccessorCount() != targets.size()) {
       throw new IllegalArgumentException(
           "Size of Targets is not the amount of from's expected successors.");

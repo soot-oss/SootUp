@@ -11,6 +11,7 @@ import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -247,13 +248,13 @@ public class LocalSplitterTest {
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 =
+    BranchingStmt stmt2 =
         JavaJimple.newIfStmt(
             JavaJimple.newGeExpr(l1, IntConstant.getInstance(0)), noStmtPositionInfo);
     Stmt stmt3 =
         JavaJimple.newAssignStmt(
             l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    BranchingStmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt stmt5 =
         JavaJimple.newAssignStmt(
             l1, JavaJimple.newSubExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
@@ -272,14 +273,14 @@ public class LocalSplitterTest {
     graph.setStartingStmt(startingStmt);
 
     /* set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, ret);
-    builder.addFlow(stmt2, stmt5);
-    builder.addFlow(stmt5, stmt6);
-    builder.addFlow(stmt6, ret);
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, stmt3);
+    stmtGraph.putEdge(stmt3, stmt4);
+    stmtGraph.putEdge(stmt4, ret);
+    stmtGraph.putEdge(stmt2, stmt5);
+    stmtGraph.putEdge(stmt5, stmt6);
+    stmtGraph.putEdge(stmt6, ret);
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
@@ -304,7 +305,7 @@ public class LocalSplitterTest {
     builder.setLocals(locals);
 
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 =
+    BranchingStmt stmt2 =
         JavaJimple.newIfStmt(
             JavaJimple.newGeExpr(l1hash1, IntConstant.getInstance(0)), noStmtPositionInfo);
     Stmt stmt3 =
@@ -312,7 +313,7 @@ public class LocalSplitterTest {
             l1hash2,
             JavaJimple.newAddExpr(l1hash1, IntConstant.getInstance(1)),
             noStmtPositionInfo);
-    Stmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    BranchingStmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt stmt5 =
         JavaJimple.newAssignStmt(
             l1hash3,
@@ -335,14 +336,14 @@ public class LocalSplitterTest {
     graph.setStartingStmt(startingStmt);
 
     /* set graph
-        builder.addFlow(startingStmt, stmt1);
-        builder.addFlow(stmt1, stmt2);
-        builder.addFlow(stmt2, stmt3);
-        builder.addFlow(stmt3, stmt4);
-        builder.addFlow(stmt4, ret);
-        builder.addFlow(stmt2, stmt5);
-        builder.addFlow(stmt5, stmt6);
-        builder.addFlow(stmt6, ret);
+        stmtGraph.putEdge(startingStmt, stmt1);
+        stmtGraph.putEdge(stmt1, stmt2);
+        stmtGraph.putEdge(stmt2, stmt3);
+        stmtGraph.putEdge(stmt3, stmt4);
+        stmtGraph.putEdge(stmt4, ret);
+        stmtGraph.putEdge(stmt2, stmt5);
+        stmtGraph.putEdge(stmt5, stmt6);
+        stmtGraph.putEdge(stmt6, ret);
 
         // build startingStmt
         builder.setStartingStmt(startingStmt);
@@ -417,11 +418,11 @@ public class LocalSplitterTest {
     graph.setStartingStmt(startingStmt);
 
     /* set graph
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, stmt2);
-    builder.addFlow(stmt2, stmt3);
-    builder.addFlow(stmt3, stmt4);
-    builder.addFlow(stmt4, ret);
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, stmt2);
+    stmtGraph.putEdge(stmt2, stmt3);
+    stmtGraph.putEdge(stmt3, stmt4);
+    stmtGraph.putEdge(stmt4, ret);
 
     // set first stmt
     builder.setStartingStmt(startingStmt);
@@ -449,7 +450,7 @@ public class LocalSplitterTest {
     Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
     Stmt stmt2 = JavaJimple.newAssignStmt(stack4, l1, noStmtPositionInfo);
     Stmt stmt3 = JavaJimple.newAssignStmt(stack3, IntConstant.getInstance(10), noStmtPositionInfo);
-    Stmt stmt4 =
+    BranchingStmt stmt4 =
         JavaJimple.newIfStmt(
             JavaJimple.newGeExpr(stack4, stack3), noStmtPositionInfo); // branch to ret
     Stmt stmt5 =
@@ -461,7 +462,7 @@ public class LocalSplitterTest {
     Stmt stmt7 =
         JavaJimple.newAssignStmt(
             l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
+    BranchingStmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
@@ -492,7 +493,7 @@ public class LocalSplitterTest {
     Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
     Stmt stmt2 = JavaJimple.newAssignStmt(stack4, l1hash1, noStmtPositionInfo);
     Stmt stmt3 = JavaJimple.newAssignStmt(stack3, IntConstant.getInstance(10), noStmtPositionInfo);
-    Stmt stmt4 =
+    BranchingStmt stmt4 =
         JavaJimple.newIfStmt(
             JavaJimple.newGeExpr(stack4, stack3), noStmtPositionInfo); // branch to ret
     Stmt stmt5 =
@@ -506,7 +507,7 @@ public class LocalSplitterTest {
             l1hash1,
             JavaJimple.newAddExpr(l1hash2, IntConstant.getInstance(1)),
             noStmtPositionInfo);
-    Stmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
+    BranchingStmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
@@ -545,7 +546,7 @@ public class LocalSplitterTest {
     FallsThroughStmt stmt4 =
         JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
     FallsThroughStmt stmt5 = JavaJimple.newAssignStmt(l3, l1, noStmtPositionInfo);
-    Stmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    BranchingStmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     // build graph
@@ -584,7 +585,7 @@ public class LocalSplitterTest {
     FallsThroughStmt exceptionCatchStmt =
         JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
     Stmt l3assignl1hash2Stmt = JavaJimple.newAssignStmt(l3, l1hash2, noStmtPositionInfo);
-    Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
     Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
     graph.addBlock(

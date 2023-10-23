@@ -10,6 +10,7 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -50,7 +51,7 @@ public class LocalLivenessAnalyserTest {
   FallsThroughStmt aeqbplus2 =
       JavaJimple.newAssignStmt(
           a, JavaJimple.newAddExpr(b, IntConstant.getInstance(2)), noStmtPositionInfo);
-  Stmt ifalt9 =
+  BranchingStmt ifalt9 =
       JavaJimple.newIfStmt(JavaJimple.newGtExpr(IntConstant.getInstance(9), a), noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnStmt(c, noStmtPositionInfo);
 

@@ -4,11 +4,15 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -38,11 +42,13 @@ public class EmptySwitchEliminatorTest {
 
   // build Stmts
   // l0 := @this Test
-  Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
+  FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   // l1 = 3
-  Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(3), noStmtPositionInfo);
+  FallsThroughStmt stmt1 =
+      JavaJimple.newAssignStmt(l1, IntConstant.getInstance(3), noStmtPositionInfo);
   // l2 = 0
-  Stmt defaultStmt = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
+  FallsThroughStmt defaultStmt =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
   // return
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
@@ -62,7 +68,7 @@ public class EmptySwitchEliminatorTest {
   private Body createEmptySwitchBody() {
     // build an empty instance of SwitchStmt
     List<IntConstant> values = new ArrayList<>();
-    Stmt sw = JavaJimple.newLookupSwitchStmt(l1, values, noStmtPositionInfo);
+    BranchingStmt sw = JavaJimple.newLookupSwitchStmt(l1, values, noStmtPositionInfo);
 
     // build an instance of BodyBuilder
     Body.BodyBuilder builder = Body.builder();
@@ -72,15 +78,15 @@ public class EmptySwitchEliminatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
 
     builder.setLocals(locals);
-
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // build stmtsGraph for the builder
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, sw);
-    builder.addFlow(sw, defaultStmt);
-    builder.addFlow(defaultStmt, ret);
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, sw);
+    stmtGraph.putEdge(sw, 0, defaultStmt);
+    stmtGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -90,7 +96,7 @@ public class EmptySwitchEliminatorTest {
 
   private Body createExpectedEmptySwitchBody() {
     // build a new instance of JGotoStmt
-    Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+    BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
     // build an instance of BodyBuilder
     Body.BodyBuilder builder = Body.builder();
@@ -102,10 +108,11 @@ public class EmptySwitchEliminatorTest {
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder
-    builder.addFlow(startingStmt, stmt1);
-    builder.addFlow(stmt1, gotoStmt);
-    builder.addFlow(gotoStmt, defaultStmt);
-    builder.addFlow(defaultStmt, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.putEdge(startingStmt, stmt1);
+    stmtGraph.putEdge(stmt1, gotoStmt);
+    stmtGraph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, defaultStmt);
+    stmtGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
     builder.setStartingStmt(startingStmt);

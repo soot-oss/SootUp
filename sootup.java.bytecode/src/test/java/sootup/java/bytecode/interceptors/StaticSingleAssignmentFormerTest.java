@@ -12,6 +12,8 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -69,9 +71,11 @@ public class StaticSingleAssignmentFormerTest {
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(2)), noStmtPositionInfo);
   Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
-  Stmt handlerStmt = JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
-  Stmt l2eq0 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt goTo = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  FallsThroughStmt handlerStmt =
+      JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
+  FallsThroughStmt l2eq0 =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(0), noStmtPositionInfo);
+  BranchingStmt goTo = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   @Test
   public void testSSA() {
@@ -303,9 +307,10 @@ public class StaticSingleAssignmentFormerTest {
 
     // add exception
     graph.addNode(assignl1tol2, Collections.singletonMap(exception, handlerStmt));
-    builder.addFlow(handlerStmt, l2eq0);
-    builder.addFlow(l2eq0, goTo);
-    builder.addFlow(goTo, assignl3plus1tol3);
+
+    graph.putEdge(handlerStmt, l2eq0);
+    graph.putEdge(l2eq0, goTo);
+    graph.putEdge(goTo, JGotoStmt.BRANCH_IDX, assignl3plus1tol3);
 
     return builder;
   }

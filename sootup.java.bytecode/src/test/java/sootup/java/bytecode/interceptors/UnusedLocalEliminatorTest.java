@@ -7,8 +7,12 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
@@ -68,18 +72,20 @@ public class UnusedLocalEliminatorTest {
       locals = ImmutableUtils.immutableSet(a, b);
     }
 
-    Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-    Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
+    FallsThroughStmt strToA =
+        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    FallsThroughStmt bToA =
+        JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
+    BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     final Body.BodyBuilder builder = Body.builder();
     locals.forEach(builder::addLocal);
-
-    builder.setStartingStmt(strToA);
-    builder.addFlow(strToA, jump);
-    builder.addFlow(jump, bToA);
-    builder.addFlow(bToA, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(strToA);
+    stmtGraph.putEdge(strToA, jump);
+    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    stmtGraph.putEdge(bToA, ret);
 
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
