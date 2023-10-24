@@ -1,0 +1,18 @@
+rootProject.name = 'soot'
+include ':soot.core'
+include ':soot.java.core'
+include ':soot.java.bytecode'
+include ':soot.java.sourcecode'
+include ':soot.tests'
+include ':soot.callgraph'
+include ':soot.jimple.parser'
+include ':examples'
+
+project(':soot.core').projectDir = "$rootDir/de.upb.swt.soot.core" as File
+project(':soot.java.core').projectDir = "$rootDir/de.upb.swt.soot.java.core" as File
+project(':soot.java.bytecode').projectDir = "$rootDir/de.upb.swt.soot.java.bytecode" as File
+project(':soot.java.sourcecode').projectDir = "$rootDir/de.upb.swt.soot.java.sourcecode" as File
+project(':soot.tests').projectDir = "$rootDir/de.upb.swt.soot.tests" as File
+project(':soot.callgraph').projectDir = "$rootDir/de.upb.swt.soot.callgraph" as File
+project(':soot.jimple.parser').projectDir = "$rootDir/de.upb.swt.soot.jimple.parser" as File
+project(':examples').projectDir = "$rootDir/examples" as File

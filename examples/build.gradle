@@ -1,0 +1,10 @@
+
+description = 'Soot Examples'
+dependencies {
+  compile project(':soot.callgraph')
+  compile project(':soot.core')
+  compile project(':soot.java.bytecode')
+  compile project(':soot.java.core')
+  compile project(':soot.java.sourcecode')
+  compile project(':soot.jimple.parser')
+}

@@ -1,0 +1,1081 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+    
+    
+      
+        <title>Jimple - FutureSoot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../css/hint.min.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#jimple" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FutureSoot" class="md-header__button md-logo" aria-label="FutureSoot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FutureSoot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Jimple
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/secure-software-engineering/soot-reloaded/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FutureSoot" class="md-nav__button md-logo" aria-label="FutureSoot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    FutureSoot
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/secure-software-engineering/soot-reloaded/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        Getting started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Jimple
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Jimple
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#jimple-grammar-structure" class="md-nav__link">
+    Jimple Grammar Structure
+  </a>
+  
+    <nav class="md-nav" aria-label="Jimple Grammar Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-or-interface" class="md-nav__link">
+    Class (or Interface)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field" class="md-nav__link">
+    Field
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-and-the-body" class="md-nav__link">
+    Method and the Body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signatures" class="md-nav__link">
+    Signatures
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trap" class="md-nav__link">
+    Trap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stmt" class="md-nav__link">
+    Stmt
+  </a>
+  
+    <nav class="md-nav" aria-label="Stmt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branching-statements" class="md-nav__link">
+    Branching Statements
+  </a>
+  
+    <nav class="md-nav" aria-label="Branching Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jgotostmt" class="md-nav__link">
+    JGotoStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jifstmt" class="md-nav__link">
+    JIfStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jswitchstmt" class="md-nav__link">
+    JSwitchStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    JReturnStmt &amp; JReturnVoidStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    JThrowStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jinvokestmt" class="md-nav__link">
+    JInvokeStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jassignstmt" class="md-nav__link">
+    JAssignStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jidentitystmt" class="md-nav__link">
+    JIdentityStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jentermonitorstmt-jexitmonitorstmt" class="md-nav__link">
+    JEnterMonitorStmt &amp; JExitMonitorStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jretstmt" class="md-nav__link">
+    JRetStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jbreakpointstmt" class="md-nav__link">
+    JBreakpointStmt
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immediate" class="md-nav__link">
+    Immediate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type" class="md-nav__link">
+    Type
+  </a>
+  
+    <nav class="md-nav" aria-label="Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primarytype" class="md-nav__link">
+    PrimaryType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#referencetype" class="md-nav__link">
+    ReferenceType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local" class="md-nav__link">
+    Local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant" class="md-nav__link">
+    Constant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expr" class="md-nav__link">
+    Expr
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ref" class="md-nav__link">
+    Ref
+  </a>
+  
+    <nav class="md-nav" aria-label="Ref">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarrayref" class="md-nav__link">
+    JArrayRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jfieldref-jstaticfieldref-jinstancefieldref" class="md-nav__link">
+    JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identityref" class="md-nav__link">
+    IdentityRef
+  </a>
+  
+    <nav class="md-nav" aria-label="IdentityRef">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jthisref" class="md-nav__link">
+    JThisRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jcaughtexceptionref" class="md-nav__link">
+    JCaughtExceptionRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jparameterref" class="md-nav__link">
+    JParameterRef
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BodyInterceptor/" class="md-nav__link">
+        Body Interceptors
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Tools/" class="md-nav__link">
+        Tools
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#jimple-grammar-structure" class="md-nav__link">
+    Jimple Grammar Structure
+  </a>
+  
+    <nav class="md-nav" aria-label="Jimple Grammar Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-or-interface" class="md-nav__link">
+    Class (or Interface)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field" class="md-nav__link">
+    Field
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-and-the-body" class="md-nav__link">
+    Method and the Body
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signatures" class="md-nav__link">
+    Signatures
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trap" class="md-nav__link">
+    Trap
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stmt" class="md-nav__link">
+    Stmt
+  </a>
+  
+    <nav class="md-nav" aria-label="Stmt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#branching-statements" class="md-nav__link">
+    Branching Statements
+  </a>
+  
+    <nav class="md-nav" aria-label="Branching Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jgotostmt" class="md-nav__link">
+    JGotoStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jifstmt" class="md-nav__link">
+    JIfStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jswitchstmt" class="md-nav__link">
+    JSwitchStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    JReturnStmt &amp; JReturnVoidStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    JThrowStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jinvokestmt" class="md-nav__link">
+    JInvokeStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jassignstmt" class="md-nav__link">
+    JAssignStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jidentitystmt" class="md-nav__link">
+    JIdentityStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jentermonitorstmt-jexitmonitorstmt" class="md-nav__link">
+    JEnterMonitorStmt &amp; JExitMonitorStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jretstmt" class="md-nav__link">
+    JRetStmt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jbreakpointstmt" class="md-nav__link">
+    JBreakpointStmt
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immediate" class="md-nav__link">
+    Immediate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type" class="md-nav__link">
+    Type
+  </a>
+  
+    <nav class="md-nav" aria-label="Type">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primarytype" class="md-nav__link">
+    PrimaryType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#referencetype" class="md-nav__link">
+    ReferenceType
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local" class="md-nav__link">
+    Local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant" class="md-nav__link">
+    Constant
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expr" class="md-nav__link">
+    Expr
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ref" class="md-nav__link">
+    Ref
+  </a>
+  
+    <nav class="md-nav" aria-label="Ref">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarrayref" class="md-nav__link">
+    JArrayRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jfieldref-jstaticfieldref-jinstancefieldref" class="md-nav__link">
+    JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identityref" class="md-nav__link">
+    IdentityRef
+  </a>
+  
+    <nav class="md-nav" aria-label="IdentityRef">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jthisref" class="md-nav__link">
+    JThisRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jcaughtexceptionref" class="md-nav__link">
+    JCaughtExceptionRef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jparameterref" class="md-nav__link">
+    JParameterRef
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/secure-software-engineering/soot-reloaded/edit/master/docs/jimple.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="jimple">Jimple</h1>
+<p>What is Jimple? Jimple is the intermediate representation <span class="tooltip hint--top" aria-label="A data structure which represents (source) code"><strong>IR</strong></span> of Soot.
+Soots intention is to provide a simplified way to analyze JVM bytecode. For this 
+purpose Jimple was designed as a representation of JVM bytecode which is human readable.</p>
+<h2 id="jimple-grammar-structure">Jimple Grammar Structure</h2>
+<p>Jimple mimics the JVMs class file structure.
+Therefore it is object oriented.
+A Single Class (or Interface) per file.
+Three-Address-Code which means there are no nested expressions.
+(nested expressions can be modeled via Locals that store intermediate calculation results.)</p>
+<h3 id="class-or-interface">Class (or Interface)</h3>
+<p>A class consists of Fields and Methods.
+It is referenced by its ClassType.</p>
+<h3 id="field">Field</h3>
+<p>A Field is a piece of memory which can store a value that is accessible according to its visibility modifier.
+It is referenced by its FieldSignature.</p>
+<h3 id="method-and-the-body">Method and the Body</h3>
+<p>The interesting part is a method. A method is a "piece of code" that can be executed.
+It is referenced by its MethodSignature and contains a <span class="tooltip hint--top" aria-label="a control flow graph"><strong>StmtGraph</strong></span> that models the sequence of single instructions/statements (Stmts).</p>
+<h3 id="signatures">Signatures</h3>
+<p>Everything that we can reference across a method (e.g. a Class, Interface, Method or Field) - which is basically every item//TODO:wording that is not a Local - has a Signature.</p>
+<h3 id="trap">Trap</h3>
+<p>A Trap is a mechanism to model exceptional flow.</p>
+<h3 id="stmt">Stmt</h3>
+<p>The main piece of Jimple is a Statement (Stmt). <span class="tooltip hint--top" aria-label="formerly known as Units"><strong>Stmts</strong></span> represent that can be executed by the JVM.</p>
+<h4 id="branching-statements">Branching Statements</h4>
+<p>A BranchingStmt's job is to model the flow between Stmts.</p>
+<h5 id="jgotostmt">JGotoStmt</h5>
+<p>for unconditional flow</p>
+<h5 id="jifstmt">JIfStmt</h5>
+<p>for conditional flow depending on boolean Expression (AbstractConditionExpr) so they have two successor Stmt's</p>
+<h5 id="jswitchstmt">JSwitchStmt</h5>
+<p>for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. </p>
+<p>All other Stmts are not manipulating the flow, which means they have a single successor Stmt as long as they are not exiting the flow inside a method.</p>
+<h5 id="jreturnstmt-jreturnvoidstmt">JReturnStmt &amp; JReturnVoidStmt</h5>
+<p>They end the execution/flow inside the current method and return (a value) to its caller.</p>
+<h5 id="jthrowstmt">JThrowStmt</h5>
+<p>Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler </p>
+<h5 id="jinvokestmt">JInvokeStmt</h5>
+<p>transfers the control flow to another method until the called method returns. </p>
+<h5 id="jassignstmt">JAssignStmt</h5>
+<p>assigns a Value from the right handside to the left handside.
+On the left handside can occure a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
+On the right handside can be an expression (Expr), a Local, a FieldRef or a Constant.</p>
+<h5 id="jidentitystmt">JIdentityStmt</h5>
+<p>is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph. </p>
+<h5 id="jentermonitorstmt-jexitmonitorstmt">JEnterMonitorStmt &amp; JExitMonitorStmt</h5>
+<p>marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.</p>
+<h5 id="jretstmt">JRetStmt</h5>
+<h5 id="jbreakpointstmt">JBreakpointStmt</h5>
+<p>models a Breakpoint set by a Debugger (usually not relevant for static analyses)</p>
+<h3 id="immediate">Immediate</h3>
+<p>An Immediate has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Sth that contains a Value") or a Constant ("Sth that is a Value").</p>
+<h3 id="type">Type</h3>
+<p>VoidType</p>
+<h4 id="primarytype">PrimaryType</h4>
+<p>BooleanType, ByteType, CharType, ShortType, IntType, LongType, DoubleType, FloatType</p>
+<h4 id="referencetype">ReferenceType</h4>
+<p>ClassType, 
+ArrayType
+NullType</p>
+<h4 id="local">Local</h4>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>$i0 
+</code></pre></div>
+</td></tr></table>
+<a href="https://www.youtube.com/watch?v=_FLhO7ZnKHs&amp;t=54s">Whats this?</a>
+A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
+Values can be assigned to Locals via JIdentityStmt or JAssignStmt.</p>
+<h4 id="constant">Constant</h4>
+<p>represents a value itself. don't confuse it with a variable/Local which has a immutable (i.e. final) attribute. </p>
+<p>There exists a constant entity for every Type - that way all value types can have a representation.</p>
+<h3 id="expr">Expr</h3>
+<p>// TODO</p>
+<h3 id="ref">Ref</h3>
+<h4 id="jarrayref">JArrayRef</h4>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>$arr[1]
+</code></pre></div>
+</td></tr></table>
+referencing a position inside an array.</p>
+<h4 id="jfieldref-jstaticfieldref-jinstancefieldref">JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)</h4>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>&lt;SomePackage.ExampleClass: fieldname&gt;
+// or
+$r1.&lt;SomePackage.ExampleClass: fieldname&gt;
+</code></pre></div>
+</td></tr></table>
+referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.</p>
+<h4 id="identityref">IdentityRef</h4>
+<p>The IdentityRef makes those implicit special value assignments explicit.</p>
+<h5 id="jthisref">JThisRef</h5>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>@this: package.fruit.Banana
+</code></pre></div>
+</td></tr></table>
+represents the this pointer of the current class.</p>
+<h5 id="jcaughtexceptionref">JCaughtExceptionRef</h5>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>@caughtexception
+</code></pre></div>
+</td></tr></table>
+represents the value of the thrown exception (caught by this exceptionhandler).</p>
+<h5 id="jparameterref">JParameterRef</h5>
+<p><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>$i0 := @parameter0
+$i1 := @parameter1 
+</code></pre></div>
+</td></tr></table>
+represents a parameter of a method, identified by its index.</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../getting-started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting started" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Getting started
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../BodyInterceptor/" class="md-footer__link md-footer__link--next" aria-label="Next: Body Interceptors" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Body Interceptors
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      
+    
+  </body>
+</html>
