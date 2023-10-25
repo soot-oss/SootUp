@@ -85,7 +85,6 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       // link previous stmt with always-reached successor of the if-Stmt
       for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
         stmtGraph.removeEdge(predecessor, ifStmt);
-        // FIXME: [ms] fix successorIdx
         stmtGraph.putEdge((FallsThroughStmt) predecessor, tautologicSuccessor);
       }
 
