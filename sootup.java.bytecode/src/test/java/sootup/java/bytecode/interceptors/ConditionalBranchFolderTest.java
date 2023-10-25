@@ -111,7 +111,7 @@ public class ConditionalBranchFolderTest {
         final MethodSignature methodSignature =
             JavaIdentifierFactory.getInstance()
                 .getMethodSignature(
-                    "toString", "java.lang.Object", "String", Collections.emptyList());
+                    "java.lang.Object", "toString", "String", Collections.emptyList());
         Local base =
             new Local(
                 "someObjectThatHasSomethingToString",
@@ -140,7 +140,7 @@ public class ConditionalBranchFolderTest {
     bodyBuilder.addFlow(ifStmt, retb);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     return bodyBuilder;
   }
 }

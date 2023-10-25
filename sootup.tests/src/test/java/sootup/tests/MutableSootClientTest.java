@@ -129,7 +129,7 @@ public class MutableSootClientTest {
   public void methodAdditionTest() {
     MethodSignature methodSignature =
         p.getIdentifierFactory()
-            .getMethodSignature("addedMethod", "utils.Operations", "void", Collections.emptyList());
+            .getMethodSignature("utils.Operations", "addedMethod", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
     Body body = bodyBuilder.setMethodSignature(methodSignature).build();
     JavaSootMethod newMethod =

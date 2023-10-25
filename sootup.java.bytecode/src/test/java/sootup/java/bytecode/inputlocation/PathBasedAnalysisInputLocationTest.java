@@ -380,7 +380,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                               public MethodSignature getSignature() {
                                 return JavaIdentifierFactory.getInstance()
                                     .getMethodSignature(
-                                        utilsClass, optionalToStreamMethodSubSignature);
+                                        utilsClass.getType(), optionalToStreamMethodSubSignature);
                               }
                             })
                         .withSignature(

@@ -34,7 +34,6 @@ import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -264,16 +263,16 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the method's name
    * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
-   * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param methodName the method's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @return a MethodSignature
    */
   @Override
   public MethodSignature getMethodSignature(
-      final String methodName,
       final String fullyQualifiedNameDeclClass,
+      final String methodName,
       final String fqReturnType,
       final List<String> parameters) {
     JavaClassType declaringClass = getClassType(fullyQualifiedNameDeclClass);
@@ -319,13 +318,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       final List<Type> parameters) {
 
     return new MethodSignature(declaringClassSignature, methodName, parameters, fqReturnType);
-  }
-
-  @Override
-  @Nonnull
-  public MethodSignature getMethodSignature(
-      @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
-    return getMethodSignature(declaringClass.getType(), subSignature);
   }
 
   @Override
@@ -425,7 +417,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                     })
                 .collect(Collectors.toList());
 
-    return getMethodSignature(methodName, className, returnName, argsList);
+    return getMethodSignature(className, methodName, returnName, argsList);
   }
 
   @Nonnull
