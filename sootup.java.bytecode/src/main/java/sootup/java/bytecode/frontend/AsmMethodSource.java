@@ -1201,20 +1201,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int nrArgs = sigTypes.size();
       final Operand[] operands;
       Immediate[] argList;
-      if (!isInstance) {
+      if (isInstance) {
         if (nrArgs == 0) {
-          operands = null;
-          argList = new Immediate[0];
+          operands = new Operand[1];
+          argList = null;
         } else {
-          operands = new Operand[nrArgs];
+          operands = new Operand[nrArgs + 1];
           argList = new Immediate[nrArgs];
         }
       } else {
         if (nrArgs == 0) {
-          operands = new Operand[1];
-          argList = new Immediate[0];
+          operands = null;
+          argList = null;
         } else {
-          operands = new Operand[nrArgs + 1];
+          operands = new Operand[nrArgs];
           argList = new Immediate[nrArgs];
         }
       }
@@ -1223,13 +1223,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
         argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
       }
-      if (isInstance) {
-        operands[operands.length - 1] = operandStack.popLocal();
-      }
+
       AbstractInvokeExpr invoke;
-      if (!isInstance) {
-        invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
-      } else {
+      if (isInstance) {
+        operands[operands.length - 1] = operandStack.popLocal(); // pop the return type
+
         Operand baseOperand = operands[operands.length - 1];
         Local base = (Local) baseOperand.stackOrValue();
 
@@ -1247,6 +1245,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             throw new UnsupportedOperationException("Unknown invoke op:" + op);
         }
         baseOperand.addUsageInExpr(invoke);
+      } else {
+        invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
       }
       if (operands != null) {
         for (int i = 0; i < sigTypes.size(); i++) {
