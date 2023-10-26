@@ -123,13 +123,22 @@ grammar Jimple;
     (PLUS|MINUS)? (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
 
   file:
-    importItem* modifier* file_type classname=IDENTIFIER extends_clause? implements_clause? L_BRACE member* R_BRACE EOF;
+    importItem* class_modifier* file_type classname=IDENTIFIER extends_clause? implements_clause? L_BRACE member* R_BRACE EOF;
 
   importItem:
     'import' location=identifier SEMICOLON;
 
-  modifier :
-    'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum';
+  common_modifier :
+    'final' | 'public' | 'protected' | 'private' | 'static' | 'enum'| 'synthetic';
+
+  class_modifier :
+   common_modifier | 'abstract' | 'super';
+
+  method_modifier :
+   common_modifier | 'abstract' | 'native' | 'synchronized' | 'varargs'| 'bridge' | 'strictfp';
+
+  field_modifier :
+   common_modifier  | 'transient' | 'volatile';
 
   file_type :
     CLASS | 'interface' | 'annotation interface';
@@ -151,10 +160,10 @@ grammar Jimple;
    field | method;
 
   field :
-    modifier* type identifier SEMICOLON;
+    field_modifier* type identifier SEMICOLON;
 
   method :
-    modifier* method_subsignature throws_clause? method_body;
+    method_modifier* method_subsignature throws_clause? method_body;
 
   method_name :
     '<init>' | '<clinit>' | identifier;
@@ -271,6 +280,9 @@ grammar Jimple;
     /*local*/    local=identifier |
     /*constant*/ constant;
 
+  methodhandle:
+    'methodhandle: ' STRING_CONSTANT (method_signature|field_signature);
+
   constant :
     /*boolean*/ BOOL_CONSTANT |
     /*integer*/ integer_constant |
@@ -278,7 +290,7 @@ grammar Jimple;
     /*string*/  STRING_CONSTANT |
     /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL |
-                methodhandle='handle:' method_signature |
+                methodhandle |
                 methodtype='methodtype:' method_subsignature ;
 
   binop :

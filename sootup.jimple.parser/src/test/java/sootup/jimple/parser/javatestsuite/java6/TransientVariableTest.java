@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -34,7 +34,7 @@ public class TransientVariableTest extends JimpleTestSuiteBase {
             .anyMatch(
                 sootField ->
                     sootField.getName().equals("transientVar")
-                        && sootField.getModifiers().contains(Modifier.TRANSIENT)));
+                        && sootField.getModifiers().contains(FieldModifier.TRANSIENT)));
   }
 
   public List<String> expectedBodyStmts() {

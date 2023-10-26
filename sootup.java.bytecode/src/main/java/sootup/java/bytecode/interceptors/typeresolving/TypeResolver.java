@@ -182,7 +182,7 @@ public class TypeResolver {
         Type t_old = actualTyping.getType(local);
         Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
         if (lhs instanceof JArrayRef) {
-          t_right = Type.makeArrayType(t_right, 1);
+          t_right = Type.createArrayType(t_right, 1);
         }
 
         boolean isFirstType = true;
@@ -290,7 +290,7 @@ public class TypeResolver {
     } else if (type instanceof ArrayType) {
       Type eleType = convertType(((ArrayType) type).getElementType());
       if (eleType != null) {
-        return Type.makeArrayType(eleType, 1);
+        return Type.createArrayType(eleType, 1);
       } else {
         return null;
       }

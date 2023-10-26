@@ -1,4 +1,4 @@
-public synchronized class DeclareFloat extends java.lang.Object
+public super class DeclareFloat extends java.lang.Object
 {
     float f1;
 

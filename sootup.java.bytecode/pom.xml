@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.github.ThexXTURBOXx.dex2jar</groupId>
 			<artifactId>dex-tools</artifactId>
-			<version>v61</version>
+			<version>v64</version>
 		</dependency>
 	</dependencies>
 

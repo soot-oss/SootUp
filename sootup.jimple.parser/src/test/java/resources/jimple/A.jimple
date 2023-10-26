@@ -1,4 +1,4 @@
-abstract synchronized class A extends java.lang.Object
+abstract super class A extends java.lang.Object
 {
     abstract void a();
     void <init>()

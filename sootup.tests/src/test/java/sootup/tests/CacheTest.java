@@ -30,7 +30,7 @@ public class CacheTest {
   @BeforeClass
   public static void setupProject() {
     PathBasedAnalysisInputLocation location =
-        new PathBasedAnalysisInputLocation(pathToJar, SourceType.Application);
+        PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
     p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
   }
 

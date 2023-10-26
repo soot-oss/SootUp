@@ -1,4 +1,4 @@
-synchronized class NoModifierClass extends java.lang.Object
+super class NoModifierClass extends java.lang.Object
 {
     void noModifierMethod()
     {

@@ -14,13 +14,10 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.BooleanConstant;
-import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.constant.DoubleConstant;
-import sootup.core.jimple.common.constant.EnumConstant;
 import sootup.core.jimple.common.constant.FloatConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
-import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.MethodType;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
@@ -70,6 +67,7 @@ import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.language.JavaLanguage;
 
 @Category(Java8Test.class)
@@ -153,10 +151,10 @@ public class InstantiateClassValueVisitorTest {
     listWithAllValues.add(FloatConstant.getInstance(2.5f));
     listWithAllValues.add(IntConstant.getInstance(3));
     listWithAllValues.add(LongConstant.getInstance(3L));
-    listWithAllValues.add(new StringConstant("String", StringClass));
-    listWithAllValues.add(new EnumConstant("3", StringClass));
-    listWithAllValues.add(new ClassConstant("java/lang/String", StringClass));
-    listWithAllValues.add(new MethodHandle(toStringMethod, 3, StringClass));
+    listWithAllValues.add(stringConstant);
+    listWithAllValues.add(JavaJimple.getInstance().newEnumConstant("3", "EnumTest"));
+    listWithAllValues.add(JavaJimple.getInstance().newClassConstant("java/lang/String"));
+    listWithAllValues.add(JavaJimple.getInstance().newMethodHandle(toStringMethod, 5));
     listWithAllValues.add(new MethodType(toStringMethod.getSubSignature(), StringClass));
     listWithAllValues.add(new JAddExpr(stringConstant, stringConstant));
     listWithAllValues.add(new JAndExpr(stringConstant, stringConstant));

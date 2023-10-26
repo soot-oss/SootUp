@@ -22,15 +22,16 @@ package sootup.java.bytecode.frontend;
  */
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
-import sootup.core.frontend.AbstractClassSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ClassProvider;
-import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -44,13 +45,14 @@ import sootup.java.core.types.ModuleJavaClassType;
 public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   @Nonnull private final View<?> view;
+  private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
 
   public AsmJavaClassProvider(@Nonnull View<?> view) {
     this.view = view;
   }
 
   @Override
-  public AbstractClassSource<JavaSootClass> createClassSource(
+  public Optional<SootClassSource<JavaSootClass>> createClassSource(
       AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation,
       Path sourcePath,
       ClassType classType) {
@@ -58,23 +60,30 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
     try {
       AsmUtil.initAsmClassSource(sourcePath, classNode);
-    } catch (IOException exception) {
-      throw new ResolveException(
-          exception.getMessage(), sourcePath, NoPositionInformation.getInstance(), exception);
+    } catch (IOException | IllegalArgumentException exception) {
+      logger.warn(
+          "ASM could not resolve class source of "
+              + classType
+              + " in "
+              + sourcePath
+              + " causing "
+              + exception.getMessage());
+      return Optional.empty();
     }
 
     JavaClassType klassType = (JavaClassType) classType;
     if (klassType instanceof ModuleJavaClassType
         && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
-      throw new ResolveException(
-          "Can not create ClassSource from a module info descriptor!", sourcePath);
+      logger.warn("Can not create ClassSource from a module info descriptor! path:" + sourcePath);
+      return Optional.empty();
     } else {
       if (klassType instanceof AnnotationType) {
-        return new AsmAnnotationClassSource(
-            analysisInputLocation, sourcePath, klassType, classNode);
+        return Optional.of(
+            new AsmAnnotationClassSource(analysisInputLocation, sourcePath, klassType, classNode));
       }
 
-      return new AsmClassSource(analysisInputLocation, sourcePath, klassType, classNode);
+      return Optional.of(
+          new AsmClassSource(analysisInputLocation, sourcePath, klassType, classNode));
     }
   }
 

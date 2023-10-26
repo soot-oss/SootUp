@@ -53,7 +53,9 @@ public final class JAssignStmt<L extends Value, R extends Value>
     }
     if (!validateValue(rValue)) {
       throw new RuntimeException(
-          "Illegal Assignment statement. Make sure that right hand side has a valid operand.");
+          "Illegal Assignment statement. Make sure that right hand side ("
+              + rValue
+              + ") is a valid operand.");
     }
   }
 

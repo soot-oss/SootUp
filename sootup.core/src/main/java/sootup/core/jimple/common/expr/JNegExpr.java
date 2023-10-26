@@ -69,17 +69,18 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   public Type getType() {
     Value op = getOp();
 
-    if (op.getType().equals(PrimitiveType.getInt())
-        || op.getType().equals(PrimitiveType.getByte())
-        || op.getType().equals(PrimitiveType.getShort())
-        || op.getType().equals(PrimitiveType.getBoolean())
-        || op.getType().equals(PrimitiveType.getChar())) {
+    // TODO ms: create a TypeVisitor for this -> O(1)
+    if (op.getType() == PrimitiveType.getInt()
+        || op.getType() == PrimitiveType.getByte()
+        || op.getType() == PrimitiveType.getShort()
+        || op.getType() == PrimitiveType.getBoolean()
+        || op.getType() == PrimitiveType.getChar()) {
       return PrimitiveType.getInt();
-    } else if (op.getType().equals(PrimitiveType.getLong())) {
+    } else if (op.getType() == PrimitiveType.getLong()) {
       return PrimitiveType.getLong();
-    } else if (op.getType().equals(PrimitiveType.getDouble())) {
+    } else if (op.getType() == PrimitiveType.getDouble()) {
       return PrimitiveType.getDouble();
-    } else if (op.getType().equals(PrimitiveType.getFloat())) {
+    } else if (op.getType() == PrimitiveType.getFloat()) {
       return PrimitiveType.getFloat();
     } else {
       return UnknownType.getInstance();

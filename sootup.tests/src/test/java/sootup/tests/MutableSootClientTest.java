@@ -37,7 +37,7 @@ public class MutableSootClientTest {
   /** Load the jar file for analysis as input location. */
   @BeforeClass
   public static void setupProject() {
-    location = new PathBasedAnalysisInputLocation(pathToJar, SourceType.Application);
+    location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
     p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
   }
 
@@ -79,7 +79,7 @@ public class MutableSootClientTest {
             Collections.emptySet(),
             Collections.emptySet(),
             new FullPosition(0, 0, 0, 0),
-            EnumSet.noneOf(Modifier.class),
+            EnumSet.noneOf(ClassModifier.class),
             Collections.emptySet(),
             Collections.emptySet(),
             Collections.emptySet());
@@ -129,14 +129,14 @@ public class MutableSootClientTest {
   public void methodAdditionTest() {
     MethodSignature methodSignature =
         p.getIdentifierFactory()
-            .getMethodSignature("addedMethod", "utils.Operations", "void", Collections.emptyList());
+            .getMethodSignature("utils.Operations", "addedMethod", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
     Body body = bodyBuilder.setMethodSignature(methodSignature).build();
     JavaSootMethod newMethod =
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());

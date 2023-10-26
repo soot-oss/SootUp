@@ -76,7 +76,7 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -317,7 +317,7 @@ public class InstructionConverter {
     SootField assertionsDisabled =
         new SootField(
             fieldSig,
-            EnumSet.of(Modifier.FINAL, Modifier.STATIC),
+            EnumSet.of(FieldModifier.FINAL, FieldModifier.STATIC),
             NoPositionInformation.getInstance());
 
     converter.addSootField(assertionsDisabled);
@@ -379,7 +379,7 @@ public class InstructionConverter {
     stmts.add(newAssignStmt);
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
-            "<init>", "java.lang.AssertionError", "void", Collections.emptyList());
+            "java.lang.AssertionError", "<init>", "void", Collections.emptyList());
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(failureLocal, methodSig);
     JInvokeStmt invokeStmt =
         Jimple.newInvokeStmt(
@@ -422,7 +422,7 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         SootField field =
             new SootField(
-                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -455,7 +455,7 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         SootField field =
             new SootField(
-                fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {
@@ -795,7 +795,7 @@ public class InstructionConverter {
 
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
-            target.getName().toString(), declaringClassSignature, returnType, parameters);
+            declaringClassSignature, target.getName().toString(), returnType, parameters);
 
     if (!callee.isStatic()) {
       int receiver = invokeInst.getReceiver();
@@ -940,8 +940,8 @@ public class InstructionConverter {
 
     MethodSignature initMethod =
         identifierFactory.getMethodSignature(
-            "<init>",
             sbType.getFullyQualifiedName(),
+            "<init>",
             VoidType.getInstance().toString(),
             Collections.singletonList(type.toString()));
     CAstSourcePositionMap.Position[] pos1 = new CAstSourcePositionMap.Position[2];
@@ -957,8 +957,8 @@ public class InstructionConverter {
 
     MethodSignature appendMethod =
         identifierFactory.getMethodSignature(
-            "append",
             sbType.getFullyQualifiedName(),
+            "append",
             sbType.toString(),
             Collections.singletonList(type.toString()));
     Local strBuilderLocal2 = localGenerator.generateLocal(sbType);
@@ -976,7 +976,7 @@ public class InstructionConverter {
 
     MethodSignature toStringMethod =
         identifierFactory.getMethodSignature(
-            "toString", sbType.getFullyQualifiedName(), sbType.toString(), Collections.emptyList());
+            sbType.getFullyQualifiedName(), "toString", sbType.toString(), Collections.emptyList());
 
     Stmt toStringStmt =
         Jimple.newAssignStmt(

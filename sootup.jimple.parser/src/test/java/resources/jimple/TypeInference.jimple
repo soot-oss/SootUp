@@ -1,4 +1,4 @@
-synchronized class TypeInference extends java.lang.Object
+super class TypeInference extends java.lang.Object
 {
     void <init>()
     {

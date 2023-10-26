@@ -31,7 +31,7 @@ import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
-public class PrimitiveHierarchy implements IHierarchy {
+public class PrimitiveHierarchy {
 
   /**
    * Calculate the least common ancestor of two types(primitive or BottomType). If there's a = b
@@ -40,41 +40,43 @@ public class PrimitiveHierarchy implements IHierarchy {
    * least common ancestor of a and b;
    */
   @Nonnull
-  @Override
-  public Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
-    if (a.equals(b)) {
+  public static Collection<Type> getLeastCommonAncestor(@Nonnull Type a, @Nonnull Type b) {
+    if (a == b) {
       return Collections.singleton(a);
-    } else if (arePrimitives(a, b)) {
+    }
+
+    if (arePrimitives(a, b)) {
       if (isAncestor(a, b)) {
         return Collections.singleton(a);
-      } else if (isAncestor(b, a)) {
+      }
+      if (isAncestor(b, a)) {
         return Collections.singleton(b);
-      } else if (a instanceof PrimitiveType.ByteType) {
-        if (b instanceof PrimitiveType.ShortType
-            || b instanceof PrimitiveType.CharType
-            || b instanceof AugIntegerTypes.Integer32767Type) {
+      }
+      if (a.getClass() == PrimitiveType.ByteType.class) {
+        if (b.getClass() == PrimitiveType.ShortType.class
+            || b.getClass() == PrimitiveType.CharType.class
+            || b.getClass() == AugIntegerTypes.Integer32767Type.class) {
           return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
         }
-      } else if (a instanceof PrimitiveType.ShortType) {
-        if (b instanceof PrimitiveType.ByteType || b instanceof PrimitiveType.CharType) {
-          return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
-        }
-      } else if (a instanceof PrimitiveType.CharType) {
-        if (b instanceof PrimitiveType.ByteType || b instanceof PrimitiveType.ShortType) {
-          return Collections.singleton(PrimitiveType.getInt());
-        } else {
-          return Collections.emptySet();
-        }
-      } else {
         return Collections.emptySet();
       }
-    } else {
+      if (a.getClass() == PrimitiveType.ShortType.class) {
+        if (b.getClass() == PrimitiveType.ByteType.class
+            || b.getClass() == PrimitiveType.CharType.class) {
+          return Collections.singleton(PrimitiveType.getInt());
+        }
+        return Collections.emptySet();
+      }
+      if (a.getClass() == PrimitiveType.CharType.class) {
+        if (b.getClass() == PrimitiveType.ByteType.class
+            || b.getClass() == PrimitiveType.ShortType.class) {
+          return Collections.singleton(PrimitiveType.getInt());
+        }
+        return Collections.emptySet();
+      }
       return Collections.emptySet();
     }
+    return Collections.emptySet();
   }
 
   /**
@@ -82,75 +84,83 @@ public class PrimitiveHierarchy implements IHierarchy {
    * child</code>, namely, whether child can be assigned to ancestor directly to obtain: ancestor =
    * child.
    */
-  @Override
-  public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
+  public static boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
 
-    if (ancestor.equals(child)) {
+    if (ancestor == child) {
       return true;
-    } else if (arePrimitives(ancestor, child)) {
-      if (ancestor instanceof AugIntegerTypes.Integer1Type) {
-        return child instanceof BottomType;
-      } else if (ancestor instanceof PrimitiveType.BooleanType
-          || ancestor instanceof AugIntegerTypes.Integer127Type) {
-        return child instanceof AugIntegerTypes.Integer1Type || child instanceof BottomType;
-      } else if (ancestor instanceof PrimitiveType.ByteType
-          || ancestor instanceof AugIntegerTypes.Integer32767Type) {
-        return child instanceof AugIntegerTypes.Integer127Type
-            || child instanceof AugIntegerTypes.Integer1Type
-            || child instanceof BottomType;
-      } else if (ancestor instanceof PrimitiveType.CharType
-          || ancestor instanceof PrimitiveType.ShortType) {
-        return child instanceof AugIntegerTypes.Integer32767Type
-            || child instanceof AugIntegerTypes.Integer127Type
-            || child instanceof AugIntegerTypes.Integer1Type
-            || child instanceof BottomType;
-      } else if (ancestor instanceof PrimitiveType.IntType) {
-        return (!(child instanceof PrimitiveType.BooleanType)
-                && (child instanceof PrimitiveType.IntType))
-            || child instanceof BottomType;
-      } else {
-        return child instanceof BottomType;
+    }
+
+    if (arePrimitives(ancestor, child)) {
+      if (ancestor.getClass() == AugIntegerTypes.Integer1Type.class) {
+        return child.getClass() == BottomType.class;
       }
-    } else if (ancestor instanceof ArrayType && child instanceof ArrayType) {
+      if (ancestor.getClass() == PrimitiveType.BooleanType.class
+          || ancestor.getClass() == AugIntegerTypes.Integer127Type.class) {
+        return child.getClass() == AugIntegerTypes.Integer1Type.class
+            || child.getClass() == BottomType.class;
+      }
+      if (ancestor.getClass() == PrimitiveType.ByteType.class
+          || ancestor.getClass() == AugIntegerTypes.Integer32767Type.class) {
+        return child.getClass() == AugIntegerTypes.Integer127Type.class
+            || child.getClass() == AugIntegerTypes.Integer1Type.class
+            || child.getClass() == BottomType.class;
+      }
+      if (ancestor.getClass() == PrimitiveType.CharType.class
+          || ancestor.getClass() == PrimitiveType.ShortType.class) {
+        return child.getClass() == AugIntegerTypes.Integer32767Type.class
+            || child.getClass() == AugIntegerTypes.Integer127Type.class
+            || child.getClass() == AugIntegerTypes.Integer1Type.class
+            || child.getClass() == BottomType.class;
+      }
+      if (ancestor instanceof PrimitiveType.IntType) {
+        return (!(child.getClass() == PrimitiveType.BooleanType.class)
+                && (child instanceof PrimitiveType.IntType))
+            || child.getClass() == BottomType.class;
+      }
+      return child.getClass() == BottomType.class;
+    }
+
+    if (ancestor instanceof ArrayType && child instanceof ArrayType) {
       Type ancestorBase = ((ArrayType) ancestor).getBaseType();
       Type childBase = ((ArrayType) child).getBaseType();
       int ancestorDim = ((ArrayType) ancestor).getDimension();
       int childDim = ((ArrayType) child).getDimension();
 
       if (ancestorDim == childDim && arePrimitives(ancestorBase, childBase)) {
-        if (ancestorBase instanceof AugIntegerTypes.Integer1Type) {
-          return childBase instanceof BottomType;
-        } else if (ancestorBase instanceof PrimitiveType.BooleanType
-            || ancestorBase instanceof AugIntegerTypes.Integer127Type) {
-          return childBase instanceof AugIntegerTypes.Integer1Type
-              || childBase instanceof BottomType;
-        } else if (ancestorBase instanceof PrimitiveType.ByteType
-            || ancestorBase instanceof AugIntegerTypes.Integer32767Type) {
-          return childBase instanceof AugIntegerTypes.Integer127Type
-              || childBase instanceof AugIntegerTypes.Integer1Type
-              || childBase instanceof BottomType;
-        } else if (ancestorBase instanceof PrimitiveType.IntType) {
-          return childBase instanceof AugIntegerTypes.Integer32767Type
-              || childBase instanceof AugIntegerTypes.Integer127Type
-              || childBase instanceof AugIntegerTypes.Integer1Type
-              || childBase instanceof BottomType;
-        } else {
-          return childBase instanceof BottomType;
+        // TODO: [ms] dry? looks quite similar to the if-else-tree above.. why are they differing in
+        // structure?
+        if (ancestorBase.getClass() == AugIntegerTypes.Integer1Type.class) {
+          return childBase.getClass() == BottomType.class;
         }
-      } else {
-        return childBase instanceof BottomType;
+        if (ancestorBase.getClass() == PrimitiveType.BooleanType.class
+            || ancestorBase.getClass() == AugIntegerTypes.Integer127Type.class) {
+          return childBase.getClass() == AugIntegerTypes.Integer1Type.class
+              || childBase.getClass() == BottomType.class;
+        }
+        if (ancestorBase.getClass() == PrimitiveType.ByteType.class
+            || ancestorBase.getClass() == AugIntegerTypes.Integer32767Type.class) {
+          return childBase.getClass() == AugIntegerTypes.Integer127Type.class
+              || childBase.getClass() == AugIntegerTypes.Integer1Type.class
+              || childBase.getClass() == BottomType.class;
+        }
+        if (ancestorBase.getClass() == PrimitiveType.CharType.class
+            || ancestorBase.getClass() == PrimitiveType.ShortType.class
+            || ancestorBase instanceof PrimitiveType.IntType) {
+          return childBase.getClass() == AugIntegerTypes.Integer32767Type.class
+              || childBase.getClass() == AugIntegerTypes.Integer127Type.class
+              || childBase.getClass() == AugIntegerTypes.Integer1Type.class
+              || childBase.getClass() == BottomType.class;
+        }
       }
-    } else {
-      return child instanceof BottomType;
+      return childBase.getClass() == BottomType.class;
     }
+
+    return child.getClass() == BottomType.class;
   }
 
   /** Check whether the two given types are primitives or BottomType */
-  public boolean arePrimitives(Type a, Type b) {
-    if (a instanceof PrimitiveType || a instanceof BottomType) {
-      return b instanceof PrimitiveType || b instanceof BottomType;
-    } else {
-      return false;
-    }
+  public static boolean arePrimitives(@Nonnull Type a, @Nonnull Type b) {
+    return (a instanceof PrimitiveType || a.getClass() == BottomType.class)
+        && (b instanceof PrimitiveType || b.getClass() == BottomType.class);
   }
 }

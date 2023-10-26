@@ -1,4 +1,4 @@
-public synchronized class ForLoop extends java.lang.Object
+public super class ForLoop extends java.lang.Object
 {
     public void forLoop()
     {

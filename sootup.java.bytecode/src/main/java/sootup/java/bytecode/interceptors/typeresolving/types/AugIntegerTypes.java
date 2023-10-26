@@ -60,7 +60,7 @@ public abstract class AugIntegerTypes {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      // todo: case for Integer1Type
+      throw new UnsupportedOperationException();
     }
   }
 
@@ -79,7 +79,7 @@ public abstract class AugIntegerTypes {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      // todo: case for Integer127Type
+      throw new UnsupportedOperationException();
     }
   }
 
@@ -98,7 +98,7 @@ public abstract class AugIntegerTypes {
 
     @Override
     public void accept(@Nonnull TypeVisitor v) {
-      // todo: case for Integer32767Type
+      throw new UnsupportedOperationException();
     }
   }
 }

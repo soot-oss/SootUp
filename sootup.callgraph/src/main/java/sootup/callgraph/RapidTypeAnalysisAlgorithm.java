@@ -31,7 +31,7 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -138,7 +138,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
 
     if (targetMethod == null
-        || Modifier.isStatic(targetMethod.getModifiers())
+        || MethodModifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {

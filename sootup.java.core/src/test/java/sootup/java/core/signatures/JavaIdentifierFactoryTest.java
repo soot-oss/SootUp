@@ -84,7 +84,7 @@ public class JavaIdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     ClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
+    assertSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -137,7 +137,7 @@ public class JavaIdentifierFactoryTest {
     JavaClassType classSignature1 = typeFactory.getClassType("A", "");
     JavaClassType classSignature2 = typeFactory.getClassType("A");
     // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
+    assertSame(classSignature1, classSignature2);
 
     assertSame(classSignature1.getPackageName(), classSignature2.getPackageName());
 
@@ -152,7 +152,7 @@ public class JavaIdentifierFactoryTest {
     ClassType classSignature1 = typeFactory.getClassType("java.lang.System");
     ClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
-    assertNotSame(classSignature1, classSignature2);
+    assertSame(classSignature1, classSignature2);
   }
 
   @Test
@@ -189,7 +189,7 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
     assertEquals(declClass, methodSignature.getDeclClassType());
     assertEquals(returnType, methodSignature.getType());
     assertEquals(parameter, methodSignature.getParameterTypes().get(0));
@@ -203,7 +203,7 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "java.lang.A", parameters);
     assertEquals(
         "<java.lang.System: java.lang.A foo(java.lang.Class)>", methodSignature.toString());
   }
@@ -215,7 +215,7 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
     assertEquals("<java.lang.System: void foo(java.lang.Class)>", methodSignature.toString());
   }
 
@@ -226,7 +226,7 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.emptyList();
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
     assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
   }
 
@@ -258,10 +258,10 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = new ArrayList<>();
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
     parameters.add("boolean");
     MethodSignature methodSignature2 =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
 
     assertNotEquals(methodSignature, methodSignature2);
     assertNotEquals(methodSignature.hashCode(), methodSignature2.hashCode());
@@ -274,9 +274,9 @@ public class JavaIdentifierFactoryTest {
     List<String> parameters = Collections.emptyList();
 
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
     MethodSignature methodSignature2 =
-        identifierFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+        identifierFactory.getMethodSignature("java.lang.System", "foo", "void", parameters);
 
     assertEquals(methodSignature, methodSignature2);
     assertEquals(methodSignature.hashCode(), methodSignature2.hashCode());

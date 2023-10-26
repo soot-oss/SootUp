@@ -1,4 +1,4 @@
-synchronized class InterfaceImplClass extends java.lang.Object implements InterfaceImpl
+super class InterfaceImplClass extends java.lang.Object implements InterfaceImpl
 {
     void <init>()
     {

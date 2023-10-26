@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
 import sootup.core.util.PathUtils;
 import sootup.java.bytecode.frontend.AsmModuleSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -64,6 +65,7 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
+  private SourceType sourceType = null; // FIXME !
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();
@@ -201,7 +203,8 @@ public class ModuleFinder {
 
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
     // create the input location for this module dir
-    PathBasedAnalysisInputLocation inputLocation = new PathBasedAnalysisInputLocation(dir, null);
+    PathBasedAnalysisInputLocation inputLocation =
+        PathBasedAnalysisInputLocation.create(dir, sourceType);
 
     Path moduleInfoFile = dir.resolve(JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class");
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
@@ -223,7 +226,8 @@ public class ModuleFinder {
    * @param jar the jar file
    */
   private void buildModuleForJar(@Nonnull Path jar) {
-    PathBasedAnalysisInputLocation inputLocation = new PathBasedAnalysisInputLocation(jar, null);
+    PathBasedAnalysisInputLocation inputLocation =
+        PathBasedAnalysisInputLocation.create(jar, sourceType);
     Path mi;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, (ClassLoader) null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

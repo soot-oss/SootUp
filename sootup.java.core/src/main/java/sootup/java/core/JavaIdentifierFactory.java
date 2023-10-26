@@ -33,9 +33,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -60,12 +58,17 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
-  protected final Cache<String, PackageName> packages =
+  protected final Cache<String, PackageName> packageCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   /** Caches annotation types */
   @Nonnull
-  protected final Cache<String, AnnotationType> annotationTypes =
+  protected final Cache<String, AnnotationType> annotationTypeCache =
+      CacheBuilder.newBuilder().weakValues().build();
+
+  /** Caches class types */
+  @Nonnull
+  protected final Cache<String, JavaClassType> classTypeCache =
       CacheBuilder.newBuilder().weakValues().build();
 
   @Nonnull
@@ -77,7 +80,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   JavaIdentifierFactory() {
     /* Represents the default package. */
-    packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
+    packageCache.put(PackageName.DEFAULT_PACKAGE.getName(), PackageName.DEFAULT_PACKAGE);
 
     // initialize primitive map
     primitiveTypeMap.put(
@@ -112,7 +115,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
     PackageName packageIdentifier = getPackageName(packageName);
-    return new JavaClassType(className, packageIdentifier);
+    return classTypeCache
+        .asMap()
+        .computeIfAbsent(
+            className + packageName, (k) -> new JavaClassType(className, packageIdentifier));
   }
 
   /**
@@ -216,7 +222,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
 
-    return annotationTypes
+    return annotationTypeCache
         .asMap()
         .computeIfAbsent(
             className + packageName,
@@ -226,24 +232,15 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public JavaClassType fromPath(@Nonnull final Path rootDirectory, @Nonnull final Path file) {
-    String path = file.toString();
-    String separator = file.getFileSystem().getSeparator();
-
-    // for multi release jars, remove beginning of path
-    // /META-INF/versions/15/de/upb...
-    // we only want /de/upb...
-    if (path.startsWith("/META-INF/")) {
-      // start at 4th separator
-      int index = StringUtils.ordinalIndexOf(path, separator, 4);
-      path = path.substring(index);
-    }
 
     final int nameCountBaseDir =
         rootDirectory.toString().isEmpty() ? 0 : rootDirectory.getNameCount();
 
     String fullyQualifiedName =
         FilenameUtils.removeExtension(
-            file.subpath(nameCountBaseDir, file.getNameCount()).toString().replace(separator, "."));
+            file.subpath(nameCountBaseDir, file.getNameCount())
+                .toString()
+                .replace(file.getFileSystem().getSeparator(), "."));
 
     return getClassType(fullyQualifiedName);
   }
@@ -260,22 +257,22 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    */
   @Override
   public PackageName getPackageName(@Nonnull final String packageName) {
-    return packages.asMap().computeIfAbsent(packageName, PackageName::new);
+    return packageCache.asMap().computeIfAbsent(packageName, PackageName::new);
   }
 
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the method's name
    * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
-   * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param methodName the method's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @return a MethodSignature
    */
   @Override
   public MethodSignature getMethodSignature(
-      final String methodName,
       final String fullyQualifiedNameDeclClass,
+      final String methodName,
       final String fqReturnType,
       final List<String> parameters) {
     JavaClassType declaringClass = getClassType(fullyQualifiedNameDeclClass);
@@ -321,13 +318,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
       final List<Type> parameters) {
 
     return new MethodSignature(declaringClassSignature, methodName, parameters, fqReturnType);
-  }
-
-  @Override
-  @Nonnull
-  public MethodSignature getMethodSignature(
-      @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
-    return getMethodSignature(declaringClass.getType(), subSignature);
   }
 
   @Override
@@ -427,7 +417,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                     })
                 .collect(Collectors.toList());
 
-    return getMethodSignature(methodName, className, returnName, argsList);
+    return getMethodSignature(className, methodName, returnName, argsList);
   }
 
   @Nonnull
@@ -516,7 +506,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
                       return true;
                     })
-                .map(typeName -> getType(typeName))
+                .map(this::getType)
                 .collect(Collectors.toList());
 
     return getMethodSubSignature(methodName, getType(returnName), argsList);

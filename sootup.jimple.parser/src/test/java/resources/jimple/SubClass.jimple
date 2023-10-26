@@ -1,4 +1,4 @@
-synchronized class SubClass extends SuperClass
+super class SubClass extends SuperClass
 {
     int cc;
 

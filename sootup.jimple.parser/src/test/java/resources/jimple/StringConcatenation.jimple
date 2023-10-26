@@ -1,4 +1,4 @@
-public synchronized class StringConcatenation extends java.lang.Object
+public super class StringConcatenation extends java.lang.Object
 {
     public void stringConcatenation()
     {

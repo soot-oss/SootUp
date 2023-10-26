@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -55,7 +55,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
-  @Nullable private final Set<Modifier> overriddenModifiers;
+  @Nullable private final Set<ClassModifier> overriddenModifiers;
   @Nullable private final Set<ClassType> overriddenInterfaces;
   @Nullable private final Optional<ClassType> overriddenSuperclass;
   @Nullable private final Optional<ClassType> overriddenOuterClass;
@@ -84,7 +84,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   private OverridingJavaClassSource(
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
-      @Nullable Set<Modifier> overriddenModifiers,
+      @Nullable Set<ClassModifier> overriddenModifiers,
       @Nullable Set<ClassType> overriddenInterfaces,
       @Nullable Optional<ClassType> overriddenSuperclass,
       @Nullable Optional<ClassType> overriddenOuterClass,
@@ -118,7 +118,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
       @Nonnull Set<SootField> sootFields,
       @Nonnull Set<SootMethod> sootMethods,
       @Nonnull Position position,
-      @Nonnull EnumSet<Modifier> modifiers,
+      @Nonnull EnumSet<ClassModifier> modifiers,
       @Nonnull Iterable<AnnotationUsage> annotations,
       @Nonnull Iterable<AnnotationUsage> methodAnnotations,
       @Nullable Iterable<AnnotationUsage> fieldAnnotations) {
@@ -151,7 +151,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Set<Modifier> resolveModifiers() {
+  public Set<ClassModifier> resolveModifiers() {
     return overriddenModifiers != null ? overriddenModifiers : delegate.resolveModifiers();
   }
 
@@ -293,7 +293,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingJavaClassSource withModifiers(@Nonnull Set<Modifier> overriddenModifiers) {
+  public OverridingJavaClassSource withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers) {
     return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,

@@ -24,7 +24,7 @@ package sootup.core.frontend;
 import java.io.IOException;
 import javax.annotation.Nonnull;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 
 /**
@@ -40,7 +40,8 @@ public interface BodySource {
    *     body accordingly.
    */
   @Nonnull
-  Body resolveBody(@Nonnull Iterable<Modifier> modifiers) throws ResolveException, IOException;
+  Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers)
+      throws ResolveException, IOException;
 
   /** @return returns the default value of the Annotation for this method */
   Object resolveAnnotationsDefaultValue();

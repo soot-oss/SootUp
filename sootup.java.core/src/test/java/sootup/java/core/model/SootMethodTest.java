@@ -19,7 +19,8 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -49,7 +50,7 @@ public class SootMethodTest {
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
     final JIdentityStmt<?> firstStmt =
@@ -73,7 +74,7 @@ public class SootMethodTest {
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
@@ -90,7 +91,7 @@ public class SootMethodTest {
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
                 NoPositionInformation.getInstance(),
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),

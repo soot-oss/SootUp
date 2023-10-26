@@ -1,4 +1,4 @@
-public synchronized class BinaryLiteralInInt extends java.lang.Object
+public super class BinaryLiteralInInt extends java.lang.Object
 {
     public void <init>()
     {

@@ -1,4 +1,4 @@
-public synchronized class LabelledLoopBreak extends java.lang.Object
+public super class LabelledLoopBreak extends java.lang.Object
 {
     public void labelledLoopBreak()
     {
