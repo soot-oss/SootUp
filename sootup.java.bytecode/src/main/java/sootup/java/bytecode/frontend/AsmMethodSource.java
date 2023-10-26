@@ -1217,9 +1217,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           args = Arrays.asList(argList);
         }
 
-        operands[operands.length - 1] = operandStack.popLocal(); // pop the return type
-
-        Operand baseOperand = operands[operands.length - 1];
+        final Operand baseOperand = operandStack.popLocal();
+        operands[operands.length - 1] = baseOperand;
         Local base = (Local) baseOperand.stackOrValue();
 
         switch (op) {
@@ -1270,25 +1269,27 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
-      // TODO: check equivalent to isInstance?
+      assert (isInstance); // TODO: check equivalent to isInstance?
       boolean isInstanceMethod = expr instanceof AbstractInstanceInvokeExpr;
       if (isInstanceMethod) {
         oprs = new Operand[nrArgs + 1];
-      } else {
-        oprs = nrArgs == 0 ? null : new Operand[nrArgs];
-      }
-      if (oprs != null) {
         while (nrArgs-- != 0) {
           oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
         }
-        if (isInstanceMethod) {
-          oprs[oprs.length - 1] = operandStack.pop();
-        }
-
+        oprs[oprs.length - 1] = operandStack.pop();
         frame.mergeIn(currentLineNumber, oprs);
+      } else {
+        if (nrArgs != 0) {
+          oprs = new Operand[nrArgs];
+          while (nrArgs-- != 0) {
+            oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
+          }
+          frame.mergeIn(currentLineNumber, oprs);
+        }
       }
       returnType = expr.getMethodSignature().getType();
     }
+
     if (AsmUtil.isDWord(returnType)) {
       operandStack.pushDual(opr);
     } else if (returnType != VoidType.getInstance()) {
