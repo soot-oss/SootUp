@@ -2,15 +2,12 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -21,7 +18,6 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -165,31 +161,6 @@ public class AggregatorTest {
 
     JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
     JavaView view = project.createView();
-
-    view.configBodyInterceptors(
-        (analysisInputLocation) ->
-            new ClassLoadingOptions() {
-              @Nonnull
-              @Override
-              public List<BodyInterceptor> getBodyInterceptors() {
-                return Arrays.asList(
-                    /*                    new CastAndReturnInliner(),
-                    new UnreachableCodeEliminator(),
-                    new LocalSplitter(), // FIXME:
-                    // FIXME new Aggregator() */
-                    new TypeAssigner()
-                    // ms: is already called from typeassigner? new LocalNameStandardizer(),
-                    /*  new CopyPropagator(),
-                        new DeadAssignmentEliminator(), // FIXME: removes a branch wrongfully
-                        new ConditionalBranchFolder(),
-                        new EmptySwitchEliminator(),
-                        new NopEliminator(),
-                        new UnusedLocalEliminator(),
-                        new UnreachableCodeEliminator()
-                    */ );
-              }
-            });
-
     {
       final SootMethod sootMethod =
           view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
