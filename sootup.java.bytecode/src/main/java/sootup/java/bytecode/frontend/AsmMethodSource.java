@@ -1201,6 +1201,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       int nrArgs = sigTypes.size();
       final Operand[] operands;
       Immediate[] argList;
+      AbstractInvokeExpr invoke;
       if (isInstance) {
         if (nrArgs == 0) {
           operands = new Operand[1];
@@ -1209,23 +1210,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           operands = new Operand[nrArgs + 1];
           argList = new Immediate[nrArgs];
         }
-      } else {
-        if (nrArgs == 0) {
-          operands = null;
-          argList = null;
-        } else {
-          operands = new Operand[nrArgs];
-          argList = new Immediate[nrArgs];
+
+        while (nrArgs-- > 0) {
+          operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
+          argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
         }
-      }
 
-      while (nrArgs-- > 0) {
-        operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
-        argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
-      }
-
-      AbstractInvokeExpr invoke;
-      if (isInstance) {
         operands[operands.length - 1] = operandStack.popLocal(); // pop the return type
 
         Operand baseOperand = operands[operands.length - 1];
@@ -1245,9 +1235,24 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             throw new UnsupportedOperationException("Unknown invoke op:" + op);
         }
         baseOperand.addUsageInExpr(invoke);
+
       } else {
+        if (nrArgs == 0) {
+          operands = null;
+          argList = null;
+        } else {
+          operands = new Operand[nrArgs];
+          argList = new Immediate[nrArgs];
+        }
+
+        while (nrArgs-- > 0) {
+          operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
+          argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
+        }
+
         invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
       }
+
       if (operands != null) {
         for (int i = 0; i < sigTypes.size(); i++) {
           operands[i].addUsageInExpr(invoke);
