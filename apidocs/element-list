@@ -1,6 +1,7 @@
 sootup.analysis.interprocedural.icfg
 sootup.analysis.interprocedural.ide
 sootup.analysis.interprocedural.ifds
+sootup.analysis.intraprocedural
 sootup.callgraph
 sootup.core
 sootup.core.cache
