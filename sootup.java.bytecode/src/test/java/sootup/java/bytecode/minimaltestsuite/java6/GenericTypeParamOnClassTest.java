@@ -35,15 +35,15 @@ public class GenericTypeParamOnClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: GenericTypeParamOnClass",
+            "$l0 := @this: GenericTypeParamOnClass",
             "$stack3 = new GenericTypeParamOnClass$A",
-            "specialinvoke $stack3.<GenericTypeParamOnClass$A: void <init>(GenericTypeParamOnClass)>(l0)",
-            "l1 = $stack3",
+            "specialinvoke $stack3.<GenericTypeParamOnClass$A: void <init>(GenericTypeParamOnClass)>($l0)",
+            "$l1 = $stack3",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(5)",
-            "staticinvoke <GenericTypeParamOnClass$A: void access$000(GenericTypeParamOnClass$A,java.lang.Object)>(l1, $stack4)",
-            "$stack5 = virtualinvoke l1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
+            "staticinvoke <GenericTypeParamOnClass$A: void access$000(GenericTypeParamOnClass$A,java.lang.Object)>($l1, $stack4)",
+            "$stack5 = virtualinvoke $l1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
             "$stack6 = (java.lang.Integer) $stack5",
-            "l2 = virtualinvoke $stack6.<java.lang.Integer: int intValue()>()",
+            "$l2 = virtualinvoke $stack6.<java.lang.Integer: int intValue()>()",
             "return")
         .collect(Collectors.toList());
   }

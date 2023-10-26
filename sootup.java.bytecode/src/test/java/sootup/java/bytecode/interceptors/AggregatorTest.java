@@ -6,17 +6,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.Test;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.JAddExpr;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public class AggregatorTest {
 
@@ -66,14 +77,54 @@ public class AggregatorTest {
     }
   }
 
+  @Test
+  public void noAggregationWithUse() {
+    Body.BodyBuilder builder = Body.builder();
+
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+
+    JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
+
+    Local a = JavaJimple.newLocal("a", fileType);
+    Local b = JavaJimple.newLocal("b", fileType);
+
+    FallsThroughStmt assignA =
+        JavaJimple.newAssignStmt(a, JavaJimple.newNewExpr(fileType), noPositionInfo);
+    // this use of `a` should prevent the aggregator from changing anything
+    FallsThroughStmt useA =
+        JavaJimple.newInvokeStmt(
+            Jimple.newSpecialInvokeExpr(
+                a,
+                JavaIdentifierFactory.getInstance().parseMethodSignature("<File: void <init>()>")),
+            noPositionInfo);
+    FallsThroughStmt assignB = JavaJimple.newAssignStmt(b, a, noPositionInfo);
+    Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+
+    stmtGraph.setStartingStmt(assignA);
+    stmtGraph.putEdge(assignA, useA);
+    stmtGraph.putEdge(useA, assignB);
+    stmtGraph.putEdge(assignB, ret);
+
+    builder.setMethodSignature(
+        JavaIdentifierFactory.getInstance()
+            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+
+    new Aggregator().interceptBody(builder, null);
+
+    // ensure that the assigner doesn't remove any statements
+    assertEquals(4, builder.getStmts().size());
+  }
+
   private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
     StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());
 
-    Stmt intToA = JavaJimple.newAssignStmt(a, IntConstant.getInstance(7), noPositionInfo);
-    Stmt intToB;
+    FallsThroughStmt intToA =
+        JavaJimple.newAssignStmt(a, IntConstant.getInstance(7), noPositionInfo);
+    FallsThroughStmt intToB;
     if (withAggregation) {
       intToB =
           JavaJimple.newAssignStmt(b, new JAddExpr(a, IntConstant.getInstance(4)), noPositionInfo);
@@ -85,16 +136,45 @@ public class AggregatorTest {
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(intToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(intToA);
+    stmtGraph.putEdge(intToA, intToB);
+    stmtGraph.putEdge(intToB, ret);
 
-    builder.addFlow(intToA, intToB);
-    builder.addFlow(intToB, ret);
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder;
+  }
+
+  @Test
+  public void testResource_Misuse() {
+
+    //     String classPath =
+    // "../sootup.tests/src/test/resources/bugs/664_struce-compiled/org/apache";
+    String classPath = "../sootup.tests/src/test/resources/interceptor/";
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JavaClassPathAnalysisInputLocation(classPath);
+    JavaLanguage language = new JavaLanguage(8);
+
+    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaView view = project.createView();
+    {
+      final SootMethod sootMethod =
+          view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
+              .get();
+
+      sootMethod.getBody();
+    }
+    {
+      final SootMethod sootMethod =
+          view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test1()>"))
+              .get();
+
+      System.out.println(sootMethod.getBody());
+    }
   }
 }

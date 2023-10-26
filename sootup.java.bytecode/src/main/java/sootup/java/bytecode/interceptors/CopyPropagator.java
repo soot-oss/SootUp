@@ -40,7 +40,16 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ReferenceType;
 import sootup.core.views.View;
 
-/** @author Zun Wang */
+/**
+ * The CopyPropagator performs cascaded copy propagation. If the propagator encounters situations of
+ * the form: A: a = ...; ... B: x = a; ... C: ... = ... x; where a and x are each defined only once
+ * (at A and B, respectively), then it can propagate immediately without checking between B and C
+ * for redefinitions of a. In this case the propagator is global. Otherwise, if a has multiple
+ * definitions then the propagator checks for redefinitions and propagates copies only within
+ * extended basic blocks.
+ *
+ * @author Zun Wang
+ */
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
@@ -51,11 +60,11 @@ public class CopyPropagator implements BodyInterceptor {
         if (use instanceof Local) {
           List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
 
-          if (isPropagable(defsOfUse)) {
-            AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) defsOfUse.get(0);
+          if (isPropatabable(defsOfUse)) {
+            AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
             Value rhs = defStmt.getRightOp();
             // if rhs is a constant, then replace use, if it is possible
-            if (rhs instanceof Constant) {
+            if (rhs instanceof Constant && !stmt.containsInvokeExpr()) {
               replaceUse(builder, stmt, use, rhs);
             }
             // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
@@ -86,7 +95,7 @@ public class CopyPropagator implements BodyInterceptor {
     }
   }
 
-  private boolean isPropagable(List<Stmt> defsOfUse) {
+  private boolean isPropatabable(List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
     boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {

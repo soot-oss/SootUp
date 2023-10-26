@@ -109,14 +109,14 @@ final class StackFrame {
       if (stack != null) {
         if (newOp.stackLocal == null) {
           newOp.stackLocal = stack;
-          JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
+          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
           src.setStmt(newOp.insn, as);
           newOp.updateUsages();
         } else {
           final Value rvalue = newOp.stackOrValue();
           // check for self/identity assignments and ignore them
           if (stack != rvalue) {
-            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
+            JAssignStmt as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
             src.mergeStmts(newOp.insn, as);
           }
         }
@@ -141,12 +141,12 @@ final class StackFrame {
           }
           if (prevOp.stackLocal == null) {
             prevOp.stackLocal = stack;
-            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, prevOp.value, positionInfo);
+            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value, positionInfo);
             src.setStmt(prevOp.insn, as);
           } else {
             Stmt u = src.getStmt(prevOp.insn);
-            AbstractDefinitionStmt<?, ?> as =
-                (AbstractDefinitionStmt<?, ?>)
+            AbstractDefinitionStmt as =
+                (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
             Value lvb = as.getLeftOp();
             assert lvb == prevOp.stackLocal : "Invalid stack local!";
@@ -157,13 +157,13 @@ final class StackFrame {
         if (newOp.stackLocal != stack) {
           if (newOp.stackLocal == null) {
             newOp.stackLocal = stack;
-            JAssignStmt<?, ?> as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
+            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
             src.setStmt(newOp.insn, as);
           } else {
             Stmt u = src.getStmt(newOp.insn);
             if (!(u instanceof JNopStmt)) {
-              AbstractDefinitionStmt<?, ?> as =
-                  (AbstractDefinitionStmt<?, ?>)
+              AbstractDefinitionStmt as =
+                  (AbstractDefinitionStmt)
                       (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
               Value lvb = as.getLeftOp();
               assert lvb == newOp.stackLocal : "Invalid stack local!";

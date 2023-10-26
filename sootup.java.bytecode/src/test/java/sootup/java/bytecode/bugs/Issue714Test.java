@@ -67,8 +67,8 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
-                "<clinit>",
                 "java.base/java.lang.Character$UnicodeScript",
+                "<clinit>",
                 "void",
                 Collections.emptyList());
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
@@ -104,8 +104,8 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
-                "genHTMLListForFields",
                 "jdk.hotspot.agent/sun.jvm.hotspot.ui.classbrowser.HTMLGenerator",
+                "genHTMLListForFields",
                 "java.lang.String",
                 Collections.singletonList("jdk.hotspot.agent/sun.jvm.hotspot.oops.InstanceKlass"));
 

@@ -23,8 +23,6 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
-import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.model.Body;
 
 /**
@@ -33,15 +31,11 @@ import sootup.core.model.Body;
  *
  * <p>mandatory: branches() needs to be true!
  */
-public abstract class BranchingStmt extends Stmt {
-  public BranchingStmt(@Nonnull StmtPositionInfo positionInfo) {
-    super(positionInfo);
-  }
-
-  public abstract List<Stmt> getTargetStmts(Body body);
+public interface BranchingStmt extends Stmt {
+  List<Stmt> getTargetStmts(Body body);
 
   @Override
-  public final boolean branches() {
+  default boolean branches() {
     return true;
   }
 }

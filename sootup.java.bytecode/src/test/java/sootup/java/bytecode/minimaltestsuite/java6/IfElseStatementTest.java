@@ -77,13 +77,13 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label1",
-            "l2 = 1",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 1",
             "label1:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -105,16 +105,16 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label1",
-            "l2 = 1",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 1",
             "goto label2",
             "label1:",
-            "l2 = 2",
+            "$l2 = 2",
             "label2:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -138,20 +138,20 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseIfStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label1",
-            "l2 = 1",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 1",
             "goto label3",
             "label1:",
-            "if l1 <= 123 goto label2",
-            "l2 = 2",
+            "if $l1 <= 123 goto label2",
+            "$l2 = 2",
             "goto label3",
             "label2:",
-            "l2 = 3",
+            "$l2 = 3",
             "label3:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -177,20 +177,20 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseCascadingStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label2",
-            "if l1 >= 42 goto label1",
-            "l2 = 11",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label2",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 11",
             "goto label3",
             "label1:",
-            "l2 = 12",
+            "$l2 = 12",
             "goto label3",
             "label2:",
-            "l2 = 3",
+            "$l2 = 3",
             "label3:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -216,20 +216,20 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseCascadingInElseStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label1",
-            "l2 = 1",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 1",
             "goto label3",
             "label1:",
-            "if l1 >= 42 goto label2",
-            "l2 = 21",
+            "if $l1 >= 42 goto label2",
+            "$l2 = 21",
             "goto label3",
             "label2:",
-            "l2 = 22",
+            "$l2 = 22",
             "label3:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -257,24 +257,24 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseCascadingElseIfStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label3",
-            "if l1 >= 42 goto label1",
-            "l2 = 11",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label3",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 11",
             "goto label4",
             "label1:",
-            "if l1 <= 123 goto label2",
-            "l2 = 12",
+            "if $l1 <= 123 goto label2",
+            "$l2 = 12",
             "goto label4",
             "label2:",
-            "l2 = 13",
+            "$l2 = 13",
             "goto label4",
             "label3:",
-            "l2 = 2",
+            "$l2 = 2",
             "label4:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }
@@ -302,24 +302,24 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIfElseCascadingElseIfInElseStatement() {
     return Stream.of(
-            "l0 := @this: IfElseStatement",
-            "l1 := @parameter0: int",
-            "l2 = 0",
-            "if l1 >= 42 goto label1",
-            "l2 = 1",
+            "$l0 := @this: IfElseStatement",
+            "$l1 := @parameter0: int",
+            "$l2 = 0",
+            "if $l1 >= 42 goto label1",
+            "$l2 = 1",
             "goto label4",
             "label1:",
-            "if l1 >= 42 goto label2",
-            "l2 = 21",
+            "if $l1 >= 42 goto label2",
+            "$l2 = 21",
             "goto label4",
             "label2:",
-            "if l1 <= 123 goto label3",
-            "l2 = 22",
+            "if $l1 <= 123 goto label3",
+            "$l2 = 22",
             "goto label4",
             "label3:",
-            "l2 = 23",
+            "$l2 = 23",
             "label4:",
-            "$stack3 = l2",
+            "$stack3 = $l2",
             "return $stack3")
         .collect(Collectors.toList());
   }

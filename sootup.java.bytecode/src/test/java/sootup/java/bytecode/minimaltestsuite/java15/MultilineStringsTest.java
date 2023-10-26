@@ -37,8 +37,8 @@ public class MultilineStringsTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MultilineStrings",
-            "l1 = \"<html>\\n    <body>\\n        <p>Hello, world</p>\\n    </body>\\n</html>\\n\"",
+            "$l0 := @this: MultilineStrings",
+            "$l1 = \"<html>\\n    <body>\\n        <p>Hello, world</p>\\n    </body>\\n</html>\\n\"",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

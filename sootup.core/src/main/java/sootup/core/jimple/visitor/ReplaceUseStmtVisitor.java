@@ -24,6 +24,7 @@ package sootup.core.jimple.visitor;
 
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -69,21 +70,23 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
 
-    // uses on the def side..
+    // uses on the def side.. e.g. a base in an JArrayRef but NOT with a simple Local!
     final Value leftOp = stmt.getLeftOp();
     if (leftOp instanceof Ref) {
       refVisitor.init(oldUse, newUse);
       ((Ref) leftOp).accept(refVisitor);
       if (refVisitor.getResult() != leftOp) {
-        setResult(stmt.withVariable(refVisitor.getResult()));
+        setResult(stmt.withVariable((LValue) refVisitor.getResult()));
       }
     }
 
     // rhs
     Value rValue = stmt.getRightOp();
-    if (rValue instanceof Immediate) {
+    if (rValue == oldUse) {
+      setResult(stmt.withRValue(newUse));
+    } else if (rValue instanceof Immediate) {
       if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));
       }
@@ -109,7 +112,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseIdentityStmt(@Nonnull JIdentityStmt<?> stmt) {
+  public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
     defaultCaseStmt(stmt);
   }
 

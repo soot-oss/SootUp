@@ -64,7 +64,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (int[])[3]",
             "$stack3 = newarray (int)[3]",
             "$stack3[0] = 1",
@@ -80,7 +80,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack5[1] = 8",
             "$stack5[2] = 9",
             "$stack2[2] = $stack5",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -96,7 +96,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (byte[])[2]",
             "$stack3 = newarray (byte)[2]",
             "$stack3[0] = 4",
@@ -105,7 +105,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack4 = newarray (byte)[1]",
             "$stack4[0] = 2",
             "$stack2[1] = $stack4",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -120,7 +120,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (short[])[2]",
             "$stack3 = newarray (short)[3]",
             "$stack3[0] = 10",
@@ -130,7 +130,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack4 = newarray (short)[1]",
             "$stack4[0] = 40",
             "$stack2[1] = $stack4",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -145,7 +145,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (long[])[3]",
             "$stack3 = newarray (long)[2]",
             "$stack3[0] = 547087L",
@@ -160,7 +160,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack5[0] = 34565L",
             "$stack5[1] = 234L",
             "$stack2[2] = $stack5",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -177,7 +177,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (float[])[2]",
             "$stack3 = newarray (float)[2]",
             "$stack3[0] = 3.14F",
@@ -187,7 +187,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack4[0] = 2.987F",
             "$stack4[1] = 4.87F",
             "$stack2[1] = $stack4",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -205,7 +205,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (double[])[3]",
             "$stack3 = newarray (double)[2]",
             "$stack3[0] = 6.765414",
@@ -218,7 +218,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack5[0] = 3.5656",
             "$stack5[1] = 68.234234",
             "$stack2[2] = $stack5",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -234,7 +234,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (boolean[])[2]",
             "$stack3 = newarray (boolean)[2]",
             "$stack3[0] = 1",
@@ -243,7 +243,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack4 = newarray (boolean)[1]",
             "$stack4[0] = 1",
             "$stack2[1] = $stack4",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -260,7 +260,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (char[])[3]",
             "$stack3 = newarray (char)[3]",
             "$stack3[0] = 65",
@@ -275,7 +275,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack5[0] = 50",
             "$stack5[1] = 71",
             "$stack2[2] = $stack5",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }
@@ -291,7 +291,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "$l0 := @this: InitializeMultidimensionalArrays",
             "$stack2 = newarray (java.lang.String[])[2]",
             "$stack3 = newarray (java.lang.String)[1]",
             "$stack3[0] = \"Hello World\"",
@@ -300,7 +300,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
             "$stack4[0] = \"Greetings\"",
             "$stack4[1] = \"Welcome\"",
             "$stack2[1] = $stack4",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }

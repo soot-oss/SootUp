@@ -63,10 +63,10 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MethodOverloading",
-            "l1 := @parameter0: int",
-            "l2 := @parameter1: int",
-            "$stack3 = l1 + l2",
+            "$l0 := @this: MethodOverloading",
+            "$l1 := @parameter0: int",
+            "$l2 := @parameter1: int",
+            "$stack3 = $l1 + $l2",
             "return $stack3")
         .collect(Collectors.toCollection(ArrayList::new));
   }
@@ -83,9 +83,9 @@ public class MethodOverloadingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "l0 := @this: MethodOverloading",
-            "l1 := @parameter0: int",
-            "$stack2 = l1 + l1",
+            "$l0 := @this: MethodOverloading",
+            "$l1 := @parameter0: int",
+            "$stack2 = $l1 + $l1",
             "return $stack2")
         .collect(Collectors.toCollection(ArrayList::new));
   }
