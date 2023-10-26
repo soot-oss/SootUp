@@ -179,14 +179,10 @@ public class JavaView extends AbstractView<JavaSootClass> {
       return cache.getClasses();
     }
 
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
+    Collection<JavaSootClass> resolvedClasses =
         getProject().getInputLocations().stream()
             .flatMap(location -> location.getClassSources(this).stream())
             .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<JavaSootClass> resolvedClasses =
-        resolvedClassesOpts.stream()
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());

@@ -25,7 +25,7 @@ public class Issue714Test {
     // "jdk.internal.jimage.ImageStringsReader :: mutf8FromString will cause LocalSplitter not halt
     // / comsume unreasonable time"
     JavaProject applicationProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder(new JavaLanguage(9))
             .enableModules()
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
@@ -36,9 +36,9 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .parseMethodSignature(
-                "<jdk.internal.jimage.ImageStringsReader: int mutf8FromString(java.lang.String)>");
+                "<java.base/jdk.internal.jimage.ImageStringsReader: int mutf8FromString(java.lang.String)>");
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
-    Assert.assertTrue(classOpt.isPresent());
+    Assert.assertTrue(methodSignature.getDeclClassType() + " not found", classOpt.isPresent());
 
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     Assert.assertTrue(methodOpt.isPresent());
@@ -67,12 +67,12 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
-                "java.base/java.lang.Character$UnicodeScript",
                 "<clinit>",
+                "java.base/java.lang.Character$UnicodeScript",
                 "void",
-                Collections.singletonList(""));
+                Collections.emptyList());
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
-    Assert.assertTrue(classOpt.isPresent());
+    Assert.assertTrue(methodSignature.getDeclClassType() + " not found", classOpt.isPresent());
 
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     Assert.assertTrue(methodOpt.isPresent());
@@ -104,12 +104,15 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
-                "jdk.hotspot.agent/sun.jvm.hotspot.ui.classbrowser.HTMLGenerator",
                 "genHTMLListForFields",
+                "jdk.hotspot.agent/sun.jvm.hotspot.ui.classbrowser.HTMLGenerator",
                 "java.lang.String",
                 Collections.singletonList("jdk.hotspot.agent/sun.jvm.hotspot.oops.InstanceKlass"));
+
+    view.getClasses().forEach(System.out::println);
+
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
-    Assert.assertTrue(classOpt.isPresent());
+    Assert.assertTrue(methodSignature.getDeclClassType() + " not found", classOpt.isPresent());
 
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     Assert.assertTrue(methodOpt.isPresent());
