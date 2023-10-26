@@ -40,7 +40,7 @@ See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
 ## Feel free to improve Soot!
 
 ### Feedback and Feature Requests
-For feedbacks and feature requests, best create appropriate [issues](../../issues).
+For feedback and feature requests, best create appropriate [issues](../../issues).
 
 ### Collaboration
 You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).
