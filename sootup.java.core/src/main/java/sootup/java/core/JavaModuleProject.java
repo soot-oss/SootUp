@@ -8,6 +8,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaModuleView;
+import sootup.java.core.views.MutableJavaView;
 
 public class JavaModuleProject extends JavaProject {
 
@@ -59,6 +60,11 @@ public class JavaModuleProject extends JavaProject {
   @Nonnull
   public JavaModuleView createOnDemandView() {
     return new JavaModuleView(this);
+  }
+
+  @Nonnull
+  public MutableJavaView createMutableView() {
+    throw new UnsupportedOperationException("Implement me!");
   }
 
   @Deprecated

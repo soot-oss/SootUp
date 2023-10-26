@@ -14,6 +14,7 @@ import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
@@ -97,7 +98,7 @@ public class Issue714Test {
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
 
-    JavaView view = applicationProject.createMutableView();
+    JavaView view = applicationProject.createView();
     view.configBodyInterceptors(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     // https://code.yawk.at/java/11/jdk.hotspot.agent/sun/jvm/hotspot/ui/classbrowser/HTMLGenerator.java#sun.jvm.hotspot.ui.classbrowser.HTMLGenerator%23genHTMLListForFields(sun.jvm.hotspot.oops.InstanceKlass)
@@ -109,10 +110,12 @@ public class Issue714Test {
                 "java.lang.String",
                 Collections.singletonList("jdk.hotspot.agent/sun.jvm.hotspot.oops.InstanceKlass"));
 
-    view.getClasses().forEach(System.out::println);
-
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
     Assert.assertTrue(methodSignature.getDeclClassType() + " not found", classOpt.isPresent());
+
+    for (JavaSootMethod javaSootMethod : classOpt.get().getMethods()) {
+      System.out.println(javaSootMethod);
+    }
 
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     Assert.assertTrue(methodOpt.isPresent());
