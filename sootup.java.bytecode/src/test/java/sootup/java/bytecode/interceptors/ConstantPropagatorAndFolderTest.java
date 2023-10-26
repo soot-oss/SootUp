@@ -102,7 +102,7 @@ public class ConstantPropagatorAndFolderTest {
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     stmtGraph.setStartingStmt(assignA);

@@ -73,7 +73,7 @@ public class CastAndReturnInlinerTest {
 
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, null);
@@ -130,7 +130,7 @@ public class CastAndReturnInlinerTest {
     stmtGraph.putEdge(bToA, ret);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, null);

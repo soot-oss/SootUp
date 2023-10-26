@@ -138,11 +138,12 @@ public class AggregatorTest {
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     stmtGraph.setStartingStmt(intToA);
     stmtGraph.putEdge(intToA, intToB);
     stmtGraph.putEdge(intToB, ret);
+
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());
 

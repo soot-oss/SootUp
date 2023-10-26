@@ -131,7 +131,7 @@ public class DeadAssignmentEliminatorTest {
     stmtGraph.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
     if (essentialOption) {
       FallsThroughStmt newToB =
