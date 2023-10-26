@@ -1200,20 +1200,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           identifierFactory.getMethodSignature(cls, insn.name, returnType, sigTypes);
       int nrArgs = sigTypes.size();
       final Operand[] operands;
-      Immediate[] argList;
       AbstractInvokeExpr invoke;
       if (isInstance) {
+        final List<Immediate> args;
         if (nrArgs == 0) {
           operands = new Operand[1];
-          argList = null;
+          args = Collections.emptyList();
         } else {
+          Immediate[] argList = new Immediate[nrArgs];
           operands = new Operand[nrArgs + 1];
-          argList = new Immediate[nrArgs];
-        }
 
-        while (nrArgs-- > 0) {
-          operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
-          argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
+          while (nrArgs-- > 0) {
+            operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
+            argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
+          }
+          args = Arrays.asList(argList);
         }
 
         operands[operands.length - 1] = operandStack.popLocal(); // pop the return type
@@ -1223,13 +1224,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
         switch (op) {
           case INVOKESPECIAL:
-            invoke = Jimple.newSpecialInvokeExpr(base, methodSignature, Arrays.asList(argList));
+            invoke = Jimple.newSpecialInvokeExpr(base, methodSignature, args);
             break;
           case INVOKEVIRTUAL:
-            invoke = Jimple.newVirtualInvokeExpr(base, methodSignature, Arrays.asList(argList));
+            invoke = Jimple.newVirtualInvokeExpr(base, methodSignature, args);
             break;
           case INVOKEINTERFACE:
-            invoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, Arrays.asList(argList));
+            invoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, args);
             break;
           default:
             throw new UnsupportedOperationException("Unknown invoke op:" + op);
@@ -1239,18 +1240,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       } else {
         if (nrArgs == 0) {
           operands = null;
-          argList = null;
+          invoke = Jimple.newStaticInvokeExpr(methodSignature, Collections.emptyList());
+
         } else {
+
           operands = new Operand[nrArgs];
-          argList = new Immediate[nrArgs];
-        }
+          Immediate[] argList = new Immediate[nrArgs];
 
-        while (nrArgs-- > 0) {
-          operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
-          argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
-        }
+          while (nrArgs-- > 0) {
+            operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
+            argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
+          }
 
-        invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
+          invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
+        }
       }
 
       if (operands != null) {
