@@ -1246,10 +1246,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           operands = new Operand[nrArgs];
           Immediate[] argList = new Immediate[nrArgs];
 
-          while (nrArgs-- > 0) {
+          do {
+            nrArgs--;
             operands[nrArgs] = operandStack.popImmediate(sigTypes.get(nrArgs));
             argList[nrArgs] = (Immediate) operands[nrArgs].stackOrValue();
-          }
+          } while (nrArgs > 0);
 
           invoke = Jimple.newStaticInvokeExpr(methodSignature, Arrays.asList(argList));
         }
@@ -1279,11 +1280,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         oprs[oprs.length - 1] = operandStack.pop();
         frame.mergeIn(currentLineNumber, oprs);
       } else {
-        if (nrArgs != 0) {
+        if (nrArgs > 0) {
           oprs = new Operand[nrArgs];
-          while (nrArgs-- != 0) {
+          do {
+            nrArgs--;
             oprs[nrArgs] = operandStack.pop(types.get(nrArgs));
-          }
+          } while (nrArgs > 0);
+
           frame.mergeIn(currentLineNumber, oprs);
         }
       }
