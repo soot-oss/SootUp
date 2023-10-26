@@ -42,7 +42,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "$l0 := @this: AssertStatement",
             "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -66,7 +66,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "$l0 := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -75,7 +75,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
             "throw $stack4",
             "label1:",
             "$stack3 = 4",
-            "l1 = $stack3",
+            "$l1 = $stack3",
             "return")
         .collect(Collectors.toList());
   }
@@ -94,7 +94,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend2() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "$l0 := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"first\" != null goto label1",
@@ -103,7 +103,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
             "throw $stack7",
             "label1:",
             "$stack6 = 1",
-            "l1 = $stack6",
+            "$l1 = $stack6",
             "$stack3 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack3 != 0 goto label2",
             "if \"second\" != null goto label2",
@@ -112,7 +112,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
             "throw $stack5",
             "label2:",
             "$stack4 = 2",
-            "l1 = $stack4",
+            "$l1 = $stack4",
             "return")
         .collect(Collectors.toList());
   }

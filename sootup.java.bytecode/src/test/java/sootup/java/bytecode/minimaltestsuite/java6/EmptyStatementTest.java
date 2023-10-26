@@ -33,7 +33,7 @@ public class EmptyStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: EmptyStatement", "l1 = 5", "return")
+    return Stream.of("$l0 := @this: EmptyStatement", "$l1 = 5", "return")
         .collect(Collectors.toList());
   }
 

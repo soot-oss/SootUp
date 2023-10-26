@@ -24,6 +24,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 import com.google.common.collect.ImmutableSet;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
@@ -39,7 +40,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
@@ -76,29 +77,29 @@ public class AugEvalFunction {
    * This method is used to evaluate the type of the given value which the given stmt and body
    * belongs to.
    */
+  @Nullable
   public Type evaluate(
       @Nonnull Typing typing,
       @Nonnull Value value,
       @Nonnull Stmt stmt,
       @Nonnull StmtGraph<?> graph) {
 
-    // TODO: [ms] make use of the ValueVisitor..
+    // TODO: [ms] make use of the ValueVisitor
 
     if (value instanceof Immediate) {
       if (value instanceof Local) {
         return typing.getType((Local) value);
-        // if value instanceof Constant
-      } else {
+      } else if (value instanceof Constant) {
         if (value.getClass() == IntConstant.class) {
           int val = ((IntConstant) value).getValue();
           if (val >= 0 && val < 2) {
-            return AugIntegerTypes.getInteger1();
+            return AugmentIntegerTypes.getInteger1();
           } else if (val >= 2 && val < 128) {
-            return AugIntegerTypes.getInteger127();
+            return AugmentIntegerTypes.getInteger127();
           } else if (val >= -128 && val < 0) {
             return PrimitiveType.getByte();
           } else if (val >= 128 && val < 32768) {
-            return AugIntegerTypes.getInteger32767();
+            return AugmentIntegerTypes.getInteger32767();
           } else if (val >= -32768 && val < -128) {
             return PrimitiveType.getShort();
           } else if (val >= 32768 && val < 65536) {
@@ -121,13 +122,23 @@ public class AugEvalFunction {
         } else if (value.getClass() == MethodType.class) {
           return methodTypeClassType;
         } else {
-          throw new RuntimeException("Invaluable constant in AugEvalFunction '" + value + "'.");
+          throw new IllegalStateException("can't evaluate this type of Constant '" + value + "'.");
         }
       }
     } else if (value instanceof Expr) {
       if (value instanceof AbstractBinopExpr) {
         Type tl = evaluate(typing, ((AbstractBinopExpr) value).getOp1(), stmt, graph);
+        if (tl == null) {
+          return null;
+          // throw new RuntimeException("can't evaluatable constant in AugEvalFunction '" + value +
+          // "'.");
+        }
         Type tr = evaluate(typing, ((AbstractBinopExpr) value).getOp2(), stmt, graph);
+        if (tr == null) {
+          return null;
+          // throw new RuntimeException("can't evaluatable constant in AugEvalFunction '" + value +
+          // "'.");
+        }
         if (value instanceof AbstractIntBinopExpr) {
           if (value instanceof AbstractConditionExpr) {
             return PrimitiveType.getBoolean();
@@ -151,8 +162,9 @@ public class AugEvalFunction {
               } else {
                 Collection<Type> lca = PrimitiveHierarchy.getLeastCommonAncestor(tl, tr);
                 if (lca.isEmpty()) {
-                  throw new RuntimeException(
-                      "Invaluable expression by using AugEvalFunction '" + value + "'.");
+                  // throw new RuntimeException("can't evaluate expression by using AugEvalFunction
+                  // '" + value + "'.");
+                  return null;
                 }
                 return lca.iterator().next();
               }
@@ -178,23 +190,15 @@ public class AugEvalFunction {
         Set<ClassType> exceptionTypes = getExceptionTypeCandidates(stmt, graph);
         ClassType type = null;
         for (ClassType exceptionType : exceptionTypes) {
-          Optional<?> exceptionClassOp = view.getClass(exceptionType);
-          SootClass<?> exceptionClass;
-          if (exceptionClassOp.isPresent()) {
-            exceptionClass = (SootClass<?>) exceptionClassOp.get();
-          } else {
-            throw new RuntimeException("ExceptionType '" + exceptionType + "' is not in the view");
-          }
-          if (exceptionClass.isPhantomClass()) {
+          Optional<?> exceptionClassOpt = view.getClass(exceptionType);
+          if (!exceptionClassOpt.isPresent()) {
             return throwableClassType;
-          } else if (type == null) {
+          }
+          if (type == null) {
             type = exceptionType;
           } else {
             type = getLeastCommonExceptionType(type, exceptionType);
           }
-        }
-        if (type == null) {
-          throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");
         }
         return type;
       } else if (value instanceof JArrayRef) {
@@ -213,7 +217,9 @@ public class AugEvalFunction {
           || value instanceof JFieldRef) {
         return value.getType();
       } else {
-        throw new RuntimeException("Invaluable reference in AugEvalFunction '" + value + "'.");
+        return null;
+        // throw new RuntimeException("can't evaluatable reference in AugEvalFunction '" + value +
+        // "'.");
       }
     }
     return null;
@@ -232,6 +238,7 @@ public class AugEvalFunction {
    * This function is used to retrieve the path from the type "Throwable" to the given exception
    * type
    */
+  // TODO: ms: simplify - use the typehiararchy directly!
   private Deque<ClassType> getExceptionPath(@Nonnull ClassType exceptionType) {
     Deque<ClassType> path = new ArrayDeque<>();
     path.push(exceptionType);
@@ -240,6 +247,7 @@ public class AugEvalFunction {
       final Optional<? extends ClassType> superclassOpt =
           view.getClass(exceptionType).flatMap(SootClass::getSuperclass);
       if (!superclassOpt.isPresent()) {
+        // TODO: ms: don't fail completely.. work as far as information exists and warn.
         throw new IllegalStateException(
             "The path from '" + exceptionType + "' to java.lang.Throwable cannot be found!");
       }

@@ -26,12 +26,12 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.AbstractStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JBreakpointStmt extends Stmt implements Copyable {
+public final class JBreakpointStmt extends AbstractStmt implements FallsThroughStmt {
 
   public JBreakpointStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);

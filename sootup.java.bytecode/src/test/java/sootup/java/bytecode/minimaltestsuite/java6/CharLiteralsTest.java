@@ -1,10 +1,9 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
@@ -54,7 +53,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharCharacter() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 97", "return").collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 97", "return");
   }
 
   /**
@@ -67,7 +66,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSymbol() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 37", "return").collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 37", "return");
   }
 
   /**
@@ -78,7 +77,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslashT() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 9", "return").collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 9", "return");
   }
 
   /**
@@ -91,7 +90,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslash() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 92", "return").collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 92", "return");
   }
 
   /**
@@ -104,7 +103,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSingleQuote() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 39", "return").collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 39", "return");
   }
 
   /**
@@ -117,8 +116,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharUnicode() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 937", "return")
-        .collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 937", "return");
   }
 
   /**
@@ -131,7 +129,6 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsSpecialChar() {
-    return Stream.of("l0 := @this: CharLiterals", "l1 = 8482", "return")
-        .collect(Collectors.toList());
+    return Arrays.asList("$l0 := @this: CharLiterals", "$l1 = 8482", "return");
   }
 }

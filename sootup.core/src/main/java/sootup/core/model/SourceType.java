@@ -23,7 +23,7 @@ package sootup.core.model;
  */
 
 public enum SourceType {
-  Phantom,
-  Application,
-  Library
+  Application, // code that we want to analyze e.g. in call graph generation its traversed
+  Library // code that is given but should not be analyzed e.g. in call graph generation its not
+  // traversed
 }

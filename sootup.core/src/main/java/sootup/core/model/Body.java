@@ -33,7 +33,6 @@ import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.Type;
 import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.ImmutableUtils;
@@ -87,7 +86,6 @@ public class Body implements Copyable {
     this.graph = /* FIXME: [ms] make immutable when availabe */
         new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
     this.position = position;
-    // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
 
@@ -160,7 +158,7 @@ public class Body implements Copyable {
   public Stmt getThisStmt() {
     for (Stmt u : getStmts()) {
       if (u instanceof JIdentityStmt) {
-        if (((JIdentityStmt<?>) u).getRightOp() instanceof JThisRef) {
+        if (((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
           return u;
         }
       } else {
@@ -176,23 +174,23 @@ public class Body implements Copyable {
   /** Return LHS of the first identity stmt assigning from \@this. */
   @Nullable
   public Local getThisLocal() {
-    final JIdentityStmt<?> thisStmt = (JIdentityStmt<?>) getThisStmt();
+    final JIdentityStmt thisStmt = (JIdentityStmt) getThisStmt();
     if (thisStmt == null) {
       return null;
     }
-    return thisStmt.getLeftOp();
+    return (Local) thisStmt.getLeftOp();
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
-  @Nullable
+  @Nonnull
   public Local getParameterLocal(int i) {
     for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt) {
-        if (((JIdentityStmt<?>) s).getRightOp() instanceof JParameterRef) {
-          JIdentityStmt<?> idStmt = (JIdentityStmt<?>) s;
+        if (((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
+          JIdentityStmt idStmt = (JIdentityStmt) s;
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
           if (pr.getIndex() == i) {
-            return idStmt.getLeftOp();
+            return (Local) idStmt.getLeftOp();
           }
         }
       } else {
@@ -200,7 +198,7 @@ public class Body implements Copyable {
         //  break;
       }
     }
-    return null;
+    throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
   }
 
   /**
@@ -217,10 +215,10 @@ public class Body implements Copyable {
     // fixed index positions at the beginning?
     for (Stmt u : graph.getNodes()) {
       if (u instanceof JIdentityStmt) {
-        JIdentityStmt<?> idStmt = (JIdentityStmt<?>) u;
+        JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), idStmt.getLeftOp());
+          retVal.add(pr.getIndex(), (Local) idStmt.getLeftOp());
         }
       }
       /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
@@ -319,8 +317,8 @@ public class Body implements Copyable {
    *
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getDefs() {
-    ArrayList<Value> defList = new ArrayList<>();
+  public Collection<LValue> getDefs() {
+    ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
       defList.addAll(stmt.getDefs());
@@ -355,8 +353,8 @@ public class Body implements Copyable {
    * Body.BodyBuilder builder = Body.builder();
    * builder.setMethodSignature( ... );
    * builder.setStartingStmt(stmt1);
-   * builder.addFlow(stmt1,stmt2);
-   * builder.addFlow(stmt2,stmt3);
+   * stmtGraph.putEdge(stmt1,stmt2);
+   * stmtGraph.putEdge(stmt2,stmt3);
    * ...
    * Body body = builder.build();
    *
@@ -365,7 +363,6 @@ public class Body implements Copyable {
    */
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
-    @Nonnull private final LocalGenerator localGen = new LocalGenerator(locals);
     @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
@@ -402,26 +399,22 @@ public class Body implements Copyable {
       return cachedLinearizedStmts;
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
-    public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
-    }
-
-    @Nonnull
+    @Deprecated
     public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
       graph.setStartingStmt(startingStmt);
       return this;
     }
 
     @Nonnull
-    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
-      this.locals = locals;
-      return this;
+    public Set<Local> getLocals() {
+      return Collections.unmodifiableSet(locals);
     }
 
     @Nonnull
-    public BodyBuilder addLocal(@Nonnull String name, Type type) {
-      locals.add(localGen.generateLocal(type));
+    public BodyBuilder setLocals(@Nonnull Set<Local> locals) {
+      this.locals = locals;
       return this;
     }
 
@@ -438,16 +431,13 @@ public class Body implements Copyable {
         for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
           final Stmt stmt = currStmt;
           if (currStmt.getUses().contains(oldLocal)) {
-            final Stmt newStmt = currStmt.withNewUse(oldLocal, newLocal);
-            if (newStmt != null) {
-              currStmt = newStmt;
-            }
+            currStmt = currStmt.withNewUse(oldLocal, newLocal);
           }
-          final List<Value> defs = currStmt.getDefs();
-          for (Value def : defs) {
+          final List<LValue> defs = currStmt.getDefs();
+          for (LValue def : defs) {
             if (def == oldLocal || def.getUses().contains(oldLocal)) {
               if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt<?, ?>) currStmt).withNewDef(newLocal);
+                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
               }
             }
           }
@@ -460,33 +450,36 @@ public class Body implements Copyable {
       }
     }
 
-    /** replace the oldStmt with newStmt in stmtGraph and branches */
+    /**
+     * replace the oldStmt with newStmt in stmtGraph and branches
+     *
+     * <p>Deprecated: please use methods of getStmtGraph() directly
+     */
     @Nonnull
+    @Deprecated
     public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
       graph.replaceNode(oldStmt, newStmt);
       return this;
     }
 
-    /** remove the a stmt from the graph and stmt */
+    /**
+     * remove the a stmt from the graph and stmt
+     *
+     * <p>Deprecated: please use methods of getStmtGraph() directly
+     */
     @Nonnull
+    @Deprecated
     public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
       graph.removeNode(stmt);
       cachedLinearizedStmts = null;
       return this;
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
+    @Deprecated
     public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
       graph.clearExceptionalEdges(stmt);
-      return this;
-    }
-
-    /*
-     * Note: if there is a stmt branching to successor this is not updated to the new stmt
-     * */
-    @Nonnull
-    public BodyBuilder insertBefore(@Nonnull Stmt beforeStmt, Stmt newstmt) {
-      graph.insertBefore(beforeStmt, newstmt);
       return this;
     }
 
@@ -496,16 +489,11 @@ public class Body implements Copyable {
       return graph.getTraps();
     }
 
+    /** Deprecated: please use methods of getStmtGraph() directly */
     @Nonnull
-    public BodyBuilder addFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
+    @Deprecated
+    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
       graph.putEdge(fromStmt, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    @Nonnull
-    public BodyBuilder removeFlow(@Nonnull Stmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.removeEdge(fromStmt, toStmt);
       cachedLinearizedStmts = null;
       return this;
     }
@@ -587,19 +575,17 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Local, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
-    Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
+  public static Map<LValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
+    Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<Value> defs = stmt.getDefs();
-      for (Value value : defs) {
-        if (value instanceof Local) {
-          Collection<Stmt> localDefs = allDefs.get(value);
-          if (localDefs == null) {
-            localDefs = new ArrayList<>();
-          }
-          localDefs.add(stmt);
-          allDefs.put((Local) value, localDefs);
+      List<LValue> defs = stmt.getDefs();
+      for (LValue value : defs) {
+        Collection<Stmt> localDefs = allDefs.get(value);
+        if (localDefs == null) {
+          localDefs = new ArrayList<>();
         }
+        localDefs.add(stmt);
+        allDefs.put(value, localDefs);
       }
     }
     return allDefs;
@@ -611,18 +597,18 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Local, Collection<Stmt>> collectUses(List<Stmt> stmts) {
-    Map<Local, Collection<Stmt>> allUses = new HashMap<>();
+  public static Map<LValue, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
+    Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
       Collection<Value> uses = stmt.getUses();
       for (Value value : uses) {
-        if (value instanceof Local) {
+        if (value instanceof LValue) {
           Collection<Stmt> localUses = allUses.get(value);
           if (localUses == null) {
             localUses = new ArrayList<>();
           }
           localUses.add(stmt);
-          allUses.put((Local) value, localUses);
+          allUses.put((LValue) value, localUses);
         }
       }
     }

@@ -36,7 +36,7 @@ public class UncheckedCastTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: UncheckedCast",
+            "$l0 := @this: UncheckedCast",
             "$stack3 = newarray (java.lang.Integer)[4]",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(5)",
             "$stack3[0] = $stack4",
@@ -46,10 +46,10 @@ public class UncheckedCastTest extends MinimalBytecodeTestSuiteBase {
             "$stack3[2] = $stack6",
             "$stack7 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(6)",
             "$stack3[3] = $stack7",
-            "l1 = staticinvoke <java.util.Arrays: java.util.List asList(java.lang.Object[])>($stack3)",
-            "l2 = l1",
+            "$l1 = staticinvoke <java.util.Arrays: java.util.List asList(java.lang.Object[])>($stack3)",
+            "$l2 = $l1",
             "$stack8 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.Object)>(l2)",
+            "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.Object)>($l2)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

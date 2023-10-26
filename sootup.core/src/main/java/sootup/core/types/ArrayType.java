@@ -42,7 +42,7 @@ public class ArrayType extends ReferenceType {
         || baseType instanceof ClassType
         || baseType instanceof NullType)) {
       throw new RuntimeException(
-          "The type: " + baseType + "can not be as a base type of an ArrayType.");
+          "The type: '" + baseType + "' can not be as a base type of an ArrayType.");
     }
     if (dimension < 1) {
       throw new RuntimeException("The dimension of array type should be at least 1.");

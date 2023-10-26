@@ -33,7 +33,7 @@ public class StringWithUnicodeCharTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: StringWithUnicodeChar", "l1 = \"$123\"", "return")
+    return Stream.of("$l0 := @this: StringWithUnicodeChar", "$l1 = \"$123\"", "return")
         .collect(Collectors.toList());
   }
 

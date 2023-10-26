@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.Constant;
@@ -77,7 +78,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   @Override
-  public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+  public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     Value lhs = stmt.getLeftOp();
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
@@ -97,13 +98,14 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           // allocation site.
           if (Type.isObjectLikeType(type_base)
               || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<Local, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
+            Map<LValue, Collection<Stmt>> defs =
+                Body.collectDefs(builder.getStmtGraph().getNodes());
             Collection<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
               for (Stmt defStmt : defStmts) {
                 if (defStmt instanceof JAssignStmt) {
-                  Value arrExpr = ((JAssignStmt<?, ?>) defStmt).getRightOp();
+                  Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
                   if (arrExpr instanceof JNewArrayExpr) {
                     arrayType = (ArrayType) arrExpr.getType();
                     findDef = true;
@@ -149,7 +151,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<Local, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));
@@ -162,11 +164,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             Collection<Stmt> stmts = defs.get(pair.getLocal());
             for (Stmt s : stmts) {
               if (s instanceof JAssignStmt) {
-                Value value = ((JAssignStmt<?, ?>) s).getRightOp();
+                Value value = ((JAssignStmt) s).getRightOp();
                 if (value instanceof JNewArrayExpr) {
-                  sel = selectType(sel, ((JNewArrayExpr) value).getBaseType(), s);
+                  sel = selectArrayType(sel, ((JNewArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof JNewMultiArrayExpr) {
-                  sel = selectType(sel, ((JNewMultiArrayExpr) value).getBaseType(), s);
+                  sel = selectArrayType(sel, ((JNewMultiArrayExpr) value).getBaseType(), s);
                 } else if (value instanceof Local) {
                   worklist.add(new StmtLocalPair(s, (Local) value));
                 } else if (value instanceof JCastExpr) {
@@ -309,16 +311,12 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   }
 
   // select the type with bigger bit size
-  public Type selectType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
+  public Type selectArrayType(@Nullable Type preType, @Nonnull Type newType, @Nonnull Stmt stmt) {
     if (preType == null || preType.equals(newType)) {
       return newType;
     }
-    Type sel;
-    if (Type.getValueBitSize(newType) > Type.getValueBitSize(preType)) {
-      sel = newType;
-    } else {
-      sel = preType;
-    }
+    Type sel = Type.getValueBitSize(newType) > Type.getValueBitSize(preType) ? newType : preType;
+
     logger.warn(
         "Conflicting array types at "
             + stmt
@@ -328,7 +326,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             + preType
             + " or "
             + newType
-            + ". Select: "
+            + ". Selecting: "
             + sel);
     return sel;
   }
