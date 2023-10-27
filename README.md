@@ -7,6 +7,13 @@
 This is the home of the **SootUp** project.
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
 
+## 💻Tech Stack
+
+<p>
+  <a href="">
+    <img src="https://img.shields.io/badge/Java-007ACC?style=for-the-badge&logo=java&logoColor=white" alt="java" />
+  </a>
+
 ## What is SootUp
 - Transforms JVM bytecode (and other inputs!) to the intermediate representation Jimple.
 - Provides ClassHierarchy generation
