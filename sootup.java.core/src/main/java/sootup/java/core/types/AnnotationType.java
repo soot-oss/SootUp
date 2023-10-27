@@ -22,13 +22,7 @@ package sootup.java.core.types;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -80,6 +74,7 @@ public class AnnotationType extends JavaClassType {
 
         if (!jv.getClass(this).isPresent()) {
           log.error("Class of annotation not in view" + this);
+          return defaultValues;
         }
 
         JavaSootClass jsc = jv.getClass(this).get();
