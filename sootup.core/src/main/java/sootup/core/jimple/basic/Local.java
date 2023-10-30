@@ -56,13 +56,11 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
   }
 
   /** Constructs a JimpleLocal of the given name and type. */
-    public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
+  public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
     this.name = name;
-    if(type instanceof VoidType)
-    {
+    if (type instanceof VoidType) {
       throw new RuntimeException("Type should not be VoidType");
-    }
-    else {
+    } else {
       this.type = type;
     }
     this.position = position;
