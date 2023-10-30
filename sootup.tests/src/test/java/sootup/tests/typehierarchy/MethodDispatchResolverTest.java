@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.signatures.MethodSignature;
@@ -73,20 +72,26 @@ public class MethodDispatchResolverTest {
         factory.parseMethodSignature("java.util.ArrayDeque#clone(): java.util.ArrayDequeue");
 
     Set<MethodSignature> candidates =
-        MethodDispatchResolver.resolveAbstractDispatch(view, collectionSize);
+        MethodDispatchResolver.resolveAbstractDispatch(view, collectionSize)
+            .collect(Collectors.toSet());
     assertTrue(collectionSize + " can resolve to " + setSize, candidates.contains(setSize));
     assertTrue(collectionSize + " can resolve to " + listSize, candidates.contains(listSize));
 
     assertTrue(
         abstractListSize + " can resolve to " + listSize,
-        MethodDispatchResolver.resolveAbstractDispatch(view, abstractListSize).contains(listSize));
+        MethodDispatchResolver.resolveAbstractDispatch(view, abstractListSize)
+            .collect(Collectors.toSet())
+            .contains(listSize));
 
     assertTrue(
         objectClone + " can resolve to " + enumSetClone,
-        MethodDispatchResolver.resolveAbstractDispatch(view, objectClone).contains(enumSetClone));
+        MethodDispatchResolver.resolveAbstractDispatch(view, objectClone)
+            .collect(Collectors.toSet())
+            .contains(enumSetClone));
     assertFalse(
         arrayDequeueClone + " cannot resolve to " + enumSetClone,
         MethodDispatchResolver.resolveAbstractDispatch(view, arrayDequeueClone)
+            .collect(Collectors.toSet())
             .contains(enumSetClone));
   }
 
@@ -144,18 +149,23 @@ public class MethodDispatchResolverTest {
             objectWait1Param, objectWait2Param, view.getTypeHierarchy()));
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void invalidResolveConcreteDispatch() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    MethodDispatchResolver.resolveConcreteDispatch(
-        view, factory.parseMethodSignature("java.util.Collection#size(): int"));
+    Optional<MethodSignature> ms =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            view, factory.parseMethodSignature("java.util.Collection#size(): int"));
+    assertFalse(ms.isPresent());
   }
 
-  @Test(expected = ResolveException.class)
+  @Test()
   public void invalidResolveConcreteDispatchOfAbstractMethod() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    MethodDispatchResolver.resolveConcreteDispatch(
-        view, factory.parseMethodSignature("java.util.AbstractList#get(int): java.lang.Object"));
+    Optional<MethodSignature> ms =
+        MethodDispatchResolver.resolveConcreteDispatch(
+            view,
+            factory.parseMethodSignature("java.util.AbstractList#get(int): java.lang.Object"));
+    assertFalse(ms.isPresent());
   }
 
   @Test

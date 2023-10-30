@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.signatures.MethodSignature;
@@ -38,9 +39,10 @@ public class AbstractDispatchTest extends MethodDispatchBase {
 
     Set<MethodSignature> candidatesAbstract =
         MethodDispatchResolver.resolveAbstractDispatch(
-            customTestWatcher.getView(),
-            identifierFactory.getMethodSignature(
-                sootClassTypeA, "method", "void", Collections.emptyList()));
+                customTestWatcher.getView(),
+                identifierFactory.getMethodSignature(
+                    sootClassTypeA, "method", "void", Collections.emptyList()))
+            .collect(Collectors.toSet());
     assertFalse(candidatesAbstract.contains(sootMethodAbstract));
     assertFalse(candidatesAbstract.contains(sootMethodA));
     assertFalse(candidatesAbstract.contains(sootMethodB));
@@ -48,9 +50,10 @@ public class AbstractDispatchTest extends MethodDispatchBase {
 
     Set<MethodSignature> candidatesSuper =
         MethodDispatchResolver.resolveAbstractDispatch(
-            customTestWatcher.getView(),
-            identifierFactory.getMethodSignature(
-                sootClassTypeAbstract, "method", "void", Collections.emptyList()));
+                customTestWatcher.getView(),
+                identifierFactory.getMethodSignature(
+                    sootClassTypeAbstract, "method", "void", Collections.emptyList()))
+            .collect(Collectors.toSet());
     assertFalse(candidatesSuper.contains(sootMethodAbstract));
     assertFalse(candidatesSuper.contains(sootMethodA));
     assertFalse(candidatesSuper.contains(sootMethodB));

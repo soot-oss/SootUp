@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
@@ -81,39 +82,49 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
-
     SootMethod targetMethod =
-        view.getClass(targetMethodSignature.getDeclClassType())
-            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
-            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+        MethodDispatchResolver.findConcreteMethod(view, targetMethodSignature).orElse(null);
 
     if (targetMethod == null
         || MethodModifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return result;
+      return Stream.of(targetMethodSignature);
     } else {
-      if (targetMethod.isAbstract()) {
-        return resolveAllSubClassCallTargets(targetMethodSignature);
+      if (targetMethod.isAbstract() || invokeExpr instanceof JInterfaceInvokeExpr) {
+        // abstract method call or interface call
+        // TODO: SpeedUp by only resolving direct subclasses
+        return resolveAllCallTargets(targetMethodSignature);
       }
-      return MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
-          .map(
-              methodSignature ->
-                  Stream.concat(
-                      Stream.of(methodSignature),
-                      resolveAllSubClassCallTargets(targetMethodSignature)))
-          .orElseGet(() -> resolveAllSubClassCallTargets(targetMethodSignature));
+      return Stream.concat(
+          Stream.of(targetMethod.getSignature()),
+          resolveAllSubClassCallTargets(targetMethodSignature, targetMethod));
     }
   }
 
-  private Stream<MethodSignature> resolveAllSubClassCallTargets(
-      MethodSignature targetMethodSignature) {
+  private Stream<MethodSignature> resolveAllCallTargets(MethodSignature targetMethodSignature) {
     return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
         .map(
             methodSignature ->
                 MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
         .filter(Optional::isPresent)
         .map(Optional::get);
+  }
+
+  private Stream<MethodSignature> resolveAllSubClassCallTargets(
+      MethodSignature targetMethodSignature, SootMethod targetMethod) {
+    SootClass<?> sootClass = view.getClass(targetMethod.getDeclaringClassType()).orElse(null);
+    if (sootClass == null) {
+      return Stream.empty();
+    }
+    if (sootClass.isInterface()) {
+      // the super call target is a default method of an Interface.
+      // If subtypes of class in the target signature does not implement the method,
+      // other default method which are subtypes of the Interface can be targets
+    }
+
+    // the concrete target of the hierarchical highest class of call targets is known.
+    // this method can be only overwritten by implemented methods of the subtypes
+    return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature);
   }
 
   @Override

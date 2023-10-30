@@ -140,7 +140,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCall() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvc.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvc.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvc.Class"), "target", "void", Collections.emptyList());
@@ -160,8 +160,27 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testConcreteCallDifferentDefaultMethodInSubClass() {
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscddi.Class");
+    MethodSignature interfaceMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscddi.Interface"),
+            "method",
+            "void",
+            Collections.emptyList());
+    MethodSignature subInterfaceMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("cvcscddi.SubInterface"),
+            "method",
+            "void",
+            Collections.emptyList());
+    assertTrue(cg.containsCall(mainMethodSignature, interfaceMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, subInterfaceMethod));
+  }
+
+  @Test
   public void testConcreteCallInSuperClassWithDefaultInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscwi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscwi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscwi.SuperClass"),
@@ -173,7 +192,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvci.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvci.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvci.Interface"),
@@ -185,7 +204,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSubInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvcsi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcsi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcsi.SubInterface"),
@@ -197,7 +216,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testConcreteCallInSuperClassSubInterface() {
-    CallGraph cg = loadCallGraph("ConcreteCall", "cvcscsi.Class");
+    CallGraph cg = loadCallGraph("ConcreteCall", false, "cvcscsi.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscsi.SubInterface"),
@@ -443,8 +462,27 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   @Test
+  public void testDynamicInterfaceMethod0() {
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim0.Class");
+    MethodSignature interfaceMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("j8dim0.Interface"),
+            "method",
+            "void",
+            Collections.emptyList());
+    MethodSignature classMethod =
+        identifierFactory.getMethodSignature(
+            identifierFactory.getClassType("j8dim0.Class"),
+            "method",
+            "void",
+            Collections.emptyList());
+    assertFalse(cg.containsCall(mainMethodSignature, interfaceMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, classMethod));
+  }
+
+  @Test
   public void testDynamicInterfaceMethod1() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim1.Class");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim1.Class");
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("j8dim1.Interface"),
@@ -456,7 +494,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod2() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim2.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim2.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -469,7 +507,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod3() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim3.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim3.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -479,7 +517,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod4() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim4.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim4.SuperClass");
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -492,7 +530,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testDynamicInterfaceMethod5() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim5.SuperClass");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8dim5.SuperClass");
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
@@ -539,7 +577,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testStaticInterfaceMethod() {
-    CallGraph cg = loadCallGraph("InterfaceMethod", "j8sim.Class");
+    CallGraph cg = loadCallGraph("InterfaceMethod", false, "j8sim.Class");
 
     MethodSignature method =
         identifierFactory.getMethodSignature(

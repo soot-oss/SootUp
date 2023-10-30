@@ -22,13 +22,15 @@ package sootup.core.typehierarchy;
  */
 
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.Method;
@@ -39,6 +41,9 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 public final class MethodDispatchResolver {
+
+  private static final Logger logger = LoggerFactory.getLogger(MethodDispatchResolver.class);
+
   private MethodDispatchResolver() {}
 
   /**
@@ -52,20 +57,19 @@ public final class MethodDispatchResolver {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
-        .map(
-            subtype ->
-                view.getClass(subtype)
-                    .orElseThrow(
-                        () ->
-                            new ResolveException(
-                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .filter(
-            sootClass -> {
-              SootMethod sootMethod = sootClass.getMethod(m.getSubSignature()).orElse(null);
-              // method is not implemented or not abstract
+            classType -> {
+              SootMethod sootMethod =
+                  view.getMethod(
+                          view.getIdentifierFactory()
+                              .getMethodSignature(classType, m.getSubSignature()))
+                      .orElse(null);
+              // methods are kept that are not implemented or not abstract
               return sootMethod == null || !sootMethod.isAbstract();
             })
-        .map(sootClass -> new MethodSignature(sootClass.getType(), m.getSubSignature()))
+        .map(
+            classType ->
+                view.getIdentifierFactory().getMethodSignature(classType, m.getSubSignature()))
         .collect(Collectors.toSet());
   }
 
@@ -74,24 +78,19 @@ public final class MethodDispatchResolver {
    * the set of method signatures that a method call could resolve to.
    */
   @Nonnull
-  public static Set<MethodSignature> resolveAbstractDispatch(
+  public static Stream<MethodSignature> resolveAbstractDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
-            subtype ->
-                view.getClass(subtype)
-                    .orElseThrow(
-                        () ->
-                            new ResolveException(
-                                "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
+            sootClass ->
+                view.getMethod(
+                    view.getIdentifierFactory().getMethodSignature(sootClass, m.getSubSignature())))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
-        .map(Method::getSignature)
-        .collect(Collectors.toSet());
+        .map(Method::getSignature);
   }
 
   /**
@@ -174,20 +173,6 @@ public final class MethodDispatchResolver {
   }
 
   /**
-   * Returns all superclasses of <code>classType</code>(inclusive) up to <code>java.lang.Object
-   * </code>, which will be the last entry in the list, or till one of the superclasses is not
-   * contained in view.
-   */
-  private static List<SootClass<?>> findSuperClassesInclusive(
-      View<? extends SootClass<?>> view, ClassType classType) {
-    return Stream.concat(
-            Stream.of(classType),
-            view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream())
-        .flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
-        .collect(Collectors.toList());
-  }
-
-  /**
    * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
@@ -195,74 +180,75 @@ public final class MethodDispatchResolver {
   @Nonnull
   public static Optional<MethodSignature> resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
-    TypeHierarchy hierarchy = view.getTypeHierarchy();
-    ClassType current = m.getDeclClassType();
-    SootClass<?> startClass = view.getClass(current).orElse(null);
-    List<SootClass<?>> classesInHierarchyOrder = findSuperClassesInclusive(view, current);
+    Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
+    if (methodOp.isPresent()) {
+      SootMethod method = methodOp.get();
+      if (method.isAbstract()) {
+        return Optional.empty();
+      }
+      return Optional.of(method.getSignature());
+    }
+    return Optional.empty();
+  }
 
-    for (SootClass<?> currentClass : classesInHierarchyOrder) {
-      SootMethod method = currentClass.getMethod(m.getSubSignature()).orElse(null);
-      if (method != null) {
-        if (!method.isAbstract()) {
-          // found method is not abstract
-          return Optional.of(method.getSignature());
-        } else {
-          if (startClass.isAbstract()
-              && !startClass.getType().equals(method.getDeclaringClassType())) {
-            // A not implemented method of an abstract class results into an abstract method
-            return Optional.empty();
-          }
-          // found method is abstract and the startClass is not abstract
-          throw new ResolveException(
-              "Could not find concrete method for " + m + " because the method is abstract");
-        }
+  /**
+   * searches the method object in the given hierarchy
+   *
+   * @param view it contains all classes
+   * @param sig the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  public static Optional<? extends SootMethod> findConcreteMethod(
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    Optional<? extends SootMethod> startMethod = view.getMethod(sig);
+    if (startMethod.isPresent()) {
+      return startMethod;
+    }
+    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+
+    List<ClassType> superClasses = typeHierarchy.incompleteSuperClassesOf(sig.getDeclClassType());
+    for (ClassType superClassType : superClasses) {
+      Optional<? extends SootMethod> method =
+          view.getMethod(
+              identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()));
+      if (method.isPresent()) {
+        return method;
       }
     }
-
-    // No super class contains the implemented method, search the concrete method in interfaces
-    // first collect all interfaces and super interfaces
-    List<SootClass<?>> worklist =
-        classesInHierarchyOrder.stream()
-            .flatMap(sootClass -> getSootClassesOfInterfaces(view, sootClass).stream())
-            .collect(Collectors.toList());
-    ArrayList<SootClass<?>> processedInterface = new ArrayList<>();
-    ArrayList<SootMethod> possibleDefaultMethods = new ArrayList<>();
-    while (!worklist.isEmpty()) {
-      SootClass<?> currentInterface = worklist.remove(0);
-      if (processedInterface.contains(currentInterface)) {
-        // interface was already processed
-        continue;
-      }
-
-      // add found default method to possibleDefaultMethods
-      Optional<? extends SootMethod> concreteMethod =
-          currentInterface.getMethod(m.getSubSignature());
-      concreteMethod.ifPresent(possibleDefaultMethods::add);
-
-      // if no default message is found search the default message in super interfaces
-      if (!concreteMethod.isPresent()) {
-        worklist.addAll(getSootClassesOfInterfaces(view, currentInterface));
-      }
-      processedInterface.add(currentInterface);
+    Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sig.getDeclClassType());
+    Optional<? extends SootMethod> defaultMethod =
+        interfaces.stream()
+            .map(
+                classType ->
+                    view.getMethod(
+                        identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .sorted(
+                (interface1, interface2) -> {
+                  // interface1 is a sub-interface of interface2
+                  if (typeHierarchy.isSubtype(
+                      interface2.getDeclaringClassType(), interface1.getDeclaringClassType()))
+                    return -1;
+                  // interface1 is a super-interface of interface2
+                  if (typeHierarchy.isSubtype(
+                      interface1.getDeclaringClassType(), interface2.getDeclaringClassType()))
+                    return 1;
+                  // due to multiple inheritance in interfaces
+                  return 0;
+                })
+            .findFirst();
+    if (defaultMethod.isPresent()) {
+      return defaultMethod;
     }
-
-    if (!possibleDefaultMethods.isEmpty()) {
-      // the interfaces are sorted by hierarchy
-      possibleDefaultMethods.sort(
-          (interface1, interface2) -> {
-            // interface1 is a sub-interface of interface2
-            if (hierarchy.isSubtype(
-                interface2.getDeclaringClassType(), interface1.getDeclaringClassType())) return -1;
-            // interface1 is a super-interface of interface2
-            if (hierarchy.isSubtype(
-                interface1.getDeclaringClassType(), interface2.getDeclaringClassType())) return 1;
-            // due to multiple inheritance in interfaces
-            return 0;
-          });
-      // return the lowest element in the hierarchy
-      return Optional.of(possibleDefaultMethods.get(0).getSignature());
-    }
-    throw new ResolveException("Could not find concrete method for " + m);
+    logger.warn(
+        "Could not find \""
+            + sig.getSubSignature()
+            + "\" in "
+            + sig.getDeclClassType().getClassName()
+            + " and in its superclasses and interfaces");
+    return Optional.empty();
   }
 
   /**

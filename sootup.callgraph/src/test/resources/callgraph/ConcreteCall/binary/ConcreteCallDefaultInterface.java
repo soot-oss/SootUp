@@ -1,7 +1,7 @@
 // cvci/Class.java
 package cvci;
 
-class Class implements Interface{
+class Class implements SInterface{
 
   public static void main(String[] args){
     Class cls = new Class();
