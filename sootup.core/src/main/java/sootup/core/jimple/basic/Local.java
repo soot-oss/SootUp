@@ -33,6 +33,7 @@ import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
 import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -55,9 +56,15 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
   }
 
   /** Constructs a JimpleLocal of the given name and type. */
-  public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
+    public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
     this.name = name;
-    this.type = type;
+    if(type instanceof VoidType)
+    {
+      throw new RuntimeException("Type should not be VoidType");
+    }
+    else {
+      this.type = type;
+    }
     this.position = position;
   }
 

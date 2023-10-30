@@ -68,8 +68,7 @@ public class Body implements Copyable {
           new ValuesValidator(),
           new CheckInitValidator(),
           new CheckTypesValidator(),
-          new CheckVoidLocalesValidator(),
-          new CheckEscapingValidator());
+          new CheckVoidLocalesValidator());
 
   /**
    * Creates an body which is not associated to any method.
