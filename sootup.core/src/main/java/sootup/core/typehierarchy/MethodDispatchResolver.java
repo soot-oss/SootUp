@@ -217,6 +217,9 @@ public final class MethodDispatchResolver {
       }
     }
     Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sig.getDeclClassType());
+    // interface1 is a sub-interface of interface2
+    // interface1 is a super-interface of interface2
+    // due to multiple inheritance in interfaces
     Optional<? extends SootMethod> defaultMethod =
         interfaces.stream()
             .map(
@@ -225,7 +228,7 @@ public final class MethodDispatchResolver {
                         identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .sorted(
+            .min(
                 (interface1, interface2) -> {
                   // interface1 is a sub-interface of interface2
                   if (typeHierarchy.isSubtype(
@@ -237,8 +240,7 @@ public final class MethodDispatchResolver {
                     return 1;
                   // due to multiple inheritance in interfaces
                   return 0;
-                })
-            .findFirst();
+                });
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }
@@ -249,26 +251,6 @@ public final class MethodDispatchResolver {
             + sig.getDeclClassType().getClassName()
             + " and in its superclasses and interfaces");
     return Optional.empty();
-  }
-
-  /**
-   * Returns all SootClasses of interfaces that are implemented in the given SootClass
-   *
-   * <p>returns a list of all SootClass Objects of interfaces that are associated with the given
-   * sootClass parameter. The ClassTypes of the interfaces are converted to SootClasses and not
-   * contained Interfaces are filtered.
-   *
-   * @param view the view that contains all searched SootClasses
-   * @param sootClass it contains the interfaces
-   * @return a list of SootClasses of the interfaces of sootClass
-   */
-  private static List<SootClass<?>> getSootClassesOfInterfaces(
-      View<? extends SootClass<?>> view, SootClass<?> sootClass) {
-    return sootClass.getInterfaces().stream()
-        .map(view::getClass)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .collect(Collectors.toList());
   }
 
   /**
