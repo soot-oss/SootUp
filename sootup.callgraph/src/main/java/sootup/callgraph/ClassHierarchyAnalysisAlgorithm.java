@@ -120,6 +120,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       // the super call target is a default method of an Interface.
       // If subtypes of class in the target signature does not implement the method,
       // other default method which are subtypes of the Interface can be targets
+      //TODO: add default method resolving
     }
 
     // the concrete target of the hierarchical highest class of call targets is known.
