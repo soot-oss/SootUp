@@ -42,7 +42,7 @@ jobs:
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 
       - name: replace "{{ git_latest_release }}" with latest release tag version in .md files
-        run: sed -i 's\{{ git_latest_release }}\$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)\g' docs/**.md
+        run: sed -i "s\{{ git_latest_release }}\{{$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)}}\g" docs/**.md
 
       - run: git fetch origin gh-pages --depth=1
       - name: Configure git user
