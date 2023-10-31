@@ -33,7 +33,6 @@ plugins:
   - search
   - include:
       src_path: 'sootup.examples/src/test/java/sootup/examples'
-  - git-latest-release
 
 extra_css:
   - css/hint.min.css

@@ -20,8 +20,9 @@ jobs:
       - run: pip install mkdocs-material
       - run: pip install mkdocs-tooltips
       - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
-      - run: pip install mkdocs_latest_release_plugin
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
+      # replace version in .md files
+      - run: sed -i 's\{{ git_latest_release }}\'$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)'\g' *.md
       - run: mkdocs gh-deploy --force
