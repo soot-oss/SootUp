@@ -39,7 +39,7 @@ jobs:
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 
 
-      - run: lsK
+      - run: ls -a
       - run: git describe --tags `git rev-list --tags --max-count=1`
       - run: git tag --sort=committerdate
 
