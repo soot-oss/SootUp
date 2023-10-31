@@ -46,8 +46,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: deploy doc in subdirectory
-        run: mike deploy ${{ github.ref_name }} --push
+        run: mike deploy ${{ github.ref }} --push
 
       - name: deploy doc and update alias 'latest' to the new doc deployment
         if: github.event_name == 'release' && github.event.action == 'created'
-        run: mike --push --update-aliases ${{ github.ref_name }} latest
+        run: mike --push --update-aliases ${{ github.ref }} latest
