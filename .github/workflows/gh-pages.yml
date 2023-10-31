@@ -45,9 +45,14 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: deploy doc in subdirectory
-        run: mike deploy $(echo ${{ github.ref }} | sed -e "s#refs/heads/##g") --push
+      - name: deploy doc in subdirectory (pr)
+        if: github.event_name == 'pull_request'
+        run: mike deploy ${{ github.head_ref }} --push
+
+      - name: deploy doc in subdirectory (release)
+        if: github.event_name == 'release'
+        run: mike deploy ${{ github.ref }} --push
 
       - name: deploy doc and update alias 'latest' to the new doc deployment
-        if: github.event_name == 'release' && github.event.action == 'created'
+        if: github.event_name == 'release' && github.event.action == 'published'
         run: mike --push --update-aliases $(echo ${{ github.ref }} | sed -e "s#refs/heads/##g") latest
