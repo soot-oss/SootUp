@@ -1,0 +1,21 @@
+name: Delete obsolete Documentation
+on: delete
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - run: pip install mike
+      - run: git fetch origin gh-pages --depth=1
+      - name: Configure git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - run: mike delete $(echo ${{ github.event.ref }} | sed -e "s#refs/heads/##g") --push

@@ -1,13 +1,13 @@
 name: Documentation 
 on:
   push:
-    branches: 
-      - develop
-    # only trigger workflow if one of these paths are affected as well
     paths:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
+      - run: pip install mike
       - run: pip install mkdocs-material
       - run: pip install mkdocs-tooltips
       - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
@@ -24,5 +25,11 @@ jobs:
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
       # replace version in .md files
+
       - run: sed -i 's\{{ git_latest_release }}\'$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)'\g' *.md
-      - run: mkdocs gh-deploy --force
+      - run: git fetch origin gh-pages --depth=1
+      - name: Configure git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - run: mike deploy ${{ github.ref_name }} --push
