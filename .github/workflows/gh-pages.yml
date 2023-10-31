@@ -2,9 +2,14 @@
 
 name: Documentation
 on:
-  push:
-    branches:
-      - '!gh-pages/**'
+  release:
+    types: [ created, published ]
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
     paths:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
@@ -47,5 +52,5 @@ jobs:
         run: mike deploy ${{ github.ref_name }} --push
 
       - name: deploy doc and update alias 'latest' to the new doc deployment
-        if: ${{ github.ref == refs/tags/') }}
-        run: mike --update-aliases ${{ github.ref_name }} latest
+        if: github.event_name == 'release' && github.event.action == 'created'
+        run: mike --push --update-aliases ${{ github.ref_name }} latest

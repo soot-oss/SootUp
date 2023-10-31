@@ -1,5 +1,12 @@
 name: Delete obsolete Documentation
-on: delete
+on:
+  pull_request:
+    types:
+      - closed
+    paths:
+      - 'mkdocs.yml'
+      - 'sootup.examples/**'
+      - 'docs/**'
 
 permissions:
   contents: write
