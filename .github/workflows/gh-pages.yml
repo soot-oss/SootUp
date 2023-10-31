@@ -36,8 +36,14 @@ jobs:
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 
+
+      - name: get latest release tag
+        id: latestgittag
+        run: latestgittagvar=git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7
+
+
       - name: replace version in .md files
-        run: sed -i 's\{{ git_latest_release }}\'$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)'\g' *.md
+        run: sed -i 's\{{ git_latest_release }}\${{steps.latestgittag.outputs.latestgittagvar}}\g' *.md
 
       - run: git fetch origin gh-pages --depth=1
       - name: Configure git user
@@ -49,10 +55,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mike deploy ${{ github.head_ref }} --push
 
-      - name: deploy doc in subdirectory (release)
+      - name: deploy doc in subdirectory (release created)
         if: github.event_name == 'release'
         run: mike deploy ${{ github.ref }} --push
 
-      - name: deploy doc and update alias 'latest' to the new doc deployment
+      - name: update alias 'latest' to the new doc deployment (release published)
         if: github.event_name == 'release' && github.event.action == 'published'
         run: mike --push --update-aliases $(echo ${{ github.ref }} | sed -e "s#refs/heads/##g") latest
