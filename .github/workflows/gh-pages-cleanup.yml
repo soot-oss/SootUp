@@ -19,8 +19,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: pip install pkg_resources
       - run: pip install mike
+      - run: pip install --upgrade setuptools
       - run: git fetch origin gh-pages --depth=1
       - name: Configure git user
         run: |
