@@ -39,7 +39,7 @@ jobs:
 
       - name: get latest release tag
         id: latestgittag
-        run: latestgittagvar=git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7
+        run: latestgittagvar=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)
 
 
       - name: replace version in .md files
@@ -57,8 +57,8 @@ jobs:
 
       - name: deploy doc in subdirectory (release created)
         if: github.event_name == 'release'
-        run: mike deploy ${{ github.ref }} --push
+        run: mike deploy ${{ github.ref_name }} --push
 
-      - name: update alias 'latest' to the new doc deployment (release published)
+      - name: set release as default (release published)
         if: github.event_name == 'release' && github.event.action == 'published'
-        run: mike --push --update-aliases $(echo ${{ github.ref }} | sed -e "s#refs/heads/##g") latest
+        run: mike set-default --push ${{ github.ref_name }}
