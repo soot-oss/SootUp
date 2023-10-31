@@ -45,9 +45,6 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      # set default to alias 'latest'
-      - run: mike set-default --push latest
-
       - name: deploy doc in subdirectory
         run: mike deploy ${{ github.ref_name }} --push
 
