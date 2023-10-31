@@ -46,8 +46,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: deploy doc in subdirectory
-        run: mike deploy ${{ github.ref }} --push
+        run: mike deploy $(echo ${{ github.event.ref }} | sed -e "s#refs/heads/##g") --push
 
       - name: deploy doc and update alias 'latest' to the new doc deployment
         if: github.event_name == 'release' && github.event.action == 'created'
-        run: mike --push --update-aliases ${{ github.ref }} latest
+        run: mike --push --update-aliases $(echo ${{ github.event.ref }} | sed -e "s#refs/heads/##g") latest
