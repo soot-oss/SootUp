@@ -25,6 +25,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-tags: true
+      # to get tag information
+      - run: git fetch --prune --unshallow
+
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
@@ -37,11 +40,6 @@ jobs:
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
-
-
-      - run: ls -a
-      - run: git describe --tags `git rev-list --tags --max-count=1`
-      - run: git tag --sort=committerdate
 
       - name: get latest release tag
         id: "latestgittag"
