@@ -38,12 +38,13 @@ jobs:
 
 
       - name: get latest release tag
-        id: latestgittag
-        run: latestgittagvar=$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)
+        id: "latestgittag"
+        run: latestgittagvar="$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)"
 
+      - run: echo "[${{steps.latestgittag.outputs.latestgittagvar}}]"
 
-      - name: replace version in .md files
-        run: sed -i 's\{{ git_latest_release }}\${{steps.latestgittag.outputs.latestgittagvar}}\g' *.md
+      - name: replace "{{ git_latest_release }}" with latest release tag version in .md files
+        run: sed -i 's\{{ git_latest_release }}\'${{steps.latestgittag.outputs.latestgittagvar}}'\g' docs/**.md
 
       - run: git fetch origin gh-pages --depth=1
       - name: Configure git user
