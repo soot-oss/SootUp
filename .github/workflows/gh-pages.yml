@@ -37,6 +37,8 @@ jobs:
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 
 
+      - run: git tag --sort=committerdate
+
       - name: get latest release tag
         id: "latestgittag"
         run: latestgittagvar="$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)"
