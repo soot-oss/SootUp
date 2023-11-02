@@ -286,6 +286,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testSingleClassDoesNotExist() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), null);
+  }
+
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =

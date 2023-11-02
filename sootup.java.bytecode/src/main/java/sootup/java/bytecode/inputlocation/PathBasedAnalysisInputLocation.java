@@ -83,11 +83,6 @@ public abstract class PathBasedAnalysisInputLocation
     this.sourceType = srcType;
   }
 
-  protected PathBasedAnalysisInputLocation(Path path) {
-    this.path = path;
-    this.sourceType = null;
-  }
-
   @Nullable
   @Override
   public SourceType getSourceType() {
@@ -143,23 +138,6 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     return false;
-  }
-
-  @Nonnull
-  Optional<? extends AbstractClassSource<JavaSootClass>> createClassSourceForPath(
-      @Nonnull Path classFilePath,
-      @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
-    final FileType handledFileType = classProvider.getHandledFileType();
-    final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
-
-    // Check if the file has the correct extension and is not a module info file
-    if (PathUtils.hasExtension(classFilePath, handledFileType)
-        && !classFilePath.toString().endsWith(moduleInfoFilename)) {
-      return classProvider.createClassSource(
-          this, classFilePath, factory.fromPath(classFilePath.getParent(), classFilePath));
-    }
-    return Optional.empty();
   }
 
   @Nonnull
