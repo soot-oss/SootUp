@@ -34,13 +34,13 @@ public enum FileType {
   JAR("jar"),
   ZIP("zip"),
   APK("apk"),
-  CLASS("class"),
   JAVA("java"),
   WAR("war"),
+  CLASS("class"),
   JIMPLE("jimple");
 
   public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES =
-      EnumSet.of(JAR, ZIP, APK, WAR, CLASS);
+      EnumSet.of(JAR, ZIP, APK, WAR);
 
   private final @Nonnull String extension;
 

@@ -101,18 +101,17 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
-
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
         inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
-      } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
-        inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
       } else {
         inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
+    } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
+      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
     } else {
       throw new IllegalArgumentException(
           "Path '"
