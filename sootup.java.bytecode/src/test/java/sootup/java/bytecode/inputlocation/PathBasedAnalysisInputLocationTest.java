@@ -282,8 +282,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(cls, null);
     ArrayList<ClassType> sigs = new ArrayList<>();
-    sigs.add(
-        getIdentifierFactory().getClassType("Employee"));
+    sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
   }
 

@@ -50,9 +50,7 @@ public abstract class AnalysisInputLocationTest {
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
   final Path apk = Paths.get("../shared-test-resources/apk/SimpleApk.apk");
-  final Path cls =
-      Paths.get(
-          "../shared-test-resources/miniTestSuite/java6/binary/Employee.class");
+  final Path cls = Paths.get("../shared-test-resources/miniTestSuite/java6/binary/Employee.class");
 
   protected IdentifierFactory getIdentifierFactory() {
     return JavaIdentifierFactory.getInstance();
