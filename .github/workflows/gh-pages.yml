@@ -57,7 +57,7 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${{ github.head_ref }}_preview && mike props ${{ github.head_ref }}_preview hidden --push
+        run: mike deploy ${{ github.head_ref }}_preview && mike props ${{ github.head_ref }}_preview --set-string hidden=true --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
