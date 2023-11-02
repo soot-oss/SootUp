@@ -25,13 +25,11 @@ package sootup.java.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
@@ -227,22 +225,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
         .computeIfAbsent(
             className + packageName,
             (k) -> new AnnotationType(className, getPackageName(packageName)));
-  }
-
-  @Override
-  @Nonnull
-  public JavaClassType fromPath(@Nonnull final Path rootDirectory, @Nonnull final Path file) {
-
-    final int nameCountBaseDir =
-        rootDirectory.toString().isEmpty() ? 0 : rootDirectory.getNameCount();
-
-    String fullyQualifiedName =
-        FilenameUtils.removeExtension(
-            file.subpath(nameCountBaseDir, file.getNameCount())
-                .toString()
-                .replace(file.getFileSystem().getSeparator(), "."));
-
-    return getClassType(fullyQualifiedName);
   }
 
   /**

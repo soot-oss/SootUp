@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
@@ -212,7 +213,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     // else use the module system and create fully class signature
     // we do not have a base directory here, the moduleDir is actually not a directory
-    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(Paths.get(""), filename);
+    final Path rootDirectory = Paths.get("");
+
+    final String fullyQualifiedName = fromPath(rootDirectory, filename);
+
+    JavaClassType sig = (JavaClassType) identifierFactory.getClassType(fullyQualifiedName);
 
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)
@@ -221,6 +226,15 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     // if we are using the normal signature factory, then trim the module from the path
     return sig;
+  }
+
+  @Nonnull
+  private static String fromPath(@Nonnull Path rootDirectory, @Nonnull Path filename) {
+    return FilenameUtils.removeExtension(
+        filename
+            .subpath(rootDirectory.getNameCount(), filename.getNameCount())
+            .toString()
+            .replace(filename.getFileSystem().getSeparator(), "."));
   }
 
   @Nonnull

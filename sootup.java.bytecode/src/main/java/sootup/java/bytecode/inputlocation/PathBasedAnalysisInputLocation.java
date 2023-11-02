@@ -7,6 +7,7 @@ import com.google.common.cache.RemovalNotification;
 import com.googlecode.dex2jar.tools.Dex2jarCmd;
 import java.io.*;
 import java.nio.file.*;
+import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
@@ -21,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,7 +42,10 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.*;
+import sootup.java.core.JavaModuleIdentifierFactory;
+import sootup.java.core.JavaModuleInfo;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -145,23 +151,36 @@ public abstract class PathBasedAnalysisInputLocation
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
       @Nonnull ClassProvider<JavaSootClass> classProvider) {
-    try {
-      final FileType handledFileType = classProvider.getHandledFileType();
-      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
-      return Files.walk(dirPath)
-          .filter(
+
+    final FileType handledFileType = classProvider.getHandledFileType();
+    final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
+    try (final Stream<Path> walk = Files.walk(dirPath)) {
+      return walk.filter(
               filePath ->
                   PathUtils.hasExtension(filePath, handledFileType)
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
+              p -> {
+                final String fullyQualifiedName = fromPath(dirPath, p);
+
+                return StreamUtils.optionalToStream(
+                    classProvider.createClassSource(
+                        this, p, factory.getClassType(fullyQualifiedName)));
+              })
           .collect(Collectors.toList());
 
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  @Nonnull
+  private static String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+    return FilenameUtils.removeExtension(
+        packageNamePathAndClass
+            .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
+            .toString()
+            .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
   }
 
   @Nonnull
@@ -220,8 +239,11 @@ public abstract class PathBasedAnalysisInputLocation
       AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
       IdentifierFactory factory = view.getIdentifierFactory();
       Path dirPath = this.path.getParent();
+
+      final String fullyQualifiedName = fromPath(dirPath, path);
+
       Optional<SootClassSource<JavaSootClass>> classSource =
-          classProvider.createClassSource(this, path, factory.fromPath(dirPath, path));
+          classProvider.createClassSource(this, path, factory.getClassType(fullyQualifiedName));
       return Collections.singletonList(classSource.get());
     }
   }
@@ -272,18 +294,20 @@ public abstract class PathBasedAnalysisInputLocation
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
-        tmp =
-            Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))
-                .map(dir -> dir.getFileName().toString().replace("/", ""))
-                .mapToInt(Integer::new)
-                .sorted()
-                .toArray();
+        try (final Stream<Path> list =
+            Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))) {
+          tmp =
+              list.map(dir -> dir.getFileName().toString().replace("/", ""))
+                  .mapToInt(Integer::new)
+                  .sorted()
+                  .toArray();
+        }
+
       } catch (IOException | ExecutionException e) {
         e.printStackTrace();
         tmp = new int[] {};
       }
       availableVersions = tmp;
-
       discoverInputLocations(srcType);
     }
 
@@ -293,7 +317,7 @@ public abstract class PathBasedAnalysisInputLocation
       try {
         fs = fileSystemCache.get(path);
       } catch (ExecutionException e) {
-        e.printStackTrace();
+        throw new RuntimeException(e);
       }
       final Path archiveRoot = fs.getPath("/");
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
