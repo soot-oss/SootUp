@@ -70,31 +70,31 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_min =
         JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, SourceType.Application))
             .build();
     final JavaView view_min = project_min.createView();
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, SourceType.Application))
             .build();
     final JavaView view_8 = project_8.createView();
 
     final JavaProject project_9 =
         JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, SourceType.Application))
             .build();
     final JavaView view_9 = project_9.createView();
 
     final JavaProject project_10 =
         JavaProject.builder(new JavaLanguage(10))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, SourceType.Application))
             .build();
     final JavaView view_10 = project_10.createView();
 
     final JavaProject project_max =
         JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, SourceType.Application))
             .build();
     final JavaView view_max = project_max.createView();
 
@@ -184,7 +184,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     final JavaProject project_8 =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mmrj, null))
+            .addInputLocation(PathBasedAnalysisInputLocation.create(mmrj, SourceType.Application))
             .build();
     final JavaView view_8 = project_8.createView();
 
@@ -194,7 +194,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 .enableModules()
                 .addInputLocation(
                     (ModuleInfoAnalysisInputLocation)
-                        PathBasedAnalysisInputLocation.create(mmrj, null))
+                        PathBasedAnalysisInputLocation.create(mmrj, SourceType.Application))
                 .build();
 
     final JavaModuleView view_9 = project_9.createView();
@@ -271,7 +271,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testApk() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(apk, null);
+        PathBasedAnalysisInputLocation.create(apk, SourceType.Application);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
     testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
@@ -280,7 +280,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(cls, null);
+        PathBasedAnalysisInputLocation.create(cls, SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
@@ -289,13 +289,25 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test(expected = IllegalArgumentException.class)
   public void testSingleClassDoesNotExist() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), null);
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("NonExisting.class"), SourceType.Application);
+  }
+
+  @Test
+  public void testSingleClassWPackageName() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            SourceType.Application);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("ClassesPackageName.ClassWithPackageName"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(jar, null);
+        PathBasedAnalysisInputLocation.create(jar, SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
@@ -305,7 +317,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(war, null);
+        PathBasedAnalysisInputLocation.create(war, SourceType.Application);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
   }
@@ -423,7 +435,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testRuntimeJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
+            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), SourceType.Application);
 
     JavaView v =
         JavaProject.builder(new JavaLanguage(8))
