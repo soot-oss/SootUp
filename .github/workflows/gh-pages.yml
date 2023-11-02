@@ -37,8 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-tags: true
       # to get tag information
       - run: git fetch --prune --unshallow
 
