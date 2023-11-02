@@ -4,6 +4,10 @@
 
 name: Documentation
 on:
+  push:
+    branches:
+      - develop
+
   release:
     types: [ created, published ]
 
@@ -53,6 +57,11 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+      # on push to develop branch - keep a doc around for develop to show the current state
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'push'
+        run: mike deploy develop
 
       # on PR events..
       - name: deploy doc in subdirectory
