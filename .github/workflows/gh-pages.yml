@@ -21,7 +21,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  deploy:
+  manage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -55,21 +55,19 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${{ github.head_ref }} --push
+        run: mike deploy ${{ github.head_ref }}_preview --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
-            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.head_ref }}/).
+            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}_preview/${{ github.head_ref }}/).
 
       # on PR close - delete preview
       - name: delete the deployed preview
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        run: mike delete ${{ github.head_ref }} --push
-
-
+        run: mike delete ${{ github.head_ref }}_preview --push
 
 
       # on release events..
@@ -79,4 +77,4 @@ jobs:
 
       - name: set the new release doc as default (release published)
         if: github.event_name == 'release' && github.event.action == 'published'
-        run: mike set-default --push ${{ github.ref_name }}
+        run: mike deploy --push --update-aliases ${{ github.ref_name }} latest
