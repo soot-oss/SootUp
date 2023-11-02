@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - 'mkdocs.yml'
+      - 'sootup.examples/**'
+      - 'docs/**'
 
   release:
     types: [ created, published ]
@@ -21,6 +25,8 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+
+concurrency: pages
 
 permissions:
   contents: write
