@@ -134,4 +134,22 @@ public class MethodSubSignature extends SootClassMemberSubSignature
 
     printer.literal(")");
   }
+
+  boolean isMainSignature() {
+    if (getName().equals("main")) {
+      if (getParameterTypes().size() == 1) {
+        // FIXME: handle modules with 'java.base' in the signature as well
+        return getParameterTypes().get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
+  }
+
+  boolean isStaticInitializerSignature() {
+    return getName().equals("<clinit>");
+  }
+
+  boolean isConstructor() {
+    return getName().equals("<init>");
+  }
 }
