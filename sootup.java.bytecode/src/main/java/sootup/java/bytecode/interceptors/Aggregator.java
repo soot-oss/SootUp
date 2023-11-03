@@ -183,14 +183,15 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        // cannot aggregate e.g. a JIdentityStmt
+        // can only aggregate JAssignStmts
         if (!(relevantDef instanceof JAssignStmt)) {
           continue;
         }
 
         Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
         JAssignStmt newStmt = null;
-        if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
+        if (assignStmt.getRightOp() instanceof AbstractBinopExpr
+            && aggregatee instanceof Immediate) {
           AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
           if (rightOp.getOp1() == val) {
             AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
