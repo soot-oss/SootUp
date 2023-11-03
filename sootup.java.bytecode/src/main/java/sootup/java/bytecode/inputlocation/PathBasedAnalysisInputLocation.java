@@ -83,7 +83,7 @@ public abstract class PathBasedAnalysisInputLocation
     this.sourceType = srcType;
 
     if (!Files.exists(path)) {
-      throw new IllegalArgumentException("The provided path does not exist.");
+      throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
     }
   }
 

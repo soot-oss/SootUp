@@ -560,8 +560,6 @@ public class LocalSplitterTest {
 
     graph.setStartingStmt(startingStmt);
 
-    System.out.println(graph);
-
     return builder;
   }
 

@@ -62,7 +62,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
     assertTrue(
         classSources.size()
             > 20000); // not precise as this amount can differ depending on the included runtime
-                      // library
+    // library
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig1)));
     assertTrue(view.getClass(sig1).isPresent());
     assertTrue(classSources.stream().anyMatch(cs -> cs.getClassType().equals(sig2)));
