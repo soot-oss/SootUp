@@ -109,7 +109,11 @@ public abstract class PathBasedAnalysisInputLocation
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
-        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+        try {
+          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       } else {
         throw new IllegalArgumentException(
             "Path '"
@@ -616,15 +620,18 @@ public abstract class PathBasedAnalysisInputLocation
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType) {
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType)
+        throws IOException {
       super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"),
+          Files.createDirectory(
+                  Paths.get(
+                      System.getProperty("java.io.tmpdir")
+                          + File.separator
+                          + "sootOutput"
+                          + "-war"
+                          + warPath.hashCode()
+                          + "/"))
+              .toAbsolutePath(),
           srcType);
       extractWarFile(warPath, path);
 
