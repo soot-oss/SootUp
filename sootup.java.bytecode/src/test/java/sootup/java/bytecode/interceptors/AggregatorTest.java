@@ -2,9 +2,11 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -18,9 +20,13 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
+import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -176,5 +182,25 @@ public class AggregatorTest {
 
       System.out.println(sootMethod.getBody());
     }
+  }
+
+  @Test
+  public void testIssue739() {
+
+    PathBasedAnalysisInputLocation inputLocation =
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
+            SourceType.Application);
+
+    JavaProject project =
+        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+
+    JavaView view = project.createView();
+    view.configBodyInterceptors(a -> BytecodeClassLoadingOptions.Default);
+
+    final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
+    Assert.assertTrue(view.getClass(classType).isPresent());
+
+    view.getClasses().stream().findFirst().get().getMethods().forEach(SootMethod::getBody);
   }
 }
