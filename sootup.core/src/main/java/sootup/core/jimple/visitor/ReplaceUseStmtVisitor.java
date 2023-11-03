@@ -71,6 +71,8 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+    // fall back to the original statement when none of the cases set a result
+    setResult(stmt);
 
     // uses on the def side.. e.g. a base in an JArrayRef but NOT with a simple Local!
     final Value leftOp = stmt.getLeftOp();
@@ -106,8 +108,6 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       if (exprVisitor.getResult() != rValue) {
         setResult(stmt.withRValue(exprVisitor.getResult()));
       }
-    } else {
-      setResult(stmt);
     }
   }
 
