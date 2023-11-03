@@ -27,10 +27,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.constant.Constant;
 import sootup.core.types.Type;
 
 /**
@@ -52,7 +48,7 @@ public class OperandStack {
   public StackFrame getOrCreateStackframe(@Nonnull AbstractInsnNode insn) {
     StackFrame frame = frames.get(insn);
     if (frame == null) {
-      frame = new StackFrame(methodSource);
+      frame = new StackFrame(insn, methodSource);
       frames.put(insn, frame);
     }
     return frame;
@@ -107,76 +103,14 @@ public class OperandStack {
   }
 
   @Nonnull
-  public Operand popLocal(@Nonnull Operand o) {
-    Value v = o.value;
-    Local l = o.stackLocal;
-    if (l == null && !(v instanceof Local)) {
-      l = o.stackLocal = methodSource.newStackLocal();
-      methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
-      o.updateUsages();
-    }
-    return o;
-  }
-
-  @Nonnull
-  public Operand popImmediate(@Nonnull Operand o) {
-    Value v = o.value;
-    Local l = o.stackLocal;
-    if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
-      l = o.stackLocal = methodSource.newStackLocal();
-      methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
-      o.updateUsages();
-    }
-    return o;
-  }
-
-  @Nonnull
-  public Operand popStackConst(@Nonnull Operand o) {
-    Value v = o.value;
-    Local l = o.stackLocal;
-    if (l == null && !(v instanceof Constant)) {
-      l = o.stackLocal = methodSource.newStackLocal();
-      methodSource.setStmt(o.insn, Jimple.newAssignStmt(l, v, methodSource.getStmtPositionInfo()));
-      o.updateUsages();
-    }
-    return o;
-  }
-
-  @Nonnull
-  public Operand popLocal() {
-    return popLocal(pop());
-  }
-
-  @SuppressWarnings("unused")
-  @Nonnull
-  public Operand popLocalDual() {
-    return popLocal(popDual());
-  }
-
-  @Nonnull
-  public Operand popImmediate() {
-    return popImmediate(pop());
-  }
-
-  @Nonnull
-  public Operand popImmediateDual() {
-    return popImmediate(popDual());
-  }
-
-  @Nonnull
-  public Operand popImmediate(@Nonnull Type t) {
-    return AsmUtil.isDWord(t) ? popImmediateDual() : popImmediate();
-  }
-
-  @Nonnull
   public Operand popStackConst() {
-    return popStackConst(pop());
+    return pop();
   }
 
   @SuppressWarnings("unused")
   @Nonnull
   public Operand popStackConstDual() {
-    return popStackConst(popDual());
+    return popDual();
   }
 
   @Nonnull

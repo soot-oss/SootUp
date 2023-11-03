@@ -23,15 +23,10 @@ package sootup.java.bytecode.frontend;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.jimple.Jimple;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
 /**
  * Frame of stack for an instruction. (see <a
@@ -40,7 +35,7 @@ import sootup.core.jimple.common.stmt.Stmt;
  * @author Aaloan Miftah
  */
 final class StackFrame {
-
+  @Nonnull private final AbstractInsnNode insn;
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
   @Nonnull private final ArrayList<Operand[]> in = new ArrayList<>(1);
@@ -51,7 +46,8 @@ final class StackFrame {
    *
    * @param src source the frame belongs to.
    */
-  StackFrame(@Nonnull AsmMethodSource src) {
+  StackFrame(@Nonnull AbstractInsnNode insn, @Nonnull AsmMethodSource src) {
+    this.insn = insn;
     this.src = src;
   }
 
@@ -88,111 +84,60 @@ final class StackFrame {
    * @throws IllegalArgumentException if the number of new operands is not equal to the number of
    *     old operands.
    */
-  void mergeIn(int lineNumber, @Nonnull Operand... oprs) {
-    if (in.get(0).length != oprs.length) {
+  void mergeIn(@Nonnull Operand... oprs) {
+    if (in.get(0).length != oprs.length || oprs.length == 0) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
 
-    StmtPositionInfo positionInfo;
-    if (lineNumber > 0) {
-      positionInfo = new SimpleStmtPositionInfo(lineNumber);
-    } else {
-      positionInfo = StmtPositionInfo.createNoStmtPositionInfo();
-    }
-
-    final int nrIn = in.size();
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
-      /* merge, since prevOp != newOp */
+      // TODO skip finding/setting a common stack local when the values of the operands match?
+
       Local stack = inStackLocals[i];
       if (stack != null) {
-        if (newOp.stackLocal == null) {
-          newOp.stackLocal = stack;
-          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
-          src.setStmt(newOp.insn, as);
-          newOp.updateUsages();
-        } else {
-          final Value rvalue = newOp.stackOrValue();
-          // check for self/identity assignments and ignore them
-          if (stack != rvalue) {
-            JAssignStmt as = Jimple.newAssignStmt(stack, rvalue, positionInfo);
-            src.mergeStmts(newOp.insn, as);
-          }
-        }
+        newOp.changeStackLocal(stack);
       } else {
-        for (int j = 0; j != nrIn; j++) {
+        // Search for a stack local that was already allocated for an operand in a different branch
+        for (int j = 0; j != in.size(); j++) {
           stack = in.get(j)[i].stackLocal;
           if (stack != null) {
             break;
           }
         }
-        if (stack == null) {
-          stack = newOp.stackLocal;
-          if (stack == null) {
-            stack = src.newStackLocal();
-          }
-        }
-        /* add assign statement for prevOp */
-        for (int j = 0; j != nrIn; j++) {
-          Operand prevOp = in.get(j)[i];
-          if (prevOp.stackLocal == stack) {
-            continue;
-          }
-          if (prevOp.stackLocal == null) {
-            prevOp.stackLocal = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value, positionInfo);
-            src.setStmt(prevOp.insn, as);
-          } else {
-            Stmt u = src.getStmt(prevOp.insn);
-            AbstractDefinitionStmt as =
-                (AbstractDefinitionStmt)
-                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-            Value lvb = as.getLeftOp();
-            assert lvb == prevOp.stackLocal : "Invalid stack local!";
-            prevOp.stackLocal = stack;
-          }
-          prevOp.updateUsages();
-        }
-        if (newOp.stackLocal != stack) {
-          if (newOp.stackLocal == null) {
-            newOp.stackLocal = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, positionInfo);
-            src.setStmt(newOp.insn, as);
-          } else {
-            Stmt u = src.getStmt(newOp.insn);
-            if (!(u instanceof JNopStmt)) {
-              AbstractDefinitionStmt as =
-                  (AbstractDefinitionStmt)
-                      (u instanceof StmtContainer ? ((StmtContainer) u).getFirstStmt() : u);
-              Value lvb = as.getLeftOp();
-              assert lvb == newOp.stackLocal : "Invalid stack local!";
-            }
-            newOp.stackLocal = stack;
-          }
-          newOp.updateUsages();
-        }
-        inStackLocals[i] = stack;
-      }
 
-      /*
-       * this version uses allocated locals if it finds both operands have stack locals allocated already
-       */
-      /*
-       * if (stack == null) { if (in.size() != 1) throw new AssertionError("Local h " + in.size()); stack =
-       * src.newStackLocal(); inStackLocals[i] = stack; ValueBox box = boxes == null ? null : boxes[i]; /* add assign
-       * statement for prevOp * for (int j = 0; j != nrIn; j++) { Operand prevOp = in.get(j)[i]; prevOp.removeBox(box); if
-       * (prevOp.stack == null) { prevOp.stack = stack; as = Jimple.v().newAssignStmt(stack, prevOp.value);
-       * src.setUnit(prevOp.insn, as); prevOp.updateBoxes(); } else { as = Jimple.v().newAssignStmt(stack,
-       * prevOp.stackOrValue()); src.mergeUnits(prevOp.insn, as); } prevOp.addBox(as.getRightOpBox()); } if (box != null)
-       * box.setValue(stack); } if (newOp.stack == null) { newOp.stack = stack; as = Jimple.v().newAssignStmt(stack,
-       * newOp.value); src.setUnit(newOp.insn, as); newOp.updateBoxes(); } else { as = Jimple.v().newAssignStmt(stack,
-       * newOp.stackOrValue()); src.mergeUnits(newOp.insn, as); } newOp.addBox(as.getRightOpBox());
-       */
+        // The incoming operand may already have a stack local allocated that can be re-used
+        if (stack == null && newOp.stackLocal != null) {
+          stack = newOp.stackLocal;
+        }
+
+        // Didn't find any pre-allocated stack local from any operand.
+        // So create a new stack local.
+        // TODO use a special case when the statement is an assignment to a local since in that case
+        //  we can use the local directly instead of creating a new stack local
+        if (stack == null) {
+          stack = src.newStackLocal();
+        }
+
+        /* add assign statement for prevOp */
+        for (int j = 0; j != in.size(); j++) {
+          Operand prevOp = in.get(j)[i];
+          prevOp.changeStackLocal(stack);
+        }
+        newOp.changeStackLocal(stack);
+
+        inStackLocals[i] = stack;
+        // TODO `in.get(0)` is weird because of the index?
+        // TODO make it more obvious that this is only run the first time (because `inStackLocals[i]
+        //  == null`)
+        ReplaceUseStmtVisitor replaceUseStmtVisitor =
+            new ReplaceUseStmtVisitor(in.get(0)[i].value, stack);
+        Stmt oldStatement = this.src.getStmt(this.insn);
+        oldStatement.accept(replaceUseStmtVisitor);
+        this.src.replaceStmt(oldStatement, replaceUseStmtVisitor.getResult());
+      }
     }
-    // add if there is a difference
-    if (0 < oprs.length) {
-      in.add(oprs);
-    }
+
+    in.add(oprs);
   }
 }

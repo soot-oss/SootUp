@@ -1,4 +1,5 @@
 package sootup.java.bytecode.frontend;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -20,14 +21,16 @@ package sootup.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.Expr;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
@@ -41,13 +44,10 @@ class Operand {
   @SuppressWarnings("ConstantConditions")
   static final Operand DWORD_DUMMY = new Operand(null, null, null);
 
-  @Nonnull protected final AbstractInsnNode insn;
+  @Nonnull protected AbstractInsnNode insn;
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
-
-  @Nonnull private final List<Stmt> usedByStmts = new ArrayList<>();
-  @Nonnull private final List<Expr> usedByExpr = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -62,62 +62,81 @@ class Operand {
     this.methodSource = methodSource;
   }
 
-  /**
-   * Adds a usage of this operand (so whenever it is used in a stmt)
-   *
-   * @param stmt the usage
-   */
-  void addUsageInStmt(@Nonnull Stmt stmt) {
-    usedByStmts.add(stmt);
-  }
-
-  /**
-   * Adds a usage of this operand (so whenever it is used in a Expr)
-   *
-   * @param expr the usage
-   */
-  void addUsageInExpr(@Nonnull Expr expr) {
-    usedByExpr.add(expr);
-  }
-
-  /** Updates all statements and expressions that use this Operand. */
-  void updateUsages() {
-
-    for (Expr exprUsage : usedByExpr) {
-      methodSource
-          .getStmtsThatUse(exprUsage)
-          .map(methodSource::getLatestVersionOfStmt)
-          .filter(stmt -> !usedByStmts.contains(stmt))
-          .forEach(usedByStmts::add);
+  Local getOrAssignValueToStackLocal() {
+    if (stackLocal == null) {
+      changeStackLocal(methodSource.newStackLocal());
     }
 
-    if (value == stackOrValue()) return;
+    return stackLocal;
+  }
 
-    ReplaceUseStmtVisitor replaceStmtVisitor = new ReplaceUseStmtVisitor(value, stackOrValue());
+  void emitStatement() {
+    if (this == DWORD_DUMMY) {
+      return;
+    }
 
-    List<Stmt> stmtsToDelete = new ArrayList<>();
+    if (value instanceof AbstractInvokeExpr) {
+      methodSource.setStmt(
+          insn,
+          Jimple.newInvokeStmt((AbstractInvokeExpr) value, methodSource.getStmtPositionInfo()));
+    } else {
+      // create an assignment that uses the value because it might have side effects
+      getOrAssignValueToStackLocal();
+    }
+  }
 
-    for (int i = 0; i < usedByStmts.size(); i++) {
-      Stmt oldUsage = usedByStmts.get(i);
+  void changeStackLocal(Local newStackLocal) {
+    Local oldStackLocal = this.stackLocal;
 
-      // resolve stmt in method source, it might not exist anymore!
-      oldUsage = methodSource.getLatestVersionOfStmt(oldUsage);
+    if (oldStackLocal == newStackLocal) {
+      // nothing to change
+      return;
+    }
 
-      oldUsage.accept(replaceStmtVisitor);
-      Stmt newUsage = replaceStmtVisitor.getResult();
+    JAssignStmt assignStmt = methodSource.getStmt(insn);
+    if (assignStmt == null) {
+      // TODO the position info is the position of the *usage* (which is only mostly correct?)
+      // emit `$newStackLocal = value`
+      methodSource.setStmt(
+          insn, Jimple.newAssignStmt(newStackLocal, value, methodSource.getStmtPositionInfo()));
+    } else {
+      assert assignStmt.getLeftOp() == oldStackLocal;
+      // replace `$oldStackLocal = value` with `$newStackLocal = value`
+      methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
+    }
 
-      if (oldUsage != newUsage) {
-        methodSource.replaceStmt(oldUsage, newUsage);
-        usedByStmts.set(i, newUsage);
+    // Replace all usages of `oldStackLocal` with `newStackLocal`
+    if (oldStackLocal != null) {
+      ReplaceUseStmtVisitor replaceStmtVisitor =
+          new ReplaceUseStmtVisitor(oldStackLocal, newStackLocal);
+      for (Stmt oldUsage :
+          methodSource.getStmtsThatUse(oldStackLocal).collect(Collectors.toList())) {
+        oldUsage.accept(replaceStmtVisitor);
+        Stmt newUsage = replaceStmtVisitor.getResult();
+
+        if (newUsage != null && oldUsage != newUsage) {
+          methodSource.replaceStmt(oldUsage, newUsage);
+        }
       }
     }
-    usedByStmts.removeAll(stmtsToDelete);
+
+    this.stackLocal = newStackLocal;
   }
 
-  /** @return either the stack local allocated for this operand, or its value. */
-  @Nonnull
-  Value stackOrValue() {
-    return stackLocal == null ? value : stackLocal;
+  Local toLocal() {
+    if (stackLocal == null && value instanceof Local) {
+      return (Local) value;
+    }
+
+    return getOrAssignValueToStackLocal();
+  }
+
+  Immediate toImmediate() {
+    if (stackLocal == null && value instanceof Immediate) {
+      return (Immediate) value;
+    }
+
+    return getOrAssignValueToStackLocal();
   }
 
   /**
@@ -127,11 +146,14 @@ class Operand {
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {
-    // care for DWORD comparison, as stackOrValue is null, which would result in a
+    Value stackOrValue = stackLocal == null ? value : stackLocal;
+    Value stackOrValueOther = other.stackLocal == null ? other.value : other.stackLocal;
+
+    // care for DWORD comparison, as asValue is null, which would result in a
     // NullPointerException
     return (this == other)
         || ((this == Operand.DWORD_DUMMY) == (other == Operand.DWORD_DUMMY)
-            && stackOrValue().equivTo(other.stackOrValue()));
+            && stackOrValue.equivTo(stackOrValueOther));
   }
 
   @Override
@@ -142,16 +164,6 @@ class Operand {
   @Nonnull
   public AbstractInsnNode getInsn() {
     return insn;
-  }
-
-  @Nonnull
-  public Value getValue() {
-    return value;
-  }
-
-  @Nullable
-  public Local getStackLocal() {
-    return stackLocal;
   }
 
   @Override
