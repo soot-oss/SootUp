@@ -81,6 +81,10 @@ public abstract class PathBasedAnalysisInputLocation
   protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
     this.path = path;
     this.sourceType = srcType;
+
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException("The provided path does not exist.");
+    }
   }
 
   @Nullable
@@ -199,11 +203,8 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classPath, @Nonnull SourceType srcType) {
-      super(classPath, srcType);
-      if (!Files.exists(classPath)) {
-        throw new IllegalArgumentException("The provided .class file does not exist.");
-      }
+        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
+      super(classFilePath, srcType);
     }
 
     @Override
@@ -787,6 +788,17 @@ public abstract class PathBasedAnalysisInputLocation
         throw new RuntimeException(e);
       }
       return classesInXML;
+    }
+  }
+
+  private static class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
+
+    private DefaultRTJarAnalysisInputLocation() {
+      this(SourceType.Library);
+    }
+
+    private DefaultRTJarAnalysisInputLocation(@Nullable SourceType srcType) {
+      super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType);
     }
   }
 }
