@@ -78,6 +78,11 @@ class Operand {
       return;
     }
 
+    if (methodSource.getStmt(insn) != null) {
+      // the operand is already used, which means side effects already happen as well
+      return;
+    }
+
     if (value instanceof AbstractInvokeExpr) {
       methodSource.setStmt(
           insn,

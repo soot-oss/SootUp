@@ -142,6 +142,9 @@ final class StackFrame {
         //  this might require a callback(?) to change the statement; alternative we could do the
         //  merging *before* constructing the statement and then replace the statement if it differs
         //  from an already existing one
+        //  This actually works right now because the `ReplaceUseExprVisitor` only checks object
+        //  equality meaning the
+        //  two instances of the constant are different and only the correct instance is replaced
         Stmt oldStatement = this.src.getStmt(this.insn);
         // TODO `oldStatement` might not exist when a STORE instruction was used to set the
         //  stackLocal
