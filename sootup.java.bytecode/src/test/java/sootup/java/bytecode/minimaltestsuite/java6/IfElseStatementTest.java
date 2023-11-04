@@ -83,8 +83,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "if $l1 >= 42 goto label1",
             "$l2 = 1",
             "label1:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -114,8 +113,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label1:",
             "$l2 = 2",
             "label2:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -151,8 +149,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label2:",
             "$l2 = 3",
             "label3:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -190,8 +187,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label2:",
             "$l2 = 3",
             "label3:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -229,8 +225,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label2:",
             "$l2 = 22",
             "label3:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -274,8 +269,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label3:",
             "$l2 = 2",
             "label4:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 
@@ -319,8 +313,7 @@ public class IfElseStatementTest extends MinimalBytecodeTestSuiteBase {
             "label3:",
             "$l2 = 23",
             "label4:",
-            "$stack3 = $l2",
-            "return $stack3")
+            "return $l2")
         .collect(Collectors.toList());
   }
 }

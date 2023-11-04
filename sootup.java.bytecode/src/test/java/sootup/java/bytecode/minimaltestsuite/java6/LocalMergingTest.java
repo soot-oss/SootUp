@@ -31,6 +31,15 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
                 "void",
                 Collections.singletonList("int")));
     assertJimpleStmts(methodOtherLocal, expectedBodyStmtsOtherLocal());
+
+    SootMethod methodDuplicateValue =
+        loadMethod(
+            identifierFactory.getMethodSignature(
+                getDeclaredClassSignature(),
+                "localMergingWithDuplicateValue",
+                "void",
+                Collections.singletonList("int")));
+    assertJimpleStmts(methodDuplicateValue, expectedBodyStmtsDuplicateValue());
   }
 
   /**
@@ -91,6 +100,36 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
             "$stack5 = $l3",
             "label2:",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>($stack5)",
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * public void localMergingWithDuplicateValue(int n) {
+   *     String a = "one";
+   *     // One of the branches for the first argument contains the constant "two"
+   *     // and the second argument also contains the constant "two".
+   *     // This test ensures that when the first argument gets replaced by a stack local,
+   *     // the second argument isn't replaced as well.
+   *     System.setProperty(n == 1 ? a : "two", "two");
+   * }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsDuplicateValue() {
+    return Stream.of(
+            "$l0 := @this: LocalMerging",
+            "$l1 := @parameter0: int",
+            "$l2 = \"one\"",
+            "if $l1 != 1 goto label1",
+            "$stack3 = $l2",
+            "goto label2",
+            "label1:",
+            "$stack3 = \"two\"",
+            "label2:",
+            "staticinvoke <java.lang.System: java.lang.String setProperty(java.lang.String,java.lang.String)>($stack3, \"two\")",
             "return")
         .collect(Collectors.toList());
   }
