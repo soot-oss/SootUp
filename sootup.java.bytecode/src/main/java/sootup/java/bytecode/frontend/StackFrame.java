@@ -92,12 +92,15 @@ final class StackFrame {
     for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
-      // TODO skip finding/setting a common stack local when the values of the operands match?
-
       Local stack = inStackLocals[i];
       if (stack != null) {
         newOp.changeStackLocal(stack);
       } else {
+        if (in.get(0)[i].value == newOp.value) {
+          // all branches have the same value, so no stack local is needed to converge the values
+          continue;
+        }
+
         // Search for a stack local that was already allocated for an operand in a different branch
         for (int j = 0; j != in.size(); j++) {
           stack = in.get(j)[i].stackLocal;
