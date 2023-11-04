@@ -1445,13 +1445,20 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     Local local = getOrCreateLocal(insn.var);
     if (!insnToStmt.containsKey(insn)) {
-      AbstractDefinitionStmt as =
-          Jimple.newAssignStmt(local, opr.toImmediate(), getStmtPositionInfo());
-      // TODO might be able to `opr.stackLocal = local` instead of converting to an immediate
-      //  by updating all usages of the stackLocal
-      //  when the local isn't used anywhere else
+      AbstractDefinitionStmt as;
+      if (opr.stackLocal == null) {
+        // Can skip creating a new stack local for the operand
+        // and store the value in the local directly.
+        as = Jimple.newAssignStmt(local, opr.value, getStmtPositionInfo());
+        // TODO check that this works correctly with the merging
+        opr.stackLocal = local;
+        setStmt(opr.insn, as);
+      } else if (opr.stackLocal != local) {
+        as = Jimple.newAssignStmt(local, opr.toImmediate(), getStmtPositionInfo());
+        setStmt(insn, as);
+      }
+
       frame.setIn(opr);
-      setStmt(insn, as);
     } else {
       frame.mergeIn(opr);
     }

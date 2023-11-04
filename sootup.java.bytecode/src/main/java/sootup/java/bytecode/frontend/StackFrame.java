@@ -133,9 +133,18 @@ final class StackFrame {
         // TODO `in.get(0)` is weird because of the index?
         // TODO make it more obvious that this is only run the first time (because `inStackLocals[i]
         //  == null`)
+        // replace the operand in the statement that *started* the merge
         ReplaceUseStmtVisitor replaceUseStmtVisitor =
             new ReplaceUseStmtVisitor(in.get(0)[i].value, stack);
+        // TODO how to handle the same value being in the the statement multiple times but only one
+        //  time because of the operand? (Something like `System.out.println(operand, "hello")` with
+        //  the operand also having the value "two")
+        //  this might require a callback(?) to change the statement; alternative we could do the
+        //  merging *before* constructing the statement and then replace the statement if it differs
+        //  from an already existing one
         Stmt oldStatement = this.src.getStmt(this.insn);
+        // TODO `oldStatement` might not exist when a STORE instruction was used to set the
+        //  stackLocal
         oldStatement.accept(replaceUseStmtVisitor);
         this.src.replaceStmt(oldStatement, replaceUseStmtVisitor.getResult());
       }
