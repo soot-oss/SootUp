@@ -30,7 +30,9 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 // https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/LocalNameStandardizer.java
 
@@ -64,10 +66,18 @@ public class LocalNameStandardizer implements BodyInterceptor {
     while (iterator.hasNext()) {
       Local local = iterator.next();
       Local newLocal;
+      Type type = local.getType();
+
+      if (type instanceof BottomType) {
+        // TODO: log that likely the jimple is not formed correctly
+        // TODO: handle module signatures
+        type = view.getIdentifierFactory().getClassType("java.lang.Object");
+      }
+
       if (local.isFieldLocal()) {
-        newLocal = lgen.generateFieldLocal(local.getType());
+        newLocal = lgen.generateFieldLocal(type);
       } else {
-        newLocal = lgen.generateLocal(local.getType());
+        newLocal = lgen.generateLocal(type);
       }
       builder.replaceLocal(local, newLocal);
     }

@@ -43,7 +43,7 @@ public class BottomType extends Type {
 
   @Override
   public void accept(@Nonnull TypeVisitor v) {
-    // todo: add bottom type case
+    v.defaultCaseType();
   }
 
   @Override
