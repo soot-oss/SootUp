@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
+import sootup.java.bytecode.interceptors.LocalNameStandardizer;
 import sootup.java.bytecode.interceptors.TypeAssigner;
 
 @Category(Java8Test.class)
@@ -26,6 +27,8 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     new TypeAssigner().interceptBody(builder, view);
+    new LocalNameStandardizer().interceptBody(builder, view);
+
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
     Assert.assertEquals(
@@ -52,6 +55,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   public void testAssignStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, view);
+    new LocalNameStandardizer().interceptBody(builder, view);
 
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
