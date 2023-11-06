@@ -28,18 +28,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
@@ -71,7 +71,7 @@ public class Aggregator implements BodyInterceptor {
    */
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    StmtGraph<?> graph = builder.getStmtGraph();
+    MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Map<LValue, Collection<Stmt>> usesMap = Body.collectUses(stmts);
 
@@ -92,7 +92,8 @@ public class Aggregator implements BodyInterceptor {
         if (!(val instanceof Local)) {
           continue;
         }
-        if (usesMap.get(val).size() > 1) {
+        final Collection<Stmt> usesOfVal = usesMap.get(val);
+        if (usesOfVal.size() > 1) {
           // there are other uses, so it can't be aggregated
           continue;
         }
@@ -189,30 +190,18 @@ public class Aggregator implements BodyInterceptor {
         }
 
         Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
-        JAssignStmt newStmt = null;
-        if (assignStmt.getRightOp() instanceof AbstractBinopExpr
-            && aggregatee instanceof Immediate) {
-          AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
-          if (rightOp.getOp1() == val) {
-            AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
-            newStmt =
-                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
-          } else if (rightOp.getOp2() == val) {
-            AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
-            newStmt =
-                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
-          }
-        } else {
-          newStmt = assignStmt.withRValue(aggregatee);
-        }
+        Stmt newStmt = null;
+        if (aggregatee instanceof Immediate) {
+          final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
+          replaceVisitor.caseAssignStmt(assignStmt);
+          newStmt = replaceVisitor.getResult();
 
-        if (newStmt != null) {
-          builder.replaceStmt(stmt, newStmt);
+          graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
             Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
-            builder.setStartingStmt(newStartingStmt);
+            graph.setStartingStmt(newStartingStmt);
           }
-          builder.removeStmt(relevantDef);
+          graph.removeNode(relevantDef);
         }
       }
     }
