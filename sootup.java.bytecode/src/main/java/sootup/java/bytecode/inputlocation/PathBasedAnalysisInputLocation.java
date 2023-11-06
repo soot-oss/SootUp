@@ -78,7 +78,7 @@ public abstract class PathBasedAnalysisInputLocation
   private final SourceType sourceType;
   protected Path path;
 
-  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this.path = path;
     this.sourceType = srcType;
 
@@ -576,7 +576,7 @@ public abstract class PathBasedAnalysisInputLocation
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -798,13 +798,18 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
+  /**
+   * Refers to the rt.jar from <=Java8 as an AnalysisInputLocation requires: JAVA_HOME to be set and
+   * expects the jar in the "lib/" subdirectory. If you need to include the rt.jar from a custom
+   * Location please make use of JavaClassPathAnalysisInputLocation.
+   */
   private static class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
     private DefaultRTJarAnalysisInputLocation() {
       this(SourceType.Library);
     }
 
-    private DefaultRTJarAnalysisInputLocation(@Nullable SourceType srcType) {
+    private DefaultRTJarAnalysisInputLocation(@Nonnull SourceType srcType) {
       super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType);
     }
   }
