@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -190,12 +189,19 @@ public class Aggregator implements BodyInterceptor {
         }
 
         Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
-        Stmt newStmt = null;
-        if (aggregatee instanceof Immediate) {
-          final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
+        Stmt newStmt;
+
+        final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
+        // FIXME: this try-catch is an awful hack for "ValueBox.canContainValue" -> try to determine
+        // a replaceability earlier!
+        try {
           replaceVisitor.caseAssignStmt(assignStmt);
           newStmt = replaceVisitor.getResult();
+        } catch (ClassCastException iae) {
+          newStmt = null;
+        }
 
+        if (newStmt != null) {
           graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
             Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
