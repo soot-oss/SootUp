@@ -108,7 +108,7 @@ class Operand {
       methodSource.setStmt(
           insn, Jimple.newAssignStmt(newStackLocal, value, methodSource.getStmtPositionInfo()));
     } else {
-      assert assignStmt.getLeftOp() == oldStackLocal;
+      assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
     }
