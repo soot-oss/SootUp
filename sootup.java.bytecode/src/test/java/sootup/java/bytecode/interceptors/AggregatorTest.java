@@ -4,12 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Paths;
 import java.util.*;
-import javax.annotation.Nonnull;
 import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -21,10 +19,10 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -196,38 +194,12 @@ public class AggregatorTest {
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
 
-    final ClassLoadingOptions classLoadingOptions =
-        new ClassLoadingOptions() {
-
-          @Nonnull
-          @Override
-          public List<BodyInterceptor> getBodyInterceptors() {
-            return Arrays.asList(
-                new NopEliminator(),
-                new CastAndReturnInliner(),
-                new UnreachableCodeEliminator(),
-                new LocalSplitter(),
-                new Aggregator(),
-                new CopyPropagator(),
-                new DeadAssignmentEliminator(),
-                new UnusedLocalEliminator(),
-                new ConditionalBranchFolder(),
-                new EmptySwitchEliminator(),
-                new TypeAssigner(),
-                new LocalNameStandardizer());
-          }
-        };
-
     JavaView view = project.createView();
-    view.configBodyInterceptors(a -> classLoadingOptions);
+    view.configBodyInterceptors(a -> BytecodeClassLoadingOptions.Default);
 
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
     Assert.assertTrue(view.getClass(classType).isPresent());
 
-    // FIXME: [ms] TypeAssigner returned BottomType in d0c977d3 when the input was no
-    // correct/complete jimple! i.e. l1 had no assignment
-    // FIXME: [ms] Aggregator removes one "addition of the value of $l1" its currently just l1+l1
-    // instead of l1+l1+l1 that gets printed
     for (JavaSootMethod javaSootMethod :
         view.getClasses().stream().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
