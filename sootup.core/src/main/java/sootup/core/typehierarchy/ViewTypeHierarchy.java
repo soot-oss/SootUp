@@ -299,7 +299,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Nullable
   @Override
   public ClassType superClassOf(@Nonnull ClassType classType) {
-    return sootClassFor(classType).getSuperclass().orElse(null);
+    final Optional<? extends SootClass<?>> classOpt = view.getClass(classType);
+    if (!classOpt.isPresent()) {
+      logger.info("cant get superclass of " + classType + " is not in the view.");
+      return null;
+    }
+    return classOpt.get().getSuperclass().orElse(null);
   }
 
   public boolean isInterface(@Nonnull ClassType type) {
@@ -414,11 +419,6 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Vertex interfaceVertex = new Vertex(type, VertexType.Interface);
     graph.addVertex(interfaceVertex);
     return interfaceVertex;
-  }
-
-  @Nonnull
-  private SootClass<?> sootClassFor(@Nonnull ClassType classType) {
-    return view.getClassOrThrow(classType);
   }
 
   @Override
