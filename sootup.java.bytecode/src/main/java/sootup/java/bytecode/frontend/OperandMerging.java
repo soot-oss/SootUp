@@ -28,42 +28,35 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
-/**
- * Frame of stack for an instruction. (see <a
- * href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-2.html#jvms-2.6">...</a> )
- *
- * @author Aaloan Miftah
- */
-final class StackFrame {
+/** @author Aaloan Miftah */
+final class OperandMerging {
   @Nonnull private final AbstractInsnNode insn;
   /**
-   * TODO explain
-   *
-   * <p>Interestingly, none of the operations that need to have their inputs/outputs tracked produce
-   * more than a single output, so this doesn't need to be a list.
+   * Interestingly, none of the operations that need to have any inputs/outputs tracked produce more
+   * than a single output, so this doesn't need to be a list.
    */
-  @Nullable private Operand out;
+  @Nullable private Operand output;
 
-  @Nonnull final ArrayList<Operand[]> in = new ArrayList<>(1);
+  @Nonnull final ArrayList<Operand[]> inputOperands = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
-   * Constructs a new stack frame.
+   * Constructs a new operand merging information holder.
    *
-   * @param src source the frame belongs to.
+   * @param src source the merging belongs to.
    */
-  StackFrame(@Nonnull AbstractInsnNode insn, @Nonnull AsmMethodSource src) {
+  OperandMerging(@Nonnull AbstractInsnNode insn, @Nonnull AsmMethodSource src) {
     this.insn = insn;
     this.src = src;
   }
 
   void mergeOutput(@Nonnull Operand outputOperand) {
-    if (out == null) {
-      out = outputOperand;
+    if (output == null) {
+      output = outputOperand;
     } else {
-      if (out.stackLocal != null) {
+      if (output.stackLocal != null) {
         assert outputOperand.stackLocal == null;
-        outputOperand.changeStackLocal(out.stackLocal);
+        outputOperand.changeStackLocal(output.stackLocal);
       }
     }
   }
@@ -94,13 +87,13 @@ final class StackFrame {
    *     old operands.
    */
   void mergeInputs(@Nonnull Operand... oprs) {
-    if (in.isEmpty()) {
-      in.add(oprs);
+    if (inputOperands.isEmpty()) {
+      inputOperands.add(oprs);
       // There are no other operands to merge with
       return;
     }
 
-    if (in.get(0).length != oprs.length) {
+    if (inputOperands.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
 
@@ -114,8 +107,8 @@ final class StackFrame {
       Local stack = null;
 
       // Search for a stack local that was already allocated for an operand in a different branch
-      for (int j = 0; j != in.size(); j++) {
-        stack = in.get(j)[i].stackLocal;
+      for (int j = 0; j != inputOperands.size(); j++) {
+        stack = inputOperands.get(j)[i].stackLocal;
         if (stack != null) {
           break;
         }
@@ -126,7 +119,7 @@ final class StackFrame {
         stack = newOp.stackLocal;
       }
 
-      if (stack == null && in.get(0)[i].value.equivTo(newOp.value)) {
+      if (stack == null && inputOperands.get(0)[i].value.equivTo(newOp.value)) {
         // all branches have the same value,
         // and no stack local was allocated yet,
         // so no stack local is needed to converge the values
@@ -142,8 +135,8 @@ final class StackFrame {
       }
 
       /* add assign statement for prevOp */
-      for (int j = 0; j != in.size(); j++) {
-        Operand prevOp = in.get(j)[i];
+      for (int j = 0; j != inputOperands.size(); j++) {
+        Operand prevOp = inputOperands.get(j)[i];
         prevOp.changeStackLocal(stack);
       }
       newOp.changeStackLocal(stack);
@@ -152,7 +145,7 @@ final class StackFrame {
       // TODO make it more obvious that this is only run the first time
       // replace the operand in the statement that *started* the merge
       ReplaceUseStmtVisitor replaceUseStmtVisitor =
-          new ReplaceUseStmtVisitor(in.get(0)[i].value, stack);
+          new ReplaceUseStmtVisitor(inputOperands.get(0)[i].value, stack);
       // TODO how to handle the same value being in the the statement multiple times but only one
       //  time because of the operand? (Something like `System.out.println(operand, "hello")` with
       //  the operand also having the value "two")
@@ -171,6 +164,6 @@ final class StackFrame {
       }
     }
 
-    in.add(oprs);
+    inputOperands.add(oprs);
   }
 }

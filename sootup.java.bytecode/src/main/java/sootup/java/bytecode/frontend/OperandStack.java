@@ -37,21 +37,21 @@ public class OperandStack {
 
   @Nonnull private final AsmMethodSource methodSource;
   private List<Operand> stack;
-  @Nonnull public Map<AbstractInsnNode, StackFrame> frames;
+  @Nonnull public Map<AbstractInsnNode, OperandMerging> mergings;
 
   public OperandStack(@Nonnull AsmMethodSource methodSource, int nrInsn) {
     this.methodSource = methodSource;
-    frames = new LinkedHashMap<>(nrInsn);
+    mergings = new LinkedHashMap<>(nrInsn);
   }
 
   @Nonnull
-  public StackFrame getOrCreateStackframe(@Nonnull AbstractInsnNode insn) {
-    StackFrame frame = frames.get(insn);
-    if (frame == null) {
-      frame = new StackFrame(insn, methodSource);
-      frames.put(insn, frame);
+  public OperandMerging getOrCreateMerging(@Nonnull AbstractInsnNode insn) {
+    OperandMerging merging = this.mergings.get(insn);
+    if (merging == null) {
+      merging = new OperandMerging(insn, methodSource);
+      this.mergings.put(insn, merging);
     }
-    return frame;
+    return merging;
   }
 
   public void push(@Nonnull Operand opr) {
