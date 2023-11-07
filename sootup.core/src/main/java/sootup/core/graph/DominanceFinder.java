@@ -45,7 +45,7 @@ public class DominanceFinder {
     {
       int i = 1;
       for (BasicBlock<?> block : blocks) {
-        if (startingStmtBlock == block) {
+        if (startingStmtBlock.equals(block)) {
           blockToIdx.put(block, 0);
         } else {
           blockToIdx.put(block, i);
@@ -66,7 +66,7 @@ public class DominanceFinder {
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block == startingStmtBlock) {
+        if (block.equals(startingStmtBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
