@@ -30,7 +30,8 @@ import javax.annotation.Nonnull;
 /**
  * @author Zun Wang
  * @see <a
- *     href="https://www.cs.rice.edu/~keith/EMBED/dom.pdf">https://www.cs.rice.edu/~keith/EMBED/dom.pdf</a>
+ *     href="https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm">
+ *     https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm </a>
  */
 public class DominanceFinder {
 
