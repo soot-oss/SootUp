@@ -28,12 +28,25 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
-/** @author Aaloan Miftah */
+/**
+ * This class tracks the inputs and outputs for an instruction.
+ *
+ * <p>When an instruction is reached from different branches, the state of the operand stack might
+ * be different. In that case, the different operands from the different branches need to be merged.
+ * This class does that merging.
+ *
+ * @author Aaloan Miftah
+ */
 final class OperandMerging {
   @Nonnull private final AbstractInsnNode insn;
+
   /**
-   * Interestingly, none of the operations that need to have any inputs/outputs tracked produce more
-   * than a single output, so this doesn't need to be a list.
+   * Keep track of the result of the instruction. The output might get a stack local assigned when
+   * it is used as a local or immediate. When another branch produces the output and calls
+   * `mergeOutput`, it should be assigned to the same stack local.
+   *
+   * <p>Interestingly, none of the operations that need to have any inputs/outputs tracked produce
+   * more than a single output, so this doesn't need to be a list.
    */
   @Nullable private Operand output;
 
@@ -50,6 +63,14 @@ final class OperandMerging {
     this.src = src;
   }
 
+  /**
+   * Merges the output operand produced by the instruction.
+   *
+   * <p>The output from a previous branch might have been assigned to a (stack) local in which case
+   * any newly created outputs for different branches should be assigned to the same stack local.
+   *
+   * @param outputOperand the newly produced operand that will get pushed onto the operand stack
+   */
   void mergeOutput(@Nonnull Operand outputOperand) {
     if (output == null) {
       output = outputOperand;
@@ -65,6 +86,8 @@ final class OperandMerging {
    * Merges the specified operands with the operands that were previously used with this
    * instruction.
    *
+   * <p>This should be called after the operands have been popped of the stack.
+   *
    * <p>To convert from the stack-based instructions to register-based instructions, all possible
    * combinations of branches need to be walked, because the contents of the operand stack might be
    * different when coming from different branches.
@@ -78,9 +101,6 @@ final class OperandMerging {
    * method will merge the two (or more) diverging operands by creating a local variable that the
    * value of both operands will be assigned to in their respective branches. That local will be
    * used when invoking the `println` method.
-   *
-   * <p>TODO somewhat easy to forget calling this after `pop`ing all required operands, maybe
-   * automate this in some way?
    *
    * @param oprs the new operands.
    * @throws IllegalArgumentException if the number of new operands is not equal to the number of
