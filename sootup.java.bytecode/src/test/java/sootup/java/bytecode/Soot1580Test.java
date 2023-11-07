@@ -18,7 +18,7 @@ import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
-public class Soot1580 {
+public class Soot1580Test {
   final Path jar = Paths.get("../shared-test-resources/soot-1580/jpush-android_v3.0.5.jar");
 
   @Test
