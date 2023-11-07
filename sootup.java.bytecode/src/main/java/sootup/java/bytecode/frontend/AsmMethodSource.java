@@ -342,10 +342,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         continue;
       }
 
-      // TODO not sure what this actually does, but I'm somewhat sure that the `emitStatement`
-      //  should cause the correct behavior
-      // TODO maybe this whole function can be removed now that popping unused values of the stack
-      // also emits a statement
       operand.emitStatement();
     }
   }
@@ -1246,6 +1242,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       as = Jimple.newAssignStmt(local, opr.toImmediate(), getStmtPositionInfo());
       setStmt(insn, as);
     }
+    // The `local` has just been assigned a new value,
+    // but an operand with `value == local` might still be on the stack.
+    // That operand should use the old value,
+    // so the following call adds a `$stackLocalX = $local` statement
+    // to persist the old value when necessary.
     addReadOperandAssignments(local);
   }
 
