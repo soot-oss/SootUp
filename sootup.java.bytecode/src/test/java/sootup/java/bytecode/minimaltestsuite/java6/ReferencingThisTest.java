@@ -51,11 +51,11 @@ public class ReferencingThisTest extends MinimalBytecodeTestSuiteBase {
             "$l0 := @this: ReferencingThis",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>(\" this keyword as an argument in the constructor call\")",
-            "$stack3 = new ReferencingThis",
-            "$stack5 = $l0.<ReferencingThis: int a>",
-            "$stack4 = $l0.<ReferencingThis: int b>",
-            "specialinvoke $stack3.<ReferencingThis: void <init>(int,int)>($stack5, $stack4)",
-            "$l1 = $stack3",
+            "$stack5 = new ReferencingThis",
+            "$stack4 = $l0.<ReferencingThis: int a>",
+            "$stack3 = $l0.<ReferencingThis: int b>",
+            "specialinvoke $stack5.<ReferencingThis: void <init>(int,int)>($stack4, $stack3)",
+            "$l1 = $stack5",
             "virtualinvoke $l1.<ReferencingThis: void show()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

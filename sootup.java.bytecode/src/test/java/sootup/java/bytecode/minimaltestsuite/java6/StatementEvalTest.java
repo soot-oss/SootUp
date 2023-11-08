@@ -38,7 +38,7 @@ public class StatementEvalTest extends MinimalBytecodeTestSuiteBase {
             "$l1 = 1",
             "$stack2 = $l1",
             "$l1 = 3",
-            "$l1 = $stack2 + 3",
+            "$l1 = $stack2 + $l1",
             "return")
         .collect(Collectors.toList());
   }
