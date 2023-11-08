@@ -61,11 +61,11 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   public final List<Value> getUses() {
     final List<Value> defsuses = getLeftOp().getUses();
     final Value rightOp = getRightOp();
-    final List<Value> uses = rightOp.getUses();
-    List<Value> list = new ArrayList<>(defsuses.size() + uses.size() + 1);
+    final List<Value> rightOpUses = rightOp.getUses();
+    List<Value> list = new ArrayList<>(defsuses.size() + rightOpUses.size() + 1);
     list.addAll(defsuses);
     list.add(rightOp);
-    list.addAll(uses);
+    list.addAll(rightOpUses);
     return list;
   }
 

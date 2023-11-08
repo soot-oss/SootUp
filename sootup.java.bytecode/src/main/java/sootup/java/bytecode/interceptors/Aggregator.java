@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -72,7 +71,7 @@ public class Aggregator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
-    Map<LValue, Collection<Stmt>> usesMap = Body.collectUses(stmts);
+    Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);
 
     for (Stmt stmt : stmts) {
       if (!(stmt instanceof JAssignStmt)) {

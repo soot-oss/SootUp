@@ -63,7 +63,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   }
 
   Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
-  Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
+  Map<Value, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
@@ -222,8 +222,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
               if (!(value instanceof LValue)) {
                 continue;
               }
-              for (Stmt use : allUses.get(value)) {
-                if (stmtGraph.containsNode(use)) {
+              for (Stmt stmtOfUse : allUses.get(value)) {
+                if (stmtGraph.containsNode(stmtOfUse)) {
                   deadAssignment = false;
                   break;
                 }
