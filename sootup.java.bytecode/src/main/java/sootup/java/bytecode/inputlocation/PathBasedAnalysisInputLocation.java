@@ -704,7 +704,7 @@ public abstract class PathBasedAnalysisInputLocation
      *
      * @param warFilePath The path to war file to be extracted
      */
-    protected void extractWarFile(Path warFilePath, final Path destDirectory) {
+    private void extractWarFile(Path warFilePath, final Path destDirectory) {
       int extractedSize = 0;
       try {
         File dest = destDirectory.toFile();
@@ -716,8 +716,7 @@ public abstract class PathBasedAnalysisInputLocation
           dest.deleteOnExit();
         }
 
-        ZipInputStream zis =
-            new ZipInputStream(Files.newInputStream(Paths.get(warFilePath.toString())));
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(warFilePath));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           Path filepath = destDirectory.resolve(zipEntry.getName());
