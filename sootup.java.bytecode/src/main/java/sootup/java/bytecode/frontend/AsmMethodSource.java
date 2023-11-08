@@ -1301,7 +1301,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack());
+        edge = new BranchedInsnInfo(tgt, operandStack.getStack(), currentLineNumber);
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
@@ -1349,20 +1349,23 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         Operand opr = new Operand(handlerNode, ref, this);
         opr.stackLocal = local;
 
-        worklist.add(new BranchedInsnInfo(handlerNode, Collections.singletonList(opr)));
+        worklist.add(
+            new BranchedInsnInfo(handlerNode, Collections.singletonList(opr), currentLineNumber));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>()));
+        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>(), currentLineNumber));
       }
     }
-    worklist.add(new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList()));
+    worklist.add(
+        new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList(), currentLineNumber));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
       BranchedInsnInfo edge = worklist.pollLast();
       AbstractInsnNode insn = edge.getInsn();
+      currentLineNumber = edge.getLineNumber();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
       do {
