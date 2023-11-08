@@ -28,6 +28,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
@@ -48,6 +49,7 @@ class Operand {
   @Nonnull protected final Value value;
   @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
+  @Nonnull private final StmtPositionInfo positionInfo;
 
   /**
    * Constructs a new stack operand.
@@ -60,6 +62,7 @@ class Operand {
     this.insn = insn;
     this.value = value;
     this.methodSource = methodSource;
+    this.positionInfo = methodSource == null ? null : methodSource.getStmtPositionInfo();
   }
 
   Local getOrAssignValueToStackLocal() {
@@ -76,9 +79,7 @@ class Operand {
     }
 
     if (value instanceof AbstractInvokeExpr) {
-      methodSource.setStmt(
-          insn,
-          Jimple.newInvokeStmt((AbstractInvokeExpr) value, methodSource.getStmtPositionInfo()));
+      methodSource.setStmt(insn, Jimple.newInvokeStmt((AbstractInvokeExpr) value, positionInfo));
     } else {
       // create an assignment that uses the value because it might have side effects
       getOrAssignValueToStackLocal();
@@ -95,10 +96,8 @@ class Operand {
 
     JAssignStmt assignStmt = methodSource.getStmt(insn);
     if (assignStmt == null) {
-      // TODO the position info is the position of the *usage* (which is only mostly correct?)
       // emit `$newStackLocal = value`
-      methodSource.setStmt(
-          insn, Jimple.newAssignStmt(newStackLocal, value, methodSource.getStmtPositionInfo()));
+      methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
     } else {
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
