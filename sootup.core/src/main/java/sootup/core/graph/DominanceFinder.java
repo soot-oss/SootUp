@@ -23,12 +23,15 @@ package sootup.core.graph;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
 /**
  * @author Zun Wang
  * @see <a
- *     href="https://www.cs.rice.edu/~keith/EMBED/dom.pdf">https://www.cs.rice.edu/~keith/EMBED/dom.pdf</a>
+ *     href="https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm">
+ *     https://www.researchgate.net/publication/2569680_A_Simple_Fast_Dominance_Algorithm </a>
  */
 public class DominanceFinder {
 
@@ -39,19 +42,22 @@ public class DominanceFinder {
 
   public DominanceFinder(StmtGraph<?> blockGraph) {
 
-    // assign each block a integer id, startBlock's id must be 0
-    blocks = new ArrayList<>(blockGraph.getBlocks());
+    // we're locked into providing a List<BasicBlock<?>>, not a List<? extends BasicBlock<?>>, so
+    // we'll use the block iterator directly (which provides this type) rather than
+    // #getBlocksSorted.
+    blocks =
+        StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    blockGraph.getBlockIterator(), Spliterator.ORDERED),
+                false)
+            .collect(Collectors.toList());
+
     final BasicBlock<?> startingStmtBlock = blockGraph.getStartingStmtBlock();
-    {
-      int i = 1;
-      for (BasicBlock<?> block : blocks) {
-        if (startingStmtBlock == block) {
-          blockToIdx.put(block, 0);
-        } else {
-          blockToIdx.put(block, i);
-          i++;
-        }
-      }
+    // assign each block a integer id. The starting block must have id 0; rely on
+    // getBlocksSorted to have put the starting block first.
+    for (int i = 0; i < blocks.size(); i++) {
+      BasicBlock<?> block = blocks.get(i);
+      blockToIdx.put(block, i);
     }
 
     // initialize doms
@@ -66,7 +72,7 @@ public class DominanceFinder {
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block == startingStmtBlock) {
+        if (block.equals(startingStmtBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
