@@ -48,7 +48,7 @@ public class OperandStack {
   public OperandMerging getOrCreateMerging(@Nonnull AbstractInsnNode insn) {
     OperandMerging merging = this.mergings.get(insn);
     if (merging == null) {
-      merging = new OperandMerging(insn, methodSource);
+      merging = new OperandMerging(methodSource);
       this.mergings.put(insn, merging);
     }
     return merging;

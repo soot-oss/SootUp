@@ -40,6 +40,15 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
                 "void",
                 Collections.singletonList("int")));
     assertJimpleStmts(methodDuplicateValue, expectedBodyStmtsDuplicateValue());
+
+    SootMethod methodWithInlining =
+        loadMethod(
+            identifierFactory.getMethodSignature(
+                getDeclaredClassSignature(),
+                "localMergingWithInlining",
+                "void",
+                Collections.singletonList("int")));
+    assertJimpleStmts(methodWithInlining, expectedBodyStmtsWithInlining());
   }
 
   /**
@@ -130,6 +139,37 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
             "$stack3 = \"two\"",
             "label2:",
             "staticinvoke <java.lang.System: java.lang.String setProperty(java.lang.String,java.lang.String)>($stack3, \"two\")",
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * public void localMergingWithInlining(int n) {
+   *     String[] arr = new String[] {"a", "b"};
+   *     int a = 1;
+   *     String b = arr[n == 1 ? 0 : a];
+   * }
+   * </pre>
+   */
+  public List<String> expectedBodyStmtsWithInlining() {
+    return Stream.of(
+            "$l0 := @this: LocalMerging",
+            "$l1 := @parameter0: int",
+            "$stack5 = newarray (java.lang.String)[2]",
+            "$stack5[0] = \"a\"",
+            "$stack5[1] = \"b\"",
+            "$l2 = $stack5",
+            "$l3 = 1",
+            "if $l1 != 1 goto label1",
+            "$stack6 = 0",
+            "goto label2",
+            "label1:",
+            "$stack6 = $l3",
+            "label2:",
+            "$l4 = $l2[$stack6]",
             "return")
         .collect(Collectors.toList());
   }

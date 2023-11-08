@@ -24,4 +24,10 @@ public class LocalMerging {
         // the second argument isn't replaced as well.
         System.setProperty(n == 1 ? a : "two", "two");
     }
+
+    public void localMergingWithInlining(int n) {
+        String[] arr = new String[] {"a", "b"};
+        int a = 1;
+        String b = arr[n == 1 ? 0 : a];
+    }
 }

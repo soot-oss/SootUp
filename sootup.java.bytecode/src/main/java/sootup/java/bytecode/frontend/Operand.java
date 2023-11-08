@@ -46,9 +46,6 @@ class Operand {
 
   @Nonnull protected AbstractInsnNode insn;
   @Nonnull protected final Value value;
-  // TODO probably need to store the `insn` for the STORE instruction when a *real*
-  //  local is used here and use that when merging,
-  //  or more specifically when changing to a different stack local in `changeStackLocal`
   @Nullable protected Local stackLocal;
   @Nonnull private final AsmMethodSource methodSource;
 
@@ -75,11 +72,6 @@ class Operand {
 
   void emitStatement() {
     if (this == DWORD_DUMMY) {
-      return;
-    }
-
-    if (methodSource.getStmt(insn) != null) {
-      // the operand is already used, which means side effects already happen as well
       return;
     }
 
