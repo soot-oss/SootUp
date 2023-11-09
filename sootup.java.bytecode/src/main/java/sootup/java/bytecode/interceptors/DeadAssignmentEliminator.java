@@ -205,7 +205,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       return;
     }
 
-    Map<Value, Collection<Stmt>> allUses = Body.collectUses(stmtGraph.getNodes());
+    Map<Value, Collection<Stmt>> essentialUses = Body.collectUses(essentialStmts);
     // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
     List<JAssignStmt> postProcess = new ArrayList<>();
     for (Stmt stmt : stmts) {
@@ -220,14 +220,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             if (!(value instanceof LValue)) {
               continue;
             }
-            final Collection<Stmt> stmtsWithValuesUse = allUses.get(value);
+            final Collection<Stmt> stmtsWithValuesUse = essentialUses.get(value);
             if (stmtsWithValuesUse != null) {
-              for (Stmt stmtOfUse : stmtsWithValuesUse) {
-                if (essentialStmts.contains(stmtOfUse)) {
-                  deadAssignment = false;
-                  break;
-                }
-              }
+              deadAssignment = false;
             }
           }
           if (deadAssignment) {
