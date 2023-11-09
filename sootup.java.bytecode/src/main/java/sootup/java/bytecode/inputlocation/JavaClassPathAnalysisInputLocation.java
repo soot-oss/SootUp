@@ -30,7 +30,6 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.AbstractClassSource;
@@ -58,7 +57,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Nonnull private final Collection<AnalysisInputLocation<JavaSootClass>> cpEntries;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
-  private SourceType srcType = null;
+  private final SourceType srcType;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
@@ -67,15 +66,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param classPath The class path to search in
    */
   public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
-    if (classPath.length() <= 0) {
-      throw new IllegalStateException("Empty class path given");
-    }
-
-    cpEntries = explodeClassPath(classPath);
-
-    if (cpEntries.isEmpty()) {
-      throw new IllegalStateException("Empty class path is given.");
-    }
+    this(classPath, SourceType.Application);
   }
 
   /**
@@ -86,11 +77,11 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param srcType the source type for the path can be Library, Application, Phantom.
    */
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nullable SourceType srcType) {
+      @Nonnull String classPath, @Nonnull SourceType srcType) {
+    this.srcType = srcType;
     if (classPath.length() <= 0) {
       throw new IllegalStateException("Empty class path given");
     }
-    setSpecifiedAsBuiltInByUser(srcType);
     cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
@@ -98,16 +89,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     }
   }
 
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
-    this.srcType = srcType;
-  }
-
   @Override
+  @Nonnull
   public SourceType getSourceType() {
     return srcType;
   }

@@ -56,7 +56,7 @@ public class TrapTightener implements BodyInterceptor {
     // FIXME: [ms] ThrowAnalysis is missing and in result mightThrow (...) makes no sense. Issue
     // #486
     if (true) {
-      return;
+      throw new UnsupportedOperationException("TrapTightener is not yet implemented.");
     }
 
     MutableStmtGraph graph = builder.getStmtGraph();

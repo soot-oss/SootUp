@@ -38,9 +38,7 @@ public class DoWhileLoopTest extends MinimalBytecodeTestSuiteBase {
             "$l2 = 0",
             "label1:",
             "$l2 = $l2 + 1",
-            "$stack4 = $l1",
-            "$stack3 = $l2",
-            "if $stack4 > $stack3 goto label1",
+            "if $l1 > $l2 goto label1",
             "return")
         .collect(Collectors.toList());
   }
