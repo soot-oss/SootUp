@@ -223,6 +223,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             final Collection<Stmt> stmtsWithValuesUse = essentialUses.get(value);
             if (stmtsWithValuesUse != null) {
               deadAssignment = false;
+              break;
             }
           }
           if (deadAssignment) {
