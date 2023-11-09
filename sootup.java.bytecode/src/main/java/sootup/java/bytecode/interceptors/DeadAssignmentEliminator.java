@@ -169,10 +169,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       allEssential &= isEssential;
     }
 
-    if (!containsInvoke && allEssential) {
-      return;
-    }
-
     if (allEssential) {
       return;
     }
@@ -197,7 +193,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
     }
 
-    // Remove the dead statements
+    // Remove the dead statements from the stmtGraph
     for (Stmt stmt : stmts) {
       if (!essentialStmts.contains(stmt)) {
         stmtGraph.removeNode(stmt);
@@ -237,6 +233,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
         }
       }
 
+      // change JAssignStmt+InvokeExpr where the lhs is not used/essential to an JInvokeStmt
       for (JAssignStmt assignStmt : postProcess) {
         // Transform it into a simple invoke
         Stmt newInvoke =
