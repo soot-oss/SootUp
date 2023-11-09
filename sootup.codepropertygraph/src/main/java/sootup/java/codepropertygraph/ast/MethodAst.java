@@ -1,7 +1,6 @@
 package sootup.java.codepropertygraph.ast;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Modifier;
@@ -13,24 +12,14 @@ public class MethodAst {
   private final Set<Modifier> modifiers;
   private final List<Type> parameterTypes;
   private final List<Stmt> bodyStmts;
-  private final JReturnStmt returnStmt;
+  private final Type returnType;
 
   public MethodAst(SootMethod method) {
     name = method.getName();
     modifiers = method.getModifiers();
     parameterTypes = method.getParameterTypes();
     bodyStmts = method.getBody().getStmts();
-    returnStmt =
-        bodyStmts.stream()
-            .filter(JReturnStmt.class::isInstance)
-            .map(JReturnStmt.class::cast)
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new NoSuchElementException(
-                        String.format(
-                            "The return statement of the method %s was not found.",
-                            method.getName())));
+    returnType = method.getReturnType();
   }
 
   public String getName() {
@@ -49,7 +38,7 @@ public class MethodAst {
     return bodyStmts;
   }
 
-  public JReturnStmt getReturnStmt() {
-    return returnStmt;
+  public Type getReturnType() {
+    return returnType;
   }
 }

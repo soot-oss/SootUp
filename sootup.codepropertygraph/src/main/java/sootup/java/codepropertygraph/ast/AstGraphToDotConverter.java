@@ -33,7 +33,7 @@ class AstGraphToDotConverter {
   private static String getTypeBasedColor(AstNodeType type) {
     switch (type) {
       case STMT:
-      case JRETURNSTMT:
+      case JRETURNTYPE:
         return "lightblue";
       case MODIFIER:
         return "palegreen";

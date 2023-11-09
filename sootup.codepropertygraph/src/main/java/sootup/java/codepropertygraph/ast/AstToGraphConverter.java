@@ -4,7 +4,6 @@ import static sootup.java.codepropertygraph.ast.AstNodeType.*;
 
 import java.util.List;
 import java.util.Set;
-import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Modifier;
 import sootup.core.types.Type;
@@ -25,7 +24,7 @@ public class AstToGraphConverter {
     addModifierEdges(graph, modifiersNode, methodAst.getModifiers());
     addParameterTypeEdges(graph, parametersTypesNode, methodAst.getParameterTypes());
     addBodyStmtEdges(graph, bodyStmtsNode, methodAst.getBodyStmts());
-    addReturnStmtEdge(graph, rootNode, methodAst.getReturnStmt());
+    addReturnStmtEdge(graph, rootNode, methodAst.getReturnType());
 
     return graph;
   }
@@ -49,7 +48,7 @@ public class AstToGraphConverter {
     }
   }
 
-  private static void addReturnStmtEdge(AstGraph graph, AstNode rootNode, JReturnStmt returnStmt) {
-    graph.addEdge(rootNode, new AstNode(returnStmt.toString(), JRETURNSTMT));
+  private static void addReturnStmtEdge(AstGraph graph, AstNode rootNode, Type returnType) {
+    graph.addEdge(rootNode, new AstNode(returnType.toString(), JRETURNTYPE));
   }
 }
