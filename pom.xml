@@ -70,6 +70,7 @@
         <module>sootup.analysis</module>
         <module>sootup.examples</module>
         <module>sootup.report</module>
+        <module>sootup.codepropertygraph</module>
     </modules>
 
     <!-- Shared Configuration -->
