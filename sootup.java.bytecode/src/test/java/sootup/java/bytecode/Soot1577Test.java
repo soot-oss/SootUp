@@ -15,7 +15,7 @@ import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
-public class Soot1577 {
+public class Soot1577Test {
   final String directory = "../shared-test-resources/soot-1577/";
 
   @Test

@@ -268,7 +268,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             classType ->
                 Stream.concat(
                     Stream.of(classType),
-                    view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream()))
+                    view.getTypeHierarchy().superClassesOf(classType).stream()))
         .filter(Objects::nonNull)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)
@@ -291,7 +291,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (optSc.isPresent()) {
       SootClass<?> sc = optSc.get();
 
-      List<ClassType> superClasses = view.getTypeHierarchy().incompleteSuperClassesOf(sc.getType());
+      List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(sc.getType());
       Set<ClassType> interfaces = view.getTypeHierarchy().implementedInterfacesOf(sc.getType());
       superClasses.addAll(interfaces);
 
@@ -364,7 +364,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     processWorkList(view, workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
-    List<ClassType> superClasses = view.getTypeHierarchy().incompleteSuperClassesOf(classType);
+    List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
     Set<ClassType> implementedInterfaces =
         view.getTypeHierarchy().implementedInterfacesOf(classType);
     Stream<ClassType> superTypes =

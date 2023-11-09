@@ -181,8 +181,7 @@ public final class MethodDispatchResolver {
   private static List<SootClass<?>> findSuperClassesInclusive(
       View<? extends SootClass<?>> view, ClassType classType) {
     return Stream.concat(
-            Stream.of(classType),
-            view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream())
+            Stream.of(classType), view.getTypeHierarchy().superClassesOf(classType).stream())
         .flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
         .collect(Collectors.toList());
   }

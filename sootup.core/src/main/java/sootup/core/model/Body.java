@@ -28,9 +28,12 @@ import java.io.StringWriter;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.graph.*;
+import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.*;
-import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.util.Copyable;
@@ -597,19 +600,17 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<LValue, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
-    Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
+  public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
+    Map<Value, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
       Collection<Value> uses = stmt.getUses();
       for (Value value : uses) {
-        if (value instanceof LValue) {
-          Collection<Stmt> localUses = allUses.get(value);
-          if (localUses == null) {
-            localUses = new ArrayList<>();
-          }
-          localUses.add(stmt);
-          allUses.put((LValue) value, localUses);
+        Collection<Stmt> localUses = allUses.get(value);
+        if (localUses == null) {
+          localUses = new ArrayList<>();
         }
+        localUses.add(stmt);
+        allUses.put(value, localUses);
       }
     }
     return allUses;

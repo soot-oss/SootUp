@@ -40,10 +40,8 @@ public enum BytecodeBodyInterceptors {
       new UnusedLocalEliminator(),
       new ConditionalBranchFolder(),
       new EmptySwitchEliminator(),
-      new TypeAssigner()
-      // ms: is already called from typeassigner? new LocalNameStandardizer()
-      // new LocalNameStandardizer(),
-      );
+      new TypeAssigner(),
+      new LocalNameStandardizer());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
