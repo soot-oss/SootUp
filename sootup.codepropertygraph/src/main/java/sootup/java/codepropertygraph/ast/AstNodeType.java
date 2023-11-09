@@ -1,10 +1,9 @@
 package sootup.java.codepropertygraph.ast;
 
 public enum AstNodeType {
-  STMT,
-
+  AGGREGATE,
   MODIFIER,
   PARAMETER_TYPE,
-  JRETURNTYPE,
-  AGGREGATE
+  RETURN_TYPE,
+  STMT
 }

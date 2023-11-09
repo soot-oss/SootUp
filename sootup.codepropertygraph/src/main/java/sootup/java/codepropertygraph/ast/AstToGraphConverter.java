@@ -49,6 +49,6 @@ public class AstToGraphConverter {
   }
 
   private static void addReturnStmtEdge(AstGraph graph, AstNode rootNode, Type returnType) {
-    graph.addEdge(rootNode, new AstNode(returnType.toString(), JRETURNTYPE));
+    graph.addEdge(rootNode, new AstNode(returnType.toString(), RETURN_TYPE));
   }
 }
