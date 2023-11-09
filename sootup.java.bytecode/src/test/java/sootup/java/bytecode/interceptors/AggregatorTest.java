@@ -203,7 +203,6 @@ public class AggregatorTest {
     for (JavaSootMethod javaSootMethod :
         view.getClasses().stream().findFirst().get().getMethods()) {
       final Body body = javaSootMethod.getBody();
-      System.out.println(body);
     }
   }
 }
