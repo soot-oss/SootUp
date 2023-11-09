@@ -610,7 +610,7 @@ public class Body implements Copyable {
           localUses = new ArrayList<>();
         }
         localUses.add(stmt);
-        allUses.put((LValue) value, localUses);
+        allUses.put(value, localUses);
       }
     }
     return allUses;

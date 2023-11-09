@@ -62,9 +62,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
-  Map<Value, Collection<Stmt>> allUses = new HashMap<>();
-
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
@@ -72,7 +69,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
-
     boolean isStatic = MethodModifier.isStatic(builder.getModifiers());
     boolean allEssential = true;
     boolean containsInvoke = false;
@@ -177,55 +173,60 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       return;
     }
 
+    if (allEssential) {
+      return;
+    }
+
     // Add all the statements which are used to compute values for the essential statements,
     // recursively
-    allDefs = Body.collectDefs(stmtGraph.getNodes());
+    Map<LValue, Collection<Stmt>> allDefs = Body.collectDefs(stmtGraph.getNodes());
 
-    if (!allEssential) {
-      Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
-      while (!deque.isEmpty()) {
-        Stmt stmt = deque.removeFirst();
-        if (essentialStmts.add(stmt)) {
-          for (Value value : stmt.getUses()) {
-            if (value instanceof Local) {
-              Local local = (Local) value;
-              Collection<Stmt> defs = allDefs.get(local);
-              if (defs != null) {
-                deque.addAll(defs);
-              }
+    Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
+    while (!deque.isEmpty()) {
+      Stmt stmt = deque.removeFirst();
+      if (essentialStmts.add(stmt)) {
+        for (Value value : stmt.getUses()) {
+          if (value instanceof Local) {
+            Local local = (Local) value;
+            Collection<Stmt> defs = allDefs.get(local);
+            if (defs != null) {
+              deque.addAll(defs);
             }
           }
         }
       }
+    }
 
-      // Remove the dead statements
-      for (Stmt stmt : stmts) {
-        if (!essentialStmts.contains(stmt)) {
-          stmtGraph.removeNode(stmt);
-        }
+    // Remove the dead statements
+    for (Stmt stmt : stmts) {
+      if (!essentialStmts.contains(stmt)) {
+        stmtGraph.removeNode(stmt);
       }
     }
 
     if (containsInvoke) {
-      allUses = Body.collectUses(stmtGraph.getNodes());
+      Map<Value, Collection<Stmt>> allUses = Body.collectUses(stmtGraph.getNodes());
       // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
       List<JAssignStmt> postProcess = new ArrayList<>();
       for (Stmt stmt : stmts) {
         if (stmt instanceof JAssignStmt) {
           JAssignStmt assignStmt = (JAssignStmt) stmt;
           if (assignStmt.containsInvokeExpr()) {
-            // Just find one use of Value which is essential
+            // find at least one use of Value which is in an essential stmt
             boolean deadAssignment = true;
 
-            List<Value> values = assignStmt.getUses();
+            List<Value> values = assignStmt.getUsesAndDefs();
             for (Value value : values) {
               if (!(value instanceof LValue)) {
                 continue;
               }
-              for (Stmt stmtOfUse : allUses.get(value)) {
-                if (stmtGraph.containsNode(stmtOfUse)) {
-                  deadAssignment = false;
-                  break;
+              final Collection<Stmt> stmtsWithValuesUse = allUses.get(value);
+              if (stmtsWithValuesUse != null) {
+                for (Stmt stmtOfUse : stmtsWithValuesUse) {
+                  if (essentialStmts.contains(stmtOfUse)) {
+                    deadAssignment = false;
+                    break;
+                  }
                 }
               }
             }
