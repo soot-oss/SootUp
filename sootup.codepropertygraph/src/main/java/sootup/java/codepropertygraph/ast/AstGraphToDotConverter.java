@@ -8,7 +8,7 @@ class AstGraphToDotConverter {
     builder.append("\tnode [shape=record, style=filled];\n");
 
     for (AstNode node : graph.getNodes()) {
-      String type = escapeDot(node.getType());
+      String type = escapeDot(node.getType().toString());
       String name = escapeDot(node.getName());
       String label = String.format("\"{<f0> %s | <f1> %s}\"", type, name);
       String color = getTypeBasedColor(node.getType());
@@ -30,14 +30,14 @@ class AstGraphToDotConverter {
     return label.replace("\"", "\\\"").replace("<", "&lt;").replace(">", "&gt;");
   }
 
-  private static String getTypeBasedColor(String type) {
+  private static String getTypeBasedColor(AstNodeType type) {
     switch (type) {
-      case "Stmt":
-      case "JReturnStmt":
+      case STMT:
+      case JRETURNSTMT:
         return "lightblue";
-      case "Modifier":
+      case MODIFIER:
         return "palegreen";
-      case "ParameterType":
+      case PARAMETER_TYPE:
         return "lightgray";
       default:
         return "white";

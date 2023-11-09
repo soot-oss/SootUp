@@ -1,32 +1,37 @@
 package sootup.java.codepropertygraph.ast;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AstGraph {
-  private final Set<AstNode> nodes;
-  private final Set<AstEdge> edges;
+  private final List<AstNode> nodes;
+  private final List<AstEdge> edges;
 
   public AstGraph() {
-    this.nodes = new HashSet<>();
-    this.edges = new HashSet<>();
+    this.nodes = new ArrayList<>();
+    this.edges = new ArrayList<>();
   }
 
-  private void addNode(AstNode node) {
-    nodes.add(node);
+  public void addNode(AstNode node) {
+    if (!nodes.contains(node)) {
+      nodes.add(node);
+    }
   }
 
   public void addEdge(AstNode source, AstNode destination) {
-    addNode(source);
-    addNode(destination);
-    edges.add(new AstEdge(source, destination));
+    AstEdge edge = new AstEdge(source, destination);
+    if (!edges.contains(edge)) {
+      addNode(source);
+      addNode(destination);
+      edges.add(edge);
+    }
   }
 
-  public Set<AstNode> getNodes() {
+  public List<AstNode> getNodes() {
     return nodes;
   }
 
-  public Set<AstEdge> getEdges() {
+  public List<AstEdge> getEdges() {
     return edges;
   }
 

@@ -1,5 +1,7 @@
 package sootup.java.codepropertygraph.ast;
 
+import static sootup.java.codepropertygraph.ast.AstNodeType.*;
+
 import java.util.List;
 import java.util.Set;
 import sootup.core.jimple.common.stmt.JReturnStmt;
@@ -10,11 +12,11 @@ import sootup.core.types.Type;
 public class AstToGraphConverter {
   public static AstGraph convert(MethodAst methodAst) {
     AstGraph graph = new AstGraph();
-    AstNode rootNode = new AstNode(methodAst.getName(), "Method");
+    AstNode rootNode = new AstNode(methodAst.getName(), AGGREGATE);
 
-    AstNode modifiersNode = new AstNode("Modifiers", "List<Modifier>");
-    AstNode parametersTypesNode = new AstNode("ParameterTypes", "List<ParameterType>");
-    AstNode bodyStmtsNode = new AstNode("BodyStmts", "List<Stmt>");
+    AstNode modifiersNode = new AstNode("Modifiers", AGGREGATE);
+    AstNode parametersTypesNode = new AstNode("ParameterTypes", AGGREGATE);
+    AstNode bodyStmtsNode = new AstNode("BodyStmts", AGGREGATE);
 
     graph.addEdge(rootNode, modifiersNode);
     graph.addEdge(rootNode, parametersTypesNode);
@@ -30,24 +32,24 @@ public class AstToGraphConverter {
 
   private static void addModifierEdges(AstGraph graph, AstNode rootNode, Set<Modifier> modifiers) {
     for (Modifier modifier : modifiers) {
-      graph.addEdge(rootNode, new AstNode(modifier.name(), "Modifier"));
+      graph.addEdge(rootNode, new AstNode(modifier.name(), MODIFIER));
     }
   }
 
   private static void addParameterTypeEdges(
       AstGraph graph, AstNode rootNode, List<Type> parameterTypes) {
     for (Type parameterType : parameterTypes) {
-      graph.addEdge(rootNode, new AstNode(parameterType.toString(), "ParameterType"));
+      graph.addEdge(rootNode, new AstNode(parameterType.toString(), PARAMETER_TYPE));
     }
   }
 
   private static void addBodyStmtEdges(AstGraph graph, AstNode rootNode, List<Stmt> bodyStmts) {
     for (Stmt stmt : bodyStmts) {
-      graph.addEdge(rootNode, new AstNode(stmt.toString(), "Stmt"));
+      graph.addEdge(rootNode, new AstNode(stmt.toString(), STMT));
     }
   }
 
   private static void addReturnStmtEdge(AstGraph graph, AstNode rootNode, JReturnStmt returnStmt) {
-    graph.addEdge(rootNode, new AstNode(returnStmt.toString(), "JReturnStmt"));
+    graph.addEdge(rootNode, new AstNode(returnStmt.toString(), JRETURNSTMT));
   }
 }

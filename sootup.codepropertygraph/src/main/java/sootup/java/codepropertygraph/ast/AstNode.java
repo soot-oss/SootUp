@@ -2,9 +2,9 @@ package sootup.java.codepropertygraph.ast;
 
 public class AstNode {
   private final String name;
-  private final String type;
+  private final AstNodeType type;
 
-  public AstNode(String name, String type) {
+  public AstNode(String name, AstNodeType type) {
     this.name = name;
     this.type = type;
   }
@@ -13,7 +13,7 @@ public class AstNode {
     return name;
   }
 
-  public String getType() {
+  public AstNodeType getType() {
     return type;
   }
 }
