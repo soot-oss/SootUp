@@ -90,42 +90,46 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return Stream.of(targetMethodSignature);
     } else {
-      if (targetMethod.isAbstract() || invokeExpr instanceof JInterfaceInvokeExpr) {
-        // abstract method call or interface call
-        // TODO: SpeedUp by only resolving direct subclasses
-        return resolveAllCallTargets(targetMethodSignature);
+      List<MethodSignature> targets = resolveAllCallTargets(targetMethodSignature);
+      if (!targetMethod.isAbstract()) {
+        targets.add(targetMethod.getSignature());
       }
-      return Stream.concat(
-          Stream.of(targetMethod.getSignature()),
-          resolveAllSubClassCallTargets(targetMethodSignature, targetMethod));
+      if (invokeExpr instanceof JInterfaceInvokeExpr) {
+        // TODO:add concrete dispatches of subtypes with no implemented
+      }
+      return targets.stream();
     }
   }
 
-  private Stream<MethodSignature> resolveAllCallTargets(MethodSignature targetMethodSignature) {
-    return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
-        .map(
-            methodSignature ->
-                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
-        .filter(Optional::isPresent)
-        .map(Optional::get);
-  }
-
-  private Stream<MethodSignature> resolveAllSubClassCallTargets(
-      MethodSignature targetMethodSignature, SootMethod targetMethod) {
-    SootClass<?> sootClass = view.getClass(targetMethod.getDeclaringClassType()).orElse(null);
-    if (sootClass == null) {
-      return Stream.empty();
-    }
-    if (sootClass.isInterface()) {
-      // the super call target is a default method of an Interface.
-      // If subtypes of class in the target signature does not implement the method,
-      // other default method which are subtypes of the Interface can be targets
-      //TODO: add default method resolving
-    }
-
-    // the concrete target of the hierarchical highest class of call targets is known.
-    // this method can be only overwritten by implemented methods of the subtypes
-    return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature);
+  private List<MethodSignature> resolveAllCallTargets(MethodSignature targetMethodSignature) {
+    ArrayList<MethodSignature> targets = new ArrayList<>();
+    view.getTypeHierarchy()
+        .subtypesOf(targetMethodSignature.getDeclClassType())
+        .forEach(
+            classType -> {
+              SootClass<?> clazz = view.getClass(classType).orElse(null);
+              if (clazz == null) return;
+              // check if method is implemented
+              SootMethod method =
+                  clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
+              if (method != null && !method.isAbstract()) targets.add(method.getSignature());
+              // collect all default methods
+              clazz
+                  .getInterfaces()
+                  .forEach(
+                      interfaceType -> {
+                        SootMethod defaultMethod =
+                            view.getMethod(
+                                    view.getIdentifierFactory()
+                                        .getMethodSignature(
+                                            interfaceType, targetMethodSignature.getSubSignature()))
+                                .orElse(null);
+                        // contains an implemented default method
+                        if (defaultMethod != null && !defaultMethod.isAbstract())
+                          targets.add(defaultMethod.getSignature());
+                      });
+            });
+    return targets;
   }
 
   @Override
