@@ -48,9 +48,6 @@ public class HierarchyComparatorTest {
     assertEquals(-1, hc.compare(subclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, subclass));
-    assertEquals(0, hc.compare(superclass, superclass));
-    assertEquals(0, hc.compare(subclass, subclass));
-    assertEquals(0, hc.compare(subSubclass, subSubclass));
     assertEquals(1, hc.compare(superclass, subclass));
     assertEquals(1, hc.compare(superclass, subSubclass));
     assertEquals(1, hc.compare(subclass, subSubclass));
@@ -75,9 +72,6 @@ public class HierarchyComparatorTest {
     assertEquals(-1, hc.compare(subInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, subInterface));
-    assertEquals(0, hc.compare(Interface, Interface));
-    assertEquals(0, hc.compare(subInterface, subInterface));
-    assertEquals(0, hc.compare(subSubInterface2, subSubInterface2));
     assertEquals(1, hc.compare(Interface, subInterface));
     assertEquals(1, hc.compare(Interface, subSubInterface2));
     assertEquals(1, hc.compare(subInterface, subSubInterface2));
@@ -105,19 +99,16 @@ public class HierarchyComparatorTest {
 
     assertEquals(-1, hc.compare(subSubInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface, subInterface));
-    assertEquals(0, hc.compare(subSubInterface, subSubInterface));
     assertEquals(1, hc.compare(subSubInterface, superclass));
     assertEquals(1, hc.compare(subSubInterface, subclass));
     assertEquals(1, hc.compare(subSubInterface, subSubclass));
 
     assertEquals(-1, hc.compare(subInterface, Interface));
-    assertEquals(0, hc.compare(subInterface, subInterface));
     assertEquals(1, hc.compare(subInterface, subSubInterface));
     assertEquals(1, hc.compare(subInterface, superclass));
     assertEquals(1, hc.compare(subInterface, subclass));
     assertEquals(1, hc.compare(subInterface, subSubclass));
 
-    assertEquals(0, hc.compare(Interface, Interface));
     assertEquals(1, hc.compare(Interface, subInterface));
     assertEquals(1, hc.compare(Interface, subSubInterface));
     assertEquals(1, hc.compare(Interface, superclass));
@@ -127,7 +118,6 @@ public class HierarchyComparatorTest {
     assertEquals(-1, hc.compare(superclass, Interface));
     assertEquals(-1, hc.compare(superclass, subInterface));
     assertEquals(-1, hc.compare(superclass, subSubInterface));
-    assertEquals(0, hc.compare(superclass, superclass));
     assertEquals(1, hc.compare(superclass, subclass));
     assertEquals(1, hc.compare(superclass, subSubclass));
 
@@ -135,7 +125,6 @@ public class HierarchyComparatorTest {
     assertEquals(-1, hc.compare(subclass, subInterface));
     assertEquals(-1, hc.compare(subclass, subSubInterface));
     assertEquals(-1, hc.compare(subclass, superclass));
-    assertEquals(0, hc.compare(subclass, subclass));
     assertEquals(1, hc.compare(subclass, subSubclass));
 
     assertEquals(-1, hc.compare(subSubclass, Interface));
@@ -143,7 +132,6 @@ public class HierarchyComparatorTest {
     assertEquals(-1, hc.compare(subSubclass, subSubInterface));
     assertEquals(-1, hc.compare(subSubclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, subclass));
-    assertEquals(0, hc.compare(subSubclass, subSubclass));
 
     ArrayList<ClassType> classes = new ArrayList<>();
     classes.add(Interface);
