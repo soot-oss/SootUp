@@ -220,6 +220,7 @@ public final class MethodDispatchResolver {
     // interface1 is a sub-interface of interface2
     // interface1 is a super-interface of interface2
     // due to multiple inheritance in interfaces
+    final HierarchyComparator hierarchyComparator = new HierarchyComparator(view);
     Optional<? extends SootMethod> defaultMethod =
         interfaces.stream()
             .map(
@@ -229,18 +230,9 @@ public final class MethodDispatchResolver {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .min(
-                (interface1, interface2) -> {
-                  // interface1 is a sub-interface of interface2
-                  if (typeHierarchy.isSubtype(
-                      interface2.getDeclaringClassType(), interface1.getDeclaringClassType()))
-                    return -1;
-                  // interface1 is a super-interface of interface2
-                  if (typeHierarchy.isSubtype(
-                      interface1.getDeclaringClassType(), interface2.getDeclaringClassType()))
-                    return 1;
-                  // due to multiple inheritance in interfaces
-                  return 0;
-                });
+                (m1, m2) ->
+                    hierarchyComparator.compare(
+                        m1.getDeclaringClassType(), m2.getDeclaringClassType()));
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }
