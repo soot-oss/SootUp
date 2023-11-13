@@ -23,6 +23,7 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 public class HierarchyComparatorTest {
 
   private static View<? extends SootClass<?>> view;
+
   @BeforeClass
   public static void setUp() {
     JavaProject project =
@@ -36,126 +37,127 @@ public class HierarchyComparatorTest {
             .build();
     view = project.createView();
   }
+
   @Test
-  public void testHierarchyComparatorOnClasses(){
+  public void testHierarchyComparatorOnClasses() {
+    ClassType superclass = view.getIdentifierFactory().getClassType("Superclass", "");
+    ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
+    ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    ClassType superclass=view.getIdentifierFactory().getClassType("Superclass","");
-    ClassType subclass=view.getIdentifierFactory().getClassType("Subclass","");
-    ClassType subSubclass=view.getIdentifierFactory().getClassType("SubSubclass","");
+    HierarchyComparator hc = new HierarchyComparator(view);
+    assertEquals(-1, hc.compare(subclass, superclass));
+    assertEquals(-1, hc.compare(subSubclass, superclass));
+    assertEquals(-1, hc.compare(subSubclass, subclass));
+    assertEquals(0, hc.compare(superclass, superclass));
+    assertEquals(0, hc.compare(subclass, subclass));
+    assertEquals(0, hc.compare(subSubclass, subSubclass));
+    assertEquals(1, hc.compare(superclass, subclass));
+    assertEquals(1, hc.compare(superclass, subSubclass));
+    assertEquals(1, hc.compare(subclass, subSubclass));
 
-    HierarchyComparator hc=new HierarchyComparator(view);
-    assertEquals(-1,hc.compare(subclass,superclass));
-    assertEquals(-1,hc.compare(subSubclass,superclass));
-    assertEquals(-1,hc.compare(subSubclass,subclass));
-    assertEquals(0,hc.compare(superclass,superclass));
-    assertEquals(0,hc.compare(subclass,subclass));
-    assertEquals(0,hc.compare(subSubclass,subSubclass));
-    assertEquals(1,hc.compare(superclass,subclass));
-    assertEquals(1,hc.compare(superclass,subSubclass));
-    assertEquals(1,hc.compare(subclass,subSubclass));
-
-    ArrayList<ClassType> classes= new ArrayList<>();
+    ArrayList<ClassType> classes = new ArrayList<>();
     classes.add(superclass);
     classes.add(subSubclass);
     classes.add(subclass);
-    List<ClassType> classesSorted=classes.stream().sorted(hc).collect(Collectors.toList());
-    assertEquals(subSubclass,classesSorted.get(0));
-    assertEquals(subclass,classesSorted.get(1));
-    assertEquals(superclass,classesSorted.get(2));
+    List<ClassType> classesSorted = classes.stream().sorted(hc).collect(Collectors.toList());
+    assertEquals(subSubclass, classesSorted.get(0));
+    assertEquals(subclass, classesSorted.get(1));
+    assertEquals(superclass, classesSorted.get(2));
   }
+
   @Test
-  public void testHierarchyComparatorOnInterfaces(){
-    ClassType Interface=view.getIdentifierFactory().getClassType("Interface","");
-    ClassType subInterface=view.getIdentifierFactory().getClassType("SubInterface","");
-    ClassType subSubInterface2=view.getIdentifierFactory().getClassType("SubSubInterface","");
+  public void testHierarchyComparatorOnInterfaces() {
+    ClassType Interface = view.getIdentifierFactory().getClassType("Interface", "");
+    ClassType subInterface = view.getIdentifierFactory().getClassType("SubInterface", "");
+    ClassType subSubInterface2 = view.getIdentifierFactory().getClassType("SubSubInterface", "");
 
-    HierarchyComparator hc=new HierarchyComparator(view);
-    assertEquals(-1,hc.compare(subInterface,Interface));
-    assertEquals(-1,hc.compare(subSubInterface2,Interface));
-    assertEquals(-1,hc.compare(subSubInterface2,subInterface));
-    assertEquals(0,hc.compare(Interface,Interface));
-    assertEquals(0,hc.compare(subInterface,subInterface));
-    assertEquals(0,hc.compare(subSubInterface2,subSubInterface2));
-    assertEquals(1,hc.compare(Interface,subInterface));
-    assertEquals(1,hc.compare(Interface,subSubInterface2));
-    assertEquals(1,hc.compare(subInterface,subSubInterface2));
+    HierarchyComparator hc = new HierarchyComparator(view);
+    assertEquals(-1, hc.compare(subInterface, Interface));
+    assertEquals(-1, hc.compare(subSubInterface2, Interface));
+    assertEquals(-1, hc.compare(subSubInterface2, subInterface));
+    assertEquals(0, hc.compare(Interface, Interface));
+    assertEquals(0, hc.compare(subInterface, subInterface));
+    assertEquals(0, hc.compare(subSubInterface2, subSubInterface2));
+    assertEquals(1, hc.compare(Interface, subInterface));
+    assertEquals(1, hc.compare(Interface, subSubInterface2));
+    assertEquals(1, hc.compare(subInterface, subSubInterface2));
 
-    ArrayList<ClassType> classes= new ArrayList<>();
+    ArrayList<ClassType> classes = new ArrayList<>();
     classes.add(Interface);
     classes.add(subSubInterface2);
     classes.add(subInterface);
-    List<ClassType> classesSorted=classes.stream().sorted(hc).collect(Collectors.toList());
-    assertEquals(subSubInterface2,classesSorted.get(0));
-    assertEquals(subInterface,classesSorted.get(1));
-    assertEquals(Interface,classesSorted.get(2));
+    List<ClassType> classesSorted = classes.stream().sorted(hc).collect(Collectors.toList());
+    assertEquals(subSubInterface2, classesSorted.get(0));
+    assertEquals(subInterface, classesSorted.get(1));
+    assertEquals(Interface, classesSorted.get(2));
   }
+
   @Test
-  public void testHierarchyComparatorOnMixed(){
-    ClassType Interface=view.getIdentifierFactory().getClassType("Interface","");
-    ClassType subInterface=view.getIdentifierFactory().getClassType("SubInterface","");
-    ClassType subSubInterface=view.getIdentifierFactory().getClassType("SubSubInterface","");
-    ClassType superclass=view.getIdentifierFactory().getClassType("Superclass","");
-    ClassType subclass=view.getIdentifierFactory().getClassType("Subclass","");
-    ClassType subSubclass=view.getIdentifierFactory().getClassType("SubSubclass","");
+  public void testHierarchyComparatorOnMixed() {
+    ClassType Interface = view.getIdentifierFactory().getClassType("Interface", "");
+    ClassType subInterface = view.getIdentifierFactory().getClassType("SubInterface", "");
+    ClassType subSubInterface = view.getIdentifierFactory().getClassType("SubSubInterface", "");
+    ClassType superclass = view.getIdentifierFactory().getClassType("Superclass", "");
+    ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
+    ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    HierarchyComparator hc=new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view);
 
-    assertEquals(-1,hc.compare(subSubInterface,Interface));
-    assertEquals(-1,hc.compare(subSubInterface,subInterface));
-    assertEquals(0,hc.compare(subSubInterface,subSubInterface));
-    assertEquals(1,hc.compare(subSubInterface,superclass));
-    assertEquals(1,hc.compare(subSubInterface,subclass));
-    assertEquals(1,hc.compare(subSubInterface,subSubclass));
+    assertEquals(-1, hc.compare(subSubInterface, Interface));
+    assertEquals(-1, hc.compare(subSubInterface, subInterface));
+    assertEquals(0, hc.compare(subSubInterface, subSubInterface));
+    assertEquals(1, hc.compare(subSubInterface, superclass));
+    assertEquals(1, hc.compare(subSubInterface, subclass));
+    assertEquals(1, hc.compare(subSubInterface, subSubclass));
 
-    assertEquals(-1,hc.compare(subInterface,Interface));
-    assertEquals(0,hc.compare(subInterface,subInterface));
-    assertEquals(1,hc.compare(subInterface,subSubInterface));
-    assertEquals(1,hc.compare(subInterface,superclass));
-    assertEquals(1,hc.compare(subInterface,subclass));
-    assertEquals(1,hc.compare(subInterface,subSubclass));
+    assertEquals(-1, hc.compare(subInterface, Interface));
+    assertEquals(0, hc.compare(subInterface, subInterface));
+    assertEquals(1, hc.compare(subInterface, subSubInterface));
+    assertEquals(1, hc.compare(subInterface, superclass));
+    assertEquals(1, hc.compare(subInterface, subclass));
+    assertEquals(1, hc.compare(subInterface, subSubclass));
 
-    assertEquals(0,hc.compare(Interface,Interface));
-    assertEquals(1,hc.compare(Interface,subInterface));
-    assertEquals(1,hc.compare(Interface,subSubInterface));
-    assertEquals(1,hc.compare(Interface,superclass));
-    assertEquals(1,hc.compare(Interface,subclass));
-    assertEquals(1,hc.compare(Interface,subSubclass));
+    assertEquals(0, hc.compare(Interface, Interface));
+    assertEquals(1, hc.compare(Interface, subInterface));
+    assertEquals(1, hc.compare(Interface, subSubInterface));
+    assertEquals(1, hc.compare(Interface, superclass));
+    assertEquals(1, hc.compare(Interface, subclass));
+    assertEquals(1, hc.compare(Interface, subSubclass));
 
-    assertEquals(-1,hc.compare(superclass,Interface));
-    assertEquals(-1,hc.compare(superclass,subInterface));
-    assertEquals(-1,hc.compare(superclass,subSubInterface));
-    assertEquals(0,hc.compare(superclass,superclass));
-    assertEquals(1,hc.compare(superclass,subclass));
-    assertEquals(1,hc.compare(superclass,subSubclass));
+    assertEquals(-1, hc.compare(superclass, Interface));
+    assertEquals(-1, hc.compare(superclass, subInterface));
+    assertEquals(-1, hc.compare(superclass, subSubInterface));
+    assertEquals(0, hc.compare(superclass, superclass));
+    assertEquals(1, hc.compare(superclass, subclass));
+    assertEquals(1, hc.compare(superclass, subSubclass));
 
-    assertEquals(-1,hc.compare(subclass,Interface));
-    assertEquals(-1,hc.compare(subclass,subInterface));
-    assertEquals(-1,hc.compare(subclass,subSubInterface));
-    assertEquals(-1,hc.compare(subclass,superclass));
-    assertEquals(0,hc.compare(subclass,subclass));
-    assertEquals(1,hc.compare(subclass,subSubclass));
+    assertEquals(-1, hc.compare(subclass, Interface));
+    assertEquals(-1, hc.compare(subclass, subInterface));
+    assertEquals(-1, hc.compare(subclass, subSubInterface));
+    assertEquals(-1, hc.compare(subclass, superclass));
+    assertEquals(0, hc.compare(subclass, subclass));
+    assertEquals(1, hc.compare(subclass, subSubclass));
 
-    assertEquals(-1,hc.compare(subSubclass,Interface));
-    assertEquals(-1,hc.compare(subSubclass,subInterface));
-    assertEquals(-1,hc.compare(subSubclass,subSubInterface));
-    assertEquals(-1,hc.compare(subSubclass,superclass));
-    assertEquals(-1,hc.compare(subSubclass,subclass));
-    assertEquals(0,hc.compare(subSubclass,subSubclass));
+    assertEquals(-1, hc.compare(subSubclass, Interface));
+    assertEquals(-1, hc.compare(subSubclass, subInterface));
+    assertEquals(-1, hc.compare(subSubclass, subSubInterface));
+    assertEquals(-1, hc.compare(subSubclass, superclass));
+    assertEquals(-1, hc.compare(subSubclass, subclass));
+    assertEquals(0, hc.compare(subSubclass, subSubclass));
 
-
-    ArrayList<ClassType> classes= new ArrayList<>();
+    ArrayList<ClassType> classes = new ArrayList<>();
     classes.add(Interface);
     classes.add(subclass);
     classes.add(subSubInterface);
     classes.add(superclass);
     classes.add(subInterface);
     classes.add(subSubclass);
-    List<ClassType> classesSorted=classes.stream().sorted(hc).collect(Collectors.toList());
-    assertEquals(subSubclass,classesSorted.get(0));
-    assertEquals(subclass,classesSorted.get(1));
-    assertEquals(superclass,classesSorted.get(2));
-    assertEquals(subSubInterface,classesSorted.get(3));
-    assertEquals(subInterface,classesSorted.get(4));
-    assertEquals(Interface,classesSorted.get(5));
+    List<ClassType> classesSorted = classes.stream().sorted(hc).collect(Collectors.toList());
+    assertEquals(subSubclass, classesSorted.get(0));
+    assertEquals(subclass, classesSorted.get(1));
+    assertEquals(superclass, classesSorted.get(2));
+    assertEquals(subSubInterface, classesSorted.get(3));
+    assertEquals(subInterface, classesSorted.get(4));
+    assertEquals(Interface, classesSorted.get(5));
   }
 }
