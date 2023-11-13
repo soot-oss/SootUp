@@ -165,13 +165,13 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature interfaceMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscddi.Interface"),
-            "method",
+            "target",
             "void",
             Collections.emptyList());
     MethodSignature subInterfaceMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvcscddi.SubInterface"),
-            "method",
+            "target",
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, interfaceMethod));
