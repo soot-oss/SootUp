@@ -25,6 +25,7 @@ package sootup.callgraph;
 import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
@@ -34,6 +35,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.MethodDispatchResolver;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
@@ -90,18 +92,31 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return Stream.of(targetMethodSignature);
     } else {
-      List<MethodSignature> targets = resolveAllCallTargets(targetMethodSignature);
+      ArrayList<ClassType> noImplementedMethod = new ArrayList<>();
+      List<MethodSignature> targets =
+          resolveAllCallTargets(targetMethodSignature, noImplementedMethod);
       if (!targetMethod.isAbstract()) {
         targets.add(targetMethod.getSignature());
       }
       if (invokeExpr instanceof JInterfaceInvokeExpr) {
-        // TODO:add concrete dispatches of subtypes with no implemented
+        IdentifierFactory factory = view.getIdentifierFactory();
+        noImplementedMethod.stream()
+            .map(
+                classType ->
+                    MethodDispatchResolver.resolveConcreteDispatch(
+                        view,
+                        factory.getMethodSignature(
+                            classType, targetMethodSignature.getSubSignature())))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(targets::add);
       }
       return targets.stream();
     }
   }
 
-  private List<MethodSignature> resolveAllCallTargets(MethodSignature targetMethodSignature) {
+  private List<MethodSignature> resolveAllCallTargets(
+      MethodSignature targetMethodSignature, ArrayList<ClassType> noImplementedMethod) {
     ArrayList<MethodSignature> targets = new ArrayList<>();
     view.getTypeHierarchy()
         .subtypesOf(targetMethodSignature.getDeclClassType())
@@ -113,6 +128,8 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
               SootMethod method =
                   clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
               if (method != null && !method.isAbstract()) targets.add(method.getSignature());
+              // save classes with no implementation of the searched method
+              if (method == null && !clazz.isInterface()) noImplementedMethod.add(classType);
               // collect all default methods
               clazz
                   .getInterfaces()
