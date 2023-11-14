@@ -207,7 +207,7 @@ public final class MethodDispatchResolver {
     }
     TypeHierarchy typeHierarchy = view.getTypeHierarchy();
 
-    List<ClassType> superClasses = typeHierarchy.incompleteSuperClassesOf(sig.getDeclClassType());
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
     for (ClassType superClassType : superClasses) {
       Optional<? extends SootMethod> method =
           view.getMethod(
