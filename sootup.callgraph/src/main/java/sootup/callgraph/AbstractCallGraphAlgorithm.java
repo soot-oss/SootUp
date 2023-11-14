@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -40,6 +41,8 @@ import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.HierarchyComparator;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
@@ -458,4 +461,77 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   protected abstract Stream<MethodSignature> resolveCall(
       SootMethod method, AbstractInvokeExpr invokeExpr);
+
+  /**
+   * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
+   * This is done by checking each superclass and the class itself for whether it contains the
+   * concrete implementation.
+   */
+  @Nonnull
+  public static Optional<MethodSignature> resolveConcreteDispatch(
+      View<? extends SootClass<?>> view, MethodSignature m) {
+    Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
+    if (methodOp.isPresent()) {
+      SootMethod method = methodOp.get();
+      if (method.isAbstract()) {
+        return Optional.empty();
+      }
+      return Optional.of(method.getSignature());
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * searches the method object in the given hierarchy
+   *
+   * @param view it contains all classes
+   * @param sig the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  public static Optional<? extends SootMethod> findConcreteMethod(
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    Optional<? extends SootMethod> startMethod = view.getMethod(sig);
+    if (startMethod.isPresent()) {
+      return startMethod;
+    }
+    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
+    for (ClassType superClassType : superClasses) {
+      Optional<? extends SootMethod> method =
+          view.getMethod(
+              identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()));
+      if (method.isPresent()) {
+        return method;
+      }
+    }
+    Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sig.getDeclClassType());
+    // interface1 is a sub-interface of interface2
+    // interface1 is a super-interface of interface2
+    // due to multiple inheritance in interfaces
+    final HierarchyComparator hierarchyComparator = new HierarchyComparator(view);
+    Optional<? extends SootMethod> defaultMethod =
+        interfaces.stream()
+            .map(
+                classType ->
+                    view.getMethod(
+                        identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .min(
+                (m1, m2) ->
+                    hierarchyComparator.compare(
+                        m1.getDeclaringClassType(), m2.getDeclaringClassType()));
+    if (defaultMethod.isPresent()) {
+      return defaultMethod;
+    }
+    logger.warn(
+        "Could not find \""
+            + sig.getSubSignature()
+            + "\" in "
+            + sig.getDeclClassType().getClassName()
+            + " and in its superclasses and interfaces");
+    return Optional.empty();
+  }
 }

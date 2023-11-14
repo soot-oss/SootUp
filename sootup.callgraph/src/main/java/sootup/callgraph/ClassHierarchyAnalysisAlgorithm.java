@@ -84,8 +84,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    SootMethod targetMethod =
-        MethodDispatchResolver.findConcreteMethod(view, targetMethodSignature).orElse(null);
+    SootMethod targetMethod =findConcreteMethod(view, targetMethodSignature).orElse(null);
 
     if (targetMethod == null
         || MethodModifier.isStatic(targetMethod.getModifiers())
@@ -103,7 +102,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         noImplementedMethod.stream()
             .map(
                 classType ->
-                    MethodDispatchResolver.resolveConcreteDispatch(
+                    resolveConcreteDispatch(
                         view,
                         factory.getMethodSignature(
                             classType, targetMethodSignature.getSubSignature())))

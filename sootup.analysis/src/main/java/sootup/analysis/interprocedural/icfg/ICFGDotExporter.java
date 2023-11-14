@@ -2,6 +2,7 @@ package sootup.analysis.interprocedural.icfg;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -90,7 +91,7 @@ public class ICFGDotExporter {
       return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
           .map(
               methodSignature ->
-                  MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
+                  AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, methodSignature))
           .filter(Optional::isPresent)
           .map(Optional::get)
           .collect(Collectors.toSet());
