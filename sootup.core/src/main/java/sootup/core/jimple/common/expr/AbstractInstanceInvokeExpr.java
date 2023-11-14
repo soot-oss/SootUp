@@ -48,14 +48,10 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Override
   @Nonnull
   public List<Value> getUses() {
-    List<Value> list = new ArrayList<>();
-
     List<? extends Value> args = getArgs();
-    if (args != null) {
-      list.addAll(args);
-      for (Value arg : args) {
-        list.addAll(arg.getUses());
-      }
+    List<Value> list = new ArrayList<>(args);
+    for (Value arg : args) {
+      list.addAll(arg.getUses());
     }
     list.addAll(base.getUses());
     list.add(base);

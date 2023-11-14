@@ -115,7 +115,7 @@ public class LocalPacker implements BodyInterceptor {
             localToNewLocal.put(ori, newLocal);
           }
         }
-        newStmt = ((AbstractDefinitionStmt<?, ?>) newStmt).withNewDef(newLocal);
+        newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
       }
       if (!stmt.equals(newStmt)) {
         builder.replaceStmt(stmt, newStmt);
@@ -144,8 +144,8 @@ public class LocalPacker implements BodyInterceptor {
     // assign each parameter local a color (local from IdentityStmt)
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof JIdentityStmt) {
-        if (((JIdentityStmt<?>) stmt).getLeftOp() instanceof Local) {
-          Local l = (Local) ((JIdentityStmt<?>) stmt).getLeftOp();
+        if (((JIdentityStmt) stmt).getLeftOp() instanceof Local) {
+          Local l = (Local) ((JIdentityStmt) stmt).getLeftOp();
           Type type = l.getType();
           int count = typeToColorCount.get(type);
           localToColor.put(l, count);

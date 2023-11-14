@@ -25,8 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.AbstractStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
@@ -40,7 +42,7 @@ import sootup.core.util.printer.StmtPrinter;
  * @author Aaloan Miftah
  * @author Markus Schmidt
  */
-class StmtContainer extends Stmt {
+class StmtContainer extends AbstractStmt {
 
   @Nonnull private final List<Stmt> stmts = new LinkedList<>();
 
@@ -83,7 +85,7 @@ class StmtContainer extends Stmt {
 
   @Nonnull
   @Override
-  public List<Value> getDefs() {
+  public List<LValue> getDefs() {
     throw new UnsupportedOperationException();
   }
 

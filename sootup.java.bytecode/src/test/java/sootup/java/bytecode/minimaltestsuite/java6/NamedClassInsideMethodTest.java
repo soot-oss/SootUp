@@ -39,11 +39,11 @@ public class NamedClassInsideMethodTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: NamedClassInsideMethod",
+            "$l0 := @this: NamedClassInsideMethod",
             "$stack2 = new NamedClassInsideMethod$1MyMathOperation",
-            "specialinvoke $stack2.<NamedClassInsideMethod$1MyMathOperation: void <init>(NamedClassInsideMethod)>(l0)",
-            "l1 = $stack2",
-            "interfaceinvoke l1.<NamedClassInsideMethod$MathOperation: void addition()>()",
+            "specialinvoke $stack2.<NamedClassInsideMethod$1MyMathOperation: void <init>(NamedClassInsideMethod)>($l0)",
+            "$l1 = $stack2",
+            "interfaceinvoke $l1.<NamedClassInsideMethod$MathOperation: void addition()>()",
             "return")
         .collect(Collectors.toList());
   }

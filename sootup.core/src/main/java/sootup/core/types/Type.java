@@ -61,6 +61,7 @@ public abstract class Type implements Acceptor<TypeVisitor> {
   }
 
   public static int getValueBitSize(Type type) {
+    // TODO: ms: make use of the typevisitor to get O(1)
     if (type instanceof PrimitiveType.BooleanType) {
       return 1;
     }

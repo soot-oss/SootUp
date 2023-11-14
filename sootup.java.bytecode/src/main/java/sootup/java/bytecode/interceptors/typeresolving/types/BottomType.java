@@ -26,7 +26,7 @@ import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.Type;
 
 /**
- * This type is imaginary type, and used for Type Inference
+ * This type is an imaginary/intermediate type which is used to calculate Type Inference
  *
  * @author Zun Wang
  */
@@ -43,6 +43,11 @@ public class BottomType extends Type {
 
   @Override
   public void accept(@Nonnull TypeVisitor v) {
-    // todo: add bottom type case
+    v.defaultCaseType();
+  }
+
+  @Override
+  public String toString() {
+    return "BottomType";
   }
 }

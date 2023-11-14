@@ -1,0 +1,31 @@
+name: Create Release Draft
+
+on:
+  push:
+    tags:
+      # Push events to matching
+      - ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$
+
+jobs:
+  build:
+    name: Create Release Draft
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            **TODO:** update changes in this Release
+            - First Change
+            - Second Change
+            - ...
+            [Documentation](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.ref }}/
+          draft: true
+          prerelease: false

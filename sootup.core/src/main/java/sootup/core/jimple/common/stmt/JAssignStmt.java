@@ -1,7 +1,7 @@
 package sootup.core.jimple.common.stmt;
 
 /*-
- * #%L
+ * #%Value
  * Soot - a J*va Optimization Framework
  * %%
  * Copyright (C) 1997-2020 Etienne Gagnon, Linghui Luo, Markus Schmidt and others
@@ -19,7 +19,7 @@ package sootup.core.jimple.common.stmt;
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
+ * #Value%
  */
 
 import javax.annotation.Nonnull;
@@ -31,12 +31,13 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt<L extends Value, R extends Value>
-    extends AbstractDefinitionStmt<L, R> implements Copyable {
+public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
+
+  @Nonnull final LValue leftOp;
+  @Nonnull final Value rightOp;
 
   /**
    * Instantiates a new JAssignStmt.
@@ -45,28 +46,17 @@ public final class JAssignStmt<L extends Value, R extends Value>
    * @param rValue the value on the right side of the assign statement.
    */
   public JAssignStmt(
-      @Nonnull L variable, @Nonnull R rValue, @Nonnull StmtPositionInfo positionInfo) {
-    super(variable, rValue, positionInfo);
-    if (!validateVariable(variable)) {
-      throw new RuntimeException(
-          "Illegal Assignment statement. Make sure that left hand side has a valid operand.");
-    }
+      @Nonnull LValue variable, @Nonnull Value rValue, @Nonnull StmtPositionInfo positionInfo) {
+    super(positionInfo);
+    leftOp = variable;
+    rightOp = rValue;
+
     if (!validateValue(rValue)) {
       throw new RuntimeException(
           "Illegal Assignment statement. Make sure that right hand side ("
               + rValue
               + ") is a valid operand.");
     }
-  }
-
-  /**
-   * returns true if variable can be on the left side of the assign statement
-   *
-   * @param variable the variable on the left side of the assign statement.
-   */
-  private boolean validateVariable(@Nonnull Value variable) {
-    // i.e. not Constant, not IdentityRef, not Expr
-    return variable instanceof Local || variable instanceof ConcreteRef;
   }
 
   /**
@@ -200,25 +190,33 @@ public final class JAssignStmt<L extends Value, R extends Value>
   }
 
   @Nonnull
-  public <N extends Value> JAssignStmt<N, R> withVariable(@Nonnull N variable) {
-    return new JAssignStmt<>(variable, getRightOp(), getPositionInfo());
+  @Override
+  public LValue getLeftOp() {
+    return leftOp;
   }
 
   @Nonnull
-  public <N extends Value> JAssignStmt<L, N> withRValue(@Nonnull N rValue) {
-    return new JAssignStmt<>(getLeftOp(), rValue, getPositionInfo());
-  }
-
-  @Nonnull
-  public JAssignStmt<L, R> withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
-    return new JAssignStmt<>(getLeftOp(), getRightOp(), positionInfo);
+  @Override
+  public Value getRightOp() {
+    return rightOp;
   }
 
   @Override
-  public Stmt withNewDef(@Nonnull Local newLocal) {
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
+
+  @Nonnull
+  @Override
+  public JAssignStmt withNewDef(@Nonnull Local newLocal) {
     // "ReplaceDefVisitor"
     final Value leftOp = getLeftOp();
-    Value newVal;
+    LValue newVal;
     if (leftOp instanceof ConcreteRef) {
       if (leftOp instanceof JArrayRef) {
         newVal = ((JArrayRef) leftOp).withBase(newLocal);
@@ -229,9 +227,24 @@ public final class JAssignStmt<L extends Value, R extends Value>
         return this;
       }
     } else {
-      // its a Local..
+      // it's a Local
       newVal = newLocal;
     }
     return withVariable(newVal);
+  }
+
+  @Nonnull
+  public JAssignStmt withVariable(@Nonnull LValue variable) {
+    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withRValue(@Nonnull Value rValue) {
+    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
+    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

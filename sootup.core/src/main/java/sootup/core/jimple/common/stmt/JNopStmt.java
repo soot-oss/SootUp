@@ -27,11 +27,10 @@ import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A no-operation statement. */
-public final class JNopStmt extends Stmt implements Copyable {
+public final class JNopStmt extends AbstractStmt implements FallsThroughStmt {
 
   public JNopStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
