@@ -22,18 +22,9 @@ package sootup.core.typehierarchy;
  */
 
 import com.google.common.collect.Sets;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sootup.core.IdentifierFactory;
-import sootup.core.frontend.ResolveException;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -71,7 +62,6 @@ public final class MethodDispatchResolver {
         .collect(Collectors.toSet());
   }
 
-
   /**
    * Resolves all dispatches of a given call filtered by a set of given classes
    *
@@ -106,5 +96,4 @@ public final class MethodDispatchResolver {
 
     return signatureInClasses;
   }
-
 }

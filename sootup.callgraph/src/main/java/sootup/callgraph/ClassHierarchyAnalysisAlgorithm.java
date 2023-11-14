@@ -34,7 +34,6 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.MethodDispatchResolver;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -84,7 +83,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    SootMethod targetMethod =findConcreteMethod(view, targetMethodSignature).orElse(null);
+    SootMethod targetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
 
     if (targetMethod == null
         || MethodModifier.isStatic(targetMethod.getModifiers())

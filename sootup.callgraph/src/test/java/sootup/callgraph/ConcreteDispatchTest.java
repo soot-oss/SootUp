@@ -20,13 +20,13 @@ import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-
 /** @author : Hasitha Rajapakse, Jonas Klauke * */
 @Category(Java8Test.class)
 public class ConcreteDispatchTest {
   public ClassType getClassType(String className) {
     return view.getIdentifierFactory().getClassType(className);
   }
+
   private static JavaView view;
 
   @BeforeClass
@@ -82,7 +82,8 @@ public class ConcreteDispatchTest {
     MethodSignature concreteMethodSig =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, strToStringSig).orElse(null);
     Assert.assertNotNull(concreteMethodSig);
-    Assert.assertEquals("String.toString() should resolve to itself", strToStringSig, concreteMethodSig);
+    Assert.assertEquals(
+        "String.toString() should resolve to itself", strToStringSig, concreteMethodSig);
 
     MethodSignature concreteMethodSig2 =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(
@@ -94,13 +95,14 @@ public class ConcreteDispatchTest {
         factory.parseMethodSignature("java.lang.Object#hashCode(): int"),
         concreteMethodSig2);
   }
+
   @Test
   public void method() {
     // test concrete method in super class
     ClassType sootClassTypeA = getClassType("A");
     ClassType sootClassTypeB = getClassType("B");
 
-    IdentifierFactory identifierFactory=view.getIdentifierFactory();
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
     MethodSignature sootMethod1 =
         identifierFactory.getMethodSignature(
             sootClassTypeA, "method", "void", Collections.emptyList());
@@ -112,14 +114,12 @@ public class ConcreteDispatchTest {
             sootClassTypeB, "method2", "void", Collections.emptyList());
 
     MethodSignature candidate1 =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootMethod1)
-            .orElse(null);
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootMethod1).orElse(null);
     assertNotNull(candidate1);
     assertEquals(candidate1, sootMethod1);
 
     MethodSignature candidate2 =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootMethod2)
-            .orElse(null);
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootMethod2).orElse(null);
     assertNotNull(candidate2);
     assertEquals(candidate2, sootMethod3);
 
@@ -134,9 +134,7 @@ public class ConcreteDispatchTest {
             sootClassTypeA, "interfaceMethod", "void", Collections.emptyList());
 
     MethodSignature candidateInterface =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(
-                view, sootInterfaceMethodA)
-            .orElse(null);
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootInterfaceMethodA).orElse(null);
     assertNotNull(candidateInterface);
     assertEquals(candidateInterface, sootInterfaceMethod);
 
@@ -151,8 +149,7 @@ public class ConcreteDispatchTest {
             sootClassTypeA, "superInterfaceMethod", "void", Collections.emptyList());
 
     MethodSignature candidateSuperInterface =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(
-                view, sootSuperInterfaceMethodA)
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootSuperInterfaceMethodA)
             .orElse(null);
     assertNotNull(candidateSuperInterface);
     assertEquals(candidateSuperInterface, sootSuperInterfaceMethod);
@@ -173,14 +170,12 @@ public class ConcreteDispatchTest {
             sootClassTypeC, "interfaceMethod", "void", Collections.emptyList());
 
     MethodSignature candidateSubInterface =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(
-                view, sootSuperInterfaceMethodD)
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootSuperInterfaceMethodD)
             .orElse(null);
     assertNotNull(candidateSubInterface);
     assertEquals(candidateSubInterface, subInterfaceMethod);
     MethodSignature candidateSubInterface2 =
-        AbstractCallGraphAlgorithm.resolveConcreteDispatch(
-                view, sootSuperInterfaceMethodC)
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, sootSuperInterfaceMethodC)
             .orElse(null);
     assertNotNull(candidateSubInterface2);
     assertEquals(candidateSubInterface, candidateSubInterface2);

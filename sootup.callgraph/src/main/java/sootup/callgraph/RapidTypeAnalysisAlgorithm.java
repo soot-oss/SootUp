@@ -173,16 +173,14 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       // find the concrete dispatch of all possible dispatches
       Set<MethodSignature> concreteCallTargets =
           implAndOverrides.stream()
-              .map(
-                  methodSignature ->resolveConcreteDispatch(view, methodSignature))
+              .map(methodSignature -> resolveConcreteDispatch(view, methodSignature))
               .filter(Optional::isPresent)
               .map(Optional::get)
               .collect(Collectors.toSet());
 
       // add the concrete of the targetMethod if the class is instantiated
       if (targetMethodClassIsInstantiated) {
-        resolveConcreteDispatch(view, targetMethodSignature)
-            .ifPresent(concreteCallTargets::add);
+        resolveConcreteDispatch(view, targetMethodSignature).ifPresent(concreteCallTargets::add);
       }
 
       return concreteCallTargets.stream();
@@ -238,8 +236,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
           if (newEdges != null) {
             newEdges.forEach(
                 call -> {
-                  MethodSignature concreteTarget =resolveConcreteDispatch(view, call.target)
-                          .orElse(null);
+                  MethodSignature concreteTarget =
+                      resolveConcreteDispatch(view, call.target).orElse(null);
                   if (concreteTarget == null) {
                     return;
                   }
