@@ -228,12 +228,22 @@ public class BytecodeHierarchy {
             }
           }
         } else {
-          Set<ClassType> superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type);
+
+          Set<ClassType> superInterfaces;
+          ClassType superClass;
+          try {
+            superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type);
+            superClass = typeHierarchy.superClassOf(node.type);
+          } catch (IllegalArgumentException iae) {
+            // node.type does not exist in
+            continue;
+          }
+
           for (ClassType superInterface : superInterfaces) {
             AncestryPath superNode = new AncestryPath(superInterface, node);
             pathNodes.add(superNode);
           }
-          ClassType superClass = typeHierarchy.superClassOf(node.type);
+
           // only java.lang.Object can have no SuperClass i.e. is null
           if (superClass != null) {
             AncestryPath superNode = new AncestryPath(superClass, node);

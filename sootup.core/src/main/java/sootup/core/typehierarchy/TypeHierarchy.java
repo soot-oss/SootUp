@@ -154,7 +154,7 @@ public interface TypeHierarchy {
         return (supertypeName.equals("java.lang.Object")
                 && !potentialSubtypeName.equals("java.lang.Object"))
             || supertype.equals(superClassOf((ClassType) potentialSubtype))
-            || incompleteSuperClassesOf((ClassType) potentialSubtype).contains(supertype)
+            || superClassesOf((ClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
@@ -171,25 +171,10 @@ public interface TypeHierarchy {
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list. i.e. its ordered from bottom level to top level.
-   */
-  @Nonnull
-  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
-    List<ClassType> superClasses = new ArrayList<>();
-    ClassType currentSuperClass = superClassOf(classType);
-    while (currentSuperClass != null) {
-      superClasses.add(currentSuperClass);
-      currentSuperClass = superClassOf(currentSuperClass);
-    }
-    return superClasses;
-  }
-
-  /**
-   * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
    */
   @Nonnull
-  default List<ClassType> incompleteSuperClassesOf(@Nonnull ClassType classType) {
+  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
     ClassType currentSuperClass = null;
     try {

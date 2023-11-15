@@ -54,22 +54,22 @@ public class CastCounter extends TypeChecker {
   }
 
   public int getCastCount(@Nonnull Typing typing) {
-    this.castCount = 0;
-    this.countOnly = true;
+    castCount = 0;
+    countOnly = true;
     setTyping(typing);
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
-    return this.castCount;
+    return castCount;
   }
 
   public int getCastCount() {
-    return this.castCount;
+    return castCount;
   }
 
   public void insertCastStmts(@Nonnull Typing typing) {
-    this.castCount = 0;
-    this.countOnly = false;
+    castCount = 0;
+    countOnly = false;
     setTyping(typing);
     for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
       stmt.accept(this);
@@ -91,7 +91,7 @@ public class CastCounter extends TypeChecker {
       if (hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
-      this.castCount++;
+      castCount++;
       return;
     }
 
@@ -112,8 +112,7 @@ public class CastCounter extends TypeChecker {
     if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
       return;
     }
-    this.castCount++;
-    // TODO: modifiers later must be added
+    castCount++;
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     Local old_local;
@@ -143,18 +142,18 @@ public class CastCounter extends TypeChecker {
       newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
     }
     if (graph.containsNode(stmt)) {
-      builder.replaceStmt(stmt, newStmt);
-      this.stmt2NewStmt.put(oriStmt, newStmt);
+      graph.replaceNode(stmt, newStmt);
+      stmt2NewStmt.put(oriStmt, newStmt);
     }
   }
 
   private void addUpdatedValue(Value oldValue, Value newValue, Stmt stmt) {
     Map<Value, Value> map;
-    if (!this.changedValues.containsKey(stmt)) {
+    if (!changedValues.containsKey(stmt)) {
       map = new HashMap<>();
-      this.changedValues.put(stmt, map);
+      changedValues.put(stmt, map);
     } else {
-      map = this.changedValues.get(stmt);
+      map = changedValues.get(stmt);
     }
     map.put(oldValue, newValue);
     if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
@@ -183,7 +182,7 @@ public class CastCounter extends TypeChecker {
   }
 
   private Local generateTempLocal(@Nonnull Type type) {
-    String name = "#l" + newLocalsCount++;
+    String name = "$#l" + newLocalsCount++;
     return Jimple.newLocal(name, type);
   }
 }
