@@ -64,10 +64,6 @@ public class AnnotationType extends JavaClassType {
         JavaView jv = viewOptional.get();
 
         // meta annotations are not in the view
-        if (this.isMetaAnnotation()) {
-          return defaultValues;
-        }
-
         if (!jv.getClass(this).isPresent()) {
           return defaultValues;
         }
