@@ -1,6 +1,27 @@
 package sootup.core.validation;
 
-import java.util.*;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Akshita Dubey and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -13,6 +34,11 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.UnknownType;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class NewValidator implements BodyValidator {
 
@@ -33,19 +59,15 @@ public class NewValidator implements BodyValidator {
         // First seek for a JNewExpr.
         if (assign.getRightOp() instanceof JNewExpr) {
           if (!((assign.getLeftOp().getType() instanceof ReferenceType)
-              || assign.getLeftOp().getType() instanceof UnknownType)) {
+                  || assign.getLeftOp().getType() instanceof UnknownType)) {
             exceptions.add(
-                new ValidationException(
-                    assign.getLeftOp(),
-                    String.format(
-                        "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
-                        body.getMethodSignature())));
+                    new ValidationException(
+                            assign.getLeftOp(),
+                            String.format(
+                                    "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
+                                    body.getMethodSignature())));
             return;
           }
-
-          // We search for a JSpecialInvokeExpr on the local.
-          LinkedHashSet<Local> locals = new LinkedHashSet<Local>();
-          locals.add((Local) assign.getLeftOp());
 
           checkForInitializerOnPath(g, assign, exceptions);
         }

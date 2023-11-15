@@ -1,0 +1,19 @@
+public super class NewValidator_fail extends java.lang.Object
+{
+    public void newValidator_fail()
+    {
+        java.lang.String[] $l0;
+        unknown $l1, $stack2, $stack3, $stack4;
+
+        $l0 := @parameter0: java.lang.String[];
+        $stack2 = new NewValidator_fail;
+
+        $l1 = $stack2;
+        $stack4 = <java.lang.System: java.io.PrintStream out>;
+        $stack3 = $l1.<NewValidator_fail: int x>;
+        virtualinvoke $stack4.<java.io.PrintStream: void println(int)>($stack3);
+
+        return;
+    }
+
+}
