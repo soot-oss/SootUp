@@ -26,7 +26,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -54,15 +53,15 @@ public interface IdentifierFactory {
   /**
    * Gets the method signature.
    *
-   * @param methodName the method name
    * @param fullyQualifiedNameDeclClass the fully qualified name decl class
+   * @param methodName the method name
    * @param fqReturnType the fq return type
    * @param parameters the parameters
    * @return the method signature
    */
   MethodSignature getMethodSignature(
-      String methodName,
       String fullyQualifiedNameDeclClass,
+      String methodName,
       String fqReturnType,
       List<String> parameters);
 
@@ -95,17 +94,6 @@ public interface IdentifierFactory {
       String methodName,
       Type fqReturnType,
       List<Type> parameters);
-
-  /**
-   * Gets the method signature.
-   *
-   * @param declaringClass the declaring class
-   * @param subSignature the sub signature
-   * @return the method signature
-   */
-  @Nonnull
-  MethodSignature getMethodSignature(
-      @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature);
 
   /**
    * Gets the method signature.

@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -62,8 +63,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
-  Map<Local, Collection<Stmt>> allUses = new HashMap<>();
+  Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
+  Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
@@ -83,7 +84,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       boolean isEssential = true;
 
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
 
@@ -97,7 +98,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             && (!eliminateOnlyStackLocals
                 || ((Local) lhs).getName().startsWith("$")
                 || lhs.getType() instanceof NullType)) {
-          // FIXME: [ms] inspection says right side of && is always true
           isEssential = false;
 
           if (!containsInvoke) {
@@ -177,7 +177,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     if (containsInvoke || !allEssential) {
       // Add all the statements which are used to compute values for the essential statements,
       // recursively
-      allDefs = Body.collectDefs(builder.getStmts());
+      allDefs = Body.collectDefs(builder.getStmtGraph().getNodes());
 
       if (!allEssential) {
         Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
@@ -205,20 +205,22 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       }
 
       if (containsInvoke) {
-        allUses = Body.collectUses(builder.getStmts());
+        allUses = Body.collectUses(builder.getStmtGraph().getNodes());
         // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
-        List<JAssignStmt<?, ?>> postProcess = new ArrayList<>();
+        List<JAssignStmt> postProcess = new ArrayList<>();
         for (Stmt stmt : stmts) {
           if (stmt instanceof JAssignStmt) {
-            JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+            JAssignStmt assignStmt = (JAssignStmt) stmt;
             if (assignStmt.containsInvokeExpr()) {
-              // Just find one use of local which is essential
+              // Just find one use of Value which is essential
               boolean deadAssignment = true;
-              Local local = (Local) assignStmt.getRightOp();
-              for (Stmt use : allUses.get(local)) {
-                if (builder.getStmts().contains(use)) {
-                  deadAssignment = false;
-                  break;
+              if (assignStmt.getRightOp() instanceof Local) {
+                Local value = (Local) assignStmt.getRightOp();
+                for (Stmt use : allUses.get(value)) {
+                  if (builder.getStmtGraph().containsNode(use)) {
+                    deadAssignment = false;
+                    break;
+                  }
                 }
               }
               if (deadAssignment) {
@@ -228,7 +230,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           }
         }
 
-        for (JAssignStmt<?, ?> assignStmt : postProcess) {
+        for (JAssignStmt assignStmt : postProcess) {
           // Transform it into a simple invoke
           Stmt newInvoke =
               Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());

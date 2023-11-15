@@ -25,7 +25,6 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public MethodSignature getMethodSignature() {
-    System.out.println(getDeclaredClassSignature());
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "switchSomething", "void", Collections.emptyList());
   }
@@ -72,10 +71,10 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SwitchExprWithYieldTest",
-            "l1 = 5",
-            "l2 = \"\"",
-            "switch(l1)",
+            "$l0 := @this: SwitchExprWithYieldTest",
+            "$l1 = 5",
+            "$l2 = \"\"",
+            "switch($l1)",
             "case 1: goto label01",
             "case 2: goto label02",
             "case 3: goto label02",
@@ -89,8 +88,8 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
             "label03:",
             "$stack11 = \"somethingElse\"",
             "label04:",
-            "l2 = $stack11",
-            "$stack12 = l1",
+            "$l2 = $stack11",
+            "$stack12 = $l1",
             "switch($stack12)",
             "case 1: goto label05",
             "case 2: goto label06",
@@ -105,8 +104,8 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
             "label07:",
             "$stack9 = \"somethingElse\"",
             "label08:",
-            "l2 = $stack9",
-            "$stack10 = l1",
+            "$l2 = $stack9",
+            "$stack10 = $l1",
             "switch($stack10)",
             "case 1: goto label09",
             "case 2: goto label10",
@@ -121,18 +120,18 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
             "label11:",
             "$stack7 = \"we will not fall through\"",
             "label12:",
-            "l2 = $stack7",
-            "$stack8 = l1",
+            "$l2 = $stack7",
+            "$stack8 = $l1",
             "switch($stack8)",
             "case 1: goto label13",
             "default: goto label14",
             "label13:",
-            "l2 = dynamicinvoke \"makeConcatWithConstants\" <java.lang.String (java.lang.String)>(l2) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>(\"\\u0001single\")",
+            "$l2 = dynamicinvoke \"makeConcatWithConstants\" <java.lang.String (java.lang.String)>($l2) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>(\"\\u0001single\")",
             "label14:",
-            "$stack4 = l2",
-            "$stack5 = dynamicinvoke \"makeConcatWithConstants\" <java.lang.String (java.lang.String)>(l2) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>(\"\\u0001somethingElse\")",
+            "$stack4 = $l2",
+            "$stack5 = dynamicinvoke \"makeConcatWithConstants\" <java.lang.String (java.lang.String)>($l2) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>(\"\\u0001somethingElse\")",
             "$stack3 = <java.lang.System: java.io.PrintStream out>",
-            "$stack6 = l2",
+            "$stack6 = $l2",
             "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>($stack6)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

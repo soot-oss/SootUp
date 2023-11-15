@@ -42,13 +42,13 @@ public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingLamExpr",
-            "l1 = dynamicinvoke \"calcPercentage\" <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), handle: <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double))",
+            "$l0 := @this: MethodAcceptingLamExpr",
+            "$l1 = dynamicinvoke \"calcPercentage\" <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), methodhandle: \"REF_INVOKE_STATIC\" <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double))",
             "$stack3 = <java.lang.System: java.io.PrintStream out>",
             "$stack2 = new java.lang.StringBuilder",
             "specialinvoke $stack2.<java.lang.StringBuilder: void <init>()>()",
             "$stack5 = virtualinvoke $stack2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"Percentage : \")",
-            "$stack4 = interfaceinvoke l1.<Percentage: double calcPercentage(double)>(45.0)",
+            "$stack4 = interfaceinvoke $l1.<Percentage: double calcPercentage(double)>(45.0)",
             "$stack6 = virtualinvoke $stack5.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>($stack4)",
             "$stack7 = virtualinvoke $stack6.<java.lang.StringBuilder: java.lang.String toString()>()",
             "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>($stack7)",

@@ -34,9 +34,9 @@ public class VariableShadowingTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: VariableShadowing",
-            "l1 = l0.<VariableShadowing: int num>",
-            "l2 = 10",
+            "$l0 := @this: VariableShadowing",
+            "$l1 = $l0.<VariableShadowing: int num>",
+            "$l2 = 10",
             "return")
         .collect(Collectors.toList());
   }

@@ -13,6 +13,9 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
@@ -46,22 +49,26 @@ public class TrapTightenerTest {
   ClassType exception = factory.getClassType("java.lang.Throwable");
   JavaJimple javaJimple = JavaJimple.getInstance();
   IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
-  Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
+  FallsThroughStmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
   Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
 
   // stmts
-  Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-  Stmt stmt2 = JavaJimple.newEnterMonitorStmt(l1, noStmtPositionInfo);
-  Stmt stmt3 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
-  Stmt stmt4 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
-  Stmt stmt5 = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  FallsThroughStmt stmt1 =
+      JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
+  FallsThroughStmt stmt2 = JavaJimple.newEnterMonitorStmt(l1, noStmtPositionInfo);
+  FallsThroughStmt stmt3 = JavaJimple.newAssignStmt(l2, l1, noStmtPositionInfo);
+  FallsThroughStmt stmt4 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
+  BranchingStmt stmt5 = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
-  Stmt stmt6 = JavaJimple.newIdentityStmt(l3, caughtExceptionRef, noStmtPositionInfo);
-  Stmt stmt7 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-  Stmt stmt8 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
+  FallsThroughStmt stmt6 = JavaJimple.newIdentityStmt(l3, caughtExceptionRef, noStmtPositionInfo);
+  FallsThroughStmt stmt7 =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
+  FallsThroughStmt stmt8 = JavaJimple.newExitMonitorStmt(l2, noStmtPositionInfo);
   Stmt stmt9 = JavaJimple.newThrowStmt(l3, noStmtPositionInfo);
-  Stmt stmt10 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
-  Stmt stmt11 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(4), noStmtPositionInfo);
+  FallsThroughStmt stmt10 =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(3), noStmtPositionInfo);
+  FallsThroughStmt stmt11 =
+      JavaJimple.newAssignStmt(l2, IntConstant.getInstance(4), noStmtPositionInfo);
   // trap
   Trap trap1 = new Trap(exception, stmt2, stmt5, stmt6);
   Trap trap2 = new Trap(exception, stmt1, stmt5, stmt6);
@@ -154,7 +161,7 @@ public class TrapTightenerTest {
     // modify exceptionalStmtGraph
     builder.clearExceptionEdgesOf(stmt2);
     builder.clearExceptionEdgesOf(stmt4);
-    //  builder.addFlow(, stmt6);
+    //  stmtGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder, null);
@@ -180,7 +187,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt10, stmt5);
     graph.putEdge(stmt6, stmt11);
     graph.putEdge(stmt11, stmt9);
-    graph.putEdge(stmt5, ret);
+    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);
@@ -203,7 +210,7 @@ public class TrapTightenerTest {
     graph.addBlock(Arrays.asList(stmt2, stmt3, stmt4), Collections.singletonMap(exception, stmt6));
     graph.putEdge(stmt1, stmt2);
     graph.putEdge(stmt4, stmt5);
-    graph.putEdge(stmt5, ret);
+    graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
     builder.setStartingStmt(startingStmt);

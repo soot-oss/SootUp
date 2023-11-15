@@ -32,8 +32,8 @@ import sootup.core.jimple.common.constant.MethodHandle;
 import sootup.core.jimple.common.constant.MethodType;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
-import sootup.core.jimple.common.ref.JFieldRef;
-import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.SootClassMemberSignature;
+import sootup.core.signatures.SootClassMemberSubSignature;
 import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
@@ -86,14 +86,16 @@ public class JavaJimple extends Jimple {
     return new StringConstant(value, getIdentifierFactory().getType("java.lang.String"));
   }
 
-  public MethodHandle newMethodHandle(JFieldRef ref, int tag) {
+  public MethodHandle newMethodHandle(
+      SootClassMemberSignature<? extends SootClassMemberSubSignature> ref, int tag) {
     return new MethodHandle(
         ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }
 
-  public MethodHandle newMethodHandle(MethodSignature ref, int tag) {
+  public MethodHandle newMethodHandle(
+      SootClassMemberSignature<? extends SootClassMemberSubSignature> ref, MethodHandle.Kind kind) {
     return new MethodHandle(
-        ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
+        ref, kind, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
   }
 
   public MethodType newMethodType(List<Type> parameterTypes, Type returnType) {

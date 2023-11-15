@@ -102,7 +102,7 @@ public class JimpleComparator {
   }
 
   public boolean caseStmt(Stmt stmt, Object o) {
-    if (!(o instanceof Stmt)) {
+    if (!(o instanceof AbstractStmt)) {
       return false;
     } else if (stmt instanceof JBreakpointStmt) {
       return caseBreakpointStmt((JBreakpointStmt) stmt, o);
@@ -168,14 +168,14 @@ public class JimpleComparator {
     if (!(o instanceof JEnterMonitorStmt)) {
       return false;
     }
-    return stmt.getOp().equivTo(((AbstractOpStmt) o).getOp(), this);
+    return stmt.getOp().equivTo(((JEnterMonitorStmt) o).getOp(), this);
   }
 
   public boolean caseExitMonitorStmt(JExitMonitorStmt stmt, Object o) {
     if (!(o instanceof JExitMonitorStmt)) {
       return false;
     }
-    return stmt.getOp().equivTo(((AbstractOpStmt) o).getOp(), this);
+    return stmt.getOp().equivTo(((JExitMonitorStmt) o).getOp(), this);
   }
 
   public boolean caseGotoStmt(JGotoStmt stmt, Object o) {
@@ -233,7 +233,7 @@ public class JimpleComparator {
     if (!(o instanceof JReturnStmt)) {
       return false;
     }
-    return stmt.getOp().equivTo(((AbstractOpStmt) o).getOp(), this);
+    return stmt.getOp().equivTo(((JReturnStmt) o).getOp(), this);
   }
 
   public boolean caseReturnVoidStmt(JReturnVoidStmt stmt, Object o) {
@@ -244,7 +244,7 @@ public class JimpleComparator {
     if (!(o instanceof JThrowStmt)) {
       return false;
     }
-    return stmt.getOp().equivTo(((AbstractOpStmt) o).getOp(), this);
+    return stmt.getOp().equivTo(((JThrowStmt) o).getOp(), this);
   }
 
   public boolean caseAbstractBinopExpr(AbstractBinopExpr obj, Object o) {

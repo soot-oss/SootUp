@@ -22,9 +22,11 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -35,6 +37,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
 
+/** FIXME: outline what this class does */
 public class CastCounter extends TypeChecker {
 
   private int castCount = 0;
@@ -68,7 +71,7 @@ public class CastCounter extends TypeChecker {
     this.castCount = 0;
     this.countOnly = false;
     setTyping(typing);
-    for (Stmt stmt : builder.getStmts()) {
+    for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
       stmt.accept(this);
     }
   }
@@ -78,59 +81,68 @@ public class CastCounter extends TypeChecker {
     AugEvalFunction evalFunction = getFuntion();
     BytecodeHierarchy hierarchy = getHierarchy();
     Typing typing = getTyping();
+
+    // TODO: ms: move into a Subclass instead of the countOnly option/field?
     if (countOnly) {
       Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
+      if (evaType == null) {
+        return;
+      }
       if (hierarchy.isAncestor(stdType, evaType)) {
         return;
       }
       this.castCount++;
+      return;
+    }
+
+    Stmt oriStmt = stmt;
+    Value oriValue = value;
+    Stmt updatedStmt = stmt2NewStmt.get(stmt);
+    if (updatedStmt != null) {
+      stmt = stmt2NewStmt.get(stmt);
+    }
+    Map<Value, Value> m = changedValues.get(oriStmt);
+    if (m != null) {
+      Value updatedValue = m.get(value);
+      if (updatedValue != null) {
+        value = updatedValue;
+      }
+    }
+    Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
+    if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
+      return;
+    }
+    this.castCount++;
+    // TODO: modifiers later must be added
+
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    Local old_local;
+    if (value instanceof Local) {
+      old_local = (Local) value;
     } else {
-      Stmt oriStmt = stmt;
-      Value oriValue = value;
-      Stmt updatedStmt = stmt2NewStmt.get(stmt);
-      if (updatedStmt != null) {
-        stmt = stmt2NewStmt.get(stmt);
-      }
-      Map<Value, Value> m = changedValues.get(oriStmt);
-      if (m != null) {
-        Value updatedValue = m.get(value);
-        if (updatedValue != null) {
-          value = updatedValue;
-        }
-      }
-      Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-      if (hierarchy.isAncestor(stdType, evaType)) {
-        return;
-      }
-      this.castCount++;
-      // TODO: modifiers later must be added
+      old_local = generateTempLocal(evaType);
+      builder.addLocal(old_local);
+      typing.set(old_local, evaType);
+      JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
+      stmtGraph.insertBefore(stmt, newAssign);
+    }
 
-      Local old_local;
-      if (value instanceof Local) {
-        old_local = (Local) value;
-      } else {
-        old_local = generateTempLocal(evaType);
-        builder.addLocal(old_local);
-        typing.set(old_local, evaType);
-        JAssignStmt<?, ?> newAssign =
-            Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-        builder.insertBefore(stmt, newAssign);
-      }
-      Local new_local = generateTempLocal(stdType);
-      builder.addLocal(new_local);
-      typing.set(new_local, stdType);
-      addUpdatedValue(oriValue, new_local, oriStmt);
-      JAssignStmt<?, ?> newCast =
-          Jimple.newAssignStmt(
-              new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-      builder.insertBefore(stmt, newCast);
+    Local new_local = generateTempLocal(stdType);
+    builder.addLocal(new_local);
+    typing.set(new_local, stdType);
+    addUpdatedValue(oriValue, new_local, oriStmt);
+    JAssignStmt newCast =
+        Jimple.newAssignStmt(
+            new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
+    stmtGraph.insertBefore(stmt, newCast);
 
-      Stmt newStmt;
-      if (stmt.getUses().contains(value)) {
-        newStmt = stmt.withNewUse(value, new_local);
-      } else {
-        newStmt = ((AbstractDefinitionStmt<?, ?>) stmt).withNewDef(new_local);
-      }
+    Stmt newStmt;
+    if (stmt.getUses().contains(value)) {
+      newStmt = stmt.withNewUse(value, new_local);
+    } else {
+      newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
+    }
+    if (graph.containsNode(stmt)) {
       builder.replaceStmt(stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);
     }
@@ -146,8 +158,8 @@ public class CastCounter extends TypeChecker {
     }
     map.put(oldValue, newValue);
     if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
-      Value leftOp = ((JAssignStmt<?, ?>) stmt).getLeftOp();
-      Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+      Value leftOp = ((JAssignStmt) stmt).getLeftOp();
+      Value rightOp = ((JAssignStmt) stmt).getRightOp();
       if (leftOp instanceof JArrayRef) {
         if (oldValue == leftOp) {
           Local base = ((JArrayRef) oldValue).getBase();

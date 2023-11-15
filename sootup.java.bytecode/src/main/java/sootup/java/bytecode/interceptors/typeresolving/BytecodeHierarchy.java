@@ -33,7 +33,6 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {
-
   private final TypeHierarchy typeHierarchy;
   public final ClassType objectClassType;
   public final ClassType throwableClassType;
@@ -47,6 +46,10 @@ public class BytecodeHierarchy {
     throwableClassType = factory.getClassType("java.lang.Throwable");
     serializableClassType = factory.getClassType("java.io.Serializable");
     cloneableClassType = factory.getClassType("java.lang.Cloneable");
+  }
+
+  boolean contains(ClassType type) {
+    return typeHierarchy.contains(type);
   }
 
   public boolean isAncestor(@Nonnull Type ancestor, @Nonnull Type child) {
@@ -94,7 +97,7 @@ public class BytecodeHierarchy {
             return canStoreType((ClassType) ancestorBase, (ClassType) childBase);
           }
         } else if (ancestorArr.getDimension() < childArr.getDimension()) {
-          // TODO: [ms] check: the dimension condition check seems weird?
+          // TODO: [ms] check: the dimension condition check as it seems weird?
           return ancestorBase == objectClassType
               || ancestorBase == serializableClassType
               || ancestorBase == cloneableClassType;
@@ -198,7 +201,8 @@ public class BytecodeHierarchy {
   }
 
   private boolean canStoreType(ClassType ancestor, ClassType child) {
-    return ancestor == objectClassType || typeHierarchy.subtypesOf(ancestor).contains(child);
+    return ancestor == objectClassType
+        || (typeHierarchy.contains(ancestor) && typeHierarchy.subtypesOf(ancestor).contains(child));
   }
 
   private Set<AncestryPath> buildAncestryPaths(ClassType type) {
@@ -207,6 +211,9 @@ public class BytecodeHierarchy {
     Set<AncestryPath> paths = new HashSet<>();
     while (!pathNodes.isEmpty()) {
       AncestryPath node = pathNodes.removeFirst();
+      if (!typeHierarchy.contains(node.type)) {
+        break;
+      }
       if (node.type == objectClassType) {
         paths.add(node);
       } else {
@@ -227,10 +234,11 @@ public class BytecodeHierarchy {
             pathNodes.add(superNode);
           }
           ClassType superClass = typeHierarchy.superClassOf(node.type);
-          // only java.lang.Object can have no SuperClass i.e. is null - this is already filtered
-          // above
-          AncestryPath superNode = new AncestryPath(superClass, node);
-          pathNodes.add(superNode);
+          // only java.lang.Object can have no SuperClass i.e. is null
+          if (superClass != null) {
+            AncestryPath superNode = new AncestryPath(superClass, node);
+            pathNodes.add(superNode);
+          }
         }
       }
     }
