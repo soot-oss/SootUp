@@ -246,7 +246,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
               // constructor calls
               if (stmt instanceof JAssignStmt) {
-                Value rightOp = ((JAssignStmt<?, ?>) stmt).getRightOp();
+                Value rightOp = ((JAssignStmt) stmt).getRightOp();
                 instantiateVisitor.init();
                 rightOp.accept(instantiateVisitor);
                 ClassType classType = instantiateVisitor.getResult();
@@ -268,7 +268,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             classType ->
                 Stream.concat(
                     Stream.of(classType),
-                    view.getTypeHierarchy().incompleteSuperClassesOf(classType).stream()))
+                    view.getTypeHierarchy().superClassesOf(classType).stream()))
         .filter(Objects::nonNull)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)
@@ -376,7 +376,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             .collect(Collectors.toSet());
 
     superTypes
-        .map(view::getClassOrThrow)
+        .map(view::getClass)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .flatMap(superType -> superType.getMethods().stream())
         .map(Method::getSignature)
         .filter(

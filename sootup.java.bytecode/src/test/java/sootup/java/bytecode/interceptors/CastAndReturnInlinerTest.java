@@ -6,8 +6,12 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
@@ -49,24 +53,27 @@ public class CastAndReturnInlinerTest {
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", stringType);
 
-    Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-    Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
+    FallsThroughStmt strToA =
+        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    FallsThroughStmt bToA =
+        JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
+    BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
 
-    bodyBuilder.setStartingStmt(strToA);
-    bodyBuilder.addFlow(strToA, jump);
-    bodyBuilder.addFlow(jump, bToA);
-    bodyBuilder.addFlow(bToA, ret);
+    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(strToA);
+    stmtGraph.putEdge(strToA, jump);
+    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    stmtGraph.putEdge(bToA, ret);
 
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, null);
@@ -101,25 +108,29 @@ public class CastAndReturnInlinerTest {
     Local b = JavaJimple.newLocal("b", stringType);
     Local c = JavaJimple.newLocal("c", stringType);
 
-    Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-    Stmt strToC = JavaJimple.newAssignStmt(c, javaJimple.newStringConstant("str2"), noPositionInfo);
-    Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
+    FallsThroughStmt strToA =
+        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    FallsThroughStmt strToC =
+        JavaJimple.newAssignStmt(c, javaJimple.newStringConstant("str2"), noPositionInfo);
+    FallsThroughStmt bToA =
+        JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     // Note this returns c, not b, hence the cast and return must not be inlined
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
+    BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
-    bodyBuilder.setStartingStmt(strToA);
-    bodyBuilder.addFlow(strToA, strToC);
-    bodyBuilder.addFlow(strToC, jump);
-    bodyBuilder.addFlow(jump, bToA);
-    bodyBuilder.addFlow(bToA, ret);
+    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(strToA);
+    stmtGraph.putEdge(strToA, strToC);
+    stmtGraph.putEdge(strToC, jump);
+    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    stmtGraph.putEdge(bToA, ret);
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, null);

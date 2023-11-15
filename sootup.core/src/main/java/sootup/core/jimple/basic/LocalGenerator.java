@@ -174,7 +174,8 @@ public class LocalGenerator {
 
     @Override
     public void caseNullType() {
-      defaultCaseType();
+      // could be ClassType (and ArrayType?) which is the same here so..
+      result.append("r").append(tempRefLikeType++);
     }
 
     @Override

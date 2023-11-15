@@ -1,5 +1,5 @@
 site_name: SootUp
-#site_url: https://example.com/
+site_url: https://soot-oss.github.io/SootUp/
 repo_url: https://github.com/soot-oss/SootUp/
 edit_uri: edit/develop/docs/
 
@@ -57,3 +57,6 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
+extra:
+  version:
+    provider: mike

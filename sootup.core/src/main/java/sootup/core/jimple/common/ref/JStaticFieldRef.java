@@ -26,13 +26,14 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JStaticFieldRef extends JFieldRef implements Copyable {
+public final class JStaticFieldRef extends JFieldRef implements LValue, Copyable {
 
   public JStaticFieldRef(@Nonnull FieldSignature fieldSig) {
     super(fieldSig);

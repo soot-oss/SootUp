@@ -6,12 +6,12 @@ import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.stmt.JNopStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
@@ -80,28 +80,31 @@ public class NopEliminatorTest {
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", stringType);
 
-    Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
-    Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
+    FallsThroughStmt strToA =
+        JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    FallsThroughStmt bToA =
+        JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
-    Stmt jump = JavaJimple.newGotoStmt(noPositionInfo);
+    BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
 
     Body.BodyBuilder builder = Body.builder();
-    builder.setStartingStmt(strToA);
     builder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
-            .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
+            .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
 
-    builder.addFlow(strToA, jump);
-    builder.addFlow(jump, bToA);
-    builder.addFlow(bToA, ret);
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    stmtGraph.setStartingStmt(strToA);
+    stmtGraph.putEdge(strToA, jump);
+    stmtGraph.putEdge(jump, JGotoStmt.BRANCH_IDX, bToA);
+    stmtGraph.putEdge(bToA, ret);
     if (withNop) {
       // strToA, jump, bToA, nop, ret;
       JNopStmt nop = new JNopStmt(noPositionInfo);
-      builder.removeFlow(bToA, ret);
-      builder.addFlow(bToA, nop);
-      builder.addFlow(nop, ret);
+      stmtGraph.removeEdge(bToA, ret);
+      stmtGraph.putEdge(bToA, nop);
+      stmtGraph.putEdge(nop, ret);
     }
     builder.setLocals(locals);
     builder.setPosition(NoPositionInformation.getInstance());

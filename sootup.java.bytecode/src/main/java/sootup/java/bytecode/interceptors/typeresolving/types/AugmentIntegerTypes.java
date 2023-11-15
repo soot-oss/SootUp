@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.PrimitiveType;
 
-public abstract class AugIntegerTypes {
+public abstract class AugmentIntegerTypes {
 
   @Nonnull
   public static Integer1Type getInteger1() {

@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SourceType;
@@ -38,10 +39,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -98,7 +96,6 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
-
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
       } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
@@ -108,6 +105,8 @@ public abstract class PathBasedAnalysisInputLocation
       } else {
         inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
       }
+    } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
+      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
     } else {
       throw new IllegalArgumentException(
           "Path '"
@@ -177,12 +176,54 @@ public abstract class PathBasedAnalysisInputLocation
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
                         + classProvider.getHandledFileType().getExtensionWithDot()));
+    if (!Files.exists(pathToClass)) {
+      return Optional.empty();
+    }
+
+    return classProvider.createClassSource(this, pathToClass, signature);
+  }
+
+  protected Optional<? extends AbstractClassSource<JavaSootClass>> getSingleClass(
+      @Nonnull JavaClassType signature,
+      @Nonnull Path path,
+      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+
+    Path pathToClass = Paths.get(path.toString());
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
     }
 
     return classProvider.createClassSource(this, pathToClass, signature);
+  }
+
+  private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+    public ClassFileBasedAnalysisInputLocation(
+        @Nonnull Path classPath, @Nonnull SourceType srcType) {
+      super(classPath, srcType);
+      if (!Files.exists(classPath)) {
+        throw new IllegalArgumentException("The provided .class file does not exist.");
+      }
+    }
+
+    @Override
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+        @Nonnull ClassType type, @Nonnull View<?> view) {
+      return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
+    }
+
+    @Nonnull
+    @Override
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull View<?> view) {
+      AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
+      IdentifierFactory factory = view.getIdentifierFactory();
+      Path dirPath = this.path.getParent();
+      Optional<SootClassSource<JavaSootClass>> classSource =
+          classProvider.createClassSource(this, path, factory.fromPath(dirPath, path));
+      return Collections.singletonList(classSource.get());
+    }
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

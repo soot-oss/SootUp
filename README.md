@@ -25,7 +25,7 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
 - [x] New Improved API (without Globals/Singletons)
 - [x] Fully-Parallelizable Architecture
-- [x] Enables lazyloading of classes (no interleaved loading of used/dependend classes anymore)
+- [x] Enables lazyloading of classes (no interleaved loading of used/dependent classes anymore)
 - [x] Fail early strategy - input validation while constructing/building objects
 - [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend
 - [x] Full Java 21 Support for Bytecode
@@ -40,7 +40,7 @@ See our [Todo list](https://github.com/soot-oss/SootUp/wiki/TODOs).
 ## Feel free to improve Soot!
 
 ### Feedback and Feature Requests
-For feedbacks and feature requests, best create appropriate [issues](../../issues).
+For feedback and feature requests, best create appropriate [issues](../../issues).
 
 ### Collaboration
 You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).

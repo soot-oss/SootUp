@@ -50,10 +50,10 @@ public class SootMethodTest {
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    final JIdentityStmt<?> firstStmt =
+    final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),

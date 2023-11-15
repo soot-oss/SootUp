@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -85,7 +86,7 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m))
+        .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -111,7 +112,7 @@ public final class MethodDispatchResolver {
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .filter(c -> classes.contains(c.getType()))
-        .map(sootClass -> findConcreteMethodInSootClass(sootClass, m))
+        .map(sootClass -> sootClass.getMethod(m.getSubSignature()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .filter(method -> !method.isAbstract())
@@ -173,6 +174,19 @@ public final class MethodDispatchResolver {
   }
 
   /**
+   * Returns all superclasses of <code>classType</code>(inclusive) up to <code>java.lang.Object
+   * </code>, which will be the last entry in the list, or till one of the superclasses is not
+   * contained in view.
+   */
+  private static List<SootClass<?>> findSuperClassesInclusive(
+      View<? extends SootClass<?>> view, ClassType classType) {
+    return Stream.concat(
+            Stream.of(classType), view.getTypeHierarchy().superClassesOf(classType).stream())
+        .flatMap(t -> view.getClass(t).map(Stream::of).orElseGet(Stream::empty))
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
    * This is done by checking each superclass and the class itself for whether it contains the
    * concrete implementation.
@@ -181,45 +195,33 @@ public final class MethodDispatchResolver {
   public static Optional<MethodSignature> resolveConcreteDispatch(
       View<? extends SootClass<?>> view, MethodSignature m) {
     TypeHierarchy hierarchy = view.getTypeHierarchy();
-    ClassType superClassType = m.getDeclClassType();
-    SootClass<?> startClass = view.getClass(superClassType).orElse(null);
-    ArrayList<SootClass<?>> classesInHierachyOrder = new ArrayList<>();
+    ClassType current = m.getDeclClassType();
+    SootClass<?> startClass = view.getClass(current).orElse(null);
+    List<SootClass<?>> classesInHierarchyOrder = findSuperClassesInclusive(view, current);
 
-    // search concrete method in the class itself and its super classes
-    do {
-      ClassType finalSuperClassType = superClassType;
-      SootClass<?> superClass =
-          view.getClass(superClassType)
-              .orElseThrow(
-                  () ->
-                      new ResolveException(
-                          "Did not find class " + finalSuperClassType + " in View"));
-
-      classesInHierachyOrder.add(superClass);
-
-      SootMethod concreteMethod = findConcreteMethodInSootClass(superClass, m).orElse(null);
-      if (concreteMethod != null && !concreteMethod.isAbstract()) {
-        // found method is not abstract
-        return Optional.of(concreteMethod.getSignature());
-      }
-      if (concreteMethod != null && concreteMethod.isAbstract()) {
-        if (startClass.isAbstract()
-            && !startClass.getType().equals(concreteMethod.getDeclaringClassType())) {
-          // A not implemented method of an abstract class results into an abstract method
-          return Optional.empty();
+    for (SootClass<?> currentClass : classesInHierarchyOrder) {
+      SootMethod method = currentClass.getMethod(m.getSubSignature()).orElse(null);
+      if (method != null) {
+        if (!method.isAbstract()) {
+          // found method is not abstract
+          return Optional.of(method.getSignature());
+        } else {
+          if (startClass.isAbstract()
+              && !startClass.getType().equals(method.getDeclaringClassType())) {
+            // A not implemented method of an abstract class results into an abstract method
+            return Optional.empty();
+          }
+          // found method is abstract and the startClass is not abstract
+          throw new ResolveException(
+              "Could not find concrete method for " + m + " because the method is abstract");
         }
-        // found method is abstract and the startclass is not abstract
-        throw new ResolveException(
-            "Could not find concrete method for " + m + " because the method is abstract");
       }
-
-      superClassType = hierarchy.superClassOf(superClassType);
-    } while (superClassType != null);
+    }
 
     // No super class contains the implemented method, search the concrete method in interfaces
     // first collect all interfaces and super interfaces
     List<SootClass<?>> worklist =
-        classesInHierachyOrder.stream()
+        classesInHierarchyOrder.stream()
             .flatMap(sootClass -> getSootClassesOfInterfaces(view, sootClass).stream())
             .collect(Collectors.toList());
     ArrayList<SootClass<?>> processedInterface = new ArrayList<>();
@@ -233,7 +235,7 @@ public final class MethodDispatchResolver {
 
       // add found default method to possibleDefaultMethods
       Optional<? extends SootMethod> concreteMethod =
-          findConcreteMethodInSootClass(currentInterface, m);
+          currentInterface.getMethod(m.getSubSignature());
       concreteMethod.ifPresent(possibleDefaultMethods::add);
 
       // if no default message is found search the default message in super interfaces
@@ -280,29 +282,6 @@ public final class MethodDispatchResolver {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .collect(Collectors.toList());
-  }
-
-  /**
-   * finds the concrete method in a SootClass
-   *
-   * <p>this method returns the concrete method of given method signature in a SootClass. Due to
-   * covariant, the given method signature can differ from the concrete method at the return type
-   * The method goes through all methods of the given SootClass and searches for a method which can
-   * dispatch.
-   *
-   * @param sootClass The method is searched in this SootClass
-   * @param methodSignature the signature of the searched method
-   * @return an Optional Object that can contain the found concrete method in the given SootClass
-   */
-  private static Optional<? extends SootMethod> findConcreteMethodInSootClass(
-      SootClass<?> sootClass, MethodSignature methodSignature) {
-    return sootClass.getMethods().stream()
-        .filter(
-            potentialTarget ->
-                methodSignature
-                    .getSubSignature()
-                    .equals(potentialTarget.getSignature().getSubSignature()))
-        .findAny();
   }
 
   /**

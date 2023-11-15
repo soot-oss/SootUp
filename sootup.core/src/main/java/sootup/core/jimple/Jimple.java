@@ -42,7 +42,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.*;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -349,6 +348,7 @@ public abstract class Jimple {
     return new JStaticInvokeExpr(method, args);
   }
 
+  @Deprecated // use the version with List<Immediate> args instead
   public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Immediate... args) {
     return newStaticInvokeExpr(method, Arrays.asList(args));
   }
@@ -374,6 +374,7 @@ public abstract class Jimple {
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
+  @Deprecated // use the version with List<Immediate> args instead
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
       Local base, MethodSignature method, Immediate... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
@@ -427,6 +428,7 @@ public abstract class Jimple {
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
+  @Deprecated // use the version with List<Immediate> args instead
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
       Local base, MethodSignature method, Immediate... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
@@ -454,6 +456,7 @@ public abstract class Jimple {
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
+  @Deprecated // use the version with List<Immediate> args instead
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
       Local base, MethodSignature method, Immediate... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
@@ -519,15 +522,14 @@ public abstract class Jimple {
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
-  public static <L extends IdentityRef> JIdentityStmt<L> newIdentityStmt(
+  public static <L extends IdentityRef> JIdentityStmt newIdentityStmt(
       Local local, L identityRef, StmtPositionInfo posInfo) {
-    return new JIdentityStmt<>(local, identityRef, posInfo);
+    return new JIdentityStmt(local, identityRef, posInfo);
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static <L extends Value, R extends Value> JAssignStmt<L, R> newAssignStmt(
-      L variable, R rvalue, StmtPositionInfo posInfo) {
-    return new JAssignStmt<>(variable, rvalue, posInfo);
+  public static JAssignStmt newAssignStmt(LValue variable, Value rvalue, StmtPositionInfo posInfo) {
+    return new JAssignStmt(variable, rvalue, posInfo);
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */

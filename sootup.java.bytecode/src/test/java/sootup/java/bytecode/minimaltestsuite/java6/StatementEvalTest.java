@@ -34,11 +34,11 @@ public class StatementEvalTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: StatementEval",
-            "l1 = 1",
-            "$stack2 = l1",
-            "l1 = 3",
-            "l1 = $stack2 + 3",
+            "$l0 := @this: StatementEval",
+            "$l1 = 1",
+            "$stack2 = $l1",
+            "$l1 = 3",
+            "$l1 = $stack2 + $l1",
             "return")
         .collect(Collectors.toList());
   }

@@ -20,11 +20,12 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.MutableBasicBlock;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -62,17 +63,13 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     this.eliminateOnlyStackLocals = eliminateOnlyStackLocals;
   }
 
-  Map<Local, Collection<Stmt>> allDefs = new HashMap<>();
-  Map<Local, Collection<Stmt>> allUses = new HashMap<>();
-
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    StmtGraph<MutableBasicBlock> stmtGraph = builder.getStmtGraph();
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
-
     boolean isStatic = MethodModifier.isStatic(builder.getModifiers());
     boolean allEssential = true;
     boolean containsInvoke = false;
@@ -83,7 +80,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       boolean isEssential = true;
 
       if (stmt instanceof JAssignStmt) {
-        JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
         Value lhs = assignStmt.getLeftOp();
         Value rhs = assignStmt.getRightOp();
 
@@ -97,7 +94,6 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
             && (!eliminateOnlyStackLocals
                 || ((Local) lhs).getName().startsWith("$")
                 || lhs.getType() instanceof NullType)) {
-          // FIXME: [ms] inspection says right side of && is always true
           isEssential = false;
 
           if (!containsInvoke) {
@@ -174,67 +170,75 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       allEssential &= isEssential;
     }
 
-    if (containsInvoke || !allEssential) {
-      // Add all the statements which are used to compute values for the essential statements,
-      // recursively
-      allDefs = Body.collectDefs(builder.getStmts());
+    if (!containsInvoke && allEssential) {
+      return;
+    }
 
-      if (!allEssential) {
-        Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
-        while (!deque.isEmpty()) {
-          Stmt stmt = deque.removeFirst();
-          if (essentialStmts.add(stmt)) {
-            for (Value value : stmt.getUses()) {
-              if (value instanceof Local) {
-                Local local = (Local) value;
-                Collection<Stmt> defs = allDefs.get(local);
-                if (defs != null) {
-                  deque.addAll(defs);
-                }
-              }
+    // Add all the statements which are used to compute values for the essential statements,
+    // recursively
+    Map<LValue, Collection<Stmt>> allDefs = Body.collectDefs(stmtGraph.getNodes());
+
+    Set<Stmt> essentialStmts = new HashSet<>(stmts.size());
+    while (!deque.isEmpty()) {
+      Stmt stmt = deque.removeFirst();
+      if (essentialStmts.add(stmt)) {
+        for (Value value : stmt.getUses()) {
+          if (value instanceof Local) {
+            Local local = (Local) value;
+            Collection<Stmt> defs = allDefs.get(local);
+            if (defs != null) {
+              deque.addAll(defs);
             }
           }
         }
-
-        // Remove the dead statements
-        for (Stmt stmt : stmts) {
-          if (!essentialStmts.contains(stmt)) {
-            builder.removeStmt(stmt);
-          }
-        }
       }
+    }
 
-      if (containsInvoke) {
-        allUses = Body.collectUses(builder.getStmts());
-        // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
-        List<JAssignStmt<?, ?>> postProcess = new ArrayList<>();
-        for (Stmt stmt : stmts) {
-          if (stmt instanceof JAssignStmt) {
-            JAssignStmt<?, ?> assignStmt = (JAssignStmt<?, ?>) stmt;
-            if (assignStmt.containsInvokeExpr()) {
-              // Just find one use of local which is essential
-              boolean deadAssignment = true;
-              Local local = (Local) assignStmt.getRightOp();
-              for (Stmt use : allUses.get(local)) {
-                if (builder.getStmts().contains(use)) {
-                  deadAssignment = false;
-                  break;
-                }
-              }
-              if (deadAssignment) {
-                postProcess.add(assignStmt);
-              }
+    // Remove the dead statements from the stmtGraph
+    for (Stmt stmt : stmts) {
+      if (!essentialStmts.contains(stmt)) {
+        stmtGraph.removeNode(stmt);
+      }
+    }
+
+    if (!containsInvoke) {
+      return;
+    }
+
+    Map<Value, Collection<Stmt>> essentialUses = Body.collectUses(essentialStmts);
+    // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
+    List<JAssignStmt> postProcess = new ArrayList<>();
+    for (Stmt stmt : stmts) {
+      if (stmt instanceof JAssignStmt) {
+        JAssignStmt assignStmt = (JAssignStmt) stmt;
+        if (assignStmt.containsInvokeExpr()) {
+          // find at least one use of Value which is in an essential stmt
+          boolean deadAssignment = true;
+
+          List<Value> values = assignStmt.getUsesAndDefs();
+          for (Value value : values) {
+            if (!(value instanceof LValue)) {
+              continue;
+            }
+            final Collection<Stmt> stmtsWithValuesUse = essentialUses.get(value);
+            if (stmtsWithValuesUse != null) {
+              deadAssignment = false;
+              break;
             }
           }
-        }
-
-        for (JAssignStmt<?, ?> assignStmt : postProcess) {
-          // Transform it into a simple invoke
-          Stmt newInvoke =
-              Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
-          builder.replaceStmt(assignStmt, newInvoke);
+          if (deadAssignment) {
+            postProcess.add(assignStmt);
+          }
         }
       }
+    }
+
+    // change JAssignStmt+InvokeExpr where the lhs is not used/essential to an JInvokeStmt
+    for (JAssignStmt assignStmt : postProcess) {
+      // Transform it into a simple invoke
+      Stmt newInvoke =
+          Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
+      stmtGraph.replaceNode(assignStmt, newInvoke);
     }
   }
 }

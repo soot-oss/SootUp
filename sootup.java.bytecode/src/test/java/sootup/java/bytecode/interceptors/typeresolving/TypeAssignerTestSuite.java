@@ -35,7 +35,7 @@ public class TypeAssignerTestSuite {
             .addInputLocation(analysisInputLocation)
             .addInputLocation(rtJar)
             .build();
-    view = project.createOnDemandView();
+    view = project.createView();
     classType = identifierFactory.getClassType(className);
     clazz = view.getClass(classType).get();
   }
@@ -51,6 +51,16 @@ public class TypeAssignerTestSuite {
   }
 
   public Typing createTyping(Set<Local> locals, Map<String, Type> map) {
+    /*
+      // test creation helper to find missing type mappings
+      final Optional<Local> foundOpt =
+          locals.stream()
+              .filter(local -> !map.containsKey(local.toString()))
+              .peek(i -> System.out.println("TEST: missing mapping for: " + i))
+              .findAny();
+      Assert.assertFalse(foundOpt.isPresent());
+    */
+
     Typing typing = new Typing(locals);
     for (Local l : typing.getLocals()) {
       if (map.containsKey(l.getName())) {
