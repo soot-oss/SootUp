@@ -26,8 +26,6 @@ import java.util.*;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.PackageName;
@@ -43,8 +41,6 @@ import sootup.java.core.views.JavaView;
  * @author Markus Schmidt, Bastian Haverkamp
  */
 public class AnnotationType extends JavaClassType {
-
-  private static final Logger log = LoggerFactory.getLogger(AnnotationType.class);
 
   public void setInherited(boolean inherited) {
     isInherited = inherited;
@@ -73,7 +69,6 @@ public class AnnotationType extends JavaClassType {
         }
 
         if (!jv.getClass(this).isPresent()) {
-          log.error("Class of annotation not in view" + this);
           return defaultValues;
         }
 
