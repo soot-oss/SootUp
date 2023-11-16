@@ -741,7 +741,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
-    assertTrue(cg.callsFrom(mainMethodSignature).size() > 0);
+    assertTrue(!cg.callsFrom(mainMethodSignature).isEmpty());
 
     SootClass<?> libraryClass =
         view.getClass(view.getIdentifierFactory().getClassType("lib.Library")).orElse(null);
