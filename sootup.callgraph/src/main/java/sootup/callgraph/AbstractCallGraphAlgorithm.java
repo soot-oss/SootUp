@@ -146,6 +146,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
+      // skip if library class
+      SootClass<?> currentClass =
+          view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
+      if (currentClass == null || currentClass.isLibraryClass()) continue;
+
       // perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
@@ -154,9 +159,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
       // transform the method signature to the actual SootMethod
       SootMethod currentMethod =
-          view.getClass(currentMethodSignature.getDeclClassType())
-              .flatMap(c -> c.getMethod(currentMethodSignature.getSubSignature()))
-              .orElse(null);
+          currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
 
       // get all call targets of invocations in the method body
       Stream<MethodSignature> invocationTargets = resolveAllCallsFromSourceMethod(currentMethod);

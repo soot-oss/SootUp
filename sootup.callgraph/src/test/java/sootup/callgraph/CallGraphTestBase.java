@@ -714,4 +714,43 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
           "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
     }
   }
+
+  /**
+   * Test uses initialize() method to create call graph, but no main method is present in input java
+   * source files. Expected result is RuntimeException.
+   */
+  @Test
+  public void testStopAtLibraryClass() {
+
+    String classPath = "src/test/resources/callgraph/Library/binary/";
+    JavaProject.JavaProjectBuilder javaProjectBuilder =
+        JavaProject.builder(new JavaLanguage(8))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(
+                    classPath + "application/", SourceType.Application))
+            .addInputLocation(
+                new JavaClassPathAnalysisInputLocation(classPath + "library/", SourceType.Library));
+    JavaView view = javaProjectBuilder.build().createView();
+
+    MethodSignature mainMethodSignature =
+        identifierFactory.getMethodSignature(
+            "app.Application", "main", "void", Collections.singletonList("java.lang.String[]"));
+    CallGraphAlgorithm algorithm = createAlgorithm(view);
+    CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
+
+    assertTrue(cg.callsFrom(mainMethodSignature).size() > 0);
+
+    SootClass<?> libraryClass =
+        view.getClass(view.getIdentifierFactory().getClassType("lib.Library")).orElse(null);
+    assertNotNull(libraryClass);
+    for (SootMethod method : libraryClass.getMethods()) {
+      MethodSignature ms = method.getSignature();
+      if (cg.containsMethod(ms)) {
+        assertEquals(0, cg.callsFrom(method.getSignature()).size());
+      }
+    }
+  }
 }
