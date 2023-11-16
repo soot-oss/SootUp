@@ -22,7 +22,6 @@ package sootup.callgraph;
  * #L%
  */
 
-import com.google.common.collect.Sets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,8 +34,6 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.MethodDispatchResolver;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -113,8 +110,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
             .collect(Collectors.toSet());
-    List<ClassType> newInstantiatedClassTypes = instantiated.stream().filter(classType -> !instantiatedClasses.contains(classType)).collect(
-        Collectors.toList());
+    List<ClassType> newInstantiatedClassTypes =
+        instantiated.stream()
+            .filter(classType -> !instantiatedClasses.contains(classType))
+            .collect(Collectors.toList());
     instantiatedClasses.addAll(instantiated);
     return newInstantiatedClassTypes;
   }
@@ -132,11 +131,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod sourceMethod, AbstractInvokeExpr invokeExpr) {
+  protected Stream<MethodSignature> resolveCall(
+      SootMethod sourceMethod, AbstractInvokeExpr invokeExpr) {
     MethodSignature resolveBaseMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(resolveBaseMethodSignature);
 
-    SootMethod concreteBaseMethod = findConcreteMethod(view, resolveBaseMethodSignature).orElse(null);
+    SootMethod concreteBaseMethod =
+        findConcreteMethod(view, resolveBaseMethodSignature).orElse(null);
 
     if (concreteBaseMethod == null
         || MethodModifier.isStatic(concreteBaseMethod.getModifiers())
@@ -145,37 +146,40 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
     } else {
       // the class of the actual method call is instantiated
       if (instantiatedClasses.contains(resolveBaseMethodSignature.getDeclClassType())) {
-        return Stream.concat(Stream.of(concreteBaseMethod.getSignature()),resolveAllCallTargets(sourceMethod.getSignature(),resolveBaseMethodSignature));
-      }
-      else {
-        saveIgnoredCall(sourceMethod.getSignature(),resolveBaseMethodSignature);
-        return resolveAllCallTargets(sourceMethod.getSignature(),resolveBaseMethodSignature);
+        return Stream.concat(
+            Stream.of(concreteBaseMethod.getSignature()),
+            resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature));
+      } else {
+        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature);
+        return resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature);
       }
     }
   }
 
-  /** Resolves all targets of the given signature of the call.
-   *  Only instantiated classes are considered as target.
-   *  All possible class of non instantiated classes are saved to the ignoredCall Hashmap,
-   *  because the classes can be instantiated at a later time
-   *
+  /**
+   * Resolves all targets of the given signature of the call. Only instantiated classes are
+   * considered as target. All possible class of non instantiated classes are saved to the
+   * ignoredCall Hashmap, because the classes can be instantiated at a later time
    *
    * @param source the method which contains call
-   * @param resolveBaseMethodSignature the base of the resolving. All subtypes of the declaring class are analyzed as potential targets
-   * @return a stream of all method signatures of instantiated classes
-   * that can be resolved as target from the given base method signature.
+   * @param resolveBaseMethodSignature the base of the resolving. All subtypes of the declaring
+   *     class are analyzed as potential targets
+   * @return a stream of all method signatures of instantiated classes that can be resolved as
+   *     target from the given base method signature.
    */
-  private Stream<MethodSignature> resolveAllCallTargets( MethodSignature source,
-      MethodSignature resolveBaseMethodSignature) {
-    return view.getTypeHierarchy().subtypesOf(resolveBaseMethodSignature.getDeclClassType()).stream()
+  private Stream<MethodSignature> resolveAllCallTargets(
+      MethodSignature source, MethodSignature resolveBaseMethodSignature) {
+    return view.getTypeHierarchy().subtypesOf(resolveBaseMethodSignature.getDeclClassType())
+        .stream()
         .map(
             classType -> {
-              MethodSignature method = view.getIdentifierFactory().getMethodSignature(classType,resolveBaseMethodSignature.getSubSignature());
-              if(instantiatedClasses.contains(classType)){
-                return resolveConcreteDispatch(view,method);
-              }
-              else {
-                saveIgnoredCall(source,method);
+              MethodSignature method =
+                  view.getIdentifierFactory()
+                      .getMethodSignature(classType, resolveBaseMethodSignature.getSubSignature());
+              if (instantiatedClasses.contains(classType)) {
+                return resolveConcreteDispatch(view, method);
+              } else {
+                saveIgnoredCall(source, method);
                 return Optional.<MethodSignature>empty();
               }
             })
@@ -183,17 +187,17 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         .map(Optional::get);
   }
 
-  /** This method saves an ignored call
-   *  If this is the first ignored call of the class type in the target method,
-   *  an entry for the class type is created in the ignoredCalls Hashmap
+  /**
+   * This method saves an ignored call If this is the first ignored call of the class type in the
+   * target method, an entry for the class type is created in the ignoredCalls Hashmap
    *
    * @param source the source method of the call
    * @param target the target method of the call
    */
-  private void saveIgnoredCall(MethodSignature source, MethodSignature target){
+  private void saveIgnoredCall(MethodSignature source, MethodSignature target) {
     ClassType notInstantiatedClass = target.getDeclClassType();
     List<Call> calls = ignoredCalls.get(notInstantiatedClass);
-    Call ignoredCall= new Call(source,target);
+    Call ignoredCall = new Call(source, target);
     if (calls == null) {
       calls = new ArrayList<>();
       ignoredCalls.put(notInstantiatedClass, calls);
@@ -205,8 +209,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * Preprocessing of a method in the RTA call graph algorithm
    *
    * <p>Before processing the method, all instantiated types are collected inside the body of the
-   * sourceMethod. If a new instantiated class has previously ignored calls to this class,
-   * they are added to call graph
+   * sourceMethod. If a new instantiated class has previously ignored calls to this class, they are
+   * added to call graph
    *
    * @param view view
    * @param sourceMethod the processed method
@@ -267,6 +271,6 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
-//    not needed
+    //    not needed
   }
 }
