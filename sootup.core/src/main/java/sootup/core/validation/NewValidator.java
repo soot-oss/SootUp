@@ -22,6 +22,10 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -34,11 +38,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.UnknownType;
-import java.util.LinkedHashSet;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class NewValidator implements BodyValidator {
 
@@ -59,13 +58,13 @@ public class NewValidator implements BodyValidator {
         // First seek for a JNewExpr.
         if (assign.getRightOp() instanceof JNewExpr) {
           if (!((assign.getLeftOp().getType() instanceof ReferenceType)
-                  || assign.getLeftOp().getType() instanceof UnknownType)) {
+              || assign.getLeftOp().getType() instanceof UnknownType)) {
             exceptions.add(
-                    new ValidationException(
-                            assign.getLeftOp(),
-                            String.format(
-                                    "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
-                                    body.getMethodSignature())));
+                new ValidationException(
+                    assign.getLeftOp(),
+                    String.format(
+                        "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
+                        body.getMethodSignature())));
             return;
           }
 
