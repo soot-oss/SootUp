@@ -282,7 +282,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(SootClassMember::getSignature);
   }
 
-
   /**
    * This method enables optional pre-processing of a method in the call graph algorithm
    *
