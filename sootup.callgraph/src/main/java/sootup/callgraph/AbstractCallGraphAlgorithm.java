@@ -282,46 +282,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .map(SootClassMember::getSignature);
   }
 
-  /**
-   * searches the method object in the given hierarchy
-   *
-   * @param view it contains all classes
-   * @param sig the signature of the searched method
-   * @param <T> the generic type of the searched method object
-   * @return the found method object, or null if the method was not found.
-   */
-  protected final <T extends Method> T findMethodInHierarchy(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
-    Optional<? extends SootClass<?>> optSc = view.getClass(sig.getDeclClassType());
-
-    if (optSc.isPresent()) {
-      SootClass<?> sc = optSc.get();
-
-      List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(sc.getType());
-      Set<ClassType> interfaces = view.getTypeHierarchy().implementedInterfacesOf(sc.getType());
-      superClasses.addAll(interfaces);
-
-      for (ClassType superClassType : superClasses) {
-        Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
-        if (superClassOpt.isPresent()) {
-          SootClass<?> superClass = superClassOpt.get();
-          Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
-          if (methodOpt.isPresent()) {
-            return (T) methodOpt.get();
-          }
-        }
-      }
-      logger.warn(
-          "Could not find \""
-              + sig.getSubSignature()
-              + "\" in "
-              + sig.getDeclClassType().getClassName()
-              + " and in its superclasses");
-    } else {
-      logger.trace("Could not find \"" + sig.getDeclClassType() + "\" in view");
-    }
-    return null;
-  }
 
   /**
    * This method enables optional pre-processing of a method in the call graph algorithm
@@ -444,7 +404,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           "There are more than 1 main method present.\n Below main methods are found: \n"
               + mainMethods
               + "\n initialize() method can be used if only one main method exists. \n You can specify these main methods as entry points by passing them as parameter to initialize method.");
-    } else if (mainMethods.size() == 0) {
+    } else if (mainMethods.isEmpty()) {
       throw new RuntimeException(
           "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
     }
