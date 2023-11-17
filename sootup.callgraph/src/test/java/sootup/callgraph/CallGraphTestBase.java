@@ -130,8 +130,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(method));
     assertFalse(cg.containsMethod(uncalledMethod));
-    // 2 methods + Object::clinit + Object::registerNatives
-    TestCase.assertEquals(4, cg.getMethodSignatures().size());
+    // 2 methods + Object::clinit
+    TestCase.assertEquals(3, cg.getMethodSignatures().size());
 
     assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
     assertTrue(cg.containsCall(mainMethodSignature, method));

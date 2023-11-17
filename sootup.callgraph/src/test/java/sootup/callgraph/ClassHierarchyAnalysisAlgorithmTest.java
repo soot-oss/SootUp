@@ -188,7 +188,7 @@ public class ClassHierarchyAnalysisAlgorithmTest
 
     assertEquals(
         cg.toString().replace("\n", "").replace("\t", ""),
-        "GraphBasedCallGraph(16):"
+        "GraphBasedCallGraph(14):"
             + "<example1.A: void <init>()>:"
             + "to <java.lang.Object: void <init>()>"
             + "from <example1.B: void <init>()>"
@@ -238,15 +238,9 @@ public class ClassHierarchyAnalysisAlgorithmTest
             + "to <java.lang.Object: void <clinit>()>"
             + ""
             + "<java.lang.Object: void <clinit>()>:"
-            + "to <java.lang.Object: void <clinit>()>"
-            + "to <java.lang.Object: void registerNatives()>"
             + "from <example1.Example: void main(java.lang.String[])>"
-            + "from <java.lang.Object: void <clinit>()>"
             + ""
             + "<java.lang.Object: void <init>()>:"
-            + "from <example1.A: void <init>()>"
-            + ""
-            + "<java.lang.Object: void registerNatives()>:"
-            + "from <java.lang.Object: void <clinit>()>");
+            + "from <example1.A: void <init>()>");
   }
 }
