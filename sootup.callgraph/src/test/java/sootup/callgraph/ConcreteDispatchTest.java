@@ -18,7 +18,6 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
-import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 /** @author : Hasitha Rajapakse, Jonas Klauke * */
 @Category(Java8Test.class)
@@ -34,8 +33,8 @@ public class ConcreteDispatchTest {
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(
-                new JavaSourcePathAnalysisInputLocation(
-                    Collections.singleton("src/test/resources/callgraph/ConcreteDispatch/")))
+                new JavaClassPathAnalysisInputLocation(
+                    "src/test/resources/callgraph/ConcreteDispatch/binary"))
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
@@ -46,20 +45,25 @@ public class ConcreteDispatchTest {
   @Test
   public void invalidResolveConcreteDispatch() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    Optional<MethodSignature> ms =
+    Optional<MethodSignature> incompleteMethod =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(
-            view, factory.parseMethodSignature("java.util.Collection#size(): int"));
-    assertFalse(ms.isPresent());
+            view, factory.parseMethodSignature("cvcscincomplete.Class#target(): void"));
+    assertFalse(incompleteMethod.isPresent());
   }
 
   @Test()
   public void invalidResolveConcreteDispatchOfAbstractMethod() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    Optional<MethodSignature> ms =
+    Optional<MethodSignature> abstractMethod =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(
             view,
             factory.parseMethodSignature("java.util.AbstractList#get(int): java.lang.Object"));
-    assertFalse(ms.isPresent());
+    assertFalse(abstractMethod.isPresent());
+
+    Optional<MethodSignature> interfaceMethod =
+        AbstractCallGraphAlgorithm.resolveConcreteDispatch(
+            view, factory.parseMethodSignature("java.util.Collection#size(): int"));
+    assertFalse(interfaceMethod.isPresent());
   }
 
   @Test

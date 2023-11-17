@@ -494,7 +494,17 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   public static Optional<? extends SootMethod> findConcreteMethod(
       @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    Optional<? extends SootMethod> startMethod = view.getMethod(sig);
+    SootClass<?> startclass = view.getClass(sig.getDeclClassType()).orElse(null);
+    if (startclass == null) {
+      logger.warn(
+          "Could not find \""
+              + sig.getDeclClassType()
+              + "\" of method"
+              + sig
+              + " to resolve the concrete method");
+      return Optional.empty();
+    }
+    Optional<? extends SootMethod> startMethod = startclass.getMethod(sig.getSubSignature());
     if (startMethod.isPresent()) {
       return startMethod;
     }
