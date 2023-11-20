@@ -152,13 +152,23 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   public String buildICFGGraph(CallGraph callGraph) {
     Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
     computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
-    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view);
+    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
   }
 
   public void computeAllCalls(
       MethodSignature methodSignature,
       Map<MethodSignature, StmtGraph> signatureToStmtGraph,
       CallGraph callGraph) {
+    ArrayList<MethodSignature> visitedMethods = new ArrayList<>();
+    computeAllCalls(methodSignature, signatureToStmtGraph, callGraph, visitedMethods);
+  }
+
+  private void computeAllCalls(
+      MethodSignature methodSignature,
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      CallGraph callGraph,
+      List<MethodSignature> visitedMethods) {
+    visitedMethods.add(methodSignature);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
     if (signatureToStmtGraph.containsKey(methodSignature)) return;
@@ -169,11 +179,12 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         signatureToStmtGraph.put(methodSignature, stmtGraph);
       }
     }
-    callGraph
-        .callsFrom(methodSignature)
+    callGraph.callsFrom(methodSignature).stream()
+        .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
         .forEach(
             nextMethodSignature ->
-                computeAllCalls(nextMethodSignature, signatureToStmtGraph, callGraph));
+                computeAllCalls(
+                    nextMethodSignature, signatureToStmtGraph, callGraph, visitedMethods));
   }
 
   private CallGraph initCallGraph() {
