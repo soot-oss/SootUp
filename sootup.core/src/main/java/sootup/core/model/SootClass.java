@@ -225,12 +225,12 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   /** Returns true if this class is an application class. */
   public boolean isApplicationClass() {
-    return sourceType.equals(SourceType.Application);
+    return sourceType == SourceType.Application;
   }
 
   /** Returns true if this class is a library class. */
   public boolean isLibraryClass() {
-    return sourceType.equals(SourceType.Library);
+    return sourceType == SourceType.Library;
   }
 
   /** Convenience method returning true if this class is private. */

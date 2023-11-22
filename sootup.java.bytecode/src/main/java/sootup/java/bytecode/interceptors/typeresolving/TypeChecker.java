@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -56,7 +56,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   private Typing typing;
   protected final Body.BodyBuilder builder;
 
-  protected final StmtGraph<?> graph;
+  protected final MutableStmtGraph graph;
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 

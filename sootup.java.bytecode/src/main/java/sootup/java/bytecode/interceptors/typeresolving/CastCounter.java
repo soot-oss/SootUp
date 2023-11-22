@@ -143,7 +143,7 @@ public class CastCounter extends TypeChecker {
       newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
     }
     if (graph.containsNode(stmt)) {
-      builder.replaceStmt(stmt, newStmt);
+      graph.replaceNode(stmt, newStmt);
       this.stmt2NewStmt.put(oriStmt, newStmt);
     }
   }

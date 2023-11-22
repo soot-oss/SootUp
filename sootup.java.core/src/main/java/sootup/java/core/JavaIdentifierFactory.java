@@ -54,6 +54,14 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
+  @Nonnull
+  public final MethodSubSignature CTOR =
+      new MethodSubSignature("<init>", Collections.emptyList(), VoidType.getInstance());
+
+  @Nonnull
+  public final MethodSubSignature STATIC_INITIALIZER =
+      new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
+
   /** Caches the created PackageNames for packages. */
   @Nonnull
   protected final Cache<String, PackageName> packageCache =

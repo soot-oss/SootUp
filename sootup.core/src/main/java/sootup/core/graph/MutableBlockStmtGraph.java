@@ -95,6 +95,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             });
   }
 
+  public static StmtGraph<?> createUnmodifiableStmtGraph(StmtGraph<?> stmtGraph) {
+    if (stmtGraph instanceof MutableStmtGraph) {
+      return ((MutableStmtGraph) stmtGraph).unmodifiableStmtGraph();
+    }
+    return stmtGraph;
+  }
+
   /**
    * Creates a Graph representation from the 'legacy' representation i.e. a List of Stmts and Traps.
    */
