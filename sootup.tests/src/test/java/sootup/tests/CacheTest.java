@@ -40,11 +40,12 @@ public class CacheTest {
     JavaView view = p.createView(new FullCacheProvider<>());
     assertEquals(0, view.getAmountOfStoredClasses());
 
-    ClassType miniAppClassType = p.getIdentifierFactory().getClassType("MiniApp");
+    ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
     view.getClass(miniAppClassType);
     assertEquals(1, view.getAmountOfStoredClasses());
 
-    ClassType utilsOperationClassType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType utilsOperationClassType =
+        view.getIdentifierFactory().getClassType("utils.Operations");
     view.getClass(utilsOperationClassType);
     assertEquals(2, view.getAmountOfStoredClasses());
 
@@ -58,11 +59,12 @@ public class CacheTest {
     JavaView view = p.createView(new LRUCacheProvider<>(1));
     assertEquals(0, view.getAmountOfStoredClasses());
 
-    ClassType miniAppClassType = p.getIdentifierFactory().getClassType("MiniApp");
+    ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
     view.getClass(miniAppClassType);
     assertEquals(1, view.getAmountOfStoredClasses());
 
-    ClassType utilsOperationClassType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType utilsOperationClassType =
+        view.getIdentifierFactory().getClassType("utils.Operations");
     view.getClass(utilsOperationClassType);
     assertEquals(1, view.getAmountOfStoredClasses());
 

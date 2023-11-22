@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 import sootup.core.SourceTypeSpecifier;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaModuleView;
 
 public class JavaModuleProject extends JavaProject {
@@ -14,18 +13,11 @@ public class JavaModuleProject extends JavaProject {
   @Nonnull private final List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocation;
 
   public JavaModuleProject(
-      JavaLanguage language,
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(language, inputLocations, sourceTypeSpecifier);
+    super(inputLocations, sourceTypeSpecifier);
     moduleInfoAnalysisInputLocation = moduleInputLocations;
-  }
-
-  @Nonnull
-  @Override
-  public JavaModuleIdentifierFactory getIdentifierFactory() {
-    return JavaModuleIdentifierFactory.getInstance();
   }
 
   @Override

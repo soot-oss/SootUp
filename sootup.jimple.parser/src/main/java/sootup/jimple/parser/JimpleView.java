@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -113,6 +114,12 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   @Nonnull
   public synchronized Optional<SootClass<?>> getClass(@Nonnull ClassType type) {
     return getAbstractClass(type);
+  }
+
+  @Nonnull
+  @Override
+  public IdentifierFactory getIdentifierFactory() {
+    return new JimpleLanguage().getIdentifierFactory();
   }
 
   @Nonnull

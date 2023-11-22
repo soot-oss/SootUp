@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
@@ -43,6 +44,7 @@ import sootup.core.views.AbstractView;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaAnnotationSootClass;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.AnnotationType;
 
 /**
@@ -131,6 +133,12 @@ public class JavaView extends AbstractView<JavaSootClass> {
     Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
         getAbstractClass(type);
     return abstractClass.flatMap(this::buildClassFrom);
+  }
+
+  @Nonnull
+  @Override
+  public IdentifierFactory getIdentifierFactory() {
+    return new JavaLanguage(8).getIdentifierFactory();
   }
 
   /** Returns the amount of classes that are currently stored in the cache. */

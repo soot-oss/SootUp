@@ -45,33 +45,27 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
 
   @Nonnull private final List<AnalysisInputLocation<? extends S>> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
-  @Nonnull private final Language language;
   /**
    * Create a project from an arbitrary input location.
    *
-   * @param language the language
    * @param inputLocation the input location
    * @param sourceTypeSpecifier the source type specifier
    */
   public Project(
-      @Nonnull Language language,
       @Nonnull AnalysisInputLocation<? extends S> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(language, Collections.singletonList(inputLocation), sourceTypeSpecifier);
+    this(Collections.singletonList(inputLocation), sourceTypeSpecifier);
   }
 
   /**
    * Create a project from an arbitrary list of input locations.
    *
-   * @param language the language
    * @param inputLocations the input locations
    * @param sourceTypeSpecifier the source type specifier
    */
   public Project(
-      @Nonnull Language language,
       @Nonnull List<AnalysisInputLocation<? extends S>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this.language = language;
     List<AnalysisInputLocation<? extends S>> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
@@ -96,18 +90,8 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   }
 
   @Nonnull
-  public IdentifierFactory getIdentifierFactory() {
-    return language.getIdentifierFactory();
-  }
-
-  @Nonnull
   public SourceTypeSpecifier getSourceTypeSpecifier() {
     return sourceTypeSpecifier;
-  }
-
-  @Nonnull
-  public Language getLanguage() {
-    return language;
   }
 
   /**

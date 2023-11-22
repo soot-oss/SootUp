@@ -54,7 +54,7 @@ public class MutableSootClientTest {
   @Test
   public void classRemovalTest() {
     int classesBeforeSize = mv.getClasses().size();
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     mv.removeClass(classType);
     int classesAfterSize = mv.getClasses().size();
 
@@ -67,7 +67,7 @@ public class MutableSootClientTest {
    */
   @Test
   public void classAdditionTest() {
-    ClassType addedClassType = p.getIdentifierFactory().getClassType("AddedClass");
+    ClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
     OverridingJavaClassSource newClass =
         new OverridingJavaClassSource(
             location,
@@ -97,13 +97,13 @@ public class MutableSootClientTest {
    */
   @Test
   public void methodRemovalTest() {
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 
     SootClass<JavaSootClassSource> utilsClass = utilsClassOpt.get();
     MethodSignature ms =
-        p.getIdentifierFactory()
+        mv.getIdentifierFactory()
             .parseMethodSignature("<utils.Operations: void removeDepartment(ds.Department)>");
     Optional<? extends SootMethod> removeDepartmentMethodOpt =
         utilsClass.getMethod(ms.getSubSignature());
@@ -128,7 +128,7 @@ public class MutableSootClientTest {
   @Test
   public void methodAdditionTest() {
     MethodSignature methodSignature =
-        p.getIdentifierFactory()
+        mv.getIdentifierFactory()
             .getMethodSignature("utils.Operations", "addedMethod", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
     Body body = bodyBuilder.setMethodSignature(methodSignature).build();
@@ -141,7 +141,7 @@ public class MutableSootClientTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 

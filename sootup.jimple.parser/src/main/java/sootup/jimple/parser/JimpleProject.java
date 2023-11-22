@@ -14,23 +14,23 @@ import sootup.core.model.SootClass;
 public class JimpleProject extends Project<SootClass<?>, JimpleView> {
 
   public JimpleProject(@Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation) {
-    super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());
+    super(inputLocation, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleProject(@Nonnull List<AnalysisInputLocation<? extends SootClass<?>>> inputLocation) {
-    super(JimpleLanguage.getInstance(), inputLocation, DefaultSourceTypeSpecifier.getInstance());
+    super(inputLocation, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleProject(
       @Nonnull AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(JimpleLanguage.getInstance(), inputLocation, sourceTypeSpecifier);
+    super(inputLocation, sourceTypeSpecifier);
   }
 
   public JimpleProject(
       @Nonnull List<AnalysisInputLocation<? extends SootClass<?>>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(JimpleLanguage.getInstance(), inputLocations, sourceTypeSpecifier);
+    super(inputLocations, sourceTypeSpecifier);
   }
 
   @Nonnull

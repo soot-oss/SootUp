@@ -53,18 +53,17 @@ public class MutatingSootClass {
     // Create a new JavaProject based on the input location
     JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
 
+    // Create a view for project, which allows us to retrieve classes
+    JavaView view = project.createView();
+
     // Create a signature for the class we want to analyze
-    ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
+    ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        project
-            .getIdentifierFactory()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
-
-    // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createView();
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

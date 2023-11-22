@@ -43,19 +43,19 @@ public class BodyInterceptor {
 
     // Create a new JavaProject based on the input location
     JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaView view = project.createView();
 
     // Create a signature for the class we want to analyze
-    ClassType classType = project.getIdentifierFactory().getClassType("File");
+    ClassType classType = view.getIdentifierFactory().getClassType("File");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        project
-            .getIdentifierFactory()
+        view.getIdentifierFactory()
             .getMethodSignature(classType, "someMethod", "void", Collections.emptyList());
 
     // Create a view for project, which allows us to retrieve classes
     // add class loading options, which can specify body interceptors
-    JavaView view = project.createView();
+
     view.configBodyInterceptors(
         analysisInputLocation ->
             new ClassLoadingOptions() {

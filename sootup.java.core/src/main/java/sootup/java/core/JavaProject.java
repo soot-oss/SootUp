@@ -46,10 +46,9 @@ import sootup.java.core.views.MutableJavaView;
 public class JavaProject extends Project<JavaSootClass, JavaView> {
 
   public JavaProject(
-      JavaLanguage language,
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(language, inputLocations, sourceTypeSpecifier);
+    super(inputLocations, sourceTypeSpecifier);
   }
 
   @Nonnull
@@ -182,9 +181,9 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
     public JavaProject build() {
       if (useModules) {
         return new JavaModuleProject(
-            language, analysisInputLocations, moduleAnalysisInputLocations, sourceTypeSpecifier);
+            analysisInputLocations, moduleAnalysisInputLocations, sourceTypeSpecifier);
       } else {
-        return new JavaProject(language, analysisInputLocations, sourceTypeSpecifier);
+        return new JavaProject(analysisInputLocations, sourceTypeSpecifier);
       }
     }
   }

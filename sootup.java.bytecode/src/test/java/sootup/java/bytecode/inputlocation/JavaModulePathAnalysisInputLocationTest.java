@@ -94,7 +94,6 @@ public class JavaModulePathAnalysisInputLocationTest {
     ModuleInfoAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     JavaModuleProject project =
         new JavaModuleProject(
-            new JavaLanguage(9),
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
@@ -119,7 +118,6 @@ public class JavaModulePathAnalysisInputLocationTest {
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
     JavaModuleProject project =
         new JavaModuleProject(
-            new JavaLanguage(9),
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
@@ -136,7 +134,6 @@ public class JavaModulePathAnalysisInputLocationTest {
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
     JavaModuleProject project =
         new JavaModuleProject(
-            new JavaLanguage(9),
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());

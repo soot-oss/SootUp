@@ -42,8 +42,8 @@ public class CallgraphExample {
     JavaView view = project.createView();
 
     // Get a MethodSignature
-    ClassType classTypeA = project.getIdentifierFactory().getClassType("A");
-    ClassType classTypeB = project.getIdentifierFactory().getClassType("B");
+    ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
+    ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
     MethodSignature entryMethodSignature =
         JavaIdentifierFactory.getInstance()
             .getMethodSignature(

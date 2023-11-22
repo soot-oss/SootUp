@@ -15,7 +15,6 @@ import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaView;
 
@@ -28,7 +27,6 @@ public class JrtFileSystemAnalysisInputLocationTest {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
         new JavaModuleProject(
-            new JavaLanguage(9),
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());
@@ -47,7 +45,6 @@ public class JrtFileSystemAnalysisInputLocationTest {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
     Project<JavaSootClass, JavaView> project =
         new JavaModuleProject(
-            new JavaLanguage(9),
             Collections.emptyList(),
             Collections.singletonList(inputLocation),
             DefaultSourceTypeSpecifier.getInstance());

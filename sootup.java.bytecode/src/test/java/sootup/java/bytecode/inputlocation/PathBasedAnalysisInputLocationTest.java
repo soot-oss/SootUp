@@ -329,7 +329,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     assertEquals(19, view.getClasses().size());
 
     // Create java class signature
-    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
+    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
     SootClass<JavaSootClassSource> utilsClass = view.getClass(utilsClassSignature).get();

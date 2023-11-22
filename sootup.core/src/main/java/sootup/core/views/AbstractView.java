@@ -25,7 +25,6 @@ package sootup.core.views;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.Scope;
 import sootup.core.model.SootClass;
@@ -59,12 +58,6 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
     this.project = (Project<T, ? extends View<T>>) project;
     this.typeHierarchy = new ViewTypeHierarchy(this);
-  }
-
-  @Override
-  @Nonnull
-  public IdentifierFactory getIdentifierFactory() {
-    return this.getProject().getIdentifierFactory();
   }
 
   @Override

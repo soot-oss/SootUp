@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.Project;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -41,6 +42,7 @@ import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.JavaModuleProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -403,6 +405,12 @@ public class JavaModuleView extends JavaView {
           return stream.map(this::buildClassFrom).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
       }
   */
+
+  @Nonnull
+  @Override
+  public IdentifierFactory getIdentifierFactory() {
+    return new JavaLanguage(9).getIdentifierFactory();
+  }
 
   @Nonnull
   private Stream<? extends Optional<? extends AbstractClassSource<JavaSootClass>>>
