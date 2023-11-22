@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -723,9 +724,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     String classPath = "src/test/resources/callgraph/Library/binary/";
     JavaProject.JavaProjectBuilder javaProjectBuilder =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     classPath + "application/", SourceType.Application))
