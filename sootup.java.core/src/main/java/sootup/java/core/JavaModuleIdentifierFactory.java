@@ -28,6 +28,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.Type;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -67,6 +68,17 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
      * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
     modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
+  }
+
+  @Override
+  boolean isMainSignature(@Nonnull MethodSignature methodSignature) {
+    if (methodSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
+      }
+    }
+    return false;
   }
 
   @Override
