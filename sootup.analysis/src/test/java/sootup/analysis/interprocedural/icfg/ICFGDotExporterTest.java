@@ -180,7 +180,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
     icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
     Map<Integer, MethodSignature> calls;
-    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view);
+    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();

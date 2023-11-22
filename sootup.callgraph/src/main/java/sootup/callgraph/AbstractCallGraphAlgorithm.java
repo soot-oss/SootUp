@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
@@ -40,6 +41,8 @@ import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.typehierarchy.HierarchyComparator;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
@@ -143,6 +146,11 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       // skip if already processed
       if (processed.contains(currentMethodSignature)) continue;
 
+      // skip if library class
+      SootClass<?> currentClass =
+          view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
+      if (currentClass == null || currentClass.isLibraryClass()) continue;
+
       // perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
@@ -151,9 +159,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
       // transform the method signature to the actual SootMethod
       SootMethod currentMethod =
-          view.getClass(currentMethodSignature.getDeclClassType())
-              .flatMap(c -> c.getMethod(currentMethodSignature.getSubSignature()))
-              .orElse(null);
+          currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
 
       // get all call targets of invocations in the method body
       Stream<MethodSignature> invocationTargets = resolveAllCallsFromSourceMethod(currentMethod);
@@ -277,47 +283,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   /**
-   * searches the method object in the given hierarchy
-   *
-   * @param view it contains all classes
-   * @param sig the signature of the searched method
-   * @param <T> the generic type of the searched method object
-   * @return the found method object, or null if the method was not found.
-   */
-  protected final <T extends Method> T findMethodInHierarchy(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
-    Optional<? extends SootClass<?>> optSc = view.getClass(sig.getDeclClassType());
-
-    if (optSc.isPresent()) {
-      SootClass<?> sc = optSc.get();
-
-      List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(sc.getType());
-      Set<ClassType> interfaces = view.getTypeHierarchy().implementedInterfacesOf(sc.getType());
-      superClasses.addAll(interfaces);
-
-      for (ClassType superClassType : superClasses) {
-        Optional<? extends SootClass<?>> superClassOpt = view.getClass(superClassType);
-        if (superClassOpt.isPresent()) {
-          SootClass<?> superClass = superClassOpt.get();
-          Optional<? extends SootMethod> methodOpt = superClass.getMethod(sig.getSubSignature());
-          if (methodOpt.isPresent()) {
-            return (T) methodOpt.get();
-          }
-        }
-      }
-      logger.warn(
-          "Could not find \""
-              + sig.getSubSignature()
-              + "\" in "
-              + sig.getDeclClassType().getClassName()
-              + " and in its superclasses");
-    } else {
-      logger.trace("Could not find \"" + sig.getDeclClassType() + "\" in view");
-    }
-    return null;
-  }
-
-  /**
    * This method enables optional pre-processing of a method in the call graph algorithm
    *
    * @param view view
@@ -438,7 +403,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           "There are more than 1 main method present.\n Below main methods are found: \n"
               + mainMethods
               + "\n initialize() method can be used if only one main method exists. \n You can specify these main methods as entry points by passing them as parameter to initialize method.");
-    } else if (mainMethods.size() == 0) {
+    } else if (mainMethods.isEmpty()) {
       throw new RuntimeException(
           "No main method is present in the input programs. initialize() method can be used if only one main method exists in the input program and that should be used as entry point for call graph. \n Please specify entry point as a parameter to initialize method.");
     }
@@ -458,4 +423,87 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   protected abstract Stream<MethodSignature> resolveCall(
       SootMethod method, AbstractInvokeExpr invokeExpr);
+
+  /**
+   * Searches for the signature of the method that is the concrete implementation of <code>m</code>.
+   * This is done by checking each superclass and the class itself for whether it contains the
+   * concrete implementation.
+   */
+  @Nonnull
+  public static Optional<MethodSignature> resolveConcreteDispatch(
+      View<? extends SootClass<?>> view, MethodSignature m) {
+    Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
+    if (methodOp.isPresent()) {
+      SootMethod method = methodOp.get();
+      if (method.isAbstract()) {
+        return Optional.empty();
+      }
+      return Optional.of(method.getSignature());
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * searches the method object in the given hierarchy
+   *
+   * @param view it contains all classes
+   * @param sig the signature of the searched method
+   * @return the found method object, or null if the method was not found.
+   */
+  public static Optional<? extends SootMethod> findConcreteMethod(
+      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    SootClass<?> startclass = view.getClass(sig.getDeclClassType()).orElse(null);
+    if (startclass == null) {
+      logger.warn(
+          "Could not find \""
+              + sig.getDeclClassType()
+              + "\" of method"
+              + sig
+              + " to resolve the concrete method");
+      return Optional.empty();
+    }
+    Optional<? extends SootMethod> startMethod = startclass.getMethod(sig.getSubSignature());
+    if (startMethod.isPresent()) {
+      return startMethod;
+    }
+    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
+    for (ClassType superClassType : superClasses) {
+      Optional<? extends SootMethod> method =
+          view.getMethod(
+              identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()));
+      if (method.isPresent()) {
+        return method;
+      }
+    }
+    Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sig.getDeclClassType());
+    // interface1 is a sub-interface of interface2
+    // interface1 is a super-interface of interface2
+    // due to multiple inheritance in interfaces
+    final HierarchyComparator hierarchyComparator = new HierarchyComparator(view);
+    Optional<? extends SootMethod> defaultMethod =
+        interfaces.stream()
+            .map(
+                classType ->
+                    view.getMethod(
+                        identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .min(
+                (m1, m2) ->
+                    hierarchyComparator.compare(
+                        m1.getDeclaringClassType(), m2.getDeclaringClassType()));
+    if (defaultMethod.isPresent()) {
+      return defaultMethod;
+    }
+    logger.warn(
+        "Could not find \""
+            + sig.getSubSignature()
+            + "\" in "
+            + sig.getDeclClassType().getClassName()
+            + " and in its superclasses and interfaces");
+    return Optional.empty();
+  }
 }
