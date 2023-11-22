@@ -16,6 +16,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -41,9 +42,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   public void ICFGDotExportTest() {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();
@@ -81,9 +80,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   public void ICFGDotExportTest2() {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();
@@ -121,9 +118,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   public void ICFGArrayListDotExport() {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();
@@ -153,9 +148,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   public void ICFGInterfaceDotExport() {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
             .build();

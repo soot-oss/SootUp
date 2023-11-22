@@ -6,7 +6,7 @@ import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -38,9 +38,7 @@ public class MethodDispatchBase {
                 .addInputLocation(
                     new JavaSourcePathAnalysisInputLocation(
                         Collections.singleton(baseDir + "/" + getClassName())))
-                .addInputLocation(
-                    new JavaClassPathAnalysisInputLocation(
-                        System.getProperty("java.home") + "/lib/rt.jar"))
+                .addInputLocation(new DefaultRTJarAnalysisInputLocation())
                 .build();
         setView(project.createView());
       }

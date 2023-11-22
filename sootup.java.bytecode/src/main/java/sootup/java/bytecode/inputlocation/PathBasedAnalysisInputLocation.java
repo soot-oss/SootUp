@@ -552,7 +552,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-  private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
@@ -580,7 +580,7 @@ public abstract class PathBasedAnalysisInputLocation
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+    ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -794,22 +794,6 @@ public abstract class PathBasedAnalysisInputLocation
         throw new RuntimeException(e);
       }
       return classesInXML;
-    }
-  }
-
-  /**
-   * Refers to the rt.jar from <=Java8 as an AnalysisInputLocation requires: JAVA_HOME to be set and
-   * expects the jar in the "lib/" subdirectory. If you need to include the rt.jar from a custom
-   * Location please make use of JavaClassPathAnalysisInputLocation.
-   */
-  private static class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
-
-    private DefaultRTJarAnalysisInputLocation() {
-      this(SourceType.Library);
-    }
-
-    private DefaultRTJarAnalysisInputLocation(@Nonnull SourceType srcType) {
-      super(Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), srcType);
     }
   }
 }
