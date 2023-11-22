@@ -99,7 +99,7 @@ public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
     AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    JimpleView view = new JimpleProject(jimpleInputLocation).createOnDemandView();
+    JimpleView view = new JimpleProject(jimpleInputLocation).createView();
 
     Collection<SootClass<?>> classes = new HashSet<>(); // Set to track the classes to check
 

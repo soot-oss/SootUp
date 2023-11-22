@@ -41,7 +41,7 @@ import sootup.core.types.UnknownType;
 
 public class NewValidator implements BodyValidator {
 
-  private static final String errorMsg =
+  private static final String ERROR_MSG =
       "There is a path from '%s' to the usage '%s' where <init> does not get called in between.";
 
   public static boolean MUST_CALL_CONSTRUCTOR_BEFORE_RETURN = false;
@@ -76,15 +76,15 @@ public class NewValidator implements BodyValidator {
 
   private boolean checkForInitializerOnPath(
       StmtGraph g, JAssignStmt newStmt, List<ValidationException> exception) {
-    List<Stmt> workList = new ArrayList<Stmt>();
-    Set<Stmt> doneSet = new HashSet<Stmt>();
+    List<Stmt> workList = new ArrayList<>();
+    Set<Stmt> doneSet = new HashSet<>();
     workList.add(newStmt);
 
-    Set<Local> aliasingLocals = new HashSet<Local>();
+    Set<Local> aliasingLocals = new HashSet<>();
     aliasingLocals.add((Local) newStmt.getLeftOp());
 
     while (!workList.isEmpty()) {
-      Stmt curStmt = (Stmt) workList.remove(0);
+      Stmt curStmt = workList.remove(0);
       if (!doneSet.add(curStmt)) {
         continue;
       }
@@ -150,7 +150,7 @@ public class NewValidator implements BodyValidator {
               // However, when creating such an alias, the use is okay.
               exception.add(
                   new ValidationException(
-                      newStmt.getLeftOp(), String.format(errorMsg, newStmt, curStmt)));
+                      newStmt.getLeftOp(), String.format(ERROR_MSG, newStmt, curStmt)));
               return false;
             }
           }
@@ -164,7 +164,7 @@ public class NewValidator implements BodyValidator {
         // on our way...
         exception.add(
             new ValidationException(
-                newStmt.getLeftOp(), String.format(errorMsg, newStmt, curStmt)));
+                newStmt.getLeftOp(), String.format(ERROR_MSG, newStmt, curStmt)));
         return false;
       }
       workList.addAll(successors);
