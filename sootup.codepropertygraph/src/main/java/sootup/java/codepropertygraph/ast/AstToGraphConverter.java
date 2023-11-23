@@ -58,24 +58,24 @@ public class AstToGraphConverter {
       case "JIfStmt":
         {
           JIfStmt currStmt = (JIfStmt) stmt;
-          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getOp1().toString(), CMP));
-          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getSymbol(), CMP));
-          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getOp2().toString(), CMP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getOp1().toString(), OP1));
+          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getSymbol(), COND));
+          graph.addEdge(parentNode, new AstNode(currStmt.getCondition().getOp2().toString(), OP2));
           break;
         }
       case "JAssignStmt":
         {
           JAssignStmt currStmt = (JAssignStmt) stmt;
-          graph.addEdge(parentNode, new AstNode(currStmt.getLeftOp().toString(), CMP));
-          graph.addEdge(parentNode, new AstNode(currStmt.getRightOp().toString(), CMP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getLeftOp().toString(), LEFTOP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getRightOp().toString(), RIGHTOP));
           break;
         }
 
       case "JIdentityStmt":
         {
           JIdentityStmt currStmt = (JIdentityStmt) stmt;
-          graph.addEdge(parentNode, new AstNode(currStmt.getLeftOp().toString(), CMP));
-          graph.addEdge(parentNode, new AstNode(currStmt.getRightOp().toString(), CMP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getLeftOp().toString(), LEFTOP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getRightOp().toString(), RIGHTOP));
           break;
         }
 
@@ -106,7 +106,7 @@ public class AstToGraphConverter {
       case "JReturnStmt":
         {
           JReturnStmt currStmt = (JReturnStmt) stmt;
-          graph.addEdge(parentNode, new AstNode(currStmt.getOp().toString(), CMP));
+          graph.addEdge(parentNode, new AstNode(currStmt.getOp().toString(), OP));
           break;
         }
 
@@ -114,7 +114,7 @@ public class AstToGraphConverter {
         JGotoStmt currStmt = (JGotoStmt) stmt;
         int gotoPosition =
             currStmt.getTargetStmts(body).get(0).getPositionInfo().getStmtPosition().getFirstLine();
-        graph.addEdge(parentNode, new AstNode(Integer.toString(gotoPosition), CMP));
+        graph.addEdge(parentNode, new AstNode(Integer.toString(gotoPosition), POS));
         break;
 
       case "JReturnVoidStmt":

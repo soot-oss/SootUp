@@ -40,6 +40,13 @@ class AstGraphToDotConverter {
       case PARAMETER_TYPE:
         return "lightgray";
       case CMP:
+      case LEFTOP:
+      case RIGHTOP:
+      case OP1:
+      case COND:
+      case OP2:
+      case POS:
+      case OP:
         return "beige";
       default:
         return "white";

@@ -100,16 +100,16 @@ public class MethodAstTest {
         expectedReturnType2
       },
       {
-        "ifElseCascadingStatement",
-        "ifElseCascadingStatement",
+        "ifElseIfStatement",
+        "ifElseIfStatement",
         expectedModifiers3,
         expectedParameterTypes3,
         expectedBodyStmts3,
         expectedReturnType3
       },
       {
-        "ifElseCascadingInElseStatement",
-        "ifElseCascadingInElseStatement",
+        "ifElseCascadingStatement",
+        "ifElseCascadingStatement",
         expectedModifiers4,
         expectedParameterTypes4,
         expectedBodyStmts4,
