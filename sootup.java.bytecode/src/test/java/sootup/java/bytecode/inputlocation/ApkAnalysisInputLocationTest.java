@@ -23,23 +23,22 @@ package sootup.java.bytecode.inputlocation;
  */
 
 import categories.Java8Test;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
 
-import java.util.Collections;
-
 @Category(Java8Test.class)
 public class ApkAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
-    @Test
-    public void testApk() {
-        AnalysisInputLocation<JavaSootClass> pathBasedNamespace =
-                new ApkAnalysisInputLocation(apk, null);
-        final ClassType mainClass =
-                getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
-        testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
-    }
+  @Test
+  public void testApk() {
+    AnalysisInputLocation<JavaSootClass> pathBasedNamespace =
+        new ApkAnalysisInputLocation(apk, null);
+    final ClassType mainClass =
+        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
+  }
 }

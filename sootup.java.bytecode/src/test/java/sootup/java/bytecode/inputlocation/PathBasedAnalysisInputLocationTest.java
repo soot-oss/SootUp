@@ -35,11 +35,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import javax.annotation.Nonnull;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.frontend.BodySource;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
@@ -50,9 +48,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
-import sootup.java.core.signatures.ModuleSignature;
-import sootup.java.core.types.ModuleJavaClassType;
-import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
 /**

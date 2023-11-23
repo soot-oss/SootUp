@@ -22,7 +22,10 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import static org.junit.Assert.assertFalse;
+
 import categories.Java8Test;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -36,224 +39,218 @@ import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertFalse;
-
 @Category(Java8Test.class)
 public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest {
 
-    @Test
-    public void multiReleaseJar() {
-        final ClassType classType =
-                getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-        final ClassType classType2 =
-                getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+  @Test
+  public void multiReleaseJar() {
+    final ClassType classType =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+    final ClassType classType2 =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
-        final JavaLanguage minLanguage = new JavaLanguage(Integer.MIN_VALUE);
-        final JavaProject project_min =
-                JavaProject.builder(minLanguage)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage))
-                        .build();
-        final JavaView view_min = project_min.createView();
+    final JavaLanguage minLanguage = new JavaLanguage(Integer.MIN_VALUE);
+    final JavaProject project_min =
+        JavaProject.builder(minLanguage)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage))
+            .build();
+    final JavaView view_min = project_min.createView();
 
-        final JavaLanguage language8 = new JavaLanguage(8);
-        final JavaProject project_8 =
-                JavaProject.builder(language8)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8))
-                        .build();
-        final JavaView view_8 = project_8.createView();
+    final JavaLanguage language8 = new JavaLanguage(8);
+    final JavaProject project_8 =
+        JavaProject.builder(language8)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8))
+            .build();
+    final JavaView view_8 = project_8.createView();
 
-        final JavaLanguage language9 = new JavaLanguage(9);
-        final JavaProject project_9 =
-                JavaProject.builder(language9)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9))
-                        .build();
-        final JavaView view_9 = project_9.createView();
+    final JavaLanguage language9 = new JavaLanguage(9);
+    final JavaProject project_9 =
+        JavaProject.builder(language9)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9))
+            .build();
+    final JavaView view_9 = project_9.createView();
 
-        final JavaLanguage language10 = new JavaLanguage(10);
-        final JavaProject project_10 =
-                JavaProject.builder(language10)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10))
-                        .build();
-        final JavaView view_10 = project_10.createView();
+    final JavaLanguage language10 = new JavaLanguage(10);
+    final JavaProject project_10 =
+        JavaProject.builder(language10)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10))
+            .build();
+    final JavaView view_10 = project_10.createView();
 
-        final JavaLanguage maxLanguage = new JavaLanguage(Integer.MAX_VALUE);
-        final JavaProject project_max =
-                JavaProject.builder(maxLanguage)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage))
-                        .build();
-        final JavaView view_max = project_max.createView();
+    final JavaLanguage maxLanguage = new JavaLanguage(Integer.MAX_VALUE);
+    final JavaProject project_max =
+        JavaProject.builder(maxLanguage)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage))
+            .build();
+    final JavaView view_max = project_max.createView();
 
-        // for java10
-        Assert.assertEquals(
-                "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-                view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // for java10
+    Assert.assertEquals(
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
+        view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
-        // assert that method is correctly resolved
-        Assert.assertTrue(
-                view_10
-                        .getClass(classType)
-                        .get()
-                        .getMethod(
-                                getIdentifierFactory()
-                                        .getMethodSubSignature(
-                                                "printVersion",
-                                                getIdentifierFactory().getType("void"),
-                                                Collections.emptyList()))
-                        .get()
-                        .getBody()
-                        .toString()
-                        .contains("java 9"));
+    // assert that method is correctly resolved
+    Assert.assertTrue(
+        view_10
+            .getClass(classType)
+            .get()
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 9"));
 
-        // for java 9
-        Assert.assertEquals(
-                "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-                view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // for java 9
+    Assert.assertEquals(
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
+        view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
-        // for java 8
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Utility.class",
-                view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
-        // assert that method is correctly resolved to base
-        Assert.assertTrue(
-                view_8
-                        .getClass(classType)
-                        .get()
-                        .getMethod(
-                                getIdentifierFactory()
-                                        .getMethodSubSignature(
-                                                "printVersion",
-                                                getIdentifierFactory().getType("void"),
-                                                Collections.emptyList()))
-                        .get()
-                        .getBody()
-                        .toString()
-                        .contains("java 8"));
+    // for java 8
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Utility.class",
+        view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // assert that method is correctly resolved to base
+    Assert.assertTrue(
+        view_8
+            .getClass(classType)
+            .get()
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 8"));
 
-        // for max int
-        Assert.assertEquals(
-                "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-                view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // for max int
+    Assert.assertEquals(
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
+        view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
-        // for min int
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Utility.class",
-                view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
-    }
+    // for min int
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Utility.class",
+        view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
+  }
 
-    @Test
-    public void modularMultiReleaseJar() {
-        final ClassType utilityNoModule =
-                getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+  @Test
+  public void modularMultiReleaseJar() {
+    final ClassType utilityNoModule =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
 
-        final ModuleJavaClassType utilityModule =
-                JavaModuleIdentifierFactory.getInstance()
-                        .getClassType("de.upb.swt.multirelease/de.upb.swt.multirelease.Utility");
+    final ModuleJavaClassType utilityModule =
+        JavaModuleIdentifierFactory.getInstance()
+            .getClassType("de.upb.swt.multirelease/de.upb.swt.multirelease.Utility");
 
-        final ClassType classType2 =
-                getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+    final ClassType classType2 =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
-        final JavaLanguage language8 = new JavaLanguage(8);
-        final JavaProject project_8 =
-                JavaProject.builder(language8)
-                        .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8))
-                        .build();
-        final JavaView view_8 = project_8.createView();
+    final JavaLanguage language8 = new JavaLanguage(8);
+    final JavaProject project_8 =
+        JavaProject.builder(language8)
+            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8))
+            .build();
+    final JavaView view_8 = project_8.createView();
 
-        final JavaLanguage language9 = new JavaLanguage(9);
-        final JavaModuleProject project_9 =
-                (JavaModuleProject)
-                        JavaModuleProject.builder(language9)
-                                .enableModules()
-                                .addInputLocation(
-                                        new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9))
-                                .build();
+    final JavaLanguage language9 = new JavaLanguage(9);
+    final JavaModuleProject project_9 =
+        (JavaModuleProject)
+            JavaModuleProject.builder(language9)
+                .enableModules()
+                .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9))
+                .build();
 
-        final JavaModuleView view_9 = project_9.createView();
+    final JavaModuleView view_9 = project_9.createView();
 
-        ModuleSignature moduleSignature =
-                JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
+    ModuleSignature moduleSignature =
+        JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
 
-        Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
+    Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
 
-        Assert.assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
+    Assert.assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
 
-        Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
+    Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
 
-        Assert.assertEquals(
-                "de.upb.swt.multirelease.Utility",
-                view_9.getModuleClasses(moduleSignature).stream()
-                        .findAny()
-                        .get()
-                        .getType()
-                        .getFullyQualifiedName());
+    Assert.assertEquals(
+        "de.upb.swt.multirelease.Utility",
+        view_9.getModuleClasses(moduleSignature).stream()
+            .findAny()
+            .get()
+            .getType()
+            .getFullyQualifiedName());
 
-        // for java 9
-        Assert.assertEquals(
-                "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-                view_9.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
-        // different class will be returned if no module is specified
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Utility.class",
-                view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
-        // assert that method is correctly resolved to base
-        Assert.assertTrue(
-                view_9
-                        .getClass(utilityModule)
-                        .get()
-                        .getMethod(
-                                getIdentifierFactory()
-                                        .getMethodSubSignature(
-                                                "printVersion",
-                                                getIdentifierFactory().getType("void"),
-                                                Collections.emptyList()))
-                        .get()
-                        .getBody()
-                        .toString()
-                        .contains("java 9"));
+    // for java 9
+    Assert.assertEquals(
+        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
+        view_9.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
+    // different class will be returned if no module is specified
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Utility.class",
+        view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // assert that method is correctly resolved to base
+    Assert.assertTrue(
+        view_9
+            .getClass(utilityModule)
+            .get()
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 9"));
 
-        // for java 8
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Utility.class",
-                view_8.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-        assertFalse(view_8.getClass(utilityModule).isPresent());
-        Assert.assertEquals(
-                "/de/upb/swt/multirelease/Main.class",
-                view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
-        // assert that method is correctly resolved to base
-        Assert.assertTrue(
-                view_8
-                        .getClass(utilityNoModule)
-                        .get()
-                        .getMethod(
-                                getIdentifierFactory()
-                                        .getMethodSubSignature(
-                                                "printVersion",
-                                                getIdentifierFactory().getType("void"),
-                                                Collections.emptyList()))
-                        .get()
-                        .getBody()
-                        .toString()
-                        .contains("java 8"));
-    }
-
+    // for java 8
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Utility.class",
+        view_8.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
+    assertFalse(view_8.getClass(utilityModule).isPresent());
+    Assert.assertEquals(
+        "/de/upb/swt/multirelease/Main.class",
+        view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
+    // assert that method is correctly resolved to base
+    Assert.assertTrue(
+        view_8
+            .getClass(utilityNoModule)
+            .get()
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 8"));
+  }
 }

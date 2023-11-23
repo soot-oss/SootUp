@@ -22,7 +22,6 @@ package sootup.java.core;
  * #L%
  */
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
