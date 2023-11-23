@@ -66,7 +66,19 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       # sanitive head_ref name
-      - run: echo "DOC_VERSION_NAME=${${{github.head_ref}}//[^[:alnum:]]/_}" >> "$GITHUB_ENV"
+      - run: echo "DOC_VERSION_NAME=${github.head_ref//[^[:alnum:]]/_}" >> "$GITHUB_ENV"
+
+      - run: echo $DOC_VERSION_NAME;
+      - run: echo "$DOC_VERSION_NAME";
+      - run: echo "$DOC_VERSION_NAME_preview";
+      - run: echo "$DOC_VERSION_NAME"_preview;
+
+      - run: echo ${DOC_VERSION_NAME};
+      - run: echo ${DOC_VERSION_NAME}_preview;
+
+      - run: echo ${{ $DOC_VERSION_NAME }};
+      - run: echo ${{ DOC_VERSION_NAME }}_preview;;
+
 
       # on push to develop branch - keep a doc around for develop to show the current state
       - name: deploy doc in subdirectory
