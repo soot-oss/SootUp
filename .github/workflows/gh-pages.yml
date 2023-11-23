@@ -12,6 +12,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
 
   release:
     types: [ created, published ]
