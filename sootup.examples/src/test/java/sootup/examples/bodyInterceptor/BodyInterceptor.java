@@ -37,12 +37,9 @@ public class BodyInterceptor {
         PathBasedAnalysisInputLocation.create(
             Paths.get("src/test/resources/BodyInterceptor/binary"), null);
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
 
     // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
     JavaView view = project.createView();
 
     // Create a signature for the class we want to analyze

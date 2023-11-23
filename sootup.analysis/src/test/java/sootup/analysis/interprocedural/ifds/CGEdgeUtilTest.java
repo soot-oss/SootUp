@@ -136,7 +136,7 @@ public class CGEdgeUtilTest {
     }
 
     JavaView view =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))

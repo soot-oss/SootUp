@@ -36,13 +36,9 @@ public class ClassHierarchy {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary");
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
-
     // Create a new JavaProject and view based on the input location
     JavaProject project =
-        JavaProject.builder(language)
+        JavaProject.builder()
             .addInputLocation(inputLocation)
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(

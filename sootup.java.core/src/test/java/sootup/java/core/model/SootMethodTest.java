@@ -41,7 +41,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     Project<?, ?> project =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(new EagerInputLocation<>())
             .build();
     View<?> view = project.createView();

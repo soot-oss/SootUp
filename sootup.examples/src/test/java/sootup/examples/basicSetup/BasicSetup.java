@@ -38,9 +38,8 @@ public class BasicSetup {
     Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
-    Language language = new JavaLanguage(8);
     Project project =
-        JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
   }
 
   @Ignore
@@ -59,13 +58,9 @@ public class BasicSetup {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    Language language = new JavaLanguage(8);
-
     // Create a new JavaProject based on the input location
     Project project =
-        JavaProject.builder((JavaLanguage) language).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
 
     // Create a view for project, which allows us to retrieve classes
     View view = project.createView();

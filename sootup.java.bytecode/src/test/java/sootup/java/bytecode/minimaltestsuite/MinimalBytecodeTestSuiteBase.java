@@ -51,7 +51,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
         JavaProject project =
-            JavaProject.builder(new JavaLanguage(8))
+            JavaProject.builder()
                 .addInputLocation(
                     new JavaClassPathAnalysisInputLocation(
                         baseDir

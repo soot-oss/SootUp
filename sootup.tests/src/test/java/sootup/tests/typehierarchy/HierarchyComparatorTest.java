@@ -27,7 +27,7 @@ public class HierarchyComparatorTest {
   @BeforeClass
   public static void setUp() {
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaSourcePathAnalysisInputLocation(
                     Collections.singleton("src/test/resources/javatypehierarchy/Comparator")))

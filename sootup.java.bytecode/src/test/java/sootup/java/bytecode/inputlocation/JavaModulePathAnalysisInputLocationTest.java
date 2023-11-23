@@ -24,7 +24,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testJarModule() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
             .build();
@@ -44,7 +44,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testExplodedModule() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "uses-provides/exploded_module/"))
@@ -65,7 +65,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetModuleInfo() {
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();

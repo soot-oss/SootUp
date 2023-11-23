@@ -20,7 +20,7 @@ public class RuntimeJarConversionTests {
         PathBasedAnalysisInputLocation.create(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
 
     final MethodSignature methodSignature =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);

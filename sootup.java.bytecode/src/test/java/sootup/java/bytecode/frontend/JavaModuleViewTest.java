@@ -28,7 +28,7 @@ public class JavaModuleViewTest {
   @Test
   public void testGeneralClassReceivalFromModule() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
             .build();
     JavaModuleView view = (JavaModuleView) p.createView();
@@ -65,7 +65,7 @@ public class JavaModuleViewTest {
   public void testUnnamedModule() {
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "../shared-test-resources/miniTestSuite/java6/binary/"))
@@ -102,7 +102,7 @@ public class JavaModuleViewTest {
     // modmain -> modb -> mod.annotations
     // transitive: modmain -> mod.annotations
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"))
             .build();
 
@@ -145,7 +145,7 @@ public class JavaModuleViewTest {
     // static trans: modmain -> modc [via modb]
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires-static/jar"))
             .addInputLocation(new JrtFileSystemAnalysisInputLocation())
@@ -188,7 +188,7 @@ public class JavaModuleViewTest {
     // transitive: all to java.base
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .build();
@@ -241,7 +241,7 @@ public class JavaModuleViewTest {
     // transitive: a -> c
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "requires_exports_requires-transitive_exports-to/jar"))
@@ -293,7 +293,7 @@ public class JavaModuleViewTest {
   @Test
   public void testReflection() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "reflection/jar"))
             .build();
 
@@ -347,7 +347,7 @@ public class JavaModuleViewTest {
   @Test
   public void testUsesProvide() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar"))
             .build();
@@ -396,7 +396,7 @@ public class JavaModuleViewTest {
   @Test
   public void testUsesProvideInClient() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "uses-provides_uses-in-client/jar"))
@@ -446,7 +446,7 @@ public class JavaModuleViewTest {
   public void testDerivedPrivatePackageProtected() {
     // static vs. dynamic type
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "derived_private-package-protected/jar"))
@@ -495,7 +495,7 @@ public class JavaModuleViewTest {
   @Test
   public void testExceptions() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "exceptions/jar"))
             .build();
 
@@ -533,7 +533,7 @@ public class JavaModuleViewTest {
   @Test
   public void testInterfaceCallback() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "interface-callback/jar"))
             .build();
@@ -571,7 +571,7 @@ public class JavaModuleViewTest {
     // A module must not require 2 or more modules, which contain the same package - export is *not*
     // even necessary.
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "splitpackage_automatic-modules/jar"))
@@ -609,7 +609,7 @@ public class JavaModuleViewTest {
     // A module must not requires 2 or more modules, which have/export the same package
     // TODO: adapt
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "splitpackage"))
             .build();
 
@@ -626,7 +626,7 @@ public class JavaModuleViewTest {
   public void testHiddenMain() {
     // i.e. main is in non exported package
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain/jar"))
             .build();
 
@@ -645,7 +645,7 @@ public class JavaModuleViewTest {
   @Test
   public void testAccessUnnamedModuleFromAutomaticModule() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-automatic-module/jar/modmain.auto.jar"))
@@ -675,7 +675,7 @@ public class JavaModuleViewTest {
   public void testAccessUnnamedModuleFromModule() {
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_access-from-explicit-module/jar/modb.jar"))
@@ -725,7 +725,7 @@ public class JavaModuleViewTest {
     // path is taken
 
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(
                     testPath + "unnamed-module_accessing-module-path/jar/modb.jar"))
@@ -821,7 +821,7 @@ public class JavaModuleViewTest {
   @Test
   public void testEqualModulePath() {
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
             .addInputLocation(

@@ -43,7 +43,7 @@ public class JavaSourcePathNamespaceTest {
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
     final JavaView view = project.createView();
 
     Optional<JavaSootClass> clazz = view.getClass(type);
@@ -70,7 +70,7 @@ public class JavaSourcePathNamespaceTest {
     JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
     final JavaView view = project.createView();
 
     Collection<? extends AbstractClassSource> classSources =
@@ -99,7 +99,7 @@ public class JavaSourcePathNamespaceTest {
 
     String classPath = "../shared-test-resources/java-miniapps/src/";
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath))
             .build();

@@ -32,7 +32,6 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
@@ -126,8 +125,8 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
    * @return A {@link JavaProjectBuilder}.
    */
   @Nonnull
-  public static JavaProjectBuilder builder(JavaLanguage language) {
-    return new JavaProjectBuilder(language);
+  public static JavaProjectBuilder builder() {
+    return new JavaProjectBuilder();
   }
 
   public static class JavaProjectBuilder {
@@ -137,12 +136,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
         new ArrayList<>();
 
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
-    private final JavaLanguage language;
     private boolean useModules = false;
-
-    public JavaProjectBuilder(JavaLanguage language) {
-      this.language = language;
-    }
 
     @Nonnull
     public JavaProjectBuilder setSourceTypeSpecifier(SourceTypeSpecifier sourceTypeSpecifier) {
@@ -159,8 +153,16 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
     @Nonnull
     public JavaProjectBuilder addInputLocation(
-        ModuleInfoAnalysisInputLocation analysisInputLocation) {
-      if (language.getVersion() > 8) {
+      ModuleInfoAnalysisInputLocation analysisInputLocation) {
+      useModules = true;
+      this.moduleAnalysisInputLocations.add(analysisInputLocation);
+      return this;
+    }
+
+    @Nonnull
+    public JavaProjectBuilder addInputLocation(
+            MultiReleaseModuleInfoAnalysisInputLocation analysisInputLocation) {
+      if (analysisInputLocation.getLanguage().getVersion() > 8) {
         useModules = true;
         this.moduleAnalysisInputLocations.add(analysisInputLocation);
       } else {

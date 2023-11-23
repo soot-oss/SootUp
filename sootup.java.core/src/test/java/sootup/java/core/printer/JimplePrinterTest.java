@@ -57,7 +57,7 @@ public class JimplePrinterTest {
   private SootClass buildClass() {
 
     Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
+        JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
     View view = project.createView();
 
     String className = "some.package.SomeClass";

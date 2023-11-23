@@ -165,7 +165,7 @@ public class AggregatorTest {
         new JavaClassPathAnalysisInputLocation(classPath);
     JavaLanguage language = new JavaLanguage(8);
 
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
     JavaView view = project.createView();
     {
       final SootMethod sootMethod =
@@ -192,7 +192,7 @@ public class AggregatorTest {
             SourceType.Application);
 
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
 
     JavaView view = project.createView();
     view.configBodyInterceptors(a -> BytecodeClassLoadingOptions.Default);

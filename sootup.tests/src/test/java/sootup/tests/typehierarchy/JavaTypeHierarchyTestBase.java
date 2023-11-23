@@ -39,7 +39,7 @@ public abstract class JavaTypeHierarchyTestBase {
         srcCode =
             new JavaSourcePathAnalysisInputLocation(
                 Collections.singleton(baseDir + "/" + getClassName()));
-        project = JavaProject.builder(new JavaLanguage(8)).addInputLocation(this.srcCode).build();
+        project = JavaProject.builder().addInputLocation(this.srcCode).build();
         setView(project.createView());
       }
     }

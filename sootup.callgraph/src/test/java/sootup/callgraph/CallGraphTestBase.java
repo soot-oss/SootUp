@@ -34,7 +34,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
     JavaProject.JavaProjectBuilder javaProjectBuilder =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
@@ -724,7 +724,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     String classPath = "src/test/resources/callgraph/Library/binary/";
     JavaProject.JavaProjectBuilder javaProjectBuilder =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))

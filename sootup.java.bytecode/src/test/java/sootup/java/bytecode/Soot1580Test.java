@@ -29,7 +29,7 @@ public class Soot1580Test {
         PathBasedAnalysisInputLocation.create(jar, null);
 
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(7)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
 
     JavaView view =
         project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);

@@ -23,7 +23,7 @@ public class IndyTests {
         new JavaClassPathAnalysisInputLocation(directory);
 
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        JavaProject.builder().addInputLocation(inputLocation).build();
 
     JavaView view = project.createView();
     Assert.assertEquals(1, view.getClasses().size());

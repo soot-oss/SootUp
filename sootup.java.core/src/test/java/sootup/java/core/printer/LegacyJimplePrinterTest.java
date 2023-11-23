@@ -32,7 +32,7 @@ public class LegacyJimplePrinterTest {
   SootClass buildClass(Body.BodyBuilder builder) {
 
     Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
+        JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
     View view = project.createView();
 
     MethodSignature methodSignature =

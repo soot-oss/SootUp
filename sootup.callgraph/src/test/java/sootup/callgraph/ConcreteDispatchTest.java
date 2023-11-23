@@ -31,7 +31,7 @@ public class ConcreteDispatchTest {
   @BeforeClass
   public static void setUp() {
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "src/test/resources/callgraph/ConcreteDispatch/binary"))

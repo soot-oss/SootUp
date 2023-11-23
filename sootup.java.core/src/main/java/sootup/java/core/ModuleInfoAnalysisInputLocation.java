@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
+
+import sootup.core.Language;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.views.View;

@@ -60,7 +60,7 @@ public abstract class AnalysisInputLocationTest {
       AnalysisInputLocation<JavaSootClass> ns, List<ClassType> sigs, int classesFound) {
 
     final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(ns).build();
+        JavaProject.builder().addInputLocation(ns).build();
     final JavaView view = project.createView();
 
     for (ClassType classType : sigs) {

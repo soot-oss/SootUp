@@ -39,10 +39,7 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
 
@@ -51,7 +48,7 @@ import sootup.java.core.types.ModuleJavaClassType;
  * analyze explicitly
  */
 public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
-    implements ModuleInfoAnalysisInputLocation {
+    implements MultiReleaseModuleInfoAnalysisInputLocation {
 
   @Nonnull private final Language language;
   @Nonnull private final int[] availableVersions;
@@ -307,6 +304,12 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
         .map(e -> ((ModuleInfoAnalysisInputLocation) e).getModules(view))
         .flatMap(Set::stream)
         .collect(Collectors.toSet());
+  }
+
+  @Nonnull
+  @Override
+  public Language getLanguage() {
+    return this.language;
   }
 
   @Override

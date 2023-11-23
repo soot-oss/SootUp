@@ -40,7 +40,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest() {
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
@@ -80,7 +80,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest2() {
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
@@ -120,7 +120,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGArrayListDotExport() {
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))
@@ -152,7 +152,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGInterfaceDotExport() {
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))

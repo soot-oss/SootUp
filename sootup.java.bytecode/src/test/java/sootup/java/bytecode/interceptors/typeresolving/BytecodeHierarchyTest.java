@@ -76,7 +76,7 @@ public class BytecodeHierarchyTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
     JavaProject p =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(analysisInputLocation).build();
+        JavaProject.builder().addInputLocation(analysisInputLocation).build();
     view = p.createView();
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
 

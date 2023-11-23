@@ -38,7 +38,7 @@ public class MutableSootClientTest {
   @BeforeClass
   public static void setupProject() {
     location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
-    p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
+    p = JavaProject.builder().addInputLocation(location).build();
   }
 
   /** Create a new mutable view that the tests should be performed on. */

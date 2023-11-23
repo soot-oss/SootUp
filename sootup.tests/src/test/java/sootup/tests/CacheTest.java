@@ -31,7 +31,7 @@ public class CacheTest {
   public static void setupProject() {
     PathBasedAnalysisInputLocation location =
         PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
-    p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
+    p = JavaProject.builder().addInputLocation(location).build();
   }
 
   /** Test the {@link sootup.core.cache.FullCache} class */

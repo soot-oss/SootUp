@@ -31,7 +31,7 @@ public class TypeAssignerTestSuite {
     JavaClassPathAnalysisInputLocation rtJar =
         new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
     JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(analysisInputLocation)
             .addInputLocation(rtJar)
             .build();

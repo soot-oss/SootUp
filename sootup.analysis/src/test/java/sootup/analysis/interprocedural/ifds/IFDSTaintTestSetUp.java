@@ -72,7 +72,7 @@ public class IFDSTaintTestSetUp {
    */
   private void setupSoot(String targetTestClassName) {
     JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
+        JavaProject.builder()
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     System.getProperty("java.home") + "/lib/rt.jar"))

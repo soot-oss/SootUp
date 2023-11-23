@@ -51,35 +51,35 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
 
     final JavaLanguage minLanguage = new JavaLanguage(Integer.MIN_VALUE);
     final JavaProject project_min =
-        JavaProject.builder(minLanguage)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage))
             .build();
     final JavaView view_min = project_min.createView();
 
     final JavaLanguage language8 = new JavaLanguage(8);
     final JavaProject project_8 =
-        JavaProject.builder(language8)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8))
             .build();
     final JavaView view_8 = project_8.createView();
 
     final JavaLanguage language9 = new JavaLanguage(9);
     final JavaProject project_9 =
-        JavaProject.builder(language9)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9))
             .build();
     final JavaView view_9 = project_9.createView();
 
     final JavaLanguage language10 = new JavaLanguage(10);
     final JavaProject project_10 =
-        JavaProject.builder(language10)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10))
             .build();
     final JavaView view_10 = project_10.createView();
 
     final JavaLanguage maxLanguage = new JavaLanguage(Integer.MAX_VALUE);
     final JavaProject project_max =
-        JavaProject.builder(maxLanguage)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage))
             .build();
     final JavaView view_max = project_max.createView();
@@ -170,7 +170,7 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
 
     final JavaLanguage language8 = new JavaLanguage(8);
     final JavaProject project_8 =
-        JavaProject.builder(language8)
+        JavaProject.builder()
             .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8))
             .build();
     final JavaView view_8 = project_8.createView();
@@ -178,7 +178,7 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
     final JavaLanguage language9 = new JavaLanguage(9);
     final JavaModuleProject project_9 =
         (JavaModuleProject)
-            JavaModuleProject.builder(language9)
+            JavaModuleProject.builder()
                 .enableModules()
                 .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9))
                 .build();
