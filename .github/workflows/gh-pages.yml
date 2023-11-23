@@ -76,9 +76,6 @@ jobs:
       - run: echo ${DOC_VERSION_NAME};
       - run: echo ${DOC_VERSION_NAME}_preview;
 
-      - run: echo ${{ DOC_VERSION_NAME }}_preview;;
-
-
       # on push to develop branch - keep a doc around for develop to show the current state
       - name: deploy doc in subdirectory
         if: github.event_name == 'push'
