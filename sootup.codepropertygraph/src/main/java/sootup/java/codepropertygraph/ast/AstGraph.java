@@ -12,13 +12,6 @@ public class AstGraph {
     this.edges = new ArrayList<>();
   }
 
-  public void addNode(AstNode node) {
-    // TODO: Handle duplicates (data)
-    if (!nodes.contains(node)) {
-      nodes.add(node);
-    }
-  }
-
   public void addEdge(AstNode source, AstNode destination) {
     AstEdge edge = new AstEdge(source, destination);
     // TODO: Handle duplicates (data)
@@ -26,6 +19,13 @@ public class AstGraph {
       addNode(source);
       addNode(destination);
       edges.add(edge);
+    }
+  }
+
+  private void addNode(AstNode node) {
+    // TODO: Handle duplicates (data)
+    if (!nodes.contains(node)) {
+      nodes.add(node);
     }
   }
 

@@ -36,9 +36,11 @@ class AstGraphToDotConverter {
       case RETURN_TYPE:
         return "lightblue";
       case MODIFIER:
-        return "palegreen";
+        return "darkseagreen2";
       case PARAMETER_TYPE:
         return "lightgray";
+      case CMP:
+        return "beige";
       default:
         return "white";
     }

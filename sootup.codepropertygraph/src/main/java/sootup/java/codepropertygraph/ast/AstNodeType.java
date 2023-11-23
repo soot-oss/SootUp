@@ -5,5 +5,6 @@ public enum AstNodeType {
   MODIFIER,
   PARAMETER_TYPE,
   RETURN_TYPE,
-  STMT
+  STMT,
+  CMP
 }

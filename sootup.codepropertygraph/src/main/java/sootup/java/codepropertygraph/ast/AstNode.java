@@ -1,5 +1,7 @@
 package sootup.java.codepropertygraph.ast;
 
+import java.util.Objects;
+
 public class AstNode {
   private final String name;
   private final AstNodeType type;
@@ -16,4 +18,17 @@ public class AstNode {
   public AstNodeType getType() {
     return type;
   }
+
+  /*@Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AstNode astNode = (AstNode) o;
+    return Objects.equals(name, astNode.name) && type == astNode.type;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, type);
+  }*/
 }
