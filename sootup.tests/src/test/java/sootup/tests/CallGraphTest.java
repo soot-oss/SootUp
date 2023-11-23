@@ -244,7 +244,8 @@ public class CallGraphTest {
             + "\t\"<MethodImplemented: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
             + "\t\"<MethodImplementedInstantiatedInSubClass: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
             + "\t\"<SubClassMethodImplemented: void <init>()>\" -> \"<MethodImplemented: void <init>()>\";\n"
-            + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n";
+            + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n"
+            + "}";
     assertEquals(expectedContent, actualContent);
   }
 }
