@@ -27,6 +27,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
 
 concurrency: pages
 
@@ -75,20 +76,20 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${DOC_VERSION_NAME}_preview --push
-        # TODO: set to true when the release is capable of the documentation ;)  && mike props ${DOC_VERSION_NAME}_preview --set-string hidden=true --push
+        run: mike deploy "$DOC_VERSION_NAME"_preview --push
+        # TODO: set to true when the release is capable of the documentation ;)  && mike props "$DOC_VERSION_NAME"_preview --set-string hidden=true --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
-            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${DOC_VERSION_NAME}_preview/).
+            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"$DOC_VERSION_NAME"_preview/).
 
       # on PR close - delete preview
       - name: delete the deployed preview
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        run: mike delete ${DOC_VERSION_NAME}_preview --push
+        run: mike delete "$DOC_VERSION_NAME"_preview --push
 
 
       # on release events..
@@ -99,13 +100,13 @@ jobs:
 
       - name: deploy doc in subdirectory
         if: github.event_name == 'release'
-        run: mike deploy ${DOC_VERSION_NAME} --push
+        run: mike deploy "$DOC_VERSION_NAME" --push
 
 
       - name: deploy doc in subdirectory
         if: github.event_name == 'release'
-        run: mike deploy ${DOC_VERSION_NAME} --push
+        run: mike deploy "$DOC_VERSION_NAME" --push
 
       - name: set the new release doc as default (release published)
         if: github.event_name == 'release' && github.event.action == 'published'
-        run: mike deploy --push --update-aliases ${DOC_VERSION_NAME} latest
+        run: mike deploy --push --update-aliases "$DOC_VERSION_NAME" latest
