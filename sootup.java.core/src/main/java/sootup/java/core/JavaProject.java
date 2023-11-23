@@ -161,9 +161,12 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
     @Nonnull
     public JavaProjectBuilder addInputLocation(
         ModuleInfoAnalysisInputLocation analysisInputLocation) {
-      Preconditions.checkArgument(language.getVersion() > 8);
-      useModules = true;
-      this.moduleAnalysisInputLocations.add(analysisInputLocation);
+      if (language.getVersion() > 8) {
+        useModules = true;
+        this.moduleAnalysisInputLocations.add(analysisInputLocation);
+      } else {
+        this.analysisInputLocations.add(analysisInputLocation);
+      }
       return this;
     }
 
