@@ -76,7 +76,6 @@ jobs:
       - run: echo ${DOC_VERSION_NAME};
       - run: echo ${DOC_VERSION_NAME}_preview;
 
-      - run: echo ${{ $DOC_VERSION_NAME }};
       - run: echo ${{ DOC_VERSION_NAME }}_preview;;
 
 
