@@ -66,7 +66,6 @@ public class JavaModuleViewTest {
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "../shared-test-resources/miniTestSuite/java6/binary/"))
-            .enableModules()
             .build();
     JavaModuleView view = (JavaModuleView) p.createView();
 

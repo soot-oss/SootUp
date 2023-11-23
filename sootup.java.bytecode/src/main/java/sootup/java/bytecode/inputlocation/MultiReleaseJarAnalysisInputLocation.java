@@ -48,7 +48,7 @@ import sootup.java.core.types.ModuleJavaClassType;
  * analyze explicitly
  */
 public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
-    implements MultiReleaseModuleInfoAnalysisInputLocation {
+    implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final Language language;
   @Nonnull private final int[] availableVersions;
@@ -307,7 +307,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   @Nonnull
-  @Override
   public Language getLanguage() {
     return this.language;
   }

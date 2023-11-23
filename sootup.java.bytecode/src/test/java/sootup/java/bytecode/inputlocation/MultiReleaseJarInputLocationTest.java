@@ -25,14 +25,20 @@ package sootup.java.bytecode.inputlocation;
 import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleProject;
 import sootup.java.core.JavaProject;
+import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -176,12 +182,10 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
     final JavaView view_8 = project_8.createView();
 
     final JavaLanguage language9 = new JavaLanguage(9);
-    final JavaModuleProject project_9 =
-        (JavaModuleProject)
-            JavaModuleProject.builder()
-                .enableModules()
-                .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9))
-                .build();
+    final JavaModuleProject project_9 = new JavaModuleProject(
+            Collections.emptyList(),
+            Collections.singletonList(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9)),
+            DefaultSourceTypeSpecifier.getInstance());
 
     final JavaModuleView view_9 = project_9.createView();
 

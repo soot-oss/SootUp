@@ -132,11 +132,8 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
   public static class JavaProjectBuilder {
     private final List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations =
         new ArrayList<>();
-    private final List<ModuleInfoAnalysisInputLocation> moduleAnalysisInputLocations =
-        new ArrayList<>();
 
     private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
-    private boolean useModules = false;
 
     @Nonnull
     public JavaProjectBuilder setSourceTypeSpecifier(SourceTypeSpecifier sourceTypeSpecifier) {
@@ -152,43 +149,8 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
     }
 
     @Nonnull
-    public JavaProjectBuilder addInputLocation(
-        ModuleInfoAnalysisInputLocation analysisInputLocation) {
-      useModules = true;
-      this.moduleAnalysisInputLocations.add(analysisInputLocation);
-      return this;
-    }
-
-    @Nonnull
-    public JavaProjectBuilder addInputLocation(
-        MultiReleaseModuleInfoAnalysisInputLocation analysisInputLocation) {
-      if (analysisInputLocation.getLanguage().getVersion() > 8) {
-        useModules = true;
-        this.moduleAnalysisInputLocations.add(analysisInputLocation);
-      } else {
-        this.analysisInputLocations.add(analysisInputLocation);
-      }
-      return this;
-    }
-
-    @Nonnull
-    /**
-     * if no ModuleAnalysisInputLocation is given but the analysis should use JavaModules for
-     * resolving anyway
-     */
-    public JavaProjectBuilder enableModules() {
-      useModules = true;
-      return this;
-    }
-
-    @Nonnull
     public JavaProject build() {
-      if (useModules) {
-        return new JavaModuleProject(
-            analysisInputLocations, moduleAnalysisInputLocations, sourceTypeSpecifier);
-      } else {
         return new JavaProject(analysisInputLocations, sourceTypeSpecifier);
-      }
     }
   }
 }
