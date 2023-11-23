@@ -14,7 +14,6 @@ import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /*-
@@ -59,8 +58,7 @@ public abstract class AnalysisInputLocationTest {
   protected void testClassReceival(
       AnalysisInputLocation<JavaSootClass> ns, List<ClassType> sigs, int classesFound) {
 
-    final JavaProject project =
-        JavaProject.builder().addInputLocation(ns).build();
+    final JavaProject project = JavaProject.builder().addInputLocation(ns).build();
     final JavaView view = project.createView();
 
     for (ClassType classType : sigs) {

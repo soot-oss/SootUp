@@ -47,7 +47,6 @@ import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -205,11 +204,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         PathBasedAnalysisInputLocation.create(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
 
-    JavaView v =
-        JavaProject.builder()
-            .addInputLocation(pathBasedNamespace)
-            .build()
-            .createView();
+    JavaView v = JavaProject.builder().addInputLocation(pathBasedNamespace).build().createView();
 
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");

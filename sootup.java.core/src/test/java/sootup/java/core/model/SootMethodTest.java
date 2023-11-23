@@ -29,7 +29,6 @@ import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
 
 /**
  * @author Linghui Luo
@@ -41,9 +40,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     Project<?, ?> project =
-        JavaProject.builder()
-            .addInputLocation(new EagerInputLocation<>())
-            .build();
+        JavaProject.builder().addInputLocation(new EagerInputLocation<>()).build();
     View<?> view = project.createView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 

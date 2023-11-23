@@ -27,7 +27,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author Linghui Luo */
@@ -38,8 +37,7 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    JavaProject project =
-        JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
+    JavaProject project = JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
     view = project.createView();
   }
 

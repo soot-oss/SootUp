@@ -20,7 +20,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.MutableJavaView;
 
 /**

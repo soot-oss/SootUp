@@ -68,7 +68,6 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
 
 @Category(Java8Test.class)
 public class InstantiateClassValueVisitorTest {

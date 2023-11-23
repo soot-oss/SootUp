@@ -16,7 +16,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author : Hasitha Rajapakse, Jonas Klauke * */

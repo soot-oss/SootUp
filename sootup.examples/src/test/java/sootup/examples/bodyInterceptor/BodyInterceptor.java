@@ -22,7 +22,6 @@ import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to invoke body interceptors. */
@@ -36,7 +35,6 @@ public class BodyInterceptor {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         PathBasedAnalysisInputLocation.create(
             Paths.get("src/test/resources/BodyInterceptor/binary"), null);
-
 
     // Create a new JavaProject based on the input location
     JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();

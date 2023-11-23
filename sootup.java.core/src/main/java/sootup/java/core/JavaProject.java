@@ -153,7 +153,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
     @Nonnull
     public JavaProjectBuilder addInputLocation(
-      ModuleInfoAnalysisInputLocation analysisInputLocation) {
+        ModuleInfoAnalysisInputLocation analysisInputLocation) {
       useModules = true;
       this.moduleAnalysisInputLocations.add(analysisInputLocation);
       return this;
@@ -161,7 +161,7 @@ public class JavaProject extends Project<JavaSootClass, JavaView> {
 
     @Nonnull
     public JavaProjectBuilder addInputLocation(
-            MultiReleaseModuleInfoAnalysisInputLocation analysisInputLocation) {
+        MultiReleaseModuleInfoAnalysisInputLocation analysisInputLocation) {
       if (analysisInputLocation.getLanguage().getVersion() > 8) {
         useModules = true;
         this.moduleAnalysisInputLocations.add(analysisInputLocation);

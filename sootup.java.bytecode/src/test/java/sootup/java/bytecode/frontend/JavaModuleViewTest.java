@@ -15,7 +15,6 @@ import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
@@ -28,9 +27,7 @@ public class JavaModuleViewTest {
   @Test
   public void testGeneralClassReceivalFromModule() {
     JavaProject p =
-        JavaProject.builder()
-            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
-            .build();
+        JavaProject.builder().addInputLocation(new JrtFileSystemAnalysisInputLocation()).build();
     JavaModuleView view = (JavaModuleView) p.createView();
     ModuleJavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");

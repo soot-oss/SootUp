@@ -16,7 +16,6 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 @Category(Java8Test.class)

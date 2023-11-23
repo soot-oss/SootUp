@@ -37,7 +37,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author Kaustubh Kelkar update on 22.04.2020 */
@@ -64,8 +63,7 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    JavaProject p =
-        JavaProject.builder().addInputLocation(analysisInputLocation).build();
+    JavaProject p = JavaProject.builder().addInputLocation(analysisInputLocation).build();
     view = p.createView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }

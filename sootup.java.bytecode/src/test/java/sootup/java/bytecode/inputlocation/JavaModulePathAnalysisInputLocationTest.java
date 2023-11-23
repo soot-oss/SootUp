@@ -11,7 +11,6 @@ import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;

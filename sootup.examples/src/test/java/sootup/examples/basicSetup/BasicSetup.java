@@ -9,7 +9,6 @@ import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Language;
 import sootup.core.Project;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
@@ -24,7 +23,6 @@ import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleProject;
@@ -38,8 +36,7 @@ public class BasicSetup {
     Path pathToSource = Paths.get("src/test/resources/BasicSetup/source");
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaSourcePathAnalysisInputLocation(pathToSource.toString());
-    Project project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    Project project = JavaProject.builder().addInputLocation(inputLocation).build();
   }
 
   @Ignore
@@ -59,8 +56,7 @@ public class BasicSetup {
         PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
     // Create a new JavaProject based on the input location
-    Project project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    Project project = JavaProject.builder().addInputLocation(inputLocation).build();
 
     // Create a view for project, which allows us to retrieve classes
     View view = project.createView();

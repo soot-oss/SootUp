@@ -15,7 +15,6 @@ import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -28,8 +27,7 @@ public class Soot1580Test {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         PathBasedAnalysisInputLocation.create(jar, null);
 
-    JavaProject project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
 
     JavaView view =
         project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);

@@ -22,7 +22,6 @@ import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 
 /**
  * @author Markus Schmidt
@@ -56,8 +55,7 @@ public class JimplePrinterTest {
 
   private SootClass buildClass() {
 
-    Project project =
-        JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
+    Project project = JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
     View view = project.createView();
 
     String className = "some.package.SomeClass";

@@ -26,7 +26,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -42,8 +41,7 @@ public class JavaSourcePathNamespaceTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    final JavaProject project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    final JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
     final JavaView view = project.createView();
 
     Optional<JavaSootClass> clazz = view.getClass(type);
@@ -69,8 +67,7 @@ public class JavaSourcePathNamespaceTest {
 
     JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
 
-    final JavaProject project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    final JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
     final JavaView view = project.createView();
 
     Collection<? extends AbstractClassSource> classSources =

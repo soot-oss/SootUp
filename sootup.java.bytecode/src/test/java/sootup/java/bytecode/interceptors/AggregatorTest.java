@@ -191,8 +191,7 @@ public class AggregatorTest {
             Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             SourceType.Application);
 
-    JavaProject project =
-        JavaProject.builder().addInputLocation(inputLocation).build();
+    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
 
     JavaView view = project.createView();
     view.configBodyInterceptors(a -> BytecodeClassLoadingOptions.Default);

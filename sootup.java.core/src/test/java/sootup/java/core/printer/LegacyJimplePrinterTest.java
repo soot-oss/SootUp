@@ -25,14 +25,12 @@ import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
 
-    Project project =
-        JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
+    Project project = JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
     View view = project.createView();
 
     MethodSignature methodSignature =
