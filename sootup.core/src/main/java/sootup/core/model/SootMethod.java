@@ -210,9 +210,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   /** @return yes if this is the main method */
   public boolean isMain(@Nonnull IdentifierFactory idf) {
-    return isPublic()
-        && isStatic()
-        && idf.isConstructorSubSignature(getSignature().getSubSignature());
+    return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
