@@ -35,6 +35,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
@@ -208,10 +209,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   /** @return yes if this is the main method */
-  public boolean isMain() {
-    return isPublic()
-        && isStatic()
-        && getSignature().getSubSignature().toString().equals("void main(java.lang.String[])");
+  public boolean isMain(@Nonnull IdentifierFactory idf) {
+    return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
@@ -228,7 +227,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     // print modifiers
     final Set<MethodModifier> modifiers = getModifiers();
     printer.modifier(MethodModifier.toString(modifiers));
-    if (modifiers.size() != 0) {
+    if (!modifiers.isEmpty()) {
       printer.literal(" ");
     }
 

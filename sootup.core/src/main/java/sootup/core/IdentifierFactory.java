@@ -243,4 +243,10 @@ public interface IdentifierFactory {
    * @return the array type
    */
   ArrayType getArrayType(Type baseType, int dim);
+
+  boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+
+  boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+
+  boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 }

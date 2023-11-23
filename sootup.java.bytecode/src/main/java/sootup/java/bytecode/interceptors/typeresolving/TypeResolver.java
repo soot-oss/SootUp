@@ -38,10 +38,10 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -95,8 +95,10 @@ public class TypeResolver {
       if (newType == null || oldType.equals(newType)) {
         continue;
       }
-      Local newLocal = local.withType(newType);
-      builder.replaceLocal(local, newLocal);
+      if (!(newType instanceof BottomType)) {
+        Local newLocal = local.withType(newType);
+        builder.replaceLocal(local, newLocal);
+      }
     }
     return true;
   }
@@ -237,20 +239,18 @@ public class TypeResolver {
   /** This method is used to remove the more general typings. */
   private void minimize(@Nonnull List<Typing> typings, @Nonnull BytecodeHierarchy hierarchy) {
     Set<Type> objectLikeTypes = new HashSet<>();
-    IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType obj = factory.getClassType("java.lang.Object");
-    ClassType ser = factory.getClassType("java.io.Serializable");
-    ClassType clo = factory.getClassType("java.lang.Cloneable");
-    objectLikeTypes.add(obj);
-    objectLikeTypes.add(ser);
-    objectLikeTypes.add(clo);
+    // FIXME: [ms] handle java modules as well!
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Object"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.io.Serializable"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Cloneable"));
 
     // collect all locals whose types are object, serializable, cloneable
     Set<Local> objectLikeLocals = new HashSet<>();
     Map<Local, Set<Type>> local2Types = getLocal2Types(typings);
-    for (Local local : local2Types.keySet()) {
-      if (local2Types.get(local).equals(objectLikeTypes)) {
-        objectLikeLocals.add(local);
+    for (Map.Entry<Local, Set<Type>> local : local2Types.entrySet()) {
+      if (local.getValue().equals(objectLikeTypes)) {
+        objectLikeLocals.add(local.getKey());
       }
     }
     // if one typing is more general als another typing, it should be removed.

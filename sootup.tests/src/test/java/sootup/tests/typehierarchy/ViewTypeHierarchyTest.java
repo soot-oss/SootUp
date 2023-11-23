@@ -51,7 +51,7 @@ public class ViewTypeHierarchyTest {
   @Before
   public void setup() {
 
-    String jarFile = MethodDispatchResolverTest.jarFile;
+    String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
     assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")

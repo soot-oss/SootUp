@@ -30,7 +30,6 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend
 - [x] Full Java 21 Support for Bytecode
 - [x] Multiple Views (Scenes)
-- [ ] Full-Diff Support for Classes (across different View instances)
 - [x] Immutable Jimple IR Objects and Graphs
 - [ ] Incremental Updates of Program Representation
 

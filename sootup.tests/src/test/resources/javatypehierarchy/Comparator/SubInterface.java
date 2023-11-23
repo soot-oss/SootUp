@@ -1,0 +1,3 @@
+interface SubInterface extends Interface{
+
+}
