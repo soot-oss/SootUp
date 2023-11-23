@@ -1,13 +1,5 @@
 [
   {
-    "version": "PathBasedAnalysisInputLocation_path_exists_for_all_preview",
-    "title": "PR Preview PathBasedAnalysisInputLocation_path_exists_for_all",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "v1.1.2",
     "title": "v1.1.2",
     "aliases": [
