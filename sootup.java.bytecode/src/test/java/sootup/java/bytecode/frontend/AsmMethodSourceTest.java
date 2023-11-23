@@ -46,7 +46,7 @@ public class AsmMethodSourceTest {
             Arrays.asList(
                 "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));
 
-    assertTrue(idf.isConstructorSubSignature(mainMethodSignature.getSubSignature()));
+    assertTrue(idf.isConstructorSubSignature(mainMethodSignature));
 
     final SootClass<?> abstractClass = view.getClass(mainClassSignature).get();
 

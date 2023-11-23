@@ -246,7 +246,7 @@ public interface IdentifierFactory {
 
   boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 
-  boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+  boolean isConstructorSubSignature(@Nonnull MethodSignature methodSignature);
 
   boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 }
