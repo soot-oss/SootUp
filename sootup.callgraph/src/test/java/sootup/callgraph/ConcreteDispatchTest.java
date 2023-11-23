@@ -14,6 +14,7 @@ import org.junit.experimental.categories.Category;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -35,9 +36,7 @@ public class ConcreteDispatchTest {
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     "src/test/resources/callgraph/ConcreteDispatch/binary"))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .build();
     view = project.createView();
   }

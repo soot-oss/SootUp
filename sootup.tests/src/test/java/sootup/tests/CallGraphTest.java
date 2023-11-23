@@ -13,7 +13,7 @@ import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -40,9 +40,7 @@ public class CallGraphTest {
   private JavaView createViewForClassPath(String classPath) {
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
             .build();
     return javaProject.createView();
@@ -247,8 +245,7 @@ public class CallGraphTest {
             + "\t\"<MethodImplementedInstantiatedInSubClass: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
             + "\t\"<SubClassMethodImplemented: void <init>()>\" -> \"<MethodImplemented: void <init>()>\";\n"
             + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n"
-            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void <clinit>()>\";\n"
-            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void registerNatives()>\";\n}";
-    assertEquals(actualContent, expectedContent);
+            + "}";
+    assertEquals(expectedContent, actualContent);
   }
 }

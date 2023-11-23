@@ -41,7 +41,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.language.JavaLanguage;
@@ -137,9 +137,7 @@ public class CGEdgeUtilTest {
 
     JavaView view =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaSourcePathAnalysisInputLocation("src/test/resources/callgraph/"))
             .build()

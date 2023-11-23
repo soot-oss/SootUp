@@ -78,9 +78,13 @@ public abstract class PathBasedAnalysisInputLocation
   private final SourceType sourceType;
   protected Path path;
 
-  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this.path = path;
     this.sourceType = srcType;
+
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
+    }
   }
 
   @Nullable
@@ -96,14 +100,25 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
-      } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
-        inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+      if (PathUtils.hasExtension(path, FileType.JAR)) {
+        if (isMultiReleaseJar(path)) {
+          inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+        } else {
+          inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        }
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path, FileType.WAR)) {
+        try {
+          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       } else {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        throw new IllegalArgumentException(
+            "Path '"
+                + path.toAbsolutePath()
+                + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
       }
     } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
       inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
@@ -199,11 +214,8 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classPath, @Nonnull SourceType srcType) {
-      super(classPath, srcType);
-      if (!Files.exists(classPath)) {
-        throw new IllegalArgumentException("The provided .class file does not exist.");
-      }
+        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
+      super(classFilePath, srcType);
     }
 
     @Override
@@ -228,7 +240,7 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -265,7 +277,7 @@ public abstract class PathBasedAnalysisInputLocation
 
     boolean isResolved = false;
 
-    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
 
       int[] tmp;
@@ -288,7 +300,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     /** Discovers all input locations for different java versions in this multi release jar */
-    private void discoverInputLocations(@Nullable SourceType srcType) {
+    private void discoverInputLocations(@Nonnull SourceType srcType) {
       FileSystem fs = null;
       try {
         fs = fileSystemCache.get(path);
@@ -523,7 +535,7 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
-    private ApkAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private ApkAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
       String jarPath = dex2jar(path);
       this.path = Paths.get(jarPath);
@@ -540,7 +552,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-  private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
@@ -568,7 +580,7 @@ public abstract class PathBasedAnalysisInputLocation
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -608,16 +620,11 @@ public abstract class PathBasedAnalysisInputLocation
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType) {
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
+        throws IOException {
       super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"),
-          srcType);
+          Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(), srcType);
+
       extractWarFile(warPath, path);
 
       Path webInfPath = path.resolve("WEB-INF");

@@ -61,9 +61,14 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
     assertJimpleStmts(sootMethod, expectedBodyStmts());
 
     sootMethod = loadMethod(getMainMethodSignature());
+    assertTrue(sootMethod.isMain(identifierFactory));
+    assertTrue(identifierFactory.isMainSubSignature(sootMethod.getSignature().getSubSignature()));
     assertJimpleStmts(sootMethod, expectedMainBodyStmts());
 
     sootMethod = loadMethod(getEnumConstructorSignature());
+    assertTrue(
+        identifierFactory.isStaticInitializerSubSignature(
+            sootMethod.getSignature().getSubSignature()));
     assertJimpleStmts(sootMethod, expectedEnumConstructorStmts());
 
     sootMethod = loadMethod(getEnumGetValueSignature());

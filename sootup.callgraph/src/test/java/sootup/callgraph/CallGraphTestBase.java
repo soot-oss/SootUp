@@ -9,6 +9,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -35,9 +36,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
     JavaProject.JavaProjectBuilder javaProjectBuilder =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation());
     if (useSourceCodeFrontend) {
       javaProjectBuilder.addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath));
     } else {
@@ -725,9 +724,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     String classPath = "src/test/resources/callgraph/Library/binary/";
     JavaProject.JavaProjectBuilder javaProjectBuilder =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .addInputLocation(
                 new JavaClassPathAnalysisInputLocation(
                     classPath + "application/", SourceType.Application))

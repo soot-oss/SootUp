@@ -46,7 +46,7 @@ import sootup.core.views.View;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends AbstractClass> {
+public interface AnalysisInputLocation<T extends AbstractClass<?>> {
   /**
    * Create or find a class source for a given type.
    *
