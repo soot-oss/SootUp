@@ -76,8 +76,7 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview --push
-        # TODO: set to true when the release is capable of the documentation ;)  && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
+        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
