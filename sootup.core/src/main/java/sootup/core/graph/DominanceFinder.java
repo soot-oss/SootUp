@@ -32,20 +32,21 @@ import javax.annotation.Nonnull;
  */
 public class DominanceFinder {
 
-  private List<BasicBlock<?>> blocks;
+  private List<BasicBlock<?>> blocks = new ArrayList<>();;
   private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
 
   public DominanceFinder(StmtGraph<?> blockGraph) {
+    Iterator<BasicBlock<?>> iterator = blockGraph.getBlockIterator();
+    while (iterator.hasNext()) blocks.add(iterator.next());
 
     // assign each block a integer id, startBlock's id must be 0
-    blocks = new ArrayList<>(blockGraph.getBlocks());
     final BasicBlock<?> startingStmtBlock = blockGraph.getStartingStmtBlock();
     {
       int i = 1;
       for (BasicBlock<?> block : blocks) {
-        if (startingStmtBlock == block) {
+        if (startingStmtBlock.equals(block)) {
           blockToIdx.put(block, 0);
         } else {
           blockToIdx.put(block, i);
@@ -66,7 +67,7 @@ public class DominanceFinder {
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block == startingStmtBlock) {
+        if (block.equals(startingStmtBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
@@ -104,7 +105,10 @@ public class DominanceFinder {
         for (BasicBlock<?> pred : preds) {
           int predId = blockToIdx.get(pred);
           while (predId != doms[blockId]) {
-            domFrontiers[predId].add(blockId);
+            if (predId == -1) break;
+            if (!domFrontiers[predId].contains(blockId)) {
+              domFrontiers[predId].add(blockId);
+            }
             predId = doms[predId];
           }
         }
