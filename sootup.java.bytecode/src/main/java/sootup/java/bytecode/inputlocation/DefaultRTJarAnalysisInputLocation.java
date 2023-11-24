@@ -30,8 +30,7 @@ import sootup.core.model.SourceType;
  * expects the jar in the "lib/" subdirectory. If you need to include the rt.jar from a custom
  * Location please make use of JavaClassPathAnalysisInputLocation.
  */
-public class DefaultRTJarAnalysisInputLocation
-    extends PathBasedAnalysisInputLocation.ArchiveBasedAnalysisInputLocation {
+public class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
   public DefaultRTJarAnalysisInputLocation() {
     this(SourceType.Library);

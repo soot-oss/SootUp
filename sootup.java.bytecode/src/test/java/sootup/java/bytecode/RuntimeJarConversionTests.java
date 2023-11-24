@@ -1,6 +1,5 @@
 package sootup.java.bytecode;
 
-import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.Test;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -16,7 +15,7 @@ import sootup.java.core.views.JavaView;
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
-    AnalysisInputLocation<JavaSootClass> inputLocation =  new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation<JavaSootClass> inputLocation = new DefaultRTJarAnalysisInputLocation();
 
     final MethodSignature methodSignature =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);

@@ -1,7 +1,6 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.*;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -28,9 +27,9 @@ public class TypeAssignerTestSuite {
 
   public void buildView(String baseDir, String className) {
 
-    JavaClassPathAnalysisInputLocation analysisInputLocation =
+    AnalysisInputLocation<? extends JavaSootClass> analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(baseDir);
-    JavaClassPathAnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation<? extends JavaSootClass> rtJar = new DefaultRTJarAnalysisInputLocation();
 
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
     inputLocations.add(analysisInputLocation);

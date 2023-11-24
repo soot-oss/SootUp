@@ -214,9 +214,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
    */
   @Test
   public void testInputLocationLibraryMode() {
-    JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(new DefaultRTJarAnalysisInputLocation());
+    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
     Collection<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check

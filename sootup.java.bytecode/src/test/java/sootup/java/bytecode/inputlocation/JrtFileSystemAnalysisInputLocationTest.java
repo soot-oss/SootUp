@@ -50,7 +50,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(view);
     assertTrue(classSources.size() > 26000);
-        inputLocation.getClassSources(view);
+    inputLocation.getClassSources(view);
     assertTrue(
         classSources.size()
             > 20000); // not precise as this amount can differ depending on the included runtime

@@ -90,8 +90,14 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+      if (PathUtils.hasExtension(path, FileType.JAR)) {
+        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path, FileType.WAR)) {
+        try {
+          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       } else {
         throw new IllegalArgumentException(
             "Path '"

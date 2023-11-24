@@ -26,10 +26,7 @@ public class AsmMethodSourceTest {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                System.getProperty("java.home") + "/lib/rt.jar"));
+    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
     final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature =

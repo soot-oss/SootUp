@@ -15,10 +15,9 @@ import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 @Category(Java8Test.class)
