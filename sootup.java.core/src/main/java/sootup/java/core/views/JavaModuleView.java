@@ -106,6 +106,7 @@ public class JavaModuleView extends JavaView {
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(inputLocations, cacheProvider, classLoadingOptionsSpecifier, sourceTypeSpecifier);
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
+
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
   }
