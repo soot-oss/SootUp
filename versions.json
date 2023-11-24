@@ -1,5 +1,10 @@
 [
   {
+    "version": "feature_moveLanguageIntoInputLocation_preview",
+    "title": "PR Preview feature_moveLanguageIntoInputLocation",
+    "aliases": []
+  },
+  {
     "version": "v1.1.2",
     "title": "v1.1.2",
     "aliases": [
