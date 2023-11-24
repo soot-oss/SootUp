@@ -18,9 +18,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.*;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
@@ -49,18 +47,15 @@ public abstract class MinimalBytecodeTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        JavaProject project =
-            JavaProject.builder()
-                .addInputLocation(
-                    new JavaClassPathAnalysisInputLocation(
-                        baseDir
-                            + File.separator
-                            + getTestDirectoryName(getClassPath())
-                            + File.separator
-                            + "binary"
-                            + File.separator))
-                .build();
-        javaView = project.createView();
+        javaView =
+            new JavaView(
+                new JavaClassPathAnalysisInputLocation(
+                    baseDir
+                        + File.separator
+                        + getTestDirectoryName(getClassPath())
+                        + File.separator
+                        + "binary"
+                        + File.separator));
       }
     }
 

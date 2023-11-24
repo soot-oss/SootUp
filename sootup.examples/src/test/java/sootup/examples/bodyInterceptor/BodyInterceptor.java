@@ -19,7 +19,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.views.JavaView;
@@ -37,8 +36,7 @@ public class BodyInterceptor {
             Paths.get("src/test/resources/BodyInterceptor/binary"), null);
 
     // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
     ClassType classType = view.getIdentifierFactory().getClassType("File");

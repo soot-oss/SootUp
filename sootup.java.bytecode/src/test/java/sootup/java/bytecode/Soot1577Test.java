@@ -9,7 +9,6 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
@@ -23,9 +22,7 @@ public class Soot1577Test {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaClassPathAnalysisInputLocation(directory);
 
-    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
-
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocation);
     view.configBodyInterceptors((ail) -> EmptyClassLoadingOptions.Default);
 
     Assert.assertEquals(1, view.getClasses().size());

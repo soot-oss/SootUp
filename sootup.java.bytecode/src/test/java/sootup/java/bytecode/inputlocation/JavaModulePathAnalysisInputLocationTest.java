@@ -4,10 +4,11 @@ import static org.junit.Assert.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.*;
@@ -22,13 +23,12 @@ public class JavaModulePathAnalysisInputLocationTest {
 
   @Test
   public void testJarModule() {
-    JavaProject p =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"))
-            .build();
-
-    JavaModuleView view = (JavaModuleView) p.createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations =
+        Collections.singletonList(
+            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"));
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.emptyList();
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
@@ -42,14 +42,13 @@ public class JavaModulePathAnalysisInputLocationTest {
 
   @Test
   public void testExplodedModule() {
-    JavaProject p =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(
-                    testPath + "uses-provides/exploded_module/"))
-            .build();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations =
+        Collections.singletonList(
+            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/exploded_module/"));
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.emptyList();
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    JavaModuleView view = (JavaModuleView) p.createView();
     JavaClassType targetClass =
         JavaModuleIdentifierFactory.getInstance().getClassType("Main", "pkgmain", "modmain");
     Optional<JavaSootClass> aClass = view.getClass(targetClass);
@@ -62,14 +61,12 @@ public class JavaModulePathAnalysisInputLocationTest {
 
   @Test
   public void testGetModuleInfo() {
-
-    JavaProject p =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"))
-            .build();
-
-    JavaModuleView view = (JavaModuleView) p.createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations =
+        Collections.singletonList(
+            new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"));
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.emptyList();
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
         JavaModuleIdentifierFactory.getInstance().getPackageName("pkgmain", "modmain");
@@ -91,12 +88,11 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testGetClassSource() {
     ModuleInfoAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    JavaModuleProject project =
-        new JavaModuleProject(
-            Collections.emptyList(),
-            Collections.singletonList(inputLocation),
-            DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createView();
+
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = Collections.emptyList();
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.singletonList(inputLocation);
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
@@ -115,12 +111,10 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetClassSources() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
-    JavaModuleProject project =
-        new JavaModuleProject(
-            Collections.emptyList(),
-            Collections.singletonList(inputLocation),
-            DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = Collections.emptyList();
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.singletonList(inputLocation);
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(view);
@@ -131,12 +125,10 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetModules() {
     JavaModulePathAnalysisInputLocation inputLocation =
         new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
-    JavaModuleProject project =
-        new JavaModuleProject(
-            Collections.emptyList(),
-            Collections.singletonList(inputLocation),
-            DefaultSourceTypeSpecifier.getInstance());
-    JavaModuleView view = project.createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = Collections.emptyList();
+    List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
+        Collections.singletonList(inputLocation);
+    JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
     Collection<ModuleSignature> modules = inputLocation.getModules(view);
     assertEquals(3, modules.size());
 

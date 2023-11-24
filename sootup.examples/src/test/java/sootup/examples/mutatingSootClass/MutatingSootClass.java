@@ -21,7 +21,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.OverridingJavaClassSource;
@@ -45,11 +44,8 @@ public class MutatingSootClass {
         PathBasedAnalysisInputLocation.create(
             Paths.get("src/test/resources/BasicSetup/binary"), null);
 
-    // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
-
     // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
     ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");

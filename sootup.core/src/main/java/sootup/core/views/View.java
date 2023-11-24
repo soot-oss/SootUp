@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.Project;
 import sootup.core.Scope;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
@@ -40,14 +39,12 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 
 /**
- * A View is essentially a collection of code belonging to a {@link Project}.
+ * A View is essentially a collection of code.
  *
  * @author Linghui Luo
  * @author Ben Hermann
  */
 public interface View<T extends SootClass> {
-
-  Project getProject();
 
   @Nonnull
   List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation);

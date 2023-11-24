@@ -6,7 +6,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -23,9 +23,8 @@ public abstract class JavaTypeHierarchyTestBase {
   public static class CustomTestWatcher extends TestWatcher {
 
     private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
-    private AnalysisInputLocation srcCode;
+    private AnalysisInputLocation<? extends JavaSootClass> srcCode;
     private JavaView view;
-    private JavaProject project;
 
     @Override
     protected void starting(Description description) {
@@ -38,8 +37,8 @@ public abstract class JavaTypeHierarchyTestBase {
         srcCode =
             new JavaSourcePathAnalysisInputLocation(
                 Collections.singleton(baseDir + "/" + getClassName()));
-        project = JavaProject.builder().addInputLocation(this.srcCode).build();
-        setView(project.createView());
+        JavaView view = new JavaView(this.srcCode);
+        setView(view);
       }
     }
 

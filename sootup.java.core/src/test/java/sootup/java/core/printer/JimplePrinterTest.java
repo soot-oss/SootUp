@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
-import sootup.core.Project;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -21,7 +20,7 @@ import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
+import sootup.java.core.views.JavaView;
 
 /**
  * @author Markus Schmidt
@@ -55,8 +54,7 @@ public class JimplePrinterTest {
 
   private SootClass buildClass() {
 
-    Project project = JavaProject.builder().addInputLocation(new EagerInputLocation()).build();
-    View view = project.createView();
+    View view = new JavaView(new EagerInputLocation<>());
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =

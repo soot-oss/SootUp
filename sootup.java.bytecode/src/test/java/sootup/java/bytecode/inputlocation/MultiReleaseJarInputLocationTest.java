@@ -25,20 +25,12 @@ package sootup.java.bytecode.inputlocation;
 import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
-
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleProject;
-import sootup.java.core.JavaProject;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -56,39 +48,24 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaLanguage minLanguage = new JavaLanguage(Integer.MIN_VALUE);
-    final JavaProject project_min =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage))
-            .build();
-    final JavaView view_min = project_min.createView();
+    final JavaView view_min =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage));
 
     final JavaLanguage language8 = new JavaLanguage(8);
-    final JavaProject project_8 =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8))
-            .build();
-    final JavaView view_8 = project_8.createView();
+    final JavaView view_8 =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8));
 
     final JavaLanguage language9 = new JavaLanguage(9);
-    final JavaProject project_9 =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9))
-            .build();
-    final JavaView view_9 = project_9.createView();
+    final JavaView view_9 =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9));
 
     final JavaLanguage language10 = new JavaLanguage(10);
-    final JavaProject project_10 =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10))
-            .build();
-    final JavaView view_10 = project_10.createView();
+    final JavaView view_10 =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10));
 
     final JavaLanguage maxLanguage = new JavaLanguage(Integer.MAX_VALUE);
-    final JavaProject project_max =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage))
-            .build();
-    final JavaView view_max = project_max.createView();
+    final JavaView view_max =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage));
 
     // for java10
     Assert.assertEquals(
@@ -175,19 +152,15 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaLanguage language8 = new JavaLanguage(8);
-    final JavaProject project_8 =
-        JavaProject.builder()
-            .addInputLocation(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8))
-            .build();
-    final JavaView view_8 = project_8.createView();
+    final JavaView view_8 =
+        new JavaView(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8));
 
     final JavaLanguage language9 = new JavaLanguage(9);
-    final JavaModuleProject project_9 = new JavaModuleProject(
+    final JavaModuleView view_9 =
+        new JavaModuleView(
             Collections.emptyList(),
-            Collections.singletonList(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9)),
-            DefaultSourceTypeSpecifier.getInstance());
-
-    final JavaModuleView view_9 = project_9.createView();
+            Collections.singletonList(
+                new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9)));
 
     ModuleSignature moduleSignature =
         JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");

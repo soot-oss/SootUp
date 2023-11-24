@@ -110,10 +110,6 @@ public abstract class Project<S extends SootClass<?>, V extends View<? extends S
   @Nonnull
   public abstract V createView(@Nonnull ClassCacheProvider<S> cacheProvider);
 
-  /**
-   * Creates an on-demand View that uses the default {@link ClassLoadingOptions} of each frontend.
-   */
-
   /** Creates a View with custom {@link ClassLoadingOptions}. */
   @Nonnull
   public abstract V createView(

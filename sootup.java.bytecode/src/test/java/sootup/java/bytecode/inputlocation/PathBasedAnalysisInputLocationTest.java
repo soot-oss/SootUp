@@ -96,14 +96,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
-    // Create a project
-    JavaProject p =
-        JavaProject.builder()
-            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
-            .build();
-
     // Get the view
-    JavaView view = p.createView();
+    JavaView view = new JavaView(new JavaClassPathAnalysisInputLocation(warFile));
 
     assertEquals(19, view.getClasses().size());
 
@@ -204,7 +198,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         PathBasedAnalysisInputLocation.create(
             Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
 
-    JavaView v = JavaProject.builder().addInputLocation(pathBasedNamespace).build().createView();
+    JavaView v = new JavaView(pathBasedNamespace);
 
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
@@ -222,14 +216,10 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
    */
   @Test
   public void testInputLocationLibraryMode() {
-
-    JavaProject javaProject =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .build();
-    JavaView view = javaProject.createView();
+    JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
 
     Collection<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check

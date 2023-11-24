@@ -25,7 +25,6 @@ package sootup.core.views;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.Project;
 import sootup.core.Scope;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -40,11 +39,12 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
-
-  @Nonnull private final Project<T, ? extends View<T>> project;
-
+public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
   @Nullable private TypeHierarchy typeHierarchy;
+
+  public AbstractView() {
+    this.typeHierarchy = new ViewTypeHierarchy(this);
+  }
 
   @Override
   @Nonnull
@@ -53,11 +53,6 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
       typeHierarchy = new ViewTypeHierarchy(this);
     }
     return typeHierarchy;
-  }
-
-  public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
-    this.project = (Project<T, ? extends View<T>>) project;
-    this.typeHierarchy = new ViewTypeHierarchy(this);
   }
 
   @Override
@@ -77,7 +72,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    final Optional<S> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
@@ -87,16 +82,10 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    final Optional<S> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
     return aClass.get().getField(signature.getSubSignature());
-  }
-
-  @Override
-  @Nonnull
-  public Project<? extends T, ? extends View<T>> getProject() {
-    return project;
   }
 }

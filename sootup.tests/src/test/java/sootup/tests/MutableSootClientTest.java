@@ -30,20 +30,20 @@ import sootup.java.core.views.MutableJavaView;
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   static AnalysisInputLocation<JavaSootClass> location;
-  static JavaProject p;
   MutableJavaView mv;
 
   /** Load the jar file for analysis as input location. */
   @BeforeClass
   public static void setupProject() {
     location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
-    p = JavaProject.builder().addInputLocation(location).build();
   }
 
   /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
-    mv = p.createMutableView();
+    mv =
+        new MutableJavaView(
+            PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application));
   }
 
   /**

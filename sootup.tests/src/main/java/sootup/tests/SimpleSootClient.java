@@ -24,7 +24,6 @@ import com.ibm.wala.ipa.callgraph.CallGraph;
 import java.util.Collections;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -47,10 +46,8 @@ public class SimpleSootClient {
     AnalysisInputLocation<JavaSootClass> walaSource =
         new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
 
-    JavaProject p = JavaProject.builder().addInputLocation(walaSource).build();
-
     // 1. simple case
-    JavaView fullView = p.createView();
+    JavaView fullView = new JavaView(walaSource);
 
     /*
         CallGraph cg = fullView.createCallGraph();

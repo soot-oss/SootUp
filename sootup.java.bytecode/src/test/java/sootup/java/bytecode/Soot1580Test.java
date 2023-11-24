@@ -3,17 +3,18 @@ package sootup.java.bytecode;
 import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
@@ -27,10 +28,11 @@ public class Soot1580Test {
     AnalysisInputLocation<JavaSootClass> inputLocation =
         PathBasedAnalysisInputLocation.create(jar, null);
 
-    JavaProject project = JavaProject.builder().addInputLocation(inputLocation).build();
-
     JavaView view =
-        project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+        new JavaView(
+            Collections.singletonList(inputLocation),
+            new FullCacheProvider<>(),
+            analysisInputLocation -> BytecodeClassLoadingOptions.Default);
 
     Assert.assertEquals(91, view.getClasses().size());
 

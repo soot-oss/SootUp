@@ -2,16 +2,19 @@ package sootup.callgraph;
 
 import static junit.framework.TestCase.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Test;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -32,18 +35,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
-    JavaProject.JavaProjectBuilder javaProjectBuilder =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
     if (useSourceCodeFrontend) {
-      javaProjectBuilder.addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath));
+      inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
     } else {
-      javaProjectBuilder.addInputLocation(new JavaClassPathAnalysisInputLocation(classPath));
+      inputLocations.add(new JavaClassPathAnalysisInputLocation(classPath));
     }
 
-    return javaProjectBuilder.build().createView();
+    return new JavaView(inputLocations);
   }
 
   CallGraph loadCallGraph(String testDirectory, String className) {
@@ -722,17 +724,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   public void testStopAtLibraryClass() {
 
     String classPath = "src/test/resources/callgraph/Library/binary/";
-    JavaProject.JavaProjectBuilder javaProjectBuilder =
-        JavaProject.builder()
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    classPath + "application/", SourceType.Application))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(classPath + "library/", SourceType.Library));
-    JavaView view = javaProjectBuilder.build().createView();
+
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(classPath + "application/", SourceType.Application));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(classPath + "library/", SourceType.Library));
+
+    JavaView view = new JavaView(inputLocations);
 
     MethodSignature mainMethodSignature =
         identifierFactory.getMethodSignature(

@@ -1,5 +1,6 @@
 package sootup.examples.classhierarchy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,6 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -32,19 +32,14 @@ public class ClassHierarchy {
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary");
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary"));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            System.getProperty("java.home") + "/lib/rt.jar")); // add rt.jar
 
-    // Create a new JavaProject and view based on the input location
-    JavaProject project =
-        JavaProject.builder()
-            .addInputLocation(inputLocation)
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar")) // add rt.jar
-            .build();
-
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocations);
 
     // Create type hierarchy
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
