@@ -17,6 +17,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
@@ -40,8 +41,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest() {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
@@ -76,8 +76,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGDotExportTest2() {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
@@ -112,8 +111,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGArrayListDotExport() {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);
@@ -140,8 +138,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   @Test
   public void ICFGInterfaceDotExport() {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
     view = new JavaView(inputLocations);

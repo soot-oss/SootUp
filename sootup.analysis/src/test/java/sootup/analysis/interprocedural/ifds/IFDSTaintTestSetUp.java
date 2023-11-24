@@ -33,6 +33,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
@@ -74,8 +75,7 @@ public class IFDSTaintTestSetUp {
    */
   private void setupSoot(String targetTestClassName) {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"));
 
     view = new JavaView(inputLocations);

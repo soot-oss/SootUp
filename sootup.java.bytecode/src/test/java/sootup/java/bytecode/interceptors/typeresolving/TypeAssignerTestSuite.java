@@ -2,11 +2,17 @@ package sootup.java.bytecode.interceptors.typeresolving;
 
 import java.util.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
@@ -24,8 +30,7 @@ public class TypeAssignerTestSuite {
 
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(baseDir);
-    JavaClassPathAnalysisInputLocation rtJar =
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
+    JavaClassPathAnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
 
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
     inputLocations.add(analysisInputLocation);

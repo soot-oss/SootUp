@@ -12,6 +12,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
 
   release:
     types: [ created, published ]
@@ -26,6 +27,7 @@ on:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
 
 concurrency: pages
 
@@ -63,6 +65,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
+      # sanitive head_ref name
+      - run: echo "DOC_VERSION_NAME=$(echo ${{ github.head_ref }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
+
       # on push to develop branch - keep a doc around for develop to show the current state
       - name: deploy doc in subdirectory
         if: github.event_name == 'push'
@@ -71,27 +76,36 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${{ github.head_ref }}_preview --push
-        # TODO: set to true when the release is capable of the documentation ;)  && mike props ${{ github.head_ref }}_preview --set-string hidden=true --push
+        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview -t "PR Preview ${{ env.DOC_VERSION_NAME }}" && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
-            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}_preview/${{ github.head_ref }}/).
+            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ env.DOC_VERSION_NAME }}_preview/).
 
       # on PR close - delete preview
       - name: delete the deployed preview
         if: github.event_name == 'pull_request' && github.event.action == 'closed'
-        run: mike delete ${{ github.head_ref }}_preview --push
+        run: mike delete ${{ env.DOC_VERSION_NAME }}_preview --push
 
 
       # on release events..
+      # sanitive head_ref name
+      - name: sanitize tag name
+        if: github.event_name == 'release'
+        run: echo "DOC_VERSION_NAME=$(echo ${{ github.ref_name }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
+
       - name: deploy doc in subdirectory
         if: github.event_name == 'release'
-        run: mike deploy ${{ github.ref_name }} --push
+        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
+
+
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'release'
+        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
 
       - name: set the new release doc as default (release published)
         if: github.event_name == 'release' && github.event.action == 'published'
-        run: mike deploy --push --update-aliases ${{ github.ref_name }} latest
+        run: mike deploy --push --update-aliases ${{ env.DOC_VERSION_NAME }} latest

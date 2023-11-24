@@ -56,6 +56,27 @@ public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
+  @Override
+  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<clinit>");
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>");
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
+  }
+
   /** Caches the created PackageNames for packages. */
   @Nonnull
   protected final Cache<String, PackageName> packageCache =

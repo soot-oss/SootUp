@@ -68,9 +68,13 @@ public abstract class PathBasedAnalysisInputLocation
   private final SourceType sourceType;
   protected Path path;
 
-  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this.path = path;
     this.sourceType = srcType;
+
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
+    }
   }
 
   @Nullable
@@ -89,7 +93,10 @@ public abstract class PathBasedAnalysisInputLocation
       if (PathUtils.hasExtension(path, FileType.WAR)) {
         inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
       } else {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        throw new IllegalArgumentException(
+            "Path '"
+                + path.toAbsolutePath()
+                + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
       }
     } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
       inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
@@ -185,11 +192,8 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classPath, @Nonnull SourceType srcType) {
-      super(classPath, srcType);
-      if (!Files.exists(classPath)) {
-        throw new IllegalArgumentException("The provided .class file does not exist.");
-      }
+        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
+      super(classFilePath, srcType);
     }
 
     @Override
@@ -214,7 +218,7 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -239,16 +243,11 @@ public abstract class PathBasedAnalysisInputLocation
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType) {
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
+        throws IOException {
       super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"),
-          srcType);
+          Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(), srcType);
+
       extractWarFile(warPath, path);
 
       Path webInfPath = path.resolve("WEB-INF");

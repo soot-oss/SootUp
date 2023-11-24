@@ -38,8 +38,6 @@ import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
 
 public class JavaSootMethod extends SootMethod {
-  @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
-  @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
   @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   public JavaSootMethod(
@@ -51,19 +49,6 @@ public class JavaSootMethod extends SootMethod {
       @Nonnull Position position) {
     super(source, methodSignature, modifiers, thrownExceptions, position);
     this.annotations = annotations;
-  }
-
-  /**
-   * @return yes, if this function is a constructor. Please not that &lt;clinit&gt; methods are not
-   *     treated as constructors in this methodRef.
-   */
-  public boolean isConstructor() {
-    return this.getSignature().getName().equals(CONSTRUCTOR_NAME);
-  }
-
-  /** @return yes, if this function is a static initializer. */
-  public boolean isStaticInitializer() {
-    return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
   }
 
   @Nonnull

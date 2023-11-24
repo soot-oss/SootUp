@@ -194,9 +194,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
+    PathBasedAnalysisInputLocation pathBasedNamespace = new DefaultRTJarAnalysisInputLocation();
 
     JavaView v = new JavaView(pathBasedNamespace);
 
@@ -218,8 +216,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testInputLocationLibraryMode() {
     JavaView view =
         new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library));
+            new JavaClassPathAnalysisInputLocation(new DefaultRTJarAnalysisInputLocation());
 
     Collection<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check

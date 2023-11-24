@@ -1,16 +1,16 @@
 package sootup.java.bytecode.frontend;
 
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.fail;
 
 import categories.Java8Test;
 import java.util.Arrays;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -19,7 +19,6 @@ import sootup.java.core.views.JavaView;
 public class AsmMethodSourceTest {
 
   @Test
-  @Ignore("FIXME")
   public void testFix_StackUnderrun_convertPutFieldInsn_init() {
 
     double version = Double.parseDouble(System.getProperty("java.specification.version"));
@@ -32,17 +31,18 @@ public class AsmMethodSourceTest {
             new JavaClassPathAnalysisInputLocation(
                 System.getProperty("java.home") + "/lib/rt.jar"));
 
+    final JavaIdentifierFactory idf = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature =
-        JavaIdentifierFactory.getInstance()
-            .getClassType("javax.management.NotificationBroadcasterSupport");
+        idf.getClassType("javax.management.NotificationBroadcasterSupport");
     MethodSignature mainMethodSignature =
-        JavaIdentifierFactory.getInstance()
-            .getMethodSignature(
-                mainClassSignature,
-                "<init>",
-                "void",
-                Arrays.asList(
-                    "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));
+        idf.getMethodSignature(
+            mainClassSignature,
+            "<init>",
+            "void",
+            Arrays.asList(
+                "java.util.concurrent.Executor", "javax.management.MBeanNotificationInfo[]"));
+
+    assertTrue(idf.isConstructorSubSignature(mainMethodSignature.getSubSignature()));
 
     final SootClass<?> abstractClass = view.getClass(mainClassSignature).get();
 

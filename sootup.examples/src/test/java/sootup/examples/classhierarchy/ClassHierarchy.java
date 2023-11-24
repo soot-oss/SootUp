@@ -9,6 +9,7 @@ import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
@@ -35,9 +36,7 @@ public class ClassHierarchy {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary"));
-    inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(
-            System.getProperty("java.home") + "/lib/rt.jar")); // add rt.jar
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation()); // add rt.jar
 
     JavaView view = new JavaView(inputLocations);
 
