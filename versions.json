@@ -2,7 +2,10 @@
   {
     "version": "feature_moveLanguageIntoInputLocation_preview",
     "title": "PR Preview feature_moveLanguageIntoInputLocation",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "v1.1.2",
