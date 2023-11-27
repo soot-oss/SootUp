@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
@@ -59,6 +60,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
 
+  private final List<BodyInterceptor> bodyInterceptors;
+
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
    * path.
@@ -69,6 +72,11 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     this(classPath, SourceType.Application);
   }
 
+  public JavaClassPathAnalysisInputLocation(
+      @Nonnull String classPath, @Nonnull SourceType srcType) {
+    this(classPath, srcType, new ArrayList<>());
+  }
+
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
    * path.
@@ -77,8 +85,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param srcType the source type for the path can be Library, Application, Phantom.
    */
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nonnull SourceType srcType) {
+      @Nonnull String classPath,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.srcType = srcType;
+    this.bodyInterceptors = bodyInterceptors;
+
     if (classPath.length() <= 0) {
       throw new IllegalArgumentException("Empty class path given");
     }
@@ -93,6 +105,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Nonnull
   public SourceType getSourceType() {
     return srcType;
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   /**
@@ -186,7 +204,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
   @Nonnull
   private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType));
+      return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType, bodyInterceptors));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

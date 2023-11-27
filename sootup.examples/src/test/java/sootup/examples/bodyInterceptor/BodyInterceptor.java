@@ -3,21 +3,17 @@ package sootup.examples.bodyInterceptor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
@@ -32,10 +28,12 @@ public class BodyInterceptor {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get("src/test/resources/BodyInterceptor/binary"), null);
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/BodyInterceptor/binary",
+            null,
+            Collections.singletonList(new DeadAssignmentEliminator()));
 
-    // Create a new JavaProject based on the input location
+    // Create a new JavaView based on the input location
     JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
@@ -45,19 +43,6 @@ public class BodyInterceptor {
     MethodSignature methodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(classType, "someMethod", "void", Collections.emptyList());
-
-    // Create a view for project, which allows us to retrieve classes
-    // add class loading options, which can specify body interceptors
-
-    view.configBodyInterceptors(
-        analysisInputLocation ->
-            new ClassLoadingOptions() {
-              @Nonnull
-              @Override
-              public List<sootup.core.transform.BodyInterceptor> getBodyInterceptors() {
-                return Collections.singletonList(new DeadAssignmentEliminator());
-              }
-            });
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

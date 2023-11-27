@@ -210,6 +210,7 @@ public class ModuleFinder {
 
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ResolveException {
     // create the input location for this module dir
+    // TODO: propagte corresponding BodyInterceptors to newly cerated InputLocations
     PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(dir, sourceType);
 

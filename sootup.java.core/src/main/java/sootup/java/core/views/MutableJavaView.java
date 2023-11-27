@@ -1,7 +1,6 @@
 package sootup.java.core.views;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
@@ -38,23 +36,8 @@ public class MutableJavaView extends JavaView implements MutableView {
 
   public MutableJavaView(
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    super(inputLocations, new MutableFullCacheProvider<>(), classLoadingOptionsSpecifier);
-  }
-
-  public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(
-        inputLocations,
-        new MutableFullCacheProvider<>(),
-        classLoadingOptionsSpecifier,
-        sourceTypeSpecifier);
+    super(inputLocations, new MutableFullCacheProvider<>(), sourceTypeSpecifier);
   }
 
   /**

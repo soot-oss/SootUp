@@ -26,6 +26,7 @@ import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
@@ -66,11 +67,20 @@ import sootup.java.core.types.JavaClassType;
 public abstract class PathBasedAnalysisInputLocation
     implements AnalysisInputLocation<JavaSootClass> {
   private final SourceType sourceType;
+  private final List<BodyInterceptor> bodyInterceptors;
   protected Path path;
 
-  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    this(path, srcType, new ArrayList<>());
+  }
+
+  protected PathBasedAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.path = path;
     this.sourceType = srcType;
+    this.bodyInterceptors = bodyInterceptors;
 
     if (!Files.exists(path)) {
       throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
@@ -83,18 +93,32 @@ public abstract class PathBasedAnalysisInputLocation
     return sourceType;
   }
 
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
   @Nonnull
   public static PathBasedAnalysisInputLocation create(
-      @Nonnull Path path, @Nonnull SourceType srcType) {
+      @Nonnull Path path, @Nonnull SourceType sourceType) {
+    return PathBasedAnalysisInputLocation.create(path, sourceType, new ArrayList<>());
+  }
+
+  @Nonnull
+  public static PathBasedAnalysisInputLocation create(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     final PathBasedAnalysisInputLocation inputLocation;
     if (Files.isDirectory(path)) {
-      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
+      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
-          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -105,7 +129,7 @@ public abstract class PathBasedAnalysisInputLocation
                 + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
       }
     } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
-      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
+      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
     } else {
       throw new IllegalArgumentException(
           "Path '"
@@ -197,9 +221,17 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
-      super(classFilePath, srcType);
+      this(classFilePath, srcType, new ArrayList<>());
+    }
+
+    public ClassFileBasedAnalysisInputLocation(
+        @Nonnull Path classFilePath,
+        @Nonnull SourceType srcType,
+        @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      super(classFilePath, srcType, bodyInterceptors);
     }
 
     @Override
@@ -225,7 +257,14 @@ public abstract class PathBasedAnalysisInputLocation
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
-      super(path, srcType);
+      this(path, srcType, new ArrayList<>());
+    }
+
+    private DirectoryBasedAnalysisInputLocation(
+        @Nonnull Path path,
+        @Nonnull SourceType srcType,
+        @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      super(path, srcType, bodyInterceptors);
     }
 
     @Override
@@ -251,8 +290,18 @@ public abstract class PathBasedAnalysisInputLocation
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
         throws IOException {
+      this(warPath, srcType, new ArrayList<>());
+    }
+
+    private WarArchiveAnalysisInputLocation(
+        @Nonnull Path warPath,
+        @Nonnull SourceType srcType,
+        @Nonnull List<BodyInterceptor> bodyInterceptors)
+        throws IOException {
       super(
-          Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(), srcType);
+          Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(),
+          srcType,
+          bodyInterceptors);
 
       extractWarFile(warPath, path);
 
@@ -261,7 +310,8 @@ public abstract class PathBasedAnalysisInputLocation
       // https://download.oracle.com/otn-pub/jcp/servlet-2.4-fr-spec-oth-JSpec/servlet-2_4-fr-spec.pdf?AuthParam=1625059899_16c705c72f7db7f85a8a7926558701fe
       Path classDir = webInfPath.resolve("classes");
       if (Files.exists(classDir)) {
-        containedInputLocations.add(new DirectoryBasedAnalysisInputLocation(classDir, srcType));
+        containedInputLocations.add(
+            new DirectoryBasedAnalysisInputLocation(classDir, srcType, bodyInterceptors));
       }
 
       Path libDir = webInfPath.resolve("lib");
@@ -272,7 +322,7 @@ public abstract class PathBasedAnalysisInputLocation
               .forEach(
                   f ->
                       containedInputLocations.add(
-                          new ArchiveBasedAnalysisInputLocation(f, srcType)));
+                          new ArchiveBasedAnalysisInputLocation(f, srcType, bodyInterceptors)));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

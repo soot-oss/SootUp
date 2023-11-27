@@ -22,6 +22,7 @@ package sootup.core.inputlocation;
  */
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,4 +75,7 @@ public interface AnalysisInputLocation<T extends AbstractClass<?>> {
    */
   @Nullable
   SourceType getSourceType();
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors();
 }

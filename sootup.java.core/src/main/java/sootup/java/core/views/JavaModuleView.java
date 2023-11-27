@@ -104,7 +104,7 @@ public class JavaModuleView extends JavaView {
           Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
               classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(inputLocations, cacheProvider, classLoadingOptionsSpecifier, sourceTypeSpecifier);
+    super(inputLocations, cacheProvider, sourceTypeSpecifier);
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
 
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();

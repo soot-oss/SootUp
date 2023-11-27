@@ -33,6 +33,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
@@ -60,6 +61,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   private SourceType srcType = null;
 
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+
   /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
    * given source path.
@@ -82,9 +85,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    this.sourcePaths = sourcePaths;
-    this.exclusionFilePath = exclusionFilePath;
-    this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+    this(null, sourcePaths, exclusionFilePath, new ArrayList<>());
 
     final Optional<String> any =
         sourcePaths.stream().filter(path -> !Files.exists(Paths.get(path))).findAny();
@@ -103,10 +104,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nullable SourceType srcType, @Nonnull Set<String> sourcePaths) {
-    this(sourcePaths, null);
-    setSpecifiedAsBuiltInByUser(srcType);
-    // this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath,
-    // DefaultSourceTypeSpecifier.getInstance());
+    this(srcType, sourcePaths, null, new ArrayList<>());
   }
 
   /**
@@ -117,9 +115,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    * @param sourcePath the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nullable SourceType srcType, @Nonnull String sourcePath) {
-    this(Collections.singleton(sourcePath), null);
-    setSpecifiedAsBuiltInByUser(srcType);
+      @Nonnull SourceType srcType, @Nonnull String sourcePath) {
+    this(srcType, Collections.singleton(sourcePath), null, new ArrayList<>());
   }
 
   /**
@@ -130,12 +127,14 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    * @param sourcePaths the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nonnull SourceType srcType,
+      @Nullable SourceType srcType,
       @Nonnull Set<String> sourcePaths,
-      @Nullable String exclusionFilePath) {
+      @Nullable String exclusionFilePath,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+    this.bodyInterceptors = bodyInterceptors;
     setSpecifiedAsBuiltInByUser(srcType);
   }
 
@@ -151,6 +150,12 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Override
   public SourceType getSourceType() {
     return srcType;
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   @Override

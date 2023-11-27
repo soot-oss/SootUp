@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
@@ -15,11 +14,8 @@ import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
-import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.model.SootClass;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 
@@ -40,10 +36,6 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   private volatile boolean isFullyResolved = false;
 
-  @Nonnull
-  protected Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
-      classLoadingOptionsSpecifier;
-
   public JimpleView(@Nonnull AnalysisInputLocation<SootClass<?>> inputLocation) {
     this(Collections.singletonList(inputLocation), new FullCacheProvider<>());
   }
@@ -55,51 +47,16 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   public JimpleView(
       @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
       @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
-    this(inputLocations, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
+    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleView(
       @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
       @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this(
-        inputLocations,
-        cacheProvider,
-        classLoadingOptionsSpecifier,
-        DefaultSourceTypeSpecifier.getInstance());
-  }
-
-  public JimpleView(
-      @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
-      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     this.sourceTypeSpecifier = sourceTypeSpecifier;
-  }
-
-  @Nonnull
-  @Override
-  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation) {
-    return classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors();
-  }
-
-  @Nonnull
-  private List<BodyInterceptor> getBodyInterceptors() {
-    return Collections.emptyList();
-  }
-
-  public void configBodyInterceptors(
-      @Nonnull
-          Function<AnalysisInputLocation<SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override

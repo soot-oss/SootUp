@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
@@ -37,10 +36,7 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
-import sootup.core.inputlocation.EmptyClassLoadingOptions;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 import sootup.java.core.AnnotationUsage;
@@ -62,10 +58,6 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Nonnull protected final ClassCache<JavaSootClass> cache;
   @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
-  @Nonnull
-  protected Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-      classLoadingOptionsSpecifier;
-
   protected volatile boolean isFullyResolved = false;
 
   public JavaView(@Nonnull AnalysisInputLocation<? extends JavaSootClass> inputLocation) {
@@ -76,56 +68,25 @@ public class JavaView extends AbstractView<JavaSootClass> {
     this(inputLocations, new FullCacheProvider<>());
   }
 
-  public JavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
-    this(inputLocations, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
-  }
-
   /**
    * Creates a new instance of the {@link JavaView} class.
    *
-   * @param classLoadingOptionsSpecifier To use the default {@link ClassLoadingOptions} for an
-   *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
-   *     options.
+   * <p>{@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
+   * options.
    */
   public JavaView(
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this(
-        inputLocations,
-        cacheProvider,
-        classLoadingOptionsSpecifier,
-        DefaultSourceTypeSpecifier.getInstance());
+      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
+    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JavaView(
       @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
       @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
     this.sourceTypeSpecifier = sourceTypeSpecifier;
-  }
-
-  @Nonnull
-  @Override
-  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation clazz) {
-    return this.classLoadingOptionsSpecifier.apply(clazz).getBodyInterceptors();
-  }
-
-  public void configBodyInterceptors(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */

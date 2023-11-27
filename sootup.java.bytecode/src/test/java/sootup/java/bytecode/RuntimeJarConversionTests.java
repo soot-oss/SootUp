@@ -2,9 +2,9 @@ package sootup.java.bytecode;
 
 import java.util.Collections;
 import org.junit.Test;
-import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
@@ -15,16 +15,14 @@ import sootup.java.core.views.JavaView;
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
-    AnalysisInputLocation<JavaSootClass> inputLocation = new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new DefaultRTJarAnalysisInputLocation(
+            SourceType.Library, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 
     final MethodSignature methodSignature =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);
 
-    JavaView view =
-        new JavaView(
-            Collections.singletonList(inputLocation),
-            new FullCacheProvider<>(),
-            analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod = view.getMethod(methodSignature).get();
     sootMethod.getBody();

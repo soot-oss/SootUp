@@ -34,6 +34,7 @@ import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
@@ -60,12 +61,20 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull private final SourceType sourceType;
 
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+
   public JrtFileSystemAnalysisInputLocation() {
     this(SourceType.Library);
   }
 
   public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
+    this(sourceType, new ArrayList<>());
+  }
+
+  public JrtFileSystemAnalysisInputLocation(
+      @Nonnull SourceType sourceType, @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
+    this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
@@ -245,6 +254,12 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   @Override
   public SourceType getSourceType() {
     return sourceType;
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   @Override

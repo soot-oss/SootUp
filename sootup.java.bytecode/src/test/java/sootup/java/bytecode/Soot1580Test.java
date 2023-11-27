@@ -1,38 +1,32 @@
 package sootup.java.bytecode;
 
 import categories.Java8Test;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
 public class Soot1580Test {
-  final Path jar = Paths.get("../shared-test-resources/soot-1580/jpush-android_v3.0.5.jar");
+  final String jar = "../shared-test-resources/soot-1580/jpush-android_v3.0.5.jar";
 
   @Test
   @Ignore("Localsplitter fails; bytecode itself is somehow strange")
   public void test() {
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.create(jar, null);
+        new JavaClassPathAnalysisInputLocation(
+            jar, null, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 
-    JavaView view =
-        new JavaView(
-            Collections.singletonList(inputLocation),
-            new FullCacheProvider<>(),
-            analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     Assert.assertEquals(91, view.getClasses().size());
 

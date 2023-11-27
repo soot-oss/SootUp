@@ -30,15 +30,14 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
@@ -74,7 +73,14 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                   }));
 
   public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    super(path, srcType);
+    this(path, srcType, new ArrayList<>());
+  }
+
+  public ArchiveBasedAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    super(path, srcType, bodyInterceptors);
   }
 
   @Override

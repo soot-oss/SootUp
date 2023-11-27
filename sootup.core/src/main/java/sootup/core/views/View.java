@@ -23,17 +23,14 @@ package sootup.core.views;
  */
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 
@@ -44,9 +41,6 @@ import sootup.core.types.ClassType;
  * @author Ben Hermann
  */
 public interface View<T extends SootClass<?>> {
-
-  @Nonnull
-  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<?> inputLocation);
 
   /** Return all classes in the view. */
   @Nonnull

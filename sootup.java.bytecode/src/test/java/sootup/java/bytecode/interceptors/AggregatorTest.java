@@ -2,7 +2,6 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +23,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
@@ -182,13 +180,13 @@ public class AggregatorTest {
   @Test
   public void testIssue739() {
 
-    PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
-            SourceType.Application);
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "../shared-test-resources/bugfixes/Issue739_Aggregator.class",
+            SourceType.Application,
+            BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 
     JavaView view = new JavaView(inputLocation);
-    view.configBodyInterceptors(a -> BytecodeClassLoadingOptions.Default);
 
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
     Assert.assertTrue(view.getClass(classType).isPresent());
