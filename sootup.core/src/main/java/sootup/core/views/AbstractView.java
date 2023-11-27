@@ -25,7 +25,6 @@ package sootup.core.views;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.Scope;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -53,13 +52,6 @@ public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
       typeHierarchy = new ViewTypeHierarchy(this);
     }
     return typeHierarchy;
-  }
-
-  @Override
-  @Nonnull
-  public Optional<Scope> getScope() {
-    // TODO implement scope
-    throw new UnsupportedOperationException("not implemented yet");
   }
 
   /**

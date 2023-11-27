@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.Scope;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -44,10 +43,10 @@ import sootup.core.types.ClassType;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass> {
+public interface View<T extends SootClass<?>> {
 
   @Nonnull
-  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation);
+  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation<?> inputLocation);
 
   /** Return all classes in the view. */
   @Nonnull
@@ -64,14 +63,6 @@ public interface View<T extends SootClass> {
   Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
 
   Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
-
-  /**
-   * Returns the scope if the view is scoped.
-   *
-   * @return The scope that led to the view
-   */
-  @Nonnull
-  Optional<Scope> getScope();
 
   @Nonnull
   TypeHierarchy getTypeHierarchy();
