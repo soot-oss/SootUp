@@ -2,7 +2,10 @@
   {
     "version": "ImprovedModulePoms_preview",
     "title": "PR Preview ImprovedModulePoms",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "feature_moveLanguageIntoInputLocation_preview",
