@@ -231,7 +231,7 @@ public abstract class PathBasedAnalysisInputLocation
     return classProvider.createClassSource(this, pathToClass, signature);
   }
 
-  private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
       super(classFilePath, srcType);

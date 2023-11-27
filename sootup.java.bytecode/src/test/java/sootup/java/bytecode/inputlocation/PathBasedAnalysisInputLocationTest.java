@@ -296,7 +296,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testSingleClassWPackageName() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/ClassWithPackageName.class"),
             SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();

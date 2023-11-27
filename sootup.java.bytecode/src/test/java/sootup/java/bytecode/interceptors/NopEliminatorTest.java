@@ -37,6 +37,7 @@ public class NopEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body testBody = builder.build();
 
+    builder = Body.builder(testBody, builder.getModifiers());
     new NopEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 

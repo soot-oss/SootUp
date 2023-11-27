@@ -68,7 +68,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public boolean isConstructorSubSignature(@Nonnull MethodSignature methodSignature) {
     return methodSignature.getName().equals("<init>")
-        && methodSignature.getType() == methodSignature.getDeclClassType();
+        && methodSignature.getType() == VoidType.getInstance();
   }
 
   @Override
