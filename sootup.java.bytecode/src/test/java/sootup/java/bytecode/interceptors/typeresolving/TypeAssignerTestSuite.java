@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -30,7 +29,7 @@ public class TypeAssignerTestSuite {
 
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(baseDir);
-    AnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
+    DefaultRTJarAnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(analysisInputLocation)
