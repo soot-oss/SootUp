@@ -1177,7 +1177,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           }
         case CHECKCAST:
           {
-            val = Jimple.newCastExpr(op1.toImmediate(), AsmUtil.toJimpleType(insn.desc));
+            val = Jimple.newCastExpr(op1.toImmediate(), AsmUtil.arrayTypetoJimpleType(insn.desc));
             break;
           }
         case INSTANCEOF:
