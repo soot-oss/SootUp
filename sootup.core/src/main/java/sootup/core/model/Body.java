@@ -346,24 +346,7 @@ public class Body implements Copyable {
     return new BodyBuilder(body, modifiers);
   }
 
-  /**
-   * The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern)
-   *
-   * <pre>
-   * <code>
-   * Stmt stmt1, stmt2, stmt3;
-   * ...
-   * Body.BodyBuilder builder = Body.builder();
-   * builder.setMethodSignature( ... );
-   * builder.setStartingStmt(stmt1);
-   * stmtGraph.putEdge(stmt1,stmt2);
-   * stmtGraph.putEdge(stmt2,stmt3);
-   * ...
-   * Body body = builder.build();
-   *
-   * </code>
-   * </pre>
-   */
+  /** The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern) */
   public static class BodyBuilder {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
     @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();

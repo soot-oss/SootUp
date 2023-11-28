@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -36,6 +35,7 @@ public class TypeAssignerTestSuite {
     inputLocations.add(rtJar);
 
     view = new JavaView(inputLocations);
+
     classType = identifierFactory.getClassType(className);
     clazz = view.getClass(classType).get();
   }
