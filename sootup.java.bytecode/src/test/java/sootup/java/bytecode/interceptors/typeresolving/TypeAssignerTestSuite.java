@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
