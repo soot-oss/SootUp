@@ -12,13 +12,10 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PackedSwitchInstruction extends SwitchInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-
-    }
 
     public PackedSwitchInstruction(Instruction instruction, int codeAddress) {
         super(instruction, codeAddress);
@@ -40,7 +37,10 @@ public class PackedSwitchInstruction extends SwitchInstruction {
             int offset = se.getOffset();
             targets.add(body.instructionAtAddress(codeAddress + offset).stmt);
         }
+        targets.add(defaultTarget);
         JSwitchStmt jSwitchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.createNoStmtPositionInfo());
+        body.addBranchingStmt(jSwitchStmt, targets);
+        body.addBranchingStmt(jSwitchStmt, Collections.singletonList(defaultTarget));
         setStmt(jSwitchStmt);
         return jSwitchStmt;
     }

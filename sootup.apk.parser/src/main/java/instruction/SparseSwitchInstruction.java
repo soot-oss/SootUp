@@ -12,6 +12,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SparseSwitchInstruction extends SwitchInstruction {
@@ -38,7 +39,9 @@ public class SparseSwitchInstruction extends SwitchInstruction {
         }
         JSwitchStmt switchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(switchStmt);
-        body.add(switchStmt);
+        // It is unlike the PackedSwitchInstruction, here only one branching statement should be. (I literally don't know why :( )
+        targets.add(defaultTarget);
+        body.addBranchingStmt(switchStmt, targets);
         return switchStmt;
     }
 

@@ -38,7 +38,6 @@ public abstract class SwitchInstruction extends PseudoInstruction implements Def
         int targetAddress = codeAddress + offset;
         Instruction targetData = body.instructionAtAddress(targetAddress).instruction;
         Stmt stmt = switchStatement(body, targetData, key);
-        // TODO: InsertAfter Logic
         body.insertAfter(stmt, markerUnit);
     }
 }

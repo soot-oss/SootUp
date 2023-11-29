@@ -9,6 +9,8 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.stmt.JIfStmt;
 
+import java.util.Collections;
+
 public class IfTestInstruction extends ConditionalJumpInstruction {
     public IfTestInstruction(Instruction instruction, int codeAddress) {
         super(instruction, codeAddress);
@@ -21,6 +23,7 @@ public class IfTestInstruction extends ConditionalJumpInstruction {
         Local other = dexBody.getRegisterLocal(i.getRegisterB());
         AbstractConditionExpr condition = getComparisonExpr(one, other);
         JIfStmt jif = Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
+        dexBody.addBranchingStmt(jif, Collections.singletonList(targetInstruction.stmt));
         return jif;
     }
 }

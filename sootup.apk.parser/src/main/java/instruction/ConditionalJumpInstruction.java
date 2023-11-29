@@ -9,8 +9,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
-import sootup.core.jimple.common.stmt.JIfStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
+
+import java.util.Collections;
 
 public abstract class ConditionalJumpInstruction extends JumpInstruction implements DeferableInstruction{
     /**
@@ -27,9 +28,10 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
     public void jimplify(DexBody body) {
         // check if target instruction has been jimplified
         DexLibAbstractInstruction ins = getTargetInstruction(body);
-        if (ins != null && ins.getStmt() != null) {
+        if (ins != null && ins.getStmt() != null /*&& !(ins.stmt instanceof JNopStmt)*/) {
             JIfStmt s = ifStatement(body);
             body.add(s);
+//            body.addBranchingStmt(s, Collections.singletonList(ins.stmt));
             setStmt(s);
         }
         else{
@@ -87,6 +89,14 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
     public void deferredJimplify(DexBody body) {
          JIfStmt jIfStmt = ifStatement(body);
          body.replaceStmt(markerUnit, jIfStmt);
+//         Stmt labelStmt;
+//         if(targetInstruction.stmt == null){
+//             labelStmt = Util.Util.makeStmt(targetInstruction);
+//         }
+//         else{
+//             labelStmt = targetInstruction.stmt;
+//         }
+//         body.addBranchingStmt(jIfStmt, Collections.singletonList(labelStmt));
          setStmt(jIfStmt);
     }
 }

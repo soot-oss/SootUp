@@ -172,7 +172,7 @@ public class DexFileProvider {
         return Collections.unmodifiableMap(dexMap);
     }
 
-    private List<File> allSourcesFromFile(File dexSource) {
+    public List<File> allSourcesFromFile(File dexSource) {
         if (dexSource.isDirectory()) {
             List<File> dexFiles = getAllDexFilesInDirectory(dexSource);
             return dexFiles;

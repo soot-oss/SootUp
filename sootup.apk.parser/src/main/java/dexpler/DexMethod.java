@@ -22,7 +22,7 @@ public class DexMethod {
     }
 
     public SootMethod makeSootMethod(final Method method) {
-        System.out.println(method.getName() + "\n" + "**********");
+        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" + "**********");
         int modifierFlags = method.getAccessFlags();
         if(Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)){
             DexMethodSource dexMethodSource = new DexMethodSource(declaringclassType, Collections.emptySet(), new MutableBlockStmtGraph(), method, Collections.emptyList());

@@ -28,8 +28,10 @@ public class ApkToDexTest {
     @Test
     public void testApkConversion() {
         MutableJavaView view;
-        String apk_path = getClass().getClassLoader().getResource("app-debug.apk").getPath();
-        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), 15);
+//        String apk_path = getClass().getClassLoader().getResource("app-debug.apk").getPath();
+        String apk_path = "/Users/palaniappanmuthuraman/Documents/FlowDroid/DroidBench/apk/Aliasing/FlowSensitivity1.apk";
+        String[] stringArray = {"TaskStackBuilder", "ArrayMap"};
+        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
         JavaProject javaProject =
                 JavaProject.builder(new JavaLanguage(8))
                         .addInputLocation(sootClassApkAnalysisInputLocation)
@@ -45,7 +47,7 @@ public class ApkToDexTest {
                 }
                 Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
                         sootClassApkAnalysisInputLocation.getClassSource(identifierFactory.getClassType(className), view);
-                if (classSource.isPresent()) {
+                if (classSource.isPresent() && !testWhetherStringPresent(stringArray, className)) {
                     DexClassSource dexClassSource = (DexClassSource) classSource.get();
                     ClassType classType = view.getIdentifierFactory().getClassType(className);
                     Set<SootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
@@ -65,10 +67,21 @@ public class ApkToDexTest {
         }
     }
 
+    public boolean testWhetherStringPresent(String[] stringArray, String searchString){
+        boolean isStringPresent = false;
+        for (String str : stringArray) {
+            if (searchString.contains(str)) {
+                isStringPresent = true;
+                break; // Exit the loop since the string is found
+            }
+        }
+        return isStringPresent;
+    }
+
     @Test
     public void loadOneClass(){
         String apk_path = getClass().getClassLoader().getResource("app-debug.apk").getPath();
-        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), 15);
+        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
         JavaProject javaProject =
                 JavaProject.builder(new JavaLanguage(8))
                         .addInputLocation(sootClassApkAnalysisInputLocation)

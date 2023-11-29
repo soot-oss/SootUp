@@ -1,6 +1,5 @@
 package main;//import Util.DexNumTransformer;
 import Util.DexUtil;
-import Util.Util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import dexpler.DexMethodSource;
@@ -10,24 +9,24 @@ import org.jf.dexlib2.analysis.ClassPathResolver;
 import org.jf.dexlib2.analysis.ClassProvider;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.*;
+import org.jf.dexlib2.iface.debug.DebugItem;
 import org.jf.dexlib2.iface.instruction.Instruction;
+import org.jf.dexlib2.immutable.debug.ImmutableEndLocal;
+import org.jf.dexlib2.immutable.debug.ImmutableLineNumber;
+import org.jf.dexlib2.immutable.debug.ImmutableRestartLocal;
+import org.jf.dexlib2.immutable.debug.ImmutableStartLocal;
 import org.jf.dexlib2.util.MethodUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.*;
-import sootup.core.model.Body;
-import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
@@ -35,6 +34,7 @@ import sootup.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DexBody {
 
@@ -63,8 +63,6 @@ public class DexBody {
 
     protected final MultiDexContainer.DexEntry dexEntry;
 
-    MutableStmtGraph mutableStmtGraph = new MutableBlockStmtGraph();
-
     List<Stmt> stmtList = new ArrayList<>();
 
     protected Map<Integer, DexLibAbstractInstruction> instructionAtAddress;
@@ -81,7 +79,9 @@ public class DexBody {
 
     protected Set<ReTypeableInstruction> instructionsToRetype;
 
-    private LinkedListMultimap<BranchingStmt, Stmt> stmtsThatBranchToLabel;
+    LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap =LinkedListMultimap.create();
+
+    HashMap<Stmt, DexLibAbstractInstruction> branchingMapReplacer = new HashMap<>();
 
 
     protected class RegDbgEntry {
@@ -102,8 +102,8 @@ public class DexBody {
         }
     }
 
-    public MutableStmtGraph getGraph(){
-        return mutableStmtGraph;
+    public LinkedListMultimap<BranchingStmt, List<Stmt>> getBranchingMap(){
+        return branchingMap;
     }
 
     public void addDeferredJimplification(DeferableInstruction i) {
@@ -154,50 +154,50 @@ public class DexBody {
 
         registerLocals = new Local[numRegisters];
 
-//        for (DebugItem di : code.getDebugItems()) {
-//            if (di instanceof ImmutableLineNumber) {
-//                ImmutableLineNumber ln = (ImmutableLineNumber) di;
-//                instruction.DexLibAbstractInstruction ins = instructionAtAddress(ln.getCodeAddress());
-//                if (ins == null) {
-//                    // Debug.printDbg("Line number tag pointing to invalid
-//                    // offset: " + ln.getCodeAddress());
-//                    continue;
-//                }
-//                ins.setLineNumber(ln.getLineNumber());
-//            } else if (di instanceof ImmutableStartLocal || di instanceof ImmutableRestartLocal) {
-//                int reg, codeAddr;
-//                String type, signature, name;
-//                if (di instanceof ImmutableStartLocal) {
-//                    ImmutableStartLocal sl = (ImmutableStartLocal) di;
-//                    reg = sl.getRegister();
-//                    codeAddr = sl.getCodeAddress();
-//                    name = sl.getName();
-//                    type = sl.getType();
-//                    signature = sl.getSignature();
-//                } else {
-//                    ImmutableRestartLocal sl = (ImmutableRestartLocal) di;
-//                    // ImmutableRestartLocal and ImmutableStartLocal share the same members but
-//                    // don't share a base. So we have to write some duplicated code.
-//                    reg = sl.getRegister();
-//                    codeAddr = sl.getCodeAddress();
-//                    name = sl.getName();
-//                    type = sl.getType();
-//                    signature = sl.getSignature();
-//                }
-//                if (name != null && type != null) {
-//                    localDebugs.put(reg, new RegDbgEntry(codeAddr, -1 /* endAddress */, reg, name, type, signature));
-//                }
-//            } else if (di instanceof ImmutableEndLocal) {
-//                ImmutableEndLocal el = (ImmutableEndLocal) di;
-//                List<RegDbgEntry> lds = localDebugs.get(el.getRegister());
-//                if (lds == null || lds.isEmpty()) {
-//                    // Invalid debug info
-//                    continue;
-//                } else {
-//                    lds.get(lds.size() - 1).endAddress = el.getCodeAddress();
-//                }
-//            }
-//        }
+        for (DebugItem di : code.getDebugItems()) {
+            if (di instanceof ImmutableLineNumber) {
+                ImmutableLineNumber ln = (ImmutableLineNumber) di;
+                instruction.DexLibAbstractInstruction ins = instructionAtAddress(ln.getCodeAddress());
+                if (ins == null) {
+                    // Debug.printDbg("Line number tag pointing to invalid
+                    // offset: " + ln.getCodeAddress());
+                    continue;
+                }
+                ins.setLineNumber(ln.getLineNumber());
+            } else if (di instanceof ImmutableStartLocal || di instanceof ImmutableRestartLocal) {
+                int reg, codeAddr;
+                String type, signature, name;
+                if (di instanceof ImmutableStartLocal) {
+                    ImmutableStartLocal sl = (ImmutableStartLocal) di;
+                    reg = sl.getRegister();
+                    codeAddr = sl.getCodeAddress();
+                    name = sl.getName();
+                    type = sl.getType();
+                    signature = sl.getSignature();
+                } else {
+                    ImmutableRestartLocal sl = (ImmutableRestartLocal) di;
+                    // ImmutableRestartLocal and ImmutableStartLocal share the same members but
+                    // don't share a base. So we have to write some duplicated code.
+                    reg = sl.getRegister();
+                    codeAddr = sl.getCodeAddress();
+                    name = sl.getName();
+                    type = sl.getType();
+                    signature = sl.getSignature();
+                }
+                if (name != null && type != null) {
+                    localDebugs.put(reg, new RegDbgEntry(codeAddr, -1 /* endAddress */, reg, name, type, signature));
+                }
+            } else if (di instanceof ImmutableEndLocal) {
+                ImmutableEndLocal el = (ImmutableEndLocal) di;
+                List<RegDbgEntry> lds = localDebugs.get(el.getRegister());
+                if (lds == null || lds.isEmpty()) {
+                    // Invalid debug info
+                    continue;
+                } else {
+                    lds.get(lds.size() - 1).endAddress = el.getCodeAddress();
+                }
+            }
+        }
 
         this.method = method;
         this.dexEntry = dexEntry;
@@ -228,18 +228,11 @@ public class DexBody {
     }
 
     public void add(Stmt stmt) {
-//        if(mutableStmtGraph.getStmts().isEmpty()) {
-//            mutableStmtGraph.setStartingStmt(stmt);
-//            lastStatement = stmt;
-//        }
-//        else {
-//            if(!(lastStatement instanceof JReturnVoidStmt || lastStatement instanceof JReturnStmt)) {
-//                mutableStmtGraph.addNode(stmt);
-//                mutableStmtGraph.putEdge(lastStatement, stmt);
-//                lastStatement = stmt;
-//            }
-//        }
         stmtList.add(stmt);
+    }
+
+    public void addBranchingStmt(BranchingStmt branchingStmt, List<Stmt> stmt){
+        branchingMap.put(branchingStmt, stmt);
     }
 
     public void insertAfter(Stmt tobeInserted, Stmt afterThisStmt){
@@ -307,10 +300,29 @@ public class DexBody {
         jimplify();
         // All the statements are converted, it is time to create a mutable statement graph
         MutableBlockStmtGraph graph =  new MutableBlockStmtGraph();
-        graph.initializeWith(stmtList, Collections.emptyMap(), Collections.emptyList());
+        stmtList.removeIf(stmt -> stmt instanceof JNopStmt);
+        graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
         DexMethodSource dexMethodSource = new DexMethodSource(classType, locals, graph, method, parameterTypes);
-        SootMethod sootMethod = dexMethodSource.makeSootMethod();
-        return sootMethod;
+        return dexMethodSource.makeSootMethod();
+    }
+
+    public Map<BranchingStmt, List<Stmt>> replaceNoOpStmts(){
+        Map<BranchingStmt, List<Stmt>> filteredMap = convertMultimap(branchingMap).entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().stream().anyMatch(stmt -> stmt instanceof JNopStmt))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return null;
+    }
+
+    public Map<BranchingStmt, List<Stmt>> convertMultimap(LinkedListMultimap<BranchingStmt, List<Stmt>> multimap) {
+        Map<BranchingStmt, List<Stmt>> resultMap = new HashMap<>();
+
+        for (Map.Entry<BranchingStmt, Collection<List<Stmt>>> entry : multimap.asMap().entrySet()) {
+            resultMap.put(entry.getKey(), new ArrayList<>(entry.getValue().iterator().next()));
+        }
+
+        return resultMap;
     }
 
 
@@ -430,6 +442,12 @@ public class DexBody {
         if (dangling != null) {
             dangling.finalize(this, null);
         }
+        for (DeferableInstruction instruction : deferredInstructions) {
+            instruction.deferredJimplify(this);
+        }
+        if(tries != null && !tries.isEmpty()){
+            addTraps();
+        }
         // By this point, all the "jimplification" process should be done, so clean everything.
         instructions = null;
         instructionAtAddress.clear();
@@ -441,9 +459,6 @@ public class DexBody {
 
         for(ReTypeableInstruction reTypeableInstruction : instructionsToRetype){
 //                reTypeableInstruction.retype(this);
-        }
-        if(tries != null){
-            addTraps();
         }
     }
 
@@ -469,10 +484,10 @@ public class DexBody {
             // if the try block ends on the last instruction of the body, add a
             // nop instruction so Soot can include
             // the last instruction in the try block.
-            if(mutableStmtGraph.getStmts().get(mutableStmtGraph.getStmts().size() - 1) == endStmt && instructionAtAddress(endAddress - 1).getStmt() == endStmt){
+            if(stmtList.get(stmtList.size() - 1) == endStmt && instructionAtAddress(endAddress - 1).getStmt() == endStmt){
                 Stmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-                // TODO: InsertAfter in the mutableStmtGraph, either need to write this API for inserting after one statrment or write a logic to do this.
-
+                insertAfter(nop, endStmt);
+                endStmt = nop;
             }
 
             List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
@@ -483,18 +498,18 @@ public class DexBody {
                 }
                 Type t = DexUtil.toSootType(exceptionType, 0);
                 // exceptions can only be of ReferenceType
-                // TODO: How to get the classType from RefereneType ?
-                if(t instanceof ReferenceType){
-                    Class<? extends ReferenceType> exception = ((ReferenceType) t).getClass();
+                if(t instanceof JavaClassType){
+                    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+                    JavaClassType type = identifierFactory.getClassType(((JavaClassType) t).getClassName());
                     DexLibAbstractInstruction instruction = instructionAtAddress(handler.getHandlerCodeAddress());
                     if (!(instruction instanceof MoveExceptionInstruction)) {
                         logger.debug("" + String.format("First instruction of trap handler unit not MoveException but %s",
                                 instruction.getClass().getName()));
                     } else {
-//                        ((MoveExceptionInstruction) instruction).setRealType(this, exception.getType());
+                        ((MoveExceptionInstruction) instruction).setRealType(this, type);
                     }
-//                    Trap trap = Jimple.newTrap(, beginStmt, endStmt, instruction.getStmt());
-//                    traps.add(trap)
+                    Trap trap = Jimple.newTrap(type, beginStmt, endStmt, instruction.getStmt());
+                    traps.add(trap);
                 }
             }
         }
