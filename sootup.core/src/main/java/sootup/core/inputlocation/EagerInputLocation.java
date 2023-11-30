@@ -51,7 +51,7 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
 
   public EagerInputLocation(
       @Nonnull Map<ClassType, ? extends SootClassSource<S>> map, @Nullable SourceType sourceType) {
-    this(map, sourceType, new ArrayList<>());
+    this(map, sourceType, Collections.emptyList());
   }
 
   public EagerInputLocation(

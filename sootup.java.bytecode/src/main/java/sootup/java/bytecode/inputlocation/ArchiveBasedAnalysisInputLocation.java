@@ -73,7 +73,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                   }));
 
   public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    this(path, srcType, new ArrayList<>());
+    this(path, srcType, Collections.emptyList());
   }
 
   public ArchiveBasedAnalysisInputLocation(

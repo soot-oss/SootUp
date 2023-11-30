@@ -68,7 +68,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
-    this(sourceType, new ArrayList<>());
+    this(sourceType, Collections.emptyList());
   }
 
   public JrtFileSystemAnalysisInputLocation(

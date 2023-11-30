@@ -85,7 +85,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    this(null, sourcePaths, exclusionFilePath, new ArrayList<>());
+    this(null, sourcePaths, exclusionFilePath, Collections.emptyList());
 
     final Optional<String> any =
         sourcePaths.stream().filter(path -> !Files.exists(Paths.get(path))).findAny();
@@ -104,7 +104,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nullable SourceType srcType, @Nonnull Set<String> sourcePaths) {
-    this(srcType, sourcePaths, null, new ArrayList<>());
+    this(srcType, sourcePaths, null, Collections.emptyList());
   }
 
   /**
@@ -116,7 +116,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull SourceType srcType, @Nonnull String sourcePath) {
-    this(srcType, Collections.singleton(sourcePath), null, new ArrayList<>());
+    this(srcType, Collections.singleton(sourcePath), null, Collections.emptyList());
   }
 
   /**

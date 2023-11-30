@@ -74,7 +74,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull SourceType srcType) {
-    this(classPath, srcType, new ArrayList<>());
+    this(classPath, srcType, Collections.emptyList());
   }
 
   /**

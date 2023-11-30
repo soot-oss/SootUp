@@ -71,7 +71,7 @@ public abstract class PathBasedAnalysisInputLocation
   protected Path path;
 
   protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    this(path, srcType, new ArrayList<>());
+    this(path, srcType, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
@@ -102,7 +102,7 @@ public abstract class PathBasedAnalysisInputLocation
   @Nonnull
   public static PathBasedAnalysisInputLocation create(
       @Nonnull Path path, @Nonnull SourceType sourceType) {
-    return PathBasedAnalysisInputLocation.create(path, sourceType, new ArrayList<>());
+    return PathBasedAnalysisInputLocation.create(path, sourceType, Collections.emptyList());
   }
 
   @Nonnull
@@ -224,7 +224,7 @@ public abstract class PathBasedAnalysisInputLocation
 
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
-      this(classFilePath, srcType, new ArrayList<>());
+      this(classFilePath, srcType, Collections.emptyList());
     }
 
     public ClassFileBasedAnalysisInputLocation(
@@ -257,7 +257,7 @@ public abstract class PathBasedAnalysisInputLocation
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
-      this(path, srcType, new ArrayList<>());
+      this(path, srcType, Collections.emptyList());
     }
 
     private DirectoryBasedAnalysisInputLocation(
@@ -290,7 +290,7 @@ public abstract class PathBasedAnalysisInputLocation
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
         throws IOException {
-      this(warPath, srcType, new ArrayList<>());
+      this(warPath, srcType, Collections.emptyList());
     }
 
     private WarArchiveAnalysisInputLocation(

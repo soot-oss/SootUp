@@ -38,7 +38,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    this(path, srcType, new ArrayList<>());
+    this(path, srcType, Collections.emptyList());
   }
 
   public JimpleAnalysisInputLocation(
