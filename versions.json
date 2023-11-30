@@ -2,7 +2,10 @@
   {
     "version": "fix_ci_preview",
     "title": "PR Preview fix_ci",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "feature_moveLanguageIntoInputLocation_preview",
