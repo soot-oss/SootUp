@@ -80,12 +80,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       @Nonnull String classPath, @Nonnull SourceType srcType) {
     this.srcType = srcType;
     if (classPath.length() <= 0) {
-      throw new IllegalStateException("Empty class path given");
+      throw new IllegalArgumentException("Empty class path given");
     }
     cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
-      throw new IllegalStateException("Empty class path is given.");
+      throw new IllegalArgumentException("Empty class path is given.");
     }
   }
 
@@ -133,9 +133,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       @Nonnull String entry, FileSystem fileSystem) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try {
-        return StreamUtils.iteratorToStream(
-            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}"); ) {
+        return StreamUtils.iteratorToStream(paths.iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new IllegalStateException("Malformed wildcard entry", e);
       } catch (IOException e) {
@@ -213,14 +212,9 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    */
   private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(
       @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
-    try {
-      return explode(jarPath, fileSystem)
-          .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
-          .collect(Collectors.toList());
-
-    } catch (IllegalArgumentException e) {
-      throw new IllegalStateException("Malformed class path given: " + jarPath, e);
-    }
+    return explode(jarPath, fileSystem)
+        .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
+        .collect(Collectors.toList());
   }
 
   @Override

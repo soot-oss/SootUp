@@ -31,7 +31,6 @@ import sootup.core.Project;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.EmptyClassLoadingOptions;
@@ -118,7 +117,7 @@ public class JavaModuleView extends JavaView {
 
     Optional<JavaModuleInfo> moduleInfoOpt = getModuleInfo(packageName.getModuleSignature());
     if (!moduleInfoOpt.isPresent()) {
-      throw new ResolveException("ModuleDescriptor not available.");
+      throw new IllegalStateException("ModuleDescriptor not available.");
     }
     JavaModuleInfo moduleInfo = moduleInfoOpt.get();
 

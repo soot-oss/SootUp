@@ -10,6 +10,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -34,9 +35,7 @@ public class CallgraphExample {
     JavaProject project =
         JavaProject.builder(language)
             .addInputLocation(inputLocation)
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar")) // add rt.jar
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation()) // add rt.jar
             .build();
 
     JavaView view = project.createView();

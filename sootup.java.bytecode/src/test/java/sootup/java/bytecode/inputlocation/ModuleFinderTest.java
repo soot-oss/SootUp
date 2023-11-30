@@ -17,7 +17,22 @@ import sootup.java.core.signatures.ModuleSignature;
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
-  public void discoverModuleByName() {
+  public void discoverJarModuleByName() {
+    ModuleFinder moduleFinder = new ModuleFinder(jar.toString());
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("MiniApp"));
+    assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
+  }
+
+  @Test
+  public void discoverJarModuleInAllModules() {
+    ModuleFinder moduleFinder = new ModuleFinder(jar.toString());
+    Collection<ModuleSignature> modules = moduleFinder.getAllModules();
+    assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("MiniApp")));
+  }
+
+  @Test
+  public void discoverWarModuleByName() {
     ModuleFinder moduleFinder = new ModuleFinder(war.toString());
     AnalysisInputLocation<JavaSootClass> inputLocation =
         moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp"));
@@ -25,7 +40,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   }
 
   @Test
-  public void discoverModuleInAllModules() {
+  public void discoverWarModuleInAllModules() {
     ModuleFinder moduleFinder = new ModuleFinder(war.toString());
     Collection<ModuleSignature> modules = moduleFinder.getAllModules();
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp")));

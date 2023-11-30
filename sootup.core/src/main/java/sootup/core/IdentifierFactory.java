@@ -253,4 +253,10 @@ public interface IdentifierFactory {
    * @return the class type
    */
   ClassType fromPath(Path rootDirectory, Path file);
+
+  boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+
+  boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+
+  boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 }

@@ -1,7 +1,30 @@
 package sootup.analysis.interprocedural.icfg;
 
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 2022-2023 Palaniappan Muthuraman, Jonas Klauke
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.*;
 import java.util.stream.Collectors;
+import sootup.callgraph.CallGraph;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
@@ -11,7 +34,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.MethodDispatchResolver;
 import sootup.core.types.VoidType;
 import sootup.core.util.DotExporter;
 import sootup.core.views.View;
@@ -19,11 +41,13 @@ import sootup.core.views.View;
 public class ICFGDotExporter {
 
   public static String buildICFGGraph(
-      Map<MethodSignature, StmtGraph> signatureToStmtGraph, View<? extends SootClass<?>> view) {
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      View<? extends SootClass<?>> view,
+      CallGraph callGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;
-    calls = computeCalls(signatureToStmtGraph, view);
+    calls = computeCalls(signatureToStmtGraph, view, callGraph);
     for (Map.Entry<MethodSignature, StmtGraph> entry : signatureToStmtGraph.entrySet()) {
       String graph = DotExporter.buildGraph(entry.getValue(), true, calls, entry.getKey());
       sb.append(graph + "\n");
@@ -37,9 +61,13 @@ public class ICFGDotExporter {
    * methods.
    */
   public static Map<Integer, MethodSignature> computeCalls(
-      Map<MethodSignature, StmtGraph> stmtGraphSet, View<? extends SootClass<?>> view) {
+      Map<MethodSignature, StmtGraph> stmtGraphSet,
+      View<? extends SootClass<?>> view,
+      CallGraph callgraph) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
-    for (StmtGraph stmtGraph : stmtGraphSet.values()) {
+    for (Map.Entry<MethodSignature, StmtGraph> entry : stmtGraphSet.entrySet()) {
+      StmtGraph stmtGraph = entry.getValue();
+      MethodSignature source = entry.getKey();
       Collection<? extends BasicBlock<?>> blocks;
       try {
         blocks = stmtGraph.getBlocksSorted();
@@ -50,11 +78,11 @@ public class ICFGDotExporter {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
           if (stmt.containsInvokeExpr()) {
-            MethodSignature methodSignature = stmt.getInvokeExpr().getMethodSignature();
+            MethodSignature target = stmt.getInvokeExpr().getMethodSignature();
             int hashCode = stmt.hashCode();
-            calls.put(hashCode, methodSignature);
+            calls.put(hashCode, target);
             // compute all the classes that are made to the subclasses as well
-            connectEdgesToSubClasses(methodSignature, view, calls);
+            connectEdgesToSubClasses(source, target, view, calls, callgraph);
           } else if (stmt instanceof JAssignStmt) {
             JAssignStmt jAssignStmt = (JAssignStmt) stmt;
             Integer currentHashCode = stmt.hashCode();
@@ -85,44 +113,40 @@ public class ICFGDotExporter {
   }
 
   public static Set<MethodSignature> getMethodSignatureInSubClass(
-      MethodSignature targetMethodSignature, View<? extends SootClass<?>> view) {
-    try {
-      return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
-          .map(
-              methodSignature ->
-                  MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
-          .filter(Optional::isPresent)
-          .map(Optional::get)
-          .collect(Collectors.toSet());
-    } catch (Exception e) {
-      return null;
+      MethodSignature source, MethodSignature target, CallGraph callGraph) {
+    if (!callGraph.containsMethod(source) || !callGraph.containsMethod(target)) {
+      return Collections.emptySet();
     }
+    return callGraph.callsFrom(source).stream()
+        .filter(
+            methodSignature -> methodSignature.getSubSignature().equals(target.getSubSignature()))
+        .collect(Collectors.toSet());
   }
 
   public static void connectEdgesToSubClasses(
-      MethodSignature methodSignature,
+      MethodSignature source,
+      MethodSignature target,
       View<? extends SootClass<?>> view,
-      Map<Integer, MethodSignature> calls) {
+      Map<Integer, MethodSignature> calls,
+      CallGraph callgraph) {
     Set<MethodSignature> methodSignatureInSubClass =
-        getMethodSignatureInSubClass(methodSignature, view);
-    if (methodSignatureInSubClass != null) {
-      methodSignatureInSubClass.forEach(
-          subclassmethodSignature -> {
-            Optional<? extends SootMethod> method = view.getMethod(methodSignature);
-            MethodSignature initMethod =
-                new MethodSignature(
-                    subclassmethodSignature.getDeclClassType(),
-                    new MethodSubSignature(
-                        "<init>", Collections.emptyList(), VoidType.getInstance()));
-            if (method.isPresent()
-                && !subclassmethodSignature.toString().equals(initMethod.toString())) {
-              if (method.get().hasBody()) {
-                calls.put(
-                    method.get().getBody().getStmtGraph().getStartingStmt().hashCode(),
-                    subclassmethodSignature);
-              }
+        getMethodSignatureInSubClass(source, target, callgraph);
+    methodSignatureInSubClass.forEach(
+        subclassmethodSignature -> {
+          Optional<? extends SootMethod> method = view.getMethod(target);
+          MethodSignature initMethod =
+              new MethodSignature(
+                  subclassmethodSignature.getDeclClassType(),
+                  new MethodSubSignature(
+                      "<init>", Collections.emptyList(), VoidType.getInstance()));
+          if (method.isPresent()
+              && !subclassmethodSignature.toString().equals(initMethod.toString())) {
+            if (method.get().hasBody()) {
+              calls.put(
+                  method.get().getBody().getStmtGraph().getStartingStmt().hashCode(),
+                  subclassmethodSignature);
             }
-          });
-    }
+          }
+        });
   }
 }

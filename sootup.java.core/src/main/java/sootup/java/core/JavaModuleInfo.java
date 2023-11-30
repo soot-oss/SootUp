@@ -24,7 +24,6 @@ package sootup.java.core;
 
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.frontend.ResolveException;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -87,33 +86,33 @@ public abstract class JavaModuleInfo {
       @Override
       public Collection<ModuleReference> requires() {
         // can read all other modules and the unnamed module (modules on the classpath)
-        throw new ResolveException(
+        throw new UnsupportedOperationException(
             "All modules can be required from the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<PackageReference> exports() {
         // all Packages are exported
-        throw new ResolveException(
+        throw new UnsupportedOperationException(
             "All Packages are exported in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<PackageReference> opens() {
         // all Packages are open
-        throw new ResolveException(
+        throw new UnsupportedOperationException(
             "All Packages are open in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<InterfaceReference> provides() {
-        throw new ResolveException(
+        throw new UnsupportedOperationException(
             "All Packages are open in the automatic module. Handle it separately.");
       }
 
       @Override
       public Collection<JavaClassType> uses() {
-        throw new ResolveException(
+        throw new UnsupportedOperationException(
             "All Packages are open in the automatic module. Handle it separately.");
       }
 
