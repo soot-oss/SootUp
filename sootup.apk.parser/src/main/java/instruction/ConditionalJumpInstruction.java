@@ -6,6 +6,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
@@ -38,7 +39,7 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
             // set marker unit to swap real gotostmt with otherwise
             body.addDeferredJimplification(this);
             markerUnit = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-            stmt = markerUnit;
+            setStmt(markerUnit);
             body.add(stmt);
         }
     }
@@ -89,6 +90,9 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
     public void deferredJimplify(DexBody body) {
          JIfStmt jIfStmt = ifStatement(body);
          body.replaceStmt(markerUnit, jIfStmt);
+         if(!branchingStmtInstructionHashMap.isEmpty()){
+             body.replaceBranchingStmt(getFirstEntryFromBranchingMap(), jIfStmt);
+         }
 //         Stmt labelStmt;
 //         if(targetInstruction.stmt == null){
 //             labelStmt = Util.Util.makeStmt(targetInstruction);
@@ -97,6 +101,7 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
 //             labelStmt = targetInstruction.stmt;
 //         }
 //         body.addBranchingStmt(jIfStmt, Collections.singletonList(labelStmt));
+//        body.addBranchingStmt(jIfStmt, Collections.singletonList(targetInstruction.stmt));
          setStmt(jIfStmt);
     }
 }

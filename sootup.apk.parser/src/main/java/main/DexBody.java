@@ -26,6 +26,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.types.*;
 import sootup.java.core.JavaIdentifierFactory;
@@ -306,15 +307,6 @@ public class DexBody {
         return dexMethodSource.makeSootMethod();
     }
 
-    public Map<BranchingStmt, List<Stmt>> replaceNoOpStmts(){
-        Map<BranchingStmt, List<Stmt>> filteredMap = convertMultimap(branchingMap).entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().stream().anyMatch(stmt -> stmt instanceof JNopStmt))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        return null;
-    }
-
     public Map<BranchingStmt, List<Stmt>> convertMultimap(LinkedListMultimap<BranchingStmt, List<Stmt>> multimap) {
         Map<BranchingStmt, List<Stmt>> resultMap = new HashMap<>();
 
@@ -323,6 +315,10 @@ public class DexBody {
         }
 
         return resultMap;
+    }
+
+    public void replaceBranchingStmt(BranchingStmt branchingStmt, Stmt stmtToReplace){
+        branchingMap.replaceValues(branchingStmt, Collections.singletonList(Collections.singletonList(stmtToReplace)));
     }
 
 
@@ -460,10 +456,6 @@ public class DexBody {
         for(ReTypeableInstruction reTypeableInstruction : instructionsToRetype){
 //                reTypeableInstruction.retype(this);
         }
-    }
-
-    private void createMutableStmtGraph() {
-
     }
 
     private void addTraps() {

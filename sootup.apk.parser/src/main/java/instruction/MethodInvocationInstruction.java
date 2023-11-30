@@ -41,13 +41,11 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
             assignStmt = Jimple.newAssignStmt(body.getStoreResultLocal(), invocation, StmtPositionInfo.createNoStmtPositionInfo());
             setStmt(assignStmt);
             body.add(assignStmt);
-            stmt = assignStmt;
         }
         else{
             JInvokeStmt jInvokeStmt = Jimple.newInvokeStmt(invocation, StmtPositionInfo.createNoStmtPositionInfo());
             setStmt(jInvokeStmt);
             body.add(jInvokeStmt);
-            stmt = jInvokeStmt;
         }
     }
 

@@ -21,7 +21,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
         }
         body.addDeferredJimplification(this);
         markerUnit = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        stmt = markerUnit;
+        setStmt(markerUnit);
         body.add(markerUnit);
     }
 
@@ -31,6 +31,9 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
 
     private JGotoStmt gotoStatement(DexBody body) {
         JGotoStmt go = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        if(targetInstruction.stmt instanceof JNopStmt){
+            targetInstruction.addBranchingStmtMap(go, targetInstruction);
+        }
         body.addBranchingStmt(go, Collections.singletonList(targetInstruction.stmt));
         setStmt(go);
         return go;
@@ -39,6 +42,9 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
     @Override
     public void deferredJimplify(DexBody body) {
         JGotoStmt jGotoStmt = gotoStatement(body);
+        if(!branchingStmtInstructionHashMap.isEmpty()){
+            body.replaceBranchingStmt(getFirstEntryFromBranchingMap(), jGotoStmt);
+        }
 //        Stmt labelStmt;
 //        if(targetInstruction.stmt == null){
 //            labelStmt = Util.Util.makeStmt(targetInstruction);
@@ -49,6 +55,8 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
 //        if(!(targetInstruction.stmt instanceof JGotoStmt)) {
 //            body.addBranchingStmt(jGotoStmt, Collections.singletonList(labelStmt));
 //        }
+//        body.addBranchingStmt(jGotoStmt, Collections.singletonList(targetInstruction.stmt));
         body.insertAfter(jGotoStmt, markerUnit);
+        setStmt(jGotoStmt);
     }
 }

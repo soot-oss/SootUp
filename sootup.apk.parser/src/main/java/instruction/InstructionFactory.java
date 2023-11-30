@@ -210,6 +210,13 @@ public class InstructionFactory {
                 return new ReturnInstruction(instruction, codeAddress);
             case RETURN_VOID:
                 return new ReturnVoidInstruction(instruction, codeAddress);
+            case NEG_INT:
+            case NOT_INT:
+            case NEG_FLOAT:
+            case NEG_LONG:
+            case NOT_LONG:
+            case NEG_DOUBLE:
+                return new UnOpInstruction(instruction, codeAddress);
             case INVOKE_DIRECT:
             case INVOKE_DIRECT_RANGE:
             case INVOKE_SUPER:

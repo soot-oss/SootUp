@@ -25,7 +25,7 @@ public abstract class SwitchInstruction extends PseudoInstruction implements Def
     @Override
     public void jimplify(DexBody body) {
         markerUnit = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        stmt = markerUnit;
+        setStmt(markerUnit);
         body.add(markerUnit);
         body.addDeferredJimplification(this);
     }
@@ -39,5 +39,6 @@ public abstract class SwitchInstruction extends PseudoInstruction implements Def
         Instruction targetData = body.instructionAtAddress(targetAddress).instruction;
         Stmt stmt = switchStatement(body, targetData, key);
         body.insertAfter(stmt, markerUnit);
+        setStmt(stmt);
     }
 }

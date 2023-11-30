@@ -4,13 +4,11 @@ import main.DexBody;
 import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.RegisterRangeInstruction;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.Type;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class represents a wrapper around dexlib instruction.
@@ -20,12 +18,28 @@ public abstract class DexLibAbstractInstruction {
     protected int lineNumber = -1;
 
     protected final Instruction instruction;
+
+    protected HashMap<BranchingStmt, DexLibAbstractInstruction> branchingStmtInstructionHashMap = new HashMap<>();
+
     protected final int codeAddress;
 
     protected Stmt stmt;
 
     public Instruction getInstruction() {
         return instruction;
+    }
+
+    public void addBranchingStmtMap(BranchingStmt branchingStmt, DexLibAbstractInstruction dexLibAbstractInstruction){
+        branchingStmtInstructionHashMap.put(branchingStmt, dexLibAbstractInstruction);
+    }
+
+    public BranchingStmt getFirstEntryFromBranchingMap(){
+        Iterator<Map.Entry<BranchingStmt, DexLibAbstractInstruction>> iterator = branchingStmtInstructionHashMap.entrySet().iterator();
+        return iterator.hasNext() ? iterator.next().getKey() : null;
+    }
+
+    public HashMap<BranchingStmt, DexLibAbstractInstruction> getBranchingStmtInstructionHashMap() {
+        return branchingStmtInstructionHashMap;
     }
 
     /**
