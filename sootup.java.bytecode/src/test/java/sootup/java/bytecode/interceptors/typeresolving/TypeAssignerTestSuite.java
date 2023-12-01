@@ -9,6 +9,7 @@ import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
@@ -28,8 +29,7 @@ public class TypeAssignerTestSuite {
 
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(baseDir);
-    JavaClassPathAnalysisInputLocation rtJar =
-        new JavaClassPathAnalysisInputLocation(System.getProperty("java.home") + "/lib/rt.jar");
+    DefaultRTJarAnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8))
             .addInputLocation(analysisInputLocation)

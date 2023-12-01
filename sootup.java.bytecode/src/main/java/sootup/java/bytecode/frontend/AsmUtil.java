@@ -166,18 +166,6 @@ public final class AsmUtil {
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 
-  /**
-   * Converts a type descriptor to a Jimple reference type.
-   *
-   * @param desc the descriptor.
-   * @return the reference type.
-   */
-  public static Type toJimpleSignature(@Nonnull String desc) {
-    return desc.charAt(0) == '['
-        ? toJimpleType(desc)
-        : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
-  }
-
   @Nonnull
   public static Type toJimpleType(@Nonnull String desc) {
     int nrDims = countArrayDim(desc);
@@ -206,7 +194,7 @@ public final class AsmUtil {
 
   @Nonnull
   public static Type arrayTypetoJimpleType(@Nonnull String desc) {
-    if (desc.startsWith("[")) {
+    if (desc.charAt(0) == '[') {
       return toJimpleType(desc);
     }
     return toJimpleClassType(desc);

@@ -87,7 +87,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
   public JavaModulePathAnalysisInputLocation(
       @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
     this.sourcetype = sourcetype;
-    moduleFinder = new ModuleFinder(modulePath, fileSystem);
+    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype);
   }
 
   @Nonnull

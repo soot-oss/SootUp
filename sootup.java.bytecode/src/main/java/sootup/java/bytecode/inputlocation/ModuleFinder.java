@@ -65,7 +65,7 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
-  private SourceType sourceType = null; // FIXME !
+  private final SourceType sourceType;
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();
@@ -75,8 +75,11 @@ public class ModuleFinder {
    * Helper Class to discover modules in a given module path.
    *
    * @param modulePath the module path
+   * @param sourceType
    */
-  public ModuleFinder(@Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
+  public ModuleFinder(
+      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath, fileSystem)
             .collect(Collectors.toList());
@@ -92,8 +95,12 @@ public class ModuleFinder {
     }
   }
 
+  public ModuleFinder(@Nonnull String modulePath, @Nonnull SourceType sourceType) {
+    this(modulePath, FileSystems.getDefault(), sourceType);
+  }
+
   public ModuleFinder(@Nonnull String modulePath) {
-    this(modulePath, FileSystems.getDefault());
+    this(modulePath, FileSystems.getDefault(), SourceType.Application);
   }
 
   @Nonnull

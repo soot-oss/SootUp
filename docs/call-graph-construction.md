@@ -19,9 +19,7 @@ Below, we show how to create a type hierarchy:
     JavaProject project =
         JavaProject.builder(language)
             .addInputLocation(inputLocation)
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .build();
 
     JavaView view = project.createView();

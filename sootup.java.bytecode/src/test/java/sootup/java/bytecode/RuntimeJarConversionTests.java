@@ -1,12 +1,11 @@
 package sootup.java.bytecode;
 
-import java.nio.file.Paths;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
@@ -16,9 +15,7 @@ import sootup.java.core.views.JavaView;
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
+    AnalysisInputLocation<JavaSootClass> inputLocation = new DefaultRTJarAnalysisInputLocation();
     JavaProject project =
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
 
