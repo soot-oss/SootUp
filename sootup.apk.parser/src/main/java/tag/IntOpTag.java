@@ -3,15 +3,15 @@ package tag;
 import main.Tag;
 
 public class IntOpTag implements Tag {
-    public static final String NAME = "IntOpTag";
+  public static final String NAME = "IntOpTag";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
-    @Override
-    public byte[] getValue() {
-        return new byte[1];
-    }
+  @Override
+  public byte[] getValue() {
+    return new byte[1];
+  }
 }

@@ -9,16 +9,20 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class MoveResultInstruction extends DexLibAbstractInstruction {
 
-    public MoveResultInstruction(Instruction instruction, int codeAdress) {
-        super(instruction, codeAdress);
-    }
+  public MoveResultInstruction(Instruction instruction, int codeAdress) {
+    super(instruction, codeAdress);
+  }
 
-    @Override
-    public void jimplify(DexBody body) {
-        int dest = ((OneRegisterInstruction) instruction).getRegisterA();
+  @Override
+  public void jimplify(DexBody body) {
+    int dest = ((OneRegisterInstruction) instruction).getRegisterA();
 
-        JAssignStmt assignStmt = Jimple.newAssignStmt(body.getRegisterLocal(dest), body.getStoreResultLocal(), StmtPositionInfo.createNoStmtPositionInfo());
-        setStmt(assignStmt);
-        body.add(assignStmt);
-    }
+    JAssignStmt assignStmt =
+        Jimple.newAssignStmt(
+            body.getRegisterLocal(dest),
+            body.getStoreResultLocal(),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    setStmt(assignStmt);
+    body.add(assignStmt);
+  }
 }

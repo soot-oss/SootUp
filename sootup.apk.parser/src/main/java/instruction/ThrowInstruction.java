@@ -8,15 +8,18 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JThrowStmt;
 
 public class ThrowInstruction extends DexLibAbstractInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        Instruction11x throwInstruction = (Instruction11x) instruction;
-        JThrowStmt jThrowStmt = Jimple.newThrowStmt(body.getRegisterLocal(throwInstruction.getRegisterA()), StmtPositionInfo.createNoStmtPositionInfo());
-        setStmt(jThrowStmt);
-        body.add(jThrowStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    Instruction11x throwInstruction = (Instruction11x) instruction;
+    JThrowStmt jThrowStmt =
+        Jimple.newThrowStmt(
+            body.getRegisterLocal(throwInstruction.getRegisterA()),
+            StmtPositionInfo.createNoStmtPositionInfo());
+    setStmt(jThrowStmt);
+    body.add(jThrowStmt);
+  }
 
-    public ThrowInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public ThrowInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 }

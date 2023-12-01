@@ -10,26 +10,28 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class IgetInstruction extends FieldInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
-        int dest = i.getRegisterA();
-        int object = i.getRegisterB();
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        JInstanceFieldRef jInstanceFieldRef = Jimple.newInstanceFieldRef(body.getRegisterLocal(object), getSootFieldRef(f).getFieldSignature());
-        JAssignStmt assignStmt = getAssignStmt(body, body.getRegisterLocal(dest), jInstanceFieldRef);
-        setStmt(assignStmt);
-        body.add(assignStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
+    int dest = i.getRegisterA();
+    int object = i.getRegisterB();
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    JInstanceFieldRef jInstanceFieldRef =
+        Jimple.newInstanceFieldRef(
+            body.getRegisterLocal(object), getSootFieldRef(f).getFieldSignature());
+    JAssignStmt assignStmt = getAssignStmt(body, body.getRegisterLocal(dest), jInstanceFieldRef);
+    setStmt(assignStmt);
+    body.add(assignStmt);
+  }
 
-    public IgetInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public IgetInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 
-    @Override
-    boolean overridesRegister(int register) {
-        TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
-        int dest = i.getRegisterA();
-        return register == dest;
-    }
+  @Override
+  boolean overridesRegister(int register) {
+    TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
+    int dest = i.getRegisterA();
+    return register == dest;
+  }
 }

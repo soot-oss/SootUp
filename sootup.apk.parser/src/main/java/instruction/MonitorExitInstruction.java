@@ -9,16 +9,17 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 
 public class MonitorExitInstruction extends DexLibAbstractInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        int reg = ((OneRegisterInstruction) instruction).getRegisterA();
-        Local object = body.getRegisterLocal(reg);
-        JExitMonitorStmt exitMonitorStmt = Jimple.newExitMonitorStmt(object, StmtPositionInfo.createNoStmtPositionInfo());
-        setStmt(exitMonitorStmt);
-        body.add(exitMonitorStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    int reg = ((OneRegisterInstruction) instruction).getRegisterA();
+    Local object = body.getRegisterLocal(reg);
+    JExitMonitorStmt exitMonitorStmt =
+        Jimple.newExitMonitorStmt(object, StmtPositionInfo.createNoStmtPositionInfo());
+    setStmt(exitMonitorStmt);
+    body.add(exitMonitorStmt);
+  }
 
-    public MonitorExitInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public MonitorExitInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 }

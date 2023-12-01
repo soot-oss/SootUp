@@ -8,21 +8,18 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
 import sootup.core.jimple.common.stmt.JIfStmt;
-import sootup.core.jimple.common.stmt.JNopStmt;
-
-import java.util.Collections;
 
 public class IfTestInstruction extends ConditionalJumpInstruction {
-    public IfTestInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public IfTestInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 
-    @Override
-    protected JIfStmt ifStatement(DexBody dexBody) {
-        Instruction22t i = (Instruction22t) instruction;
-        Local one = dexBody.getRegisterLocal(i.getRegisterA());
-        Local other = dexBody.getRegisterLocal(i.getRegisterB());
-        AbstractConditionExpr condition = getComparisonExpr(one, other);
-        return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
-    }
+  @Override
+  protected JIfStmt ifStatement(DexBody dexBody) {
+    Instruction22t i = (Instruction22t) instruction;
+    Local one = dexBody.getRegisterLocal(i.getRegisterA());
+    Local other = dexBody.getRegisterLocal(i.getRegisterB());
+    AbstractConditionExpr condition = getComparisonExpr(one, other);
+    return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
+  }
 }

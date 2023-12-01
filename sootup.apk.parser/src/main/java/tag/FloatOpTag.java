@@ -4,15 +4,15 @@ import main.Tag;
 
 public class FloatOpTag implements Tag {
 
-    public static final String NAME = "FloatOpTag";
+  public static final String NAME = "FloatOpTag";
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
+  @Override
+  public String getName() {
+    return NAME;
+  }
 
-    @Override
-    public byte[] getValue() {
-        return new byte[1];
-    }
+  @Override
+  public byte[] getValue() {
+    return new byte[1];
+  }
 }

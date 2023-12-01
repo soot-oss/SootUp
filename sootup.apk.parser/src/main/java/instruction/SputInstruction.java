@@ -13,24 +13,25 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.Type;
 
 public class SputInstruction extends FieldInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        int source = ((OneRegisterInstruction) instruction).getRegisterA();
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        JStaticFieldRef instanceField = Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
-        Local sourceValue = body.getRegisterLocal(source);
-        JAssignStmt assign = getAssignStmt(body, sourceValue, instanceField);
-        setStmt(assign);
-        body.add(assign);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    int source = ((OneRegisterInstruction) instruction).getRegisterA();
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    JStaticFieldRef instanceField =
+        Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
+    Local sourceValue = body.getRegisterLocal(source);
+    JAssignStmt assign = getAssignStmt(body, sourceValue, instanceField);
+    setStmt(assign);
+    body.add(assign);
+  }
 
-    @Override
-    protected Type getTargetType(DexBody body) {
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        return DexUtil.toSootType(f.getType(),0);
-    }
+  @Override
+  protected Type getTargetType(DexBody body) {
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    return DexUtil.toSootType(f.getType(), 0);
+  }
 
-    public SputInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public SputInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 }

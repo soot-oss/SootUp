@@ -14,54 +14,53 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class ConstInstruction extends DexLibAbstractInstruction {
 
-    public ConstInstruction(Instruction instruction, int codeAdress) {
-        super(instruction, codeAdress);
+  public ConstInstruction(Instruction instruction, int codeAdress) {
+    super(instruction, codeAdress);
+  }
+
+  @Override
+  public void jimplify(DexBody body) {
+    int dest = ((OneRegisterInstruction) instruction).getRegisterA();
+    Constant cst = getConstant();
+    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, null);
+    setStmt(assign);
+    body.add(assign);
+  }
+
+  /** Return the literal constant for this instruction. */
+  private Constant getConstant() {
+    long literal = 0;
+    if (instruction instanceof WideLiteralInstruction) {
+      literal = ((WideLiteralInstruction) instruction).getWideLiteral();
+    } else if (instruction instanceof NarrowLiteralInstruction) {
+      literal = ((NarrowLiteralInstruction) instruction).getNarrowLiteral();
+    } else {
+      throw new RuntimeException("literal error: expected narrow or wide literal.");
     }
 
-    @Override
-    public void jimplify(DexBody body) {
-        int dest = ((OneRegisterInstruction) instruction).getRegisterA();
-        Constant cst = getConstant();
-        JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, null);
-        setStmt(assign);
-        body.add(assign);
+    Opcode opcode = instruction.getOpcode();
+    switch (opcode) {
+      case CONST:
+      case CONST_4:
+      case CONST_HIGH16:
+      case CONST_16:
+        return IntConstant.getInstance((int) literal);
+
+      case CONST_WIDE_HIGH16:
+      case CONST_WIDE:
+      case CONST_WIDE_16:
+      case CONST_WIDE_32:
+        return LongConstant.getInstance(literal);
+      default:
+        throw new IllegalArgumentException(
+            "Expected a const or a const-wide instruction, got neither.");
     }
+  }
 
-    /**
-     * Return the literal constant for this instruction.
-     */
-    private Constant getConstant() {
-        long literal = 0;
-        if (instruction instanceof WideLiteralInstruction) {
-            literal = ((WideLiteralInstruction) instruction).getWideLiteral();
-        } else if (instruction instanceof NarrowLiteralInstruction) {
-            literal = ((NarrowLiteralInstruction) instruction).getNarrowLiteral();
-        } else {
-            throw new RuntimeException("literal error: expected narrow or wide literal.");
-        }
-
-        Opcode opcode = instruction.getOpcode();
-        switch (opcode) {
-            case CONST:
-            case CONST_4:
-            case CONST_HIGH16:
-            case CONST_16:
-                return IntConstant.getInstance((int) literal);
-
-            case CONST_WIDE_HIGH16:
-            case CONST_WIDE:
-            case CONST_WIDE_16:
-            case CONST_WIDE_32:
-                return LongConstant.getInstance(literal);
-            default:
-                throw new IllegalArgumentException("Expected a const or a const-wide instruction, got neither.");
-        }
-    }
-
-    @Override
-    boolean overridesRegister(int register) {
-        OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-        int dest = i.getRegisterA();
-        return register == dest;
-    }
+  @Override
+  boolean overridesRegister(int register) {
+    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
+    int dest = i.getRegisterA();
+    return register == dest;
+  }
 }

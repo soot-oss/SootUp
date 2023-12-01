@@ -13,25 +13,28 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.Type;
 
 public class IputInstruction extends FieldInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
-        int source = i.getRegisterA();
-        int object = i.getRegisterB();
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        JInstanceFieldRef jInstanceFieldRef = Jimple.newInstanceFieldRef(body.getRegisterLocal(object), getSootFieldRef(f).getFieldSignature());
-        Local sourceValue = body.getRegisterLocal(source);
-        JAssignStmt jAssignStmt = getAssignStmt(body, sourceValue, jInstanceFieldRef);
-        setStmt(jAssignStmt);
-        body.add(jAssignStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
+    int source = i.getRegisterA();
+    int object = i.getRegisterB();
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    JInstanceFieldRef jInstanceFieldRef =
+        Jimple.newInstanceFieldRef(
+            body.getRegisterLocal(object), getSootFieldRef(f).getFieldSignature());
+    Local sourceValue = body.getRegisterLocal(source);
+    JAssignStmt jAssignStmt = getAssignStmt(body, sourceValue, jInstanceFieldRef);
+    setStmt(jAssignStmt);
+    body.add(jAssignStmt);
+  }
 
-    public IputInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
-    @Override
-    protected Type getTargetType(DexBody body) {
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        return DexUtil.toSootType(f.getType(), 0);
-    }
+  public IputInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
+
+  @Override
+  protected Type getTargetType(DexBody body) {
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    return DexUtil.toSootType(f.getType(), 0);
+  }
 }

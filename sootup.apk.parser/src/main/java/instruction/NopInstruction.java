@@ -7,15 +7,16 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 
 public class NopInstruction extends DexLibAbstractInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        setStmt(jNopStmt);
-        // TODO: In one example, there comes NoOp Instruction after the return statement, dont know how to handle. Should discuss with Kadiray.
-//        body.add(jNopStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    setStmt(jNopStmt);
+    // TODO: In one example, there comes NoOp Instruction after the return statement, dont know how
+    // to handle. Should discuss with Kadiray.
+    //        body.add(jNopStmt);
+  }
 
-    public NopInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public NopInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 }

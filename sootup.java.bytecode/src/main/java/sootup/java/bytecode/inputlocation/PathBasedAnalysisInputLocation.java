@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import com.googlecode.dex2jar.tools.Dex2jarCmd;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -535,7 +534,7 @@ public abstract class PathBasedAnalysisInputLocation
       int start = apkPath.lastIndexOf(File.separator);
       int end = apkPath.lastIndexOf(".apk");
       String outputFile = outDir + apkPath.substring(start + 1, end) + ".jar";
-//      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
+      //      Dex2jarCmd.main("-f", apkPath, "-o", outputFile);
       return outputFile;
     }
   }

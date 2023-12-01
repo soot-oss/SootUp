@@ -11,24 +11,26 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
 public class SgetInstruction extends FieldInstruction {
-    @Override
-    public void jimplify(DexBody body) {
-        int dest = ((OneRegisterInstruction) instruction).getRegisterA();
-        FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
-        JStaticFieldRef r = Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
-        JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), r, StmtPositionInfo.createNoStmtPositionInfo());
-        body.add(assign);
-        setStmt(assign);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    int dest = ((OneRegisterInstruction) instruction).getRegisterA();
+    FieldReference f = (FieldReference) ((ReferenceInstruction) instruction).getReference();
+    JStaticFieldRef r = Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
+    JAssignStmt assign =
+        Jimple.newAssignStmt(
+            body.getRegisterLocal(dest), r, StmtPositionInfo.createNoStmtPositionInfo());
+    body.add(assign);
+    setStmt(assign);
+  }
 
-    public SgetInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public SgetInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 
-    @Override
-    boolean overridesRegister(int register) {
-        OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-        int dest = i.getRegisterA();
-        return register == dest;
-    }
+  @Override
+  boolean overridesRegister(int register) {
+    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
+    int dest = i.getRegisterA();
+    return register == dest;
+  }
 }

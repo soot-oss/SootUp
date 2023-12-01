@@ -1,6 +1,11 @@
 package instruction;
 
+import static Util.Util.*;
+import static Util.Util.dottedClassName;
+
 import Util.DexUtil;
+import java.util.HashSet;
+import java.util.Set;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
@@ -14,45 +19,38 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static Util.Util.*;
-import static Util.Util.dottedClassName;
-
 public class NewInstanceInstruction extends DexLibAbstractInstruction {
-    public NewInstanceInstruction(Instruction instruction, int codeAddress) {
-        super(instruction, codeAddress);
-    }
+  public NewInstanceInstruction(Instruction instruction, int codeAddress) {
+    super(instruction, codeAddress);
+  }
 
-    @Override
-    public void jimplify(DexBody body) {
-        Instruction21c i = (Instruction21c) instruction;
-        int dest = i.getRegisterA();
-        String className = dottedClassName(((TypeReference) (i.getReference())).toString());
-        ClassType classType = getClassTypeFromClassName(className);
-        JNewExpr jNewExpr = Jimple.newNewExpr(classType);
-        JAssignStmt jAssignStmt = Jimple.newAssignStmt(body.getRegisterLocal(dest), jNewExpr, StmtPositionInfo.createNoStmtPositionInfo());
-        setStmt(jAssignStmt);
-        body.add(jAssignStmt);
-    }
+  @Override
+  public void jimplify(DexBody body) {
+    Instruction21c i = (Instruction21c) instruction;
+    int dest = i.getRegisterA();
+    String className = dottedClassName(((TypeReference) (i.getReference())).toString());
+    ClassType classType = getClassTypeFromClassName(className);
+    JNewExpr jNewExpr = Jimple.newNewExpr(classType);
+    JAssignStmt jAssignStmt =
+        Jimple.newAssignStmt(
+            body.getRegisterLocal(dest), jNewExpr, StmtPositionInfo.createNoStmtPositionInfo());
+    setStmt(jAssignStmt);
+    body.add(jAssignStmt);
+  }
 
-    @Override
-    boolean overridesRegister(int register) {
-        OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-        int dest = i.getRegisterA();
-        return register == dest;
-    }
+  @Override
+  boolean overridesRegister(int register) {
+    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
+    int dest = i.getRegisterA();
+    return register == dest;
+  }
 
-    @Override
-    public Set<Type> introducedTypes() {
-        ReferenceInstruction i = (ReferenceInstruction) instruction;
+  @Override
+  public Set<Type> introducedTypes() {
+    ReferenceInstruction i = (ReferenceInstruction) instruction;
 
-        Set<Type> types = new HashSet<Type>();
-        types.add(DexUtil.toSootType(((TypeReference) i.getReference()).getType(), 0));
-        return types;
-    }
-
-
+    Set<Type> types = new HashSet<Type>();
+    types.add(DexUtil.toSootType(((TypeReference) i.getReference()).getType(), 0));
+    return types;
+  }
 }
