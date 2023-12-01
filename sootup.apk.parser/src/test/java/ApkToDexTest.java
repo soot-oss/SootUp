@@ -1,5 +1,6 @@
 import dexpler.DexClassSource;
 import org.junit.Test;
+import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -13,13 +14,16 @@ import sootup.core.types.VoidType;
 import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static Util.Util.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -28,9 +32,8 @@ public class ApkToDexTest {
     @Test
     public void testApkConversion() {
         MutableJavaView view;
-//        String apk_path = getClass().getClassLoader().getResource("app-debug.apk").getPath();
-        String apk_path = "/Users/palaniappanmuthuraman/Documents/FlowDroid/DroidBench/apk/Aliasing/FlowSensitivity1.apk";
-        String[] stringArray = {"TaskStackBuilder", "ArrayMap"};
+        long startTime = System.currentTimeMillis();
+        String apk_path = "resources/FlowSensitivity1.apk";
         ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
         JavaProject javaProject =
                 JavaProject.builder(new JavaLanguage(8))
@@ -47,7 +50,7 @@ public class ApkToDexTest {
                 }
                 Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
                         sootClassApkAnalysisInputLocation.getClassSource(identifierFactory.getClassType(className), view);
-                if (classSource.isPresent() && !testWhetherStringPresent(stringArray, className)) {
+                if (classSource.isPresent()) {
                     DexClassSource dexClassSource = (DexClassSource) classSource.get();
                     ClassType classType = view.getIdentifierFactory().getClassType(className);
                     Set<SootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
@@ -63,32 +66,38 @@ public class ApkToDexTest {
         } catch (Exception exception) {
             exception.printStackTrace();
         } finally {
-            System.out.println(successfulconvertedNumber + " converted successfully out of " + classNamesList.size() + " classes");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+            System.out.println("Time Taken to load 740 classes: " + dateFormat.format(System.currentTimeMillis() - startTime));
         }
     }
 
-    public boolean testWhetherStringPresent(String[] stringArray, String searchString){
-        boolean isStringPresent = false;
-        for (String str : stringArray) {
-            if (searchString.contains(str)) {
-                isStringPresent = true;
-                break; // Exit the loop since the string is found
-            }
-        }
-        return isStringPresent;
+    @Test
+    public void loadAllClasses(){
+        String apk_path = "resources/FlowSensitivity1.apk";
+        long startTime = System.currentTimeMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
+        JavaProject javaProject =
+                JavaProject.builder(new JavaLanguage(8))
+                        .addInputLocation(sootClassApkAnalysisInputLocation)
+                        .build();
+        JavaView view = javaProject.createView(new FullCacheProvider<>());
+        view.getClasses();
+        System.out.println("Time Taken to load 740 classes: " + dateFormat.format(System.currentTimeMillis() - startTime));
+        assertEquals(740, view.getAmountOfStoredClasses());
     }
 
     @Test
     public void loadOneClass(){
-        String apk_path = getClass().getClassLoader().getResource("app-debug.apk").getPath();
+        String apk_path = "resources/FlowSensitivity1.apk";
         ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation = new ApkAnalysisInputLocation<>(Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
         JavaProject javaProject =
                 JavaProject.builder(new JavaLanguage(8))
                         .addInputLocation(sootClassApkAnalysisInputLocation)
                         .build();
         View view = javaProject.createView();
-        String className = "androidx.core.graphics.drawable.RoundedBitmapDrawableFactory";
-        String methodName = "RoundedBitmapDrawableFactory";
+        String className = "android.support.v4.app.FragmentState$1";
+        String methodName = "FragmentState$1";
         ClassType classType = view.getIdentifierFactory().getClassType(className);
         assertTrue(view.getClass(classType).isPresent());
         // Retrieve class
@@ -99,7 +108,5 @@ public class ApkToDexTest {
         // Retrieve method
         assertTrue(sootClass.getMethod(methodSignature.getSubSignature()).isPresent());
         SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
-//         Read jimple code of method
-        System.out.println(sootMethod.getBody());
     }
 }

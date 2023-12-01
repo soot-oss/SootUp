@@ -19,7 +19,7 @@ public abstract class DexLibAbstractInstruction {
 
     protected final Instruction instruction;
 
-    protected HashMap<BranchingStmt, DexLibAbstractInstruction> branchingStmtInstructionHashMap = new HashMap<>();
+//    protected HashMap<BranchingStmt, DexLibAbstractInstruction> branchingStmtInstructionHashMap = new HashMap<>();
 
     protected final int codeAddress;
 
@@ -29,18 +29,18 @@ public abstract class DexLibAbstractInstruction {
         return instruction;
     }
 
-    public void addBranchingStmtMap(BranchingStmt branchingStmt, DexLibAbstractInstruction dexLibAbstractInstruction){
-        branchingStmtInstructionHashMap.put(branchingStmt, dexLibAbstractInstruction);
-    }
+//    public void addBranchingStmtMap(BranchingStmt branchingStmt, DexLibAbstractInstruction dexLibAbstractInstruction){
+//        branchingStmtInstructionHashMap.put(branchingStmt, dexLibAbstractInstruction);
+//    }
 
-    public BranchingStmt getFirstEntryFromBranchingMap(){
-        Iterator<Map.Entry<BranchingStmt, DexLibAbstractInstruction>> iterator = branchingStmtInstructionHashMap.entrySet().iterator();
-        return iterator.hasNext() ? iterator.next().getKey() : null;
-    }
+//    public BranchingStmt getFirstEntryFromBranchingMap(){
+//        Iterator<Map.Entry<BranchingStmt, DexLibAbstractInstruction>> iterator = branchingStmtInstructionHashMap.entrySet().iterator();
+//        return iterator.hasNext() ? iterator.next().getKey() : null;
+//    }
 
-    public HashMap<BranchingStmt, DexLibAbstractInstruction> getBranchingStmtInstructionHashMap() {
-        return branchingStmtInstructionHashMap;
-    }
+//    public HashMap<BranchingStmt, DexLibAbstractInstruction> getBranchingStmtInstructionHashMap() {
+//        return branchingStmtInstructionHashMap;
+//    }
 
     /**
      * Jimplify this instruction.

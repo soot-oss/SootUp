@@ -23,11 +23,6 @@ public class IfTestInstruction extends ConditionalJumpInstruction {
         Local one = dexBody.getRegisterLocal(i.getRegisterA());
         Local other = dexBody.getRegisterLocal(i.getRegisterB());
         AbstractConditionExpr condition = getComparisonExpr(one, other);
-        JIfStmt jif = Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
-        if(targetInstruction.stmt instanceof JNopStmt){
-            targetInstruction.addBranchingStmtMap(jif, targetInstruction);
-        }
-        dexBody.addBranchingStmt(jif, Collections.singletonList(targetInstruction.stmt));
-        return jif;
+        return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
     }
 }

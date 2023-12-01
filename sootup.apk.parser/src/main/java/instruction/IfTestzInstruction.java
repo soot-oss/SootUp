@@ -23,18 +23,6 @@ public class IfTestzInstruction extends ConditionalJumpInstruction {
     protected JIfStmt ifStatement(DexBody dexBody) {
         Instruction21t i = (Instruction21t) instruction;
         AbstractConditionExpr condition = getComparisonExpr(dexBody, i.getRegisterA());
-        JIfStmt jif = Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
-        if(targetInstruction.stmt instanceof JNopStmt){
-            targetInstruction.addBranchingStmtMap(jif, targetInstruction);
-        }
-//        Stmt labelStmt;
-//        if(targetInstruction.stmt == null){
-//            labelStmt = Util.Util.makeStmt(targetInstruction);
-//        }
-//        else{
-//            labelStmt = targetInstruction.stmt;
-//        }
-        dexBody.addBranchingStmt(jif, Collections.singletonList(targetInstruction.stmt));
-        return jif;
+        return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
     }
 }

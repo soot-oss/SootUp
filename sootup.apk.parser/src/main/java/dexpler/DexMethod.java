@@ -22,7 +22,7 @@ public class DexMethod {
     }
 
     public SootMethod makeSootMethod(final Method method) {
-        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" + "**********");
+//        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" + "**********");
         int modifierFlags = method.getAccessFlags();
         if(Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)){
             DexMethodSource dexMethodSource = new DexMethodSource(declaringclassType, Collections.emptySet(), new MutableBlockStmtGraph(), method, Collections.emptyList());
@@ -31,7 +31,7 @@ public class DexMethod {
         else {
             DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
             SootMethod sootMethod = dexBody.makeSootMethod(method, declaringclassType);
-            System.out.println(sootMethod.getBody() + "\n" + "*********");
+//            System.out.println(sootMethod.getBody() + "\n" + "*********");
             return sootMethod;
         }
     }

@@ -14,7 +14,7 @@ public abstract class JumpInstruction extends DexLibAbstractInstruction {
         super(instruction, codeAddress);
     }
 
-    protected DexLibAbstractInstruction targetInstruction;
+    public DexLibAbstractInstruction targetInstruction;
     protected Stmt markerUnit;
 
     protected DexLibAbstractInstruction getTargetInstruction(DexBody body) {

@@ -1,4 +1,5 @@
 package main;//import Util.DexNumTransformer;
+
 import Util.DexUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -19,23 +20,26 @@ import org.jf.dexlib2.util.MethodUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.stmt.*;
-import sootup.core.model.Body;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.JNopStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
-import sootup.core.types.*;
+import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DexBody {
 
@@ -74,15 +78,11 @@ public class DexBody {
 
     protected ClassType classType;
 
-    protected Stmt lastStatement;
-
     protected List<Trap> traps;
 
     protected Set<ReTypeableInstruction> instructionsToRetype;
 
     LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap =LinkedListMultimap.create();
-
-    HashMap<Stmt, DexLibAbstractInstruction> branchingMapReplacer = new HashMap<>();
 
 
     protected class RegDbgEntry {
@@ -301,7 +301,7 @@ public class DexBody {
         jimplify();
         // All the statements are converted, it is time to create a mutable statement graph
         MutableBlockStmtGraph graph =  new MutableBlockStmtGraph();
-        stmtList.removeIf(stmt -> stmt instanceof JNopStmt);
+        stmtList.removeIf(JNopStmt.class::isInstance);
         graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
         DexMethodSource dexMethodSource = new DexMethodSource(classType, locals, graph, method, parameterTypes);
         return dexMethodSource.makeSootMethod();
@@ -316,11 +316,6 @@ public class DexBody {
 
         return resultMap;
     }
-
-    public void replaceBranchingStmt(BranchingStmt branchingStmt, Stmt stmtToReplace){
-        branchingMap.replaceValues(branchingStmt, Collections.singletonList(Collections.singletonList(stmtToReplace)));
-    }
-
 
 
     public void jimplify(){
@@ -444,6 +439,7 @@ public class DexBody {
         if(tries != null && !tries.isEmpty()){
             addTraps();
         }
+        addBranchingMap(instructions);
         // By this point, all the "jimplification" process should be done, so clean everything.
         instructions = null;
         instructionAtAddress.clear();
@@ -456,6 +452,20 @@ public class DexBody {
         for(ReTypeableInstruction reTypeableInstruction : instructionsToRetype){
 //                reTypeableInstruction.retype(this);
         }
+    }
+
+    private void addBranchingMap(List<DexLibAbstractInstruction> instructions) {
+        instructions.stream().filter(SwitchInstruction.class::isInstance).forEach(switchInstruction -> {
+          ((SwitchInstruction) switchInstruction).addBranchingStmts(this);
+        });
+
+        instructions.stream().filter(JumpInstruction.class::isInstance).forEach(dexLibAbstractInstruction -> {
+            Stmt targetStmt;
+            targetStmt = ((JumpInstruction) dexLibAbstractInstruction).targetInstruction.getStmt();
+            if(targetStmt != null) {
+            branchingMap.put((BranchingStmt) dexLibAbstractInstruction.getStmt(), Collections.singletonList(targetStmt));
+            }
+        });
     }
 
     private void addTraps() {

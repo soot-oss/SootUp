@@ -23,25 +23,11 @@ public class SparseSwitchInstruction extends SwitchInstruction {
 
     @Override
     protected Stmt switchStatement(DexBody body, Instruction targetData, Local key) {
-        SparseSwitchPayload i = (SparseSwitchPayload) targetData;
-        List<? extends SwitchElement> seList = i.getSwitchElements();
-
-        // the default target always follows the switch statement
-        int defaultTargetAddress = codeAddress + instruction.getCodeUnits();
-        Stmt defaultTarget = body.instructionAtAddress(defaultTargetAddress).getStmt();
-
-        List<IntConstant> lookupValues = new ArrayList<IntConstant>();
-        List<Stmt> targets = new ArrayList<Stmt>();
-        for (SwitchElement se : seList) {
-            lookupValues.add(IntConstant.getInstance(se.getKey()));
-            int offset = se.getOffset();
-            targets.add(body.instructionAtAddress(codeAddress + offset).stmt);
-        }
         JSwitchStmt switchStmt = Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.createNoStmtPositionInfo());
         setStmt(switchStmt);
         // It is unlike the PackedSwitchInstruction, here only one branching statement should be. (I literally don't know why :( )
-        targets.add(defaultTarget);
-        body.addBranchingStmt(switchStmt, targets);
+//        targets.add(defaultTarget);
+//        body.addBranchingStmt(switchStmt, targets);
         return switchStmt;
     }
 

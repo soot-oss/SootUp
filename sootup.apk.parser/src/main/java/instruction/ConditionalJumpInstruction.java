@@ -29,10 +29,9 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
     public void jimplify(DexBody body) {
         // check if target instruction has been jimplified
         DexLibAbstractInstruction ins = getTargetInstruction(body);
-        if (ins != null && ins.getStmt() != null /*&& !(ins.stmt instanceof JNopStmt)*/) {
+        if (ins != null && ins.getStmt() != null) {
             JIfStmt s = ifStatement(body);
             body.add(s);
-//            body.addBranchingStmt(s, Collections.singletonList(ins.stmt));
             setStmt(s);
         }
         else{
@@ -90,18 +89,6 @@ public abstract class ConditionalJumpInstruction extends JumpInstruction impleme
     public void deferredJimplify(DexBody body) {
          JIfStmt jIfStmt = ifStatement(body);
          body.replaceStmt(markerUnit, jIfStmt);
-         if(!branchingStmtInstructionHashMap.isEmpty()){
-             body.replaceBranchingStmt(getFirstEntryFromBranchingMap(), jIfStmt);
-         }
-//         Stmt labelStmt;
-//         if(targetInstruction.stmt == null){
-//             labelStmt = Util.Util.makeStmt(targetInstruction);
-//         }
-//         else{
-//             labelStmt = targetInstruction.stmt;
-//         }
-//         body.addBranchingStmt(jIfStmt, Collections.singletonList(labelStmt));
-//        body.addBranchingStmt(jIfStmt, Collections.singletonList(targetInstruction.stmt));
          setStmt(jIfStmt);
     }
 }

@@ -12,6 +12,7 @@ import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
+import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
@@ -22,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -45,7 +48,7 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>> 
 
     private static final Logger logger = LoggerFactory.getLogger(ApkAnalysisInputLocation.class);
 
-    public ApkAnalysisInputLocation(Path apkPath, String android_jar_path ){
+    public ApkAnalysisInputLocation(Path apkPath, String android_jar_path) {
         this.apk_path = apkPath;
         this.android_jar_path = getAndroidJarPath(android_jar_path, apkPath.toString());
         this.classNamesList = extractDexFilesFromPath();
@@ -59,7 +62,7 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>> 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Map <String, EnumSet<ClassModifier>> classList = new HashMap<>();
+        Map<String, EnumSet<ClassModifier>> classList = new HashMap<>();
         dexFromSource.forEach(dexContainer -> dexContainer.getBase().getDexFile().getClasses().forEach(dexClass -> classList.put(Util.dottedClassName(dexClass.toString()), getClassModifiers(dexClass.getAccessFlags()))));
         return classList;
     }
@@ -91,12 +94,9 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>> 
     @Nonnull
     @Override
     public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(@Nonnull View<?> view) {
-        Set classes = new HashSet();
-        long timeMillis = System.currentTimeMillis();
-        classNamesList.forEach((className, classModifiers) ->
-                classes.add(new DexClassProvider(view).createClassSource(this, apk_path, view.getIdentifierFactory().getClassType(className))));
-        logger.info("End of getAllClasses" + (System.currentTimeMillis() - timeMillis));
-        return classes;
+        return classNamesList.entrySet().stream().flatMap(className ->
+                StreamUtils.optionalToStream(getClassSource(view.getIdentifierFactory().getClassType(className.getKey()), view)))
+                .collect(Collectors.toList());
     }
 
     @Nullable
@@ -105,7 +105,7 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>> 
         return SourceType.Application;
     }
 
-    public String getAndroidJarPath(String jars, String apk){
+    public String getAndroidJarPath(String jars, String apk) {
         int APIVersion = getAndroidAPIVersion(jars, apk);
 
         String jarPath = jars + File.separatorChar + "android-" + APIVersion + File.separatorChar + "android.jar";
