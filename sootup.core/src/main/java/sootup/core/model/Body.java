@@ -88,7 +88,7 @@ public class Body implements Copyable {
     this.graph = /* FIXME: [ms] make immutable when availabe */
         new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
     this.position = position;
-    checkInit();
+    //    checkInit();
   }
 
   /**
@@ -121,14 +121,6 @@ public class Body implements Copyable {
     return locals.size();
   }
 
-  private void runValidation(BodyValidator validator) {
-    final List<ValidationException> exceptionList = new ArrayList<>();
-    validator.validate(this, exceptionList);
-    if (!exceptionList.isEmpty()) {
-      throw exceptionList.get(0);
-    }
-  }
-
   /** Verifies that a Value is not used in more than one place. */
   // TODO: #535 implement validator public void validateValues() {   runValidation(new
   // ValuesValidator());}
@@ -140,9 +132,9 @@ public class Body implements Copyable {
   /** Verifies that each use in this Body has a def. */
   // TODO: #535 implement validator public void validateUses() {  runValidation(new
   // UsesValidator()); }
-  private void checkInit() {
-    runValidation(new CheckInitValidator());
-  }
+  //  private void checkInit() {
+  //    runValidation(new CheckInitValidator(),);
+  //  }
 
   /** Returns a backed chain of the locals declared in this Body. */
   public Set<Local> getLocals() {
@@ -278,9 +270,9 @@ public class Body implements Copyable {
     return getStmtGraph().isStmtBranchTarget(targetStmt);
   }
 
-  public void validateIdentityStatements() {
-    runValidation(new IdentityStatementsValidator());
-  }
+  //  public void validateIdentityStatements() {
+  //    runValidation(new IdentityStatementsValidator());
+  //  }
 
   /** Returns the first non-identity stmt in this body. */
   @Nonnull

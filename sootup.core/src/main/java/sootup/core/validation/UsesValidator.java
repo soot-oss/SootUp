@@ -24,12 +24,17 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class UsesValidator implements BodyValidator {
 
-  /** Verifies that each use in this Body has a def. */
+  /**
+   * Verifies that each use in this Body has a def.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: auto generated stub
     /*
      * // Conservative validation of uses: add edges to exception handlers // even if they are not reachable. // // class C {
@@ -61,6 +66,7 @@ public class UsesValidator implements BodyValidator {
      * private boolean graphEdgesAreValid(UnitGraph g, Unit u) { /* for (Unit p : g.getPredsOf(u)) { if
      * (!g.getSuccsOf(p).contains(u)) { return false; } } return true;
      */
+    return null;
   }
 
   @Override

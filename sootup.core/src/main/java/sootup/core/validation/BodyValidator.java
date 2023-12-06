@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 /** Implement this interface if you want to provide your own body Validator */
 public interface BodyValidator {
@@ -31,9 +32,9 @@ public interface BodyValidator {
    * Validates the given body and saves all validation errors in the given list.
    *
    * @param body the body to check
-   * @param exceptions the list of exceptions
+   * @param view the view
    */
-  void validate(Body body, List<ValidationException> exceptions);
+  List<ValidationException> validate(Body body, View<?> view);
 
   /**
    * Basic validators run essential checks and are run always if validate is called.<br>

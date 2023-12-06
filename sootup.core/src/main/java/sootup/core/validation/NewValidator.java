@@ -38,6 +38,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.UnknownType;
+import sootup.core.views.View;
 
 public class NewValidator implements BodyValidator {
 
@@ -48,7 +49,9 @@ public class NewValidator implements BodyValidator {
 
   //  Checks whether after each new-instruction a constructor call follows.
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View<?> view) {
+
+    List<ValidationException> exceptions = new ArrayList<>();
 
     StmtGraph g = body.getStmtGraph();
     for (Stmt u : body.getStmts()) {
@@ -65,13 +68,14 @@ public class NewValidator implements BodyValidator {
                     String.format(
                         "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
                         body.getMethodSignature())));
-            return;
+            return exceptions;
           }
 
           checkForInitializerOnPath(g, assign, exceptions);
         }
       }
     }
+    return exceptions;
   }
 
   private boolean checkForInitializerOnPath(

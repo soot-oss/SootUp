@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class IdentityStatementsValidator implements BodyValidator {
 
@@ -36,9 +37,11 @@ public class IdentityStatementsValidator implements BodyValidator {
    *   <li>param-references must precede all statements that are not themselves param-references or
    *       this-references, if they occur at all
    * </ol>
+   *
+   * @return
    */
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: check copied code from old soot
     /*
      * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
@@ -57,6 +60,7 @@ public class IdentityStatementsValidator implements BodyValidator {
      * // @caughtexception statement foundNonThisOrParamIdentityStatement = true; } } else { // non-identity statement
      * foundNonThisOrParamIdentityStatement = true; } firstStatement = false; }
      */
+    return null;
   }
 
   @Override

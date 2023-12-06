@@ -92,8 +92,8 @@ public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void testNewValidator() {
-    List<ValidationException> validationExceptions_success = new ArrayList<>();
-    List<ValidationException> validationExceptions_fail = new ArrayList<>();
+    List<ValidationException> validationExceptions_success;
+    List<ValidationException> validationExceptions_fail;
 
     String classPath = "src/test/java/resources/jimple";
     AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
@@ -109,33 +109,35 @@ public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
       }
     }
 
-    validator.validate(
-        classes.stream()
-            .filter(c -> c.getType().getClassName().contains("NewValidator"))
-            .findFirst()
-            .get()
-            .getMethods()
-            .stream()
-            .filter(m -> m.getName().contains("newValidator"))
-            .map(m -> m.getBody())
-            .findFirst()
-            .get(),
-        validationExceptions_success);
+    validationExceptions_success =
+        validator.validate(
+            classes.stream()
+                .filter(c -> c.getType().getClassName().contains("NewValidator"))
+                .findFirst()
+                .get()
+                .getMethods()
+                .stream()
+                .filter(m -> m.getName().contains("newValidator"))
+                .map(m -> m.getBody())
+                .findFirst()
+                .get(),
+            view);
 
     assertEquals(0, validationExceptions_success.size());
 
-    validator.validate(
-        classes.stream()
-            .filter(c -> c.getType().getClassName().contains("NewValidator_fail"))
-            .findFirst()
-            .get()
-            .getMethods()
-            .stream()
-            .filter(m -> m.getName().contains("newValidator_fail"))
-            .map(m -> m.getBody())
-            .findFirst()
-            .get(),
-        validationExceptions_fail);
+    validationExceptions_fail =
+        validator.validate(
+            classes.stream()
+                .filter(c -> c.getType().getClassName().contains("NewValidator_fail"))
+                .findFirst()
+                .get()
+                .getMethods()
+                .stream()
+                .filter(m -> m.getName().contains("newValidator_fail"))
+                .map(m -> m.getBody())
+                .findFirst()
+                .get(),
+            view);
 
     assertEquals(1, validationExceptions_fail.size());
   }
