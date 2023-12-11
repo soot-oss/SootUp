@@ -1,7 +1,6 @@
 package sootup.java.bytecode;
 
 import categories.Java9Test;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -26,8 +25,9 @@ public class IndyTests {
         JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
 
     JavaView view = project.createView();
-    Assert.assertEquals(1, view.getClasses().size());
-
-    view.getClasses().stream().findFirst().get().getMethods().forEach(SootMethod::getBody);
+    view.getClass(view.getIdentifierFactory().getClassType("Indy"))
+        .get()
+        .getMethods()
+        .forEach(SootMethod::getBody);
   }
 }
