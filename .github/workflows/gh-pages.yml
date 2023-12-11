@@ -32,6 +32,7 @@ on:
 concurrency: pages
 
 permissions:
+  pages: write
   contents: write
   pull-requests: write
 
