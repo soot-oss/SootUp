@@ -37,7 +37,9 @@ import soot.MethodOrMethodContext;
 import soot.util.ArrayNumberer;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -46,6 +48,8 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -535,7 +539,7 @@ public class PAG {
   }
 
   private void handleArrayCopy(SootMethod method) {
-    Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
+    Map<FallsThroughStmt, Collection<FallsThroughStmt>> newUnits = DataFactory.createMap();
     Body body = PTAUtils.getMethodBody(method);
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
@@ -551,14 +555,15 @@ public class PAG {
               continue;
             }
             Type objType = PTAUtils.getClassType("java.lang.Object");
+            final FallsThroughStmt ftInvokeStmt = (FallsThroughStmt) s;
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
               builder.addLocal(localSrc);
               newUnits
-                  .computeIfAbsent(s, k -> new HashSet<>())
+                  .computeIfAbsent(ftInvokeStmt, k -> new HashSet<>())
                   .add(
-                      new JAssignStmt<>(
+                      new JAssignStmt(
                           localSrc, srcArr, StmtPositionInfo.createNoStmtPositionInfo()));
               srcArr = localSrc;
             }
@@ -571,34 +576,34 @@ public class PAG {
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
               builder.addLocal(localDst);
               newUnits
-                  .computeIfAbsent(s, k -> new HashSet<>())
+                  .computeIfAbsent(ftInvokeStmt, k -> new HashSet<>())
                   .add(
-                      new JAssignStmt<>(
+                      new JAssignStmt(
                           localDst, dstArr, StmtPositionInfo.createNoStmtPositionInfo()));
               dstArr = localDst;
             }
-            Value src =
+            JArrayRef src =
                 JavaJimple.getInstance().newArrayRef((Local) srcArr, IntConstant.getInstance(0));
-            Value dst =
+            JArrayRef dst =
                 JavaJimple.getInstance().newArrayRef((Local) dstArr, IntConstant.getInstance(0));
             Local local =
                 Jimple.newLocal(
                     "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
             builder.addLocal(local);
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
-                .add(new JAssignStmt<>(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
+                .computeIfAbsent(ftInvokeStmt, k -> DataFactory.createSet())
+                .add(new JAssignStmt(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
             newUnits
-                .computeIfAbsent(s, k -> DataFactory.createSet())
-                .add(new JAssignStmt<>(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
+                .computeIfAbsent(ftInvokeStmt, k -> DataFactory.createSet())
+                .add(new JAssignStmt(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
           }
         }
       }
     }
-
-    for (Stmt unit : newUnits.keySet()) {
+    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    for (FallsThroughStmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
-        builder.addFlow(unit, succ);
+        stmtGraph.putEdge(unit, succ);
       }
     }
     PTAUtils.updateMethodBody(method, builder.build());

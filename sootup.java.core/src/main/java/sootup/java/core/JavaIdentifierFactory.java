@@ -34,7 +34,6 @@ import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.SootClass;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSignature;
@@ -56,6 +55,27 @@ import sootup.java.core.types.JavaClassType;
 public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
+
+  @Override
+  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<clinit>");
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>");
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
+  }
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
@@ -264,16 +284,16 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the method's name
    * @param fullyQualifiedNameDeclClass the fully-qualified name of the declaring class
-   * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param methodName the method's name
    * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param parameters the methods parameters fully-qualified name or a primitive's name
    * @return a MethodSignature
    */
   @Override
   public MethodSignature getMethodSignature(
-      final String methodName,
       final String fullyQualifiedNameDeclClass,
+      final String methodName,
       final String fqReturnType,
       final List<String> parameters) {
     JavaClassType declaringClass = getClassType(fullyQualifiedNameDeclClass);
@@ -324,13 +344,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public MethodSignature getMethodSignature(
-      @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
-    return getMethodSignature(declaringClass.getType(), subSignature);
-  }
-
-  @Override
-  @Nonnull
-  public MethodSignature getMethodSignature(
       @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
     return new MethodSignature(declaringClassSignature, subSignature);
   }
@@ -339,7 +352,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     @Nonnull
     private static final Pattern SOOT_METHOD_SIGNATURE_PATTERN =
         Pattern.compile(
-            "^<(?<class>[^:]+):\\s+(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)>$");
+            "^<(?<class>[^:]+):\\s*(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)>$");
 
     @Nonnull
     private static final Pattern JAVADOCLIKE_METHOD_SIGNATURE_PATTERN =
@@ -425,7 +438,7 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                     })
                 .collect(Collectors.toList());
 
-    return getMethodSignature(methodName, className, returnName, argsList);
+    return getMethodSignature(className, methodName, returnName, argsList);
   }
 
   @Nonnull

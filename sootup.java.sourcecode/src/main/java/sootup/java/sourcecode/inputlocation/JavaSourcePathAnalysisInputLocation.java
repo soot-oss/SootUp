@@ -21,6 +21,7 @@ package sootup.java.sourcecode.inputlocation;
  * #L%
  */
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -84,6 +85,13 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+
+    final Optional<String> any =
+        sourcePaths.stream().filter(path -> !Files.exists(Paths.get(path))).findAny();
+    any.ifPresent(
+        s -> {
+          throw new IllegalArgumentException("The provided path " + any.get() + " does not exist.");
+        });
   }
 
   /**

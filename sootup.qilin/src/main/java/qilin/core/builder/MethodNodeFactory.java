@@ -54,7 +54,7 @@ import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -159,9 +159,9 @@ public class MethodNodeFactory {
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-        new AbstractStmtVisitor<>() {
+        new AbstractStmtVisitor<Object>() {
           @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt<?, ?> stmt) {
+          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();
             Value r = stmt.getRightOp();
             if (l instanceof JStaticFieldRef) {
@@ -190,7 +190,7 @@ public class MethodNodeFactory {
           }
 
           @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt<?> stmt) {
+          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
             if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
               return;
             }
@@ -243,7 +243,7 @@ public class MethodNodeFactory {
       sf =
           new SootField(
               fieldSig,
-              Collections.singleton(Modifier.PUBLIC),
+              Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());
       System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
     } else {
@@ -263,7 +263,7 @@ public class MethodNodeFactory {
     mpag.addInternalEdge(prevAn, prevVn); // new
     VarNode ret = prevVn;
     while (true) {
-      Type t = type.getArrayElementType();
+      Type t = type.getElementType();
       if (!(t instanceof ArrayType)) {
         break;
       }

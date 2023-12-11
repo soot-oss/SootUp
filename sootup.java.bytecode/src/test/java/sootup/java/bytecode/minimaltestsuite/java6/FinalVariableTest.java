@@ -31,9 +31,11 @@ public class FinalVariableTest extends MinimalBytecodeTestSuiteBase {
    *
    * </pre>
    */
+  // FIXME: test does not test what is should as the class does not contain a variable at all.. it
+  // needs a use like in sout
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: FinalVariable", "return").collect(Collectors.toList());
+    return Stream.of("$l0 := @this: FinalVariable", "return").collect(Collectors.toList());
   }
 
   @Test

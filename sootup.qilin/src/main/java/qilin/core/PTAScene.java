@@ -35,7 +35,9 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import sootup.core.inputlocation.ClassLoadingOptions;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -122,7 +124,7 @@ public class PTAScene {
       builder.addInputLocation(new JavaClassPathAnalysisInputLocation(clazzPath));
     }
     JavaProject javaProject = builder.build();
-    return javaProject.createOnDemandView(analysisInputLocation -> clo);
+    return javaProject.createView(analysisInputLocation -> clo);
   }
 
   private static Collection<String> getJreJars(String JRE) {
@@ -173,7 +175,7 @@ public class PTAScene {
     return this.fakeMainFactory.getFakeMain();
   }
 
-  public Value getFieldCurrentThread() {
+  public JStaticFieldRef getFieldCurrentThread() {
     return this.fakeMainFactory.getFieldCurrentThread();
   }
 

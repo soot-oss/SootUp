@@ -19,7 +19,10 @@
 package qilin.core.natives;
 
 import qilin.util.PTAUtils;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -40,11 +43,11 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
     //        Value srcArr = getPara(0);
     //        Value dstArr = getPara(2);
     ClassType objType = PTAUtils.getClassType("java.lang.Object");
-    Value srcArr = getPara(0, new ArrayType(objType, 1));
-    Value dstArr = getPara(2, new ArrayType(objType, 1));
-    Value src = getArrayRef(srcArr);
-    Value dst = getArrayRef(dstArr);
-    Value temp = getNextLocal(objType);
+    Local srcArr = getPara(0, new ArrayType(objType, 1));
+    Local dstArr = getPara(2, new ArrayType(objType, 1));
+    JArrayRef src = getArrayRef(srcArr);
+    JArrayRef dst = getArrayRef(dstArr);
+    Local temp = getNextLocal(objType);
     addAssign(temp, src);
     addAssign(dst, temp);
   }

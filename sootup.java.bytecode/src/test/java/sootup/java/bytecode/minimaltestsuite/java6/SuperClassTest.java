@@ -36,11 +36,11 @@ public class SuperClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SuperClass",
-            "l0.<SuperClass: int a> = 10",
-            "l0.<SuperClass: int b> = 20",
-            "l0.<SuperClass: int c> = 30",
-            "l0.<SuperClass: int d> = 40",
+            "$l0 := @this: SuperClass",
+            "$l0.<SuperClass: int a> = 10",
+            "$l0.<SuperClass: int b> = 20",
+            "$l0.<SuperClass: int c> = 30",
+            "$l0.<SuperClass: int d> = 40",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

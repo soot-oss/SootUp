@@ -23,6 +23,8 @@ package sootup.core.graph;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
 
@@ -65,14 +67,14 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
 
   public abstract void insertBefore(
       @Nonnull Stmt beforeStmt,
-      @Nonnull List<Stmt> stmts,
+      @Nonnull List<FallsThroughStmt> stmts,
       @Nonnull Map<ClassType, Stmt> exceptionMap);
 
   /**
    * inserts the "newStmt" before the position of "beforeStmt" i.e.
    * newStmt.successors().contains(beforeStmt) will be true
    */
-  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull Stmt newStmt) {
+  public void insertBefore(@Nonnull Stmt beforeStmt, @Nonnull FallsThroughStmt newStmt) {
     insertBefore(beforeStmt, Collections.singletonList(newStmt), Collections.emptyMap());
   }
 
@@ -86,18 +88,27 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
    * StmtGraph it will be added. if "to" needs to be added to the StmtGraph i.e. "to" is not already
    * in the StmtGraph the method assumes "to" has the same exceptional flows as "from".
    */
-  public abstract void putEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  public abstract void putEdge(@Nonnull FallsThroughStmt from, @Nonnull Stmt to);
+
+  public abstract void putEdge(@Nonnull BranchingStmt from, int successorIdx, @Nonnull Stmt to);
+
+  public abstract boolean replaceSucessorEdge(
+      @Nonnull Stmt from, @Nonnull Stmt oldTo, @Nonnull Stmt newTo);
 
   /** replaces the current outgoing flows of "from" to "targets" */
-  public abstract void setEdges(@Nonnull Stmt from, @Nonnull List<Stmt> targets);
+  public abstract void setEdges(@Nonnull BranchingStmt from, @Nonnull List<Stmt> targets);
 
   /** replaces the current outgoing flows of "from" to each target of "targets" */
-  public void setEdges(@Nonnull Stmt from, @Nonnull Stmt... targets) {
+  public void setEdges(@Nonnull BranchingStmt from, @Nonnull Stmt... targets) {
     setEdges(from, Arrays.asList(targets));
   }
 
-  /** removes the current outgoing flows of "from" to "targets" */
-  public abstract void removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  /**
+   * removes the current outgoing flows of "from" to "to"
+   *
+   * @return true if the edge existed and was removed; false if the edge didn't exist
+   */
+  public abstract boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /** Modifications of exceptional flows removes all exceptional flows from "stmt" */
   public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);

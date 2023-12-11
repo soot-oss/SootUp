@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
@@ -106,7 +105,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     return baseType;
   }
 
-  public Value getSize(@Nonnull int index) {
+  public Immediate getSize(@Nonnull int index) {
     return sizes.get(index);
   }
 

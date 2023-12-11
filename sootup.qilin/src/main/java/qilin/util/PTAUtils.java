@@ -650,7 +650,7 @@ public final class PTAUtils {
 
   public static boolean isPrimitiveArrayType(Type type) {
     if (type instanceof ArrayType arrayType) {
-      return arrayType.getArrayElementType() instanceof PrimitiveType;
+      return arrayType.getElementType() instanceof PrimitiveType;
     }
     return false;
   }
@@ -660,7 +660,7 @@ public final class PTAUtils {
     PackageName pkgName = clz.getType().getPackageName();
     String clzName = clz.getType().getClassName();
     File packageDirectory = new File(
-            parentDir + File.separator + pkgName.getPackageName().replace(".", File.separator));
+            parentDir + File.separator + pkgName.getName().replace(".", File.separator));
 
     try {
       packageDirectory.mkdirs();

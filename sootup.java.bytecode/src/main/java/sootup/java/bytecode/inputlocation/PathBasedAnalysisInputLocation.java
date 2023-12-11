@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SourceType;
@@ -38,10 +39,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -80,9 +78,13 @@ public abstract class PathBasedAnalysisInputLocation
   private final SourceType sourceType;
   protected Path path;
 
-  protected PathBasedAnalysisInputLocation(Path path, SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this.path = path;
     this.sourceType = srcType;
+
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException("The provided path '" + path + "' does not exist.");
+    }
   }
 
   @Nullable
@@ -98,16 +100,28 @@ public abstract class PathBasedAnalysisInputLocation
     if (Files.isDirectory(path)) {
       inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType);
     } else if (PathUtils.isArchive(path)) {
-
-      if (PathUtils.hasExtension(path, FileType.WAR)) {
-        inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
-      } else if (isMultiReleaseJar(path)) { // check if mainfest contains multi release flag
-        inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+      if (PathUtils.hasExtension(path, FileType.JAR)) {
+        if (isMultiReleaseJar(path)) {
+          inputLocation = new MultiReleaseJarAnalysisInputLocation(path, srcType);
+        } else {
+          inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        }
       } else if (PathUtils.hasExtension(path, FileType.APK)) {
         inputLocation = new ApkAnalysisInputLocation(path, srcType);
+      } else if (PathUtils.hasExtension(path, FileType.WAR)) {
+        try {
+          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       } else {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType);
+        throw new IllegalArgumentException(
+            "Path '"
+                + path.toAbsolutePath()
+                + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
       }
+    } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
+      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType);
     } else {
       throw new IllegalArgumentException(
           "Path '"
@@ -177,6 +191,19 @@ public abstract class PathBasedAnalysisInputLocation
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
                         + classProvider.getHandledFileType().getExtensionWithDot()));
+    if (!Files.exists(pathToClass)) {
+      return Optional.empty();
+    }
+
+    return classProvider.createClassSource(this, pathToClass, signature);
+  }
+
+  protected Optional<? extends AbstractClassSource<JavaSootClass>> getSingleClass(
+      @Nonnull JavaClassType signature,
+      @Nonnull Path path,
+      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+
+    Path pathToClass = Paths.get(path.toString());
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
@@ -185,9 +212,35 @@ public abstract class PathBasedAnalysisInputLocation
     return classProvider.createClassSource(this, pathToClass, signature);
   }
 
+  private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+    public ClassFileBasedAnalysisInputLocation(
+        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
+      super(classFilePath, srcType);
+    }
+
+    @Override
+    @Nonnull
+    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
+        @Nonnull ClassType type, @Nonnull View<?> view) {
+      return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
+    }
+
+    @Nonnull
+    @Override
+    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
+        @Nonnull View<?> view) {
+      AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
+      IdentifierFactory factory = view.getIdentifierFactory();
+      Path dirPath = this.path.getParent();
+      Optional<SootClassSource<JavaSootClass>> classSource =
+          classProvider.createClassSource(this, path, factory.fromPath(dirPath, path));
+      return Collections.singletonList(classSource.get());
+    }
+  }
+
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -224,7 +277,7 @@ public abstract class PathBasedAnalysisInputLocation
 
     boolean isResolved = false;
 
-    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
 
       int[] tmp;
@@ -247,7 +300,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
 
     /** Discovers all input locations for different java versions in this multi release jar */
-    private void discoverInputLocations(@Nullable SourceType srcType) {
+    private void discoverInputLocations(@Nonnull SourceType srcType) {
       FileSystem fs = null;
       try {
         fs = fileSystemCache.get(path);
@@ -482,7 +535,7 @@ public abstract class PathBasedAnalysisInputLocation
 
   private static class ApkAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
-    private ApkAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    private ApkAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
       String jarPath = dex2jar(path);
       this.path = Paths.get(jarPath);
@@ -499,7 +552,7 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-  private static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  static class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     // We cache the FileSystem instances as their creation is expensive.
     // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
@@ -527,7 +580,7 @@ public abstract class PathBasedAnalysisInputLocation
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
       super(path, srcType);
     }
 
@@ -567,16 +620,11 @@ public abstract class PathBasedAnalysisInputLocation
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
-    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nullable SourceType srcType) {
+    private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
+        throws IOException {
       super(
-          Paths.get(
-              System.getProperty("java.io.tmpdir")
-                  + File.separator
-                  + "sootOutput"
-                  + "-war"
-                  + warPath.hashCode()
-                  + "/"),
-          srcType);
+          Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(), srcType);
+
       extractWarFile(warPath, path);
 
       Path webInfPath = path.resolve("WEB-INF");

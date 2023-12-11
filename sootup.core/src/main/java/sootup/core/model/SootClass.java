@@ -233,11 +233,6 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
     return sourceType.equals(SourceType.Library);
   }
 
-  /** Returns true if this class is a phantom class. */
-  public boolean isPhantomClass() {
-    return sourceType.equals(SourceType.Phantom);
-  }
-
   /** Convenience method returning true if this class is private. */
   public boolean isPrivate() {
     return ClassModifier.isPrivate(this.getModifiers());

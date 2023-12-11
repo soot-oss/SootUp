@@ -23,16 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.ref.JParameterRef;
-import sootup.core.jimple.common.ref.JThisRef;
+import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -92,7 +88,7 @@ public abstract class ArtificialMethod {
   }
 
   private void addIdentity(Local lValue, IdentityRef rValue) {
-    Stmt identityStmt =
+    FallsThroughStmt identityStmt =
         Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(identityStmt);
   }
@@ -126,14 +122,14 @@ public abstract class ArtificialMethod {
     stmtList.add(stmt);
   }
 
-  protected Value getStaticFieldRef(String className, String name) {
+  protected JStaticFieldRef getStaticFieldRef(String className, String name) {
     ClassType classType = PTAUtils.getClassType(className);
     SootClass sc = (SootClass) view.getClass(classType).get();
     SootField field = (SootField) sc.getField(name).get();
     return Jimple.newStaticFieldRef(field.getSignature());
   }
 
-  protected Value getArrayRef(Value base) {
+  protected JArrayRef getArrayRef(Value base) {
     return JavaJimple.getInstance().newArrayRef((Local) base, IntConstant.getInstance(0));
   }
 
@@ -147,7 +143,7 @@ public abstract class ArtificialMethod {
         clazz.isInterface()
             ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
             : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
-    Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
+    FallsThroughStmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 
@@ -174,7 +170,7 @@ public abstract class ArtificialMethod {
   protected void addInvoke(String sig, Immediate... args) {
     MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
-    Stmt stmt =
+    FallsThroughStmt stmt =
         Jimple.newInvokeStmt(
             Jimple.newStaticInvokeExpr(methodSig, argsL),
             StmtPositionInfo.createNoStmtPositionInfo());
@@ -189,13 +185,13 @@ public abstract class ArtificialMethod {
   protected Value getInvoke(String sig, Immediate... args) {
     MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
-    Value rx = getNextLocal(methodSig.getType());
+    Local rx = getNextLocal(methodSig.getType());
     addAssign(rx, Jimple.newStaticInvokeExpr(methodSig, argsL));
     return rx;
   }
 
-  protected void addAssign(Value lValue, Value rValue) {
-    Stmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+  protected void addAssign(LValue lValue, Value rValue) {
+    FallsThroughStmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 }

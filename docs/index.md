@@ -27,7 +27,7 @@ So we introduced [Design changes in SootUp](whatsnew.md), which aim to address S
 The goal is a lighter library that can easily be understood and maintained to be included in other projects.
 
 ### Is this a drop-in replacement for Soot?
-Not really. SootUp has a completely new architecture and API, so it is not trivial to update existing projects that build on soot. We recommend using it for greenfield projects.
+Not really. SootUp has a completely new architecture and API, so it is not trivial to update existing projects that build on soot. We recommend using SootUp for greenfield projects.
 
 
 ## Supporters

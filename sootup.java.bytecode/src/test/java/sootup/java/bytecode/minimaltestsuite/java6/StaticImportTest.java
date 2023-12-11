@@ -44,7 +44,7 @@ public class StaticImportTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: StaticImport",
+            "$l0 := @this: StaticImport",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "$stack2 = staticinvoke <java.lang.Math: double sqrt(double)>(4.0)",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(double)>($stack2)",

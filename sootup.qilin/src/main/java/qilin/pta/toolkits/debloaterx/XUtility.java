@@ -88,7 +88,7 @@ public class XUtility {
   /* Implemnting the rules for defining coarse types (Figure 6 in the paper) */
   public boolean isCoarseType(Type type) {
     if (type instanceof ArrayType at) {
-      type = at.getArrayElementType();
+      type = at.getElementType();
     }
     return isImpreciseType(type) || rawOrPolyTypes().contains(type);
   }
@@ -98,7 +98,7 @@ public class XUtility {
     for (AllocNode heap : pag.getAllocNodes()) {
       Type type = heap.getType();
       if (type instanceof ArrayType at) {
-        Type et = at.getArrayElementType();
+        Type et = at.getElementType();
         if (isImpreciseType(et)) {
           rawOrPolyTypes.add(et);
         } else {
@@ -108,7 +108,7 @@ public class XUtility {
         for (SparkField field : getFields(heap)) {
           Type ft = field.getType();
           if (ft instanceof ArrayType fat) {
-            ft = fat.getArrayElementType();
+            ft = fat.getElementType();
           }
           if (isImpreciseType(ft)) {
             rawOrPolyTypes.add(ft);

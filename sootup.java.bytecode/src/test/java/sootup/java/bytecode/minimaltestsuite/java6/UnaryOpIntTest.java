@@ -25,11 +25,6 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    /**
-     * TODO Do we need to check the type of variable as int?
-     * assertTrue(getFields().stream().anyMatch(sootField -> {return
-     * sootField.getType().equals("int");}));
-     */
   }
 
   /**
@@ -45,10 +40,10 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: UnaryOpInt",
-            "$stack3 = l0.<UnaryOpInt: int i>",
-            "$stack2 = l0.<UnaryOpInt: int j>",
-            "l1 = $stack3 + $stack2",
+            "$l0 := @this: UnaryOpInt",
+            "$stack2 = $l0.<UnaryOpInt: int i>",
+            "$stack3 = $l0.<UnaryOpInt: int j>",
+            "$l1 = $stack2 + $stack3",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

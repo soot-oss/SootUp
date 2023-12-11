@@ -45,7 +45,7 @@ public class ContextField extends ValNode {
       if (contextElements.length > 0) {
         Type baseHeapType = ((AllocNode) ((ContextElements) context).getElements()[0]).getType();
         if (baseHeapType instanceof ArrayType arrayType) {
-          return arrayType.getArrayElementType();
+          return arrayType.getElementType();
         } else {
           throw new RuntimeException(baseHeapType + " is not an array type.");
         }

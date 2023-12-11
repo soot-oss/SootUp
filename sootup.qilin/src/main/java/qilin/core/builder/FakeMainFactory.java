@@ -35,6 +35,7 @@ import soot.JavaMethods;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
@@ -42,14 +43,11 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
-import sootup.core.model.Body;
-import sootup.core.model.Modifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -80,11 +78,11 @@ public class FakeMainFactory extends ArtificialMethod {
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
     SootField currentThread =
-        new SootField(ctSig, EnumSet.of(Modifier.STATIC), NoPositionInformation.getInstance());
+        new SootField(ctSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     FieldSignature gtSig =
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
     SootField globalThrow =
-        new SootField(gtSig, EnumSet.of(Modifier.STATIC), NoPositionInformation.getInstance());
+        new SootField(gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
     //        fakeClass.addMethod(this.method);
     //        fakeClass.addField(currentThread);
     //        fakeClass.addField(globalThrow);
@@ -98,35 +96,36 @@ public class FakeMainFactory extends ArtificialMethod {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     this.bodyBuilder = Body.builder();
     makeFakeMain(currentThread);
-    bodyBuilder.getStmtGraph().addBlock(stmtList);
-    bodyBuilder
-        .setStartingStmt(jNop)
-        .addFlow(jNop, stmtList.get(0))
-        .addFlow(stmtList.get(stmtList.size() - 1), returnVoidStmt)
-        .setMethodSignature(methodSignatureOne)
+    final MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.addBlock(stmtList);
+    stmtGraph.setStartingStmt(jNop);
+    stmtGraph.putEdge(jNop, stmtList.get(0));
+    stmtGraph.putEdge( (FallsThroughStmt) stmtList.get(stmtList.size() - 1), returnVoidStmt);
+
+    bodyBuilder.setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();
     SootMethod dummyMainMethod =
         new SootMethod(
             new OverridingBodySource(methodSignatureOne, bodyOne),
             methodSignatureOne,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
     this.fakeClass =
-        new SootClass(
+        new SootClass<>(
             new OverridingClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 null,
                 JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"),
                 null,
                 NoPositionInformation.getInstance(),
                 null,
                 view.getIdentifierFactory().getClassType(className),
-                new EagerInputLocation()),
+                new EagerInputLocation<>()),
             SourceType.Application);
   }
 
@@ -168,7 +167,7 @@ public class FakeMainFactory extends ArtificialMethod {
     return ret;
   }
 
-  public Value getFieldCurrentThread() {
+  public JStaticFieldRef getFieldCurrentThread() {
     return getStaticFieldRef("FakeMain", "currentThread");
   }
 
@@ -206,7 +205,7 @@ public class FakeMainFactory extends ArtificialMethod {
     Local mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
     Local systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
 
-    Value gCurrentThread = Jimple.newStaticFieldRef(currentThread.getSignature());
+    JStaticFieldRef gCurrentThread = Jimple.newStaticFieldRef(currentThread.getSignature());
     addAssign(gCurrentThread, mainThread); // Store
     Local vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
 

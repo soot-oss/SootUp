@@ -171,24 +171,10 @@ public interface TypeHierarchy {
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list. i.e. its ordered from bottom level to top level.
-   */
-  @Nonnull
-  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
-    List<ClassType> superClasses = new ArrayList<>();
-    ClassType currentSuperClass = superClassOf(classType);
-    while (currentSuperClass != null) {
-      superClasses.add(currentSuperClass);
-      currentSuperClass = superClassOf(currentSuperClass);
-    }
-    return superClasses;
-  }
-  /**
-   * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
    */
   @Nonnull
-  default List<ClassType> incompleteSuperClassesOf(@Nonnull ClassType classType) {
+  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
     ClassType currentSuperClass = null;
     try {
@@ -212,4 +198,8 @@ public interface TypeHierarchy {
   boolean isInterface(@Nonnull ClassType type);
 
   Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
+
+  // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
+  // View.getClass(...).isPresent()
+  boolean contains(ClassType type);
 }

@@ -278,10 +278,24 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   }
 
   @Test
+  public void testSingleClass() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(cls, null);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("Employee"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSingleClassDoesNotExist() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), null);
+  }
+
+  @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.create(jar, null);
-
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
@@ -380,7 +394,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                               public MethodSignature getSignature() {
                                 return JavaIdentifierFactory.getInstance()
                                     .getMethodSignature(
-                                        utilsClass, optionalToStreamMethodSubSignature);
+                                        utilsClass.getType(), optionalToStreamMethodSubSignature);
                               }
                             })
                         .withSignature(
@@ -407,9 +421,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
+    PathBasedAnalysisInputLocation pathBasedNamespace = new DefaultRTJarAnalysisInputLocation();
 
     JavaView v =
         JavaProject.builder(new JavaLanguage(8))
@@ -436,9 +448,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     JavaProject javaProject =
         JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
+            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
             .build();
     JavaView view = javaProject.createView();
 

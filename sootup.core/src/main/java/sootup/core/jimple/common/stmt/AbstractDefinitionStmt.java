@@ -25,32 +25,23 @@ package sootup.core.jimple.common.stmt;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.types.Type;
 
-public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> extends Stmt {
+public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
-  @Nonnull private final L leftOp;
-  @Nonnull private final R rightOp;
-
-  AbstractDefinitionStmt(
-      @Nonnull L leftOp, @Nonnull R rightOp, @Nonnull StmtPositionInfo positionInfo) {
+  AbstractDefinitionStmt(@Nonnull StmtPositionInfo positionInfo) {
     super(positionInfo);
-    this.leftOp = leftOp;
-    this.rightOp = rightOp;
   }
 
   @Nonnull
-  public final L getLeftOp() {
-    return leftOp;
-  }
+  public abstract LValue getLeftOp();
 
   @Nonnull
-  public R getRightOp() {
-    return rightOp;
-  }
+  public abstract Value getRightOp();
 
   @Nonnull
   public Type getType() {
@@ -59,21 +50,22 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
 
   @Override
   @Nonnull
-  public List<Value> getDefs() {
-    final List<Value> defs = new ArrayList<>();
-    defs.add(leftOp);
+  public List<LValue> getDefs() {
+    final List<LValue> defs = new ArrayList<>();
+    defs.add(getLeftOp());
     return defs;
   }
 
   @Override
   @Nonnull
   public final List<Value> getUses() {
-    final List<Value> defsuses = leftOp.getUses();
-    final List<Value> uses = rightOp.getUses();
-    List<Value> list = new ArrayList<>(defsuses.size() + uses.size() + 1);
+    final List<Value> defsuses = getLeftOp().getUses();
+    final Value rightOp = getRightOp();
+    final List<Value> rightOpUses = rightOp.getUses();
+    List<Value> list = new ArrayList<>(defsuses.size() + rightOpUses.size() + 1);
     list.addAll(defsuses);
     list.add(rightOp);
-    list.addAll(uses);
+    list.addAll(rightOpUses);
     return list;
   }
 
@@ -87,5 +79,6 @@ public abstract class AbstractDefinitionStmt<L extends Value, R extends Value> e
     return false;
   }
 
-  public abstract Stmt withNewDef(@Nonnull Local newLocal);
+  @Nonnull
+  public abstract FallsThroughStmt withNewDef(@Nonnull Local newLocal);
 }
