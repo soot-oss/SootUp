@@ -112,12 +112,12 @@ public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
     validationExceptions_success =
         validator.validate(
             classes.stream()
-                .filter(c -> c.getType().getClassName().contains("NewValidator"))
+                .filter(c -> c.getType().getClassName().contains("NewValidator_pass"))
                 .findFirst()
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().contains("newValidator"))
+                .filter(m -> m.getName().contains("newValidator_pass"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),
