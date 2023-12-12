@@ -2,14 +2,16 @@ package sootup.java.codepropertygraph.cdg;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Optional;
 import org.junit.Test;
 import sootup.core.IdentifierFactory;
-import sootup.core.graph.BasicBlock;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -44,50 +46,73 @@ public class MethodCdgTest {
 
   @Test
   public void testCdgForIfStatement() {
-    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod("ifStatement");
+    String methodName = "ifStatement";
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
     MethodCdg cdg = new MethodCdg(method.get());
     CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
-    System.out.println(cdgGraph.toDotFormat());
+    writeGraph(cdgGraph.toDotFormat(), methodName);
   }
 
   @Test
   public void testCdgForIfElseStatement() {
-    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod("ifElseStatement");
+    String methodName = "ifElseStatement";
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
     MethodCdg cdg = new MethodCdg(method.get());
     CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
-    System.out.println(cdgGraph.toDotFormat());
+    writeGraph(cdgGraph.toDotFormat(), methodName);
   }
 
   @Test
   public void testCdgForIfElseIfStatement() {
-    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod("ifElseIfStatement");
+    String methodName = "ifElseIfStatement";
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
     MethodCdg cdg = new MethodCdg(method.get());
     CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
-    System.out.println(cdgGraph.toDotFormat());
+    writeGraph(cdgGraph.toDotFormat(), methodName);
   }
 
   @Test
   public void testCdgForIfElseCascadingElseIfStatement() {
-    Optional<? extends SootMethod> method =
-        getMinimalTestSuiteMethod("ifElseCascadingElseIfStatement");
+    String methodName = "ifElseCascadingElseIfStatement";
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
     MethodCdg cdg = new MethodCdg(method.get());
     CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
 
-    System.out.println(cdgGraph.toDotFormat());
+    writeGraph(cdgGraph.toDotFormat(), methodName);
   }
 
   @Test
   public void testCdgForIfElseCascadingElseIfInElseStatement() {
-    Optional<? extends SootMethod> method =
-        getMinimalTestSuiteMethod("ifElseCascadingElseIfInElseStatement");
+    String methodName = "ifElseCascadingElseIfInElseStatement";
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
     MethodCdg cdg = new MethodCdg(method.get());
     CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
 
-    System.out.println(cdgGraph.toDotFormat());
+    writeGraph(cdgGraph.toDotFormat(), methodName);
+  }
+
+  private void writeGraph(String dotGraph, String methodName) {
+    System.out.println(methodName);
+    System.out.println(dotGraph);
+
+    File file = new File("temp/cdg_" + methodName + ".dot");
+    System.out.println(file.toPath());
+
+    // Create the output folder if it doesn't exist
+    File folder = file.getParentFile();
+    if (folder != null && !folder.exists()) {
+      folder.mkdirs();
+    }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      writer.write(dotGraph);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
