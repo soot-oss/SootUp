@@ -2,10 +2,7 @@
 This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
 ## The core datastructures
-Before you get started with the SootUp library, it helps to learn about the following core data structures: 
-
-- `Project`: defines the outlines of an analysis. SootUp users should first create a `Project` instance. It is the starting point for all operations. 
-  You can define multiple instances of `Project` at the same time and there are no information shared between them. All caches are always at the project level.
+Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
 - `Language`: represents the programming language of the analyzed code. 
 
@@ -33,41 +30,35 @@ Before you get started with the SootUp library, it helps to learn about the foll
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
-## Creating a Project
+## Creating a View
 
-You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create project for analyzing Java bytecode.
+You can use bytecode analysis typically when you do not have access to the source code of the target program. Following example shows how to create a view for analyzing Java bytecode.
 
-!!! example "Create a project to analyze Java bytecode"
+!!! example "Create a view to analyze Java bytecode"
 
     ~~~java
     AnalysisInputLocation<JavaSootClass> inputLocation = 
             new JavaClassPathAnalysisInputLocation("path2Binary");
             
-    JavaLanguage language = new JavaLanguage(8);
-    
-    Project project = 
-            JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaView view = new JavaView(inputLocation);
     ~~~
 
-If you have access to the source code, it is also possible to create a project for analyzing source code. Following example shows how to create project for analyzing Java source code.
+If you have access to the source code, it is also possible to create a view for analyzing source code. Following example shows how to create view for analyzing Java source code.
 
 !!! info "Experimental"
 
     The source code frontend is experimental and should only be used for testing purposes. You should compile the code for analysis first and use the bytecode frontend instead.  
 
-!!! example "Create a project to analyze Java source code"
+!!! example "Create a view to analyze Java source code"
 
     ~~~java
     AnalysisInputLocation<JavaSootClass> inputLocation = 
             new JavaSourcePathAnalysisInputLocation("path2Source");
             
-    JavaLanguage language = new JavaLanguage(8);
-    
-    Project project = 
-            JavaProject.builder(language).addInputLocation(inputLocation).build();
+    JavaView view = new JavaView(inputLocation);
     ~~~
 
-If you have a [Jimple](../jimple) file, you can create a project for analyzing jimple code directly. Following example shows how to create project for analyzing jimple code.
+If you have a [Jimple](../jimple) file, you can create a view for analyzing jimple code directly. Following example shows how to create a view for analyzing jimple code.
 
 !!! example "Create a project to analyze jimple code"
 
@@ -77,7 +68,7 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
     AnalysisInputLocation<JavaSootClass> inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
     
-    Project project = new JimpleProject(inputLocation);
+    JimpleView view = new JimpleView(inputLocation);
     ~~~
 
 <!---
@@ -86,22 +77,14 @@ If you have a [Jimple](../jimple) file, you can create a project for analyzing j
    TODO: add code
 --->
 
-## Creating a View
-
-
-To create an analysis view, you can call the `createView()` method on the `project` object:
-
-```java
-JavaView view = project.createView();
-```
-
 By default, whenever a class is retrieved, it will be permanently stored in a cache.
 If you do not want retrieved classes to be stored indefinetly, you can instead provide a different `CacheProvider` to the created view.
 To for example use an `LRUCache` instead, which stores at most 50 classes, and always replaces the least recently used class by a newly retrieved one, use the following call:
 
 ```java
-JavaView view = project.createView(new LRUCacheProvider(50));
+JavaView view = new JavaView(Collections.singletonList(inputLocation), new LRUCacheProvider(50));
 ```
+
 
 ## Retrieving a Class
 
@@ -138,7 +121,7 @@ Then, we could define the `ClassType` of the `HelloWorld` class as follows:
 
     ```java
     ClassType classType = 
-            project.getIdentifierFactory().getClassType("example.HelloWorld");
+            view.getIdentifierFactory().getClassType("example.HelloWorld");
     ```
 
 Once we have a `ClassType` that identifies the `HelloWorld` class, we can use it to retrieve the corresponding `SootClass` object from the `view` as shown below:
@@ -157,7 +140,7 @@ Like the classes, methods also have an identifier which we call `MethodSignature
 
     ```java
     MethodSignature methodSignature =
-        project
+        view
             .getIdentifierFactory()
             .getMethodSignature(
                 "main", // method name
@@ -215,23 +198,17 @@ Below we show a comparison of the code so far with the same functionality in soo
     AnalysisInputLocation<JavaSootClass> inputLocation =
     new JavaClassPathAnalysisInputLocation("path2Binary");
 
-    JavaLanguage language = new JavaLanguage(8);
-
-    Project project =
-        JavaProject.builder(language)
-                .addInputLocation(inputLocation).build();
+    JavaView view = new JavaView(inputLocation);
 
     ClassType classType = 
-            project.getIdentifierFactory().getClassType("HelloWorld");
+            view.getIdentifierFactory().getClassType("HelloWorld");
 
     MethodSignature methodSignature =
-        project
+        view
             .getIdentifierFactory()
             .getMethodSignature(
                 "main", classType, "void",
                 Collections.singletonList("java.lang.String[]"));
-
-    View view = project.createView();
 
     SootClass<JavaSootClassSource> sootClass =
         (SootClass<JavaSootClassSource>) view.getClass(classType).get();

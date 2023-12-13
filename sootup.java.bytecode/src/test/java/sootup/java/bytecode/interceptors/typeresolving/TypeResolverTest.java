@@ -19,8 +19,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -90,12 +88,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testArrayAssignStmt() {
-
-    final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new JavaClassPathAnalysisInputLocation(baseDir + "Misc/"))
-            .build();
-    final JavaView view = project.createView();
+    final JavaView view = new JavaView(new JavaClassPathAnalysisInputLocation(baseDir + "Misc/"));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()

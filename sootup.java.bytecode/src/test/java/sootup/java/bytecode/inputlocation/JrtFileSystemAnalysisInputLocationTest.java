@@ -8,16 +8,12 @@ import java.util.Collections;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Project;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModuleSignature;
-import sootup.java.core.views.JavaView;
+import sootup.java.core.views.JavaModuleView;
 
 /** @author Andreas Dann, Markus Schmidt */
 @Category(Java9Test.class)
@@ -26,17 +22,15 @@ public class JrtFileSystemAnalysisInputLocationTest {
   @Test
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Project<JavaSootClass, JavaView> project =
-        new JavaModuleProject(
-            new JavaLanguage(9),
-            Collections.emptyList(),
-            Collections.singletonList(inputLocation),
-            DefaultSourceTypeSpecifier.getInstance());
+
+    JavaModuleView view =
+        new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
+
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 
     final Optional<? extends AbstractClassSource<JavaSootClass>> clazz =
-        inputLocation.getClassSource(sig, project.createView());
+        inputLocation.getClassSource(sig, view);
     assertTrue(clazz.isPresent());
     assertEquals(sig, clazz.get().getClassType());
   }
@@ -45,20 +39,18 @@ public class JrtFileSystemAnalysisInputLocationTest {
   public void getClassSources() {
     // hint: quite expensive as it loads **all** Runtime modules!
     JrtFileSystemAnalysisInputLocation inputLocation = new JrtFileSystemAnalysisInputLocation();
-    Project<JavaSootClass, JavaView> project =
-        new JavaModuleProject(
-            new JavaLanguage(9),
-            Collections.emptyList(),
-            Collections.singletonList(inputLocation),
-            DefaultSourceTypeSpecifier.getInstance());
+    JavaModuleView view =
+        new JavaModuleView(Collections.emptyList(), Collections.singletonList(inputLocation));
+
     final ClassType sig1 =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
     final ClassType sig2 =
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
-    final JavaView view = project.createView();
     final Collection<? extends AbstractClassSource<?>> classSources =
         inputLocation.getClassSources(view);
+    assertTrue(classSources.size() > 26000);
+    inputLocation.getClassSources(view);
     assertTrue(
         classSources.size()
             > 20000); // not precise as this amount can differ depending on the included runtime
