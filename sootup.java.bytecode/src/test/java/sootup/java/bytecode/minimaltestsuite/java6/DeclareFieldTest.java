@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -42,19 +42,17 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getModifiers().contains(Modifier.PRIVATE)
-                      && sootField.getModifiers().contains(Modifier.STATIC)
-                      && sootField.getName().equals("i");
-                }));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PRIVATE)
+                        && sootField.getModifiers().contains(FieldModifier.STATIC)
+                        && sootField.getName().equals("i")));
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getModifiers().contains(Modifier.PUBLIC)
-                      && sootField.getModifiers().contains(Modifier.FINAL)
-                      && sootField.getName().equals("s");
-                }));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PUBLIC)
+                        && sootField.getModifiers().contains(FieldModifier.FINAL)
+                        && sootField.getName().equals("s")));
   }
 
   /**
@@ -69,7 +67,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: DeclareField",
+            "$l0 := @this: DeclareField",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
             "return")
@@ -87,7 +85,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "l0 := @this: DeclareField",
+            "$l0 := @this: DeclareField",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "$stack1 = <DeclareField: int i>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1)",

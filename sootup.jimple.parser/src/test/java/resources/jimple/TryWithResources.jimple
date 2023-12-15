@@ -1,4 +1,4 @@
-synchronized class TryWithResources extends java.lang.Object
+super class TryWithResources extends java.lang.Object
 {
     void <init>()
     {

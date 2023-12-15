@@ -22,14 +22,9 @@ package sootup.core.views;
  * #L%
  */
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.IdentifierFactory;
-import sootup.core.Project;
-import sootup.core.Scope;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -43,13 +38,12 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
-
-  @Nonnull private final Project<T, ? extends View<T>> project;
-
-  @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
-
+public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
   @Nullable private TypeHierarchy typeHierarchy;
+
+  public AbstractView() {
+    this.typeHierarchy = new ViewTypeHierarchy(this);
+  }
 
   @Override
   @Nonnull
@@ -58,24 +52,6 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
       typeHierarchy = new ViewTypeHierarchy(this);
     }
     return typeHierarchy;
-  }
-
-  public AbstractView(@Nonnull Project<?, ? extends View<?>> project) {
-    this.project = (Project<T, ? extends View<T>>) project;
-    this.typeHierarchy = new ViewTypeHierarchy(this);
-  }
-
-  @Override
-  @Nonnull
-  public IdentifierFactory getIdentifierFactory() {
-    return this.getProject().getIdentifierFactory();
-  }
-
-  @Override
-  @Nonnull
-  public Optional<Scope> getScope() {
-    // TODO implement scope
-    throw new UnsupportedOperationException("not implemented yet");
   }
 
   /**
@@ -88,7 +64,7 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    final Optional<S> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
@@ -98,28 +74,10 @@ public abstract class AbstractView<T extends SootClass<?>> implements View<T> {
   @Override
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<T> aClass = getClass(signature.getDeclClassType());
+    final Optional<S> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
     return aClass.get().getField(signature.getSubSignature());
-  }
-
-  @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData
-  @Override
-  @Nullable
-  public <K> K getModuleData(@Nonnull ModuleDataKey<K> key) {
-    return (K) moduleData.get(key);
-  }
-
-  @Override
-  public <K> void putModuleData(@Nonnull ModuleDataKey<K> key, @Nonnull K value) {
-    moduleData.put(key, value);
-  }
-
-  @Override
-  @Nonnull
-  public Project<? extends T, ? extends View<T>> getProject() {
-    return project;
   }
 }

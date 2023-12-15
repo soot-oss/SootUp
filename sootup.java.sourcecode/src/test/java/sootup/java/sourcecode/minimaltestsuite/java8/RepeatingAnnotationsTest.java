@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -29,7 +29,7 @@ public class RepeatingAnnotationsTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
 
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));
+    assertTrue(ClassModifier.isAnnotation(sootClass.getModifiers()));
   }
 
   @Override

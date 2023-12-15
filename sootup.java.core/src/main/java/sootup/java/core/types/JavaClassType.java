@@ -86,8 +86,8 @@ public class JavaClassType extends ClassType {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!packageName.getPackageName().isEmpty()) {
-      sb.append(packageName.getPackageName());
+    if (!packageName.getName().isEmpty()) {
+      sb.append(packageName.getName());
       sb.append('.');
     }
     sb.append(className);
@@ -100,7 +100,7 @@ public class JavaClassType extends ClassType {
     String packageNameStr = packageName.toString();
     if (!packageNameStr.isEmpty()) {
       sb.append(packageName);
-      if (!packageName.getPackageName().isEmpty()) {
+      if (!packageName.getName().isEmpty()) {
         sb.append('.');
       }
     }
@@ -128,6 +128,6 @@ public class JavaClassType extends ClassType {
       String moduleName = ((ModulePackageName) packageName).getModuleSignature().toString();
       return moduleName.startsWith("java.") || moduleName.startsWith("jdk.");
     }
-    return LIBRARY_CLASS_PATTERN.matcher(packageName.getPackageName()).find();
+    return LIBRARY_CLASS_PATTERN.matcher(packageName.getName()).find();
   }
 }

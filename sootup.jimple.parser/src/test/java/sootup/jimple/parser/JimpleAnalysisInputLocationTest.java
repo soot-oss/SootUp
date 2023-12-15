@@ -14,7 +14,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.java.core.JavaSootClass;
 import sootup.jimple.parser.categories.Java8Test;
 
 @Category(Java8Test.class)
@@ -69,21 +68,46 @@ public class JimpleAnalysisInputLocationTest {
           }
         };
 
+    final ClassType classTypeFake =
+        new ClassType() {
+          @Override
+          public boolean isBuiltInClass() {
+            return false;
+          }
+
+          @Override
+          public String getFullyQualifiedName() {
+            return "jimple.FakeJimple";
+          }
+
+          @Override
+          public String getClassName() {
+            return "FakeJimple";
+          }
+
+          @Override
+          public PackageName getPackageName() {
+            return new PackageName("jimple");
+          }
+        };
+
     final String resourceDir = "src/test/java/resources/";
 
     // files direct in dir
     final JimpleAnalysisInputLocation inputLocation1 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir + "/jimple/"));
-    JimpleView jv1 = new JimpleProject(inputLocation1).createView();
+    JimpleView jv1 = new JimpleView(inputLocation1);
     final Optional<SootClass<?>> classSource1 = jv1.getClass(onlyClassNameType);
     assertTrue(classSource1.isPresent());
     final Optional<SootClass<?>> classSource2 = jv1.getClass(classType);
     assertFalse(classSource2.isPresent());
+    final Optional<SootClass<?>> classSourceNon = jv1.getClass(classTypeFake);
+    assertFalse(classSourceNon.isPresent());
 
     // files in subdir structure
     final JimpleAnalysisInputLocation inputLocation2 =
         new JimpleAnalysisInputLocation(Paths.get(resourceDir));
-    JimpleView jv2 = new JimpleProject(inputLocation2).createView();
+    JimpleView jv2 = new JimpleView(inputLocation2);
     final Optional<SootClass<?>> classSource3 = jv2.getClass(onlyClassNameType);
     assertFalse(classSource3.isPresent());
 
@@ -98,9 +122,9 @@ public class JimpleAnalysisInputLocationTest {
   @Test
   public void specifyBuiltInInputJimplePath() {
     String classPath = "src/test/java/resources/jimple";
-    AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
+    AnalysisInputLocation<SootClass<?>> jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Library);
-    JimpleView view = new JimpleProject(jimpleInputLocation).createOnDemandView();
+    JimpleView view = new JimpleView(jimpleInputLocation);
 
     Collection<SootClass<?>> classes = new HashSet<>(); // Set to track the classes to check
 

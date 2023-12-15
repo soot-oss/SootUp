@@ -47,7 +47,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
@@ -83,7 +83,7 @@ public class JInvokeStmtTest {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC),
+            EnumSet.of(ClassModifier.PUBLIC),
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());
@@ -93,7 +93,7 @@ public class JInvokeStmtTest {
     // JStaticInvokeExpr
     MethodSignature statMethodSig =
         dif.getMethodSignature(
-            "print", "java.system.Out", "void", Collections.singletonList("String"));
+            "java.system.Out", "print", "void", Collections.singletonList("String"));
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
@@ -112,7 +112,7 @@ public class JInvokeStmtTest {
 
     // JSpecialInvoke
     MethodSignature smethodSig =
-        dif.getMethodSignature("<init>", "java.lang.Object", "void", Collections.emptyList());
+        dif.getMethodSignature("java.lang.Object", "<init>", "void", Collections.emptyList());
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
@@ -129,7 +129,7 @@ public class JInvokeStmtTest {
 
     // JInterfaceInvoke
     MethodSignature imethodSig =
-        dif.getMethodSignature("remove", "java.util.Iterator", "void", Collections.emptyList());
+        dif.getMethodSignature("java.util.Iterator", "remove", "void", Collections.emptyList());
     Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
@@ -147,12 +147,12 @@ public class JInvokeStmtTest {
     // JDynamicInvoke
     MethodSignature dmethodSig =
         dif.getMethodSignature(
-            "mylambda",
             JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME,
+            "mylambda",
             "void",
             Collections.emptyList());
     MethodSignature bootstrapMethodSig =
-        dif.getMethodSignature("run", "Runnable", "void", Collections.emptyList());
+        dif.getMethodSignature("Runnable", "run", "void", Collections.emptyList());
     List<Immediate> bootstrapArgs = Collections.emptyList();
     List<Immediate> methodArgs = Collections.emptyList();
 

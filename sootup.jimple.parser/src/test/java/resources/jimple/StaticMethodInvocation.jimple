@@ -1,4 +1,4 @@
-public synchronized class StaticMethodInvocation extends java.lang.Object
+public super class StaticMethodInvocation extends java.lang.Object
 {
     public void <init>()
     {

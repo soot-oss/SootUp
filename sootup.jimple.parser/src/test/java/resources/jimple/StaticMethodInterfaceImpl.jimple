@@ -1,4 +1,4 @@
-synchronized class StaticMethodInterfaceImpl extends java.lang.Object implements StaticMethodInterface
+super class StaticMethodInterfaceImpl extends java.lang.Object implements StaticMethodInterface
 {
     public static void initStatic()
     {

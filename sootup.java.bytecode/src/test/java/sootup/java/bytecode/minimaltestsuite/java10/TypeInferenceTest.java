@@ -47,25 +47,23 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: TypeInference",
-            "l1 = \"file.txt\"",
-            "l2 = \"\"",
+            "$l0 := @this: TypeInference",
+            "$l1 = \"file.txt\"",
+            "$l2 = \"\"",
             "$stack5 = new java.io.FileReader",
-            "specialinvoke $stack5.<java.io.FileReader: void <init>(java.lang.String)>(l1)",
-            "l3 = $stack5",
+            "specialinvoke $stack5.<java.io.FileReader: void <init>(java.lang.String)>($l1)",
+            "$l3 = $stack5",
             "$stack6 = new java.io.BufferedReader",
-            "specialinvoke $stack6.<java.io.BufferedReader: void <init>(java.io.Reader)>(l3)",
-            "l4 = $stack6",
+            "specialinvoke $stack6.<java.io.BufferedReader: void <init>(java.io.Reader)>($l3)",
+            "$l4 = $stack6",
             "label1:",
-            "$stack9 = l4",
-            "$stack7 = virtualinvoke $stack9.<java.io.BufferedReader: java.lang.String readLine()>()",
-            "l2 = $stack7",
-            "if $stack7 == null goto label2",
-            "$stack8 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>(l2)",
+            "$l2 = virtualinvoke $l4.<java.io.BufferedReader: java.lang.String readLine()>()",
+            "if $l2 == null goto label2",
+            "$stack7 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke $stack7.<java.io.PrintStream: void println(java.lang.String)>($l2)",
             "goto label1",
             "label2:",
-            "virtualinvoke l4.<java.io.BufferedReader: void close()>()",
+            "virtualinvoke $l4.<java.io.BufferedReader: void close()>()",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

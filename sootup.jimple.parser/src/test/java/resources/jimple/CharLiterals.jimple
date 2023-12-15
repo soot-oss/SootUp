@@ -1,4 +1,4 @@
-public synchronized class CharLiterals extends java.lang.Object
+public super class CharLiterals extends java.lang.Object
 {
     public void specialChar()
     {

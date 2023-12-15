@@ -53,7 +53,7 @@ public class OverridingClassSource extends SootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
-  @Nullable private final Set<Modifier> overriddenModifiers;
+  @Nullable private final Set<ClassModifier> overriddenModifiers;
   @Nullable private final Set<ClassType> overriddenInterfaces;
   @Nullable private final Optional<ClassType> overriddenSuperclass;
   @Nullable private final Optional<ClassType> overriddenOuterClass;
@@ -76,7 +76,7 @@ public class OverridingClassSource extends SootClassSource {
   private OverridingClassSource(
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
-      @Nullable Set<Modifier> overriddenModifiers,
+      @Nullable Set<ClassModifier> overriddenModifiers,
       @Nullable Set<ClassType> overriddenInterfaces,
       @Nullable Optional<ClassType> overriddenSuperclass,
       @Nullable Optional<ClassType> overriddenOuterClass,
@@ -97,7 +97,7 @@ public class OverridingClassSource extends SootClassSource {
   public OverridingClassSource(
       @Nonnull Set<SootMethod> sootMethods,
       @Nonnull Set<SootField> sootFields,
-      @Nonnull EnumSet<Modifier> modifiers,
+      @Nonnull EnumSet<ClassModifier> modifiers,
       @Nonnull Set<ClassType> interfaces,
       @Nonnull ClassType superClass,
       @Nonnull ClassType outerClass,
@@ -131,7 +131,7 @@ public class OverridingClassSource extends SootClassSource {
 
   @Nonnull
   @Override
-  public Set<Modifier> resolveModifiers() {
+  public Set<ClassModifier> resolveModifiers() {
     return overriddenModifiers != null ? overriddenModifiers : delegate.resolveModifiers();
   }
 
@@ -261,7 +261,7 @@ public class OverridingClassSource extends SootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withModifiers(@Nonnull Set<Modifier> overriddenModifiers) {
+  public OverridingClassSource withModifiers(@Nonnull Set<ClassModifier> overriddenModifiers) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,

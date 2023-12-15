@@ -4,22 +4,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
+import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.inputlocation.EmptyClassLoadingOptions;
+import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.model.SootClass;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
-import sootup.java.core.views.JavaView;
 
 /**
  * The Class JimpleView manages the Sootclasses of the application being analyzed.
@@ -32,69 +30,33 @@ import sootup.java.core.views.JavaView;
 // for View if we really need different views in the future?
 public class JimpleView extends AbstractView<SootClass<?>> {
 
+  @Nonnull protected final List<AnalysisInputLocation<SootClass<?>>> inputLocations;
   @Nonnull private final ClassCache<SootClass<?>> cache;
+  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
   private volatile boolean isFullyResolved = false;
 
-  @Nonnull
-  protected Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-      classLoadingOptionsSpecifier;
+  public JimpleView(@Nonnull AnalysisInputLocation<SootClass<?>> inputLocation) {
+    this(Collections.singletonList(inputLocation), new FullCacheProvider<>());
+  }
 
-  /** Creates a new instance of the {@link JavaView} class. */
-  public JimpleView(@Nonnull JimpleProject project) {
-    this(
-        project,
-        new FullCacheProvider<>(),
-        analysisInputLocation -> EmptyClassLoadingOptions.Default);
+  public JimpleView(@Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations) {
+    this(inputLocations, new FullCacheProvider<>());
   }
 
   public JimpleView(
-      @Nonnull JimpleProject project,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this(project, new FullCacheProvider<>(), classLoadingOptionsSpecifier);
+      @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
+      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
+    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleView(
-      @Nonnull JimpleProject project, @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
-    this(project, cacheProvider, analysisInputLocation -> EmptyClassLoadingOptions.Default);
-  }
-
-  /**
-   * Creates a new instance of the {@link JavaView} class.
-   *
-   * @param classLoadingOptionsSpecifier To use the default {@link ClassLoadingOptions} for an
-   *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
-   *     options.
-   */
-  public JimpleView(
-      @Nonnull JimpleProject project,
+      @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
       @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    super(project);
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-  }
-
-  @Nonnull
-  @Override
-  public List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation) {
-    return classLoadingOptionsSpecifier.apply(inputLocation).getBodyInterceptors();
-  }
-
-  @Nonnull
-  private List<BodyInterceptor> getBodyInterceptors() {
-    return Collections.emptyList();
-  }
-
-  public void configBodyInterceptors(
-      @Nonnull
-          Function<AnalysisInputLocation<? extends SootClass<?>>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
-    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
+    this.sourceTypeSpecifier = sourceTypeSpecifier;
   }
 
   @Override
@@ -116,14 +78,20 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
+  @Override
+  public IdentifierFactory getIdentifierFactory() {
+    return new JimpleLanguage().getIdentifierFactory();
+  }
+
+  @Nonnull
   Optional<SootClass<?>> getAbstractClass(@Nonnull ClassType type) {
     SootClass<?> cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<? extends AbstractClassSource<? extends SootClass<?>>> foundClassSources =
-        getProject().getInputLocations().stream()
+    final List<? extends AbstractClassSource<SootClass<?>>> foundClassSources =
+        inputLocations.stream()
             .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
             .limit(2)
@@ -148,13 +116,12 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Nonnull
   private synchronized Optional<SootClass<?>> buildClassFrom(
-      AbstractClassSource<? extends SootClass<?>> classSource) {
+      AbstractClassSource<SootClass<?>> classSource) {
 
     ClassType classType = classSource.getClassType();
     SootClass<?> theClass;
     if (!cache.hasClass(classType)) {
-      theClass =
-          classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(classSource));
+      theClass = classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
       cache.putClass(classType, theClass);
     } else {
       theClass = cache.getClass(classType);
@@ -168,7 +135,7 @@ public class JimpleView extends AbstractView<SootClass<?>> {
       return;
     }
 
-    getProject().getInputLocations().stream()
+    inputLocations.stream()
         .flatMap(location -> location.getClassSources(this).stream())
         .forEach(this::buildClassFrom);
     isFullyResolved = true;

@@ -5,10 +5,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.Project;
+import sootup.core.SourceTypeSpecifier;
 import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
@@ -24,8 +25,19 @@ public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
-  public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
-    super(project, new MutableFullCacheProvider<>());
+  public MutableJavaView(@Nonnull AnalysisInputLocation<? extends JavaSootClass> inputLocation) {
+    this(Collections.singletonList(inputLocation));
+  }
+
+  public MutableJavaView(
+      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations) {
+    super(inputLocations, new MutableFullCacheProvider<>());
+  }
+
+  public MutableJavaView(
+      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    super(inputLocations, new MutableFullCacheProvider<>(), sourceTypeSpecifier);
   }
 
   /**

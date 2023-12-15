@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: SootUp
+message: 'If you use SootUp, please cite it as below.'
+type: software
+authors:
+  - given-names: Soot-oss
+repository-code: 'https://github.com/soot-oss/SootUp'
+version: 1.1.2
+date-released: '2023-06-12'

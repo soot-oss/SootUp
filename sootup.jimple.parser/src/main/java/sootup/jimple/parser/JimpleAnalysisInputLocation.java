@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +17,7 @@ import sootup.core.inputlocation.FileType;
 import sootup.core.model.AbstractClass;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
@@ -29,24 +27,24 @@ import sootup.core.views.View;
 public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
     implements AnalysisInputLocation<T> {
   final Path path;
+  private final List<BodyInterceptor> bodyInterceptors;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private SourceType srcType = null;
 
   // TODO: allow pointing to a single file
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
-    if (!Files.exists(path)) {
-      throw new IllegalArgumentException(
-          "The configured path '"
-              + path
-              + "' pointing to '"
-              + path.toAbsolutePath()
-              + "' does not exist.");
-    }
-    this.path = path;
+    this(path, null);
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    this(path, srcType, Collections.emptyList());
+  }
+
+  public JimpleAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     if (!Files.exists(path)) {
       throw new IllegalArgumentException(
           "The configured path '"
@@ -56,6 +54,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
               + "' does not exist.");
     }
     this.path = path;
+    this.bodyInterceptors = bodyInterceptors;
     setSpecifiedAsBuiltInByUser(srcType);
   }
 
@@ -73,6 +72,12 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     return srcType;
   }
 
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
   @Nonnull
   List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
       @Nonnull Path dirPath,
@@ -85,8 +90,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      Optional.of(
-                          classProvider.createClassSource(this, p, factory.fromPath(dirPath, p)))))
+                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -98,15 +102,14 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   @Nonnull
   public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
     return walkDirectory(
-        path, view.getIdentifierFactory(), new JimpleClassProvider(view.getBodyInterceptors(this)));
+        path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors));
   }
 
   @Override
   @Nonnull
   public Optional<? extends SootClassSource<T>> getClassSource(
       @Nonnull ClassType type, @Nonnull View<?> view) {
-    final JimpleClassProvider<T> classProvider =
-        new JimpleClassProvider<>(view.getBodyInterceptors(this));
+    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(bodyInterceptors);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 
@@ -126,7 +129,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
       }
     }
 
-    return Optional.of(classProvider.createClassSource(this, pathToClass, type));
+    return classProvider.createClassSource(this, pathToClass, type);
   }
 
   @Override

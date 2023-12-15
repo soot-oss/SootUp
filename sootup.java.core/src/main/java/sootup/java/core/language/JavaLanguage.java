@@ -28,7 +28,6 @@ import sootup.core.Language;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaModuleIdentifierFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * Language specific Configuration for Java.
  *
@@ -40,13 +39,13 @@ public class JavaLanguage extends Language {
   /** The identifier factory. */
   @Nonnull private final IdentifierFactory identifierFactory;
 
-  /** The version number. */
+  /** The version number of Java. */
   private final int version;
 
   /**
    * Instantiates a new java language with given version e.g 8 or 9
    *
-   * @param version the version
+   * @param version the Java version, not the major release version within the class file
    */
   public JavaLanguage(int version) {
     this.version = version;

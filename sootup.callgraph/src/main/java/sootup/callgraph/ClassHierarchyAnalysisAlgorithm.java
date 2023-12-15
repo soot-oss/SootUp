@@ -25,14 +25,16 @@ package sootup.callgraph;
 import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
+import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.MethodDispatchResolver;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
@@ -81,39 +83,68 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
       return Stream.empty();
     }
 
-    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
-
-    SootMethod targetMethod =
-        view.getClass(targetMethodSignature.getDeclClassType())
-            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
-            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+    SootMethod targetMethod = findConcreteMethod(view, targetMethodSignature).orElse(null);
 
     if (targetMethod == null
-        || Modifier.isStatic(targetMethod.getModifiers())
+        || MethodModifier.isStatic(targetMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
-      return result;
+      return Stream.of(targetMethodSignature);
     } else {
-      if (targetMethod.isAbstract()) {
-        return resolveAllSubClassCallTargets(targetMethodSignature);
+      ArrayList<ClassType> noImplementedMethod = new ArrayList<>();
+      List<MethodSignature> targets =
+          resolveAllCallTargets(targetMethodSignature, noImplementedMethod);
+      if (!targetMethod.isAbstract()) {
+        targets.add(targetMethod.getSignature());
       }
-      return MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
-          .map(
-              methodSignature ->
-                  Stream.concat(
-                      Stream.of(methodSignature),
-                      resolveAllSubClassCallTargets(targetMethodSignature)))
-          .orElseGet(() -> resolveAllSubClassCallTargets(targetMethodSignature));
+      if (invokeExpr instanceof JInterfaceInvokeExpr) {
+        IdentifierFactory factory = view.getIdentifierFactory();
+        noImplementedMethod.stream()
+            .map(
+                classType ->
+                    resolveConcreteDispatch(
+                        view,
+                        factory.getMethodSignature(
+                            classType, targetMethodSignature.getSubSignature())))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(targets::add);
+      }
+      return targets.stream();
     }
   }
 
-  private Stream<MethodSignature> resolveAllSubClassCallTargets(
-      MethodSignature targetMethodSignature) {
-    return MethodDispatchResolver.resolveAllDispatches(view, targetMethodSignature).stream()
-        .map(
-            methodSignature ->
-                MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
-        .filter(Optional::isPresent)
-        .map(Optional::get);
+  private List<MethodSignature> resolveAllCallTargets(
+      MethodSignature targetMethodSignature, ArrayList<ClassType> noImplementedMethod) {
+    ArrayList<MethodSignature> targets = new ArrayList<>();
+    view.getTypeHierarchy()
+        .subtypesOf(targetMethodSignature.getDeclClassType())
+        .forEach(
+            classType -> {
+              SootClass<?> clazz = view.getClass(classType).orElse(null);
+              if (clazz == null) return;
+              // check if method is implemented
+              SootMethod method =
+                  clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
+              if (method != null && !method.isAbstract()) targets.add(method.getSignature());
+              // save classes with no implementation of the searched method
+              if (method == null && !clazz.isInterface()) noImplementedMethod.add(classType);
+              // collect all default methods
+              clazz
+                  .getInterfaces()
+                  .forEach(
+                      interfaceType -> {
+                        SootMethod defaultMethod =
+                            view.getMethod(
+                                    view.getIdentifierFactory()
+                                        .getMethodSignature(
+                                            interfaceType, targetMethodSignature.getSubSignature()))
+                                .orElse(null);
+                        // contains an implemented default method
+                        if (defaultMethod != null && !defaultMethod.isAbstract())
+                          targets.add(defaultMethod.getSignature());
+                      });
+            });
+    return targets;
   }
 
   @Override

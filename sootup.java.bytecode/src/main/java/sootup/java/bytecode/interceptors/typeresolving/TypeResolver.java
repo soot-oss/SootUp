@@ -38,15 +38,15 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
 public class TypeResolver {
-  private final ArrayList<AbstractDefinitionStmt<?, ?>> assignments = new ArrayList<>();
+  private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
   private int castCount;
@@ -67,7 +67,7 @@ public class TypeResolver {
       return false;
     }
     Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
-    if (this.castCount != 0) {
+    if (this.castCount > 0) {
       CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
       castCounter.insertCastStmts(minCastsTyping);
     }
@@ -78,7 +78,11 @@ public class TypeResolver {
       return false;
     } else {
       for (Local local : locals) {
-        Type convertedType = convertType(promotedTyping.getType(local));
+        final Type type = promotedTyping.getType(local);
+        if (type == null) {
+          continue;
+        }
+        Type convertedType = convertType(type);
         if (convertedType != null) {
           promotedTyping.set(local, convertedType);
         }
@@ -88,11 +92,13 @@ public class TypeResolver {
     for (Local local : locals) {
       Type oldType = local.getType();
       Type newType = promotedTyping.getType(local);
-      if (oldType.equals(newType)) {
+      if (newType == null || oldType.equals(newType)) {
         continue;
       }
-      Local newLocal = local.withType(newType);
-      builder.replaceLocal(local, newLocal);
+      if (!(newType instanceof BottomType)) {
+        Local newLocal = local.withType(newType);
+        builder.replaceLocal(local, newLocal);
+      }
     }
     return true;
   }
@@ -101,7 +107,7 @@ public class TypeResolver {
   private void init(Body.BodyBuilder builder) {
     for (Stmt stmt : builder.getStmts()) {
       if (stmt instanceof AbstractDefinitionStmt) {
-        AbstractDefinitionStmt<?, ?> defStmt = (AbstractDefinitionStmt<?, ?>) stmt;
+        AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
         Value lhs = defStmt.getLeftOp();
         if (lhs instanceof Local || lhs instanceof JArrayRef || lhs instanceof JInstanceFieldRef) {
           final int id = assignments.size();
@@ -176,13 +182,27 @@ public class TypeResolver {
         workQueue.removeFirst();
       } else {
         actualSL.clear(stmtId);
-        AbstractDefinitionStmt<?, ?> defStmt = this.assignments.get(stmtId);
+        AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
         Value lhs = defStmt.getLeftOp();
-        Local local = (lhs instanceof Local) ? (Local) lhs : ((JArrayRef) lhs).getBase();
+        Local local;
+        if (lhs instanceof Local) {
+          local = (Local) lhs;
+        } else if (lhs instanceof JArrayRef) {
+          local = ((JArrayRef) lhs).getBase();
+        } else if (lhs instanceof JInstanceFieldRef) {
+          local = ((JInstanceFieldRef) lhs).getBase();
+        } else {
+          throw new IllegalStateException("can not handle " + lhs.getClass());
+        }
         Type t_old = actualTyping.getType(local);
         Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+        if (t_right == null) {
+          // TODO: ms: is this correct to handle: null?
+          workQueue.removeFirst();
+          continue;
+        }
         if (lhs instanceof JArrayRef) {
-          t_right = Type.makeArrayType(t_right, 1);
+          t_right = Type.createArrayType(t_right, 1);
         }
 
         boolean isFirstType = true;
@@ -220,20 +240,18 @@ public class TypeResolver {
   /** This method is used to remove the more general typings. */
   private void minimize(@Nonnull List<Typing> typings, @Nonnull BytecodeHierarchy hierarchy) {
     Set<Type> objectLikeTypes = new HashSet<>();
-    IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType obj = factory.getClassType("java.lang.Object");
-    ClassType ser = factory.getClassType("java.io.Serializable");
-    ClassType clo = factory.getClassType("java.lang.Cloneable");
-    objectLikeTypes.add(obj);
-    objectLikeTypes.add(ser);
-    objectLikeTypes.add(clo);
+    // FIXME: [ms] handle java modules as well!
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Object"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.io.Serializable"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Cloneable"));
 
     // collect all locals whose types are object, serializable, cloneable
     Set<Local> objectLikeLocals = new HashSet<>();
     Map<Local, Set<Type>> local2Types = getLocal2Types(typings);
-    for (Local local : local2Types.keySet()) {
-      if (local2Types.get(local).equals(objectLikeTypes)) {
-        objectLikeLocals.add(local);
+    for (Map.Entry<Local, Set<Type>> local : local2Types.entrySet()) {
+      if (local.getValue().equals(objectLikeTypes)) {
+        objectLikeLocals.add(local.getKey());
       }
     }
     // if one typing is more general als another typing, it should be removed.
@@ -281,16 +299,16 @@ public class TypeResolver {
   }
 
   private Type convertType(@Nonnull Type type) {
-    if (type instanceof AugIntegerTypes.Integer1Type) {
+    if (type instanceof AugmentIntegerTypes.Integer1Type) {
       return PrimitiveType.getBoolean();
-    } else if (type instanceof AugIntegerTypes.Integer127Type) {
+    } else if (type instanceof AugmentIntegerTypes.Integer127Type) {
       return PrimitiveType.getByte();
-    } else if (type instanceof AugIntegerTypes.Integer32767Type) {
+    } else if (type instanceof AugmentIntegerTypes.Integer32767Type) {
       return PrimitiveType.getShort();
     } else if (type instanceof ArrayType) {
       Type eleType = convertType(((ArrayType) type).getElementType());
       if (eleType != null) {
-        return Type.makeArrayType(eleType, 1);
+        return Type.createArrayType(eleType, 1);
       } else {
         return null;
       }

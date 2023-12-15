@@ -1,4 +1,4 @@
-public synchronized class AnonymousClassInsideMethod extends java.lang.Object
+public super class AnonymousClassInsideMethod extends java.lang.Object
 {
     public void <init>()
     {

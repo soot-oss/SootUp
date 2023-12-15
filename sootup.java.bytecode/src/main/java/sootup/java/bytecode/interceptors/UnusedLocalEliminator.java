@@ -32,7 +32,9 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
 /**
- * A BodyTransformer that removes all unused local variables from a given Body.
+ * The UnusedLocalEliminator removes any unused locals from the method. TODO: ms: it basically
+ * collects all locals and assigns the collection of Locals to the Body... i.e. its use replaces the
+ * need of a validator and the manual assignment of the Locals to the body.
  *
  * @author Marcus Nachtigall
  */

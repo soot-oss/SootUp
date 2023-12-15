@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.ResolveException;
 import sootup.core.types.*;
 import sootup.core.views.View;
 
@@ -172,24 +171,10 @@ public interface TypeHierarchy {
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
-   * will be the last entry in the list.
-   */
-  @Nonnull
-  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
-    List<ClassType> superClasses = new ArrayList<>();
-    ClassType currentSuperClass = superClassOf(classType);
-    while (currentSuperClass != null) {
-      superClasses.add(currentSuperClass);
-      currentSuperClass = superClassOf(currentSuperClass);
-    }
-    return superClasses;
-  }
-  /**
-   * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
    */
   @Nonnull
-  default List<ClassType> incompleteSuperClassesOf(@Nonnull ClassType classType) {
+  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
     ClassType currentSuperClass = null;
     try {
@@ -198,7 +183,7 @@ public interface TypeHierarchy {
         superClasses.add(currentSuperClass);
         currentSuperClass = superClassOf(currentSuperClass);
       }
-    } catch (ResolveException ex) {
+    } catch (IllegalArgumentException ex) {
       logger.warn(
           "Could not find "
               + (currentSuperClass != null ? currentSuperClass : classType)
@@ -207,4 +192,14 @@ public interface TypeHierarchy {
     }
     return superClasses;
   }
+
+  Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+
+  boolean isInterface(@Nonnull ClassType type);
+
+  Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
+
+  // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
+  // View.getClass(...).isPresent()
+  boolean contains(ClassType type);
 }

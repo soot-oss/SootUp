@@ -58,7 +58,8 @@ public class ClassConstant implements Constant {
 
   public ClassConstant(@Nonnull String str, @Nonnull Type type) {
     if (str.contains(".")) {
-      throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
+      throw new IllegalArgumentException(
+          "ClassConstants must use class names separated by '/', not '.'!");
     }
     this.value = str;
     this.type = type;
@@ -113,7 +114,7 @@ public class ClassConstant implements Constant {
   public boolean isRefType() {
     return value.startsWith("L") && value.endsWith(";");
   }
-  // TODO: [ms] code is quite like the one in  Asmutil.java ? so we can/shall remove it?
+  // TODO: [ms] code is quite like the one in  Asmutil.java ? so we can/shall refactor it?
   //  /** Returns numDimensions. */
   //  public Type toSootType() {
   //    int numDimensions = 0;

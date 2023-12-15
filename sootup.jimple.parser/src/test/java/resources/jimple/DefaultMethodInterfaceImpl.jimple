@@ -1,4 +1,4 @@
-synchronized class DefaultMethodInterfaceImpl extends java.lang.Object implements DefaultMethodInterface
+super class DefaultMethodInterfaceImpl extends java.lang.Object implements DefaultMethodInterface
 {
     public void interfaceMethod()
     {

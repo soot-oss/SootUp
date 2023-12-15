@@ -6,16 +6,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
-import sootup.core.Project;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
@@ -23,20 +23,17 @@ import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
 
-    Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createView();
+    View view = new JavaView(new EagerInputLocation<>());
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
     Body body =
         builder
             .setMethodSignature(methodSignature)
@@ -49,7 +46,7 @@ public class LegacyJimplePrinterTest {
         new SootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
@@ -57,7 +54,7 @@ public class LegacyJimplePrinterTest {
         new OverridingClassSource(
             Collections.singleton(dummyMainMethod),
             Collections.emptySet(),
-            EnumSet.of(Modifier.PUBLIC),
+            EnumSet.of(ClassModifier.PUBLIC),
             Collections.emptySet(),
             null,
             null,
@@ -80,18 +77,19 @@ public class LegacyJimplePrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     final JNopStmt jNop2 = new JNopStmt(noPosInfo);
 
-    Stmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
+    BranchingStmt tableSwitch = new JSwitchStmt(IntConstant.getInstance(42), 4, 5, noPosInfo);
 
     {
       Body.BodyBuilder builder = Body.builder();
-      builder.setStartingStmt(tableSwitch);
+      final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+      stmtGraph.setStartingStmt(tableSwitch);
 
-      builder.addFlow(tableSwitch, jNop);
-      builder.addFlow(tableSwitch, jNop2);
-      builder.addFlow(tableSwitch, returnstmt);
+      stmtGraph.putEdge(tableSwitch, 0, jNop);
+      stmtGraph.putEdge(tableSwitch, 1, jNop2);
+      stmtGraph.putEdge(tableSwitch, 2, returnstmt);
 
-      builder.addFlow(jNop, jNop2);
-      builder.addFlow(jNop2, returnstmt);
+      stmtGraph.putEdge(jNop, jNop2);
+      stmtGraph.putEdge(jNop2, returnstmt);
 
       SootClass tableClass = buildClass(builder);
 
@@ -116,17 +114,19 @@ public class LegacyJimplePrinterTest {
     }
 
     {
-      Stmt lookupSwitch = new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
+      BranchingStmt lookupSwitch =
+          new JSwitchStmt(IntConstant.getInstance(123), lookupValues, noPosInfo);
 
       Body.BodyBuilder builder = Body.builder();
-      builder.setStartingStmt(lookupSwitch);
+      final MutableStmtGraph stmtGraph = builder.getStmtGraph();
+      stmtGraph.setStartingStmt(lookupSwitch);
 
-      builder.addFlow(lookupSwitch, jNop);
-      builder.addFlow(lookupSwitch, jNop2);
-      builder.addFlow(lookupSwitch, returnstmt);
+      stmtGraph.putEdge(lookupSwitch, 0, jNop);
+      stmtGraph.putEdge(lookupSwitch, 1, jNop2);
+      stmtGraph.putEdge(lookupSwitch, 2, returnstmt);
 
-      builder.addFlow(jNop, jNop2);
-      builder.addFlow(jNop2, returnstmt);
+      stmtGraph.putEdge(jNop, jNop2);
+      stmtGraph.putEdge(jNop2, returnstmt);
 
       SootClass lookupClass = buildClass(builder);
 

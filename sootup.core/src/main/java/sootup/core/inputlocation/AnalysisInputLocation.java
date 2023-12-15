@@ -22,6 +22,7 @@ package sootup.core.inputlocation;
  */
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,7 +47,7 @@ import sootup.core.views.View;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends AbstractClass> {
+public interface AnalysisInputLocation<T extends AbstractClass<?>> {
   /**
    * Create or find a class source for a given type.
    *
@@ -73,7 +74,8 @@ public interface AnalysisInputLocation<T extends AbstractClass> {
    * @return returns null as source type
    */
   @Nullable
-  default SourceType getSourceType() {
-    return null;
-  }
+  SourceType getSourceType();
+
+  @Nonnull
+  List<BodyInterceptor> getBodyInterceptors();
 }

@@ -21,12 +21,10 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -43,27 +41,20 @@ public class MutatingSootClass {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(Paths.get("src/test/resources/BasicSetup/binary"), null);
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("src/test/resources/BasicSetup/binary"), null);
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
-
-    // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    // Create a view for project, which allows us to retrieve classes
+    JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
+    ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        project
-            .getIdentifierFactory()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
-
-    // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createView();
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

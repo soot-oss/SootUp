@@ -41,7 +41,7 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MethodReference",
+            "$l0 := @this: MethodReference",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Instance Method\")",
             "return")

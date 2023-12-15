@@ -21,15 +21,14 @@ package sootup.core.inputlocation;
  * #L%
  */
 import com.google.common.collect.ImmutableMap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -41,15 +40,27 @@ import sootup.core.views.View;
 public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>>>
     implements AnalysisInputLocation<S> {
 
+  protected final SourceType sourceType;
   @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /** not useful for retrieval of classes via view. remove inputlocation from sootclass? */
   public EagerInputLocation() {
-    map = Collections.emptyMap();
+    this(Collections.emptyMap(), SourceType.Application);
   }
 
-  public EagerInputLocation(@Nonnull Map<ClassType, ? extends SootClassSource<S>> map) {
+  public EagerInputLocation(
+      @Nonnull Map<ClassType, ? extends SootClassSource<S>> map, @Nullable SourceType sourceType) {
+    this(map, sourceType, Collections.emptyList());
+  }
+
+  public EagerInputLocation(
+      @Nonnull Map<ClassType, ? extends SootClassSource<S>> map,
+      @Nullable SourceType sourceType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this.sourceType = sourceType;
     this.map = ImmutableMap.copyOf(map);
+    this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
@@ -64,6 +75,17 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   public Collection<? extends AbstractClassSource<S>> getClassSources(@Nullable View<?> view) {
     // FIXME: add classloadingoptions
     return map.values();
+  }
+
+  @Override
+  public SourceType getSourceType() {
+    return sourceType;
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   @Override

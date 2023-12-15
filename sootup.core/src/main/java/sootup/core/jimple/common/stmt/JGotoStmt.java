@@ -29,11 +29,11 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.model.Body;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Unconditionally jumps to a target Stmt */
-public class JGotoStmt extends BranchingStmt implements Copyable {
+public class JGotoStmt extends AbstractStmt implements BranchingStmt {
+  public static final int BRANCH_IDX = 0;
 
   public JGotoStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);
@@ -71,6 +71,11 @@ public class JGotoStmt extends BranchingStmt implements Copyable {
   @Override
   public boolean fallsThrough() {
     return false;
+  }
+
+  @Override
+  public boolean branches() {
+    return true;
   }
 
   @Override

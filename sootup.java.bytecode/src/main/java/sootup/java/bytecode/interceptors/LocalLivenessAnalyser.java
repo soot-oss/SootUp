@@ -25,6 +25,7 @@ package sootup.java.bytecode.interceptors;
 import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -77,7 +78,7 @@ public class LocalLivenessAnalyser {
             in.add((Local) use);
           }
         }
-        final List<Value> defs = stmt.getDefs();
+        final List<LValue> defs = stmt.getDefs();
         if (!defs.isEmpty()) {
           final Value value = defs.get(0);
           if (value instanceof Local) {

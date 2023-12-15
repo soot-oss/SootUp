@@ -1,4 +1,4 @@
-public final synchronized enum class DeclareEnum$Type extends java.lang.Enum
+public final super enum class DeclareEnum$Type extends java.lang.Enum
 {
     public static final enum DeclareEnum$Type TYPE3;
 

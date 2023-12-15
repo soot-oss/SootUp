@@ -1,7 +1,11 @@
 package sootup.core.model;
 
 public class LinePosition extends Position {
-  int lineNo;
+  private final int lineNo;
+
+  public LinePosition(int lineNo) {
+    this.lineNo = lineNo;
+  }
 
   @Override
   public int getFirstLine() {

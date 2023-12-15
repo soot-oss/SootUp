@@ -1,4 +1,4 @@
-public synchronized class AutomaticWidening extends java.lang.Object
+public super class AutomaticWidening extends java.lang.Object
 {
     public void <init>()
     {

@@ -1,26 +1,112 @@
-name: Documentation 
+# see https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
+# execute once, after the first deployment has 'latest' as alias:
+# mike set-default latest --push
+
+name: Documentation
+
 on:
   push:
-    branches: 
+    branches:
       - develop
-    # only trigger workflow if one of these paths are affected as well
     paths:
       - 'mkdocs.yml'
       - 'sootup.examples/**'
       - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
+
+  release:
+    types: [ created, published ]
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+    paths:
+      - 'mkdocs.yml'
+      - 'sootup.examples/**'
+      - 'docs/**'
+      - '.github/workflows/gh-pages.yml'
+
+concurrency: pages
+
+permissions:
+  pages: write
+  contents: write
+  pull-requests: write
 
 jobs:
-  deploy:
+  manage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # to get tag information
+      - run: git fetch --prune --unshallow
+
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
+
+      # install dependencies
+      - run: pip install mike
       - run: pip install mkdocs-material
       - run: pip install mkdocs-tooltips
       - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
       - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
-      - run: mkdocs gh-deploy --force
+
+      - name: replace "{{ git_latest_release }}" with latest release tag version in .md files
+        run: sed -i 's\{{ git_latest_release }}\'$(git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7)'\g' docs/**.md
+
+      - run: git fetch origin gh-pages --depth=1
+      - name: Configure git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      # sanitive head_ref name
+      - run: echo "DOC_VERSION_NAME=$(echo ${{ github.head_ref }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
+
+      # on push to develop branch - keep a doc around for develop to show the current state
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'push'
+        run: mike deploy develop
+
+      # on PR events..
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'pull_request'
+        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview -t "PR Preview ${{ env.DOC_VERSION_NAME }}" && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
+
+      - name: comment link to preview
+        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            You updated the documentation - [Doc Preview](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ env.DOC_VERSION_NAME }}_preview/).
+
+      # on PR close - delete preview
+      - name: delete the deployed preview
+        if: github.event_name == 'pull_request' && github.event.action == 'closed'
+        run: mike delete ${{ env.DOC_VERSION_NAME }}_preview --push
+
+
+      # on release events..
+      # sanitive head_ref name
+      - name: sanitize tag name
+        if: github.event_name == 'release'
+        run: echo "DOC_VERSION_NAME=$(echo ${{ github.ref_name }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
+
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'release'
+        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
+
+
+      - name: deploy doc in subdirectory
+        if: github.event_name == 'release'
+        run: mike deploy ${{ env.DOC_VERSION_NAME }} --push
+
+      - name: set the new release doc as default (release published)
+        if: github.event_name == 'release' && github.event.action == 'published'
+        run: mike deploy --push --update-aliases ${{ env.DOC_VERSION_NAME }} latest
