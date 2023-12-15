@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Set;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 public class MethodAst {
   private final String name;
-  private final Set<Modifier> modifiers;
+  private final Set<MethodModifier> modifiers;
   private final List<Type> parameterTypes;
   private final List<Stmt> bodyStmts;
   private final Type returnType;
@@ -33,7 +33,7 @@ public class MethodAst {
     return name;
   }
 
-  public Set<Modifier> getModifiers() {
+  public Set<MethodModifier> getModifiers() {
     return modifiers;
   }
 

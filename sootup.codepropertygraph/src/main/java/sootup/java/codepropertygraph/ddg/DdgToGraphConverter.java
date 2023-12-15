@@ -1,8 +1,5 @@
 package sootup.java.codepropertygraph.ddg;
 
-import java.util.*;
-import sootup.core.graph.BasicBlock;
-import sootup.core.graph.PostDominanceFinder;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -12,8 +9,6 @@ public class DdgToGraphConverter {
   public static DdgGraph convert(MethodDdg methodDdg) {
     DdgGraph ddgGraph = new DdgGraph();
     StmtGraph<?> stmtGraph = methodDdg.getStmtGraph();
-
-    // ddg ...
 
     return ddgGraph;
   }

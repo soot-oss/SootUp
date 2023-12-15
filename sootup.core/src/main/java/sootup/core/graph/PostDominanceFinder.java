@@ -35,10 +35,10 @@ import javax.annotation.Nonnull;
  */
 public class PostDominanceFinder {
 
-  private List<BasicBlock<?>> blocks;
-  private Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
-  private int[] pdoms;
-  private ArrayList<Integer>[] pdomFrontiers;
+  private final List<BasicBlock<?>> blocks;
+  private final Map<BasicBlock<?>, Integer> blockToIdx = new HashMap<>();
+  private final int[] pdoms;
+  private final ArrayList<Integer>[] pdomFrontiers;
 
   public PostDominanceFinder(StmtGraph<?> blockGraph) {
 
@@ -46,11 +46,11 @@ public class PostDominanceFinder {
     // we'll use the block iterator directly (which provides this type) rather than
     // #getBlocksSorted.
     blocks =
-            StreamSupport.stream(
-                            Spliterators.spliteratorUnknownSize(
-                                    blockGraph.getBlockIterator(), Spliterator.ORDERED),
-                            false)
-                    .collect(Collectors.toList());
+        StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    blockGraph.getBlockIterator(), Spliterator.ORDERED),
+                false)
+            .collect(Collectors.toList());
     Collections.reverse(blocks);
 
     final BasicBlock<?> tailStmtBlock = blockGraph.getBlockOf(blockGraph.getTails().get(0));
@@ -130,7 +130,7 @@ public class PostDominanceFinder {
   }
 
   @Nonnull
-  public BasicBlock<?> getImmediateDominator(@Nonnull BasicBlock<?> block) {
+  public BasicBlock<?> getImmediatePostDominator(@Nonnull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }

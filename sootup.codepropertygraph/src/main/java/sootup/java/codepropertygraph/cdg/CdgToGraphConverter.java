@@ -14,9 +14,7 @@ public class CdgToGraphConverter {
     CdgGraph cdgGraph = new CdgGraph();
     StmtGraph<?> stmtGraph = methodCdg.getStmtGraph();
 
-    StmtGraphReverser reverser = new StmtGraphReverser();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
-
 
     Iterator<BasicBlock<?>> iterator = stmtGraph.getBlockIterator();
     while (iterator.hasNext()) {

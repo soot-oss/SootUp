@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.types.Type;
 
 public class AstToGraphConverter {
@@ -31,8 +31,8 @@ public class AstToGraphConverter {
   }
 
   private static void addModifierEdges(
-      AstGraph graph, AstNode parentNode, Set<Modifier> modifiers) {
-    for (Modifier modifier : modifiers) {
+      AstGraph graph, AstNode parentNode, Set<MethodModifier> modifiers) {
+    for (MethodModifier modifier : modifiers) {
       graph.addEdge(parentNode, new AstNode(modifier.name(), MODIFIER));
     }
   }
