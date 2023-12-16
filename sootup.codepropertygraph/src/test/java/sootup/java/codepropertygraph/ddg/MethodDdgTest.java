@@ -11,18 +11,13 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Test;
-import sootup.core.IdentifierFactory;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.codepropertygraph.ddg.DdgGraph;
-import sootup.java.codepropertygraph.ddg.DdgToGraphConverter;
-import sootup.java.codepropertygraph.ddg.MethodDdg;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 public class MethodDdgTest {
   private static final Path MINIMAL_TEST_SUITE_DIR =
@@ -32,15 +27,12 @@ public class MethodDdgTest {
 
   Optional<? extends SootMethod> getMinimalTestSuiteMethod(String methodName) {
     PathBasedAnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation(MINIMAL_TEST_SUITE_DIR, null);
-    JavaLanguage language = new JavaLanguage(8);
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
-    IdentifierFactory projectIdentifierFactory = project.getIdentifierFactory();
-    View<JavaSootClass> view = project.createView();
-    ClassType appClass = projectIdentifierFactory.getClassType(CLASS_NAME);
+        PathBasedAnalysisInputLocation.create(MINIMAL_TEST_SUITE_DIR, null);
+    View<JavaSootClass> view = new JavaView(inputLocation);
+    ClassType appClass = view.getIdentifierFactory().getClassType(CLASS_NAME);
     MethodSignature methodSignature =
-        projectIdentifierFactory.getMethodSignature(
-            appClass, methodName, "int", Collections.singletonList("int"));
+        view.getIdentifierFactory()
+            .getMethodSignature(appClass, methodName, "int", Collections.singletonList("int"));
     return view.getMethod(methodSignature);
   }
 
@@ -103,7 +95,11 @@ public class MethodDdgTest {
     System.out.println(methodName);
     System.out.println(dotGraph);
 
-    File file = new File("temp/ddg_" + methodName + ".dot");
+    // writeToFile(dotGraph, methodName);
+  }
+
+  private static void writeToFile(String dotGraph, String methodName) {
+    File file = new File("temp/cdg_" + methodName + ".dot");
     System.out.println(file.toPath());
 
     // Create the output folder if it doesn't exist

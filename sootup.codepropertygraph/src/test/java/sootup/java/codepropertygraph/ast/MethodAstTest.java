@@ -2,15 +2,18 @@ package sootup.java.codepropertygraph.ast;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import sootup.core.IdentifierFactory;
 import sootup.core.jimple.common.stmt.*;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -18,9 +21,8 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 @RunWith(Parameterized.class)
 public class MethodAstTest {
@@ -30,7 +32,7 @@ public class MethodAstTest {
   private static final String CLASS_NAME = "IfElseStatement";
   private final String methodName;
   private final String expectedName;
-  private final Set<Modifier> expectedModifiers;
+  private final Set<MethodModifier> expectedModifiers;
   private final List<Type> expectedParameterTypes;
   private final List<Stmt> expectedBodyStmts;
   private final Type expectedReturnType;
@@ -38,7 +40,7 @@ public class MethodAstTest {
   public MethodAstTest(
       String methodName,
       String expectedName,
-      Set<Modifier> expectedModifiers,
+      Set<MethodModifier> expectedModifiers,
       List<Type> expectedParameterTypes,
       List<Stmt> expectedBodyStmts,
       Type expectedReturnType) {
@@ -52,32 +54,32 @@ public class MethodAstTest {
 
   @Parameterized.Parameters(name = "TestAstMethod({0})")
   public static Object[][] data() {
-    Object expectedModifiers1 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers1 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes1 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts1 = null;
     Object expectedReturnType1 = PrimitiveType.IntType.getInstance();
 
-    Object expectedModifiers2 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers2 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes2 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts2 = null;
     Object expectedReturnType2 = PrimitiveType.IntType.getInstance();
 
-    Object expectedModifiers3 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers3 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes3 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts3 = null;
     Object expectedReturnType3 = PrimitiveType.IntType.getInstance();
 
-    Object expectedModifiers4 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers4 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes4 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts4 = null;
     Object expectedReturnType4 = PrimitiveType.IntType.getInstance();
 
-    Object expectedModifiers5 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers5 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes5 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts5 = null;
     Object expectedReturnType5 = PrimitiveType.IntType.getInstance();
 
-    Object expectedModifiers6 = EnumSet.of(Modifier.PUBLIC);
+    Object expectedModifiers6 = EnumSet.of(MethodModifier.PUBLIC);
     Object expectedParameterTypes6 = Collections.singletonList(PrimitiveType.IntType.getInstance());
     Object expectedBodyStmts6 = null;
     Object expectedReturnType6 = PrimitiveType.IntType.getInstance();
@@ -147,21 +149,43 @@ public class MethodAstTest {
     // assertEquals(expectedBodyStmts, methodAst.getBodyStmts());
     assertEquals(expectedReturnType, methodAst.getReturnType());
 
-    System.out.println(methodName);
-    System.out.println(AstToGraphConverter.convert(methodAst).toDotFormat());
+    AstGraph astGraph = AstToGraphConverter.convert(methodAst);
+
+    writeGraph(astGraph.toDotFormat(), methodName);
   }
 
   Optional<? extends SootMethod> getMinimalTestSuiteMethod(String methodName) {
     PathBasedAnalysisInputLocation inputLocation =
-        new PathBasedAnalysisInputLocation(MINIMAL_TEST_SUITE_DIR, null);
-    JavaLanguage language = new JavaLanguage(8);
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
-    IdentifierFactory projectIdentifierFactory = project.getIdentifierFactory();
-    View<JavaSootClass> view = project.createView();
-    ClassType appClass = projectIdentifierFactory.getClassType(CLASS_NAME);
+        PathBasedAnalysisInputLocation.create(MINIMAL_TEST_SUITE_DIR, null);
+    View<JavaSootClass> view = new JavaView(inputLocation);
+    ClassType appClass = view.getIdentifierFactory().getClassType(CLASS_NAME);
     MethodSignature methodSignature =
-        projectIdentifierFactory.getMethodSignature(
-            appClass, methodName, "int", Collections.singletonList("int"));
+        view.getIdentifierFactory()
+            .getMethodSignature(appClass, methodName, "int", Collections.singletonList("int"));
     return view.getMethod(methodSignature);
+  }
+
+  private void writeGraph(String dotGraph, String methodName) {
+    System.out.println(methodName);
+    System.out.println(dotGraph);
+
+    // writeToFile(dotGraph, methodName);
+  }
+
+  private static void writeToFile(String dotGraph, String methodName) {
+    File file = new File("temp/cdg_" + methodName + ".dot");
+    System.out.println(file.toPath());
+
+    // Create the output folder if it doesn't exist
+    File folder = file.getParentFile();
+    if (folder != null && !folder.exists()) {
+      folder.mkdirs();
+    }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      writer.write(dotGraph);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
