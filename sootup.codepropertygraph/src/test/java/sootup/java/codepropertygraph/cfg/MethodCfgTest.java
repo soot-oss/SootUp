@@ -110,7 +110,7 @@ public class MethodCfgTest {
   }
 
   private static void writeToFile(String dotGraph, String methodName) {
-    File file = new File("temp/cdg_" + methodName + ".dot");
+    File file = new File("temp/cfg_" + methodName + ".dot");
     System.out.println(file.toPath());
 
     // Create the output folder if it doesn't exist

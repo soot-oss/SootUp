@@ -169,7 +169,7 @@ public class MethodAstTest {
     System.out.println(methodName);
     System.out.println(dotGraph);
 
-    // writeToFile(dotGraph, methodName);
+    writeToFile(dotGraph, methodName);
   }
 
   private static void writeToFile(String dotGraph, String methodName) {
