@@ -169,11 +169,11 @@ public class MethodAstTest {
     System.out.println(methodName);
     System.out.println(dotGraph);
 
-    writeToFile(dotGraph, methodName);
+    // writeToFile(dotGraph, methodName);
   }
 
   private static void writeToFile(String dotGraph, String methodName) {
-    File file = new File("temp/cdg_" + methodName + ".dot");
+    File file = new File("temp/ast_" + methodName + ".dot");
     System.out.println(file.toPath());
 
     // Create the output folder if it doesn't exist
