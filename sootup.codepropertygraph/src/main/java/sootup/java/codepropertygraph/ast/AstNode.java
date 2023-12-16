@@ -1,6 +1,5 @@
 package sootup.java.codepropertygraph.ast;
 
-import java.util.Objects;
 
 public class AstNode {
   private final String name;

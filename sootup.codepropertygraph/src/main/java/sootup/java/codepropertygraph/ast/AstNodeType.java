@@ -6,5 +6,12 @@ public enum AstNodeType {
   PARAMETER_TYPE,
   RETURN_TYPE,
   STMT,
-  LEFTOP, RIGHTOP, OP1, COND, OP2, POS, OP, CMP
+  LEFTOP,
+  RIGHTOP,
+  OP1,
+  COND,
+  OP2,
+  POS,
+  OP,
+  CMP
 }

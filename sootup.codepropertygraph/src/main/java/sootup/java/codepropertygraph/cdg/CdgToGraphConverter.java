@@ -1,7 +1,6 @@
 package sootup.java.codepropertygraph.cdg;
 
 import java.util.*;
-
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.PostDominanceFinder;
 import sootup.core.graph.StmtGraph;
@@ -20,15 +19,22 @@ public class CdgToGraphConverter {
     while (iterator.hasNext()) {
       BasicBlock<?> currBlock = iterator.next();
       // System.out.println(currBlock);
-      for (BasicBlock<?> frontierBlock: postDominanceFinder.getPostDominanceFrontiers(currBlock)) {
+      for (BasicBlock<?> frontierBlock : postDominanceFinder.getPostDominanceFrontiers(currBlock)) {
         // System.out.println("\t-> " + frontierBlock);
-        CdgNode source = new CdgNode(getStmtSource(frontierBlock.getTail(), methodCdg.getBody()), CdgNodeType.STMT, frontierBlock.getTail().getPositionInfo());
-        for (Stmt srcStmt: currBlock.getStmts()) {
-          CdgNode destination = new CdgNode(getStmtSource(srcStmt, methodCdg.getBody()), CdgNodeType.STMT, srcStmt.getPositionInfo());
+        CdgNode source =
+            new CdgNode(
+                getStmtSource(frontierBlock.getTail(), methodCdg.getBody()),
+                CdgNodeType.STMT,
+                frontierBlock.getTail().getPositionInfo());
+        for (Stmt srcStmt : currBlock.getStmts()) {
+          CdgNode destination =
+              new CdgNode(
+                  getStmtSource(srcStmt, methodCdg.getBody()),
+                  CdgNodeType.STMT,
+                  srcStmt.getPositionInfo());
           cdgGraph.addEdge(source, destination);
         }
       }
-
     }
 
     return cdgGraph;

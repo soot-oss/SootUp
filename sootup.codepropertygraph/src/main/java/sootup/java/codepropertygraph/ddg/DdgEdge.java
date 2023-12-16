@@ -3,21 +3,21 @@ package sootup.java.codepropertygraph.ddg;
 import java.util.Objects;
 
 public class DdgEdge {
-    private final DdgNode source;
-    private final DdgNode destination;
+  private final DdgNode source;
+  private final DdgNode destination;
 
-    public DdgEdge(DdgNode source, DdgNode destination) {
-        this.source = source;
-        this.destination = destination;
-    }
+  public DdgEdge(DdgNode source, DdgNode destination) {
+    this.source = source;
+    this.destination = destination;
+  }
 
-    public DdgNode getSource() {
-        return source;
-    }
+  public DdgNode getSource() {
+    return source;
+  }
 
-    public DdgNode getDestination() {
-        return destination;
-    }
+  public DdgNode getDestination() {
+    return destination;
+  }
 
   @Override
   public boolean equals(Object o) {

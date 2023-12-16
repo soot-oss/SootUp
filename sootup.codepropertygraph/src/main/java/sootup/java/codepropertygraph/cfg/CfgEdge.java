@@ -3,21 +3,21 @@ package sootup.java.codepropertygraph.cfg;
 import java.util.Objects;
 
 public class CfgEdge {
-    private final CfgNode source;
-    private final CfgNode destination;
+  private final CfgNode source;
+  private final CfgNode destination;
 
-    public CfgEdge(CfgNode source, CfgNode destination) {
-        this.source = source;
-        this.destination = destination;
-    }
+  public CfgEdge(CfgNode source, CfgNode destination) {
+    this.source = source;
+    this.destination = destination;
+  }
 
-    public CfgNode getSource() {
-        return source;
-    }
+  public CfgNode getSource() {
+    return source;
+  }
 
-    public CfgNode getDestination() {
-        return destination;
-    }
+  public CfgNode getDestination() {
+    return destination;
+  }
 
   @Override
   public boolean equals(Object o) {

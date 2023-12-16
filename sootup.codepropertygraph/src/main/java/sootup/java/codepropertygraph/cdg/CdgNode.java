@@ -27,7 +27,9 @@ public class CdgNode {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CdgNode cdgNode = (CdgNode) o;
-    return Objects.equals(name, cdgNode.name) && type == cdgNode.type && Objects.equals(positionInfo, cdgNode.positionInfo);
+    return Objects.equals(name, cdgNode.name)
+        && type == cdgNode.type
+        && Objects.equals(positionInfo, cdgNode.positionInfo);
   }
 
   @Override

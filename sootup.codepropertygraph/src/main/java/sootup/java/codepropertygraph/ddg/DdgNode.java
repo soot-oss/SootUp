@@ -27,7 +27,9 @@ public class DdgNode {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     DdgNode ddgNode = (DdgNode) o;
-    return Objects.equals(name, ddgNode.name) && type == ddgNode.type && Objects.equals(positionInfo, ddgNode.positionInfo);
+    return Objects.equals(name, ddgNode.name)
+        && type == ddgNode.type
+        && Objects.equals(positionInfo, ddgNode.positionInfo);
   }
 
   @Override

@@ -6,8 +6,6 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.java.codepropertygraph.ast.AstNode;
-import sootup.java.codepropertygraph.ast.AstNodeType;
 
 public class CfgToGraphConverter {
   public static CfgGraph convert(MethodCfg methodCfg) {
@@ -20,23 +18,27 @@ public class CfgToGraphConverter {
                 .getAllSuccessors(currStmt)
                 .forEach(
                     successor -> {
-                        Body body = methodCfg.getBody();
-                      CfgNode sourceNode = new CfgNode(getStmtSource(currStmt, body), STMT, currStmt.getPositionInfo());
-                      CfgNode destinationNode = new CfgNode(getStmtSource(successor, body), STMT, successor.getPositionInfo());
+                      Body body = methodCfg.getBody();
+                      CfgNode sourceNode =
+                          new CfgNode(
+                              getStmtSource(currStmt, body), STMT, currStmt.getPositionInfo());
+                      CfgNode destinationNode =
+                          new CfgNode(
+                              getStmtSource(successor, body), STMT, successor.getPositionInfo());
                       cfgGraph.addEdge(sourceNode, destinationNode);
                     }));
 
     return cfgGraph;
   }
 
-    private static String getStmtSource(Stmt currStmt, Body body) {
+  private static String getStmtSource(Stmt currStmt, Body body) {
 
-        if (currStmt.getClass().getSimpleName().equals("JGotoStmt")) {
-            JGotoStmt stmt = (JGotoStmt) currStmt;
-            int gotoPosition =
-                    stmt.getTargetStmts(body).get(0).getPositionInfo().getStmtPosition().getFirstLine();
-            return String.format("%s %d", stmt, gotoPosition);
-        }
-        return currStmt.toString();
+    if (currStmt.getClass().getSimpleName().equals("JGotoStmt")) {
+      JGotoStmt stmt = (JGotoStmt) currStmt;
+      int gotoPosition =
+          stmt.getTargetStmts(body).get(0).getPositionInfo().getStmtPosition().getFirstLine();
+      return String.format("%s %d", stmt, gotoPosition);
     }
+    return currStmt.toString();
+  }
 }

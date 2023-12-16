@@ -1,8 +1,7 @@
 package sootup.java.codepropertygraph.cfg;
 
-import sootup.core.jimple.basic.StmtPositionInfo;
-
 import java.util.Objects;
+import sootup.core.jimple.basic.StmtPositionInfo;
 
 public class CfgNode {
   private final String name;
@@ -28,7 +27,9 @@ public class CfgNode {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CfgNode cfgNode = (CfgNode) o;
-    return Objects.equals(name, cfgNode.name) && type == cfgNode.type && Objects.equals(positionInfo, cfgNode.positionInfo);
+    return Objects.equals(name, cfgNode.name)
+        && type == cfgNode.type
+        && Objects.equals(positionInfo, cfgNode.positionInfo);
   }
 
   @Override
