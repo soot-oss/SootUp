@@ -19,20 +19,6 @@ import sootup.core.types.Type;
  * retrieves the specific class to analyze further.
  */
 public class DexLibWrapper {
-  private static final Set<String> systemAnnotationNames;
-
-  static {
-    Set<String> systemAnnotationNamesModifiable = new HashSet<String>();
-    // names as defined in the ".dex - Dalvik Executable Format" document
-    systemAnnotationNamesModifiable.add("dalvik.annotation.AnnotationDefault");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.EnclosingClass");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.EnclosingMethod");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.InnerClass");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.MemberClasses");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.Signature");
-    systemAnnotationNamesModifiable.add("dalvik.annotation.Throws");
-    systemAnnotationNames = Collections.unmodifiableSet(systemAnnotationNamesModifiable);
-  }
 
   //    private final DexClassLoader dexLoader = createDexClassLoader();
 

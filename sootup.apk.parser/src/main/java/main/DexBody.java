@@ -39,6 +39,7 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
+import transformer.DexTrapStackTransformer;
 
 public class DexBody {
 
@@ -323,6 +324,7 @@ public class DexBody {
     return dexMethodSource.makeSootMethod();
   }
 
+  // Just a conversion code from LinkedListMultimap<BranchingStmt, List<Stmt>> to Map<BranchingStmt, List<Stmt>>.
   public Map<BranchingStmt, List<Stmt>> convertMultimap(
       LinkedListMultimap<BranchingStmt, List<Stmt>> multimap) {
     Map<BranchingStmt, List<Stmt>> resultMap = new HashMap<>();
@@ -467,7 +469,9 @@ public class DexBody {
     dangling = null;
     tries = null;
     parameterNames.clear();
-    //        new DexNumTransformer().transform(mutableStmtGraph, locals);
+    // Fix traps that do not catch exceptions
+    new DexTrapStackTransformer().transform(stmtList, traps, locals);
+    
 
     for (ReTypeableInstruction reTypeableInstruction : instructionsToRetype) {
       //                reTypeableInstruction.retype(this);

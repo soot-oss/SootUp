@@ -36,7 +36,8 @@ public class DexClassProvider implements ClassProvider<JavaSootClass> {
       AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       ClassType classSignature) {
-    ensureDexIndex();
+    // TODO : In soot, they wrote this. This code makes sense, but dont know where to add this or what will happen if we dont use it.
+//    ensureDexIndex();
     return Optional.of(new DexClassSource(inputLocation, classSignature, sourcePath));
   }
 

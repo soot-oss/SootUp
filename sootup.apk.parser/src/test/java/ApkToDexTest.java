@@ -3,6 +3,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import dexpler.DexClassSource;
+
+import java.io.File;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -90,6 +92,35 @@ public class ApkToDexTest {
 
   @Test
   public void loadAllClasses() {
+    // Check if the folder exists and is a directory
+//    if (folder.exists() && folder.isDirectory()) {
+//      // List all files and directories in the folder
+//      File[] files = folder.listFiles();
+//      if (files != null) {
+//        for (File file : files) {
+//          if (file.isFile()) {
+//            long startTime = System.currentTimeMillis();
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+//            ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+//                    new ApkAnalysisInputLocation<>(
+//                            Paths.get(file.getAbsolutePath()), "/Users/palaniappanmuthuraman/Documents/android-platforms");
+//            JavaProject javaProject =
+//                    JavaProject.builder(new JavaLanguage(8))
+//                            .addInputLocation(sootClassApkAnalysisInputLocation)
+//                            .build();
+//            JavaView view = javaProject.createView(new FullCacheProvider<>());
+//            view.getClasses();
+//            String[] pathComponents = file.getAbsolutePath().split("/");
+//
+//            // Get the value in the last index
+//            String apkName = pathComponents[pathComponents.length - 1];
+//            System.out.println(
+//                    apkName +" had " + view.getClasses().size() + " and it took "
+//                            + dateFormat.format(System.currentTimeMillis() - startTime) + " to jimplify them");
+//          }
+//        }
+//      }
+//    }
     String apk_path = "resources/FlowSensitivity1.apk";
     long startTime = System.currentTimeMillis();
     SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
