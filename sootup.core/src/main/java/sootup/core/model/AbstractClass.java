@@ -25,6 +25,7 @@ package sootup.core.model;
 import com.google.common.collect.Iterables;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
@@ -121,5 +122,16 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
                   "ambiguous method: " + name + " in " + getClassSource().getClassType(),
                   getClassSource().getSourcePath());
             });
+  }
+
+  /**
+   * Attempts to retrieve the method with the given name. This method will return an empty Set if
+   * there is no method with the given name.
+   */
+  @Nonnull
+  public Set<? extends SootMethod> getMethod(@Nonnull String name) {
+    return this.getMethods().stream()
+        .filter(m -> m.getSignature().getName().equals(name))
+        .collect(Collectors.toSet());
   }
 }
