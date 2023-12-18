@@ -21,7 +21,7 @@ SootUp has a modular architecture, which enables its clients to include only the
 ### No More Singletons
 
 Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
-SootUp does not make use of singletons such the `Scene` class in the old Soot any more. It enables analyzing multple programs simultaneously.
+SootUp does not make use of singletons such the `Scene` class in the old Soot any more. It enables analyzing multiple programs simultaneously.
 
 ### New Source Code Frontend
 
