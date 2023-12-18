@@ -5,18 +5,32 @@ edit_uri: edit/develop/docs/
 
 nav:
     - Home: index.md
-    - Installation: installation.md
-    - General information:
+    - Announcements: announce.md
+    - Used by: tools.md
+
+    - Getting started:
+      - Installation: installation.md
+
+    - Basics:
       - Design Decisions: whatsnew.md
       - Getting started: getting-started.md
       - Jimple: jimple.md
+
+    - Advanced Topics:
+      - BodyInterceptors: bodyinterceptors.md
       - Call Graph Construction: call-graph-construction.md
-      - Advanced Topics: advanced-topics.md
-  #   - Writing Analyses: analyses.md
+      - SootUp Utilities: advanced-topics.md
+
+      - How to..:
+        - Write an Analysis: write_analyses.md
+      #  - Modify a StmtGraph: mutable_stmtgraph.md
+      #  - Modify a View: mutable_view.md
+      #  - Implement a BodyInterceptor: body_interceptor.md
+      #  - Implement an AnalysisTool: write_analysis_tool.md
+
     - More information:
       - Javadoc: /SootUp/apidocs
-      - FAQ: faq.md
-      - Used by: tools.md
+      - Troubleshooting & FAQ: faq.md
 
 theme:
   palette:
