@@ -5,19 +5,18 @@ edit_uri: edit/develop/docs/
 
 nav:
     - Home: index.md
-    - How to Start:
-      - Installation: installation.md
-      - Getting started: getting-started.md
+    - Installation: installation.md
     - General information:
       - Design Decisions: whatsnew.md
+      - Getting started: getting-started.md
       - Jimple: jimple.md
       - Call Graph Construction: call-graph-construction.md
       - Advanced Topics: advanced-topics.md
+  #   - Writing Analyses: analyses.md
     - More information:
       - Javadoc: /SootUp/apidocs
       - FAQ: faq.md
-#    - Used by: tools.md
-#    - Analyses: analyses.md
+      - Used by: tools.md
 
 theme:
   palette:
