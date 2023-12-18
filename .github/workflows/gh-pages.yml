@@ -34,15 +34,18 @@ concurrency: pages
 permissions:
   pages: write
   contents: write
-  pull-requests: write
 
 jobs:
   manage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
       # to get tag information
-      - run: git fetch --prune --unshallow
+      #- run: git fetch --prune --unshallow
 
       - uses: actions/setup-python@v2
         with:
@@ -72,7 +75,7 @@ jobs:
       # on push to develop branch - keep a doc around for develop to show the current state
       - name: deploy doc in subdirectory
         if: github.event_name == 'push'
-        run: mike deploy develop
+        run: mike deploy develop --push
 
       # on PR events..
       - name: deploy doc in subdirectory
