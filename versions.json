@@ -2,7 +2,10 @@
   {
     "version": "fix_ghpages_permission_preview",
     "title": "PR Preview fix_ghpages_permission",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
