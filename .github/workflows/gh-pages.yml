@@ -44,10 +44,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          fetch-tags: true
-
-      # to get tag information
-      #- run: git fetch --prune --unshallow
+          fetch-tags: true      # to get tag information
 
       - uses: actions/setup-python@v2
         with:
@@ -82,7 +79,7 @@ jobs:
       # on PR events..
       - name: deploy doc in subdirectory
         if: github.event_name == 'pull_request'
-        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview -t "PR Preview ${{ env.DOC_VERSION_NAME }}" && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
+        run: mike deploy ${{ env.DOC_VERSION_NAME }}_preview -t "PR Preview ${{ env.DOC_VERSION_NAME }}" --push && mike props ${{ env.DOC_VERSION_NAME }}_preview --set-string hidden=true --push
 
       - name: comment link to preview
         if: github.event_name == 'pull_request' && github.event.action != 'closed'
