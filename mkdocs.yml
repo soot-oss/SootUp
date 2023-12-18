@@ -7,7 +7,6 @@ nav:
     - Home: index.md
     - Announcements: announce.md
     - Design Decisions: whatsnew.md
-    - Used by: tools.md
 
     - Basics:
       - Installation: installation.md
@@ -30,6 +29,7 @@ nav:
     - More information:
       - Javadoc: /SootUp/apidocs
       - Troubleshooting & FAQ: faq.md
+      # - Based on SootUp: tools.md
 
 theme:
   palette:
