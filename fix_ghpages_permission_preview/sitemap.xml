@@ -16,6 +16,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://soot-oss.github.io/SootUp/fix_ghpages_permission_preview/bodyinterceptors/</loc>
+         <lastmod>2023-12-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://soot-oss.github.io/SootUp/fix_ghpages_permission_preview/call-graph-construction/</loc>
          <lastmod>2023-12-18</lastmod>
          <changefreq>daily</changefreq>
