@@ -12,8 +12,8 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Provides ClassHierarchy generation
 - CallGraph generation with different algorithms/precisions
 - Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
-- Applies/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
-- Provides serialization of the Jimple IR.
+- Applies simple transformations on retrieving a methods Body (see `BodyInterceptor`)
+- Provides parsing and serialization of the Jimple IR.
 
 ## Getting started
 [Documentation](https://soot-oss.github.io/SootUp/) and usage examples are available on Github pages.
@@ -23,13 +23,13 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 
 ## SootUp improvements 
 #### (compared to its predecessor [Soot](https://github.com/soot-oss/soot).)
-- [x] New Improved API (without Globals/Singletons)
+- [x] New improved API (without Globals/Singletons)
 - [x] Fully-Parallelizable Architecture
-- [x] Enables lazyloading of classes (no interleaved loading of used/dependent classes anymore)
+- [x] Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
 - [x] Fail early strategy - input validation while constructing/building objects
-- [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend
+- [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Can not handle try-catch inputs, yet!)
 - [x] Full Java 21 Support for Bytecode
-- [x] Multiple Views (Scenes)
+- [x] Multiple Views (no single static Scene anymore)
 - [x] Immutable Jimple IR Objects and Graphs
 - [ ] Incremental Updates of Program Representation
 

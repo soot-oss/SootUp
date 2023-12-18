@@ -6,13 +6,12 @@ edit_uri: edit/develop/docs/
 nav:
     - Home: index.md
     - Announcements: announce.md
+    - Design Decisions: whatsnew.md
     - Used by: tools.md
 
-    - Getting started:
-      - Installation: installation.md
-
     - Basics:
-      - Design Decisions: whatsnew.md
+      - Installation: installation.md
+#      - Configure your Input: analysisinputlocations.md
       - Getting started: getting-started.md
       - Jimple: jimple.md
 
@@ -21,12 +20,12 @@ nav:
       - Call Graph Construction: call-graph-construction.md
       - SootUp Utilities: advanced-topics.md
 
-      - How to..:
-        - Write an Analysis: write_analyses.md
-      #  - Modify a StmtGraph: mutable_stmtgraph.md
-      #  - Modify a View: mutable_view.md
-      #  - Implement a BodyInterceptor: body_interceptor.md
-      #  - Implement an AnalysisTool: write_analysis_tool.md
+    - How to..:
+      - Write an Analysis: write_analyses.md
+    #  - Modify a StmtGraph: mutable_stmtgraph.md
+    #  - Modify a View: mutable_view.md
+    #  - Implement a BodyInterceptor: body_interceptor.md
+    #  - Implement an AnalysisTool: write_analysis_tool.md
 
     - More information:
       - Javadoc: /SootUp/apidocs
