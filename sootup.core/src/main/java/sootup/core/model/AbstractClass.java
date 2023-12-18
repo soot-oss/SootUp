@@ -127,6 +127,8 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   /**
    * Attempts to retrieve the method with the given name. This method will return an empty Set if
    * there is no method with the given name.
+   * @param name the name of the method
+   * @return a set of methods that have the given name
    */
   @Nonnull
   public Set<? extends SootMethod> getMethod(@Nonnull String name) {
