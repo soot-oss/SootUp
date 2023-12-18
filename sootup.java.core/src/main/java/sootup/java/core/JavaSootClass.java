@@ -126,6 +126,12 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Nonnull
   @Override
+  public Set<JavaSootMethod> getMethodsByName(@Nonnull String name) {
+    return (Set<JavaSootMethod>) super.getMethodsByName(name);
+  }
+
+  @Nonnull
+  @Override
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return (Optional<JavaSootMethod>) super.getMethod(subSignature);
   }
