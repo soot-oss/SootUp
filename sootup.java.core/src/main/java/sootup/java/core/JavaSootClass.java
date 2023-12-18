@@ -130,8 +130,8 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Nonnull
   @Override
-  public Set<JavaSootMethod> getMethod(@Nonnull String name) {
-    return (Set<JavaSootMethod>) super.getMethod(name);
+  public Set<JavaSootMethod> getMethodsByName(@Nonnull String name) {
+    return (Set<JavaSootMethod>) super.getMethodsByName(name);
   }
 
   @Nonnull

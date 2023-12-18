@@ -127,11 +127,12 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   /**
    * Attempts to retrieve the method with the given name. This method will return an empty Set if
    * there is no method with the given name.
+   *
    * @param name the name of the method
    * @return a set of methods that have the given name
    */
   @Nonnull
-  public Set<? extends SootMethod> getMethod(@Nonnull String name) {
+  public Set<? extends SootMethod> getMethodsByName(@Nonnull String name) {
     return this.getMethods().stream()
         .filter(m -> m.getSignature().getName().equals(name))
         .collect(Collectors.toSet());
