@@ -32,7 +32,10 @@ on:
 concurrency: pages
 
 permissions:
-  write-all # don't!
+  pages: write          # to trigger a gh-pages build
+  deployments: write
+  contents: write       # for creating files via mike/mkdocs
+  pull-requests: write  # for commenting the link
 
 jobs:
   manage:
