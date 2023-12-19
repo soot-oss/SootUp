@@ -93,8 +93,9 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
           SootMethod method = null;
           if (sparkNode instanceof LocalVarNode) {
             method = ((LocalVarNode) sparkNode).getMethod();
-          } else if (sparkNode instanceof AllocNode allocNode) {
-            method = allocNode.getMethod();
+          } else if (sparkNode instanceof AllocNode) {
+              AllocNode allocNode = (AllocNode) sparkNode;
+              method = allocNode.getMethod();
           }
 
           if (method != null) {
@@ -131,8 +132,9 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
           nodes.add(((VarNode) from).getVariable());
         } else if (from instanceof AllocNode) {
           nodes.add(((AllocNode) from).getNewExpr());
-        } else if (from instanceof FieldRefNode fr) {
-          VarNode base = fr.getBase();
+        } else if (from instanceof FieldRefNode) {
+            FieldRefNode fr = (FieldRefNode) from;
+            VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -140,8 +142,9 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
 
         if (to instanceof LocalVarNode) {
           nodes.add(((VarNode) to).getVariable());
-        } else if (to instanceof FieldRefNode fr) {
-          VarNode base = fr.getBase();
+        } else if (to instanceof FieldRefNode) {
+            FieldRefNode fr = (FieldRefNode) to;
+            VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -164,8 +167,9 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
             nodes.add(dest);
           }
         }
-        if (ie instanceof AbstractInstanceInvokeExpr iie) {
-          Local base = iie.getBase();
+        if (ie instanceof AbstractInstanceInvokeExpr) {
+            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+            Local base = iie.getBase();
           nodes.add(base);
         }
       }

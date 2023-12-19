@@ -79,8 +79,9 @@ public class XUtility {
     if (type == PTAUtils.getClassType("java.lang.Object")) {
       return true;
     }
-    if (type instanceof ClassType refType) {
-      SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
+    if (type instanceof ClassType) {
+        ClassType refType = (ClassType) type;
+        SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
       return sc.isAbstract() || sc.isInterface() || refType.getClassName().startsWith("Abstract");
     }
     return false;
@@ -88,8 +89,9 @@ public class XUtility {
 
   /* Implemnting the rules for defining coarse types (Figure 6 in the paper) */
   public boolean isCoarseType(Type type) {
-    if (type instanceof ArrayType at) {
-      type = at.getElementType();
+    if (type instanceof ArrayType) {
+        ArrayType at = (ArrayType) type;
+        type = at.getElementType();
     }
     return isImpreciseType(type) || rawOrPolyTypes().contains(type);
   }
@@ -98,8 +100,9 @@ public class XUtility {
     Set<Type> types = new HashSet<>();
     for (AllocNode heap : pag.getAllocNodes()) {
       Type type = heap.getType();
-      if (type instanceof ArrayType at) {
-        Type et = at.getElementType();
+      if (type instanceof ArrayType) {
+          ArrayType at = (ArrayType) type;
+          Type et = at.getElementType();
         if (isImpreciseType(et)) {
           rawOrPolyTypes.add(et);
         } else {
@@ -108,8 +111,9 @@ public class XUtility {
       } else {
         for (SparkField field : getFields(heap)) {
           Type ft = field.getType();
-          if (ft instanceof ArrayType fat) {
-            ft = fat.getElementType();
+          if (ft instanceof ArrayType) {
+              ArrayType fat = (ArrayType) ft;
+              ft = fat.getElementType();
           }
           if (isImpreciseType(ft)) {
             rawOrPolyTypes.add(ft);
@@ -154,14 +158,16 @@ public class XUtility {
     while (reader.hasNext()) {
       Node from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
-        if (to instanceof FieldRefNode frn) {
-          stores.add(frn);
+        if (to instanceof FieldRefNode) {
+            FieldRefNode frn = (FieldRefNode) to;
+            stores.add(frn);
         }
         if (thisAliases.contains(from) && to instanceof LocalVarNode) {
           thisAliases.add(to);
         }
-      } else if (from instanceof FieldRefNode frn) {
-        loads.add(frn);
+      } else if (from instanceof FieldRefNode) {
+          FieldRefNode frn = (FieldRefNode) from;
+          loads.add(frn);
       }
     }
     // handle STORE
@@ -221,8 +227,9 @@ public class XUtility {
       }
       final Stmt s = edge.srcStmt();
       AbstractInvokeExpr ie = s.getInvokeExpr();
-      if (ie instanceof AbstractInstanceInvokeExpr iie) {
-        Local base = iie.getBase();
+      if (ie instanceof AbstractInstanceInvokeExpr) {
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
         LocalVarNode receiver = pag.findLocalVarNode(srcM, base, base.getType());
         MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
         VirtualCallSite virtualCallSite =
@@ -293,8 +300,9 @@ public class XUtility {
   }
 
   public Set<SparkField> getFields(Type type) {
-    if (type instanceof ClassType refType) {
-      Set<SparkField> ret = this.t2Fields.get(refType);
+    if (type instanceof ClassType) {
+        ClassType refType = (ClassType) type;
+        Set<SparkField> ret = this.t2Fields.get(refType);
       if (ret != null) {
         return ret;
       } else {
@@ -302,8 +310,9 @@ public class XUtility {
         for (AllocNode heap : this.o2Fields.keySet()) {
           if (PTAScene.v().canStoreType(heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
-              if (sparkField instanceof Field f) {
-                SootField sf = f.getField();
+              if (sparkField instanceof Field) {
+                  Field f = (Field) sparkField;
+                  SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
                 if (PTAScene.v().canStoreType(type, declType)) {
                   ret.add(sparkField);

@@ -70,10 +70,11 @@ public class DFAState {
     if (this == other) {
       return true;
     }
-    if (!(other instanceof DFAState anoDFAState)) {
+    if (!(other instanceof DFAState)) {
       return false;
     }
-    return getObjects().equals(anoDFAState.getObjects());
+      DFAState anoDFAState = (DFAState) other;
+      return getObjects().equals(anoDFAState.getObjects());
   }
 
   @Override

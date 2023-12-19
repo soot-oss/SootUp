@@ -114,8 +114,9 @@ public class OAG implements DirectedGraph<AllocNode> {
       QueueReader<qilin.core.pag.Node> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
         qilin.core.pag.Node from = reader.next(), to = reader.next();
-        if (from instanceof AllocNode tgt) {
-          if (PTAUtils.isFakeMainMethod(method)) {
+        if (from instanceof AllocNode) {
+            AllocNode tgt = (AllocNode) from;
+            if (PTAUtils.isFakeMainMethod(method)) {
             // special treatment for fake main
             AllocNode src = pta.getRootNode();
             addEdge(src, tgt);

@@ -58,8 +58,9 @@ public class OCG {
               }
 
               SparkField f = contextField.getField();
-              if (f.getType() instanceof ArrayType at) {
-                if (at.getBaseType() instanceof PrimitiveType) {
+              if (f.getType() instanceof ArrayType) {
+                  ArrayType at = (ArrayType) f.getType();
+                  if (at.getBaseType() instanceof PrimitiveType) {
                   return;
                 }
               }
@@ -245,8 +246,9 @@ public class OCG {
     if (!(retType instanceof ReferenceType)) {
       return false;
     }
-    if (retType instanceof ArrayType at) {
-      if (at.getBaseType() instanceof PrimitiveType) {
+    if (retType instanceof ArrayType) {
+        ArrayType at = (ArrayType) retType;
+        if (at.getBaseType() instanceof PrimitiveType) {
         return false;
       }
     }

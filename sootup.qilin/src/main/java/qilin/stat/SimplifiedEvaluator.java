@@ -19,6 +19,8 @@
 package qilin.stat;
 
 import java.util.*;
+
+import com.google.common.collect.Sets;
 import qilin.core.PTA;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.MethodNodeFactory;
@@ -94,8 +96,9 @@ public class SimplifiedEvaluator implements IEvaluator {
               totalPolyCalls++;
             }
           }
-        } else if (st instanceof JAssignStmt assignStmt) {
-          Value rhs = assignStmt.getRightOp();
+        } else if (st instanceof JAssignStmt) {
+            JAssignStmt assignStmt = (JAssignStmt) st;
+            Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
             final Type targetType = rhs.getType();
@@ -186,21 +189,21 @@ public class SimplifiedEvaluator implements IEvaluator {
   }
 
   private final Set<String> handledNatives =
-      Set.of(
-          "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>",
-          "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>",
-          "<java.lang.Thread: java.lang.Thread currentThread()>",
-          "<java.lang.Thread: void start0()>",
-          "<java.lang.Object: java.lang.Object clone()>",
-          "<java.lang.System: void setIn0(java.io.InputStream)>",
-          "<java.lang.System: void setOut0(java.io.PrintStream)>",
-          "<java.lang.System: void setErr0(java.io.PrintStream)>",
-          "<java.io.FileSystem: java.io.FileSystem getFileSystem()>",
-          "<java.io.UnixFileSystem: java.lang.String[] list(java.io.File)>",
-          "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedAction)>",
-          "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)>",
-          "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction)>",
-          "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction,java.security.AccessControlContext)>");
+          Sets.newHashSet(
+                  "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>",
+                  "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>",
+                  "<java.lang.Thread: java.lang.Thread currentThread()>",
+                  "<java.lang.Thread: void start0()>",
+                  "<java.lang.Object: java.lang.Object clone()>",
+                  "<java.lang.System: void setIn0(java.io.InputStream)>",
+                  "<java.lang.System: void setOut0(java.io.PrintStream)>",
+                  "<java.lang.System: void setErr0(java.io.PrintStream)>",
+                  "<java.io.FileSystem: java.io.FileSystem getFileSystem()>",
+                  "<java.io.UnixFileSystem: java.lang.String[] list(java.io.File)>",
+                  "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedAction)>",
+                  "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedAction,java.security.AccessControlContext)>",
+                  "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction)>",
+                  "<java.security.AccessController: java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction,java.security.AccessControlContext)>");
 
   private final Set<LocalVarNode> mLocalVarNodes = new HashSet<>();
 

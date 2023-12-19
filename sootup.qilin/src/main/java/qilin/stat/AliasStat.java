@@ -68,14 +68,16 @@ public class AliasStat implements AbstractStat {
             if (!(((VarNode) to).getVariable() instanceof Local)) continue;
             Util.addToMap(assignMap, (LocalVarNode) from, (LocalVarNode) to);
             Util.addToMap(assignMap, (LocalVarNode) to, (LocalVarNode) from);
-          } else if (to instanceof FieldRefNode fr) {
-            LocalVarNode base = (LocalVarNode) fr.getBase();
+          } else if (to instanceof FieldRefNode) {
+              FieldRefNode fr = (FieldRefNode) to;
+              LocalVarNode base = (LocalVarNode) fr.getBase();
             if (!(base.getVariable() instanceof Local)) continue;
             addToMap(globalMap, fr.getField(), true, base);
             addToMap(localMap, fr.getField(), true, base);
           } // else//local-global
-        } else if (from instanceof FieldRefNode fr) {
-          LocalVarNode base = (LocalVarNode) fr.getBase();
+        } else if (from instanceof FieldRefNode) {
+            FieldRefNode fr = (FieldRefNode) from;
+            LocalVarNode base = (LocalVarNode) fr.getBase();
           if (!(base.getVariable() instanceof Local)) continue;
           addToMap(globalMap, fr.getField(), false, base);
           addToMap(localMap, fr.getField(), false, base);

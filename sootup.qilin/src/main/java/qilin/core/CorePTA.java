@@ -70,20 +70,25 @@ public abstract class CorePTA extends PTA {
     if (context == null) {
       throw new RuntimeException("null context!!!");
     }
-    if (n instanceof LocalVarNode lvn) {
-      return parameterize(lvn, context);
+    if (n instanceof LocalVarNode) {
+        LocalVarNode lvn = (LocalVarNode) n;
+        return parameterize(lvn, context);
     }
-    if (n instanceof FieldRefNode frn) {
-      return parameterize(frn, context);
+    if (n instanceof FieldRefNode) {
+        FieldRefNode frn = (FieldRefNode) n;
+        return parameterize(frn, context);
     }
-    if (n instanceof AllocNode an) {
-      return parameterize(an, context);
+    if (n instanceof AllocNode) {
+        AllocNode an = (AllocNode) n;
+        return parameterize(an, context);
     }
-    if (n instanceof FieldValNode fvn) {
-      return parameterize(fvn, context);
+    if (n instanceof FieldValNode) {
+        FieldValNode fvn = (FieldValNode) n;
+        return parameterize(fvn, context);
     }
-    if (n instanceof GlobalVarNode gvn) {
-      return pag.makeContextVarNode(gvn, emptyContext());
+    if (n instanceof GlobalVarNode) {
+        GlobalVarNode gvn = (GlobalVarNode) n;
+        return pag.makeContextVarNode(gvn, emptyContext());
     }
     throw new RuntimeException("cannot parameterize this node: " + n);
   }

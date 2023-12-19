@@ -82,16 +82,18 @@ public abstract class AbstractPAG {
       Node from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
-        else if (to instanceof FieldRefNode fr) {
-          this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+        else if (to instanceof FieldRefNode) {
+            FieldRefNode fr = (FieldRefNode) to;
+            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
         } // local-global
 
       } else if (from instanceof AllocNode) {
         if (to instanceof LocalVarNode) {
           this.addNewEdge((AllocNode) from, (LocalVarNode) to);
         } // GlobalVarNode
-      } else if (from instanceof FieldRefNode fr) {
-        this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
+      } else if (from instanceof FieldRefNode) {
+          FieldRefNode fr = (FieldRefNode) from;
+          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
       } // global-local
     }
 

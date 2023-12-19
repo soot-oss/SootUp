@@ -57,11 +57,13 @@ public class CollectionHeuristic {
     while (reader.hasNext()) {
       Node from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
-        if (to instanceof FieldRefNode frn) {
-          stores.add(frn);
+        if (to instanceof FieldRefNode) {
+            FieldRefNode frn = (FieldRefNode) to;
+            stores.add(frn);
         }
-      } else if (from instanceof FieldRefNode frn) {
-        loads.add(frn);
+      } else if (from instanceof FieldRefNode) {
+          FieldRefNode frn = (FieldRefNode) from;
+          loads.add(frn);
       }
     }
     // handle STORE
@@ -129,8 +131,9 @@ public class CollectionHeuristic {
 
   private void computeContainerTypes() {
     for (Type type : t2Fields.keySet()) {
-      if (type instanceof ClassType refType) {
-        SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
+      if (type instanceof ClassType) {
+          ClassType refType = (ClassType) type;
+          SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
         if (isImplementingCollection(sc) || isNestedInClassImplementCollection(sc)) {
           containerType.add(type);
         } else {
@@ -141,8 +144,9 @@ public class CollectionHeuristic {
             }
           }
         }
-      } else if (type instanceof ArrayType at) {
-        if (at.getBaseType() == PTAUtils.getClassType("java.lang.Object")) {
+      } else if (type instanceof ArrayType) {
+          ArrayType at = (ArrayType) type;
+          if (at.getBaseType() == PTAUtils.getClassType("java.lang.Object")) {
           containerType.add(at);
         }
       } else {
@@ -155,13 +159,15 @@ public class CollectionHeuristic {
       if (type instanceof ClassType) {
         for (SparkField sf : t2Fields.get(type)) {
           Type sft = sf.getType();
-          if (sft instanceof ArrayType at) {
-            sft = at.getBaseType();
+          if (sft instanceof ArrayType) {
+              ArrayType at = (ArrayType) sft;
+              sft = at.getBaseType();
           }
           ft2t.computeIfAbsent(sft, k -> new HashSet<>()).add(type);
         }
-      } else if (type instanceof ArrayType at) {
-        ft2t.computeIfAbsent(at.getBaseType(), k -> new HashSet<>()).add(type);
+      } else if (type instanceof ArrayType) {
+          ArrayType at = (ArrayType) type;
+          ft2t.computeIfAbsent(at.getBaseType(), k -> new HashSet<>()).add(type);
       }
     }
     // find more container types by checking whether a type has a field of a container type.

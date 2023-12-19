@@ -84,8 +84,9 @@ public class Solver extends Propagator {
       final PointsToSetInternal newset = pts.getNewSet();
       pag.simpleLookup(curr).forEach(to -> propagatePTS(to, newset));
 
-      if (curr instanceof VarNode mSrc) {
-        // Step 1 continues.
+      if (curr instanceof VarNode) {
+          VarNode mSrc = (VarNode) curr;
+          // Step 1 continues.
         Collection<ExceptionThrowSite> throwSites = eh.throwSitesLookUp(mSrc);
         for (ExceptionThrowSite site : throwSites) {
           eh.exceptionDispatch(newset, site);
@@ -134,8 +135,9 @@ public class Solver extends Propagator {
     for (final Stmt s : units) {
       if (s.containsInvokeExpr()) {
         AbstractInvokeExpr ie = s.getInvokeExpr();
-        if (ie instanceof AbstractInstanceInvokeExpr iie) {
-          Local receiver = iie.getBase();
+        if (ie instanceof AbstractInstanceInvokeExpr) {
+            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+            Local receiver = iie.getBase();
           VarNode recNode = cgb.getReceiverVarNode(receiver, m);
           MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
           VirtualCallSite virtualCallSite =
@@ -194,8 +196,9 @@ public class Solver extends Propagator {
     for (QueueReader<Node> reader = mpag.getInternalReader().clone(); reader.hasNext(); ) {
       Node from = reader.next();
       Node to = reader.next();
-      if (from instanceof AllocNode heap) {
-        from = pta.heapAbstractor().abstractHeap(heap);
+      if (from instanceof AllocNode) {
+          AllocNode heap = (AllocNode) from;
+          from = pta.heapAbstractor().abstractHeap(heap);
       }
       if (from instanceof AllocNode && to instanceof GlobalVarNode) {
         pag.addGlobalPAGEdge(from, to);
@@ -301,10 +304,12 @@ public class Solver extends Propagator {
         final ValNode srcv = (ValNode) addedSrc;
         final ValNode tgtv = (ValNode) addedTgt;
         propagatePTS(tgtv, srcv.getP2Set().getOldSet());
-      } else if (addedSrc instanceof final FieldRefNode srcfrn) { // b = a.f
+      } else if (addedSrc instanceof FieldRefNode) {
+          final FieldRefNode srcfrn = (FieldRefNode) addedSrc; // b = a.f
         handleLoadEdge(
             srcfrn.getBase().getP2Set().getOldSet(), srcfrn.getField(), (ValNode) addedTgt);
-      } else if (addedTgt instanceof final FieldRefNode tgtfrn) { // a.f = b;
+      } else if (addedTgt instanceof FieldRefNode) {
+          final FieldRefNode tgtfrn = (FieldRefNode) addedTgt; // a.f = b;
         handleStoreEdge(
             tgtfrn.getBase().getP2Set().getOldSet(), tgtfrn.getField(), (ValNode) addedSrc);
       } else if (addedSrc instanceof AllocNode) { // alloc x = new T;

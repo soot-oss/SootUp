@@ -77,7 +77,7 @@ public class TypeClientStat implements AbstractStat {
     for (SootMethod sm : reachableMethods) {
       View view = PTAScene.v().getView();
       Optional<SootClass> osc = view.getClass(sm.getDeclaringClassType());
-      if (osc.isEmpty()) {
+      if (!osc.isPresent()) {
         continue;
       }
       SootClass sc = osc.get();
@@ -113,8 +113,9 @@ public class TypeClientStat implements AbstractStat {
               }
             }
           }
-        } else if (st instanceof JAssignStmt assignStmt) {
-          Value rhs = assignStmt.getRightOp();
+        } else if (st instanceof JAssignStmt) {
+            JAssignStmt assignStmt = (JAssignStmt) st;
+            Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
             final Type targetType = rhs.getType();

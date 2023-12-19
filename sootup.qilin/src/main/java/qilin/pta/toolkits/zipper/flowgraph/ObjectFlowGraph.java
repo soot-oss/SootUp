@@ -31,16 +31,18 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
   }
 
   private boolean localVarBase(ValNode valNode) {
-    if (valNode instanceof ContextVarNode cvn) {
-      return cvn.base() instanceof LocalVarNode;
+    if (valNode instanceof ContextVarNode) {
+        ContextVarNode cvn = (ContextVarNode) valNode;
+        return cvn.base() instanceof LocalVarNode;
     } else {
       return valNode instanceof LocalVarNode;
     }
   }
 
   private LocalVarNode fetchLocalVar(ValNode valNode) {
-    if (valNode instanceof ContextVarNode cvn) {
-      if (cvn.base() instanceof LocalVarNode) {
+    if (valNode instanceof ContextVarNode) {
+        ContextVarNode cvn = (ContextVarNode) valNode;
+        if (cvn.base() instanceof LocalVarNode) {
         return (LocalVarNode) cvn.base();
       }
     } else if (valNode instanceof LocalVarNode) {
@@ -50,13 +52,16 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
   }
 
   private LocalVarNode fetchVar(ValNode valNode) {
-    if (valNode instanceof ContextVarNode cvn) {
-      VarNode base = cvn.base();
-      if (base instanceof LocalVarNode lvn) {
-        return lvn;
+    if (valNode instanceof ContextVarNode) {
+        ContextVarNode cvn = (ContextVarNode) valNode;
+        VarNode base = cvn.base();
+      if (base instanceof LocalVarNode) {
+          LocalVarNode lvn = (LocalVarNode) base;
+          return lvn;
       }
-    } else if (valNode instanceof LocalVarNode lvn) {
-      return lvn;
+    } else if (valNode instanceof LocalVarNode) {
+        LocalVarNode lvn = (LocalVarNode) valNode;
+        return lvn;
     }
     return null;
   }
@@ -89,13 +94,15 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
                             addOutEdge(new Edge(Kind.LOCAL_ASSIGN, fromNode, toNode));
                           }
                         }
-                      } else if (t instanceof ContextField ctxField) {
-                        LocalVarNode varNode = fetchVar(s);
+                      } else if (t instanceof ContextField) {
+                          ContextField ctxField = (ContextField) t;
+                          LocalVarNode varNode = fetchVar(s);
                         addOutEdge(new Edge(Kind.INSTANCE_STORE, varNode, ctxField));
                       }
                     });
-              } else if (s instanceof ContextField ctxField) {
-                ts.forEach(
+              } else if (s instanceof ContextField) {
+                  ContextField ctxField = (ContextField) s;
+                  ts.forEach(
                     t -> {
                       assert localVarBase(t);
                       LocalVarNode varNode = fetchVar(t);
@@ -116,8 +123,9 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
                   LocalVarNode thisVar = (LocalVarNode) calleeNF.caseThis();
                   AbstractInvokeExpr ie = callsite.getInvokeExpr();
                   Value base = null;
-                  if (ie instanceof AbstractInstanceInvokeExpr iie) {
-                    base = iie.getBase();
+                  if (ie instanceof AbstractInstanceInvokeExpr) {
+                      AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+                      base = iie.getBase();
                   }
                   if (base != null) {
                     LocalVarNode fromNode = (LocalVarNode) pta.getPag().findValNode(base);

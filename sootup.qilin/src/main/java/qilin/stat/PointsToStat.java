@@ -19,6 +19,8 @@
 package qilin.stat;
 
 import java.util.*;
+
+import com.google.common.collect.Sets;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
@@ -78,7 +80,7 @@ public class PointsToStat implements AbstractStat {
   }
 
   private final Set<String> handledNatives =
-      Set.of(
+          Sets.newHashSet(
           "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>",
           "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>",
           "<java.lang.Thread: java.lang.Thread currentThread()>",

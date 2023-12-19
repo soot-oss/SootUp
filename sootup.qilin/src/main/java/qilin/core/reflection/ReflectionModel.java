@@ -73,18 +73,29 @@ public abstract class ReflectionModel {
 
   private Collection<Stmt> transform(Stmt s) {
     AbstractInvokeExpr ie = s.getInvokeExpr();
-    return switch (ie.getMethodSignature().toString()) {
-      case sigForName, sigForName2 -> transformClassForName(s);
-      case sigClassNewInstance -> transformClassNewInstance(s);
-      case sigConstructorNewInstance -> transformContructorNewInstance(s);
-      case sigMethodInvoke -> transformMethodInvoke(s);
-      case sigFieldSet -> transformFieldSet(s);
-      case sigFieldGet -> transformFieldGet(s);
-      case sigArrayNewInstance -> transformArrayNewInstance(s);
-      case sigArrayGet -> transformArrayGet(s);
-      case sigArraySet -> transformArraySet(s);
-      default -> Collections.emptySet();
-    };
+      switch (ie.getMethodSignature().toString()) {
+          case sigForName:
+          case sigForName2:
+              return transformClassForName(s);
+          case sigClassNewInstance:
+              return transformClassNewInstance(s);
+          case sigConstructorNewInstance:
+              return transformContructorNewInstance(s);
+          case sigMethodInvoke:
+              return transformMethodInvoke(s);
+          case sigFieldSet:
+              return transformFieldSet(s);
+          case sigFieldGet:
+              return transformFieldGet(s);
+          case sigArrayNewInstance:
+              return transformArrayNewInstance(s);
+          case sigArrayGet:
+              return transformArrayGet(s);
+          case sigArraySet:
+              return transformArraySet(s);
+          default:
+              return Collections.emptySet();
+      }
   }
 
   /** replace reflection call with appropriate statements */
@@ -104,10 +115,12 @@ public abstract class ReflectionModel {
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
-        if (succ instanceof JAssignStmt assign) {
-          stmtGraph.insertBefore(unit, assign);
-        } else if (succ instanceof JInvokeStmt invoke) {
-          stmtGraph.insertBefore(unit, invoke);
+        if (succ instanceof JAssignStmt) {
+            JAssignStmt assign = (JAssignStmt) succ;
+            stmtGraph.insertBefore(unit, assign);
+        } else if (succ instanceof JInvokeStmt) {
+            JInvokeStmt invoke = (JInvokeStmt) succ;
+            stmtGraph.insertBefore(unit, invoke);
         } else {
           System.out.println("unit:" + unit);
           System.out.println("succ:" + succ.getClass());

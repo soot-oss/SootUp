@@ -68,8 +68,9 @@ public class InterFlowAnalysis {
     while (!queue.isEmpty()) {
       Pair<Node, State> front = queue.poll();
       if (front.getSecond() == State.End) {
-        if (front.getFirst() instanceof LocalVarNode lvn) {
-          ret.add(lvn);
+        if (front.getFirst() instanceof LocalVarNode) {
+            LocalVarNode lvn = (LocalVarNode) front.getFirst();
+            ret.add(lvn);
         }
       }
       // visit the node and state.
@@ -111,19 +112,22 @@ public class InterFlowAnalysis {
    * */
   private State nextStateForOut(State currState, EdgeKind kind, boolean fieldMatch) {
     switch (currState) {
-      case THIS -> {
+      case THIS:
+      {
         if (kind == EdgeKind.ITHIS) {
           return State.ThisAlias;
         }
       }
-      case ThisAlias -> {
+      case ThisAlias:
+      {
         if (kind == EdgeKind.ASSIGN) {
           return State.ThisAlias;
         } else if (kind == EdgeKind.LOAD && fieldMatch) {
           return State.VPlus;
         }
       }
-      case VPlus -> {
+      case VPlus:
+      {
         if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
           return State.VPlus;
         } else if (kind == EdgeKind.RETURN) {
@@ -136,7 +140,8 @@ public class InterFlowAnalysis {
           return State.VMinus;
         }
       }
-      case VMinus -> {
+      case VMinus:
+      {
         if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
           return State.VMinus;
         } else if (kind == EdgeKind.INEW) {
@@ -145,7 +150,8 @@ public class InterFlowAnalysis {
           return State.End;
         }
       }
-      case O -> {
+      case O:
+      {
         if (kind == EdgeKind.NEW) {
           return State.VPlus;
         }
@@ -174,17 +180,20 @@ public class InterFlowAnalysis {
    * */
   private State nextStateForIn(State currState, EdgeKind kind, boolean fieldMatch) {
     switch (currState) {
-      case O -> {
+      case O:
+      {
         if (kind == EdgeKind.NEW) {
           return State.VPlus;
         }
       }
-      case THIS -> {
+      case THIS:
+      {
         if (kind == EdgeKind.ITHIS) {
           return State.ThisAlias;
         }
       }
-      case VPlus -> {
+      case VPlus:
+      {
         if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
           return State.VPlus;
         } else if (kind == EdgeKind.ISTORE
@@ -196,7 +205,8 @@ public class InterFlowAnalysis {
           return State.VMinus;
         }
       }
-      case VMinus -> {
+      case VMinus:
+      {
         if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
           return State.VMinus;
         } else if (kind == EdgeKind.INEW) {
@@ -205,7 +215,8 @@ public class InterFlowAnalysis {
           return State.End;
         }
       }
-      case ThisAlias -> {
+      case ThisAlias:
+      {
         if (kind == EdgeKind.ASSIGN) {
           return State.ThisAlias;
         } else if (kind == EdgeKind.ISTORE) {

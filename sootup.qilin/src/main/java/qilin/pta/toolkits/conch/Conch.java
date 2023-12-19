@@ -69,10 +69,12 @@ public class Conch extends AbstractConch {
     MethodPAG cmpag = pag.getMethodPAG(containingMethod);
     MethodNodeFactory nodeFactory = cmpag.nodeFactory();
     for (Stmt unit : cmpag.getInvokeStmts()) {
-      if (unit instanceof JInvokeStmt invokeStmt) {
-        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
-        if (expr instanceof JSpecialInvokeExpr iie) {
-          Value base = iie.getBase();
+      if (unit instanceof JInvokeStmt) {
+          JInvokeStmt invokeStmt = (JInvokeStmt) unit;
+          AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        if (expr instanceof JSpecialInvokeExpr) {
+            JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
+            Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           PointsToSet v1pts = pta.reachingObjects(baseNode);
           SootMethod target =
@@ -93,10 +95,12 @@ public class Conch extends AbstractConch {
     MethodNodeFactory nodeFactory = cmpag.nodeFactory();
     VarNode thisNode = nodeFactory.caseThis();
     for (Stmt unit : cmpag.getInvokeStmts()) {
-      if (unit instanceof JInvokeStmt invokeStmt) {
-        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
-        if (expr instanceof JSpecialInvokeExpr iie) {
-          Value base = iie.getBase();
+      if (unit instanceof JInvokeStmt) {
+          JInvokeStmt invokeStmt = (JInvokeStmt) unit;
+          AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        if (expr instanceof JSpecialInvokeExpr) {
+            JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
+            Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           MethodSignature targetSig = iie.getMethodSignature();
           SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(targetSig).get();
@@ -138,8 +142,9 @@ public class Conch extends AbstractConch {
           (Optional<SootMethod>) PTAScene.v().getView().getMethod(methodSig);
       if (otarget.isPresent() && otarget.get().equals(curr)) {
         for (Node n : params) {
-          if (n instanceof VarNode paramNode) {
-            LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
+          if (n instanceof VarNode) {
+              VarNode paramNode = (VarNode) n;
+              LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
             if (argNode != null) {
               ret.addAll(this.pfg.fetchReachableParamsOf(argNode));
             }

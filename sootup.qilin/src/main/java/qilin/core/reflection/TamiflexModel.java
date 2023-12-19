@@ -458,15 +458,23 @@ public class TamiflexModel extends ReflectionModel {
   }
 
   private boolean matchReflectionKind(ReflectionKind kind, String methodSig) {
-    return switch (kind) {
-      case ClassForName -> methodSig.equals(sigForName) || methodSig.equals(sigForName2);
-      case ClassNewInstance -> methodSig.equals(sigClassNewInstance);
-      case ConstructorNewInstance -> methodSig.equals(sigConstructorNewInstance);
-      case MethodInvoke -> methodSig.equals(sigMethodInvoke);
-      case FieldSet -> methodSig.equals(sigFieldSet);
-      case FieldGet -> methodSig.equals(sigFieldGet);
-      case ArrayNewInstance -> methodSig.equals(sigArrayNewInstance);
-      default -> false;
-    };
+      switch (kind) {
+          case ClassForName:
+              return methodSig.equals(sigForName) || methodSig.equals(sigForName2);
+          case ClassNewInstance:
+              return methodSig.equals(sigClassNewInstance);
+          case ConstructorNewInstance:
+              return methodSig.equals(sigConstructorNewInstance);
+          case MethodInvoke:
+              return methodSig.equals(sigMethodInvoke);
+          case FieldSet:
+              return methodSig.equals(sigFieldSet);
+          case FieldGet:
+              return methodSig.equals(sigFieldGet);
+          case ArrayNewInstance:
+              return methodSig.equals(sigArrayNewInstance);
+          default:
+              return false;
+      }
   }
 }

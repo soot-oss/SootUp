@@ -50,8 +50,9 @@ public class Triple<T1, T2, T3> {
 
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof final Triple<?, ?, ?> anoTriple) {
-      return Objects.equals(this.first, anoTriple.first)
+    if (o instanceof Triple<?, ?, ?>) {
+        final Triple<?, ?, ?> anoTriple = (Triple<?, ?, ?>) o;
+        return Objects.equals(this.first, anoTriple.first)
           && Objects.equals(this.second, anoTriple.second)
           && Objects.equals(this.third, anoTriple.third);
     }

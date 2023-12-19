@@ -273,15 +273,17 @@ public final class PTAUtils {
   }
 
   public static boolean isUnresolved(Type type) {
-    if (type instanceof ArrayType at) {
-      type = at.getBaseType();
+    if (type instanceof ArrayType) {
+        ArrayType at = (ArrayType) type;
+        type = at.getBaseType();
     }
-    if (!(type instanceof ClassType rt)) return false;
-    //        if (!rt.hasSootClass()) {
+    if (!(type instanceof ClassType)) return false;
+      ClassType rt = (ClassType) type;
+      //        if (!rt.hasSootClass()) {
     //            return true;
     //        }
     Optional<SootClass> ocl = PTAScene.v().getView().getClass(rt);
-    return ocl.isEmpty();
+    return !ocl.isPresent();
     //        SootClass cl = rt.getSootClass();
     //        return cl.resolvingLevel() < SootClass.HIERARCHY;
   }
@@ -345,19 +347,23 @@ public final class PTAUtils {
           if (sm != null && !sm.getSignature().toString().equals("<qilin.pta.FakeMain: void main()>")) {
             clz = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
           }
-        } else if (vn instanceof GlobalVarNode gvn) {
-          clz = gvn.getDeclaringClass();
-        } else if (vn instanceof ContextVarNode cv) {
-          VarNode varNode = cv.base();
-          if (varNode instanceof LocalVarNode cvbase) {
-            clz =
+        } else if (vn instanceof GlobalVarNode) {
+            GlobalVarNode gvn = (GlobalVarNode) vn;
+            clz = gvn.getDeclaringClass();
+        } else if (vn instanceof ContextVarNode) {
+            ContextVarNode cv = (ContextVarNode) vn;
+            VarNode varNode = cv.base();
+          if (varNode instanceof LocalVarNode) {
+              LocalVarNode cvbase = (LocalVarNode) varNode;
+              clz =
                 (SootClass)
                     PTAScene.v()
                         .getView()
                         .getClass(cvbase.getMethod().getDeclaringClassType())
                         .get();
-          } else if (varNode instanceof GlobalVarNode gvn) {
-            clz = gvn.getDeclaringClass();
+          } else if (varNode instanceof GlobalVarNode) {
+              GlobalVarNode gvn = (GlobalVarNode) varNode;
+              clz = gvn.getDeclaringClass();
           }
         }
         if (appOnly && clz != null && !clz.isApplicationClass()) {
@@ -592,10 +598,11 @@ public final class PTAUtils {
   }
 
   public static boolean subtypeOfAbstractStringBuilder(Type t) {
-    if (!(t instanceof ClassType rt)) {
+    if (!(t instanceof ClassType)) {
       return false;
     }
-    String s = rt.toString();
+      ClassType rt = (ClassType) t;
+      String s = rt.toString();
     return (s.equals("java.lang.StringBuffer") || s.equals("java.lang.StringBuilder"));
   }
 
@@ -603,8 +610,9 @@ public final class PTAUtils {
     MethodSubSignature sigFinalize =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
-    if (type instanceof ClassType refType && type != PTAUtils.getClassType("java.lang.Object")) {
-      SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
+    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
+        ClassType refType = (ClassType) type;
+        SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
       if (finalizeMethod != null
           && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
         return false;
@@ -617,8 +625,9 @@ public final class PTAUtils {
   public static Context plusplusOp(AllocNode heap) {
     ContextElement[] array;
     int s;
-    if (heap instanceof ContextAllocNode csHeap) {
-      ContextElements ctxElems = (ContextElements) csHeap.context();
+    if (heap instanceof ContextAllocNode) {
+        ContextAllocNode csHeap = (ContextAllocNode) heap;
+        ContextElements ctxElems = (ContextElements) csHeap.context();
       int ms = ctxElems.size();
       ContextElement[] oldArray = ctxElems.getElements();
       array = new ContextElement[ms + 1];
@@ -649,15 +658,17 @@ public final class PTAUtils {
   private static Set<SootClass> ignoreList = null;
 
   public static boolean isOfPrimitiveBaseType(AllocNode heap) {
-    if (heap.getType() instanceof ArrayType arrayType) {
-      return arrayType.getBaseType() instanceof PrimitiveType;
+    if (heap.getType() instanceof ArrayType) {
+        ArrayType arrayType = (ArrayType) heap.getType();
+        return arrayType.getBaseType() instanceof PrimitiveType;
     }
     return false;
   }
 
   public static boolean isPrimitiveArrayType(Type type) {
-    if (type instanceof ArrayType arrayType) {
-      return arrayType.getElementType() instanceof PrimitiveType;
+    if (type instanceof ArrayType) {
+        ArrayType arrayType = (ArrayType) type;
+        return arrayType.getElementType() instanceof PrimitiveType;
     }
     return false;
   }
@@ -775,10 +786,12 @@ public final class PTAUtils {
 
   public static boolean isEmptyArray(AllocNode heap) {
     Object var = heap.getNewExpr();
-    if (var instanceof JNewArrayExpr nae) {
-      Value sizeVal = nae.getSize();
-      if (sizeVal instanceof IntConstant size) {
-        return size.getValue() == 0;
+    if (var instanceof JNewArrayExpr) {
+        JNewArrayExpr nae = (JNewArrayExpr) var;
+        Value sizeVal = nae.getSize();
+      if (sizeVal instanceof IntConstant) {
+          IntConstant size = (IntConstant) sizeVal;
+          return size.getValue() == 0;
       }
     }
     return false;
@@ -790,8 +803,9 @@ public final class PTAUtils {
     Parm mPi = (Parm) pi.getVariable();
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     LocalVarNode receiver;
-    if (ie instanceof AbstractInstanceInvokeExpr iie) {
-      Local base = iie.getBase();
+    if (ie instanceof AbstractInstanceInvokeExpr) {
+        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+        Local base = iie.getBase();
       receiver = pag.findLocalVarNode(srcmpag.getMethod(), base, base.getType());
     } else {
       // static call
@@ -800,8 +814,9 @@ public final class PTAUtils {
     if (mPi.isThis()) {
       return receiver;
     } else if (mPi.isReturn()) {
-      if (invokeStmt instanceof JAssignStmt assignStmt) {
-        Value mR = assignStmt.getLeftOp();
+      if (invokeStmt instanceof JAssignStmt) {
+          JAssignStmt assignStmt = (JAssignStmt) invokeStmt;
+          Value mR = assignStmt.getLeftOp();
         return (LocalVarNode) pag.findValNode(mR);
       } else {
         return null;

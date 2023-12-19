@@ -380,22 +380,22 @@ public class FakeMainFactory extends ArtificialMethod {
       Optional<SootMethod> oinit = cl.getMethod(sigClinit);
       Optional<ClassType> osuperClass = cl.getSuperclass();
       // check super classes until finds a constructor or no super class there anymore.
-      while (oinit.isEmpty() && osuperClass.isPresent()) {
+      while (!oinit.isPresent() && osuperClass.isPresent()) {
         ClassType superType = osuperClass.get();
         Optional<SootClass> oSuperClass = view.getClass(superType);
-        if (oSuperClass.isEmpty()) {
+        if (!oSuperClass.isPresent()) {
           break;
         }
         SootClass superClass = oSuperClass.get();
         oinit = superClass.getMethod(sigClinit);
         osuperClass = superClass.getSuperclass();
       }
-      if (oinit.isEmpty()) {
+      if (!oinit.isPresent()) {
         return Collections.emptyList();
       }
       SootMethod initStart = oinit.get();
       return () ->
-          new Iterator<>() {
+          new Iterator<SootMethod>() {
             SootMethod current = initStart;
 
             @Override
@@ -408,18 +408,18 @@ public class FakeMainFactory extends ArtificialMethod {
               // Pre-fetch the next element
               current = null;
               Optional<SootClass> oCurrentClass = view.getClass(n.getDeclaringClassType());
-              if (oCurrentClass.isEmpty()) {
+              if (!oCurrentClass.isPresent()) {
                 return n;
               }
               SootClass currentClass = oCurrentClass.get();
               while (true) {
                 Optional<ClassType> osuperType1 = currentClass.getSuperclass();
-                if (osuperType1.isEmpty()) {
+                if (!osuperType1.isPresent()) {
                   break;
                 }
                 ClassType classType = osuperType1.get();
                 Optional<SootClass> osuperClass1 = view.getClass(classType);
-                if (osuperClass1.isEmpty()) {
+                if (!osuperClass1.isPresent()) {
                   break;
                 }
                 SootClass superClass = osuperClass1.get();

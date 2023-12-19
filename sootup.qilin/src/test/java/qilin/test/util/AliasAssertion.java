@@ -83,15 +83,17 @@ public class AliasAssertion implements IAssertion {
     }
     if (va instanceof StringConstant && vb instanceof StringConstant) {
       return va.equals(vb);
-    } else if (va instanceof StringConstant strConst) {
-      String s = strConst.getValue();
+    } else if (va instanceof StringConstant) {
+        StringConstant strConst = (StringConstant) va;
+        String s = strConst.getValue();
       if (!PTAConfig.v().getPtaConfig().stringConstants) {
         s = "STRING_NODE";
       }
       PointsToSet pts = pta.reachingObjects(sm, (Local) vb).toCIPointsToSet();
       return pts.possibleStringConstants().contains(s);
-    } else if (vb instanceof StringConstant strConst) {
-      String s = strConst.getValue();
+    } else if (vb instanceof StringConstant) {
+        StringConstant strConst = (StringConstant) vb;
+        String s = strConst.getValue();
       if (!PTAConfig.v().getPtaConfig().stringConstants) {
         s = "STRING_NODE";
       }

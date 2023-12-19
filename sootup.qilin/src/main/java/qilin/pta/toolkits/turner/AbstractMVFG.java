@@ -129,8 +129,9 @@ public abstract class AbstractMVFG {
       Node from = reader.next(), to = reader.next();
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
-        else if (to instanceof FieldRefNode fr) {
-          this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+        else if (to instanceof FieldRefNode) {
+            FieldRefNode fr = (FieldRefNode) to;
+            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
         } // local-global
 
       } else if (from instanceof AllocNode) {
@@ -140,8 +141,9 @@ public abstract class AbstractMVFG {
             this.addCSLikelyEdge((AllocNode) from);
           }
         } // GlobalVarNode
-      } else if (from instanceof FieldRefNode fr) {
-        this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
+      } else if (from instanceof FieldRefNode) {
+          FieldRefNode fr = (FieldRefNode) from;
+          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
       } // global-local
     }
     // add exception edges that added dynamically during the pre-analysis.
@@ -172,8 +174,9 @@ public abstract class AbstractMVFG {
         }
       }
       LocalVarNode receiver;
-      if (ie instanceof AbstractInstanceInvokeExpr iie) {
-        Local base = iie.getBase();
+      if (ie instanceof AbstractInstanceInvokeExpr) {
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
         receiver = pag.findLocalVarNode(method, base, base.getType());
       } else {
         // static call

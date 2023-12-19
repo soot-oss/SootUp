@@ -295,8 +295,9 @@ public class PAG {
 
   /** Finds the ValNode for the variable value, or returns null. */
   public ValNode findValNode(Object value) {
-    if (value instanceof Local local) {
-      Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
+    if (value instanceof Local) {
+        Local local = (Local) value;
+        Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
       return valToValNode.get(localTypePair);
     } else {
       return valToValNode.get(value);
@@ -367,8 +368,9 @@ public class PAG {
     if (ret == null) {
       valToValNode.put(localTriple, ret = new LocalVarNode(value, type, method));
       valNodeNumberer.add(ret);
-      if (value instanceof Local local) {
-        locals.add(new Triple<>(method, local, type));
+      if (value instanceof Local) {
+          Local local = (Local) value;
+          locals.add(new Triple<>(method, local, type));
       }
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
@@ -549,8 +551,9 @@ public class PAG {
     for (Stmt s : body.getStmts()) {
       if (s.containsInvokeExpr()) {
         AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
-        if (invokeExpr instanceof JStaticInvokeExpr sie) {
-          String sig = sie.getMethodSignature().toString();
+        if (invokeExpr instanceof JStaticInvokeExpr) {
+            JStaticInvokeExpr sie = (JStaticInvokeExpr) invokeExpr;
+            String sig = sie.getMethodSignature().toString();
           if (sig.equals(
               "<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
             Value srcArr = sie.getArg(0);

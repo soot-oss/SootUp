@@ -137,8 +137,9 @@ public class FlowAnalysis {
       pollutionFlowGraph.addNode(node);
       // add unwrapped flow edges
       if (Global.isEnableUnwrappedFlow()) {
-        if (node instanceof VarNode var) {
-          Collection<AllocNode> varPts = pta.reachingObjects(var).toCIPointsToSet().toCollection();
+        if (node instanceof VarNode) {
+            VarNode var = (VarNode) node;
+            Collection<AllocNode> varPts = pta.reachingObjects(var).toCIPointsToSet().toCollection();
           // Optimization: approximate unwrapped flows to make
           // Zipper and pointer analysis run faster
           pta.getCgb()
@@ -151,8 +152,9 @@ public class FlowAnalysis {
                     if (!(invo instanceof AbstractInstanceInvokeExpr)) {
                       return;
                     }
-                    if (callsiteStmt instanceof JAssignStmt assignStmt) {
-                      Value lv = assignStmt.getLeftOp();
+                    if (callsiteStmt instanceof JAssignStmt) {
+                        JAssignStmt assignStmt = (JAssignStmt) callsiteStmt;
+                        Value lv = assignStmt.getLeftOp();
                       if (!(lv.getType() instanceof ReferenceType)) {
                         return;
                       }
@@ -175,10 +177,17 @@ public class FlowAnalysis {
       List<Edge> nextEdges = new ArrayList<>();
       for (Edge edge : outEdgesOf(node)) {
         switch (edge.getKind()) {
-          case LOCAL_ASSIGN, UNWRAPPED_FLOW -> {
+          case UNWRAPPED_FLOW :{
             nextEdges.add(edge);
           }
-          case INTERPROCEDURAL_ASSIGN, INSTANCE_LOAD, WRAPPED_FLOW -> {
+          case LOCAL_ASSIGN:
+          {
+              nextEdges.add(edge);
+          }
+          case INTERPROCEDURAL_ASSIGN:
+          case INSTANCE_LOAD:
+          case WRAPPED_FLOW:
+          {
             // next must be a variable
             LocalVarNode next = (LocalVarNode) edge.getTarget();
             SootMethod inMethod = next.getMethod();
@@ -189,7 +198,8 @@ public class FlowAnalysis {
               nextEdges.add(edge);
             }
           }
-          case INSTANCE_STORE -> {
+          case INSTANCE_STORE:
+          {
             ContextField next = (ContextField) edge.getTarget();
             AllocNode base = next.getBase();
             if (base.getType().equals(currentType)) {
@@ -213,9 +223,11 @@ public class FlowAnalysis {
                     .allocLookup(mBase)
                     .forEach(
                         v -> {
-                          if (v instanceof ContextVarNode cvn) {
-                            if (cvn.base() instanceof LocalVarNode lvn) {
-                              if (!lvn.isThis()) {
+                          if (v instanceof ContextVarNode) {
+                              ContextVarNode cvn = (ContextVarNode) v;
+                              if (cvn.base() instanceof LocalVarNode) {
+                                LocalVarNode lvn = (LocalVarNode) cvn.base();
+                                if (!lvn.isThis()) {
                                 r.add(lvn);
                               }
                             }
@@ -233,7 +245,8 @@ public class FlowAnalysis {
               nextEdges.add(edge);
             }
           }
-          default -> {
+          default:
+          {
             throw new RuntimeException("Unknown edge: " + edge);
           }
         }

@@ -86,8 +86,9 @@ public class IntraFlowAnalysis {
     Set<Node> visit = epsilon(heap);
     boolean flag = false;
     for (Node node : visit) {
-      if (node instanceof LocalVarNode lvn) {
-        if (lvn.isReturn()) {
+      if (node instanceof LocalVarNode) {
+          LocalVarNode lvn = (LocalVarNode) node;
+          if (lvn.isReturn()) {
           flag = true;
         }
       }
@@ -143,10 +144,11 @@ public class IntraFlowAnalysis {
     MethodPAG srcmpag = pag.getMethodPAG(method);
     for (final Stmt s : srcmpag.getInvokeStmts()) {
       AbstractInvokeExpr ie = s.getInvokeExpr();
-      if (!(ie instanceof AbstractInstanceInvokeExpr iie)) {
+      if (!(ie instanceof AbstractInstanceInvokeExpr)) {
         continue;
       }
-      Local base = iie.getBase();
+        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+        Local base = iie.getBase();
       LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
       if (!x.contains(receiver)) {
         continue;
@@ -182,8 +184,9 @@ public class IntraFlowAnalysis {
           if (target.getParameterType(i) instanceof ReferenceType) {
             if (args[i] != null) {
               ValNode argNode = pag.findValNode(args[i]);
-              if (argNode instanceof LocalVarNode lvn) {
-                LocalVarNode param = (LocalVarNode) tgtnf.caseParm(i);
+              if (argNode instanceof LocalVarNode) {
+                  LocalVarNode lvn = (LocalVarNode) argNode;
+                  LocalVarNode param = (LocalVarNode) tgtnf.caseParm(i);
                 if (inParams.contains(param)) {
                   ret.add(lvn);
                 }
@@ -231,19 +234,22 @@ public class IntraFlowAnalysis {
 
   private State nextState(State currState, EdgeKind kind) {
     switch (currState) {
-      case O -> {
+      case O:
+      {
         if (kind == EdgeKind.NEW) {
           return State.VPlus;
         }
       }
-      case VPlus -> {
+      case VPlus:
+      {
         if (kind == EdgeKind.ASSIGN) {
           return State.VPlus;
         } else if (kind == EdgeKind.STORE) {
           return State.VMinus;
         }
       }
-      case VMinus -> {
+      case VMinus:
+      {
         if (kind == EdgeKind.IASSIGN) {
           return State.VMinus;
         } else if (kind == EdgeKind.ILOAD) {

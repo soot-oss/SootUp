@@ -41,16 +41,18 @@ public class ContainerFinder {
     Set<AllocNode> remainObjs = new HashSet<>();
     for (AllocNode heap : pag.getAllocNodes()) {
       Type type = heap.getType();
-      if (type instanceof ArrayType at) {
-        JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
+      if (type instanceof ArrayType) {
+          ArrayType at = (ArrayType) type;
+          JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
         Value vl = nae.getSize();
-        if (utility.isCoarseType(at) && (!(vl instanceof IntConstant ic) || ic.getValue() != 0)) {
+        if (utility.isCoarseType(at) && (!(vl instanceof IntConstant) || ((IntConstant) vl).getValue() != 0)) {
           containers.computeIfAbsent(heap, k -> new HashSet<>()).add(ArrayElement.v());
         } else {
           notcontainers.add(heap);
         }
-      } else if (type instanceof ClassType refType) {
-        if (utility.isCoarseType(refType) && heap.getMethod() != null) {
+      } else if (type instanceof ClassType) {
+          ClassType refType = (ClassType) type;
+          if (utility.isCoarseType(refType) && heap.getMethod() != null) {
           remainObjs.add(heap);
         } else {
           notcontainers.add(heap);

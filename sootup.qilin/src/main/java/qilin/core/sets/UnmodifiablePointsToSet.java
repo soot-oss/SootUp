@@ -52,8 +52,9 @@ public class UnmodifiablePointsToSet implements PointsToSet {
 
   @Override
   public boolean hasNonEmptyIntersection(PointsToSet other) {
-    if (other instanceof UnmodifiablePointsToSet uother) {
-      return pta == uother.pta && pts.hasNonEmptyIntersection(uother.pts);
+    if (other instanceof UnmodifiablePointsToSet) {
+        UnmodifiablePointsToSet uother = (UnmodifiablePointsToSet) other;
+        return pta == uother.pta && pts.hasNonEmptyIntersection(uother.pts);
     }
     return false;
   }
@@ -65,8 +66,9 @@ public class UnmodifiablePointsToSet implements PointsToSet {
         new P2SetVisitor(pta) {
           public void visit(Node n) {
             Type t = n.getType();
-            if (t instanceof ClassType rt) {
-              View view = PTAScene.v().getView();
+            if (t instanceof ClassType) {
+                ClassType rt = (ClassType) t;
+                View view = PTAScene.v().getView();
               Optional<SootClass> osc = (Optional<SootClass>) view.getClass(rt);
               if (osc.isPresent() && osc.get().isAbstract()) {
                 return;
@@ -149,8 +151,9 @@ public class UnmodifiablePointsToSet implements PointsToSet {
     if (this == other) {
       return true;
     }
-    if (other instanceof UnmodifiablePointsToSet otherPts) {
-      if (otherPts.pta != pta) {
+    if (other instanceof UnmodifiablePointsToSet) {
+        UnmodifiablePointsToSet otherPts = (UnmodifiablePointsToSet) other;
+        if (otherPts.pta != pta) {
         return false;
       }
       // both sets are equal if they are supersets of each other

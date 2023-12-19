@@ -44,10 +44,11 @@ public final class ContextMethod implements MethodOrMethodContext {
   }
 
   public boolean equals(Object o) {
-    if (!(o instanceof ContextMethod other)) {
+    if (!(o instanceof ContextMethod)) {
       return false;
     } else {
-      return this.method.equals(other.method) && this.context.equals(other.context);
+        ContextMethod other = (ContextMethod) o;
+        return this.method.equals(other.method) && this.context.equals(other.context);
     }
   }
 

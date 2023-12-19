@@ -29,17 +29,20 @@ public class PTAFactory {
       case HYBOBJ:
         {
           switch (ptaPattern.getApproach()) {
-            case DATADRIVEN -> {
+            case DATADRIVEN:
+            {
               // data-driven hybrid-2obj, Sehun Jeong oopsla'17
               CtxConstructor ctxCons = new HybObjCtxConstructor();
               return new DataDrivenPTA(ctxCons);
             }
-            case TUNNELING -> {
+            case TUNNELING:
+            {
               CtxConstructor ctxCons = new HybObjCtxConstructor();
               return new TunnelingPTA(
                   ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
             }
-            default -> {
+            default:
+            {
               // static method using callsite as context, Yannis pldi'13
               return new HybridObjectSensPTA(
                   ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
@@ -49,7 +52,8 @@ public class PTAFactory {
       case OBJECT:
         {
           switch (ptaPattern.getApproach()) {
-            case EAGLE -> {
+            case EAGLE:
+            {
               // k-obj pointer analysis with Eagle pre-analysis, Jingbo OOPSLA'19
               assert ptaPattern.getContextDepth() == ptaPattern.getHeapContextDepth() + 1;
               BasePTA eagle = new EaglePTA(ptaPattern.getContextDepth());
@@ -59,14 +63,16 @@ public class PTAFactory {
                 return eagle;
               }
             }
-            case BEAN -> {
+            case BEAN:
+            {
               CtxConstructor ctxCons = new ObjCtxConstructor();
               return new BeanPTA(ctxCons);
             }
-            case TURNER -> {
+            case TURNER :
+            {
               return new TurnerPTA(ptaPattern.getContextDepth());
             }
-            case ZIPPER -> {
+            case ZIPPER:{
               CtxConstructor ctxCons = new ObjCtxConstructor();
               BasePTA zipperPTA =
                   new ZipperPTA(
@@ -77,7 +83,8 @@ public class PTAFactory {
                 return zipperPTA;
               }
             }
-            case MAHJONG -> {
+            case MAHJONG:
+            {
               CtxConstructor ctxCons = new ObjCtxConstructor();
               BasePTA mahjongPTA =
                   new MahjongPTA(
@@ -88,16 +95,18 @@ public class PTAFactory {
                 return mahjongPTA;
               }
             }
-            case DATADRIVEN -> {
+            case DATADRIVEN:
+            {
               CtxConstructor ctxCons = new ObjCtxConstructor();
               return new DataDrivenPTA(ctxCons);
             }
-            case TUNNELING -> {
+            case TUNNELING:
+            {
               CtxConstructor ctxCons = new ObjCtxConstructor();
               return new TunnelingPTA(
                   ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
             }
-            default -> {
+            default:{
               BasePTA kobj =
                   new ObjectSensPTA(ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
 
@@ -113,16 +122,16 @@ public class PTAFactory {
       case TYPE:
         {
           switch (ptaPattern.getApproach()) {
-            case DATADRIVEN -> {
+            case DATADRIVEN: {
               CtxConstructor ctxCons = new TypeCtxConstructor();
               return new DataDrivenPTA(ctxCons);
             }
-            case TUNNELING -> {
+            case TUNNELING :{
               CtxConstructor ctxCons = new TypeCtxConstructor();
               return new TunnelingPTA(
                   ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
             }
-            default -> {
+            default: {
               // normal type-sensitive pointer analysis, Yannis popl'11
               return new TypeSensPTA(
                   ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
@@ -132,29 +141,29 @@ public class PTAFactory {
       case CALLSITE:
         {
           switch (ptaPattern.getApproach()) {
-            case ZIPPER -> {
+            case ZIPPER: {
               CtxConstructor ctxCons = new CallsiteCtxConstructor();
               return new ZipperPTA(
                   ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth(), ctxCons);
             }
-            case MAHJONG -> {
+            case MAHJONG : {
               CtxConstructor ctxCons = new CallsiteCtxConstructor();
               return new MahjongPTA(
                   ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth(), ctxCons);
             }
-            case DATADRIVEN -> {
+            case DATADRIVEN : {
               CtxConstructor ctxCons = new CallsiteCtxConstructor();
               return new DataDrivenPTA(ctxCons);
             }
-            case TUNNELING -> {
+            case TUNNELING : {
               CtxConstructor ctxCons = new CallsiteCtxConstructor();
               return new TunnelingPTA(
                   ctxCons, ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
             }
-            case SELECTX -> {
+            case SELECTX : {
               return new SelectxPTA(ptaPattern.getContextDepth());
             }
-            default -> {
+            default : {
               // CallSite Sensitive
               return new CallSiteSensPTA(
                   ptaPattern.getContextDepth(), ptaPattern.getHeapContextDepth());
