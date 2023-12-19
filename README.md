@@ -27,7 +27,7 @@ Do you have questions? Feel free to start a [Discussion](https://github.com/soot
 - [x] Fully-Parallelizable Architecture
 - [x] Enables lazy loading of classes (no interleaved loading of used/dependent classes anymore)
 - [x] Fail early strategy - input validation while constructing/building objects
-- [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Can not handle try-catch inputs, yet!)
+- [x] Up-to-Date (i.e. Java8!) Sourcecode Frontend (Beware: Cannot handle try-catch inputs, yet!)
 - [x] Full Java 21 Support for Bytecode
 - [x] Multiple Views (no single static Scene anymore)
 - [x] Immutable Jimple IR Objects and Graphs
