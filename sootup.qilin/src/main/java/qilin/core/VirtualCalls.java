@@ -83,8 +83,9 @@ public class VirtualCalls {
         && !subSig.toString().equals("void <clinit>()")) {
       SootClass cls =
           (SootClass) PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
-      SootClass superCls = (SootClass) cls.getSuperclass().get();
-      return resolveNonSpecial(superCls.getType(), subSig, appOnly);
+      ClassType superClsType = (ClassType) cls.getSuperclass().get();
+      System.out.println("resolve" + iie + ";;" + subSig + ";;" + container);
+      return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       return target;
     }
@@ -163,11 +164,10 @@ public class VirtualCalls {
       t = PTAUtils.getClassType("java.lang.Object");
     }
 
-    if (declaredType != null
-        && !PTAScene.v().getView().getTypeHierarchy().isSubtype(declaredType, t)) {
+    if (declaredType != null && !PTAScene.v().canStoreType(t, declaredType)) {
       return;
     }
-    if (sigType != null && !PTAScene.v().getView().getTypeHierarchy().isSubtype(sigType, t)) {
+    if (sigType != null && !PTAScene.v().canStoreType(t, sigType)) {
       return;
     }
     if (t instanceof ClassType) {

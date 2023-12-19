@@ -25,6 +25,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
+import qilin.util.Triple;
 import soot.Context;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootField;
@@ -131,15 +132,17 @@ public class PointsToStat implements AbstractStat {
       }
     }
     // locals exclude Exceptions
-    for (Local local : pag.getLocalPointers()) {
+    for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        Collection<VarNode> varNodes = pag.getVarNodes(local);
-        LocalVarNode lvn = pag.findLocalVarNode(local);
+        SootMethod method = localTriple.getFirst();
+        Local local = localTriple.getSecond();
+        Collection<VarNode> varNodes = pag.getVarNodes(method, local);
+        LocalVarNode lvn = pag.findLocalVarNode(method, local, localTriple.getThird());
         if (local.toString().contains("intermediate/")) {
           continue;
         }
         mLocalVarNodes.add(lvn);
-        if (!handledNatives.contains(lvn.getMethod().toString())) {
+        if (!handledNatives.contains(method.toString())) {
           mLocalVarNodesNoNative.add(lvn);
         }
         boolean app = PTAUtils.isApplicationMethod(lvn.getMethod());
@@ -153,7 +156,7 @@ public class PointsToStat implements AbstractStat {
           appLocalPointersCs += varNodes.size();
         }
 
-        PointsToSet pts = pta.reachingObjects(local);
+        PointsToSet pts = pta.reachingObjects(method, local);
         final Set<Object> allocSites = getPointsToNewExpr(pts);
 
         totalLocalCiToCi += allocSites.size();

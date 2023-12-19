@@ -25,8 +25,10 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
+import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -305,12 +307,13 @@ public class Selectx {
         if (s instanceof JAssignStmt) {
           Value dest = ((JAssignStmt) s).getLeftOp();
           if (dest.getType() instanceof ReferenceType) {
-            retDest = prePAG.findLocalVarNode(dest);
+            retDest = prePAG.findLocalVarNode(method, dest, dest.getType());
           }
         }
         LocalVarNode receiver = null;
         if (ie instanceof AbstractInstanceInvokeExpr iie) {
-          receiver = prePAG.findLocalVarNode(iie.getBase());
+          Local base = iie.getBase();
+          receiver = prePAG.findLocalVarNode(method, base, base.getType());
         }
         for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
           Edge e = it.next();
@@ -330,7 +333,7 @@ public class Selectx {
           }
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           LocalVarNode throwFinal =
-              prePAG.findLocalVarNode(new Parm(tgtmtd, PointsToAnalysis.THROW_NODE));
+              prePAG.findLocalVarNode(method, new Parm(tgtmtd, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Throwable"));
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }

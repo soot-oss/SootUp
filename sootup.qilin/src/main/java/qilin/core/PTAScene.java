@@ -35,7 +35,6 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
@@ -124,7 +123,7 @@ public class PTAScene {
       builder.addInputLocation(new JavaClassPathAnalysisInputLocation(clazzPath));
     }
     JavaProject javaProject = builder.build();
-    return javaProject.createView(analysisInputLocation -> clo);
+    return javaProject.createOnDemandView(analysisInputLocation -> clo);
   }
 
   private static Collection<String> getJreJars(String JRE) {
@@ -200,6 +199,9 @@ public class PTAScene {
   }
 
   public boolean canStoreType(final Type child, final Type parent) {
+    if (child == parent || child.equals(parent)) {
+      return true;
+    }
     return view.getTypeHierarchy().isSubtype(parent, child);
   }
 

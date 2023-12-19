@@ -28,6 +28,7 @@ import qilin.util.PTAUtils;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -90,19 +91,24 @@ public abstract class ReflectionModel {
     if (!PTAScene.v().reflectionBuilt.add(m)) {
       return;
     }
-    Map<FallsThroughStmt, Collection<Stmt>> newUnits = DataFactory.createMap();
+    Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
     Body body = PTAUtils.getMethodBody(m);
     List<Stmt> units = body.getStmts();
     for (final Stmt u : units) {
       if (u.containsInvokeExpr()) {
-        newUnits.put( (FallsThroughStmt) u, transform(u));
+        newUnits.put(u, transform(u));
       }
     }
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (FallsThroughStmt unit : newUnits.keySet()) {
+    for (Stmt unit : newUnits.keySet()) {
       for (Stmt succ : newUnits.get(unit)) {
-        stmtGraph.putEdge(unit, succ);
+        if (succ instanceof JAssignStmt assign) {
+          stmtGraph.insertBefore(unit, assign);
+        } else {
+          System.out.println("succ:" + succ.getClass());
+          stmtGraph.putEdge((FallsThroughStmt) unit, succ);
+        }
       }
     }
     PTAUtils.updateMethodBody(m, builder.build());

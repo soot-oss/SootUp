@@ -89,7 +89,7 @@ public class FakeMainFactory extends ArtificialMethod {
 
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
-            .getMethodSignature("main", className, "void", Collections.emptyList());
+            .getMethodSignature(className, "main", "void", Collections.emptyList());
 
     StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
@@ -100,10 +100,12 @@ public class FakeMainFactory extends ArtificialMethod {
     stmtGraph.addBlock(stmtList);
     stmtGraph.setStartingStmt(jNop);
     stmtGraph.putEdge(jNop, stmtList.get(0));
-    stmtGraph.putEdge( (FallsThroughStmt) stmtList.get(stmtList.size() - 1), returnVoidStmt);
+    stmtGraph.putEdge((FallsThroughStmt) stmtList.get(stmtList.size() - 1), returnVoidStmt);
 
-    bodyBuilder.setMethodSignature(methodSignatureOne)
+    bodyBuilder
+        .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
+
     Body bodyOne = bodyBuilder.build();
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -114,7 +116,7 @@ public class FakeMainFactory extends ArtificialMethod {
             NoPositionInformation.getInstance());
     this.method = dummyMainMethod;
     this.fakeClass =
-        new SootClass<>(
+        new SootClass(
             new OverridingClassSource(
                 Collections.singleton(dummyMainMethod),
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
@@ -125,7 +127,7 @@ public class FakeMainFactory extends ArtificialMethod {
                 NoPositionInformation.getInstance(),
                 null,
                 view.getIdentifierFactory().getClassType(className),
-                new EagerInputLocation<>()),
+                new EagerInputLocation()),
             SourceType.Application);
   }
 
@@ -374,21 +376,24 @@ public class FakeMainFactory extends ArtificialMethod {
       // Do not create an actual list, since this method gets called quite often
       // Instead, callers usually just want to iterate over the result.
       Optional<SootMethod> oinit = cl.getMethod(sigClinit);
-      Optional<SootClass> osuperClass = cl.getSuperclass();
+      Optional<ClassType> osuperClass = cl.getSuperclass();
       // check super classes until finds a constructor or no super class there anymore.
-      while (oinit.isPresent() && osuperClass.isPresent()) {
-        oinit = osuperClass.get().getMethod(sigClinit);
-        osuperClass = osuperClass.get().getSuperclass();
+      while (oinit.isEmpty() && osuperClass.isPresent()) {
+        ClassType superType = osuperClass.get();
+        Optional<SootClass> oSuperClass = view.getClass(superType);
+        if (oSuperClass.isEmpty()) {
+          break;
+        }
+        SootClass superClass = oSuperClass.get();
+        oinit = superClass.getMethod(sigClinit);
+        osuperClass = superClass.getSuperclass();
       }
-      if (!oinit.isPresent()) {
+      if (oinit.isEmpty()) {
         return Collections.emptyList();
       }
       SootMethod initStart = oinit.get();
-      return new Iterable<SootMethod>() {
-
-        @Override
-        public Iterator<SootMethod> iterator() {
-          return new Iterator<SootMethod>() {
+      return () ->
+          new Iterator<>() {
             SootMethod current = initStart;
 
             @Override
@@ -400,20 +405,28 @@ public class FakeMainFactory extends ArtificialMethod {
 
               // Pre-fetch the next element
               current = null;
-              SootClass currentClass = (SootClass) view.getClass(n.getDeclaringClassType()).get();
+              Optional<SootClass> oCurrentClass = view.getClass(n.getDeclaringClassType());
+              if (oCurrentClass.isEmpty()) {
+                return n;
+              }
+              SootClass currentClass = oCurrentClass.get();
               while (true) {
-                Optional<SootClass> osuperClass = currentClass.getSuperclass();
-                if (!osuperClass.isPresent()) {
+                Optional<ClassType> osuperType1 = currentClass.getSuperclass();
+                if (osuperType1.isEmpty()) {
                   break;
                 }
-
-                Optional<SootMethod> om = osuperClass.get().getMethod(sigClinit);
+                ClassType classType = osuperType1.get();
+                Optional<SootClass> osuperClass1 = view.getClass(classType);
+                if (osuperClass1.isEmpty()) {
+                  break;
+                }
+                SootClass superClass = osuperClass1.get();
+                Optional<SootMethod> om = superClass.getMethod(sigClinit);
                 if (om.isPresent()) {
                   current = om.get();
                   break;
                 }
-
-                currentClass = osuperClass.get();
+                currentClass = superClass;
               }
 
               return n;
@@ -424,8 +437,6 @@ public class FakeMainFactory extends ArtificialMethod {
               return current != null;
             }
           };
-        }
-      };
     }
   }
 }

@@ -12,6 +12,7 @@ import qilin.util.Stopwatch;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -213,6 +214,7 @@ public class XUtility {
     // collect virtual callsites.
     Set<VirtualCallSite> vcallsites = new HashSet<>();
     for (Edge edge : callgraph) {
+      SootMethod srcM = edge.src();
       SootMethod tgtM = edge.tgt();
       if (tgtM.isStatic() || !tgtM.isConcrete()) {
         continue;
@@ -220,13 +222,14 @@ public class XUtility {
       final Stmt s = edge.srcStmt();
       AbstractInvokeExpr ie = s.getInvokeExpr();
       if (ie instanceof AbstractInstanceInvokeExpr iie) {
-        LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
+        Local base = iie.getBase();
+        LocalVarNode receiver = pag.findLocalVarNode(srcM, base, base.getType());
         MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
         VirtualCallSite virtualCallSite =
             new VirtualCallSite(
                 receiver,
                 s,
-                new ContextMethod(edge.src(), pta.emptyContext()),
+                new ContextMethod(srcM, pta.emptyContext()),
                 iie,
                 subSig,
                 soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
@@ -238,7 +241,8 @@ public class XUtility {
     // foreach virtualcallsite, we build mapping from their receiver objects.
     for (VirtualCallSite vcallsite : vcallsites) {
       AbstractInstanceInvokeExpr iie = vcallsite.iie();
-      LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
+      Local base = iie.getBase();
+      LocalVarNode receiver = pag.findLocalVarNode(vcallsite.container().method(), base, base.getType());
       for (AllocNode heap : pta.reachingObjects(receiver).toCIPointsToSet().toCollection()) {
         QueueReader<SootMethod> reader = PTAUtils.dispatch(heap.getType(), vcallsite);
         while (reader.hasNext()) {

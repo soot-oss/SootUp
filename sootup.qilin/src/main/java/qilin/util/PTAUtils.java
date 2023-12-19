@@ -46,6 +46,7 @@ import soot.util.dot.DotGraphConstants;
 import soot.util.dot.DotGraphNode;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -66,6 +67,7 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 
 public final class PTAUtils {
@@ -80,8 +82,13 @@ public final class PTAUtils {
 
   public static boolean isApplicationMethod(SootMethod sm) {
     ClassType classType = sm.getDeclaringClassType();
-    SootClass sc = (SootClass) PTAScene.v().getView().getClass(classType).get();
-    return sc.isApplicationClass();
+    View view = PTAScene.v().getView();
+    Optional<SootClass> osc = view.getClass(classType);
+    if (osc.isPresent()) {
+      return osc.get().isApplicationClass();
+    } else {
+      return false;
+    }
   }
 
   public static boolean isStaticInitializer(SootMethod method) {
@@ -335,7 +342,7 @@ public final class PTAUtils {
         SootClass clz = null;
         if (vn instanceof LocalVarNode) {
           SootMethod sm = ((LocalVarNode) vn).getMethod();
-          if (sm != null) {
+          if (sm != null && !sm.getSignature().toString().equals("<qilin.pta.FakeMain: void main()>")) {
             clz = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
           }
         } else if (vn instanceof GlobalVarNode gvn) {
@@ -659,8 +666,9 @@ public final class PTAUtils {
   public static void writeJimple(String parentDir, SootClass clz) {
     PackageName pkgName = clz.getType().getPackageName();
     String clzName = clz.getType().getClassName();
-    File packageDirectory = new File(
-            parentDir + File.separator + pkgName.getName().replace(".", File.separator));
+    File packageDirectory =
+        new File(
+            parentDir + File.separator + pkgName.getPackageName().replace(".", File.separator));
 
     try {
       packageDirectory.mkdirs();
@@ -754,7 +762,7 @@ public final class PTAUtils {
       if (m.isConcrete()) {
         body = m.getBody();
       } else {
-        body = Body.builder().build();
+        body = Body.builder().setMethodSignature(m.getSignature()).build();
       }
       methodToBody.putIfAbsent(m, body);
     }
@@ -783,7 +791,8 @@ public final class PTAUtils {
     LocalVarNode thisRef = (LocalVarNode) srcnf.caseThis();
     LocalVarNode receiver;
     if (ie instanceof AbstractInstanceInvokeExpr iie) {
-      receiver = pag.findLocalVarNode(iie.getBase());
+      Local base = iie.getBase();
+      receiver = pag.findLocalVarNode(srcmpag.getMethod(), base, base.getType());
     } else {
       // static call
       receiver = thisRef;
@@ -805,7 +814,7 @@ public final class PTAUtils {
     if (arg == null) {
       return null;
     } else {
-      return pag.findLocalVarNode(arg);
+      return pag.findLocalVarNode(srcmpag.getMethod(), arg, arg.getType());
     }
   }
 

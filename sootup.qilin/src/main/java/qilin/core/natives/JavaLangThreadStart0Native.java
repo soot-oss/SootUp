@@ -21,8 +21,6 @@ package qilin.core.natives;
 import qilin.core.PTAScene;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootMethod;
 
 public class JavaLangThreadStart0Native extends NativeMethod {
@@ -40,7 +38,7 @@ public class JavaLangThreadStart0Native extends NativeMethod {
   protected void simulateImpl() {
     Local mThis = getThis();
     addInvoke(mThis, "<java.lang.Thread: void run()>");
-    JStaticFieldRef lv = PTAScene.v().getFieldCurrentThread();
+    LValue lv = PTAScene.v().getFieldCurrentThread();
     addAssign(lv, mThis); // store.
   }
 }

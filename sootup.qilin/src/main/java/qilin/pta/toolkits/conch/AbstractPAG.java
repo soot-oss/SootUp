@@ -32,6 +32,7 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
+import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -108,7 +109,7 @@ public abstract class AbstractPAG {
       LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
       addReturnEdge(mret);
     }
-    Node throwNode = prePAG.findLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE));
+    Node throwNode = prePAG.findLocalVarNode(method, new Parm(method, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Throwable"));
     if (throwNode != null) {
       addThrowEdge(throwNode);
     }

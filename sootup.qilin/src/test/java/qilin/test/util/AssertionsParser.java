@@ -54,10 +54,10 @@ public class AssertionsParser {
           AbstractInvokeExpr ie = stmt.getInvokeExpr();
           if (ie instanceof JStaticInvokeExpr) {
             final MethodSignature calleeSig = ie.getMethodSignature();
-            if (calleeSig.equals(mayAliasSig)) {
+            if (calleeSig.toString().equals(mayAliasSig)) {
               aliasAssertionSet.add(
                   new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), true));
-            } else if (calleeSig.equals(notAliasSig)) {
+            } else if (calleeSig.toString().equals(notAliasSig)) {
               aliasAssertionSet.add(
                   new AliasAssertion(pta, sm, stmt, ie.getArg(0), ie.getArg(1), false));
             }

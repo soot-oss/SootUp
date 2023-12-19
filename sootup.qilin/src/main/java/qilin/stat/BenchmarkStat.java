@@ -18,6 +18,7 @@
 
 package qilin.stat;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import qilin.CoreConfig;
@@ -25,6 +26,7 @@ import qilin.core.PTA;
 import qilin.core.PTAScene;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 public class BenchmarkStat implements AbstractStat {
   private final PTA pta;
@@ -43,13 +45,17 @@ public class BenchmarkStat implements AbstractStat {
   }
 
   private void init() {
+    View view = PTAScene.v().getView();
     reachableClasses =
         pta.getNakedReachableMethods().stream()
             .map(
                 m -> {
                   ClassType classType = m.getDeclaringClassType();
-                  return (SootClass) PTAScene.v().getView().getClass(classType).get();
+                  Optional<SootClass> osc = view.getClass(classType);
+                  return osc;
                 })
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(Collectors.toSet());
     reachableAppClasses =
         reachableClasses.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());

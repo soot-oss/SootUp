@@ -26,6 +26,7 @@ import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
+import qilin.util.Triple;
 import soot.MethodOrMethodContext;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -103,7 +104,7 @@ public class SimplifiedEvaluator implements IEvaluator {
               continue;
             }
             boolean fails = false;
-            Collection<AllocNode> pts = pta.reachingObjects((Local) v).toCollection();
+            Collection<AllocNode> pts = pta.reachingObjects(sm, (Local) v).toCollection();
             for (Node n : pts) {
               if (fails) {
                 break;
@@ -131,9 +132,12 @@ public class SimplifiedEvaluator implements IEvaluator {
     int varCntNoNative = 0;
     PAG pag = pta.getPag();
     // locals exclude Exceptions
-    for (Local local : pag.getLocalPointers()) {
+    for (Triple<SootMethod, Local, Type> localTriple : pag.getLocalPointers()) {
       try {
-        LocalVarNode lvn = pag.findLocalVarNode(local);
+        SootMethod method = localTriple.getFirst();
+        Local local = localTriple.getSecond();
+        Type type = localTriple.getThird();
+        LocalVarNode lvn = pag.findLocalVarNode(method, local, type);
         if (local.toString().contains("intermediate/")) {
           continue;
         }

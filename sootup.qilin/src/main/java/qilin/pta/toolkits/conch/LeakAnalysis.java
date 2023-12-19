@@ -133,7 +133,7 @@ public class LeakAnalysis extends AbstractPAG {
             Edge edge = it.next();
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-            Stmt invokeStmt = (Stmt) edge.srcUnit();
+            Stmt invokeStmt = edge.srcUnit();
             if (targetState == DFA.State.F) { // ret.f* = heap
               // add S -new-> r summary edge for symbolic heaps.
               VarNode ret = (VarNode) targetNode;
@@ -154,7 +154,7 @@ public class LeakAnalysis extends AbstractPAG {
             Edge edge = it.next();
             SootMethod srcMethod = edge.src();
             MethodPAG srcmpag = prePAG.getMethodPAG(srcMethod);
-            Stmt invokeStmt = (Stmt) edge.srcUnit();
+            Stmt invokeStmt = edge.srcUnit();
             VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
             // a param reach end state.
             if (targetState == DFA.State.B && sourceNode != targetNode) { // pi.f* = pj, pi != pj.

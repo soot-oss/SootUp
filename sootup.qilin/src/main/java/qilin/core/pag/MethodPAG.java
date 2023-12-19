@@ -91,7 +91,10 @@ public class MethodPAG {
 
   protected void build() {
     // this method is invalid but exists in pmd-deps.jar
-    if (method.getSignature().equals("<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
+    if (method
+        .getSignature()
+        .equals(
+            "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
       return;
     }
     buildException();
@@ -124,7 +127,7 @@ public class MethodPAG {
       return;
     }
     List<Trap> traps = body.getTraps();
-//    List<Stmt> units = body.getStmts();
+    //    List<Stmt> units = body.getStmts();
     Set<Stmt> inTraps = DataFactory.createSet();
     /*
      * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.

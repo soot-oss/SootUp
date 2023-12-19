@@ -25,6 +25,7 @@ import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
+import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import sootup.core.jimple.basic.Immediate;
@@ -54,10 +55,7 @@ import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
-import sootup.core.model.FieldModifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -159,7 +157,7 @@ public class MethodNodeFactory {
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-        new AbstractStmtVisitor<Object>() {
+        new AbstractStmtVisitor<>() {
           @Override
           public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
             Value l = stmt.getLeftOp();
@@ -249,8 +247,8 @@ public class MethodNodeFactory {
     } else {
       sf = osf.get();
     }
-    return pag.makeFieldRefNode(
-        pag.makeLocalVarNode(ifr.getBase(), ifr.getBase().getType(), method), new Field(sf));
+    Local base = ifr.getBase();
+    return pag.makeFieldRefNode(pag.makeLocalVarNode(base, base.getType(), method), new Field(sf));
   }
 
   private VarNode caseNewMultiArrayExpr(JNewMultiArrayExpr nmae) {
@@ -258,7 +256,9 @@ public class MethodNodeFactory {
     int pos = 0;
     AllocNode prevAn =
         pag.makeAllocNode(
-            JavaJimple.getInstance().newNewArrayExpr(type, nmae.getSize(pos)), type, method);
+            JavaJimple.getInstance().newNewArrayExpr(type, (Immediate) nmae.getSize(pos)),
+            type,
+            method);
     VarNode prevVn = pag.makeLocalVarNode(prevAn.getNewExpr(), prevAn.getType(), method);
     mpag.addInternalEdge(prevAn, prevVn); // new
     VarNode ret = prevVn;
@@ -271,7 +271,7 @@ public class MethodNodeFactory {
       ++pos;
       Immediate sizeVal;
       if (pos < nmae.getSizeCount()) {
-        sizeVal = nmae.getSize(pos);
+        sizeVal = (Immediate) nmae.getSize(pos);
       } else {
         sizeVal = IntConstant.getInstance(1);
       }
@@ -362,8 +362,7 @@ public class MethodNodeFactory {
         pag.makeGlobalVarNode(sc, PTAUtils.getClassType("java.lang.String"));
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
     VarNode vn =
-        pag.makeLocalVarNode(
-            new Pair<>(method, sc), PTAUtils.getClassType("java.lang.String"), method);
+        pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }
@@ -376,9 +375,7 @@ public class MethodNodeFactory {
     AllocNode classConstant = pag.makeClassConstantNode(cc);
     VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.getClassType("java.lang.Class"));
     mpag.addInternalEdge(classConstant, classConstantVar);
-    VarNode vn =
-        pag.makeLocalVarNode(
-            new Pair<>(method, cc), PTAUtils.getClassType("java.lang.Class"), method);
+    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.getClassType("java.lang.Class"), method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
   }

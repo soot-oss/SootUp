@@ -9,6 +9,7 @@ import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -145,7 +146,8 @@ public class IntraFlowAnalysis {
       if (!(ie instanceof AbstractInstanceInvokeExpr iie)) {
         continue;
       }
-      LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
+      Local base = iie.getBase();
+      LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
       if (!x.contains(receiver)) {
         continue;
       }

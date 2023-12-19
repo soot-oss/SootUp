@@ -29,9 +29,10 @@ import qilin.core.natives.NativeMethodDriver;
 import qilin.core.reflection.NopReflectionModel;
 import qilin.core.reflection.ReflectionModel;
 import qilin.core.reflection.TamiflexModel;
-import qilin.parm.heapabst.HeapAbstractor;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
+import qilin.util.Pair;
+import qilin.util.Triple;
 import soot.Context;
 import soot.MethodOrMethodContext;
 import soot.util.ArrayNumberer;
@@ -48,7 +49,6 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -86,7 +86,7 @@ public class PAG {
   protected final Map<Object, ValNode> valToValNode;
   protected final Map<SootMethod, MethodPAG> methodToPag;
   protected final Set<SootField> globals;
-  protected final Set<Local> locals;
+  protected final Set<Triple<SootMethod, Local, Type>> locals;
   // ==========================outer objects==============================
   protected ChunkedQueue<Node> edgeQueue;
 
@@ -289,13 +289,18 @@ public class PAG {
     return globals;
   }
 
-  public Set<Local> getLocalPointers() {
+  public Set<Triple<SootMethod, Local, Type>> getLocalPointers() {
     return locals;
   }
 
   /** Finds the ValNode for the variable value, or returns null. */
   public ValNode findValNode(Object value) {
-    return valToValNode.get(value);
+    if (value instanceof Local local) {
+      Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
+      return valToValNode.get(localTypePair);
+    } else {
+      return valToValNode.get(value);
+    }
   }
 
   public AllocNode findAllocNode(Object obj) {
@@ -339,6 +344,7 @@ public class PAG {
 
   /** Finds or creates the GlobalVarNode for the variable value, of type type. */
   public GlobalVarNode makeGlobalVarNode(Object value, Type type) {
+    // value could only be a StringConstant, ClassConstant, or SootField.
     GlobalVarNode ret = (GlobalVarNode) valToValNode.get(value);
     if (ret == null) {
       ret =
@@ -356,19 +362,17 @@ public class PAG {
 
   /** Finds or creates the LocalVarNode for the variable value, of type type. */
   public LocalVarNode makeLocalVarNode(Object value, Type type, SootMethod method) {
-    LocalVarNode ret = (LocalVarNode) valToValNode.get(value);
+    Triple<SootMethod, Object, Type> localTriple = new Triple<>(method, value, type);
+    LocalVarNode ret = (LocalVarNode) valToValNode.get(localTriple);
     if (ret == null) {
-      valToValNode.put(value, ret = new LocalVarNode(value, type, method));
+      valToValNode.put(localTriple, ret = new LocalVarNode(value, type, method));
       valNodeNumberer.add(ret);
       if (value instanceof Local local) {
-        //                if (local.getNumber() == 0) {
-        //                    PTAScene.v().getLocalNumberer().add(local);
-        //                }
-        locals.add(local);
+        locals.add(new Triple<>(method, local, type));
       }
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
-          "Value " + value + " of type " + type + " previously had type " + ret.getType());
+              "Value " + value + " of type " + type + " previously had type " + ret.getType());
     }
     return ret;
   }
@@ -435,10 +439,6 @@ public class PAG {
     return addedContexts;
   }
 
-  public boolean containsMethodPAG(SootMethod m) {
-    return methodToPag.containsKey(m);
-  }
-
   public Collection<ContextField> getContextFields() {
     return contextFieldMap.values().stream()
         .flatMap(m -> m.values().stream())
@@ -473,8 +473,9 @@ public class PAG {
     return ret;
   }
 
-  public Collection<VarNode> getVarNodes(Local local) {
-    Map<?, ContextVarNode> subMap = contextVarNodeMap.get(findLocalVarNode(local));
+  public Collection<VarNode> getVarNodes(SootMethod m, Local local) {
+    LocalVarNode lvn = findLocalVarNode(m, local, local.getType());
+    Map<?, ContextVarNode> subMap = contextVarNodeMap.get(lvn);
     if (subMap == null) {
       return Collections.emptySet();
     }
@@ -489,8 +490,9 @@ public class PAG {
   }
 
   /** Finds the LocalVarNode for the variable value, or returns null. */
-  public LocalVarNode findLocalVarNode(Object value) {
-    ValNode ret = findValNode(value);
+  public LocalVarNode findLocalVarNode(SootMethod m, Object value, Type type) {
+    Triple<SootMethod, Object, Type> key = new Triple<>(m, value, type);
+    ValNode ret = findValNode(key);
     if (ret instanceof LocalVarNode) {
       return (LocalVarNode) ret;
     }
@@ -498,8 +500,9 @@ public class PAG {
   }
 
   /** Finds the ContextVarNode for base variable value and context context, or returns null. */
-  public ContextVarNode findContextVarNode(Local baseValue, Context context) {
-    Map<Context, ContextVarNode> contextMap = contextVarNodeMap.get(findLocalVarNode(baseValue));
+  public ContextVarNode findContextVarNode(SootMethod m, Local baseValue, Context context) {
+    LocalVarNode lvn = findLocalVarNode(m, baseValue, baseValue.getType());
+    Map<Context, ContextVarNode> contextMap = contextVarNodeMap.get(lvn);
     return contextMap == null ? null : contextMap.get(context);
   }
 
@@ -539,7 +542,7 @@ public class PAG {
   }
 
   private void handleArrayCopy(SootMethod method) {
-    Map<FallsThroughStmt, Collection<FallsThroughStmt>> newUnits = DataFactory.createMap();
+    Map<Stmt, Collection<JAssignStmt>> newUnits = DataFactory.createMap();
     Body body = PTAUtils.getMethodBody(method);
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     int localCount = body.getLocalCount();
@@ -555,13 +558,12 @@ public class PAG {
               continue;
             }
             Type objType = PTAUtils.getClassType("java.lang.Object");
-            final FallsThroughStmt ftInvokeStmt = (FallsThroughStmt) s;
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
               builder.addLocal(localSrc);
               newUnits
-                  .computeIfAbsent(ftInvokeStmt, k -> new HashSet<>())
+                  .computeIfAbsent(s, k -> new HashSet<>())
                   .add(
                       new JAssignStmt(
                           localSrc, srcArr, StmtPositionInfo.createNoStmtPositionInfo()));
@@ -576,45 +578,38 @@ public class PAG {
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
               builder.addLocal(localDst);
               newUnits
-                  .computeIfAbsent(ftInvokeStmt, k -> new HashSet<>())
+                  .computeIfAbsent(s, k -> new HashSet<>())
                   .add(
                       new JAssignStmt(
                           localDst, dstArr, StmtPositionInfo.createNoStmtPositionInfo()));
               dstArr = localDst;
             }
-            JArrayRef src =
+            Value src =
                 JavaJimple.getInstance().newArrayRef((Local) srcArr, IntConstant.getInstance(0));
-            JArrayRef dst =
+            LValue dst =
                 JavaJimple.getInstance().newArrayRef((Local) dstArr, IntConstant.getInstance(0));
             Local local =
                 Jimple.newLocal(
                     "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
             builder.addLocal(local);
             newUnits
-                .computeIfAbsent(ftInvokeStmt, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> DataFactory.createSet())
                 .add(new JAssignStmt(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
             newUnits
-                .computeIfAbsent(ftInvokeStmt, k -> DataFactory.createSet())
+                .computeIfAbsent(s, k -> DataFactory.createSet())
                 .add(new JAssignStmt(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
           }
         }
       }
     }
+
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (FallsThroughStmt unit : newUnits.keySet()) {
-      for (Stmt succ : newUnits.get(unit)) {
-        stmtGraph.putEdge(unit, succ);
+    for (Stmt unit : newUnits.keySet()) {
+      for (JAssignStmt succ : newUnits.get(unit)) {
+        stmtGraph.insertBefore(unit, succ);
       }
     }
     PTAUtils.updateMethodBody(method, builder.build());
-  }
-
-  public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-    return makeLocalVarNode(invoke, PTAUtils.getClassType("java.lang.Throwable"), method);
-  }
-
-  public HeapAbstractor heapAbstractor() {
-    return pta.heapAbstractor();
   }
 
   public void resetPointsToSet() {

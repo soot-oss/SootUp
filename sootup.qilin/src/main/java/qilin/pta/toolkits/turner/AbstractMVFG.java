@@ -23,11 +23,13 @@ import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
+import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.queue.UniqueQueue;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -166,12 +168,13 @@ public abstract class AbstractMVFG {
       if (s instanceof JAssignStmt) {
         Value dest = ((JAssignStmt) s).getLeftOp();
         if (dest.getType() instanceof ReferenceType) {
-          retDest = pag.findLocalVarNode(dest);
+          retDest = pag.findLocalVarNode(method, dest, dest.getType());
         }
       }
       LocalVarNode receiver;
       if (ie instanceof AbstractInstanceInvokeExpr iie) {
-        receiver = pag.findLocalVarNode(iie.getBase());
+        Local base = iie.getBase();
+        receiver = pag.findLocalVarNode(method, base, base.getType());
       } else {
         // static call
         receiver = thisRef;
@@ -222,7 +225,7 @@ public abstract class AbstractMVFG {
       LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
       addStoreEdge(mret, thisRef);
     }
-    LocalVarNode mThrow = pag.findLocalVarNode(new Parm(method, PointsToAnalysis.THROW_NODE));
+    LocalVarNode mThrow = pag.findLocalVarNode(method, new Parm(method, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Exception"));
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }

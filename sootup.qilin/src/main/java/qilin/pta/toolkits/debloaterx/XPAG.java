@@ -8,6 +8,7 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import soot.util.queue.QueueReader;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -86,11 +87,12 @@ public class XPAG {
       if (s instanceof JAssignStmt) {
         Value dest = ((JAssignStmt) s).getLeftOp();
         if (dest.getType() instanceof ReferenceType) {
-          retDest = pag.findLocalVarNode(dest);
+          retDest = pag.findLocalVarNode(method, dest, dest.getType());
         }
       }
       if (ie instanceof AbstractInstanceInvokeExpr iie) {
-        LocalVarNode receiver = pag.findLocalVarNode(iie.getBase());
+        Local base = iie.getBase();
+        LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
         if (iie instanceof JSpecialInvokeExpr sie) {
           SootMethod target =
               (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
@@ -156,12 +158,13 @@ public class XPAG {
     if (invokeStmt instanceof JAssignStmt) {
       Value dest = ((JAssignStmt) invokeStmt).getLeftOp();
       if (dest.getType() instanceof ReferenceType) {
-        retDest = pag.findLocalVarNode(dest);
+        retDest = pag.findLocalVarNode(method, dest, dest.getType());
       }
     }
     LocalVarNode receiver = null;
     if (ie instanceof AbstractInstanceInvokeExpr iie) {
-      receiver = pag.findLocalVarNode(iie.getBase());
+      Local base = iie.getBase();
+      receiver = pag.findLocalVarNode(method, base, base.getType());
     }
     MethodPAG mpag = pag.getMethodPAG(method);
     MethodNodeFactory nodeFactory = mpag.nodeFactory();

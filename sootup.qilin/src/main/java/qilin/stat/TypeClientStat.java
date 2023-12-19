@@ -76,7 +76,11 @@ public class TypeClientStat implements AbstractStat {
 
     for (SootMethod sm : reachableMethods) {
       View view = PTAScene.v().getView();
-      SootClass sc = (SootClass) view.getClass(sm.getDeclaringClassType()).get();
+      Optional<SootClass> osc = view.getClass(sm.getDeclaringClassType());
+      if (osc.isEmpty()) {
+        continue;
+      }
+      SootClass sc = osc.get();
       boolean app = sc.isApplicationClass();
 
       // All the statements in the method
@@ -123,7 +127,7 @@ public class TypeClientStat implements AbstractStat {
               appCasts++;
             }
             boolean fails = false;
-            Collection<AllocNode> pts = pta.reachingObjects((Local) v).toCollection();
+            Collection<AllocNode> pts = pta.reachingObjects(sm, (Local) v).toCollection();
             for (AllocNode n : pts) {
               if (fails) {
                 break;

@@ -126,7 +126,7 @@ public class TamiflexModel extends ReflectionModel {
     if (!(s instanceof JAssignStmt)) {
       return Collections.emptySet();
     }
-    Local local = (Local) ((JAssignStmt) s).getLeftOp();
+    LValue lvalue = ((JAssignStmt) s).getLeftOp();
     Collection<Stmt> ret = DataFactory.createSet();
     Map<Stmt, Set<String>> constructorNewInstances =
         reflectionMap.getOrDefault(ReflectionKind.ConstructorNewInstance, Collections.emptyMap());
@@ -142,7 +142,7 @@ public class TamiflexModel extends ReflectionModel {
       for (String constructorSignature : constructorSignatures) {
         SootMethod constructor = PTAScene.v().getMethod(constructorSignature);
         JNewExpr newExpr = new JNewExpr(constructor.getDeclaringClassType());
-        ret.add(new JAssignStmt(local, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));
+        ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));
         int argCount = constructor.getParameterCount();
         List<Immediate> mArgs = new ArrayList<>(argCount);
         for (int i = 0; i < argCount; i++) {
@@ -150,7 +150,7 @@ public class TamiflexModel extends ReflectionModel {
         }
         ret.add(
             new JInvokeStmt(
-                new JSpecialInvokeExpr(local, constructor.getSignature(), mArgs),
+                new JSpecialInvokeExpr((Local) lvalue, constructor.getSignature(), mArgs),
                 StmtPositionInfo.createNoStmtPositionInfo()));
       }
     }
@@ -226,8 +226,7 @@ public class TamiflexModel extends ReflectionModel {
           assert !(base instanceof NullConstant);
           fieldRef = Jimple.newInstanceFieldRef((Local) base, field.getSignature());
         }
-        Stmt stmt =
-            new JAssignStmt(fieldRef, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+        Stmt stmt = new JAssignStmt(fieldRef, rValue, StmtPositionInfo.createNoStmtPositionInfo());
         ret.add(stmt);
       }
     }
@@ -277,8 +276,7 @@ public class TamiflexModel extends ReflectionModel {
     for (String arrayType : arrayTypes) {
       ArrayType at = (ArrayType) JavaIdentifierFactory.getInstance().getType(arrayType);
       JNewArrayExpr newExpr =
-          JavaJimple.getInstance()
-              .newNewArrayExpr(at.getElementType(), IntConstant.getInstance(1));
+          JavaJimple.getInstance().newNewArrayExpr(at.getElementType(), IntConstant.getInstance(1));
       if (s instanceof JAssignStmt) {
         LValue lvalue = ((JAssignStmt) s).getLeftOp();
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));

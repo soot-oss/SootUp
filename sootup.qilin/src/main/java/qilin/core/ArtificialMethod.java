@@ -28,7 +28,6 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.ref.*;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -88,7 +87,7 @@ public abstract class ArtificialMethod {
   }
 
   private void addIdentity(Local lValue, IdentityRef rValue) {
-    FallsThroughStmt identityStmt =
+    Stmt identityStmt =
         Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(identityStmt);
   }
@@ -100,7 +99,7 @@ public abstract class ArtificialMethod {
     return local;
   }
 
-  protected Immediate getNewArray(ClassType type) {
+  protected Local getNewArray(ClassType type) {
     Value newExpr = JavaJimple.getInstance().newNewArrayExpr(type, IntConstant.getInstance(1));
     Local local = getNextLocal(new ArrayType(type, 1));
     addAssign(local, newExpr);
@@ -143,7 +142,7 @@ public abstract class ArtificialMethod {
         clazz.isInterface()
             ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
             : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
-    FallsThroughStmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 
@@ -170,7 +169,7 @@ public abstract class ArtificialMethod {
   protected void addInvoke(String sig, Immediate... args) {
     MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
-    FallsThroughStmt stmt =
+    Stmt stmt =
         Jimple.newInvokeStmt(
             Jimple.newStaticInvokeExpr(methodSig, argsL),
             StmtPositionInfo.createNoStmtPositionInfo());
@@ -185,13 +184,13 @@ public abstract class ArtificialMethod {
   protected Value getInvoke(String sig, Immediate... args) {
     MethodSignature methodSig = JavaIdentifierFactory.getInstance().parseMethodSignature(sig);
     List<Immediate> argsL = Arrays.asList(args);
-    Local rx = getNextLocal(methodSig.getType());
+    LValue rx = getNextLocal(methodSig.getType());
     addAssign(rx, Jimple.newStaticInvokeExpr(methodSig, argsL));
     return rx;
   }
 
   protected void addAssign(LValue lValue, Value rValue) {
-    FallsThroughStmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 }

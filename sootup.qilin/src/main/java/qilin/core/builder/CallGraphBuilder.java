@@ -18,7 +18,6 @@
 
 package qilin.core.builder;
 
-import java.io.PrintWriter;
 import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
@@ -45,12 +44,10 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
-import sootup.core.util.printer.JimplePrinter;
 
 public class CallGraphBuilder {
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
@@ -147,18 +144,20 @@ public class CallGraphBuilder {
   public VarNode getReceiverVarNode(Local receiver, MethodOrMethodContext m) {
     if (receiver.getType() == UnknownType.getInstance()) {
       System.out.println("why unknown??" + m.method() + ";;" + receiver);
-      Body body = PTAUtils.getMethodBody(m.method());
-      try {
-        //        OutputStream streamOut = new FileOutputStream(m.method().getName() + ".jimple");
-        // PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
-        PrintWriter writerOut = new PrintWriter(System.out);
-        new JimplePrinter().printTo(body, writerOut);
-        writerOut.flush();
-        writerOut.close();
-        //        streamOut.close();
-      } catch (Exception e) {
-        System.out.println("Error writing jimple to file ");
-      }
+      //      Body body = PTAUtils.getMethodBody(m.method());
+      //      try {
+      //        //        OutputStream streamOut = new FileOutputStream(m.method().getName() +
+      // ".jimple");
+      //        // PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
+      //        PrintWriter writerOut = new PrintWriter(System.out);
+      //        new JimplePrinter().printTo(body, writerOut);
+      //        writerOut.flush();
+      //        writerOut.close();
+      //        //        streamOut.close();
+      //      } catch (Exception e) {
+      //        System.out.println("Error writing jimple to file ");
+      //      }
+      throw new RuntimeException();
     }
     LocalVarNode base = pag.makeLocalVarNode(receiver, receiver.getType(), m.method());
     return (VarNode) pta.parameterize(base, m.context());
@@ -247,9 +246,15 @@ public class CallGraphBuilder {
    * creates the nodes for the call site, without actually connecting them to any target method.
    */
   private void processCallAssign(Edge e) {
+    if (Objects.requireNonNull(e.tgt())
+        .getSignature()
+        .toString()
+        .equals("<java.lang.Long: java.lang.Long decode(java.lang.String)>")) {
+      System.out.println(e.src() + "==>" + e.tgt());
+    }
     MethodPAG srcmpag = pag.getMethodPAG(e.src());
     MethodPAG tgtmpag = pag.getMethodPAG(e.tgt());
-    Stmt s = (Stmt) e.srcUnit();
+    Stmt s = e.srcUnit();
     Context srcContext = e.srcCtxt();
     Context tgtContext = e.tgtCtxt();
     MethodNodeFactory srcnf = srcmpag.nodeFactory();

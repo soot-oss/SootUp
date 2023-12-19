@@ -166,8 +166,8 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public PointsToSet reachingObjects(Local l) {
-    return basePTA.reachingObjects(l);
+  public PointsToSet reachingObjects(SootMethod m, Local l) {
+    return basePTA.reachingObjects(m, l);
   }
 
   @Override
@@ -176,8 +176,8 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public PointsToSet reachingObjects(Context c, Local l) {
-    return basePTA.reachingObjects(c, l);
+  public PointsToSet reachingObjects(Context c, SootMethod m, Local l) {
+    return basePTA.reachingObjects(c, m, l);
   }
 
   @Override
@@ -191,13 +191,13 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public PointsToSet reachingObjects(Local l, SootField f) {
-    return basePTA.reachingObjects(l, f);
+  public PointsToSet reachingObjects(SootMethod m, Local l, SootField f) {
+    return basePTA.reachingObjects(m, l, f);
   }
 
   @Override
-  public PointsToSet reachingObjects(Context c, Local l, SootField f) {
-    return basePTA.reachingObjects(c, l, f);
+  public PointsToSet reachingObjects(Context c, SootMethod m, Local l, SootField f) {
+    return basePTA.reachingObjects(c, m, l, f);
   }
 
   @Override
