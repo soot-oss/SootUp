@@ -1,9 +1,12 @@
 package sootup.java.bytecode.minimaltestsuite.java6.ValidatorTests;
 
-import static org.junit.Assert.*;
 
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -14,14 +17,16 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.validation.NewValidator;
 import sootup.core.validation.ValidationException;
-import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleProject;
 import sootup.jimple.parser.JimpleView;
 
-public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+public class NewValidatorTest {
 
   NewValidator validator;
   Body body;
@@ -41,12 +46,12 @@ public class NewValidatorTest extends MinimalBytecodeTestSuiteBase {
 
           @Override
           public String getFullyQualifiedName() {
-            return "jimple.NewValidator";
+            return "jimple.NewValidator_pass";
           }
 
           @Override
           public String getClassName() {
-            return "NewValidator";
+            return "NewValidator_pass";
           }
 
           @Override
