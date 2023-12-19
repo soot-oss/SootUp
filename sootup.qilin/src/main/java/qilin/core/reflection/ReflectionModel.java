@@ -29,6 +29,7 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -105,7 +106,10 @@ public abstract class ReflectionModel {
       for (Stmt succ : newUnits.get(unit)) {
         if (succ instanceof JAssignStmt assign) {
           stmtGraph.insertBefore(unit, assign);
+        } else if (succ instanceof JInvokeStmt invoke) {
+          stmtGraph.insertBefore(unit, invoke);
         } else {
+          System.out.println("unit:" + unit);
           System.out.println("succ:" + succ.getClass());
           stmtGraph.putEdge((FallsThroughStmt) unit, succ);
         }

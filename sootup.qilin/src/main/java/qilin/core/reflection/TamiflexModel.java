@@ -78,7 +78,7 @@ public class TamiflexModel extends ReflectionModel {
       Collection<String> fornames = classForNames.get(s);
       for (String clazz : fornames) {
         // !TODO potential bug
-        ClassConstant cc = JavaJimple.getInstance().newClassConstant(clazz);
+        ClassConstant cc = JavaJimple.getInstance().newClassConstant(dot2slashStyle(clazz));
         if (s instanceof JAssignStmt) {
           LValue lvalue = ((JAssignStmt) s).getLeftOp();
           ret.add(new JAssignStmt(lvalue, cc, StmtPositionInfo.createNoStmtPositionInfo()));
@@ -86,6 +86,11 @@ public class TamiflexModel extends ReflectionModel {
       }
     }
     return ret;
+  }
+
+  public static String dot2slashStyle(String clazz) {
+    String x = clazz.replace('.', '/');
+    return "L" + x + ";";
   }
 
   @Override

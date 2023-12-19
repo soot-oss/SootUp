@@ -21,6 +21,8 @@ package qilin.core.natives;
 import qilin.core.PTAScene;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 
 public class JavaLangThreadStart0Native extends NativeMethod {
@@ -40,5 +42,7 @@ public class JavaLangThreadStart0Native extends NativeMethod {
     addInvoke(mThis, "<java.lang.Thread: void run()>");
     LValue lv = PTAScene.v().getFieldCurrentThread();
     addAssign(lv, mThis); // store.
+    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    stmtList.add(returnStmt);
   }
 }

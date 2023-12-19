@@ -20,8 +20,10 @@ package qilin.core.natives;
 
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -42,5 +44,7 @@ public class JavaLangReflectArraySet extends NativeMethod {
     Value rightValue = getPara(2);
     JArrayRef arrayRef = getArrayRef(arrayBase);
     addAssign(arrayRef, rightValue); // a[] = b;
+    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    stmtList.add(returnStmt);
   }
 }

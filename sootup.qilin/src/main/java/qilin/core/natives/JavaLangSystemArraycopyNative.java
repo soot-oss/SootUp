@@ -20,8 +20,10 @@ package qilin.core.natives;
 
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -49,5 +51,7 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
     Local temp = getNextLocal(objType);
     addAssign(temp, src);
     addAssign(dst, temp);
+    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    stmtList.add(returnStmt);
   }
 }

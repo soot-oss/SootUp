@@ -24,6 +24,8 @@ import qilin.core.PTAScene;
 import qilin.util.PTAUtils;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
@@ -44,8 +46,9 @@ public abstract class NativeMethod extends ArtificialMethod {
   public void simulate() {
     simulateImpl();
     MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
-    stmtGraph.addBlock(stmtList);
-    stmtGraph.setStartingStmt(stmtList.get(0));
+     stmtGraph.addBlock(stmtList);
+    Stmt curr = stmtList.get(0);
+    stmtGraph.setStartingStmt(curr);
     PTAUtils.updateMethodBody(method, bodyBuilder.build());
   }
 }

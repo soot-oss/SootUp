@@ -19,7 +19,9 @@
 package qilin.core.natives;
 
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 
 public class JavaLangSystemSetErr0Native extends NativeMethod {
@@ -37,5 +39,7 @@ public class JavaLangSystemSetErr0Native extends NativeMethod {
     Local r1 = getPara(0);
     JStaticFieldRef systemErr = getStaticFieldRef("java.lang.System", "err");
     addAssign(systemErr, r1);
+    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    stmtList.add(returnStmt);
   }
 }

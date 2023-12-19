@@ -170,11 +170,13 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   public JStaticFieldRef getFieldCurrentThread() {
-    return getStaticFieldRef("FakeMain", "currentThread");
+    SootField field = (SootField) fakeClass.getField("currentThread").get();
+    return Jimple.newStaticFieldRef(field.getSignature());
   }
 
   public Value getFieldGlobalThrow() {
-    return getStaticFieldRef("FakeMain", "globalThrow");
+    SootField field = (SootField) fakeClass.getField("globalThrow").get();
+    return Jimple.newStaticFieldRef(field.getSignature());
   }
 
   private void makeFakeMain(SootField currentThread) {
@@ -363,7 +365,7 @@ public class FakeMainFactory extends ArtificialMethod {
 
     /** Returns a list of all static initializers. */
     public List<SootMethod> clinits() {
-      List<SootMethod> ret = new ArrayList<SootMethod>();
+      List<SootMethod> ret = new ArrayList<>();
       Collection<SootClass> classes = view.getClasses();
       for (SootClass cl : classes) {
         addMethod(ret, cl, sigClinit);
