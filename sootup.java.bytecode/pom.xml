@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.core</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.core</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
