@@ -1,13 +1,5 @@
 [
   {
-    "version": "fix_ghpages_permission_preview",
-    "title": "PR Preview fix_ghpages_permission",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "fix_ci_preview",
     "title": "PR Preview fix_ci",
     "aliases": [],
