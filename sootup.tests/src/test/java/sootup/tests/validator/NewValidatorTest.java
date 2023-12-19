@@ -53,29 +53,6 @@ public class NewValidatorTest {
           }
         };
 
-    final ClassType classTypeNewValidator_fail =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return "jimple.NewValidator_fail";
-          }
-
-          @Override
-          public String getClassName() {
-            return "NewValidator_fail";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return new PackageName("jimple");
-          }
-        };
-
     String classPath = "src/test/resources/validator/jimple";
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
@@ -83,8 +60,6 @@ public class NewValidatorTest {
     view = new JimpleView(jimpleInputLocation);
     final Optional<SootClass<?>> classSource1 = view.getClass(classTypeNewValidator);
     assertFalse(classSource1.isPresent());
-    final Optional<SootClass<?>> classSource2 = view.getClass(classTypeNewValidator_fail);
-    assertFalse(classSource2.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
 
@@ -107,7 +82,7 @@ public class NewValidatorTest {
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("newValidator"))
+                .filter(m -> m.getName().equals("newValidator_pass"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),
@@ -123,7 +98,7 @@ public class NewValidatorTest {
     validationExceptions_fail =
         validator.validate(
             classes.stream()
-                .filter(c -> c.getType().getClassName().equals("NewValidator_fail"))
+                .filter(c -> c.getType().getClassName().equals("NewValidator"))
                 .findFirst()
                 .get()
                 .getMethods()
