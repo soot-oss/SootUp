@@ -65,21 +65,15 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {
-
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
-            .build();
-    View<JavaSootClass> view = javaProject.createView();
+    View<JavaSootClass> view = new JavaView(new DefaultRTJarAnalysisInputLocation());
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();

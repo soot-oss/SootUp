@@ -13,7 +13,8 @@ SootUp has a modular architecture, which enables its clients to include only the
 - [core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.core) contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.
 - [java.core module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core) contains parts that are essential for analyzing Java code.
 - [java.bytecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode) contains the functionality that is necessary for taking as input java bytecode.
-- [java.sourcecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode) contains the functionality that is necessary for taking as input java source code.
+- [java.sourcecode module](https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode) contains the functionality that is necessary for taking as input java source code. 
+**Beware: The sourcecodefrontend is currently unable to handle inputs with exceptions (try/catch/finally)!** 
 - [callgraph module](https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph) contains implementations of common call graph construction algorithms such as **CHA**, **RTA**. A reimplementation of **Spark** pointer analysis framework is in progress.
 - [jimple.parser module](https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser) contains the functionalty that is necessary for taking as input .jimple files.
 - [analysis module](https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis) enables performing interprocedural dataflow analyses.
@@ -21,7 +22,7 @@ SootUp has a modular architecture, which enables its clients to include only the
 ### No More Singletons
 
 Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
-SootUp does not make use of singletons such the `Scene` class in the old Soot any more. It enables analyzing multple programs simultaneously.
+SootUp does not make use of singletons such the `Scene` class in the old Soot any more. It enables analyzing multiple programs simultaneously.
 
 ### New Source Code Frontend
 
