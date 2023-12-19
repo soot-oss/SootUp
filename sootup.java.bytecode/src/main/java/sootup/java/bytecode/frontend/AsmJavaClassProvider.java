@@ -119,7 +119,7 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
               signature,
               exceptions,
               view,
-              view.getBodyInterceptors(analysisInputLocation));
+              analysisInputLocation.getBodyInterceptors());
       methods.add(mn);
       return mn;
     }

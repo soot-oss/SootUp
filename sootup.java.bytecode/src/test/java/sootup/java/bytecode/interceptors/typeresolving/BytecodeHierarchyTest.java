@@ -16,8 +16,6 @@ import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
@@ -75,9 +73,8 @@ public class BytecodeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(analysisInputLocation).build();
-    view = p.createView();
+
+    view = new JavaView(analysisInputLocation);
     ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
 
     // create types

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import sootup.analysis.interprocedural.icfg.CalleeMethodSignature;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
@@ -43,8 +45,7 @@ import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -135,13 +136,11 @@ public class CGEdgeUtilTest {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    JavaView view =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
-            .addInputLocation(
-                new JavaSourcePathAnalysisInputLocation("src/test/resources/callgraph/"))
-            .build()
-            .createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaSourcePathAnalysisInputLocation("src/test/resources/callgraph/"));
+
+    JavaView view = new JavaView(inputLocations);
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("example1.Example");

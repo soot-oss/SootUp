@@ -15,7 +15,6 @@ import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleProject;
 import sootup.jimple.parser.JimpleView;
 import sootup.jimple.parser.categories.Java8Test;
 
@@ -29,7 +28,7 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    view = new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir))).createView();
+    view = new JimpleView(new JimpleAnalysisInputLocation(Paths.get(baseDir)));
   }
 
   /**
