@@ -1,28 +1,28 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.validation.NewValidator;
 import sootup.core.validation.ValidationException;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.views.JavaView;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleProject;
 import sootup.jimple.parser.JimpleView;
 
 public class NewValidatorTest {
 
   NewValidator validator;
-  JavaView view;
+  JimpleView view;
   Collection<SootClass<?>> classes;
 
   @Before
@@ -76,22 +76,15 @@ public class NewValidatorTest {
           }
         };
 
-    final String resourceDir = "src/test/resources/validator";
-
-    // files direct in dir
-    final JimpleAnalysisInputLocation inputLocation1 =
-        new JimpleAnalysisInputLocation(Paths.get(resourceDir + "/jimple/"));
-    JimpleView jv1 = new JimpleProject(inputLocation1).createView();
-    final Optional<SootClass<?>> classSource1 = jv1.getClass(classTypeNewValidator);
-    assertFalse(classSource1.isPresent());
-    final Optional<SootClass<?>> classSource2 = jv1.getClass(classTypeNewValidator_fail);
-    assertFalse(classSource2.isPresent());
-
     String classPath = "src/test/resources/validator/jimple";
-    AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
+    JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    JimpleView view = new JimpleProject(jimpleInputLocation).createView();
+    view = new JimpleView(jimpleInputLocation);
+    final Optional<SootClass<?>> classSource1 = view.getClass(classTypeNewValidator);
+    assertFalse(classSource1.isPresent());
+    final Optional<SootClass<?>> classSource2 = view.getClass(classTypeNewValidator_fail);
+    assertFalse(classSource2.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
 
