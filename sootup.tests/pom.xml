@@ -36,6 +36,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
+			<artifactId>sootup.jimple.parser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.callgraph</artifactId>
 			<version>${project.version}</version>
 		</dependency>

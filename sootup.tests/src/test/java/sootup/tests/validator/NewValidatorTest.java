@@ -1,4 +1,4 @@
-package sootup.java.bytecode.minimaltestsuite.java6.ValidatorTests;
+package sootup.tests.validator;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,6 @@ import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
@@ -23,7 +22,6 @@ import sootup.jimple.parser.JimpleView;
 public class NewValidatorTest {
 
   NewValidator validator;
-  Body body;
   JavaView view;
   Collection<SootClass<?>> classes;
 
@@ -78,7 +76,7 @@ public class NewValidatorTest {
           }
         };
 
-    final String resourceDir = "src/test/java/resources/";
+    final String resourceDir = "src/test/resources/validator";
 
     // files direct in dir
     final JimpleAnalysisInputLocation inputLocation1 =
@@ -89,7 +87,7 @@ public class NewValidatorTest {
     final Optional<SootClass<?>> classSource2 = jv1.getClass(classTypeNewValidator_fail);
     assertFalse(classSource2.isPresent());
 
-    String classPath = "src/test/java/resources/jimple";
+    String classPath = "src/test/resources/validator/jimple";
     AnalysisInputLocation<JavaSootClass> jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
