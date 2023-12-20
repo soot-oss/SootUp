@@ -115,8 +115,10 @@ public class JimplePrinter {
   }
 
   public void printTo(SootClass<?> cl, PrintWriter out) {
+    printTo(cl, out, determinePrinter());
+  }
 
-    LabeledStmtPrinter printer = determinePrinter();
+  public void printTo(SootClass<?> cl, PrintWriter out, LabeledStmtPrinter printer) {
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -207,7 +209,7 @@ public class JimplePrinter {
     }
 
     // Print methods
-    printMethods(cl, printer, out);
+    printMethods(cl, printer);
     printer.literal("}");
 
     printer.newline();
@@ -228,7 +230,7 @@ public class JimplePrinter {
     out.println(printer.toString());
   }
 
-  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer, PrintWriter out) {
+  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -261,19 +263,25 @@ public class JimplePrinter {
     }
   }
 
+  public void printTo(Body body, PrintWriter out) {
+    printTo(body, out, determinePrinter());
+  }
+
   /**
    * Prints out the method corresponding to body Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode body body.
    */
-  public void printTo(Body body, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
+  public void printTo(Body body, PrintWriter out, LabeledStmtPrinter printer) {
     printer.enableImports(options.contains(Option.UseImports));
     printBody(body, printer);
     out.print(printer);
   }
 
   public void printTo(StmtGraph<?> graph, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
+    printTo(graph, out, determinePrinter());
+  }
+
+  public void printTo(StmtGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
     printStmts(graph, printer);
     out.print(printer);
   }

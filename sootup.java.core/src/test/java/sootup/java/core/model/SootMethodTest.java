@@ -9,7 +9,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Project;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -25,11 +24,10 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 /**
  * @author Linghui Luo
@@ -40,11 +38,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project<?, ?> project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new EagerInputLocation<>())
-            .build();
-    View<?> view = project.createView();
+    View<?> view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
@@ -82,7 +76,7 @@ public class SootMethodTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation<>(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

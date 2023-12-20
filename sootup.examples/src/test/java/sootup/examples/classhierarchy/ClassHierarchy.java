@@ -1,5 +1,6 @@
 package sootup.examples.classhierarchy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -11,9 +12,7 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -34,21 +33,12 @@ public class ClassHierarchy {
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary");
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation()); // add rt.jar
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
-
-    // Create a new JavaProject and view based on the input location
-    JavaProject project =
-        JavaProject.builder(language)
-            .addInputLocation(inputLocation)
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation()) // add rt.jar
-            .build();
-
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocations);
 
     // Create type hierarchy
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);

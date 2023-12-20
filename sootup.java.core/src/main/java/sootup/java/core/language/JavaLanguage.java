@@ -45,7 +45,7 @@ public class JavaLanguage extends Language {
   /**
    * Instantiates a new java language with given version e.g 8 or 9
    *
-   * @param version the version
+   * @param version the Java version, not the major release version within the class file
    */
   public JavaLanguage(int version) {
     this.version = version;

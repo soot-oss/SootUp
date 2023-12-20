@@ -1,9 +1,10 @@
-package sootup.core;
+package sootup.java.bytecode.inputlocation;
+
 /*-
  * #%L
  * Soot
  * %%
- * Copyright (C) 2018-2020 Linghui Luo, Ben Hermann, Christian Brüggemann
+ * Copyright (C) 06.06.2018 Manuel Benz
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,30 +21,24 @@ package sootup.core;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
+import categories.Java8Test;
+import java.util.Collections;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
+import sootup.java.core.JavaSootClass;
 
-/**
- * Definition of a scope
- *
- * @author Linghui Luo
- * @author Ben Hermann
- */
-public class Scope {
+@Category(Java8Test.class)
+public class ApkAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
-  /** Define a scope consists of multiple inputLocations. */
-  public Scope(AnalysisInputLocation... inputLocations) {
-    // TODO Auto-generated constructor stub
-  }
-
-  /** Define a scope consists of multiple packages. */
-  public Scope(PackageName... packages) {
-    // TODO Auto-generated constructor stub
-  }
-
-  /** Define a scope consists of multiple classes. */
-  public Scope(ClassType... classSignatures) {
-    // TODO Auto-generated constructor stub
+  @Test
+  public void testApk() {
+    AnalysisInputLocation<JavaSootClass> pathBasedNamespace =
+        new ApkAnalysisInputLocation(apk, null);
+    final ClassType mainClass =
+        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
   }
 }
