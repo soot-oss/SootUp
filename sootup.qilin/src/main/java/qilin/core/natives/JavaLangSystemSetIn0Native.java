@@ -39,7 +39,8 @@ public class JavaLangSystemSetIn0Native extends NativeMethod {
     Local r1 = getPara(0);
     JStaticFieldRef systemIn = getStaticFieldRef("java.lang.System", "in");
     addAssign(systemIn, r1);
-    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    final JReturnVoidStmt returnStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

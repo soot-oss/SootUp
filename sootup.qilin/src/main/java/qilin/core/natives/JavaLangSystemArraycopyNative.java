@@ -51,7 +51,8 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
     Local temp = getNextLocal(objType);
     addAssign(temp, src);
     addAssign(dst, temp);
-    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    final JReturnVoidStmt returnStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }
