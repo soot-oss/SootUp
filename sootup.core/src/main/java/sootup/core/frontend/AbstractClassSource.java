@@ -37,17 +37,17 @@ import sootup.core.views.View;
  * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
  * View} can resolve.
  */
-public abstract class AbstractClassSource<T extends AbstractClass> {
+public abstract class AbstractClassSource {
 
   // holds information about the class
-  protected final AnalysisInputLocation<? extends SootClass<?>> classSource;
+  protected final AnalysisInputLocation classSource;
   // holds information about the specific data unit where the information about a class is stored
   protected final Path sourcePath;
   // the classType that identifies the containing class information
   protected ClassType classSignature;
 
   public AbstractClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> classSource,
+      @Nonnull AnalysisInputLocation classSource,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     this.classSource = classSource;
@@ -59,13 +59,13 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
    * @param sourceType instantiates the Subclass of AbstractClassSource to create a *SootClass
    * @return a *SootClass
    */
-  public abstract T buildClass(@Nonnull SourceType sourceType);
+  public abstract SootClass buildClass(@Nonnull SourceType sourceType);
 
   public ClassType getClassType() {
     return classSignature;
   }
 
-  public AnalysisInputLocation<? extends SootClass<?>> getClassSource() {
+  public AnalysisInputLocation getClassSource() {
     return classSource;
   }
 
@@ -88,8 +88,7 @@ public abstract class AbstractClassSource<T extends AbstractClass> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AbstractClassSource<? extends SootClass<?>> that =
-        (AbstractClassSource<? extends SootClass<?>>) o;
+    AbstractClassSource that = (AbstractClassSource) o;
     return Objects.equal(classSource, that.classSource)
         && Objects.equal(sourcePath, that.sourcePath);
   }

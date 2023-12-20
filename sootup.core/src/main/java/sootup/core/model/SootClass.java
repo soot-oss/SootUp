@@ -44,20 +44,20 @@ import sootup.core.util.printer.JimplePrinter;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extends AbstractClass<S> {
+public class SootClass extends AbstractClass {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(@Nonnull S classSource, @Nonnull SourceType sourceType) {
+  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
   }
 
   @Nonnull
-  private Set<? extends SootField> lazyFieldInitializer() {
-    Set<? extends SootField> fields;
+  private Set<SootField> lazyFieldInitializer() {
+    Set<SootField> fields;
 
     try {
       fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
@@ -86,23 +86,23 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
   }
 
   @Nonnull
-  private final Supplier<Set<? extends SootMethod>> _lazyMethods =
+  private final Supplier<Set<SootMethod>> _lazyMethods =
       Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
-  public Set<? extends SootMethod> getMethods() {
+  public Set<SootMethod> getMethods() {
     return this._lazyMethods.get();
   }
 
   @Nonnull
-  private final Supplier<Set<? extends SootField>> _lazyFields =
+  private final Supplier<Set<SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
-  public Set<? extends SootField> getFields() {
+  public Set<SootField> getFields() {
     return this._lazyFields.get();
   }
 
@@ -115,7 +115,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<? extends ClassType>> lazyInterfaces =
+  private final Supplier<Set<ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -124,7 +124,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
    * this class may still be implementing additional interfaces in the usual sense by being a
    * subclass of a class which directly implements some interfaces.
    */
-  public Set<? extends ClassType> getInterfaces() {
+  public Set<ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
@@ -138,7 +138,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
     return false;
   }
 
-  private final Supplier<Optional<? extends ClassType>> lazySuperclass =
+  private final Supplier<Optional<ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -154,11 +154,11 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<? extends ClassType> getSuperclass() {
+  public Optional<ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<? extends ClassType>> lazyOuterClass =
+  private final Supplier<Optional<ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
@@ -167,7 +167,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   /** This method returns the outer class. */
   @Nonnull
-  public Optional<? extends ClassType> getOuterClass() {
+  public Optional<ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 
@@ -267,7 +267,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   @Nonnull
   @Override
-  public S getClassSource() {
+  public SootClassSource getClassSource() {
     return classSource;
   }
 
@@ -278,12 +278,12 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
   }
 
   @Nonnull
-  public SootClass<S> withClassSource(@Nonnull S classSource) {
-    return new SootClass<S>(classSource, sourceType);
+  public SootClass withClassSource(@Nonnull SootClassSource classSource) {
+    return new SootClass(classSource, sourceType);
   }
 
   @Nonnull
-  public SootClass<S> withSourceType(@Nonnull SourceType sourceType) {
-    return new SootClass<S>(classSource, sourceType);
+  public SootClass withSourceType(@Nonnull SourceType sourceType) {
+    return new SootClass(classSource, sourceType);
   }
 }

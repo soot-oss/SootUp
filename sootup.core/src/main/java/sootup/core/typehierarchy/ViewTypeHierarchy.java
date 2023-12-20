@@ -54,10 +54,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
 
-  @Nonnull private final View<? extends SootClass<?>> view;
+  @Nonnull private final View view;
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
-  public ViewTypeHierarchy(@Nonnull View<? extends SootClass<?>> view) {
+  public ViewTypeHierarchy(@Nonnull View view) {
     this.view = view;
   }
 
@@ -299,7 +299,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Nullable
   @Override
   public ClassType superClassOf(@Nonnull ClassType classType) {
-    final Optional<? extends SootClass<?>> classOpt = view.getClass(classType);
+    final Optional<SootClass> classOpt = view.getClass(classType);
     if (!classOpt.isPresent()) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
     }
@@ -372,7 +372,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private static void addSootClassToGraph(
-      SootClass<?> sootClass, Map<ClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
+      SootClass sootClass, Map<ClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
     if (sootClass.isInterface()) {
       Vertex vertex =
           typeToVertex.computeIfAbsent(
@@ -421,7 +421,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Override
-  public void addType(@Nonnull SootClass<?> sootClass) {
+  public void addType(@Nonnull SootClass sootClass) {
     ScanResult scanResult = lazyScanResult.get();
     addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
   }

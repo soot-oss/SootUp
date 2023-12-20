@@ -36,5 +36,5 @@ public interface BodyInterceptor {
    * @param builder
    * @param view
    */
-  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view);
+  void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view);
 }

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -43,16 +44,16 @@ import sootup.core.views.View;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractClass<T extends AbstractClassSource<?>> {
+public abstract class AbstractClass {
 
-  @Nonnull protected final T classSource;
+  @Nonnull protected final SootClassSource classSource;
 
-  public AbstractClass(@Nonnull T cs) {
+  public AbstractClass(@Nonnull SootClassSource cs) {
     this.classSource = cs;
   }
 
   @Nonnull
-  public T getClassSource() {
+  public SootClassSource getClassSource() {
     return classSource;
   }
 
@@ -63,10 +64,10 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
   public abstract Type getType();
 
   @Nonnull
-  public abstract Set<? extends SootField> getFields();
+  public abstract Set<SootField> getFields();
 
   @Nonnull
-  public abstract Set<? extends SootMethod> getMethods();
+  public abstract Set<SootMethod> getMethods();
 
   /**
    * Attempts to retrieve the method with the given subSignature. This method may throw an
@@ -74,7 +75,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * method with the given is found, null is returned.
    */
   @Nonnull
-  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
         .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
         .findAny();
@@ -82,7 +83,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
 
   /** Attemtps to retrieve the field with the given FieldSubSignature. */
   @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
+  public Optional<SootField> getField(@Nonnull FieldSubSignature subSignature) {
     return getFields().stream()
         .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
         .findAny();
@@ -93,7 +94,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * than one field with the given name. Returns null if no field with the given name exists.
    */
   @Nonnull
-  public Optional<? extends SootField> getField(@Nonnull String name) {
+  public Optional<SootField> getField(@Nonnull String name) {
     return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
@@ -109,7 +110,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * ResolveException if there is more than one method with the given name and parameter.
    */
   @Nonnull
-  public Optional<? extends SootMethod> getMethod(
+  public Optional<SootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
@@ -132,7 +133,7 @@ public abstract class AbstractClass<T extends AbstractClassSource<?>> {
    * @return a set of methods that have the given name
    */
   @Nonnull
-  public Set<? extends SootMethod> getMethodsByName(@Nonnull String name) {
+  public Set<SootMethod> getMethodsByName(@Nonnull String name) {
     return this.getMethods().stream()
         .filter(m -> m.getSignature().getName().equals(name))
         .collect(Collectors.toSet());

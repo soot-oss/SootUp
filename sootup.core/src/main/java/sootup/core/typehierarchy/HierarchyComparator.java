@@ -35,7 +35,7 @@ public class HierarchyComparator implements Comparator<ClassType> {
 
   TypeHierarchy typeHierarchy;
 
-  public HierarchyComparator(@Nonnull View<? extends SootClass<?>> view) {
+  public HierarchyComparator(@Nonnull View view) {
     this(view.getTypeHierarchy());
   }
 

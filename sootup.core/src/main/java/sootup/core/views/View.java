@@ -40,11 +40,11 @@ import sootup.core.types.ClassType;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass<?>> {
+public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<T> getClasses();
+  Collection<SootClass> getClasses();
 
   /**
    * Return a class with given signature.
@@ -52,11 +52,11 @@ public interface View<T extends SootClass<?>> {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<T> getClass(@Nonnull ClassType signature);
+  Optional<SootClass> getClass(@Nonnull ClassType signature);
 
-  Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
+  Optional<SootField> getField(@Nonnull FieldSignature signature);
 
-  Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
+  Optional<SootMethod> getMethod(@Nonnull MethodSignature signature);
 
   @Nonnull
   TypeHierarchy getTypeHierarchy();
@@ -66,7 +66,7 @@ public interface View<T extends SootClass<?>> {
   IdentifierFactory getIdentifierFactory();
 
   @Nonnull
-  default T getClassOrThrow(@Nonnull ClassType classType) {
+  default SootClass getClassOrThrow(@Nonnull ClassType classType) {
     return getClass(classType)
         .orElseThrow(
             () -> new IllegalArgumentException("Could not find " + classType + " in View."));

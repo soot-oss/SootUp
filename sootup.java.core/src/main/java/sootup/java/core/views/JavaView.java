@@ -37,11 +37,13 @@ import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
+import sootup.core.model.SootField;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaAnnotationSootClass;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.AnnotationType;
 
@@ -108,6 +110,26 @@ public class JavaView extends AbstractView<JavaSootClass> {
     Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
         getAbstractClass(type);
     return abstractClass.flatMap(this::buildClassFrom);
+  }
+
+  @Override
+  @Nonnull
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
+    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getMethod(signature.getSubSignature());
+  }
+
+  @Override
+  @Nonnull
+  public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
+    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      return Optional.empty();
+    }
+    return aClass.get().getField(signature.getSubSignature());
   }
 
   @Nonnull

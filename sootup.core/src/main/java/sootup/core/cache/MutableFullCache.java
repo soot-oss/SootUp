@@ -8,11 +8,11 @@ import sootup.core.types.ClassType;
  * Mutable version of the {@link FullCache} that additionally allows for a removal of cached
  * classes.
  */
-public class MutableFullCache<S extends SootClass<?>> extends FullCache<S>
-    implements MutableClassCache<S> {
+public class MutableFullCache extends FullCache
+    implements MutableClassCache {
 
   @Override
-  public S removeClass(@Nonnull ClassType classType) {
+  public SootClass removeClass(@Nonnull ClassType classType) {
     if (this.hasClass(classType)) {
       return cache.remove(classType);
     }

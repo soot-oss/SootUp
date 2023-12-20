@@ -42,8 +42,7 @@ import sootup.core.types.ClassType;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource<S extends SootClass<? extends SootClassSource<S>>>
-    extends AbstractClassSource<S> {
+public abstract class SootClassSource extends AbstractClassSource {
 
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
@@ -58,23 +57,23 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
    * @param classSignature the signature that has been used to resolve this class
    */
   public SootClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
   }
 
-  protected SootClassSource(SootClassSource<S> delegate) {
+  protected SootClassSource(SootClassSource delegate) {
     super(delegate.classSource, delegate.getClassType(), delegate.getSourcePath());
   }
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<? extends SootMethod> resolveMethods() throws ResolveException;
+  public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
 
   /** Reads from the source to retrieve its fields. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<? extends SootField> resolveFields() throws ResolveException;
+  public abstract Collection<SootField> resolveFields() throws ResolveException;
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
@@ -85,14 +84,14 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
    * operation.
    */
   @Nonnull
-  public abstract Set<? extends ClassType> resolveInterfaces();
+  public abstract Set<ClassType> resolveInterfaces();
 
   /**
    * Reads from the source to retrieve its superclass, if present. This may be an expensive
    * operation.
    */
   @Nonnull
-  public abstract Optional<? extends ClassType> resolveSuperclass();
+  public abstract Optional<ClassType> resolveSuperclass();
 
   /**
    * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
@@ -101,7 +100,7 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
    * @return
    */
   @Nonnull
-  public abstract Optional<? extends ClassType> resolveOuterClass();
+  public abstract Optional<ClassType> resolveOuterClass();
 
   /**
    * Reads from the source to retrieve its position in the source code. This may be an expensive

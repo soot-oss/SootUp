@@ -34,10 +34,10 @@ import sootup.core.types.ClassType;
  *
  * @author Manuel Benz
  */
-public interface ClassProvider<T extends SootClass<? extends SootClassSource<T>>> {
+public interface ClassProvider {
 
-  Optional<SootClassSource<T>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+  Optional<SootClassSource> createClassSource(
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       ClassType classSignature);
 

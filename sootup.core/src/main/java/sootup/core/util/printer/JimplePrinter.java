@@ -114,11 +114,11 @@ public class JimplePrinter {
     }
   }
 
-  public void printTo(SootClass<?> cl, PrintWriter out) {
+  public void printTo(SootClass cl, PrintWriter out) {
     printTo(cl, out, determinePrinter());
   }
 
-  public void printTo(SootClass<?> cl, PrintWriter out, LabeledStmtPrinter printer) {
+  public void printTo(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -156,7 +156,7 @@ public class JimplePrinter {
 
     // Print extension
     {
-      Optional<? extends ClassType> superclassSignature = cl.getSuperclass();
+      Optional<ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
           javaClassSignature -> {
@@ -167,7 +167,7 @@ public class JimplePrinter {
 
     // Print interfaces
     {
-      Iterator<? extends ClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
 
@@ -230,15 +230,15 @@ public class JimplePrinter {
     out.println(printer.toString());
   }
 
-  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer) {
-    Iterator<? extends Method> methodIt = cl.getMethods().iterator();
+  private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
+    Iterator<SootMethod> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
       printer.newline();
       incJimpleLnNum();
 
       while (methodIt.hasNext()) {
-        SootMethod method = (SootMethod) methodIt.next();
+        SootMethod method = methodIt.next();
 
         if (method.hasBody()) {
           Body body = method.getBody();
