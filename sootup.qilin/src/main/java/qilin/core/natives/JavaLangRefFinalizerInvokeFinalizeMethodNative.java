@@ -32,7 +32,8 @@ public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod
   protected void simulateImpl() {
     Local r0 = getPara(0);
     addInvoke(r0, "<java.lang.Object: void finalize()>");
-    final JReturnVoidStmt returnStmt = new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    final JReturnVoidStmt returnStmt =
+        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

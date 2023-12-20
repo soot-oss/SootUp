@@ -76,9 +76,9 @@ public abstract class JunitTests {
                 + File.separator
                 + "JREs"
                 + File.separator
-                // + "jre1.6.0_45"
-                    + "jre1.8.0_312"
-        );
+                + "jre1.6.0_45"
+            //    + "jre1.8.0_121_debug"
+            );
     jrePath = jreFile.getCanonicalPath();
     String[] args = generateArgumentsx();
     PTAOption ptaOption = new PTAOption();

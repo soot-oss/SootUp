@@ -23,7 +23,8 @@ import qilin.microben.utils.Assert;
 public class MethodInvoke {
   public static void main(String[] args) throws Exception {
     Object c = new Object();
-    Object d = MethodInvoke.class.getMethod("id", Object.class).invoke(new MethodInvokeInstance(), c);
+    Object d =
+        MethodInvoke.class.getMethod("id", Object.class).invoke(new MethodInvokeInstance(), c);
     Assert.mayAlias(c, d);
   }
 

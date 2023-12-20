@@ -110,13 +110,12 @@ public class Solver extends Propagator {
     while (newRMs.hasNext()) {
       MethodOrMethodContext momc = newRMs.next();
       SootMethod method = momc.method();
-      if (!method.isConcrete()) {
+      if (!method.isConcrete() && !method.isNative()) {
         continue;
       }
       MethodPAG mpag = pag.getMethodPAG(method);
       addToPAG(mpag, momc.context());
-      // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
-      // times.
+      // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple times.
       if (CoreConfig.v().getPtaConfig().clinitMode == CoreConfig.ClinitMode.ONFLY) {
         // add <clinit> find in the method to reachableMethods.
         Iterator<SootMethod> it = mpag.triggeredClinits();

@@ -34,22 +34,22 @@ import qilin.pta.PTAConfig;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import soot.jimple.toolkits.callgraph.CallGraph;
-import sootup.core.inputlocation.ClassLoadingOptions;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.TypeAssigner;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class PTAScene {
@@ -117,13 +117,15 @@ public class PTAScene {
   }
 
   private static JavaView createViewForClassPath(List<String> classPaths) {
-    ClassLoadingOptions clo = () -> Collections.singletonList(new TypeAssigner());
-    JavaProject.JavaProjectBuilder builder = JavaProject.builder(new JavaLanguage(8));
+    List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations = new ArrayList<>();
     for (String clazzPath : classPaths) {
-      builder.addInputLocation(new JavaClassPathAnalysisInputLocation(clazzPath));
+      analysisInputLocations.add(
+          new JavaClassPathAnalysisInputLocation(
+              clazzPath,
+              SourceType.Application,
+              BytecodeClassLoadingOptions.Default.getBodyInterceptors()));
     }
-    JavaProject javaProject = builder.build();
-    return javaProject.createOnDemandView(analysisInputLocation -> clo);
+    return new JavaView(analysisInputLocations);
   }
 
   private static Collection<String> getJreJars(String JRE) {

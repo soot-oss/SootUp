@@ -5,19 +5,21 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.IdentifierFactory;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 /** @author : Hasitha Rajapakse, Jonas Klauke * */
@@ -31,14 +33,12 @@ public class ConcreteDispatchTest {
 
   @BeforeClass
   public static void setUp() {
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    "src/test/resources/callgraph/ConcreteDispatch/binary"))
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
-            .build();
-    view = project.createView();
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/callgraph/ConcreteDispatch/binary"));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    view = new JavaView(inputLocations);
   }
 
   @Test

@@ -23,10 +23,8 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -42,9 +40,7 @@ public class JavaSourcePathNamespaceTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
-    final JavaView view = project.createView();
+    final JavaView view = new JavaView(inputLocation);
 
     Optional<JavaSootClass> clazz = view.getClass(type);
     assertTrue(clazz.isPresent());
@@ -63,15 +59,13 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSources() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation inputLocation =
+    AnalysisInputLocation<JavaSootClass> inputLocation =
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
     JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
 
-    final JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
-    final JavaView view = project.createView();
+    final JavaView view = new JavaView(inputLocation);
 
     Collection<? extends AbstractClassSource> classSources =
         view.getClasses().stream().map(jsc -> jsc.getClassSource()).collect(Collectors.toList());
@@ -98,12 +92,9 @@ public class JavaSourcePathNamespaceTest {
   public void testInputSourcePathLibraryMode() {
 
     String classPath = "../shared-test-resources/java-miniapps/src/";
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath))
-            .build();
-    JavaView view = javaProject.createOnDemandView();
+    AnalysisInputLocation<JavaSootClass> inputLocation =
+        new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath);
+    JavaView view = new JavaView(inputLocation);
 
     Set<SootClass<JavaSootClassSource>> classes =
         new HashSet<>(); // Set to track the classes to check
