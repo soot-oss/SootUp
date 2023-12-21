@@ -1,4 +1,7 @@
 # Installation
+## Using the latest version on the develop branch
+visit [SootUp on Jitpack.io](https://jitpack.io/#soot-oss/SootUp/develop-SNAPSHOT) for configuration options of your build tool.
+
 ## Using the release
 SootUp is available in maven central, you can include it in your project as follows.
 

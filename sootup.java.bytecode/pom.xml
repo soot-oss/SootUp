@@ -34,17 +34,13 @@
 			<version>9.5</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.ThexXTURBOXx.dex2jar</groupId>
-			<artifactId>dex-tools</artifactId>
-			<version>v64</version>
+			<groupId>de.femtopedia.dex2jar</groupId>
+			<artifactId>dex2jar</artifactId>
+			<version>2.4.6</version>
 		</dependency>
 	</dependencies>
 
 	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
 		<repository>
 			<id>maven.google</id>
 			<url>https://maven.google.com/</url>
