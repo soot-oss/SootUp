@@ -18,8 +18,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 
 /** @author Markus Schmidt */
-public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T>>>
-    implements ClassProvider<T> {
+public class JimpleClassProvider implements ClassProvider {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
@@ -30,8 +29,8 @@ public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T
   }
 
   @Override
-  public Optional<SootClassSource<T>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputlocation,
+  public Optional<SootClassSource> createClassSource(
+      AnalysisInputLocation inputlocation,
       Path sourcePath,
       ClassType classSignature) {
 

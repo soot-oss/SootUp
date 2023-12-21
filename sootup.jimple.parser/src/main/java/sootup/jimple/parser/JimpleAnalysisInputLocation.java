@@ -24,8 +24,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
-    implements AnalysisInputLocation<T> {
+public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
   private final List<BodyInterceptor> bodyInterceptors;
 
@@ -79,10 +78,10 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   }
 
   @Nonnull
-  List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
+  List<SootClassSource> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider<? extends SootClass<?>> classProvider) {
+      @Nonnull ClassProvider classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath)
@@ -100,16 +99,16 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
 
   @Override
   @Nonnull
-  public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
+  public Collection<SootClassSource> getClassSources(@Nonnull View view) {
     return walkDirectory(
         path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors));
   }
 
   @Override
   @Nonnull
-  public Optional<? extends SootClassSource<T>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(bodyInterceptors);
+  public Optional<SootClassSource> getClassSource(
+      @Nonnull ClassType type, @Nonnull View view) {
+    final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 
@@ -137,7 +136,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     if (!(o instanceof JimpleAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((JimpleAnalysisInputLocation<?>) o).path);
+    return path.equals(((JimpleAnalysisInputLocation) o).path);
   }
 
   @Override

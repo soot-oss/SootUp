@@ -13,6 +13,7 @@ import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.model.SootClass;
@@ -28,31 +29,31 @@ import sootup.core.views.AbstractView;
 
 // TODO: [ms] rethink of that view per language structure -> this could be the base implementation
 // for View if we really need different views in the future?
-public class JimpleView extends AbstractView<SootClass<?>> {
+public class JimpleView extends AbstractView {
 
-  @Nonnull protected final List<AnalysisInputLocation<SootClass<?>>> inputLocations;
-  @Nonnull private final ClassCache<SootClass<?>> cache;
+  @Nonnull protected final List<AnalysisInputLocation> inputLocations;
+  @Nonnull private final ClassCache cache;
   @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
   private volatile boolean isFullyResolved = false;
 
-  public JimpleView(@Nonnull AnalysisInputLocation<SootClass<?>> inputLocation) {
-    this(Collections.singletonList(inputLocation), new FullCacheProvider<>());
+  public JimpleView(@Nonnull AnalysisInputLocation inputLocation) {
+    this(Collections.singletonList(inputLocation), new FullCacheProvider());
   }
 
-  public JimpleView(@Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations) {
-    this(inputLocations, new FullCacheProvider<>());
+  public JimpleView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+    this(inputLocations, new FullCacheProvider());
   }
 
   public JimpleView(
-      @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
-      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider) {
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider) {
     this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JimpleView(
-      @Nonnull List<AnalysisInputLocation<SootClass<?>>> inputLocations,
-      @Nonnull ClassCacheProvider<SootClass<?>> cacheProvider,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
@@ -61,19 +62,19 @@ public class JimpleView extends AbstractView<SootClass<?>> {
 
   @Override
   @Nonnull
-  public synchronized Collection<SootClass<?>> getClasses() {
+  public synchronized Collection<SootClass> getClasses() {
     return getAbstractClassSources();
   }
 
   @Nonnull
-  synchronized Collection<SootClass<?>> getAbstractClassSources() {
+  synchronized Collection<SootClass> getAbstractClassSources() {
     resolveAll();
     return cache.getClasses();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<SootClass<?>> getClass(@Nonnull ClassType type) {
+  public synchronized Optional<SootClass> getClass(@Nonnull ClassType type) {
     return getAbstractClass(type);
   }
 
@@ -84,13 +85,13 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
-  Optional<SootClass<?>> getAbstractClass(@Nonnull ClassType type) {
-    SootClass<?> cachedClass = cache.getClass(type);
+  Optional<SootClass> getAbstractClass(@Nonnull ClassType type) {
+    SootClass cachedClass = cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    final List<? extends AbstractClassSource<SootClass<?>>> foundClassSources =
+    final List<SootClassSource> foundClassSources =
         inputLocations.stream()
             .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
@@ -115,11 +116,11 @@ public class JimpleView extends AbstractView<SootClass<?>> {
   }
 
   @Nonnull
-  private synchronized Optional<SootClass<?>> buildClassFrom(
-      AbstractClassSource<SootClass<?>> classSource) {
+  private synchronized Optional<SootClass> buildClassFrom(
+      AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
-    SootClass<?> theClass;
+    SootClass theClass;
     if (!cache.hasClass(classType)) {
       theClass = classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
       cache.putClass(classType, theClass);
