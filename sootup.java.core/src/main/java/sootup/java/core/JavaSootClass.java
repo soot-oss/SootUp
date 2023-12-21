@@ -39,7 +39,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.core.views.JavaView;
 
-public class JavaSootClass extends SootClass<JavaSootClassSource> {
+public class JavaSootClass extends SootClass {
 
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
@@ -75,7 +75,7 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
       }
     }
 
-    classSource.resolveAnnotations().forEach(annotationUsages::add);
+    ((JavaSootClassSource) classSource).resolveAnnotations().forEach(annotationUsages::add);
 
     annotationUsages.forEach(e -> e.getAnnotation().getDefaultValues(view));
 
@@ -95,51 +95,51 @@ public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   @Nonnull
   @Override
-  public Set<? extends JavaSootMethod> getMethods() {
-    return (Set<? extends JavaSootMethod>) super.getMethods();
+  public Set<JavaSootMethod> getMethods() {
+    return super.getMethods().stream().map(method -> (JavaSootMethod) method).collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
-  public Set<? extends JavaSootField> getFields() {
-    return (Set<? extends JavaSootField>) super.getFields();
+  public Set<JavaSootField> getFields() {
+    return super.getFields().stream().map(field -> (JavaSootField) field).collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
   public Optional<JavaSootField> getField(@Nonnull String name) {
-    return (Optional<JavaSootField>) super.getField(name);
+    return super.getField(name).map(field -> (JavaSootField) field);
   }
 
   @Nonnull
   @Override
   public Optional<JavaSootField> getField(@Nonnull FieldSubSignature subSignature) {
-    return (Optional<JavaSootField>) super.getField(subSignature);
+    return super.getField(subSignature).map(field -> (JavaSootField) field);
   }
 
   @Nonnull
   @Override
   public Optional<JavaSootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
-    return (Optional<JavaSootMethod>) super.getMethod(name, parameterTypes);
+    return super.getMethod(name, parameterTypes).map(method -> (JavaSootMethod) method);
   }
 
   @Nonnull
   @Override
   public Set<JavaSootMethod> getMethodsByName(@Nonnull String name) {
-    return (Set<JavaSootMethod>) super.getMethodsByName(name);
+    return super.getMethodsByName(name).stream().map(method -> (JavaSootMethod) method).collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
-    return (Optional<JavaSootMethod>) super.getMethod(subSignature);
+    return super.getMethod(subSignature).map(method -> (JavaSootMethod) method);
   }
 
   @Nonnull
   @Override
   public JavaSootClassSource getClassSource() {
-    return super.getClassSource();
+    return (JavaSootClassSource) super.getClassSource();
   }
 
   // Convenience withers that delegate to an OverridingClassSource

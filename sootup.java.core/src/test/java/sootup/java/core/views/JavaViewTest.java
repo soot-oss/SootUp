@@ -51,17 +51,6 @@ public class JavaViewTest {
      */
   }
 
-  @Ignore
-  public void testResolveIteratively() {
-    this.signatures.forEach(
-        it -> {
-          AbstractClass<? extends AbstractClassSource<?>> clazz =
-              this.view.getClass(it).orElse(null);
-          assertNotNull("Class for signature \"" + it + "\" not found.", clazz);
-          assertEquals(it, clazz.getType());
-        });
-  }
-
   private void resolveUndefinedClass() {
     ClassType signature =
         JavaIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");

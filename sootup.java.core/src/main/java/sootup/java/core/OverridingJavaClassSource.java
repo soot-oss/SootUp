@@ -109,7 +109,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   /** Class source where all information already available */
   public OverridingJavaClassSource(
-      @Nonnull AnalysisInputLocation<JavaSootClass> srcNamespace,
+      @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull Path sourcePath,
       @Nonnull ClassType classType,
       @Nullable ClassType superClass,
@@ -139,13 +139,13 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+  public Collection<SootMethod> resolveMethods() throws ResolveException {
     return overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
   }
 
   @Nonnull
   @Override
-  public Collection<? extends SootField> resolveFields() throws ResolveException {
+  public Collection<SootField> resolveFields() throws ResolveException {
     return overriddenSootFields != null ? overriddenSootFields : delegate.resolveFields();
   }
 
@@ -157,19 +157,19 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Set<? extends ClassType> resolveInterfaces() {
+  public Set<ClassType> resolveInterfaces() {
     return overriddenInterfaces != null ? overriddenInterfaces : delegate.resolveInterfaces();
   }
 
   @Nonnull
   @Override
-  public Optional<? extends ClassType> resolveSuperclass() {
+  public Optional<ClassType> resolveSuperclass() {
     return overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveSuperclass();
   }
 
   @Nonnull
   @Override
-  public Optional<? extends ClassType> resolveOuterClass() {
+  public Optional<ClassType> resolveOuterClass() {
     return overriddenOuterClass != null ? overriddenOuterClass : delegate.resolveOuterClass();
   }
 

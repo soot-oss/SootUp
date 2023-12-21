@@ -44,7 +44,7 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<SootClass> getClasses();
+  Collection<? extends SootClass> getClasses();
 
   /**
    * Return a class with given signature.
@@ -52,11 +52,11 @@ public interface View {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<SootClass> getClass(@Nonnull ClassType signature);
+  Optional<? extends SootClass> getClass(@Nonnull ClassType signature);
 
-  Optional<SootField> getField(@Nonnull FieldSignature signature);
+  Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
 
-  Optional<SootMethod> getMethod(@Nonnull MethodSignature signature);
+  Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
 
   @Nonnull
   TypeHierarchy getTypeHierarchy();

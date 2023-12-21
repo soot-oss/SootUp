@@ -56,7 +56,7 @@ public class SootClass extends AbstractClass {
   }
 
   @Nonnull
-  private Set<SootField> lazyFieldInitializer() {
+  private Set<? extends SootField> lazyFieldInitializer() {
     Set<SootField> fields;
 
     try {
@@ -71,7 +71,7 @@ public class SootClass extends AbstractClass {
   }
 
   @Nonnull
-  private Set<SootMethod> lazyMethodInitializer() {
+  private Set<? extends SootMethod> lazyMethodInitializer() {
     Set<SootMethod> methods;
 
     try {
@@ -86,23 +86,23 @@ public class SootClass extends AbstractClass {
   }
 
   @Nonnull
-  private final Supplier<Set<SootMethod>> _lazyMethods =
+  private final Supplier<Set<? extends SootMethod>> _lazyMethods =
       Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
-  public Set<SootMethod> getMethods() {
+  public Set<? extends SootMethod> getMethods() {
     return this._lazyMethods.get();
   }
 
   @Nonnull
-  private final Supplier<Set<SootField>> _lazyFields =
+  private final Supplier<Set<? extends SootField>> _lazyFields =
       Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
-  public Set<SootField> getFields() {
+  public Set<? extends SootField> getFields() {
     return this._lazyFields.get();
   }
 
@@ -115,7 +115,7 @@ public class SootClass extends AbstractClass {
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<ClassType>> lazyInterfaces =
+  private final Supplier<Set<? extends ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -124,7 +124,7 @@ public class SootClass extends AbstractClass {
    * this class may still be implementing additional interfaces in the usual sense by being a
    * subclass of a class which directly implements some interfaces.
    */
-  public Set<ClassType> getInterfaces() {
+  public Set<? extends ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
@@ -138,7 +138,7 @@ public class SootClass extends AbstractClass {
     return false;
   }
 
-  private final Supplier<Optional<ClassType>> lazySuperclass =
+  private final Supplier<Optional<? extends ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -154,11 +154,11 @@ public class SootClass extends AbstractClass {
    * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
    * superclass of this class. (see hasSuperclass())
    */
-  public Optional<ClassType> getSuperclass() {
+  public Optional<? extends ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<ClassType>> lazyOuterClass =
+  private final Supplier<Optional<? extends ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
@@ -167,7 +167,7 @@ public class SootClass extends AbstractClass {
 
   /** This method returns the outer class. */
   @Nonnull
-  public Optional<ClassType> getOuterClass() {
+  public Optional<? extends ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 

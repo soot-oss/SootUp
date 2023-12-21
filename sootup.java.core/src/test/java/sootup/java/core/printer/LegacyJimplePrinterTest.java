@@ -29,7 +29,7 @@ public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
 
-    View view = new JavaView(new EagerInputLocation<>());
+    View view = new JavaView(new EagerInputLocation());
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()

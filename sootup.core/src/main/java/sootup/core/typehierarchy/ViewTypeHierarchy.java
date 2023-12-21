@@ -299,7 +299,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Nullable
   @Override
   public ClassType superClassOf(@Nonnull ClassType classType) {
-    final Optional<SootClass> classOpt = view.getClass(classType);
+    final Optional<? extends SootClass> classOpt = view.getClass(classType);
     if (!classOpt.isPresent()) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
     }

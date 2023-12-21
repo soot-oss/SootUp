@@ -36,7 +36,7 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
+    view = new JavaView(Collections.singletonList(new EagerInputLocation()));
   }
 
   @Ignore
@@ -52,7 +52,7 @@ public class JFieldRefTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation<>(),
+                new EagerInputLocation(),
                 null,
                 declaringClassSignature,
                 null,
@@ -89,7 +89,7 @@ public class JFieldRefTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation<>(),
+                new EagerInputLocation(),
                 null,
                 declaringClassSignature,
                 null,

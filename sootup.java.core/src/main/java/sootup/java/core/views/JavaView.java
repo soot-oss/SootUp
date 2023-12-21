@@ -37,8 +37,6 @@ import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -54,20 +52,20 @@ import sootup.java.core.types.AnnotationType;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView extends AbstractView<JavaSootClass> {
+public class JavaView extends AbstractView {
 
-  @Nonnull protected final List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations;
-  @Nonnull protected final ClassCache<JavaSootClass> cache;
+  @Nonnull protected final List<AnalysisInputLocation> inputLocations;
+  @Nonnull protected final ClassCache cache;
   @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
   protected volatile boolean isFullyResolved = false;
 
-  public JavaView(@Nonnull AnalysisInputLocation<? extends JavaSootClass> inputLocation) {
+  public JavaView(@Nonnull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public JavaView(@Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations) {
-    this(inputLocations, new FullCacheProvider<>());
+  public JavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+    this(inputLocations, new FullCacheProvider());
   }
 
   /**
@@ -77,14 +75,14 @@ public class JavaView extends AbstractView<JavaSootClass> {
    * options.
    */
   public JavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider) {
     this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
   }
 
   public JavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
@@ -102,13 +100,12 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    JavaSootClass cachedClass = cache.getClass(type);
+    JavaSootClass cachedClass = (JavaSootClass) cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
-        getAbstractClass(type);
+    Optional<JavaSootClassSource> abstractClass = getAbstractClass(type);
     return abstractClass.flatMap(this::buildClassFrom);
   }
 
@@ -144,7 +141,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   }
 
   @Nonnull
-  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
+  protected Optional<JavaSootClassSource> getAbstractClass(
       @Nonnull ClassType type) {
     return inputLocations.stream()
         .map(location -> location.getClassSource(type, this))
@@ -153,20 +150,21 @@ public class JavaView extends AbstractView<JavaSootClass> {
         // classpath the first is returned (see splitpackage)
         .limit(1)
         .map(Optional::get)
+            .map(classSource -> (JavaSootClassSource) classSource)
         .findAny();
   }
 
   @Nonnull
   protected synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource<? extends JavaSootClass> classSource) {
+      AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
     if (!cache.hasClass(classType)) {
-      theClass = classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
+      theClass = (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
       cache.putClass(classType, theClass);
     } else {
-      theClass = cache.getClass(classType);
+      theClass = (JavaSootClass) cache.getClass(classType);
     }
 
     if (theClass.getType() instanceof AnnotationType) {
@@ -180,7 +178,7 @@ public class JavaView extends AbstractView<JavaSootClass> {
   @Nonnull
   protected synchronized Collection<JavaSootClass> resolveAll() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses();
+      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz).collect(Collectors.toList());
     }
 
     Collection<Optional<JavaSootClass>> resolvedClassesOpts =

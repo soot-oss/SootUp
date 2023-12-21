@@ -38,7 +38,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    View<?> view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
+    JavaView view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
@@ -76,7 +76,7 @@ public class SootMethodTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation<>(),
+                new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

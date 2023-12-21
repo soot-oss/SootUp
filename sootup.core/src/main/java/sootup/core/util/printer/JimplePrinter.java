@@ -156,7 +156,7 @@ public class JimplePrinter {
 
     // Print extension
     {
-      Optional<ClassType> superclassSignature = cl.getSuperclass();
+      Optional<? extends ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
           javaClassSignature -> {
@@ -167,7 +167,7 @@ public class JimplePrinter {
 
     // Print interfaces
     {
-      Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<? extends ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
 
@@ -231,7 +231,7 @@ public class JimplePrinter {
   }
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<SootMethod> methodIt = cl.getMethods().iterator();
+    Iterator<? extends SootMethod> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
       printer.newline();

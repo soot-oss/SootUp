@@ -14,14 +14,14 @@ import sootup.java.core.signatures.ModuleSignature;
  *     <p>Interface to mark AnalysisInputLocations that are capable of retreiving
  *     JavaModuleInformations
  */
-public interface ModuleInfoAnalysisInputLocation extends AnalysisInputLocation<JavaSootClass> {
+public interface ModuleInfoAnalysisInputLocation extends AnalysisInputLocation {
 
-  Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view);
-
-  @Nonnull
-  Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view);
+  Collection<AbstractClassSource> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View view);
 
   @Nonnull
-  Set<ModuleSignature> getModules(View<?> view);
+  Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view);
+
+  @Nonnull
+  Set<ModuleSignature> getModules(View view);
 }

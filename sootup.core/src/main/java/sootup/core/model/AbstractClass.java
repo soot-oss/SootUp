@@ -64,10 +64,10 @@ public abstract class AbstractClass {
   public abstract Type getType();
 
   @Nonnull
-  public abstract Set<SootField> getFields();
+  public abstract Set<? extends SootField> getFields();
 
   @Nonnull
-  public abstract Set<SootMethod> getMethods();
+  public abstract Set<? extends SootMethod> getMethods();
 
   /**
    * Attempts to retrieve the method with the given subSignature. This method may throw an
@@ -75,7 +75,7 @@ public abstract class AbstractClass {
    * method with the given is found, null is returned.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
+  public Optional<? extends SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
     return getMethods().stream()
         .filter(method -> method.getSignature().getSubSignature().equals(subSignature))
         .findAny();
@@ -83,7 +83,7 @@ public abstract class AbstractClass {
 
   /** Attemtps to retrieve the field with the given FieldSubSignature. */
   @Nonnull
-  public Optional<SootField> getField(@Nonnull FieldSubSignature subSignature) {
+  public Optional<? extends SootField> getField(@Nonnull FieldSubSignature subSignature) {
     return getFields().stream()
         .filter(f -> f.getSignature().getSubSignature().equals(subSignature))
         .findAny();
@@ -94,7 +94,7 @@ public abstract class AbstractClass {
    * than one field with the given name. Returns null if no field with the given name exists.
    */
   @Nonnull
-  public Optional<SootField> getField(@Nonnull String name) {
+  public Optional<? extends SootField> getField(@Nonnull String name) {
     return getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
         .reduce(
@@ -110,7 +110,7 @@ public abstract class AbstractClass {
    * ResolveException if there is more than one method with the given name and parameter.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(
+  public Optional<? extends SootMethod> getMethod(
       @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes) {
     return this.getMethods().stream()
         .filter(
@@ -133,7 +133,7 @@ public abstract class AbstractClass {
    * @return a set of methods that have the given name
    */
   @Nonnull
-  public Set<SootMethod> getMethodsByName(@Nonnull String name) {
+  public Set<? extends SootMethod> getMethodsByName(@Nonnull String name) {
     return this.getMethods().stream()
         .filter(m -> m.getSignature().getName().equals(name))
         .collect(Collectors.toSet());

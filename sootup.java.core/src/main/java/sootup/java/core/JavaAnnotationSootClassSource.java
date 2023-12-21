@@ -32,7 +32,7 @@ import sootup.core.types.ClassType;
 public abstract class JavaAnnotationSootClassSource extends JavaSootClassSource {
 
   public JavaAnnotationSootClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
