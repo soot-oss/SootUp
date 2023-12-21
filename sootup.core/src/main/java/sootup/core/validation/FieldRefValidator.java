@@ -24,6 +24,8 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
@@ -59,13 +61,17 @@ public class FieldRefValidator implements BodyValidator {
       if (fr instanceof JStaticFieldRef) {
         JStaticFieldRef v = (JStaticFieldRef) fr;
         try {
-          SootField field = view.getField(v.getFieldSignature()).get();
-          if (field == null) {
-            validationException.add(new ValidationException(v, "Resolved field is null: "));
-          } else if (!field.isStatic()) {
-            validationException.add(
-                new ValidationException(
-                        fr, "Trying to get a static field which is non-static: " + v));
+          Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+          if (!fieldOpt.isPresent()) {
+            validationException.add(new ValidationException(v, "Resolved field is empty: "));
+          } else {
+            SootField field = fieldOpt.get();
+            if (!field.isStatic()) {
+              validationException.add(
+                      new ValidationException(
+                              fr, "Trying to get a static field which is non-static: " + v));
+            }
+
           }
         } catch (Exception e) {
           validationException.add(
@@ -77,16 +83,16 @@ public class FieldRefValidator implements BodyValidator {
         JInstanceFieldRef v = (JInstanceFieldRef) fr;
 
         try {
-          SootField field = view.getField(v.getFieldSignature()).get();
-          if (field == null) {
+          Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+          if (!fieldOpt.isPresent()) {
             validationException.add(
                 new ValidationException(
-                        fr,
-                    "Resolved field is null: " + fr.toString()));
-          } else if (field.isStatic()) {
+                        fr, "Resolved field is null: " + fr.toString()));
+          } else{ if (field.isStatic()) {
             validationException.add(
-                new ValidationException(
-                        fr, "Trying to get an instance field which is static: " + v));
+                    new ValidationException(
+                            fr, "Trying to get an instance field which is static: " + v));
+          }
           }
         } catch (Exception e) {
           validationException.add(

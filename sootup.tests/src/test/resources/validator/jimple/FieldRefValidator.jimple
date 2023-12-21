@@ -1,11 +1,13 @@
 public super class FieldRefValidator extends java.lang.Object
 {
     static int num;
+    double pi;
 
     static void <clinit>()
     {
 
         <FieldRefValidator: int num> = 6;
+        <FieldRefValidator: double pi> = 3.14;
 
         return;
     }
@@ -23,21 +25,13 @@ public super class FieldRefValidator extends java.lang.Object
 
     public static void fieldRefVariable_pass()
     {
-        unknown $stack0;
+        unknown $stack0, $stack1;
 
         $stack0 = <FieldRefValidator: int num>;
 
-        return;
-    }
-
-    public static void fieldRefVariable_fail(){
-
-        int nonStaticVar;
-
-        nonStaticVar = <FieldRefValidator: int num>;
+        $stack1 = <FieldRefValidator: double pi>;
 
         return;
-
     }
 }
 
