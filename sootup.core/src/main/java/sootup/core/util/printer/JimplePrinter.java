@@ -32,7 +32,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.Field;
-import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;

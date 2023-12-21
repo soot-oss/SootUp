@@ -77,7 +77,6 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.FieldModifier;
-import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
@@ -423,7 +422,10 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         JavaSootField field =
             new JavaSootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
+                fieldSig,
+                EnumSet.of(FieldModifier.FINAL),
+                null,
+                NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -456,7 +458,10 @@ public class InstructionConverter {
                 "val$" + access.variableName, cSig, type.toString());
         JavaSootField field =
             new JavaSootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
+                fieldSig,
+                EnumSet.of(FieldModifier.FINAL),
+                null,
+                NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {

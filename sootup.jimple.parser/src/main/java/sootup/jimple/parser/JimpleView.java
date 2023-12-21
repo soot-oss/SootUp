@@ -116,8 +116,7 @@ public class JimpleView extends AbstractView {
   }
 
   @Nonnull
-  private synchronized Optional<SootClass> buildClassFrom(
-      AbstractClassSource classSource) {
+  private synchronized Optional<SootClass> buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     SootClass theClass;

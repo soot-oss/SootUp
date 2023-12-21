@@ -10,7 +10,6 @@ import org.junit.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.*;
@@ -99,8 +98,7 @@ public class JavaModulePathAnalysisInputLocationTest {
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 
-    final Optional<? extends SootClassSource> clazzOpt =
-        inputLocation.getClassSource(sig, view);
+    final Optional<? extends SootClassSource> clazzOpt = inputLocation.getClassSource(sig, view);
     assertTrue(clazzOpt.isPresent());
     AbstractClassSource scs = clazzOpt.get();
     assertEquals(sig, scs.getClassType());
@@ -118,8 +116,7 @@ public class JavaModulePathAnalysisInputLocationTest {
         Collections.singletonList(inputLocation);
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
-    final Collection<? extends SootClassSource> classSources =
-        inputLocation.getClassSources(view);
+    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
     assertEquals(3, classSources.size());
   }
 

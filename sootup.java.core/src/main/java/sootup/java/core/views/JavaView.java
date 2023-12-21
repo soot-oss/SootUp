@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
 import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
@@ -141,8 +140,7 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  protected Optional<JavaSootClassSource> getAbstractClass(
-      @Nonnull ClassType type) {
+  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
     return inputLocations.stream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
@@ -150,18 +148,18 @@ public class JavaView extends AbstractView {
         // classpath the first is returned (see splitpackage)
         .limit(1)
         .map(Optional::get)
-            .map(classSource -> (JavaSootClassSource) classSource)
+        .map(classSource -> (JavaSootClassSource) classSource)
         .findAny();
   }
 
   @Nonnull
-  protected synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource classSource) {
+  protected synchronized Optional<JavaSootClass> buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
     if (!cache.hasClass(classType)) {
-      theClass = (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
+      theClass =
+          (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
       cache.putClass(classType, theClass);
     } else {
       theClass = (JavaSootClass) cache.getClass(classType);
@@ -178,7 +176,9 @@ public class JavaView extends AbstractView {
   @Nonnull
   protected synchronized Collection<JavaSootClass> resolveAll() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream().map(clazz -> (JavaSootClass) clazz).collect(Collectors.toList());
+      return cache.getClasses().stream()
+          .map(clazz -> (JavaSootClass) clazz)
+          .collect(Collectors.toList());
     }
 
     Collection<Optional<JavaSootClass>> resolvedClassesOpts =

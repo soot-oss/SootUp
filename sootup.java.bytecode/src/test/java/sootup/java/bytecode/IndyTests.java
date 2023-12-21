@@ -7,7 +7,6 @@ import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 /** InvokeDynamics and the Operand stack.. */
@@ -17,8 +16,7 @@ public class IndyTests {
 
   @Test
   public void test() {
-    AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(directory);
+    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(directory);
 
     JavaView view = new JavaView(inputLocation);
     Assert.assertEquals(1, view.getClasses().size());

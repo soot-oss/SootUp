@@ -8,13 +8,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.views.JavaView;
 
 /*-
@@ -62,8 +59,7 @@ public abstract class AnalysisInputLocationTest {
     final JavaView view = new JavaView(ns);
 
     for (ClassType classType : sigs) {
-      final Optional<? extends SootClassSource> clazzOpt =
-          ns.getClassSource(classType, view);
+      final Optional<? extends SootClassSource> clazzOpt = ns.getClassSource(classType, view);
       assertTrue(clazzOpt.isPresent());
       assertEquals(classType, clazzOpt.get().getClassType());
     }

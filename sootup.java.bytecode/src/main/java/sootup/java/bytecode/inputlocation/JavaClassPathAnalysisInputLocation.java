@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
@@ -41,7 +40,6 @@ import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 
 /**
@@ -178,8 +176,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(
-      @Nonnull View view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<SootClassSource> found = new HashSet<>();
@@ -191,8 +188,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
     for (AnalysisInputLocation inputLocation : cpEntries) {
       final Optional<? extends SootClassSource> classSource =
           inputLocation.getClassSource(type, view);

@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.Language;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
@@ -56,12 +55,9 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @Nonnull
   private final Map<Integer, Map<ModuleSignature, JavaModuleInfo>> moduleInfoMap = new HashMap<>();
 
-  @Nonnull
-  private final Map<Integer, List<AnalysisInputLocation>> inputLocations =
-      new HashMap<>();
+  @Nonnull private final Map<Integer, List<AnalysisInputLocation>> inputLocations = new HashMap<>();
 
-  @Nonnull
-  private final List<AnalysisInputLocation> baseInputLocations = new ArrayList<>();
+  @Nonnull private final List<AnalysisInputLocation> baseInputLocations = new ArrayList<>();
 
   boolean isResolved = false;
 
@@ -167,11 +163,9 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   @Override
   @Nonnull
-  public Optional<JavaSootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
 
-    Collection<AnalysisInputLocation> il =
-        getBestMatchingInputLocationsRaw(language.getVersion());
+    Collection<AnalysisInputLocation> il = getBestMatchingInputLocationsRaw(language.getVersion());
 
     Collection<AnalysisInputLocation> baseIl = getBaseInputLocations();
 
@@ -201,7 +195,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
             .filter(Optional::isPresent)
             .limit(1)
             .map(Optional::get)
-                .map(src -> (JavaSootClassSource) src)
+            .map(src -> (JavaSootClassSource) src)
             .findAny();
 
     if (foundClass.isPresent()) {
@@ -212,7 +206,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
           .filter(Optional::isPresent)
           .limit(1)
           .map(Optional::get)
-              .map(src -> (JavaSootClassSource) src)
+          .map(src -> (JavaSootClassSource) src)
           .findAny();
     }
   }
@@ -228,7 +222,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                 ((ModuleInfoAnalysisInputLocation) location)
                     .getModulesClassSources(moduleSignature, view))
         .flatMap(Collection::stream)
-            .map(src -> (JavaSootClassSource) src)
+        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
@@ -238,8 +232,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
    * @param javaVersion version to find best match to
    * @return best match or base input locations
    */
-  private Collection<AnalysisInputLocation> getBestMatchingInputLocationsRaw(
-      int javaVersion) {
+  private Collection<AnalysisInputLocation> getBestMatchingInputLocationsRaw(int javaVersion) {
     for (int i = availableVersions.length - 1; i >= 0; i--) {
 
       if (availableVersions[i] > javaVersion) continue;
@@ -256,16 +249,14 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(
-      @Nonnull View view) {
-    Collection<AnalysisInputLocation> il =
-        getBestMatchingInputLocationsRaw(language.getVersion());
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+    Collection<AnalysisInputLocation> il = getBestMatchingInputLocationsRaw(language.getVersion());
 
     Collection<JavaSootClassSource> result =
         il.stream()
             .map(location -> location.getClassSources(view))
             .flatMap(Collection::stream)
-                .map(src -> (JavaSootClassSource) src)
+            .map(src -> (JavaSootClassSource) src)
             .collect(Collectors.toList());
 
     if (il != getBaseInputLocations()) {
@@ -274,7 +265,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
           getBaseInputLocations().stream()
               .map(location -> location.getClassSources(view))
               .flatMap(Collection::stream)
-                  .map(src -> (JavaSootClassSource) src)
+              .map(src -> (JavaSootClassSource) src)
               .collect(Collectors.toList());
 
       baseSources.forEach(

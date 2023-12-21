@@ -10,7 +10,6 @@ import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
@@ -29,8 +28,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     this(Collections.singletonList(inputLocation));
   }
 
-  public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations) {
+  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
     super(inputLocations, new MutableFullCacheProvider());
   }
 
@@ -59,7 +57,7 @@ public class MutableJavaView extends JavaView implements MutableView {
    */
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
-            (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
+        (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 

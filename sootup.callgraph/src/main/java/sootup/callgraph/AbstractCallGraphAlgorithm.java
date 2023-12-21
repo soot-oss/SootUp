@@ -73,8 +73,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the complete constructed call graph starting from the entry methods.
    */
   @Nonnull
-  final CallGraph constructCompleteCallGraph(
-      View view, List<MethodSignature> entryPoints) {
+  final CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
     MutableCallGraph cg = initializeCallGraph();
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
@@ -430,8 +429,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * concrete implementation.
    */
   @Nonnull
-  public static Optional<MethodSignature> resolveConcreteDispatch(
-      View view, MethodSignature m) {
+  public static Optional<MethodSignature> resolveConcreteDispatch(View view, MethodSignature m) {
     Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
     if (methodOp.isPresent()) {
       SootMethod method = methodOp.get();

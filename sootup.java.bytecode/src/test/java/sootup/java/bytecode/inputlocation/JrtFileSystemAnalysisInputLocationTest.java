@@ -8,11 +8,9 @@ import java.util.Collections;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
 
@@ -30,8 +28,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
     final ClassType sig =
         JavaModuleIdentifierFactory.getInstance().getClassType("String", "java.lang", "java.base");
 
-    final Optional<? extends SootClassSource> clazz =
-        inputLocation.getClassSource(sig, view);
+    final Optional<? extends SootClassSource> clazz = inputLocation.getClassSource(sig, view);
     assertTrue(clazz.isPresent());
     assertEquals(sig, clazz.get().getClassType());
   }
@@ -48,8 +45,7 @@ public class JrtFileSystemAnalysisInputLocationTest {
     final ClassType sig2 =
         JavaModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
 
-    final Collection<? extends SootClassSource> classSources =
-        inputLocation.getClassSources(view);
+    final Collection<? extends SootClassSource> classSources = inputLocation.getClassSources(view);
     assertTrue(classSources.size() > 26000);
     inputLocation.getClassSources(view);
     assertTrue(

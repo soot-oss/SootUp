@@ -46,7 +46,6 @@ import javax.annotation.Nullable;
 import sootup.core.SourceTypeSpecifier;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
-import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SootClass;
@@ -232,7 +231,7 @@ public class WalaJavaClassProvider implements ClassProvider {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, srcType);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-     JavaSootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
+      JavaSootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
     return classSources;

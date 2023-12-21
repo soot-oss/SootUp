@@ -97,13 +97,17 @@ public class JavaSootClass extends SootClass {
   @Nonnull
   @Override
   public Set<JavaSootMethod> getMethods() {
-    return super.getMethods().stream().map(method -> (JavaSootMethod) method).collect(Collectors.toSet());
+    return super.getMethods().stream()
+        .map(method -> (JavaSootMethod) method)
+        .collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
   public Set<JavaSootField> getFields() {
-    return super.getFields().stream().map(field -> (JavaSootField) field).collect(Collectors.toSet());
+    return super.getFields().stream()
+        .map(field -> (JavaSootField) field)
+        .collect(Collectors.toSet());
   }
 
   @Nonnull
@@ -128,7 +132,9 @@ public class JavaSootClass extends SootClass {
   @Nonnull
   @Override
   public Set<JavaSootMethod> getMethodsByName(@Nonnull String name) {
-    return super.getMethodsByName(name).stream().map(method -> (JavaSootMethod) method).collect(Collectors.toSet());
+    return super.getMethodsByName(name).stream()
+        .map(method -> (JavaSootMethod) method)
+        .collect(Collectors.toSet());
   }
 
   @Nonnull

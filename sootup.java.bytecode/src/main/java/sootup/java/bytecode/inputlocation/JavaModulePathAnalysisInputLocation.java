@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -108,8 +107,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
 
   @Override
   @Nonnull
-  public Collection<JavaSootClassSource> getClassSources(
-      @Nonnull View view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     Preconditions.checkArgument(
         identifierFactory instanceof JavaModuleIdentifierFactory,
@@ -118,7 +116,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
     return allModules.stream()
         .flatMap(sig -> getClassSourcesInternal(sig, view))
-            .map(src -> (JavaSootClassSource) src)
+        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 

@@ -23,7 +23,6 @@ package sootup.core.typehierarchy;
 
 import java.util.Comparator;
 import javax.annotation.Nonnull;
-import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 

@@ -13,7 +13,6 @@ import org.junit.experimental.categories.Category;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;

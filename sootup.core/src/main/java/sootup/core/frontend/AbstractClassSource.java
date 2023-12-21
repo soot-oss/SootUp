@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.AbstractClass;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.Signature;

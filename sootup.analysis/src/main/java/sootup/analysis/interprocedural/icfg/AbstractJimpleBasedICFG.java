@@ -33,7 +33,6 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 

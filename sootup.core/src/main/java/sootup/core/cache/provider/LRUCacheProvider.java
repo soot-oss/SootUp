@@ -2,7 +2,6 @@ package sootup.core.cache.provider;
 
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.LRUCache;
-import sootup.core.model.SootClass;
 
 /** Provides a new {@link LRUCache} object. */
 public class LRUCacheProvider implements ClassCacheProvider {

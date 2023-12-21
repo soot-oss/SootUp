@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /**
@@ -37,9 +36,7 @@ import sootup.core.types.ClassType;
 public interface ClassProvider {
 
   Optional<? extends SootClassSource> createClassSource(
-      AnalysisInputLocation inputLocation,
-      Path sourcePath,
-      ClassType classSignature);
+      AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

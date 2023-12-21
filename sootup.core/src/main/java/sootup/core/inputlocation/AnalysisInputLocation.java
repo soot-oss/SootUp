@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
-import sootup.core.model.AbstractClass;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -56,8 +54,7 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view);
+  Optional<? extends SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.

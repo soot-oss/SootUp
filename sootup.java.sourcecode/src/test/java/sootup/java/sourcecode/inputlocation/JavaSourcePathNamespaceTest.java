@@ -15,7 +15,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -95,8 +94,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath);
     JavaView view = new JavaView(inputLocation);
 
-    Set<SootClass> classes =
-        new HashSet<>(); // Set to track the classes to check
+    Set<SootClass> classes = new HashSet<>(); // Set to track the classes to check
     for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);

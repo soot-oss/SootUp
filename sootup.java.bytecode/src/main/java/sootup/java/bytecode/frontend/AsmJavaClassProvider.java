@@ -32,11 +32,9 @@ import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -53,9 +51,7 @@ public class AsmJavaClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation analysisInputLocation,
-      Path sourcePath,
-      ClassType classType) {
+      AnalysisInputLocation analysisInputLocation, Path sourcePath, ClassType classType) {
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
     try {

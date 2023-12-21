@@ -30,18 +30,14 @@ import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.BodySource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
@@ -127,13 +123,13 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     // Create the class signature
     JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
-    JavaSootField field = new JavaSootField(
+    JavaSootField field =
+        new JavaSootField(
             JavaIdentifierFactory.getInstance()
-            .getFieldSignature(classSignature, nameFieldSubSignature),
-      Collections.singleton(FieldModifier.PUBLIC),
-      null,
+                .getFieldSignature(classSignature, nameFieldSubSignature),
+            Collections.singleton(FieldModifier.PUBLIC),
+            null,
             NoPositionInformation.getInstance());
-
 
     // Build a soot class
     JavaSootClass c =
@@ -145,8 +141,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 null,
                 null,
                 null,
-                    Collections.singleton(field),
-                    Collections.emptySet(),
+                Collections.singleton(field),
+                Collections.emptySet(),
                 null,
                 EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
@@ -187,8 +183,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testInputLocationLibraryMode() {
     JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
-    Collection<SootClass> classes =
-        new HashSet<>(); // Set to track the classes to check
+    Collection<SootClass> classes = new HashSet<>(); // Set to track the classes to check
 
     for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {

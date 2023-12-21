@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.signatures.ModuleSignature;
 
 /** @author Kaustubh Kelkar */

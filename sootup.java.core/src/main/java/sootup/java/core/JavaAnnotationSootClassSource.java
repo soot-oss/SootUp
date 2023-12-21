@@ -25,7 +25,6 @@ package sootup.java.core;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 

@@ -9,13 +9,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.AbstractClass;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -106,8 +103,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
 
   @Override
   @Nonnull
-  public Optional<SootClassSource> getClassSource(
-      @Nonnull ClassType type, @Nonnull View view) {
+  public Optional<SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
     final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();

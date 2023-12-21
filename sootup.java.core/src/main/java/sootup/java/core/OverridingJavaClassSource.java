@@ -142,14 +142,16 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
-    Collection<? extends SootMethod> sootMethods = overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
+    Collection<? extends SootMethod> sootMethods =
+        overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
     return sootMethods.stream().map(method -> (JavaSootMethod) method).collect(Collectors.toList());
   }
 
   @Nonnull
   @Override
   public Collection<JavaSootField> resolveFields() throws ResolveException {
-    Collection<? extends SootField> sootFields = overriddenSootFields != null ? overriddenSootFields : delegate.resolveFields();
+    Collection<? extends SootField> sootFields =
+        overriddenSootFields != null ? overriddenSootFields : delegate.resolveFields();
     return sootFields.stream().map(field -> (JavaSootField) field).collect(Collectors.toList());
   }
 
@@ -162,21 +164,24 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Set<ClassType> resolveInterfaces() {
-    Set<? extends ClassType> classTypes = overriddenInterfaces != null ? overriddenInterfaces : delegate.resolveInterfaces();
+    Set<? extends ClassType> classTypes =
+        overriddenInterfaces != null ? overriddenInterfaces : delegate.resolveInterfaces();
     return classTypes.stream().map(ct -> (JavaClassType) ct).collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
   public Optional<ClassType> resolveSuperclass() {
-    Optional<? extends ClassType> classType = overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveSuperclass();
+    Optional<? extends ClassType> classType =
+        overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveSuperclass();
     return classType.map(ct -> (JavaClassType) ct);
   }
 
   @Nonnull
   @Override
   public Optional<ClassType> resolveOuterClass() {
-    Optional<? extends ClassType> classType = overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveOuterClass();
+    Optional<? extends ClassType> classType =
+        overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveOuterClass();
     return classType.map(ct -> (JavaClassType) ct);
   }
 
@@ -284,7 +289,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingJavaClassSource withFields(@Nonnull Collection<JavaSootField> overriddenSootFields) {
+  public OverridingJavaClassSource withFields(
+      @Nonnull Collection<JavaSootField> overriddenSootFields) {
     return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -316,7 +322,8 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingJavaClassSource withInterfaces(@Nonnull Set<JavaClassType> overriddenInterfaces) {
+  public OverridingJavaClassSource withInterfaces(
+      @Nonnull Set<JavaClassType> overriddenInterfaces) {
     return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,

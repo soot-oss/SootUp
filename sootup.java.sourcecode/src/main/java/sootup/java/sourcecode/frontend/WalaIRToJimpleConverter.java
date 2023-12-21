@@ -157,7 +157,10 @@ public class WalaIRToJimpleConverter {
           identifierFactory.getFieldSignature("this$0", classSig, outerClass);
       JavaSootField enclosingObject =
           new JavaSootField(
-              signature, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
+              signature,
+              EnumSet.of(FieldModifier.FINAL),
+              null,
+              NoPositionInformation.getInstance());
       sootFields.add(enclosingObject);
     }
 

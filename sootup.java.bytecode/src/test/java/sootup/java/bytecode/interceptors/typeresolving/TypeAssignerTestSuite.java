@@ -27,8 +27,7 @@ public class TypeAssignerTestSuite {
 
   public void buildView(String baseDir, String className) {
 
-    AnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir);
+    AnalysisInputLocation analysisInputLocation = new JavaClassPathAnalysisInputLocation(baseDir);
     AnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
 
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();

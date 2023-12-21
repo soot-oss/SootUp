@@ -26,8 +26,7 @@ public class JavaModuleViewTest {
 
   @Test
   public void testGeneralClassReceivalFromModule() {
-    List<AnalysisInputLocation> analysisInputLocations =
-        Collections.emptyList();
+    List<AnalysisInputLocation> analysisInputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(new JrtFileSystemAnalysisInputLocation());
 

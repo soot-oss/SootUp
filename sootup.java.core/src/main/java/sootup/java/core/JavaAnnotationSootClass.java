@@ -34,10 +34,11 @@ public class JavaAnnotationSootClass extends JavaSootClass {
     getMethods().forEach(method -> ((JavaAnnotationSootMethod) method).getDefaultValue());
   }
 
-
   @Nonnull
   @Override
   public Set<JavaSootMethod> getMethods() {
-    return  super.getMethods().stream().map(method -> (JavaAnnotationSootMethod) method).collect(Collectors.toSet());
+    return super.getMethods().stream()
+        .map(method -> (JavaAnnotationSootMethod) method)
+        .collect(Collectors.toSet());
   }
 }

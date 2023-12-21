@@ -28,15 +28,13 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
-import sootup.java.core.JavaSootClass;
 
 @Category(Java8Test.class)
 public class ApkAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
   public void testApk() {
-    AnalysisInputLocation pathBasedNamespace =
-        new ApkAnalysisInputLocation(apk, null);
+    AnalysisInputLocation pathBasedNamespace = new ApkAnalysisInputLocation(apk, null);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
     testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);

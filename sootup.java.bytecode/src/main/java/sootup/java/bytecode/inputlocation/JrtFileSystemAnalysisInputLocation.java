@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -96,7 +95,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
               "modules", modulePackageSignature.getModuleSignature().getModuleName());
       Path foundClass = module.resolve(filepath);
       if (Files.isRegularFile(foundClass)) {
-        return classProvider.createClassSource(this, foundClass, klassType).map(src -> (JavaSootClassSource) src);
+        return classProvider
+            .createClassSource(this, foundClass, klassType)
+            .map(src -> (JavaSootClassSource) src);
       } else {
         return Optional.empty();
       }
@@ -110,7 +111,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return classProvider.createClassSource(this, foundfile, klassType).map(src -> (JavaSootClassSource) src);
+            return classProvider
+                .createClassSource(this, foundfile, klassType)
+                .map(src -> (JavaSootClassSource) src);
           }
         }
       }
@@ -126,7 +129,8 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   @Nonnull
   public Collection<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view).map(src -> (JavaSootClassSource) src)
+    return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
+        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
@@ -160,18 +164,15 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                           this,
                           p,
                           this.fromPath(
-                              p.subpath(2, p.getNameCount()),
-                              p.subpath(1, 2),
-                              identifierFactory))))
-              .map(src -> (JavaSootClassSource) src);
+                              p.subpath(2, p.getNameCount()), p.subpath(1, 2), identifierFactory))))
+          .map(src -> (JavaSootClassSource) src);
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
   }
 
   @Override
-  public @Nonnull Collection<JavaSootClassSource> getClassSources(
-      @Nonnull View view) {
+  public @Nonnull Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
