@@ -21,17 +21,23 @@ public super class FieldRefValidator extends java.lang.Object
         return;
     }
 
-    public static void fieldRefVariable()
+    public static void fieldRefVariable_pass()
     {
-        unknown $stack1, $stack0;
-
-        $stack1 = <java.lang.System: java.io.PrintStream out>;
+        unknown $stack0;
 
         $stack0 = <FieldRefValidator: int num>;
 
-        virtualinvoke $stack1.<java.io.PrintStream: void println(int)>($stack0);
+        return;
+    }
+
+    public static void fieldRefVariable_fail(){
+
+        int nonStaticVar;
+
+        nonStaticVar = <FieldRefValidator: int num>;
 
         return;
+
     }
 }
 

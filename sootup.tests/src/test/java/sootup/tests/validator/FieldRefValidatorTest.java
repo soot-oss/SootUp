@@ -83,13 +83,33 @@ public class FieldRefValidatorTest {
                                 .get()
                                 .getMethods()
                                 .stream()
-                                .filter(m -> m.getName().equals("fieldRefVariable"))
+                                .filter(m -> m.getName().equals("fieldRefVariable_pass"))
                                 .map(m -> m.getBody())
                                 .findFirst()
                                 .get(),
                         jimpleView);
 
-        assertEquals(1, validationExceptions_success.size());
-//        System.out.println(validationExceptions_success.get(0).getMessage());
+        assertEquals(0, validationExceptions_success.size());
+    }
+
+    @Test
+    public void testFieldRefValidatorFailure() {
+        List<ValidationException> validationExceptions_fail;
+
+        validationExceptions_fail =
+                fieldRefValidator.validate(
+                        classes.stream()
+                                .filter(c -> c.getType().getClassName().equals("FieldRefValidator"))
+                                .findFirst()
+                                .get()
+                                .getMethods()
+                                .stream()
+                                .filter(m -> m.getName().equals("fieldRefVariable_fail"))
+                                .map(m -> m.getBody())
+                                .findFirst()
+                                .get(),
+                        jimpleView);
+
+        assertEquals(0, validationExceptions_fail.size());
     }
 }
