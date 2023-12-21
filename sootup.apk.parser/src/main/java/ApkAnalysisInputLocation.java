@@ -21,6 +21,7 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
@@ -118,6 +119,12 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
   @Override
   public SourceType getSourceType() {
     return SourceType.Application;
+  }
+
+  @Nonnull
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return null;
   }
 
   public String getAndroidJarPath(String jars, String apk) {

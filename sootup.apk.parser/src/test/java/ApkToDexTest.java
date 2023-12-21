@@ -1,16 +1,5 @@
-import static Util.Util.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import dexpler.DexClassSource;
-
-import java.io.File;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
-import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -21,11 +10,22 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
-import sootup.core.views.View;
-import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
+
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static Util.Util.dottedClassName;
+import static Util.Util.isByteCodeClassName;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ApkToDexTest {
 
@@ -37,11 +37,7 @@ public class ApkToDexTest {
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(sootClassApkAnalysisInputLocation)
-            .build();
-    view = javaProject.createMutableView();
+    view = new MutableJavaView(sootClassApkAnalysisInputLocation);
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     Map<String, EnumSet<ClassModifier>> classNamesList =
         sootClassApkAnalysisInputLocation.classNamesList;
@@ -76,7 +72,7 @@ public class ApkToDexTest {
                           Collections.emptyList(),
                           Collections.emptyList()),
                       SourceType.Application);
-              view.addClass(sootClass);
+//              view.addClass(sootClass);
               successfulconvertedNumber.getAndIncrement();
             }
           });
@@ -127,16 +123,12 @@ public class ApkToDexTest {
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(sootClassApkAnalysisInputLocation)
-            .build();
-    JavaView view = javaProject.createView(new FullCacheProvider<>());
+    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);;
     view.getClasses();
     System.out.println(
         "Time Taken to load 740 classes: "
             + dateFormat.format(System.currentTimeMillis() - startTime));
-    assertEquals(740, view.getAmountOfStoredClasses());
+    assertEquals(740, view.getNumberOfStoredClasses());
   }
 
   @Test
@@ -145,11 +137,7 @@ public class ApkToDexTest {
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(sootClassApkAnalysisInputLocation)
-            .build();
-    View view = javaProject.createView();
+    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v4.app.FragmentState$1";
     String methodName = "FragmentState$1";
     ClassType classType = view.getIdentifierFactory().getClassType(className);
