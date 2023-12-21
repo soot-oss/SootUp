@@ -190,7 +190,8 @@ public class TypeResolver {
         } else if (lhs instanceof JArrayRef) {
           local = ((JArrayRef) lhs).getBase();
         } else if (lhs instanceof JInstanceFieldRef) {
-          local = ((JInstanceFieldRef) lhs).getBase();
+          // local = ((JInstanceFieldRef) lhs).getBase();
+          continue; // assigment to a field is independent of the base type.
         } else {
           throw new IllegalStateException("can not handle " + lhs.getClass());
         }
