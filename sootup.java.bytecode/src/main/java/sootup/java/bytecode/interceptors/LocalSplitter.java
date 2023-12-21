@@ -72,7 +72,7 @@ public class LocalSplitter implements BodyInterceptor {
   // TODO: [ms] check equivTo()'s - I guess they can be equals()'s - or even: '=='s
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     // Find all Locals that must be split
     // If a local as a definition appears two or more times, then this local must be split

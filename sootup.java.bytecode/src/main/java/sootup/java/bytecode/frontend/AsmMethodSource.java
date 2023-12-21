@@ -96,7 +96,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nullable private JavaClassType declaringClass;
 
-  private final View<?> view;
+  private final View view;
   private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
@@ -114,7 +114,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      View<?> view,
+      View view,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;

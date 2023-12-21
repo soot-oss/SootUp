@@ -68,7 +68,7 @@ public class Aggregator implements BodyInterceptor {
    * given a def d and a use u, d has no other uses, u has no other defs, collapse d and u.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);

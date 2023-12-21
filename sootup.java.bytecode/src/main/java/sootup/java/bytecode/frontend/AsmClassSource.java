@@ -46,7 +46,7 @@ class AsmClassSource extends JavaSootClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
@@ -108,7 +108,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+  public Collection<JavaSootMethod> resolveMethods() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return classNode.methods.stream()
         .map(
@@ -148,7 +148,7 @@ class AsmClassSource extends JavaSootClassSource {
 
   @Override
   @Nonnull
-  public Collection<? extends SootField> resolveFields() throws ResolveException {
+  public Collection<JavaSootField> resolveFields() throws ResolveException {
     IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
@@ -159,12 +159,12 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Set<? extends ClassType> resolveInterfaces() {
+  public Set<JavaClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
   @Nonnull
-  public Optional<? extends ClassType> resolveSuperclass() {
+  public Optional<JavaClassType> resolveSuperclass() {
     if (classNode.superName == null) {
       return Optional.empty();
     }
@@ -172,7 +172,7 @@ class AsmClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public Optional<? extends ClassType> resolveOuterClass() {
+  public Optional<JavaClassType> resolveOuterClass() {
     if (classNode.outerClass == null) {
       return Optional.empty();
     }

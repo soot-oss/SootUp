@@ -57,7 +57,7 @@ public class ModuleFinder {
 
   // associate a module name with the input location, that represents the module
   @Nonnull
-  private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
+  private final Map<ModuleSignature, AnalysisInputLocation> moduleInputLocation =
       new HashMap<>();
 
   @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
@@ -126,10 +126,10 @@ public class ModuleFinder {
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation<JavaSootClass> getModule(@Nonnull ModuleSignature moduleName) {
+  public AnalysisInputLocation getModule(@Nonnull ModuleSignature moduleName) {
 
     // check if module is cached
-    AnalysisInputLocation<JavaSootClass> inputLocationForModule =
+    AnalysisInputLocation inputLocationForModule =
         moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;

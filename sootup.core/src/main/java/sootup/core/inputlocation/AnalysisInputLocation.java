@@ -56,7 +56,7 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<SootClassSource> getClassSource(
+  Optional<? extends SootClassSource> getClassSource(
       @Nonnull ClassType type, @Nonnull View view);
 
   /**
@@ -65,7 +65,7 @@ public interface AnalysisInputLocation {
    * @return The source entries.
    */
   @Nonnull
-  Collection<SootClassSource> getClassSources(@Nonnull View view);
+  Collection<? extends SootClassSource> getClassSources(@Nonnull View view);
 
   /**
    * If the AnalysisInputLocation is initialized with the SourceType then this method should return

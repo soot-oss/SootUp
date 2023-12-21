@@ -42,18 +42,18 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.types.ModuleJavaClassType;
 
 /** A {@link ClassProvider} capable of handling Java bytecode */
-public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
+public class AsmJavaClassProvider implements ClassProvider {
 
-  @Nonnull private final View<?> view;
+  @Nonnull private final View view;
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(AsmJavaClassProvider.class);
 
-  public AsmJavaClassProvider(@Nonnull View<?> view) {
+  public AsmJavaClassProvider(@Nonnull View view) {
     this.view = view;
   }
 
   @Override
-  public Optional<SootClassSource<JavaSootClass>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation,
+  public Optional<SootClassSource> createClassSource(
+      AnalysisInputLocation analysisInputLocation,
       Path sourcePath,
       ClassType classType) {
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
@@ -95,9 +95,9 @@ public class AsmJavaClassProvider implements ClassProvider<JavaSootClass> {
 
   class SootClassNode extends ClassNode {
 
-    private final AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation;
+    private final AnalysisInputLocation analysisInputLocation;
 
-    SootClassNode(AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation) {
+    SootClassNode(AnalysisInputLocation analysisInputLocation) {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
       this.analysisInputLocation = analysisInputLocation;
     }

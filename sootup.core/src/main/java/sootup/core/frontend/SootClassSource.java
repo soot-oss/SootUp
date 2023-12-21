@@ -69,11 +69,11 @@ public abstract class SootClassSource extends AbstractClassSource {
 
   /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
+  public abstract Collection<? extends SootMethod> resolveMethods() throws ResolveException;
 
   /** Reads from the source to retrieve its fields. This may be an expensive operation. */
   @Nonnull
-  public abstract Collection<SootField> resolveFields() throws ResolveException;
+  public abstract Collection<? extends SootField> resolveFields() throws ResolveException;
 
   /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
@@ -84,14 +84,14 @@ public abstract class SootClassSource extends AbstractClassSource {
    * operation.
    */
   @Nonnull
-  public abstract Set<ClassType> resolveInterfaces();
+  public abstract Set<? extends ClassType> resolveInterfaces();
 
   /**
    * Reads from the source to retrieve its superclass, if present. This may be an expensive
    * operation.
    */
   @Nonnull
-  public abstract Optional<ClassType> resolveSuperclass();
+  public abstract Optional<? extends ClassType> resolveSuperclass();
 
   /**
    * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
@@ -100,7 +100,7 @@ public abstract class SootClassSource extends AbstractClassSource {
    * @return
    */
   @Nonnull
-  public abstract Optional<ClassType> resolveOuterClass();
+  public abstract Optional<? extends ClassType> resolveOuterClass();
 
   /**
    * Reads from the source to retrieve its position in the source code. This may be an expensive
