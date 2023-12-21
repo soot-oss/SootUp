@@ -319,7 +319,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Set<MethodSignature> newMethodSignatures =
         clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
 
-
     if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
       // FIXME: [ms] handle better - remove from entry point signatures in this case
       throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
@@ -356,7 +355,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               MethodSignature overridingMethodSig =
                   clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
 
-              if( updated.containsMethod(overriddenMethodSig) ){
+              if (updated.containsMethod(overriddenMethodSig)) {
                 for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
                   updated.addCall(callingMethodSig, overridingMethodSig);
                 }

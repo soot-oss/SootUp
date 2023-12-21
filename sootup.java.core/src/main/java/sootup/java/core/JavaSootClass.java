@@ -37,12 +37,19 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class JavaSootClass extends SootClass<JavaSootClassSource> {
 
   public JavaSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
+  }
+
+  @Nonnull
+  @Override
+  public JavaClassType getType() {
+    return (JavaClassType) super.getType();
   }
 
   /**
