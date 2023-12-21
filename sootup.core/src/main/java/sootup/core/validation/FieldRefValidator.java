@@ -4,7 +4,7 @@ package sootup.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Akshita Dubey and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,14 +24,7 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-//import sootup.core.graph.MutableStmtGraph;
-//import sootup.core.jimple.common.ref.JFieldRef;
-//import sootup.core.jimple.common.ref.JInstanceFieldRef;
-//import sootup.core.jimple.common.ref.JStaticFieldRef;
-//import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-//import sootup.core.model.MethodModifier;
-//import sootup.core.model.SootField;
 import sootup.core.views.View;
 
 public class FieldRefValidator implements BodyValidator {
