@@ -53,7 +53,7 @@ public class CGEdgeUtil {
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      View<? extends SootClass> view, CallGraph cg) {
+      View view, CallGraph cg) {
     Set<MethodSignature> methodSigs = cg.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {

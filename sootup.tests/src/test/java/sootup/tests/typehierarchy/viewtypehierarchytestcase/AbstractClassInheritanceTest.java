@@ -19,7 +19,7 @@ import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
-    SootClass<?> sootClass =
+    SootClass sootClass =
         customTestWatcher
             .getView()
             .getClass(identifierFactory.getClassType(customTestWatcher.getClassName()))
@@ -29,7 +29,7 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
 
     ClassType superClassType = sootClass.getSuperclass().orElse(null);
     assertNotNull(superClassType);
-    SootClass<?> superClass = customTestWatcher.getView().getClass(superClassType).orElse(null);
+    SootClass superClass = customTestWatcher.getView().getClass(superClassType).orElse(null);
     assertNotNull(superClass);
     assertTrue(superClass.isAbstract());
 

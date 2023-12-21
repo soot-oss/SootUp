@@ -23,7 +23,7 @@ public abstract class JavaTypeHierarchyTestBase {
   public static class CustomTestWatcher extends TestWatcher {
 
     private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
-    private AnalysisInputLocation<? extends JavaSootClass> srcCode;
+    private AnalysisInputLocation srcCode;
     private JavaView view;
 
     @Override

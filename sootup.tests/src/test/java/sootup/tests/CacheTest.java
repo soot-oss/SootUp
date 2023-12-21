@@ -26,7 +26,7 @@ import sootup.java.core.views.JavaView;
 @Category(Java8Test.class)
 public class CacheTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  static List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations;
+  static List<AnalysisInputLocation> inputLocations;
 
   /** Load the jar file for analysis as input location. */
   @BeforeClass
@@ -39,7 +39,7 @@ public class CacheTest {
   /** Test the {@link sootup.core.cache.FullCache} class */
   @Test
   public void fullCacheTest() {
-    JavaView view = new JavaView(inputLocations, new FullCacheProvider<>());
+    JavaView view = new JavaView(inputLocations, new FullCacheProvider());
     assertEquals(0, view.getNumberOfStoredClasses());
 
     ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
@@ -58,7 +58,7 @@ public class CacheTest {
   /** Test the {@link sootup.core.cache.LRUCache} class */
   @Test
   public void lruCacheTest() {
-    JavaView view = new JavaView(inputLocations, new LRUCacheProvider<>(1));
+    JavaView view = new JavaView(inputLocations, new LRUCacheProvider(1));
     assertEquals(0, view.getNumberOfStoredClasses());
 
     ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
@@ -73,7 +73,7 @@ public class CacheTest {
     view.getClasses();
     assertEquals(1, view.getNumberOfStoredClasses());
 
-    JavaView newView = new JavaView(inputLocations, new LRUCacheProvider<>());
+    JavaView newView = new JavaView(inputLocations, new LRUCacheProvider());
     newView.getClasses();
     assertEquals(6, newView.getNumberOfStoredClasses());
   }

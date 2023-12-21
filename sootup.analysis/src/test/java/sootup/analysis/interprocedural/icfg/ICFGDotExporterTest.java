@@ -40,7 +40,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGDotExportTest() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
@@ -49,7 +49,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
@@ -75,7 +75,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGDotExportTest2() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
@@ -84,7 +84,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample2");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
@@ -110,7 +110,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGArrayListDotExport() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
@@ -119,7 +119,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGArrayListExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
 
@@ -137,7 +137,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGInterfaceDotExport() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
@@ -146,7 +146,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGInterfaceExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
 

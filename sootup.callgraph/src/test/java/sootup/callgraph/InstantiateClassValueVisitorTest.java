@@ -73,7 +73,7 @@ import sootup.java.core.views.JavaView;
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {
-    View<JavaSootClass> view = new JavaView(new DefaultRTJarAnalysisInputLocation());
+    View view = new JavaView(new DefaultRTJarAnalysisInputLocation());
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -99,7 +99,7 @@ public class InstantiateClassValueVisitorTest {
     assertFalse(foundClassTypes.contains(identifierFactory.getClassType("java.lang.String")));
   }
 
-  private void fillList(List<Value> listWithAllValues, View<JavaSootClass> view) {
+  private void fillList(List<Value> listWithAllValues, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     // interesting cases
     PrimitiveType charType = identifierFactory.getPrimitiveType("char").orElse(null);

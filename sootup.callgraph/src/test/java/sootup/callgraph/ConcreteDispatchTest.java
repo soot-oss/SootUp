@@ -33,7 +33,7 @@ public class ConcreteDispatchTest {
 
   @BeforeClass
   public static void setUp() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/callgraph/ConcreteDispatch/binary"));

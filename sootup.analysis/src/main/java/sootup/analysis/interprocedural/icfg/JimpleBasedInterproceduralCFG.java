@@ -210,7 +210,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull CallGraph cg) {
+      @Nonnull View view, @Nonnull CallGraph cg) {
     Set<MethodSignature> methodSigs = cg.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {

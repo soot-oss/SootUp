@@ -74,7 +74,7 @@ public class IFDSTaintTestSetUp {
    * classes.
    */
   private void setupSoot(String targetTestClassName) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"));
 
@@ -83,7 +83,7 @@ public class IFDSTaintTestSetUp {
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType(targetTestClassName);
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 

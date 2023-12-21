@@ -70,7 +70,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param view it contains the data of the classes and methods
    */
-  public RapidTypeAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+  public RapidTypeAnalysisAlgorithm(@Nonnull View view) {
     super(view);
   }
 
@@ -219,7 +219,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void preProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
@@ -267,7 +267,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void postProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {

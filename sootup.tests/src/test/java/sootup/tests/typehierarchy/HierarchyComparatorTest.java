@@ -23,11 +23,11 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 @Category(Java8Test.class)
 public class HierarchyComparatorTest {
 
-  private static View<? extends SootClass<?>> view;
+  private static View view;
 
   @BeforeClass
   public static void setUp() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaSourcePathAnalysisInputLocation(
             Collections.singleton("src/test/resources/javatypehierarchy/Comparator")));

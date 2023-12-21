@@ -41,7 +41,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   protected final boolean enableExceptions;
 
-  protected View<? extends SootClass<?>> view;
+  protected View view;
 
   @DontSynchronize("written by single thread; read afterwards")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();
