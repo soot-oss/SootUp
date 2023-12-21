@@ -22,7 +22,7 @@ public class Soot1580Test {
   @Test
   @Ignore("Localsplitter fails; bytecode itself is somehow strange")
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             jar, null, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

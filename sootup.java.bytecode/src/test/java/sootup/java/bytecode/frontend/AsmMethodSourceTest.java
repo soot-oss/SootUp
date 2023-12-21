@@ -41,7 +41,7 @@ public class AsmMethodSourceTest {
 
     assertTrue(idf.isConstructorSubSignature(mainMethodSignature.getSubSignature()));
 
-    final SootClass<?> abstractClass = view.getClass(mainClassSignature).get();
+    final SootClass abstractClass = view.getClass(mainClassSignature).get();
 
     final SootMethod method = abstractClass.getMethod(mainMethodSignature.getSubSignature()).get();
     method.getBody().getStmts();

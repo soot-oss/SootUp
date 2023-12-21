@@ -35,7 +35,7 @@ public class ApkAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
   public void testApk() {
-    AnalysisInputLocation<JavaSootClass> pathBasedNamespace =
+    AnalysisInputLocation pathBasedNamespace =
         new ApkAnalysisInputLocation(apk, null);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");

@@ -131,8 +131,8 @@ public class JavaView extends AbstractView {
 
   @Nonnull
   @Override
-  public IdentifierFactory getIdentifierFactory() {
-    return new JavaLanguage(8).getIdentifierFactory();
+  public JavaIdentifierFactory getIdentifierFactory() {
+    return (JavaIdentifierFactory) new JavaLanguage(8).getIdentifierFactory();
   }
 
   /** Returns the number of classes that are currently stored in the cache. */

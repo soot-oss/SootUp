@@ -53,6 +53,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -60,12 +61,12 @@ import sootup.java.core.types.JavaClassType;
  *
  * @author Linghui Luo
  */
-public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
+public class WalaJavaClassProvider implements ClassProvider {
 
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
-  private List<SootClass<?>> sootClasses;
-  private List<SootClassSource<JavaSootClass>> classSources;
+  private List<JavaSootClass> sootClasses;
+  private List<JavaSootClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
   private final File walaPropertiesFile = new File("wala.properties");
@@ -223,7 +224,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *
    * @return list of classes
    */
-  public List<SootClassSource<JavaSootClass>> getClassSources(SourceType srcType) {
+  public List<JavaSootClassSource> getClassSources(SourceType srcType) {
     Iterator<IClass> it = iterateWalaClasses();
     if (classSources == null) {
       classSources = new ArrayList<>();
@@ -231,7 +232,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, srcType);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);
+     JavaSootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
     return classSources;
@@ -245,7 +246,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *     is the responsibility of the View.
    */
   @Deprecated
-  public List<SootClass<?>> getSootClasses() {
+  public List<JavaSootClass> getSootClasses() {
     Iterator<IClass> it = iterateWalaClasses();
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();
@@ -253,7 +254,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClass<?> sootClass = walaToSoot.convertClass(walaClass);
+      JavaSootClass sootClass = walaToSoot.convertClass(walaClass);
       sootClasses.add(sootClass);
     }
     return sootClasses;
@@ -287,7 +288,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   /** Return a ClassSource with the given signature converted from a WALA class. */
-  public Optional<SootClassSource<JavaSootClass>> getClassSource(ClassType signature) {
+  public Optional<JavaSootClassSource> getClassSource(ClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
@@ -347,8 +348,8 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   @Override
-  public Optional<SootClassSource<JavaSootClass>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> srcNamespace, Path sourcePath, ClassType type) {
+  public Optional<JavaSootClassSource> createClassSource(
+      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return getClassSource(type);
   }
 

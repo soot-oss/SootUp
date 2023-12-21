@@ -204,7 +204,7 @@ public abstract class PathBasedAnalysisInputLocation
       return Optional.empty();
     }
 
-    Optional<SootClassSource> classSource = classProvider.createClassSource(this, pathToClass, signature);
+    Optional<? extends SootClassSource> classSource = classProvider.createClassSource(this, pathToClass, signature);
 
     return classSource.map(src -> (JavaSootClassSource) src);
   }
@@ -220,7 +220,7 @@ public abstract class PathBasedAnalysisInputLocation
       return Optional.empty();
     }
 
-    Optional<SootClassSource> classSource = classProvider.createClassSource(this, pathToClass, signature);
+    Optional<? extends SootClassSource> classSource = classProvider.createClassSource(this, pathToClass, signature);
 
     return classSource.map(src -> (JavaSootClassSource) src);
   }

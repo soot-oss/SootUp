@@ -17,7 +17,7 @@ public class IndyTests {
 
   @Test
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(directory);
 
     JavaView view = new JavaView(inputLocation);

@@ -14,6 +14,7 @@ import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
@@ -34,11 +35,11 @@ public class WalaJavaClassProviderTest {
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(srcDir, exclusionFilePath);
 
-    Optional<SootClassSource<JavaSootClass>> opFakeClass =
+    Optional<JavaSootClassSource> opFakeClass =
         provider.createClassSource(inputLocation, Paths.get(srcDir), faketype);
     assertFalse(opFakeClass.isPresent());
 
-    Optional<SootClassSource<JavaSootClass>> opClass =
+    Optional<JavaSootClassSource> opClass =
         provider.createClassSource(inputLocation, Paths.get(srcDir), type);
     assertTrue(opClass.isPresent());
     SootClassSource classSource = opClass.get();

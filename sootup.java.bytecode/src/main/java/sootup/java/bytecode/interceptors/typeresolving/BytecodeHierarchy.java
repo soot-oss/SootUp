@@ -39,7 +39,7 @@ public class BytecodeHierarchy {
   private final ClassType serializableClassType;
   private final ClassType cloneableClassType;
 
-  public BytecodeHierarchy(View<? extends SootClass<?>> view) {
+  public BytecodeHierarchy(View view) {
     this.typeHierarchy = view.getTypeHierarchy();
     IdentifierFactory factory = view.getIdentifierFactory();
     objectClassType = factory.getClassType("java.lang.Object");

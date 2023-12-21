@@ -58,10 +58,7 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
 import sootup.java.core.types.AnnotationType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -77,7 +74,7 @@ public class WalaIRToJimpleConverter {
   private final AnalysisInputLocation srcNamespace;
   private final HashMap<String, Integer> clsWithInnerCls;
   private final HashMap<String, String> walaToSootNameTable;
-  private Set<SootField> sootFields;
+  private Set<JavaSootField> sootFields;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
@@ -102,7 +99,7 @@ public class WalaIRToJimpleConverter {
    */
   // TODO: remove deprecated
   @Deprecated
-  public SootClass convertClass(AstClass walaClass) {
+  public JavaSootClass convertClass(AstClass walaClass) {
     JavaSootClassSource classSource = convertToClassSource(walaClass);
     // TODO: [ms] fix fixed SourceType - get it from project
     return new JavaSootClass(classSource, SourceType.Application);
@@ -120,7 +117,7 @@ public class WalaIRToJimpleConverter {
     }
 
     // get interfaces
-    Set<ClassType> interfaces = new HashSet<>();
+    Set<JavaClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
           identifierFactory.getClassType(convertClassNameFromWala(i.getName().toString()));
@@ -150,7 +147,7 @@ public class WalaIRToJimpleConverter {
     fields.addAll(walaClass.getDeclaredStaticFields());
     sootFields = new HashSet<>();
     for (IField walaField : fields) {
-      SootField sootField = convertField(classSig, (AstField) walaField);
+      JavaSootField sootField = convertField(classSig, (AstField) walaField);
       sootFields.add(sootField);
     }
 
@@ -158,17 +155,17 @@ public class WalaIRToJimpleConverter {
       // create enclosing reference to outerClass
       FieldSignature signature =
           identifierFactory.getFieldSignature("this$0", classSig, outerClass);
-      SootField enclosingObject =
-          new SootField(
-              signature, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+      JavaSootField enclosingObject =
+          new JavaSootField(
+              signature, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
       sootFields.add(enclosingObject);
     }
 
     // convert methods
-    Set<SootMethod> sootMethods = new HashSet<>();
+    Set<JavaSootMethod> sootMethods = new HashSet<>();
 
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
-      SootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
+      JavaSootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
       sootMethods.add(sootMethod);
     }
 
@@ -189,10 +186,10 @@ public class WalaIRToJimpleConverter {
   public OverridingJavaClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
-      Set<ClassType> interfaces,
+      Set<JavaClassType> interfaces,
       JavaClassType outerClass,
-      Set<SootField> sootFields,
-      Set<SootMethod> sootMethods,
+      Set<JavaSootField> sootFields,
+      Set<JavaSootMethod> sootMethods,
       Position position,
       EnumSet<ClassModifier> modifiers,
       Iterable<AnnotationType> annotations) {
@@ -223,12 +220,12 @@ public class WalaIRToJimpleConverter {
    * @param walaField the wala field
    * @return A SootField object converted from walaField.
    */
-  public SootField convertField(JavaClassType classSig, AstField walaField) {
+  public JavaSootField convertField(JavaClassType classSig, AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
     EnumSet<FieldModifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
         identifierFactory.getFieldSignature(walaField.getName().toString(), classSig, type);
-    return new SootField(signature, modifiers, NoPositionInformation.getInstance());
+    return new JavaSootField(signature, modifiers, null, NoPositionInformation.getInstance());
   }
 
   /**
@@ -237,7 +234,7 @@ public class WalaIRToJimpleConverter {
    * @param classSig the SootClass which should contain the converted SootMethod
    * @param walaMethod the walMethod to be converted
    */
-  public SootMethod convertMethod(JavaClassType classSig, AstMethod walaMethod) {
+  public JavaSootMethod convertMethod(JavaClassType classSig, AstMethod walaMethod) {
     // create SootMethod instance
     List<Type> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
@@ -624,7 +621,7 @@ public class WalaIRToJimpleConverter {
     return "L" + signature.replace('.', '/');
   }
 
-  protected void addSootField(SootField field) {
+  protected void addSootField(JavaSootField field) {
     if (this.sootFields != null) {
       this.sootFields.add(field);
     }

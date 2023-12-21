@@ -15,7 +15,7 @@ import sootup.java.core.views.JavaView;
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new DefaultRTJarAnalysisInputLocation(
             SourceType.Library, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

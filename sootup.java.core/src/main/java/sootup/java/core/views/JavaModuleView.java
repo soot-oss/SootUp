@@ -40,10 +40,7 @@ import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
@@ -434,8 +431,8 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull
   @Override
-  public IdentifierFactory getIdentifierFactory() {
-    return new JavaLanguage(9).getIdentifierFactory();
+  public JavaModuleIdentifierFactory getIdentifierFactory() {
+    return (JavaModuleIdentifierFactory) new JavaLanguage(9).getIdentifierFactory();
   }
 
   @Nonnull

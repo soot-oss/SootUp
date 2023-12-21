@@ -18,7 +18,7 @@ public class Soot1577Test {
   @Test
   @Ignore("conversion fails - could be a dex2jar conversion problem")
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(directory);
 
     JavaView view = new JavaView(inputLocation);

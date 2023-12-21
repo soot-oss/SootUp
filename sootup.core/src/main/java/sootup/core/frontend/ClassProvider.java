@@ -36,7 +36,7 @@ import sootup.core.types.ClassType;
  */
 public interface ClassProvider {
 
-  Optional<SootClassSource> createClassSource(
+  Optional<? extends SootClassSource> createClassSource(
       AnalysisInputLocation inputLocation,
       Path sourcePath,
       ClassType classSignature);

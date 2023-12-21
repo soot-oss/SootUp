@@ -83,6 +83,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 import sootup.java.core.ConstantUtil;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -313,10 +314,11 @@ public class InstructionConverter {
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
-    SootField assertionsDisabled =
-        new SootField(
+    JavaSootField assertionsDisabled =
+        new JavaSootField(
             fieldSig,
             EnumSet.of(FieldModifier.FINAL, FieldModifier.STATIC),
+            null,
             NoPositionInformation.getInstance());
 
     converter.addSootField(assertionsDisabled);
@@ -419,9 +421,9 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field =
-            new SootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+        JavaSootField field =
+            new JavaSootField(
+                fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -452,9 +454,9 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field =
-            new SootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+        JavaSootField field =
+            new JavaSootField(
+                fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {

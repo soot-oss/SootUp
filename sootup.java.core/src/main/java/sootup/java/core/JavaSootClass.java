@@ -37,6 +37,7 @@ import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 public class JavaSootClass extends SootClass {
@@ -159,28 +160,28 @@ public class JavaSootClass extends SootClass {
 
   @Nonnull
   public JavaSootClass withReplacedMethod(
-      @Nonnull SootMethod toReplace, @Nonnull SootMethod replacement) {
+      @Nonnull JavaSootMethod toReplace, @Nonnull JavaSootMethod replacement) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withReplacedMethod(toReplace, replacement),
         sourceType);
   }
 
   @Nonnull
-  public JavaSootClass withMethods(@Nonnull Collection<SootMethod> methods) {
+  public JavaSootClass withMethods(@Nonnull Collection<JavaSootMethod> methods) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withMethods(methods), sourceType);
   }
 
   @Nonnull
   public JavaSootClass withReplacedField(
-      @Nonnull SootField toReplace, @Nonnull SootField replacement) {
+      @Nonnull JavaSootField toReplace, @Nonnull JavaSootField replacement) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withReplacedField(toReplace, replacement),
         sourceType);
   }
 
   @Nonnull
-  public JavaSootClass withFields(@Nonnull Collection<SootField> fields) {
+  public JavaSootClass withFields(@Nonnull Collection<JavaSootField> fields) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withFields(fields), sourceType);
   }
@@ -193,14 +194,14 @@ public class JavaSootClass extends SootClass {
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public JavaSootClass withSuperclass(@Nonnull Optional<ClassType> superclass) {
+  public JavaSootClass withSuperclass(@Nonnull Optional<JavaClassType> superclass) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withSuperclass(superclass), sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public JavaSootClass withOuterClass(@Nonnull Optional<ClassType> outerClass) {
+  public JavaSootClass withOuterClass(@Nonnull Optional<JavaClassType> outerClass) {
     return new JavaSootClass(
         new OverridingJavaClassSource(getClassSource()).withOuterClass(outerClass), sourceType);
   }
