@@ -46,6 +46,12 @@ public class JavaSootClass extends SootClass {
     super(classSource, sourceType);
   }
 
+  @Nonnull
+  @Override
+  public JavaClassType getType() {
+    return (JavaClassType) super.getType();
+  }
+
   /**
    * Get all annotations on this class. If provided with a View, will also resolve all inherited
    * annotations from super classes.

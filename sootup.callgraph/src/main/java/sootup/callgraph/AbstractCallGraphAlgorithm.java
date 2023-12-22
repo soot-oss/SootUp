@@ -310,15 +310,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
-    MutableCallGraph updated = oldCallGraph.copy();
-
     SootClass clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
-        clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
+        clazz.getMethods().stream()
+            .map(Method::getSignature)
+            .filter(methodSig -> !oldCallGraph.containsMethod(methodSig))
+            .collect(Collectors.toSet());
 
-    if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
-      throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
+    // were all the added method signatures already visited in the CallGraph? i.e. is there
+    // something to add?
+    if (newMethodSignatures.isEmpty()) {
+      return oldCallGraph;
     }
+
+    MutableCallGraph updated = oldCallGraph.copy();
 
     // Step 1: Add edges from the new methods to other methods
     Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
@@ -351,8 +356,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               MethodSignature overridingMethodSig =
                   clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
 
-              for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
-                updated.addCall(callingMethodSig, overridingMethodSig);
+              if (updated.containsMethod(overriddenMethodSig)) {
+                for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
+                  updated.addCall(callingMethodSig, overridingMethodSig);
+                }
               }
             });
 
