@@ -217,7 +217,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
 
     // collect all static initializer calls
-      return resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
+    return resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
   }
 
   /**
@@ -459,7 +459,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               + " to resolve the concrete method");
       return Optional.empty();
     }
-    Optional<SootMethod> startMethod =  startclass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
+    Optional<SootMethod> startMethod =
+        startclass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
     if (startMethod.isPresent()) {
       return startMethod;
     }
@@ -469,7 +470,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     for (ClassType superClassType : superClasses) {
       Optional<SootMethod> method =
           view.getMethod(
-              identifierFactory.getMethodSignature(superClassType, sig.getSubSignature())).map(sm -> (SootMethod) sm);
+                  identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()))
+              .map(sm -> (SootMethod) sm);
       if (method.isPresent()) {
         return method;
       }
@@ -491,7 +493,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 (m1, m2) ->
                     hierarchyComparator.compare(
                         m1.getDeclaringClassType(), m2.getDeclaringClassType()))
-                .map(method -> (SootMethod) method);;
+            .map(method -> (SootMethod) method);
+    ;
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }
