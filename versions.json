@@ -16,6 +16,11 @@
     }
   },
   {
+    "version": "featur_removeGenerics_preview",
+    "title": "PR Preview featur_removeGenerics",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
