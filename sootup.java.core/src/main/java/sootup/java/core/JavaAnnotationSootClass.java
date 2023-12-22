@@ -31,12 +31,11 @@ public class JavaAnnotationSootClass extends JavaSootClass {
 
   public JavaAnnotationSootClass(JavaSootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
-    getMethods().forEach(method -> ((JavaAnnotationSootMethod) method).getDefaultValue());
+    getAnnotationMethods().forEach(JavaAnnotationSootMethod::getDefaultValue);
   }
 
   @Nonnull
-  @Override
-  public Set<JavaSootMethod> getMethods() {
+  public Set<JavaAnnotationSootMethod> getAnnotationMethods() {
     return super.getMethods().stream()
         .map(method -> (JavaAnnotationSootMethod) method)
         .collect(Collectors.toSet());
