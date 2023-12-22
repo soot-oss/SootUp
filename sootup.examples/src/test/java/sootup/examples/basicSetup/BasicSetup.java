@@ -31,7 +31,7 @@ public class BasicSetup {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
     // Create a view for project, which allows us to retrieve classes
@@ -50,8 +50,7 @@ public class BasicSetup {
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass =
-        (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    SootClass sootClass = view.getClass(classType).get();
 
     // Retrieve method
     view.getMethod(methodSignature);

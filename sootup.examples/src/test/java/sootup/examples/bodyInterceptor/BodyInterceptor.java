@@ -27,7 +27,7 @@ public class BodyInterceptor {
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/BodyInterceptor/binary",
             null,
@@ -48,7 +48,7 @@ public class BodyInterceptor {
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass = view.getClass(classType).get();
+    SootClass sootClass = view.getClass(classType).get();
 
     // Retrieve method
     assertTrue(view.getMethod(methodSignature).isPresent());
