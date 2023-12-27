@@ -36,7 +36,7 @@ public class ApkToDexTest {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
+            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
     view = new MutableJavaView(sootClassApkAnalysisInputLocation);
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     Map<String, EnumSet<ClassModifier>> classNamesList =
@@ -122,7 +122,7 @@ public class ApkToDexTest {
     SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
+            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);;
     view.getClasses();
     System.out.println(
@@ -136,7 +136,7 @@ public class ApkToDexTest {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms");
+            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v4.app.FragmentState$1";
     String methodName = "FragmentState$1";

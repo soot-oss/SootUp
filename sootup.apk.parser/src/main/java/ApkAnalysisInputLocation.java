@@ -43,12 +43,15 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
 
   private AndroidVersionInfo androidSDKVersionInfo;
 
+  private final List<BodyInterceptor> bodyInterceptors;
+
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
   private static final Logger logger = LoggerFactory.getLogger(ApkAnalysisInputLocation.class);
 
-  public ApkAnalysisInputLocation(Path apkPath, String android_jar_path) {
+  public ApkAnalysisInputLocation(Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
+    this.bodyInterceptors = bodyInterceptors;
     this.android_jar_path = getAndroidJarPath(android_jar_path, apkPath.toString());
     this.classNamesList = extractDexFilesFromPath();
     SourceLocator.getInstance().setClassPath(this.apk_path.toString(), this.android_jar_path);
@@ -124,7 +127,7 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
   @Nonnull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
-    return null;
+    return bodyInterceptors;
   }
 
   public String getAndroidJarPath(String jars, String apk) {
