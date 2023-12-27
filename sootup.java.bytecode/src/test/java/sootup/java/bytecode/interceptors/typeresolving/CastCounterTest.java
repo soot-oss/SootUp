@@ -12,7 +12,11 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.types.*;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
+import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
+import sootup.java.core.interceptors.typeresolving.CastCounter;
+import sootup.java.core.interceptors.typeresolving.Typing;
+import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 
 @Category(Java8Test.class)
 public class CastCounterTest extends TypeAssignerTestSuite {

@@ -1,9 +1,9 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.core.interceptors;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,23 +20,25 @@ package sootup.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.List;
+
 import javax.annotation.Nonnull;
-import sootup.core.inputlocation.ClassLoadingOptions;
+import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.core.views.View;
+import sootup.java.core.interceptors.typeresolving.TypeResolver;
+import sootup.java.core.views.JavaView;
 
 /**
- * Built-in sets of {@link ClassLoadingOptions} for the bytecode frontend.
+ * This transformer assigns types to local variables.
  *
- * @author Christian Brüggemann
+ * @author Zun Wang
  */
-public enum BytecodeClassLoadingOptions implements ClassLoadingOptions {
-  Default {
-    @Nonnull
-    @Override
-    public List<BodyInterceptor> getBodyInterceptors() {
-      return BytecodeBodyInterceptors.Default.bodyInterceptors();
-    }
+public class TypeAssigner implements BodyInterceptor {
+
+  public TypeAssigner() {}
+
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+    new TypeResolver((JavaView) view).resolve(builder);
   }
 }

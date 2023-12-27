@@ -24,6 +24,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.ConditionalBranchFolder;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 

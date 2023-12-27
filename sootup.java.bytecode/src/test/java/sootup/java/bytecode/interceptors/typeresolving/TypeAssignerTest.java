@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.interceptors.LocalNameStandardizer;
-import sootup.java.bytecode.interceptors.TypeAssigner;
+import sootup.java.core.interceptors.LocalNameStandardizer;
+import sootup.java.core.interceptors.TypeAssigner;
 
 @Category(Java8Test.class)
 public class TypeAssignerTest extends TypeAssignerTestSuite {

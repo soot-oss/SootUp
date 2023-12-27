@@ -8,8 +8,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.core.interceptors.typeresolving.PrimitiveHierarchy;
+import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)

@@ -1,9 +1,9 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.core.interceptors.typeresolving.types;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 2019-2022 Zun Wang
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,23 +20,34 @@ package sootup.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.List;
+
 import javax.annotation.Nonnull;
-import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.transform.BodyInterceptor;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.core.jimple.visitor.TypeVisitor;
+import sootup.core.types.Type;
 
 /**
- * Built-in sets of {@link ClassLoadingOptions} for the bytecode frontend.
+ * This type is an imaginary/intermediate type which is used to calculate Type Inference
  *
- * @author Christian Brüggemann
+ * @author Zun Wang
  */
-public enum BytecodeClassLoadingOptions implements ClassLoadingOptions {
-  Default {
-    @Nonnull
-    @Override
-    public List<BodyInterceptor> getBodyInterceptors() {
-      return BytecodeBodyInterceptors.Default.bodyInterceptors();
-    }
+public class BottomType extends Type {
+
+  @Nonnull private static final BottomType INSTANCE = new BottomType();
+
+  @Nonnull
+  public static BottomType getInstance() {
+    return INSTANCE;
+  }
+
+  private BottomType() {}
+
+  @Override
+  public void accept(@Nonnull TypeVisitor v) {
+    v.defaultCaseType();
+  }
+
+  @Override
+  public String toString() {
+    return "BottomType";
   }
 }

@@ -23,6 +23,7 @@ import sootup.core.types.VoidType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.LocalPacker;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 

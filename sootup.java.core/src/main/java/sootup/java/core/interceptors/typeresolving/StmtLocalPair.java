@@ -1,9 +1,10 @@
-package sootup.java.bytecode.inputlocation;
+package sootup.java.core.interceptors.typeresolving;
+
 /*-
  * #%L
- * Soot - a J*va Optimization Framework
+ * SootUp
  * %%
- * Copyright (C) 2019-2020 Christian Brüggemann
+ * Copyright (C) 1997 - 2023 Raja Vallée-Rai and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -20,23 +21,30 @@ package sootup.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.List;
-import javax.annotation.Nonnull;
-import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.transform.BodyInterceptor;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 
-/**
- * Built-in sets of {@link ClassLoadingOptions} for the bytecode frontend.
- *
- * @author Christian Brüggemann
- */
-public enum BytecodeClassLoadingOptions implements ClassLoadingOptions {
-  Default {
-    @Nonnull
-    @Override
-    public List<BodyInterceptor> getBodyInterceptors() {
-      return BytecodeBodyInterceptors.Default.bodyInterceptors();
-    }
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.Stmt;
+
+// FIXME: ms: refactor to Pair<Stmt, Local>
+public class StmtLocalPair {
+  private final Stmt stmt;
+  private final Local local;
+
+  public StmtLocalPair(Stmt stmt, Local local) {
+    this.stmt = stmt;
+    this.local = local;
+  }
+
+  public Stmt getStmt() {
+    return this.stmt;
+  }
+
+  public Local getLocal() {
+    return this.local;
+  }
+
+  @Override
+  public String toString() {
+    return "(" + stmt + "," + local + ")";
   }
 }

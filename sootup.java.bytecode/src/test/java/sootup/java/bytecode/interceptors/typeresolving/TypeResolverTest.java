@@ -19,6 +19,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
