@@ -1,37 +1,50 @@
 public super class FieldRefValidator extends java.lang.Object
 {
-    static int num;
-    double pi;
+    private int x;
+
+    private static int y;
+
+    public void <init>()
+    {
+        FieldRefValidator $l0;
+
+
+        $l0 := @this: FieldRefValidator;
+        specialinvoke $l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
 
     static void <clinit>()
     {
 
-        <FieldRefValidator: int num> = 6;
-        <FieldRefValidator: double pi> = 3.14;
+        <FieldRefValidator: int y> = 5;
 
         return;
     }
 
-    public void <init>()
+    public void testFieldRefVariable_pass()
     {
-        unknown l0;
+        FieldRefValidator $l0;
+        unknown $stack1, $stack2;
 
-        l0 := @this: FieldRefValidator;
-
-        specialinvoke l0.<java.lang.Object: void <init>()>();
+        $l0 := @this: FieldRefValidator;
+        $stack1 = $l0.<FieldRefValidator: int x>;
+        $stack2 = <FieldRefValidator: int y>;
 
         return;
     }
 
-    public static void fieldRefVariable_pass()
+    public void testFieldRefVariable_fail()
     {
-        unknown $stack0, $stack1;
+        FieldRefValidator $l0;
+        unknown $stack1, $stack2;
 
-        $stack0 = <FieldRefValidator: int num>;
-
-        $stack1 = <FieldRefValidator: double pi>;
+        $l0 := @this: FieldRefValidator;
+        $stack1 = <FieldRefValidator: int x>;
+        $stack2 = $l0.<FieldRefValidator: int y>;
 
         return;
     }
+
 }
-

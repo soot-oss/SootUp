@@ -25,14 +25,11 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.MethodModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
@@ -46,7 +43,7 @@ public class FieldRefValidator implements BodyValidator {
     List<ValidationException> validationException = new ArrayList<>();
 
     SootMethod sootMethod = view.getMethod(body.getMethodSignature()).get();
-    if(sootMethod.isAbstract()){
+    if (sootMethod.isAbstract()) {
       return validationException;
     }
 
@@ -68,16 +65,15 @@ public class FieldRefValidator implements BodyValidator {
             SootField field = fieldOpt.get();
             if (!field.isStatic()) {
               validationException.add(
-                      new ValidationException(
-                              fr, "Trying to get a static field which is non-static: " + v));
+                  new ValidationException(
+                      fr, "Trying to get a static field which is non-static: " + v));
             }
-
           }
         } catch (Exception e) {
           validationException.add(
               new ValidationException(
-                      fr,
-                  "Trying to get a static field which is non-static: " + v+" "+e.getMessage()));
+                  fr,
+                  "Trying to get a static field which is non-static: " + v + " " + e.getMessage()));
         }
       } else if (fr instanceof JInstanceFieldRef) {
         JInstanceFieldRef v = (JInstanceFieldRef) fr;
@@ -86,17 +82,20 @@ public class FieldRefValidator implements BodyValidator {
           Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
           if (!fieldOpt.isPresent()) {
             validationException.add(
-                new ValidationException(
-                        fr, "Resolved field is null: " + fr.toString()));
-          } else{ if (field.isStatic()) {
-            validationException.add(
-                    new ValidationException(
-                            fr, "Trying to get an instance field which is static: " + v));
-          }
+                new ValidationException(fr, "Resolved field is null: " + fr.toString()));
+          } else {
+            SootField field = fieldOpt.get();
+            if (field.isStatic()) {
+              validationException.add(
+                  new ValidationException(
+                      fr, "Trying to get an instance field which is static: " + v));
+            }
           }
         } catch (Exception e) {
           validationException.add(
-              new ValidationException(fr, "Trying to get an instance field which is static: " + v+" "+e.getMessage()));
+              new ValidationException(
+                  fr,
+                  "Trying to get an instance field which is static: " + v + " " + e.getMessage()));
         }
       } else {
         throw new RuntimeException("unknown field ref");
