@@ -291,9 +291,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   Local newStackLocal() {
+    return newStackLocal(UnknownType.getInstance());
+  }
+
+  @Nonnull
+  Local newStackLocal(Type type) {
     int idx = nextLocal++;
     JavaLocal l =
-        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
+            JavaJimple.newLocal("$stack" + idx, type, Collections.emptyList());
     locals.set(idx, l);
     return l;
   }
