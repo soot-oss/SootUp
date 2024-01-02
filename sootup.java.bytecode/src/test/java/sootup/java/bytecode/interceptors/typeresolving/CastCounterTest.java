@@ -149,8 +149,9 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     Assert.assertEquals(
         Stream.of(
                 "CastCounterDemos $l0",
-                "Super1[] $#l0, $#l1",
-                "unknown $l1, $l2, $stack3",
+                "Sub1 $stack3",
+                "Super1 $l2",
+                "Super1[] $#l0, $#l1, $l1",
                 "$l0 := @this: CastCounterDemos",
                 "$l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",

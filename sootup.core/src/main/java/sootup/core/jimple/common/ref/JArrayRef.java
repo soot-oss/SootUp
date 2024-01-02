@@ -27,7 +27,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.visitor.RefVisitor;
+import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
+import sootup.core.types.UnknownType;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -88,7 +90,12 @@ public final class JArrayRef implements ConcreteRef, LValue, Copyable {
   @Override
   @Nonnull
   public Type getType() {
-    return base.getType();
+    Type baseType = base.getType();
+    if(baseType instanceof ArrayType) {
+      return ((ArrayType)baseType).getElementType();
+    } else {
+      return UnknownType.getInstance();
+    }
   }
 
   @Override
