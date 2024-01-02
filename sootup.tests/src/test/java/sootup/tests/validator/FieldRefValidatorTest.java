@@ -30,7 +30,7 @@ public class FieldRefValidatorTest {
 
     fieldRefValidator = new FieldRefValidator();
 
-    ClassType classTypeNewValidator =
+    ClassType classTypeFieldRefValidator =
         new ClassType() {
           @Override
           public boolean isBuiltInClass() {
@@ -58,7 +58,7 @@ public class FieldRefValidatorTest {
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
     jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass<?>> classSource1 = jimpleView.getClass(classTypeNewValidator);
+    final Optional<SootClass<?>> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
