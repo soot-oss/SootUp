@@ -68,10 +68,18 @@ final class OperandMerging {
   void mergeOutput(@Nonnull Operand outputOperand) {
     if (output == null) {
       output = outputOperand;
-    } else {
-      if (output.stackLocal != null) {
-        assert outputOperand.stackLocal == null;
+    } else if (output.stackLocal != null) {
+      if (outputOperand.stackLocal == null) {
         outputOperand.changeStackLocal(output.stackLocal);
+      } else {
+        if (output.stackLocal != outputOperand.stackLocal) {
+          throw new IllegalStateException(
+              "Incompatible stacklocal mismatch. There exist multiple, different possible output Locals ("
+                  + outputOperand.stackLocal
+                  + ", "
+                  + output.stackLocal
+                  + ").");
+        }
       }
     }
   }
