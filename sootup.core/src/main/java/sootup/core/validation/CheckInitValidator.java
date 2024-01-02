@@ -24,11 +24,12 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class CheckInitValidator implements BodyValidator {
 
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View<?> view) {
 
     // TODO: #535 implement validator
     //  check code copied from old soot
@@ -41,6 +42,7 @@ public class CheckInitValidator implements BodyValidator {
      * "Local variable $1 is not definitively defined at this point".replace("$1", l.getName()), "Warning: Local variable " +
      * l + " not definitely defined at " + s + " in " + body.getMethod(), false); } } } }
      */
+    return null;
   }
 
   @Override

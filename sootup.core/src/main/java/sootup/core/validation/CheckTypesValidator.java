@@ -24,11 +24,12 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class CheckTypesValidator implements BodyValidator {
 
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: check code from old soot in the comment below
     /*
      * for (Unit u : body.getUnits()) { String errorSuffix = " at " + u + " in " + body.getMethod();
@@ -88,6 +89,7 @@ public class CheckTypesValidator implements BodyValidator {
      * body.getMethod())); } } } return; } exception.add(new ValidationException(stmt, "Warning: Bad types" + errorSuffix +
      * " in " + body.getMethod()));
      */
+    return null;
   }
 
   @Override
