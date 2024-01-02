@@ -24,12 +24,17 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class ValuesValidator implements BodyValidator {
 
-  /** Verifies that a Value is not used in more than one place. */
+  /**
+   * Verifies that a Value is not used in more than one place.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: check code from old soot below
     /*
      * Set<ValueBox> set = newSetFromMap(new IdentityHashMap<ValueBox, Boolean>());
@@ -40,6 +45,7 @@ public class ValuesValidator implements BodyValidator {
      *
      * for (Unit u : body.getUnits()) { System.err.println(u); } }
      */
+    return null;
   }
 
   @Override
