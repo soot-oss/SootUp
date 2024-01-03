@@ -3,13 +3,12 @@ package sootup.tests.validator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import categories.Java8Test;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import categories.Java8Test;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
