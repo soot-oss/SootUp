@@ -8,8 +8,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
+import categories.Java8Test;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
@@ -19,6 +22,7 @@ import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
+@Category(Java8Test.class)
 public class NewValidatorTest {
 
   NewValidator validator;
