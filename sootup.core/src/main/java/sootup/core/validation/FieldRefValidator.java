@@ -44,6 +44,7 @@ public class FieldRefValidator implements BodyValidator {
 
     SootMethod sootMethod = view.getMethod(body.getMethodSignature()).get();
     if (sootMethod.isAbstract()) {
+      validationException.add(new ValidationException(sootMethod, "The method is abstract"));
       return validationException;
     }
 

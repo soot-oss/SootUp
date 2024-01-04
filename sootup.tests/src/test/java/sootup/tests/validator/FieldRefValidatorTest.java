@@ -85,7 +85,7 @@ public class FieldRefValidatorTest {
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("testFieldRefVariable_pass"))
+                .filter(m -> m.getName().equals("testFieldRefValidator_pass"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),
@@ -106,7 +106,7 @@ public class FieldRefValidatorTest {
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("testFieldRefVariable_fail"))
+                .filter(m -> m.getName().equals("testFieldRefValidator_fail"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),

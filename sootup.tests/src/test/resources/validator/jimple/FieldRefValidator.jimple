@@ -23,7 +23,7 @@ public super class FieldRefValidator extends java.lang.Object
         return;
     }
 
-    public void testFieldRefVariable_pass()
+    public void testFieldRefValidator_pass()
     {
         FieldRefValidator $l0;
         unknown $stack1, $stack2;
@@ -35,7 +35,7 @@ public super class FieldRefValidator extends java.lang.Object
         return;
     }
 
-    public void testFieldRefVariable_fail()
+    public void testFieldRefValidator_fail()
     {
         FieldRefValidator $l0;
         unknown $stack1, $stack2;
