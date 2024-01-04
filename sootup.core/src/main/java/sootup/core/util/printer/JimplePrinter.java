@@ -26,16 +26,11 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.ClassModifier;
-import sootup.core.model.Field;
-import sootup.core.model.Method;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
@@ -196,8 +191,12 @@ public class JimplePrinter {
           SootField f = (SootField) fieldIt.next();
           printer.newline();
           printer.handleIndent();
-          printer.literal(f.getDeclaration());
-          printer.literal(";");
+          if (!f.getModifiers().isEmpty()) {
+            printer.literal(FieldModifier.toString(f.getModifiers()));
+            printer.literal(" ");
+          }
+          printer.typeSignature(f.getType());
+          printer.literal(" " + Jimple.escape(f.getName()) + ";");
           printer.newline();
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
