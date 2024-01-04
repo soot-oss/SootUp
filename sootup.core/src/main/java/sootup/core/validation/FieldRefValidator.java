@@ -31,7 +31,6 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public class FieldRefValidator implements BodyValidator {
@@ -41,12 +40,6 @@ public class FieldRefValidator implements BodyValidator {
   public List<ValidationException> validate(Body body, View<?> view) {
 
     List<ValidationException> validationException = new ArrayList<>();
-
-    SootMethod sootMethod = view.getMethod(body.getMethodSignature()).get();
-    if (sootMethod.isAbstract()) {
-      validationException.add(new ValidationException(sootMethod, "The method is abstract"));
-      return validationException;
-    }
 
     List<Stmt> stmts = body.getStmts();
 
@@ -58,45 +51,32 @@ public class FieldRefValidator implements BodyValidator {
 
       if (fr instanceof JStaticFieldRef) {
         JStaticFieldRef v = (JStaticFieldRef) fr;
-        try {
-          Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
-          if (!fieldOpt.isPresent()) {
-            validationException.add(new ValidationException(v, "Resolved field is empty: "));
-          } else {
-            SootField field = fieldOpt.get();
-            if (!field.isStatic()) {
-              validationException.add(
-                  new ValidationException(
-                      fr, "Trying to get a static field which is non-static: " + v));
-            }
+
+        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        if (!fieldOpt.isPresent()) {
+          validationException.add(new ValidationException(v, "Resolved field is empty: "));
+        } else {
+          SootField field = fieldOpt.get();
+          if (!field.isStatic()) {
+            validationException.add(
+                new ValidationException(
+                    fr, "Trying to get a static field which is non-static: " + v));
           }
-        } catch (Exception e) {
-          validationException.add(
-              new ValidationException(
-                  fr,
-                  "Trying to get a static field which is non-static: " + v + " " + e.getMessage()));
         }
       } else if (fr instanceof JInstanceFieldRef) {
         JInstanceFieldRef v = (JInstanceFieldRef) fr;
 
-        try {
-          Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
-          if (!fieldOpt.isPresent()) {
-            validationException.add(
-                new ValidationException(fr, "Resolved field is null: " + fr.toString()));
-          } else {
-            SootField field = fieldOpt.get();
-            if (field.isStatic()) {
-              validationException.add(
-                  new ValidationException(
-                      fr, "Trying to get an instance field which is static: " + v));
-            }
-          }
-        } catch (Exception e) {
+        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        if (!fieldOpt.isPresent()) {
           validationException.add(
-              new ValidationException(
-                  fr,
-                  "Trying to get an instance field which is static: " + v + " " + e.getMessage()));
+              new ValidationException(fr, "Resolved field is null: " + fr.toString()));
+        } else {
+          SootField field = fieldOpt.get();
+          if (field.isStatic()) {
+            validationException.add(
+                new ValidationException(
+                    fr, "Trying to get an instance field which is static: " + v));
+          }
         }
       } else {
         throw new RuntimeException("unknown field ref");
