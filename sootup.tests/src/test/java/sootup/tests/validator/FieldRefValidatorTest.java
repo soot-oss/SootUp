@@ -16,24 +16,24 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.validation.NewValidator;
+import sootup.core.validation.FieldRefValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 @Category(Java8Test.class)
-public class NewValidatorTest {
+public class FieldRefValidatorTest {
 
-  NewValidator validator;
-  JimpleView view;
-  Collection<SootClass> classes;
+  FieldRefValidator fieldRefValidator;
+  JimpleView jimpleView;
+  Collection<SootClass<?>> classes;
 
   @Before
   public void Setup() {
 
-    validator = new NewValidator();
+    fieldRefValidator = new FieldRefValidator();
 
-    ClassType classTypeNewValidator =
+    ClassType classTypeFieldRefValidator =
         new ClassType() {
           @Override
           public boolean isBuiltInClass() {
@@ -42,12 +42,12 @@ public class NewValidatorTest {
 
           @Override
           public String getFullyQualifiedName() {
-            return "jimple.NewValidator";
+            return "jimple.FieldRefValidator";
           }
 
           @Override
           public String getClassName() {
-            return "NewValidator";
+            return "FieldRefValidator";
           }
 
           @Override
@@ -60,13 +60,13 @@ public class NewValidatorTest {
     JimpleAnalysisInputLocation jimpleInputLocation =
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-    view = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = view.getClass(classTypeNewValidator);
+    jimpleView = new JimpleView(jimpleInputLocation);
+    final Optional<SootClass<?>> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass aClass : view.getClasses()) {
+    for (SootClass<?> aClass : jimpleView.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }
@@ -74,44 +74,44 @@ public class NewValidatorTest {
   }
 
   @Test
-  public void testNewValidatorSuccess() {
+  public void testFieldRefValidatorSuccess() {
     List<ValidationException> validationExceptions_success;
 
     validationExceptions_success =
-        validator.validate(
+        fieldRefValidator.validate(
             classes.stream()
-                .filter(c -> c.getType().getClassName().equals("NewValidator"))
+                .filter(c -> c.getType().getClassName().equals("FieldRefValidator"))
                 .findFirst()
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("newValidator_pass"))
+                .filter(m -> m.getName().equals("testFieldRefValidator_pass"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),
-            view);
+            jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
 
   @Test
-  public void testNewValidatorFailure() {
+  public void testFieldRefValidatorFailure() {
     List<ValidationException> validationExceptions_fail;
 
     validationExceptions_fail =
-        validator.validate(
+        fieldRefValidator.validate(
             classes.stream()
-                .filter(c -> c.getType().getClassName().equals("NewValidator"))
+                .filter(c -> c.getType().getClassName().equals("FieldRefValidator"))
                 .findFirst()
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("newValidator_fail"))
+                .filter(m -> m.getName().equals("testFieldRefValidator_fail"))
                 .map(m -> m.getBody())
                 .findFirst()
                 .get(),
-            view);
+            jimpleView);
 
-    assertEquals(1, validationExceptions_fail.size());
+    assertEquals(2, validationExceptions_fail.size());
   }
 }
