@@ -8,9 +8,7 @@ class AstGraphToDotConverter {
     builder.append("\tnode [shape=record, style=filled];\n");
 
     for (AstNode node : graph.getNodes()) {
-      String type = escapeDot(node.getType().toString());
-      String name = escapeDot(node.getName());
-      String label = String.format("\"{<f0> %s | <f1> %s}\"", type, name);
+      String label = getNodeLabel(node);
       String color = getTypeBasedColor(node.getType());
       builder.append(
           String.format("\t\"%s\" [label=%s, fillcolor=\"%s\"];\n", node.hashCode(), label, color));
@@ -24,6 +22,19 @@ class AstGraphToDotConverter {
 
     builder.append("}\n");
     return builder.toString();
+  }
+
+  private static String getNodeLabel(AstNode node) {
+    String typeStr = escapeDot(node.getType().toString());
+    String name = escapeDot(node.getName());
+    AstNodeType type = node.getType();
+
+    String label;
+
+    if (node.getType() == AstNodeType.AGGREGATE)
+      return name;
+
+    return String.format("\"{<f0> %s | <f1> %s}\"", type, name);
   }
 
   private static String escapeDot(String label) {

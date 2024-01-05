@@ -2,12 +2,6 @@ package sootup.java.codepropertygraph.ast;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,21 +9,12 @@ import org.junit.runners.Parameterized;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.views.JavaView;
+import sootup.java.codepropertygraph.CpgTestSuiteBase;
 
 @RunWith(Parameterized.class)
-public class MethodAstTest {
-  private static final Path MINIMAL_TEST_SUITE_DIR =
-      Paths.get("..//shared-test-resources/miniTestSuite/java6/binary");
-
-  private static final String CLASS_NAME = "IfElseStatement";
+public class AstMinimalTSTest extends CpgTestSuiteBase {
   private final String methodName;
   private final String expectedName;
   private final Set<MethodModifier> expectedModifiers;
@@ -37,7 +22,7 @@ public class MethodAstTest {
   private final List<Stmt> expectedBodyStmts;
   private final Type expectedReturnType;
 
-  public MethodAstTest(
+  public AstMinimalTSTest(
       String methodName,
       String expectedName,
       Set<MethodModifier> expectedModifiers,
@@ -138,7 +123,8 @@ public class MethodAstTest {
 
   @Test
   public void testMethodAst() {
-    Optional<? extends SootMethod> methodOpt = getMinimalTestSuiteMethod(methodName);
+    Optional<? extends SootMethod> methodOpt =
+        getMinimalTestSuiteMethod(methodName);
     assertTrue(methodOpt.isPresent());
     SootMethod method = methodOpt.get();
     MethodAst methodAst = new MethodAst(method);
@@ -151,41 +137,6 @@ public class MethodAstTest {
 
     AstGraph astGraph = AstToGraphConverter.convert(methodAst);
 
-    writeGraph(astGraph.toDotFormat(), methodName);
-  }
-
-  Optional<? extends SootMethod> getMinimalTestSuiteMethod(String methodName) {
-    PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.create(MINIMAL_TEST_SUITE_DIR, null);
-    View<JavaSootClass> view = new JavaView(inputLocation);
-    ClassType appClass = view.getIdentifierFactory().getClassType(CLASS_NAME);
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(appClass, methodName, "int", Collections.singletonList("int"));
-    return view.getMethod(methodSignature);
-  }
-
-  private void writeGraph(String dotGraph, String methodName) {
-    System.out.println(methodName);
-    System.out.println(dotGraph);
-
-    // writeToFile(dotGraph, methodName);
-  }
-
-  private static void writeToFile(String dotGraph, String methodName) {
-    File file = new File("temp/ast_" + methodName + ".dot");
-    System.out.println(file.toPath());
-
-    // Create the output folder if it doesn't exist
-    File folder = file.getParentFile();
-    if (folder != null && !folder.exists()) {
-      folder.mkdirs();
-    }
-
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.write(dotGraph);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    writeGraph(astGraph.toDotFormat(), methodName, "AST");
   }
 }
