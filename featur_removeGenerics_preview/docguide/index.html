@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="../icon.svg">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
     
     
       
@@ -816,8 +816,7 @@
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code>package sootup.examples.basicSetup;
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code>package sootup.examples.basicSetup;
 
 import static org.junit.Assert.assertTrue;
 
@@ -850,7 +849,7 @@ public class BasicSetup {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     Path pathToBinary = Paths.get(&quot;src/test/resources/BasicSetup/binary&quot;);
-    AnalysisInputLocation&lt;JavaSootClass&gt; inputLocation =
+    AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
     // Create a view for project, which allows us to retrieve classes
@@ -869,8 +868,7 @@ public class BasicSetup {
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass&lt;JavaSootClassSource&gt; sootClass =
-        (SootClass&lt;JavaSootClassSource&gt;) view.getClass(classType).get();
+    SootClass sootClass = view.getClass(classType).get();
 
     // Retrieve method
     view.getMethod(methodSignature);
