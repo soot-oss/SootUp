@@ -29,7 +29,7 @@ import sootup.core.views.View;
 public class CheckVoidLocalesValidator implements BodyValidator {
 
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * for (Local l : body.getLocals()) { if (l.getType() instanceof VoidType) { exception.add(new ValidationException(l,

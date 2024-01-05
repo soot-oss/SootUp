@@ -31,7 +31,7 @@ public class FieldRefValidator implements BodyValidator {
 
   // Checks the consistency of field references.
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
 
     List<ValidationException> validationException = new ArrayList<>();
 

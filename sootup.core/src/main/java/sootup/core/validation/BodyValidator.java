@@ -34,7 +34,7 @@ public interface BodyValidator {
    * @param body the body to check
    * @param view the view
    */
-  List<ValidationException> validate(Body body, View<?> view);
+  List<ValidationException> validate(Body body, View view);
 
   /**
    * Basic validators run essential checks and are run always if validate is called.<br>
