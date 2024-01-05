@@ -155,6 +155,18 @@ public class JavaSootClass extends SootClass {
     return (JavaSootClassSource) super.getClassSource();
   }
 
+  @Nonnull
+  @Override
+  public Optional<JavaClassType> getOuterClass() {
+    return super.getOuterClass().map(ct -> (JavaClassType) ct);
+  }
+
+  @Nonnull
+  @Override
+  public Optional<JavaClassType> getSuperclass() {
+    return super.getSuperclass().map(ct -> (JavaClassType) ct);
+  }
+
   // Convenience withers that delegate to an OverridingClassSource
 
   /**
