@@ -181,7 +181,7 @@ public class OverridingJavaClassSource extends JavaSootClassSource {
   @Override
   public Optional<ClassType> resolveOuterClass() {
     Optional<? extends ClassType> classType =
-        overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveOuterClass();
+        overriddenOuterClass != null ? overriddenOuterClass : delegate.resolveOuterClass();
     return classType.map(ct -> (JavaClassType) ct);
   }
 
