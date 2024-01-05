@@ -4,7 +4,7 @@ package sootup.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo, Markus Schmidt and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,14 +22,19 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class FieldRefValidator implements BodyValidator {
 
-  /** Checks the consistency of field references. */
+  // Checks the consistency of field references.
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View<?> view) {
+
+    List<ValidationException> validationException = new ArrayList<>();
+
     // TODO: check copied code from old soot
     /*
      * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
@@ -54,6 +59,8 @@ public class FieldRefValidator implements BodyValidator {
      * "Trying to get an instance field which is static: " + v)); } } else { throw new RuntimeException("unknown field ref");
      * } }
      */
+
+    return validationException;
   }
 
   @Override

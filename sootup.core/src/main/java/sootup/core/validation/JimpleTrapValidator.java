@@ -24,19 +24,24 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 /**
  * This validator checks whether the jimple traps are correct. It does not perform the same checks
  * as {link sootup.validation.TrapsValidator}
  *
- * @see JimpleTrapValidator#validate(Body, List)
+ * @see BodyValidator#validate(Body, View)
  * @author Marc Miltenberger
  */
 public class JimpleTrapValidator implements BodyValidator {
 
-  /** Checks whether all Caught-Exception-References are associated to traps. */
+  /**
+   * Checks whether all Caught-Exception-References are associated to traps.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: check copied code from old soot
     /*
      * Set<Unit> caughtUnits = new HashSet<Unit>(); for (Trap trap : body.getTraps()) {
@@ -52,6 +57,7 @@ public class JimpleTrapValidator implements BodyValidator {
      * body.getMethod().getSignature() + " contains a caught exception reference," +
      * "but not a corresponding trap using this statement as handler")); } } } }
      */
+    return null;
   }
 
   @Override
