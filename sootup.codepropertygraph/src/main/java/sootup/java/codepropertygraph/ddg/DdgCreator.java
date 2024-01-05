@@ -1,6 +1,5 @@
 package sootup.java.codepropertygraph.ddg;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import sootup.core.graph.StmtGraph;
@@ -19,11 +18,8 @@ public class DdgCreator {
     Body body = methodInfo.getBody();
 
     Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
-    Iterator<Stmt> iterator = reachingDefs.keySet().iterator();
 
-    while (iterator.hasNext()) {
-      Stmt key = iterator.next();
-
+    for (Stmt key : reachingDefs.keySet()) {
       StmtPropertyGraphNode destination =
           new StmtPropertyGraphNode(
               StmtUtils.getStmtSource(key, body), NodeType.STMT, key.getPositionInfo());
