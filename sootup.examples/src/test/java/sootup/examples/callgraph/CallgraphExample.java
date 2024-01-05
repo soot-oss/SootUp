@@ -14,7 +14,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class CallgraphExample {

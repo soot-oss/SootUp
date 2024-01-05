@@ -17,8 +17,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
@@ -31,8 +29,7 @@ public class BasicSetup {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    AnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.create(pathToBinary, null);
+    AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
 
     // Create a view for project, which allows us to retrieve classes
     View view = new JavaView(inputLocation);

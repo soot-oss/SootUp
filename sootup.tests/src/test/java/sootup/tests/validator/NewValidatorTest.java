@@ -23,7 +23,7 @@ public class NewValidatorTest {
 
   NewValidator validator;
   JimpleView view;
-  Collection<SootClass<?>> classes;
+  Collection<SootClass> classes;
 
   @Before
   public void Setup() {
@@ -58,12 +58,12 @@ public class NewValidatorTest {
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
     view = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass<?>> classSource1 = view.getClass(classTypeNewValidator);
+    final Optional<SootClass> classSource1 = view.getClass(classTypeNewValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass<?> aClass : view.getClasses()) {
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }
