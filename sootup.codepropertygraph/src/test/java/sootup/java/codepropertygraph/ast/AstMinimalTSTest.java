@@ -12,6 +12,8 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.codepropertygraph.CpgTestSuiteBase;
+import sootup.java.codepropertygraph.MethodInfo;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
 @RunWith(Parameterized.class)
 public class AstMinimalTSTest extends CpgTestSuiteBase {
@@ -123,20 +125,17 @@ public class AstMinimalTSTest extends CpgTestSuiteBase {
 
   @Test
   public void testMethodAst() {
-    Optional<? extends SootMethod> methodOpt =
-        getMinimalTestSuiteMethod(methodName);
-    assertTrue(methodOpt.isPresent());
-    SootMethod method = methodOpt.get();
-    MethodAst methodAst = new MethodAst(method);
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
+    assertTrue(method.isPresent());
+    MethodInfo methodInfo = new MethodInfo(method.get());
+    PropertyGraph astGraph = AstCreator.convert(methodInfo);
 
-    assertEquals(expectedName, methodAst.getName());
-    assertEquals(expectedModifiers, methodAst.getModifiers());
-    assertEquals(expectedParameterTypes, methodAst.getParameterTypes());
-    // assertEquals(expectedBodyStmts, methodAst.getBodyStmts());
-    assertEquals(expectedReturnType, methodAst.getReturnType());
+    assertEquals(expectedName, methodInfo.getName());
+    assertEquals(expectedModifiers, methodInfo.getModifiers());
+    assertEquals(expectedParameterTypes, methodInfo.getParameterTypes());
+    // assertEquals(expectedBodyStmts, methodInfo.getBodyStmts());
+    assertEquals(expectedReturnType, methodInfo.getReturnType());
 
-    AstGraph astGraph = AstToGraphConverter.convert(methodAst);
-
-    writeGraph(astGraph.toDotFormat(), methodName, "AST");
+    writeGraph(astGraph.toDotGraph("AST"), methodName, "AST");
   }
 }

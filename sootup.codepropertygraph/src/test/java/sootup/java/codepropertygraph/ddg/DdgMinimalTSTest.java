@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.junit.Test;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.CpgTestSuiteBase;
+import sootup.java.codepropertygraph.MethodInfo;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
 public class DdgMinimalTSTest extends CpgTestSuiteBase {
 
@@ -33,18 +35,19 @@ public class DdgMinimalTSTest extends CpgTestSuiteBase {
     assertDdgMethod(methodName);
   }
 
-  private void assertDdgMethod(String methodName) {
-    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
-    assertTrue(method.isPresent());
-    MethodDdg ddg = new MethodDdg(method.get());
-    DdgGraph ddgGraph = DdgToGraphConverter.convert(ddg);
-
-    writeGraph(ddgGraph.toDotFormat(), methodName, "DDG");
-  }
-
   @Test
   public void testDdgForIfElseCascadingElseIfInElseStatement() {
     String methodName = "ifElseCascadingElseIfInElseStatement";
     assertDdgMethod(methodName);
+  }
+
+  private void assertDdgMethod(String methodName) {
+    Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
+    assertTrue(method.isPresent());
+
+    MethodInfo methodInfo = new MethodInfo(method.get());
+    PropertyGraph ddgGraph = DdgCreator.convert(methodInfo);
+
+    writeGraph(ddgGraph.toDotGraph("DDG"), methodName, "DDG");
   }
 }

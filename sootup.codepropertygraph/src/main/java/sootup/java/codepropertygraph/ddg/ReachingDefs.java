@@ -42,11 +42,7 @@ public class ReachingDefs {
 
   static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<Pair<Value, Stmt>>> {
 
-    /**
-     * Construct the analysis from StmtGraph.
-     *
-     * @param graph
-     */
+    /** Construct the analysis from StmtGraph. */
     public <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
       super(graph);
 

@@ -1,4 +1,4 @@
-package sootup.java.codepropertygraph.cfg;
+package sootup.java.codepropertygraph.cpg;
 
 import static org.junit.Assert.*;
 
@@ -9,52 +9,52 @@ import sootup.java.codepropertygraph.CpgTestSuiteBase;
 import sootup.java.codepropertygraph.MethodInfo;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
-public class MethodCfgTest extends CpgTestSuiteBase {
+public class MethodCpgTest extends CpgTestSuiteBase {
   private String methodName;
 
   @Test
-  public void testCfgForIfStatement() {
+  public void testCpgForIfStatement() {
     methodName = "ifStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
   @Test
-  public void testCfgForIfElseStatement() {
+  public void testCpgForIfElseStatement() {
     methodName = "ifElseStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
   @Test
-  public void testCfgForIfElseIfStatement() {
+  public void testCpgForIfElseIfStatement() {
     methodName = "ifElseIfStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
   @Test
-  public void testCfgForIfElseCascadingStatement() {
+  public void testCpgForIfElseCascadingStatement() {
     methodName = "ifElseCascadingStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
   @Test
-  public void testCfgForIfElseCascadingElseIfStatement() {
+  public void testCpgForIfElseCascadingElseIfStatement() {
     methodName = "ifElseCascadingElseIfStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
   @Test
-  public void testCfgForIfElseCascadingElseIfInElseStatement() {
+  public void testCpgForIfElseCascadingElseIfInElseStatement() {
     methodName = "ifElseCascadingElseIfInElseStatement";
-    assertCfgMethod(methodName);
+    assertCpgMethod(methodName);
   }
 
-  private void assertCfgMethod(String methodName) {
+  private void assertCpgMethod(String methodName) {
     Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
 
     MethodInfo methodInfo = new MethodInfo(method.get());
-    PropertyGraph cfgGraph = CfgCreator.convert(methodInfo);
+    PropertyGraph cpgGraph = CpgCreator.convert(methodInfo);
 
-    writeGraph(cfgGraph.toDotGraph("CFG"), methodName, "CFG");
+    writeGraph(cpgGraph.toDotGraph("CPG"), methodName, "CPG");
   }
 }

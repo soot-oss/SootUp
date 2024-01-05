@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.junit.Test;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.CpgTestSuiteBase;
+import sootup.java.codepropertygraph.MethodInfo;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
 public class CdgMinimalTSTest extends CpgTestSuiteBase {
   @Test
@@ -41,9 +43,10 @@ public class CdgMinimalTSTest extends CpgTestSuiteBase {
   private void assertCdgMethod(String methodName) {
     Optional<? extends SootMethod> method = getMinimalTestSuiteMethod(methodName);
     assertTrue(method.isPresent());
-    MethodCdg cdg = new MethodCdg(method.get());
-    CdgGraph cdgGraph = CdgToGraphConverter.convert(cdg);
 
-    writeGraph(cdgGraph.toDotFormat(), methodName, "CDG");
+    MethodInfo methodInfo = new MethodInfo(method.get());
+    PropertyGraph cdgGraph = CdgCreator.convert(methodInfo);
+
+    writeGraph(cdgGraph.toDotGraph("CDG"), methodName, "CDG");
   }
 }

@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.junit.Test;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.CpgTestSuiteBase;
+import sootup.java.codepropertygraph.MethodInfo;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
 public class BasicDdgTest extends CpgTestSuiteBase {
   @Test
@@ -19,8 +21,8 @@ public class BasicDdgTest extends CpgTestSuiteBase {
         getTestResourcesMethod("codepropertygraph.Reassignment", methodName);
     assertTrue(method.isPresent());
 
-    MethodDdg ddg = new MethodDdg(method.get());
-    DdgGraph ddgGraph = DdgToGraphConverter.convert(ddg);
-    writeGraph(ddgGraph.toDotFormat(), methodName, "DDG");
+    MethodInfo methodInfo = new MethodInfo(method.get());
+    PropertyGraph ddgGraph = DdgCreator.convert(methodInfo);
+    writeGraph(ddgGraph.toDotGraph("DDG"), methodName, "DDG");
   }
 }
