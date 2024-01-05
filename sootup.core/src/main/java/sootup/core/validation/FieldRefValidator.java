@@ -4,7 +4,7 @@ package sootup.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt and others
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Christian Brüggemann, Markus Schmidt, Akshita Dubey and others
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,7 +24,13 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import sootup.core.jimple.common.ref.JFieldRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootField;
 import sootup.core.views.View;
 
 public class FieldRefValidator implements BodyValidator {
@@ -35,31 +41,47 @@ public class FieldRefValidator implements BodyValidator {
 
     List<ValidationException> validationException = new ArrayList<>();
 
-    // TODO: check copied code from old soot
-    /*
-     * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
-     *
-     * Chain<Unit> units = body.getUnits().getNonPatchingChain();
-     *
-     * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } JFieldRef fr =
-     * s.getFieldRef();
-     *
-     * if (fr instanceof JStaticFieldRef) { JStaticFieldRef v = (JStaticFieldRef) fr; try { SootField field = v.getField();
-     * if (field == null) { exceptions.add(new UnitValidationException(unit, body, "Resolved field is null: " +
-     * fr.toString())); } else if (!field.isStatic() && !field.isPhantom()) { exceptions .add(new
-     * UnitValidationException(unit, body, "Trying to get a static field which is non-static: " + v)); } } catch
-     * (ResolutionFailedException e) { exceptions.add(new UnitValidationException(unit, body,
-     * "Trying to get a static field which is non-static: " + v)); } } else if (fr instanceof InstanceFieldRef) {
-     * InstanceFieldRef v = (InstanceFieldRef) fr;
-     *
-     * try { SootField field = v.getField(); if (field == null) { exceptions.add(new UnitValidationException(unit, body,
-     * "Resolved field is null: " + fr.toString())); } else if (field.isStatic() && !field.isPhantom()) { exceptions.add(new
-     * UnitValidationException(unit, body, "Trying to get an instance field which is static: " + v)); } } catch
-     * (ResolutionFailedException e) { exceptions.add(new UnitValidationException(unit, body,
-     * "Trying to get an instance field which is static: " + v)); } } else { throw new RuntimeException("unknown field ref");
-     * } }
-     */
+    List<Stmt> stmts = body.getStmts();
 
+    for (Stmt stmt : stmts) {
+      if (!stmt.containsFieldRef()) {
+        continue;
+      }
+      JFieldRef fr = stmt.getFieldRef();
+
+      if (fr instanceof JStaticFieldRef) {
+        JStaticFieldRef v = (JStaticFieldRef) fr;
+
+        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        if (!fieldOpt.isPresent()) {
+          validationException.add(new ValidationException(v, "Resolved field is empty: "));
+        } else {
+          SootField field = fieldOpt.get();
+          if (!field.isStatic()) {
+            validationException.add(
+                new ValidationException(
+                    fr, "Trying to get a static field which is non-static: " + v));
+          }
+        }
+      } else if (fr instanceof JInstanceFieldRef) {
+        JInstanceFieldRef v = (JInstanceFieldRef) fr;
+
+        Optional<? extends SootField> fieldOpt = view.getField(v.getFieldSignature());
+        if (!fieldOpt.isPresent()) {
+          validationException.add(
+              new ValidationException(fr, "Resolved field is null: " + fr.toString()));
+        } else {
+          SootField field = fieldOpt.get();
+          if (field.isStatic()) {
+            validationException.add(
+                new ValidationException(
+                    fr, "Trying to get an instance field which is static: " + v));
+          }
+        }
+      } else {
+        throw new RuntimeException("unknown field ref");
+      }
+    }
     return validationException;
   }
 
