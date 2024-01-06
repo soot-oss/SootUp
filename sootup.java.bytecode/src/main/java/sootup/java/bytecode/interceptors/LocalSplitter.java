@@ -100,7 +100,7 @@ public class LocalSplitter implements BodyInterceptor {
             } else{
                 throw new RuntimeException("stmt with more than 1 def!");
             }
-/*
+
             for (Value use : stmt.getUses()) {
                 if (!(use instanceof Local)) {
                     continue;
@@ -108,18 +108,19 @@ public class LocalSplitter implements BodyInterceptor {
                 Local oldLocalUse = (Local) use;
                 if (localsToSplit.contains(use)) {
                     Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + mostRecentDef.get(oldLocalUse)); // use the most recent split name
-                    Stmt withNewUse = stmt.withNewUse(oldLocalUse, newLocal);
                     Stmt toReplace;
                     if (originalToNewStmt.containsKey(stmt)) {
                         toReplace = originalToNewStmt.get(stmt);
                     } else {
                         toReplace = stmt;
                     }
+                    Stmt withNewUse = toReplace.withNewUse(oldLocalUse, newLocal);
+                    //Stmt withNewUse = new JAssignStmt(toReplace.getDefs().get(0), newLocal, stmt.getPositionInfo());
                     builder.getStmtGraph().replaceNode(toReplace, withNewUse);
                     originalToNewStmt.put(stmt, withNewUse);
                 }
             }
-*/
+
         }
     }
 
