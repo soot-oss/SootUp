@@ -5,11 +5,12 @@ class PropertyGraphToDotConverter {
     StringBuilder builder = new StringBuilder();
     builder.append(String.format("digraph %s {\n", graphName));
     builder.append("\trankdir=TB;\n");
-    builder.append("\tnode [shape=record, style=filled];\n");
+    builder.append("\tnode [style=filled, shape=record];\n");
+    builder.append("\tedge [style=filled]");
 
     for (PropertyGraphNode node : graph.getNodes()) {
       String label = getNodeLabel(node);
-      String color = getTypeBasedColor(node.getType());
+      String color = getNodeColor(node.getType());
       builder.append(
           String.format("\t\"%s\" [label=%s, fillcolor=\"%s\"];\n", node.hashCode(), label, color));
     }
@@ -17,8 +18,13 @@ class PropertyGraphToDotConverter {
     for (PropertyGraphEdge edge : graph.getEdges()) {
       String sourceId = String.valueOf(edge.getSource().hashCode());
       String destinationId = String.valueOf(edge.getDestination().hashCode());
+
+      String label = edge.getLabel();
+      String color = getEdgeColor(label);
       builder.append(
-          String.format("\t\"%s\" -> \"%s\"[label=\"%s\"];\n", sourceId, destinationId, edge.getLabel()));
+          String.format(
+              "\t\"%s\" -> \"%s\"[label=\"%s\", color=\"%s\", fontcolor=\"%s\"];\n",
+              sourceId, destinationId, label, color, color));
     }
 
     builder.append("}\n");
@@ -29,8 +35,6 @@ class PropertyGraphToDotConverter {
     String name = escapeDot(node.getName());
     String typeStr = escapeDot(node.getType().toString());
 
-    String label;
-
     if (node.getType() == NodeType.AGGREGATE) return name;
 
     return String.format("\"{<f0> %s | <f1> %s}\"", typeStr, name);
@@ -40,7 +44,7 @@ class PropertyGraphToDotConverter {
     return label.replace("\"", "\\\"").replace("<", "&lt;").replace(">", "&gt;");
   }
 
-  private static String getTypeBasedColor(NodeType type) {
+  private static String getNodeColor(NodeType type) {
     switch (type) {
       case STMT:
       case RETURN_TYPE:
@@ -61,5 +65,12 @@ class PropertyGraphToDotConverter {
       default:
         return "white";
     }
+  }
+
+  private static String getEdgeColor(String edgeLabel) {
+    if (edgeLabel.startsWith("AST")) return "darkseagreen4";
+    if (edgeLabel.startsWith("CFG")) return "darkred";
+    if (edgeLabel.startsWith("CDG") || edgeLabel.startsWith("DDG")) return "dodgerblue4";
+    return "black";
   }
 }
