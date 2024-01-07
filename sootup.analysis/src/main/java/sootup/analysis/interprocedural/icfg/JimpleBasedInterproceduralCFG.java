@@ -44,7 +44,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
-import sootup.java.core.views.JavaView;
 
 /**
  * Default implementation for the {@link InterproceduralCFG} interface. Includes all statements
@@ -136,7 +135,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
       IDESolver.DEFAULT_CACHE_BUILDER.build(loaderMethodToCallers);
 
   public JimpleBasedInterproceduralCFG(
-      JavaView view,
+      View<? extends SootClass<?>> view,
       MethodSignature mainMethodSignature,
       boolean enableExceptions,
       boolean includeReflectiveCalls) {
