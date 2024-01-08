@@ -30,11 +30,11 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   private final List<BodyInterceptor> bodyInterceptors;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
-  private SourceType srcType = null;
+  private final SourceType srcType;
 
   // TODO: allow pointing to a single file
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
-    this(path, null);
+    this(path, SourceType.Application);
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
@@ -54,19 +54,9 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
               + "' does not exist.");
     }
     this.path = path;
-    this.bodyInterceptors = bodyInterceptors;
-    setSpecifiedAsBuiltInByUser(srcType);
-  }
-
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
     this.srcType = srcType;
+    this.bodyInterceptors = bodyInterceptors;
   }
-
   @Override
   public SourceType getSourceType() {
     return srcType;

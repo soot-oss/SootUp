@@ -23,6 +23,7 @@ package sootup.core.util;
  */
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +37,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
@@ -45,6 +48,16 @@ import sootup.core.util.printer.JimplePrinter;
 
 /** @author Linghui Luo */
 public class Utils {
+
+  void exportAsJimpleFile(@Nonnull SootClass<?> c, @Nonnull String baseDir){
+    try {
+          String printClass = c.print();
+          File file = new File(baseDir + c.getName().replace('.', '/') + ".jimple");
+          FileUtils.writeStringToFile(file, printClass, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Nullable
   Path compileJavaOTF(String className, String javaSourceContent) {

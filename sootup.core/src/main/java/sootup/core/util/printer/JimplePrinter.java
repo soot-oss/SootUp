@@ -134,10 +134,13 @@ public class JimplePrinter {
       */
 
       EnumSet<ClassModifier> modifiers = EnumSet.copyOf(cl.getModifiers());
-      // remove unwanted modifier combinations
+      // remove unwanted modifier combinations from print
       if (cl.isInterface() && ClassModifier.isAbstract(modifiers)) {
         modifiers.remove(ClassModifier.ABSTRACT);
       }
+      modifiers.remove(ClassModifier.SUPER);
+      modifiers.remove(ClassModifier.MODULE);
+
       if (modifiers.size() != 0) {
         printer.modifier(ClassModifier.toString(modifiers));
         printer.literal(" ");
@@ -226,7 +229,7 @@ public class JimplePrinter {
       out.println();
     }
 
-    out.println(printer.toString());
+    out.println(printer);
   }
 
   private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer) {
@@ -239,17 +242,19 @@ public class JimplePrinter {
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
 
+        printer.handleIndent();
+        method.toString(printer);
+
         if (method.hasBody()) {
           Body body = method.getBody();
           // print method's full signature information
-          method.toString(printer);
           printer.newline();
+          incJimpleLnNum();
           printBody(body, printer);
 
         } else {
-          printer.handleIndent();
-          method.toString(printer);
           printer.literal(";");
+          printer.newline();
           incJimpleLnNum();
         }
 
@@ -343,7 +348,7 @@ public class JimplePrinter {
 
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
         if (previousStmt.branches()
-            || stmtGraph.predecessors(currentStmt).size() != 1
+            || stmtGraph.predecessors(currentStmt).size() > 1
             || previousStmt.getExpectedSuccessorCount() == 0
             || currentStmtHasLabel) {
           printer.newline();

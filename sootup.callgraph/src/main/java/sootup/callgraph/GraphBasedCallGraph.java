@@ -65,7 +65,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     signatureToVertex = new HashMap<>();
   }
 
-  public GraphBasedCallGraph(
+  protected GraphBasedCallGraph(
       @Nonnull DefaultDirectedGraph<Vertex, Edge> graph,
       @Nonnull Map<MethodSignature, Vertex> signatureToVertex) {
     this.graph = graph;
@@ -181,9 +181,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
               Vertex targetVertex = graph.getEdgeTarget(edge);
               dotFormatBuilder
                   .append("\t")
-                  .append("\"" + sourceVertex.methodSignature + "\"")
+                  .append("\"")
+                  .append(sourceVertex.methodSignature)
+                  .append("\"")
                   .append(" -> ")
-                  .append("\"" + targetVertex.methodSignature + "\"")
+                  .append("\"")
+                  .append(targetVertex.methodSignature)
+                  .append("\"")
                   .append(";\n");
             });
 
@@ -207,7 +211,8 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Nonnull
   protected Vertex vertexOf(@Nonnull MethodSignature method) {
     Vertex methodVertex = signatureToVertex.get(method);
-    Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
+    Preconditions.checkNotNull(
+        methodVertex, "Node for " + method + " does not exist in this CallGraph.");
     return methodVertex;
   }
 

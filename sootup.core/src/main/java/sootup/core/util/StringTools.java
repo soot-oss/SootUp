@@ -30,20 +30,15 @@ public class StringTools {
 
   /** Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. */
   public static String getEscapedStringOf(String fromString) {
-    // TODO: [ms] possible performance+ maybe(!) work on .charAt(..) instead of .toCharArray)(..)
     char[] fromStringArray = fromString.toCharArray();
 
-    // TODO: [ms] this makes the exported jimple platform dependent? improve!
-    char cr = lineSeparator.charAt(0);
-    char lf = lineSeparator.length() == 2 ? lineSeparator.charAt(1) : cr;
-
-    // find if there is (find the first) a need to escape
+    // find the first char that has to be escaped
     int firstNonAlphaPos = -1;
     final int size = fromStringArray.length;
     for (int j = 0; j < size; j++) {
       char ch = fromStringArray[j];
       final boolean isPrintableAscii = (ch >= 32 && ch <= 126);
-      if (!((isPrintableAscii || ch == cr || ch == lf) && ch != '\\')) {
+      if (!((isPrintableAscii || ch == '\r' || ch == '\n') && ch != '\\')) {
         firstNonAlphaPos = j;
         break;
       }
@@ -65,7 +60,7 @@ public class StringTools {
         j < fromStringArrayLength;
         j++) {
       char ch = fromStringArray[j];
-      if (((ch >= 32 && ch <= 126) || ch == cr || ch == lf) && ch != '\\') {
+      if (((ch >= 32 && ch <= 126) || ch == '\r' || ch == '\n') && ch != '\\') {
         sb.append(ch);
       } else {
         sb.append(getUnicodeStringFromChar(ch));
@@ -75,62 +70,55 @@ public class StringTools {
     return sb.toString();
   }
 
-  /** Convenience field storing the system line separator. */
-  public static final String lineSeparator = System.getProperty("line.separator");
-
   /**
    * Returns fromString, but with certain characters printed as if they were in a Java string
    * literal. Used by StringConstant.toString()
    */
-  public static String getQuotedStringOf(String fromString, boolean needsQuotes) {
+  public static String getQuotedStringOf(String fromString, boolean neededQuotes) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
     StringBuilder builder = new StringBuilder(fromString.length() + 20);
-    builder.append("\"");
+    builder.append('\'');
     for (int i = 0; i < fromString.length(); i++) {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
         builder.append("\\\\");
-        needsQuotes = true;
+        neededQuotes = true;
       } else if (ch == '\'') {
-        builder.append("\\\'");
-        needsQuotes = true;
+        builder.append("\\'");
+        neededQuotes = true;
       } else if (ch == '\"') {
         builder.append("\\\"");
-        needsQuotes = true;
+        neededQuotes = true;
       } else if (ch == '\n') {
         builder.append("\\n");
-        needsQuotes = true;
+        neededQuotes = true;
       } else if (ch == '\t') {
         builder.append("\\t");
-        needsQuotes = true;
+        neededQuotes = true;
       }
       /*
        * 04.04.2006 mbatch added handling of \r, as compilers throw error if unicode
        */
       else if (ch == '\r') {
         builder.append("\\r");
-        needsQuotes = true;
+        neededQuotes = true;
       }
       /*
        * 10.04.2006 Nomait A Naeem added handling of \f, as compilers throw error if unicode
        */
       else if (ch == '\f') {
         builder.append("\\f");
-        needsQuotes = true;
+        neededQuotes = true;
       } else if (ch >= 32 && ch <= 126 /* is printable ascii */) {
         builder.append(ch);
-        // TODO: [ms] adapt this list to add quotes in cases where it is necessary
-        if (ch == ' ' || ch == ';' || ch == '/') {
-          needsQuotes = true;
-        }
       } else {
         builder.append(getUnicodeStringFromChar(ch));
       }
     }
 
-    return needsQuotes
-        ? builder.append('"').toString()
+    return neededQuotes
+        ? builder.append('\'').toString()
         : builder.subSequence(1, builder.length()).toString();
   }
 

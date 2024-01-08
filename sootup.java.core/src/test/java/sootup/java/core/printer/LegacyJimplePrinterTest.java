@@ -28,6 +28,10 @@ import sootup.java.core.views.JavaView;
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
+    return buildClass(builder, "dummyMain", "main");
+  }
+
+  SootClass buildClass(Body.BodyBuilder builder, String className, String methodName) {
 
     View view = new JavaView(new EagerInputLocation<>());
 
@@ -60,7 +64,7 @@ public class LegacyJimplePrinterTest {
             null,
             null,
             null,
-            view.getIdentifierFactory().getClassType("dummyMain"),
+            view.getIdentifierFactory().getClassType(className),
             new EagerInputLocation()),
         SourceType.Application);
   }
@@ -156,5 +160,25 @@ public class LegacyJimplePrinterTest {
     JimplePrinter p =
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.LegacyMode);
     p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
+  }
+
+  @Test
+  public void testLegacyEscaping() {
+    StringWriter out = new StringWriter();
+    PrintWriter writer = new PrintWriter(out);
+    JimplePrinter printer = new JimplePrinter(JimplePrinter.Option.LegacyMode);
+
+    SootClass clazz = buildClass(Body.builder(), "dummyMain", "from");
+    printer.printTo(clazz, writer);
+    String jimple = out.toString();
+    assertEquals(
+        "public class dummyMain\n"
+            + "{\n"
+            + "    public static void 'from'()\n"
+            + "    {\n"
+            + "    }\n"
+            + "}\n"
+            + "\n",
+        jimple);
   }
 }

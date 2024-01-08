@@ -22,8 +22,14 @@ package sootup.core.util.printer;
  * #L%
  */
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
+import sootup.core.util.StringTools;
 
 /**
  * StmtPrinter implementation for normal (full) Jimple for OldSoot
@@ -35,15 +41,109 @@ import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
  */
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
+  // source:
+  // https://github.com/soot-oss/soot/blob/1ad74494974165e8b5f2286c90f218a00eadc243/eclipse/ca.mcgill.sable.soot/src/ca/mcgill/sable/soot/editors/JimpleScanner.java
+  Set<String> soot_jimple_keywords =
+      ImmutableSet.of(
+          "ignored",
+          "abstract",
+          "final",
+          "native",
+          "public",
+          "protected",
+          "private",
+          "static",
+          "synchronized",
+          "transient",
+          "volatile",
+          "class",
+          "interface",
+          "void",
+          "boolean",
+          "byte",
+          "short",
+          "char",
+          "int",
+          "long",
+          "float",
+          "double",
+          "null_type",
+          "unknown",
+          "extends",
+          "implements",
+          "breakpoint",
+          "case",
+          "catch",
+          "cmp",
+          "cmpg",
+          "cmpl",
+          "default",
+          "entermonitor",
+          "exitmonitor",
+          "goto",
+          "if",
+          "instanceof",
+          "interfaceinvoke",
+          "lengthof",
+          "lookupswitch",
+          "neg",
+          "new",
+          "newarray",
+          "newmultiarray",
+          "nop",
+          "ret",
+          "return",
+          "specialinvoke",
+          "staticinvoke",
+          "tableswitch",
+          "throw",
+          "throws",
+          "virtualinvoke",
+          "null",
+          "from",
+          "to",
+          "with",
+          "annotation",
+          "enum");
+
   public LegacyJimplePrinter() {
     super();
+  }
+
+  @Nonnull
+  protected String sootEscape(String str) {
+    if (str.length() == 0) {
+      return "''";
+    }
+    return StringTools.getQuotedStringOf(str, soot_jimple_keywords.contains(str));
   }
 
   @Override
   void enableImports(boolean enable) {
     if (enable) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Imports are not supported in Legacy Jimple: don't enable UseImports");
+    }
+  }
+
+  @Override
+  public void typeSignature(@Nonnull Type type) {
+    handleIndent();
+    if (type instanceof ClassType) {
+      ClassType ctype = (ClassType) type;
+      final String[] splits = ctype.getPackageName().getPackageName().split("\\.");
+      for (String split : splits) {
+        if (split.length() == 0) {
+          continue;
+        }
+        output.append(sootEscape(split));
+        output.append('.');
+      }
+      output.append(sootEscape(ctype.getClassName()));
+
+    } else {
+      // primitivetypes
+      output.append(type);
     }
   }
 
