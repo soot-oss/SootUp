@@ -3,7 +3,7 @@ package sootup.java.core;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.frontend.BodySource;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -13,7 +13,7 @@ public class JavaAnnotationSootMethod extends JavaSootMethod {
   public JavaAnnotationSootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<MethodModifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       @Nonnull Iterable<AnnotationUsage> annotations,
       @Nonnull Position position) {

@@ -60,7 +60,7 @@ public class PathUtils {
     }
 
     for (FileType extension : extensions) {
-      if (endsWithIgnoreCase(path.toString(), extension.getExtension())) {
+      if (endsWithIgnoreCase(path.toString(), extension.getExtensionWithDot())) {
         return true;
       }
     }

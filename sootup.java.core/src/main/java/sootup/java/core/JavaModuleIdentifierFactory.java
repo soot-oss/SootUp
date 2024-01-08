@@ -28,6 +28,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.Type;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
@@ -67,6 +69,17 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
      * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
     modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.base/java.lang.String[]");
+      }
+    }
+    return false;
   }
 
   @Override
@@ -163,7 +176,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       @Nonnull final String packageName, @Nonnull final String moduleName) {
     String fqId = moduleName + "." + packageName;
     return (ModulePackageName)
-        packages
+        packageCache
             .asMap()
             .computeIfAbsent(
                 fqId, key -> new ModulePackageName(packageName, getModuleSignature(moduleName)));
@@ -173,7 +186,7 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
       @Nonnull final String packageName, @Nonnull final ModuleSignature moduleSignature) {
     String fqId = moduleSignature.getModuleName() + "." + packageName;
     return (ModulePackageName)
-        packages
+        packageCache
             .asMap()
             .computeIfAbsent(fqId, key -> new ModulePackageName(packageName, moduleSignature));
   }
@@ -206,12 +219,12 @@ public class JavaModuleIdentifierFactory extends JavaIdentifierFactory {
 
     @Override
     public MethodSignature getMethodSignature(
-        String methodName,
         String fullyQualifiedNameDeclClass,
+        String methodName,
         String fqReturnType,
         List<String> parameters) {
       return super.getMethodSignature(
-          methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
+          fullyQualifiedNameDeclClass, methodName, fqReturnType, parameters);
     }
   }
 }

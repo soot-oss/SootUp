@@ -1,4 +1,4 @@
-synchronized class InstanceOfCheck extends InstanceOfCheckSuper
+super class InstanceOfCheck extends InstanceOfCheckSuper
 {
     public void instanceOfCheckMethod()
     {

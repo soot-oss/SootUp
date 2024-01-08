@@ -1,4 +1,7 @@
 # Installation
+## Using the latest version on the develop branch
+visit [SootUp on Jitpack.io](https://jitpack.io/#soot-oss/SootUp/develop-SNAPSHOT) for configuration options of your build tool.
+
 ## Using the release
 SootUp is available in maven central, you can include it in your project as follows.
 
@@ -15,37 +18,37 @@ Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more abo
  <dependency>
    <groupId>org.soot-oss</groupId>
    <artifactId>sootup.core</artifactId>
-   <version>1.0.0</version>
+   <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.java.core</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.java.sourcecode</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.java.bytecode</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.jimple.parser</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.callgraph</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
  <dependency>
   <groupId>org.soot-oss</groupId>
   <artifactId>sootup.analysis</artifactId>
-  <version>1.0.0</version>
+  <version>{{ git_latest_release }}</version>
  </dependency>
 </dependencies>
 ```
@@ -54,13 +57,13 @@ Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more abo
 Add the following dependency in the ```build.gradle``` file of your project to include all SootUp modules into your project.
 
 ```
-compile "org.soot-oss:sootup.core:1.0.0"
-compile "org.soot-oss:sootup.java.core:1.0.0"
-compile "org.soot-oss:sootup.java.sourcecode:1.0.0"
-compile "org.soot-oss:sootup.java.bytecode:1.0.0"
-compile "org.soot-oss:sootup.jimple.parser:1.0.0"
-compile "org.soot-oss:sootup.callgraph:1.0.0"
-compile "org.soot-oss:sootup.analysis:1.0.0"
+compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.core{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.sourcecode{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.bytecode{{ git_latest_release }}"
+compile "org.soot-oss:sootup.jimple.parser{{ git_latest_release }}"
+compile "org.soot-oss:sootup.callgraph{{ git_latest_release }}"
+compile "org.soot-oss:sootup.analysis{{ git_latest_release }}"
 ```
 
 ## Building from Source
@@ -79,7 +82,7 @@ Alternatively, you can execute the following command in the project directory:
 mvn install
 ```
 
-Or if you want to skip unit tests while building:
+Or if you want to skip tests while building:
 
 ```
 mvn -Dskiptests install

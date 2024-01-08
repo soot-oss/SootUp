@@ -42,7 +42,9 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 import sootup.core.frontend.ResolveException;
 import sootup.core.jimple.common.constant.ClassConstant;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -99,11 +101,35 @@ public final class AsmUtil {
     return str.replace('/', '.');
   }
 
-  public static EnumSet<Modifier> getModifiers(int access) {
-    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
+  public static EnumSet<ClassModifier> getClassModifiers(int access) {
+    EnumSet<ClassModifier> modifierEnumSet = EnumSet.noneOf(ClassModifier.class);
 
     // add all modifiers for which (access & ABSTRACT) =! 0
-    for (Modifier modifier : Modifier.values()) {
+    for (ClassModifier modifier : ClassModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  public static EnumSet<MethodModifier> getMethodModifiers(int access) {
+    EnumSet<MethodModifier> modifierEnumSet = EnumSet.noneOf(MethodModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (MethodModifier modifier : MethodModifier.values()) {
+      if ((access & modifier.getBytecode()) != 0) {
+        modifierEnumSet.add(modifier);
+      }
+    }
+    return modifierEnumSet;
+  }
+
+  public static EnumSet<FieldModifier> getFieldModifiers(int access) {
+    EnumSet<FieldModifier> modifierEnumSet = EnumSet.noneOf(FieldModifier.class);
+
+    // add all modifiers for which (access & ABSTRACT) =! 0
+    for (FieldModifier modifier : FieldModifier.values()) {
       if ((access & modifier.getBytecode()) != 0) {
         modifierEnumSet.add(modifier);
       }
@@ -140,18 +166,6 @@ public final class AsmUtil {
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 
-  /**
-   * Converts a type descriptor to a Jimple reference type.
-   *
-   * @param desc the descriptor.
-   * @return the reference type.
-   */
-  public static Type toJimpleSignature(@Nonnull String desc) {
-    return desc.charAt(0) == '['
-        ? toJimpleType(desc)
-        : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
-  }
-
   @Nonnull
   public static Type toJimpleType(@Nonnull String desc) {
     int nrDims = countArrayDim(desc);
@@ -180,7 +194,7 @@ public final class AsmUtil {
 
   @Nonnull
   public static Type arrayTypetoJimpleType(@Nonnull String desc) {
-    if (desc.startsWith("[")) {
+    if (desc.charAt(0) == '[') {
       return toJimpleType(desc);
     }
     return toJimpleClassType(desc);

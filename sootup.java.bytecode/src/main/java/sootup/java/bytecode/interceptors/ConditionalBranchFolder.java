@@ -28,6 +28,7 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -83,15 +84,15 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
       // link previous stmt with always-reached successor of the if-Stmt
       for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        builder.removeFlow(predecessor, ifStmt);
-        builder.addFlow(predecessor, tautologicSuccessor);
+        stmtGraph.removeEdge(predecessor, ifStmt);
+        stmtGraph.putEdge((FallsThroughStmt) predecessor, tautologicSuccessor);
       }
 
       // removeFlow calls should be obsolete as of following removeStmt
-      builder.removeFlow(ifStmt, tautologicSuccessor);
-      builder.removeFlow(ifStmt, neverReachedSucessor);
+      stmtGraph.removeEdge(ifStmt, tautologicSuccessor);
+      stmtGraph.removeEdge(ifStmt, neverReachedSucessor);
 
-      builder.removeStmt(ifStmt);
+      stmtGraph.removeNode(ifStmt);
 
       pruneExclusivelyReachableStmts(stmtGraph, neverReachedSucessor);
     }

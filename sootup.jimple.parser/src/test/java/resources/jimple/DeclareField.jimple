@@ -1,4 +1,4 @@
-synchronized class DeclareField extends java.lang.Object
+super class DeclareField extends java.lang.Object
 {
     public final java.lang.String s;
 

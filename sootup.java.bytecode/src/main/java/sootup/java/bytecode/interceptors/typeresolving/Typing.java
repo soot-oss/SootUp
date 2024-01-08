@@ -20,20 +20,20 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Local;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 public class Typing {
-  private HashMap<Local, Type> local2Type = new HashMap<>();
-  private BitSet stmtsIDList;
+  @Nonnull private Map<Local, Type> local2Type;
+  @Nonnull private BitSet stmtsIDList;
 
   public Typing(@Nonnull Collection<Local> locals) {
+    // initialize
+    local2Type = new IdentityHashMap<>(locals.size());
     for (Local local : locals) {
       local2Type.put(local, BottomType.getInstance());
     }
@@ -41,11 +41,12 @@ public class Typing {
   }
 
   public Typing(@Nonnull Typing typing, @Nonnull BitSet stmtsIDList) {
-    this.local2Type = new HashMap<>(typing.local2Type);
+    this.local2Type = new IdentityHashMap<>(typing.local2Type);
     this.stmtsIDList = stmtsIDList;
   }
 
-  public Type getType(Local local) {
+  @Nullable
+  protected Type getType(@Nonnull Local local) {
     return local2Type.get(local);
   }
 
@@ -61,10 +62,11 @@ public class Typing {
     return this.local2Type;
   }
 
-  public void setStmtsIDList(BitSet bitSet) {
+  public void setStmtsIDList(@Nonnull BitSet bitSet) {
     this.stmtsIDList = bitSet;
   }
 
+  @Nonnull
   public BitSet getStmtsIDList() {
     return this.stmtsIDList;
   }
@@ -80,33 +82,40 @@ public class Typing {
    *     more specific than the given typing, but another local's type is more general than the
    *     given typing.
    */
-  public int compare(Typing typing, BytecodeHierarchy hierarchy, Collection<Local> localsToIgnore) {
-    if (!typing.getLocals().equals(this.getLocals())) {
+  public int compare(
+      @Nonnull Typing typing,
+      @Nonnull BytecodeHierarchy hierarchy,
+      @Nonnull Collection<Local> localsToIgnore) {
+
+    if (!typing.getLocals().equals(this.getLocals())) { // TODO: ms: check isnt it even == then?
       throw new RuntimeException("The compared typings should have the same locals' set!");
     }
+
     int ret = 0;
-    for (Local local : this.local2Type.keySet()) {
-      if (!localsToIgnore.contains(local)) {
-        Type ta = getType(local);
-        Type tb = typing.getType(local);
+    for (Map.Entry<Local, Type> local : this.local2Type.entrySet()) {
+      if (localsToIgnore.contains(local.getKey())) {
+        continue;
+      }
 
-        int cmp;
-        if (ta.equals(tb)) {
-          cmp = 0;
-        } else if (hierarchy.isAncestor(ta, tb)) {
-          cmp = 1;
-        } else if (hierarchy.isAncestor(tb, ta)) {
-          cmp = -1;
-        } else {
-          return -2;
-        }
+      Type ta = local.getValue();
+      Type tb = typing.getType(local.getKey());
 
-        if ((cmp == 1 && ret == -1) || (cmp == -1 && ret == 1)) {
-          return 2;
-        }
-        if (ret == 0) {
-          ret = cmp;
-        }
+      int cmp;
+      if (ta.equals(tb)) {
+        cmp = 0;
+      } else if (hierarchy.isAncestor(ta, tb)) {
+        cmp = 1;
+      } else if (hierarchy.isAncestor(tb, ta)) {
+        cmp = -1;
+      } else {
+        return -2;
+      }
+
+      if ((cmp == 1 && ret == -1) || (cmp == -1 && ret == 1)) {
+        return 2;
+      }
+      if (ret == 0) {
+        ret = cmp;
       }
     }
     return ret;

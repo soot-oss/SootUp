@@ -27,9 +27,15 @@ package sootup.core;
  * @author Markus Schmidt
  */
 public abstract class Language {
+
   public abstract String getName();
 
   public abstract int getVersion();
 
   public abstract IdentifierFactory getIdentifierFactory();
+
+  @Override
+  public String toString() {
+    return getName() + " " + getVersion();
+  }
 }

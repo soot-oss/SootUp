@@ -26,20 +26,19 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.*;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.AbstractStmt;
+import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
  * Represents the deprecated JVM <code>ret</code> statement - which is used in JSR Context - which
  * is deprecated as well
  */
-public final class JRetStmt extends Stmt implements Copyable {
+public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 
   @Nonnull private final Value stmtAddress;
 

@@ -33,6 +33,7 @@ import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
 import sootup.core.model.Position;
 import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -43,7 +44,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
@@ -57,7 +58,11 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
     this.name = name;
-    this.type = type;
+    if (type instanceof VoidType) {
+      throw new RuntimeException("Type should not be VoidType");
+    } else {
+      this.type = type;
+    }
     this.position = position;
   }
 
@@ -123,12 +128,13 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
     return position;
   }
 
-  public List<AbstractDefinitionStmt<Local, Value>> getDefsOfLocal(List<Stmt> defs) {
-    List<AbstractDefinitionStmt<Local, Value>> localDefs = new ArrayList<>();
+  /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
+  public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
+    List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
       if (stmt instanceof AbstractDefinitionStmt
-          && ((AbstractDefinitionStmt<Local, Value>) stmt).getLeftOp().equals(this)) {
-        localDefs.add((AbstractDefinitionStmt<Local, Value>) stmt);
+          && ((AbstractDefinitionStmt) stmt).getLeftOp().equals(this)) {
+        localDefs.add((AbstractDefinitionStmt) stmt);
       }
     }
     return localDefs;
@@ -156,7 +162,9 @@ public class Local implements Immediate, Copyable, Acceptor<ImmediateVisitor> {
         if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(this)) {
           defStmts.add(s);
         } else {
-          queue.addAll(graph.predecessors(s));
+          if (graph.containsNode(s)) {
+            queue.addAll(graph.predecessors(s));
+          }
         }
       }
     }

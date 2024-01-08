@@ -22,38 +22,49 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nonnull;
-import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class LocalsValidator implements BodyValidator {
 
-  /** Verifies that each Local of getUses() and getDefs() belongs to this body's locals. */
+  /**
+   * Verifies that each Local of getUses() and getDefs() belongs to this body's locals.
+   *
+   * @return
+   */
   @Override
-  public void validate(@Nonnull Body body, @Nonnull List<ValidationException> exception) {
-    final Set<Local> locals = body.getLocals();
+  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View<?> view) {
+    // TODO : Write tests
+    List<ValidationException> exception = new ArrayList<>();
 
-    body.getUses()
-        .parallelStream()
-        .filter(value -> value instanceof Local && !locals.contains(value))
-        .forEach(
-            value ->
-                exception.add(
-                    new ValidationException(
-                        value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+    //    final Set<Local> locals = body.getLocals();
+    //
+    //    body.getUses()
+    //        .parallelStream()
+    //        .filter(value -> value instanceof Local && !locals.contains(value))
+    //        .forEach(
+    //            value ->
+    //                exception.add(
+    //                    new ValidationException(
+    //                        value,
+    //                        "Local not in chain : " + value + " in " +
+    // body.getMethodSignature())));
+    //
+    //    body.getDefs()
+    //        .parallelStream()
+    //        .filter(value -> value instanceof Local && !locals.contains(value))
+    //        .forEach(
+    //            value ->
+    //                exception.add(
+    //                    new ValidationException(
+    //                        value,
+    //                        "Local not in chain : " + value + " in " +
+    // body.getMethodSignature())));
 
-    body.getDefs()
-        .parallelStream()
-        .filter(value -> value instanceof Local && !locals.contains(value))
-        .forEach(
-            value ->
-                exception.add(
-                    new ValidationException(
-                        value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+    return exception;
   }
 
   @Override

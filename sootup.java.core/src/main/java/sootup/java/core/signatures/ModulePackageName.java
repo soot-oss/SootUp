@@ -56,7 +56,7 @@ public class ModulePackageName extends JavaPackageName {
     }
     ModulePackageName that = (ModulePackageName) o;
     return Objects.equal(moduleSignature, that.moduleSignature)
-        && Objects.equal(getPackageName(), that.getPackageName());
+        && Objects.equal(getName(), that.getName());
   }
 
   @Override
@@ -73,7 +73,7 @@ public class ModulePackageName extends JavaPackageName {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     String moduleSignatureStr = getModuleSignature().toString();
-    String pckgStr = getPackageName();
+    String pckgStr = getName();
     if (!moduleSignatureStr.isEmpty()) {
       sb.append(moduleSignatureStr).append("/");
     }

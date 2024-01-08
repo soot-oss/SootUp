@@ -1,4 +1,4 @@
-synchronized class ReferencingThis extends java.lang.Object
+super class ReferencingThis extends java.lang.Object
 {
     int b;
 

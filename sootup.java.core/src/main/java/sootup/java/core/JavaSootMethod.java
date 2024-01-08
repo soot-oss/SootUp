@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.Position;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -38,14 +38,12 @@ import sootup.core.types.ClassType;
 import sootup.java.core.views.JavaView;
 
 public class JavaSootMethod extends SootMethod {
-  @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
-  @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
   @Nonnull private final Iterable<AnnotationUsage> annotations;
 
   public JavaSootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<MethodModifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       @Nonnull Iterable<AnnotationUsage> annotations,
       @Nonnull Position position) {
@@ -53,25 +51,9 @@ public class JavaSootMethod extends SootMethod {
     this.annotations = annotations;
   }
 
-  /**
-   * @return yes, if this function is a constructor. Please not that &lt;clinit&gt; methods are not
-   *     treated as constructors in this methodRef.
-   */
-  public boolean isConstructor() {
-    return this.getSignature().getName().equals(CONSTRUCTOR_NAME);
-  }
-
-  /** @return yes, if this function is a static initializer. */
-  public boolean isStaticInitializer() {
-    return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
-  }
-
   @Nonnull
   public Iterable<AnnotationUsage> getAnnotations(@Nonnull Optional<JavaView> view) {
-    annotations.forEach(e -> e.getAnnotation().getDefaultValues(view));
-
     resolveDefaultsForAnnotationTypes(view, annotations);
-
     return annotations;
   }
 
@@ -116,7 +98,7 @@ public class JavaSootMethod extends SootMethod {
 
   @Nonnull
   @Override
-  public JavaSootMethod withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+  public JavaSootMethod withModifiers(@Nonnull Iterable<MethodModifier> modifiers) {
     return new JavaSootMethod(
         bodySource,
         getSignature(),

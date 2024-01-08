@@ -1,33 +1,29 @@
 package sootup.java.bytecode;
 
-import java.nio.file.Paths;
+import java.util.Collections;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
 
   private static Body execute(String methodSignature1) {
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(inputLocation).build();
+        new DefaultRTJarAnalysisInputLocation(
+            SourceType.Library, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 
     final MethodSignature methodSignature =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);
 
-    JavaView view =
-        project.createView(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod = view.getMethod(methodSignature).get();
     return sootMethod.getBody();

@@ -23,7 +23,6 @@ package sootup.core.jimple.basic;
  */
 
 import javax.annotation.Nonnull;
-import sootup.core.model.FullPosition;
 import sootup.core.model.Position;
 import sootup.core.util.Copyable;
 
@@ -34,7 +33,7 @@ import sootup.core.util.Copyable;
  * @author Linghui Luo, Markus Schmidt
  */
 public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copyable {
-  protected final FullPosition[] operandPositions;
+  @Nonnull protected final Position[] operandPositions;
 
   /**
    * Create an instance from given statement position and operand positions.
@@ -43,7 +42,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
    * @param operandPositions the operand positions
    */
   public FullStmtPositionInfo(
-      @Nonnull Position stmtPosition, @Nonnull FullPosition[] operandPositions) {
+      @Nonnull Position stmtPosition, @Nonnull Position[] operandPositions) {
     super(stmtPosition);
     this.operandPositions = operandPositions;
   }
@@ -65,7 +64,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
    * @return the position of the given operand
    */
   public Position getOperandPosition(int index) {
-    if (this.operandPositions != null && index >= 0 && index < this.operandPositions.length) {
+    if (index >= 0 && index < this.operandPositions.length) {
       return this.operandPositions[index];
     } else {
       return NoPositionInformation.getInstance();
@@ -75,15 +74,10 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();
-    s.append("stmt at: ").append(getStmtPosition()).append("\n");
+    s.append(super.toString());
     s.append("operands at: ");
-    if (operandPositions != null) {
-      s.append("\n");
-      for (int i = 0; i < operandPositions.length; i++) {
-        s.append(i).append(": ").append(operandPositions[i]).append(" ");
-      }
-    } else {
-      s.append("No position info");
+    for (int i = 0; i < operandPositions.length; i++) {
+      s.append(i).append(": ").append(operandPositions[i]).append(" ");
     }
     return s.toString();
   }
@@ -94,7 +88,7 @@ public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copy
   }
 
   @Nonnull
-  public StmtPositionInfo withOperandPositions(@Nonnull FullPosition[] operandPositions) {
+  public StmtPositionInfo withOperandPositions(@Nonnull Position[] operandPositions) {
     return new FullStmtPositionInfo(stmtPosition, operandPositions);
   }
 }

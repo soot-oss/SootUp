@@ -16,9 +16,11 @@ import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.jimple.JimpleLexer;
@@ -577,7 +579,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class class extends java.lang.Object implements java.lang.'annotation'.Annotation\n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      parseJimpleClass(cs);
       fail("escaping is needed");
     } catch (Exception ignored) {
     }
@@ -615,7 +617,7 @@ public class JimpleConverterTest {
           CharStreams.fromString(
               "public class \"'notescapedquotesinstring'\" extends java.lang.Object \n {}");
       try {
-        SootClass<?> sc = parseJimpleClass(cs);
+        parseJimpleClass(cs);
         fail("\" is not allowed in identifiers");
       } catch (Exception ignore) {
       }
@@ -637,7 +639,7 @@ public class JimpleConverterTest {
       try {
         CharStream cs =
             CharStreams.fromString("public class \"class' extends java.lang.Object \n {}");
-        SootClass<?> sc = parseJimpleClass(cs);
+        parseJimpleClass(cs);
         fail("start and end quote do not match.");
       } catch (Exception ignore) {
       }
@@ -790,5 +792,16 @@ public class JimpleConverterTest {
     SootMethod method = methods.iterator().next();
     Body body = method.getBody();
     assertEquals(3, body.getLocalCount());
+  }
+
+  @Test
+  public void testEdgeCaseDoubleParsing() throws IOException {
+    SootClass<?> clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
+    Set<? extends SootField> fields = clazz.getFields();
+    for (SootField field : fields) {
+      assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
+    }
   }
 }

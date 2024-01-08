@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -146,6 +147,44 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     this.mainMethodSignature = mainMethodSignature;
     cg = initCallGraph();
     initializeStmtToOwner();
+  }
+
+  public String buildICFGGraph(CallGraph callGraph) {
+    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    computeAllCalls(mainMethodSignature, signatureToStmtGraph, callGraph);
+    return ICFGDotExporter.buildICFGGraph(signatureToStmtGraph, view, callGraph);
+  }
+
+  public void computeAllCalls(
+      MethodSignature methodSignature,
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      CallGraph callGraph) {
+    ArrayList<MethodSignature> visitedMethods = new ArrayList<>();
+    computeAllCalls(methodSignature, signatureToStmtGraph, callGraph, visitedMethods);
+  }
+
+  private void computeAllCalls(
+      MethodSignature methodSignature,
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
+      CallGraph callGraph,
+      List<MethodSignature> visitedMethods) {
+    visitedMethods.add(methodSignature);
+    final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
+    // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
+    if (signatureToStmtGraph.containsKey(methodSignature)) return;
+    if (methodOpt.isPresent()) {
+      SootMethod sootMethod = methodOpt.get();
+      if (sootMethod.hasBody()) {
+        StmtGraph<?> stmtGraph = sootMethod.getBody().getStmtGraph();
+        signatureToStmtGraph.put(methodSignature, stmtGraph);
+      }
+    }
+    callGraph.callsFrom(methodSignature).stream()
+        .filter(methodSignature1 -> !visitedMethods.contains(methodSignature1))
+        .forEach(
+            nextMethodSignature ->
+                computeAllCalls(
+                    nextMethodSignature, signatureToStmtGraph, callGraph, visitedMethods));
   }
 
   private CallGraph initCallGraph() {

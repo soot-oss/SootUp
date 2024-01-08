@@ -1,0 +1,3 @@
+class SubSubclass extends Subclass{
+
+}

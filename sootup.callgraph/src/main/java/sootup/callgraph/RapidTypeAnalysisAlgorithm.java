@@ -22,7 +22,6 @@ package sootup.callgraph;
  * #L%
  */
 
-import com.google.common.collect.Sets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,11 +30,10 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.model.Modifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.typehierarchy.MethodDispatchResolver;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
@@ -100,19 +98,24 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param method this object contains the method body which is inspected.
    */
-  protected void collectInstantiatedClassesInMethod(SootMethod method) {
+  protected List<ClassType> collectInstantiatedClassesInMethod(SootMethod method) {
     if (method == null || method.isAbstract() || method.isNative()) {
-      return;
+      return Collections.emptyList();
     }
 
     Set<ClassType> instantiated =
         method.getBody().getStmts().stream()
             .filter(stmt -> stmt instanceof JAssignStmt)
-            .map(stmt -> ((JAssignStmt<?, ?>) stmt).getRightOp())
+            .map(stmt -> ((JAssignStmt) stmt).getRightOp())
             .filter(value -> value instanceof JNewExpr)
             .map(value -> ((JNewExpr) value).getType())
             .collect(Collectors.toSet());
+    List<ClassType> newInstantiatedClassTypes =
+        instantiated.stream()
+            .filter(classType -> !instantiatedClasses.contains(classType))
+            .collect(Collectors.toList());
     instantiatedClasses.addAll(instantiated);
+    return newInstantiatedClassTypes;
   }
 
   /**
@@ -121,80 +124,93 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * is instantiated and if it contains an implementation of the methods called in the invoke
    * expression.
    *
-   * @param method the method object that contains the given invoke expression in the body.
+   * @param sourceMethod the method object that contains the given invoke expression in the body.
    * @param invokeExpr it contains the call which is resolved.
    * @return a stream containing all reachable method signatures after applying the RTA call graph
    *     algorithm
    */
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
-    MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
-    Stream<MethodSignature> result = Stream.of(targetMethodSignature);
+  protected Stream<MethodSignature> resolveCall(
+      SootMethod sourceMethod, AbstractInvokeExpr invokeExpr) {
+    MethodSignature resolveBaseMethodSignature = invokeExpr.getMethodSignature();
+    Stream<MethodSignature> result = Stream.of(resolveBaseMethodSignature);
 
-    SootMethod targetMethod =
-        view.getClass(targetMethodSignature.getDeclClassType())
-            .flatMap(clazz -> clazz.getMethod(targetMethodSignature.getSubSignature()))
-            .orElseGet(() -> findMethodInHierarchy(view, targetMethodSignature));
+    SootMethod concreteBaseMethod =
+        findConcreteMethod(view, resolveBaseMethodSignature).orElse(null);
 
-    if (targetMethod == null
-        || Modifier.isStatic(targetMethod.getModifiers())
+    if (concreteBaseMethod == null
+        || MethodModifier.isStatic(concreteBaseMethod.getModifiers())
         || (invokeExpr instanceof JSpecialInvokeExpr)) {
       return result;
     } else {
-      Set<MethodSignature> notInstantiatedCallTargets = Sets.newHashSet();
-      Set<MethodSignature> implAndOverrides =
-          MethodDispatchResolver.resolveAllDispatchesInClasses(
-              view, targetMethodSignature, instantiatedClasses, notInstantiatedCallTargets);
-
       // the class of the actual method call is instantiated
-      boolean targetMethodClassIsInstantiated =
-          instantiatedClasses.contains(targetMethodSignature.getDeclClassType());
-
-      // add the targetMethod to the ignoredCalls
-      if (!targetMethodClassIsInstantiated) {
-        notInstantiatedCallTargets.add(targetMethodSignature);
+      if (instantiatedClasses.contains(resolveBaseMethodSignature.getDeclClassType())) {
+        return Stream.concat(
+            Stream.of(concreteBaseMethod.getSignature()),
+            resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature));
+      } else {
+        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature);
+        return resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature);
       }
-
-      // save filtered calls to include them later when their class is instantiated
-      notInstantiatedCallTargets.forEach(
-          ignoredMethodSignature -> {
-            ClassType notInstantiatedClass = ignoredMethodSignature.getDeclClassType();
-            List<Call> calls = ignoredCalls.get(notInstantiatedClass);
-            if (calls == null) {
-              calls = new ArrayList<>();
-              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
-              ignoredCalls.put(notInstantiatedClass, calls);
-            } else {
-              calls.add(new Call(method.getSignature(), ignoredMethodSignature));
-            }
-          });
-
-      // find the concrete dispatch of all possible dispatches
-      Set<MethodSignature> concreteCallTargets =
-          implAndOverrides.stream()
-              .map(
-                  methodSignature ->
-                      MethodDispatchResolver.resolveConcreteDispatch(view, methodSignature))
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toSet());
-
-      // add the concrete of the targetMethod if the class is instantiated
-      if (targetMethodClassIsInstantiated) {
-        MethodDispatchResolver.resolveConcreteDispatch(view, targetMethodSignature)
-            .ifPresent(concreteCallTargets::add);
-      }
-
-      return concreteCallTargets.stream();
     }
+  }
+
+  /**
+   * Resolves all targets of the given signature of the call. Only instantiated classes are
+   * considered as target. All possible class of non instantiated classes are saved to the
+   * ignoredCall Hashmap, because the classes can be instantiated at a later time
+   *
+   * @param source the method which contains call
+   * @param resolveBaseMethodSignature the base of the resolving. All subtypes of the declaring
+   *     class are analyzed as potential targets
+   * @return a stream of all method signatures of instantiated classes that can be resolved as
+   *     target from the given base method signature.
+   */
+  private Stream<MethodSignature> resolveAllCallTargets(
+      MethodSignature source, MethodSignature resolveBaseMethodSignature) {
+    return view.getTypeHierarchy().subtypesOf(resolveBaseMethodSignature.getDeclClassType())
+        .stream()
+        .map(
+            classType -> {
+              MethodSignature method =
+                  view.getIdentifierFactory()
+                      .getMethodSignature(classType, resolveBaseMethodSignature.getSubSignature());
+              if (instantiatedClasses.contains(classType)) {
+                return resolveConcreteDispatch(view, method);
+              } else {
+                saveIgnoredCall(source, method);
+                return Optional.<MethodSignature>empty();
+              }
+            })
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+  }
+
+  /**
+   * This method saves an ignored call If this is the first ignored call of the class type in the
+   * target method, an entry for the class type is created in the ignoredCalls Hashmap
+   *
+   * @param source the source method of the call
+   * @param target the target method of the call
+   */
+  private void saveIgnoredCall(MethodSignature source, MethodSignature target) {
+    ClassType notInstantiatedClass = target.getDeclClassType();
+    List<Call> calls = ignoredCalls.get(notInstantiatedClass);
+    Call ignoredCall = new Call(source, target);
+    if (calls == null) {
+      calls = new ArrayList<>();
+      ignoredCalls.put(notInstantiatedClass, calls);
+    }
+    calls.add(ignoredCall);
   }
 
   /**
    * Preprocessing of a method in the RTA call graph algorithm
    *
    * <p>Before processing the method, all instantiated types are collected inside the body of the
-   * sourceMethod.
+   * sourceMethod. If a new instantiated class has previously ignored calls to this class, they are
+   * added to call graph
    *
    * @param view view
    * @param sourceMethod the processed method
@@ -213,35 +229,15 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             .orElse(null);
     if (method == null) return;
 
-    collectInstantiatedClassesInMethod(method);
-  }
-
-  /**
-   * Postprocessing of a method in the RTA call graph algorithm
-   *
-   * <p>RTA has to add previously ignored calls because a found instantiation of a class could
-   * enable a call to a ignored method at a later time.
-   *
-   * @param view view
-   * @param sourceMethod the processed method
-   * @param workList the current worklist that is extended by methods that have to be analyzed.
-   * @param cg the current cg is extended by new call targets and calls
-   */
-  @Override
-  protected void postProcessingMethod(
-      View<? extends SootClass<?>> view,
-      MethodSignature sourceMethod,
-      @Nonnull Deque<MethodSignature> workList,
-      @Nonnull MutableCallGraph cg) {
-    instantiatedClasses.forEach(
+    List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
+    newInstantiatedClasses.forEach(
         instantiatedClassType -> {
           List<Call> newEdges = ignoredCalls.get(instantiatedClassType);
           if (newEdges != null) {
             newEdges.forEach(
                 call -> {
                   MethodSignature concreteTarget =
-                      MethodDispatchResolver.resolveConcreteDispatch(view, call.target)
-                          .orElse(null);
+                      resolveConcreteDispatch(view, call.target).orElse(null);
                   if (concreteTarget == null) {
                     return;
                   }
@@ -259,5 +255,22 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
             ignoredCalls.remove(instantiatedClassType);
           }
         });
+  }
+
+  /**
+   * Postprocessing is not needed in RTA
+   *
+   * @param view view
+   * @param sourceMethod the processed method
+   * @param workList the current worklist that is extended by methods that have to be analyzed.
+   * @param cg the current cg is extended by new call targets and calls
+   */
+  @Override
+  protected void postProcessingMethod(
+      View<? extends SootClass<?>> view,
+      MethodSignature sourceMethod,
+      @Nonnull Deque<MethodSignature> workList,
+      @Nonnull MutableCallGraph cg) {
+    //    not needed
   }
 }

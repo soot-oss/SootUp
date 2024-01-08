@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 /**
  * This validator checks whether each ParameterRef and ThisRef is used exactly once.
@@ -32,9 +33,13 @@ import sootup.core.model.Body;
  */
 public class IdentityValidator implements BodyValidator {
 
-  /** Checks whether each ParameterRef and ThisRef is used exactly once. */
+  /**
+   * Checks whether each ParameterRef and ThisRef is used exactly once.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View<?> view) {
     // TODO: check copied code from old soot
     /*
      * boolean hasThisLocal = false; int paramCount = body.getMethod().getParameterCount(); boolean[] parameterRefs = new
@@ -57,6 +62,7 @@ public class IdentityValidator implements BodyValidator {
      * String.format("There is no parameter local for parameter number %d", i))); } }
      *
      */
+    return null;
   }
 
   @Override

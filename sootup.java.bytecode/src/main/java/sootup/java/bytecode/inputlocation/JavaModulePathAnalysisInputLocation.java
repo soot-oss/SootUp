@@ -23,17 +23,18 @@ package sootup.java.bytecode.inputlocation;
 import com.google.common.base.Preconditions;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -56,6 +57,8 @@ import sootup.java.core.types.JavaClassType;
 public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final ModuleFinder moduleFinder;
+  @Nonnull private final SourceType sourcetype;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
@@ -65,7 +68,17 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    *     SootClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    this(modulePath, FileSystems.getDefault());
+    this(modulePath, SourceType.Application);
+  }
+
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull SourceType sourcetype) {
+    this(modulePath, FileSystems.getDefault(), sourcetype);
+  }
+
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
+    this(modulePath, fileSystem, sourcetype, new ArrayList<>());
   }
 
   /**
@@ -77,8 +90,13 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull FileSystem fileSystem) {
-    moduleFinder = new ModuleFinder(modulePath, fileSystem);
+      @Nonnull String modulePath,
+      @Nonnull FileSystem fileSystem,
+      @Nonnull SourceType sourcetype,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this.sourcetype = sourcetype;
+    this.bodyInterceptors = bodyInterceptors;
+    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype);
   }
 
   @Nonnull
@@ -104,6 +122,18 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     return allModules.stream()
         .flatMap(sig -> getClassSourcesInternal(sig, view))
         .collect(Collectors.toList());
+  }
+
+  @Nullable
+  @Override
+  public SourceType getSourceType() {
+    return sourcetype;
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   @Override

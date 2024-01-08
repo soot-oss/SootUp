@@ -1,4 +1,4 @@
-public final synchronized enum class DeclareEnumWithConstructor$Number extends java.lang.Enum
+public final super enum class DeclareEnumWithConstructor$Number extends java.lang.Enum
 {
     public static final enum DeclareEnumWithConstructor$Number ONE;
 

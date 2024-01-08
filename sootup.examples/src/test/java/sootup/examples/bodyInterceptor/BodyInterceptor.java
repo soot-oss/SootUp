@@ -3,26 +3,20 @@ package sootup.examples.bodyInterceptor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to invoke body interceptors. */
@@ -34,37 +28,21 @@ public class BodyInterceptor {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     AnalysisInputLocation<JavaSootClass> inputLocation =
-        new PathBasedAnalysisInputLocation(
-            Paths.get("src/test/resources/BodyInterceptor/binary"), null);
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/BodyInterceptor/binary",
+            null,
+            Collections.singletonList(new DeadAssignmentEliminator()));
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
-
-    // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    // Create a new JavaView based on the input location
+    JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    ClassType classType = project.getIdentifierFactory().getClassType("File");
+    ClassType classType = view.getIdentifierFactory().getClassType("File");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        project
-            .getIdentifierFactory()
+        view.getIdentifierFactory()
             .getMethodSignature(classType, "someMethod", "void", Collections.emptyList());
-
-    // Create a view for project, which allows us to retrieve classes
-    // add class loading options, which can specify body interceptors
-    JavaView view = project.createView();
-    view.configBodyInterceptors(
-        analysisInputLocation ->
-            new ClassLoadingOptions() {
-              @Nonnull
-              @Override
-              public List<sootup.core.transform.BodyInterceptor> getBodyInterceptors() {
-                return Collections.singletonList(new DeadAssignmentEliminator());
-              }
-            });
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());

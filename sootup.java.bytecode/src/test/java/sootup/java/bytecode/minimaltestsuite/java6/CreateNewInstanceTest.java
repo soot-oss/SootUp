@@ -34,10 +34,10 @@ public class CreateNewInstanceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: CreateNewInstance",
+            "$l0 := @this: CreateNewInstance",
             "$stack2 = new Person",
             "specialinvoke $stack2.<Person: void <init>(int)>(20)",
-            "l1 = $stack2",
+            "$l1 = $stack2",
             "return")
         .collect(Collectors.toList());
   }

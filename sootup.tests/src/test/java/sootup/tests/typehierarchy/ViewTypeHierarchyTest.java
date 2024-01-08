@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -35,9 +35,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author Kaustubh Kelkar update on 22.04.2020 */
@@ -51,7 +49,7 @@ public class ViewTypeHierarchyTest {
   @Before
   public void setup() {
 
-    String jarFile = MethodDispatchResolverTest.jarFile;
+    String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
     assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")
@@ -64,9 +62,7 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(analysisInputLocation).build();
-    view = p.createView();
+    view = new JavaView(analysisInputLocation);
     typeHierarchy = new ViewTypeHierarchy(view);
   }
 
@@ -202,7 +198,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             Collections.emptySet(),
             null,
-            EnumSet.of(Modifier.FINAL),
+            EnumSet.of(ClassModifier.FINAL),
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList());

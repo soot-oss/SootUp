@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -31,7 +31,7 @@ public class RepeatingAnnotationsTest extends JimpleTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(Modifier.isAnnotation(sootClass.getModifiers()));
+    assertTrue(ClassModifier.isAnnotation(sootClass.getModifiers()));
   }
 
   public List<String> expectedBodyStmts() {

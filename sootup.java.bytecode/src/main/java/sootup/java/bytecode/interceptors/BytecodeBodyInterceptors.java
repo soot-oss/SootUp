@@ -20,6 +20,7 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,21 +30,18 @@ import sootup.core.transform.BodyInterceptor;
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {
   Default(
-  /*
-          new CastAndReturnInliner(),
-          new UnreachableCodeEliminator(),
-    //      // new LocalSplitter(),
-    //      new Aggregator(),
-          new TypeAssigner(),
-    //      new LocalNameStandardizer(),
-          new CopyPropagator(),
-          new DeadAssignmentEliminator(),
-          new ConditionalBranchFolder(),
-          new EmptySwitchEliminator(),
-            new NopEliminator(),
-            new UnusedLocalEliminator()
-  */
-  );
+      new NopEliminator(),
+      new CastAndReturnInliner(),
+      new UnreachableCodeEliminator(),
+      new LocalSplitter(),
+      new Aggregator(),
+      new CopyPropagator(),
+      new DeadAssignmentEliminator(),
+      new UnusedLocalEliminator(),
+      new ConditionalBranchFolder(),
+      new EmptySwitchEliminator(),
+      new TypeAssigner(),
+      new LocalNameStandardizer());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 

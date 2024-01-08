@@ -1,4 +1,4 @@
-synchronized class MultiInterfaceImplClass extends java.lang.Object implements InterfaceImplDummy, InterfaceImpl
+super class MultiInterfaceImplClass extends java.lang.Object implements InterfaceImplDummy, InterfaceImpl
 {
     public void interfaceMethod()
     {

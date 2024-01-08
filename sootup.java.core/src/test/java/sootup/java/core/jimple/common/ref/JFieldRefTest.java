@@ -17,16 +17,15 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.views.JavaView;
 
 /** @author Linghui Luo */
@@ -37,9 +36,7 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    view = project.createView();
+    view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
   }
 
   @Ignore
@@ -49,12 +46,13 @@ public class JFieldRefTest {
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field =
-        new SootField(fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+        new SootField(
+            fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation<>(),
                 null,
                 declaringClassSignature,
                 null,
@@ -63,7 +61,7 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),
@@ -75,7 +73,7 @@ public class JFieldRefTest {
     final Optional<? extends SootField> field1 = view.getField(ref.getFieldSignature());
     assertTrue(field1.isPresent());
     assertEquals(field, field1.get());
-    assertEquals(EnumSet.of(Modifier.FINAL), field1.get().getModifiers());
+    assertEquals(EnumSet.of(FieldModifier.FINAL), field1.get().getModifiers());
   }
 
   @Ignore
@@ -85,12 +83,13 @@ public class JFieldRefTest {
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field =
-        new SootField(fieldSig, EnumSet.of(Modifier.FINAL), NoPositionInformation.getInstance());
+        new SootField(
+            fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation<>(),
                 null,
                 declaringClassSignature,
                 null,
@@ -99,7 +98,7 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),
@@ -112,6 +111,6 @@ public class JFieldRefTest {
     final Optional<? extends SootField> field1 = view.getField(ref.getFieldSignature());
     assertTrue(field1.isPresent());
     assertEquals(fieldSig, field1.get().getSignature());
-    assertEquals(EnumSet.of(Modifier.FINAL), field1.get().getModifiers());
+    assertEquals(EnumSet.of(FieldModifier.FINAL), field1.get().getModifiers());
   }
 }

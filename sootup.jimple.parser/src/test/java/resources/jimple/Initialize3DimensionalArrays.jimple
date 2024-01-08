@@ -1,4 +1,4 @@
-public synchronized class Initialize3DimensionalArrays extends java.lang.Object
+public super class Initialize3DimensionalArrays extends java.lang.Object
 {
     public void shortArrays()
     {

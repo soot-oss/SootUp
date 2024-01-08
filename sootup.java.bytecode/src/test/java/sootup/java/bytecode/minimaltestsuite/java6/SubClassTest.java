@@ -59,22 +59,22 @@ public class SubClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SubClass",
-            "l0.<SubClass: int aa> = 10",
-            "l0.<SubClass: int bb> = 20",
-            "l0.<SubClass: int cc> = 30",
-            "l0.<SubClass: int dd> = 40",
+            "$l0 := @this: SubClass",
+            "$l0.<SubClass: int aa> = 10",
+            "$l0.<SubClass: int bb> = 20",
+            "$l0.<SubClass: int cc> = 30",
+            "$l0.<SubClass: int dd> = 40",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "l0 := @this: SubClass",
-            "specialinvoke l0.<SuperClass: void superclassMethod()>()",
-            "l0.<SubClass: int a> = 100",
-            "l0.<SubClass: int b> = 200",
-            "l0.<SubClass: int c> = 300",
+            "$l0 := @this: SubClass",
+            "specialinvoke $l0.<SuperClass: void superclassMethod()>()",
+            "$l0.<SubClass: int a> = 100",
+            "$l0.<SubClass: int b> = 200",
+            "$l0.<SubClass: int c> = 300",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

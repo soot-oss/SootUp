@@ -9,7 +9,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Project;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -19,16 +18,16 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.Body;
-import sootup.core.model.Modifier;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.MethodModifier;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 /**
  * @author Linghui Luo
@@ -39,20 +38,16 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project<?, ?> project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new EagerInputLocation<>())
-            .build();
-    View<?> view = project.createView();
+    View<?> view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+            .getMethodSignature("dummyMain", "main", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
 
-    final JIdentityStmt<?> firstStmt =
+    final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
@@ -73,7 +68,7 @@ public class SootMethodTest {
         new JavaSootMethod(
             new OverridingBodySource(methodSignature, body),
             methodSignature,
-            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
+            EnumSet.of(MethodModifier.PUBLIC, MethodModifier.STATIC),
             Collections.emptyList(),
             Collections.emptyList(),
             NoPositionInformation.getInstance());
@@ -81,7 +76,7 @@ public class SootMethodTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation<>(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,
@@ -90,7 +85,7 @@ public class SootMethodTest {
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
                 NoPositionInformation.getInstance(),
-                EnumSet.of(Modifier.PUBLIC),
+                EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList()),

@@ -26,16 +26,11 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.Field;
-import sootup.core.model.Method;
-import sootup.core.model.Modifier;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
@@ -115,8 +110,10 @@ public class JimplePrinter {
   }
 
   public void printTo(SootClass<?> cl, PrintWriter out) {
+    printTo(cl, out, determinePrinter());
+  }
 
-    LabeledStmtPrinter printer = determinePrinter();
+  public void printTo(SootClass<?> cl, PrintWriter out, LabeledStmtPrinter printer) {
     printer.enableImports(options.contains(Option.UseImports));
 
     // add jimple line number tags
@@ -136,16 +133,16 @@ public class JimplePrinter {
             }
       */
 
-      EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
+      EnumSet<ClassModifier> modifiers = EnumSet.copyOf(cl.getModifiers());
       // remove unwanted modifier combinations
-      if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
-        modifiers.remove(Modifier.ABSTRACT);
+      if (cl.isInterface() && ClassModifier.isAbstract(modifiers)) {
+        modifiers.remove(ClassModifier.ABSTRACT);
       }
       if (modifiers.size() != 0) {
-        printer.modifier(Modifier.toString(modifiers));
+        printer.modifier(ClassModifier.toString(modifiers));
         printer.literal(" ");
       }
-      if (!Modifier.isInterface(modifiers) && !Modifier.isAnnotation(modifiers)) {
+      if (!ClassModifier.isInterface(modifiers) && !ClassModifier.isAnnotation(modifiers)) {
         printer.literal("class ");
       }
 
@@ -194,8 +191,12 @@ public class JimplePrinter {
           SootField f = (SootField) fieldIt.next();
           printer.newline();
           printer.handleIndent();
-          printer.literal(f.getDeclaration());
-          printer.literal(";");
+          if (!f.getModifiers().isEmpty()) {
+            printer.literal(FieldModifier.toString(f.getModifiers()));
+            printer.literal(" ");
+          }
+          printer.typeSignature(f.getType());
+          printer.literal(" " + Jimple.escape(f.getName()) + ";");
           printer.newline();
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
@@ -207,7 +208,7 @@ public class JimplePrinter {
     }
 
     // Print methods
-    printMethods(cl, printer, out);
+    printMethods(cl, printer);
     printer.literal("}");
 
     printer.newline();
@@ -228,7 +229,7 @@ public class JimplePrinter {
     out.println(printer.toString());
   }
 
-  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer, PrintWriter out) {
+  private void printMethods(SootClass<?> cl, LabeledStmtPrinter printer) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -263,19 +264,25 @@ public class JimplePrinter {
     }
   }
 
+  public void printTo(Body body, PrintWriter out) {
+    printTo(body, out, determinePrinter());
+  }
+
   /**
    * Prints out the method corresponding to body Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode body body.
    */
-  public void printTo(Body body, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
+  public void printTo(Body body, PrintWriter out, LabeledStmtPrinter printer) {
     printer.enableImports(options.contains(Option.UseImports));
     printBody(body, printer);
     out.print(printer);
   }
 
   public void printTo(StmtGraph<?> graph, PrintWriter out) {
-    LabeledStmtPrinter printer = determinePrinter();
+    printTo(graph, out, determinePrinter());
+  }
+
+  public void printTo(StmtGraph<?> graph, PrintWriter out, LabeledStmtPrinter printer) {
     printStmts(graph, printer);
     out.print(printer);
   }

@@ -24,12 +24,17 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class TrapsValidator implements BodyValidator {
 
-  /** Verifies that the begin, end and handler units of each trap are in this body. */
+  /**
+   * Verifies that the begin, end and handler units of each trap are in this body.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View<?> view) {
 
     // TODO: check code from old soot below
     /*
@@ -44,6 +49,7 @@ public class TrapsValidator implements BodyValidator {
      * if (!units.contains(t.getHandlerUnit())) { exception.add(new ValidationException(t.getHandlerUnit(),
      * "handler not in chain" + " in " + body.getMethod())); } }
      */
+    return null;
   }
 
   @Override

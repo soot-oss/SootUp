@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -32,10 +32,9 @@ public class VolatileVariableTest extends MinimalBytecodeTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getName().equals("counter")
-                      && sootField.getModifiers().contains(Modifier.VOLATILE);
-                }));
+                sootField ->
+                    sootField.getName().equals("counter")
+                        && sootField.getModifiers().contains(FieldModifier.VOLATILE)));
   }
 
   /**
@@ -51,10 +50,10 @@ public class VolatileVariableTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: VolatileVariable",
-            "$stack1 = l0.<VolatileVariable: int counter>",
+            "$l0 := @this: VolatileVariable",
+            "$stack1 = $l0.<VolatileVariable: int counter>",
             "$stack2 = $stack1 + 1",
-            "l0.<VolatileVariable: int counter> = $stack2",
+            "$l0.<VolatileVariable: int counter> = $stack2",
             "return $stack1")
         .collect(Collectors.toCollection(ArrayList::new));
   }

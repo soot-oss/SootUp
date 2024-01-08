@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.Modifier;
+import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -41,19 +41,17 @@ public class DeclareFieldTest extends JimpleTestSuiteBase {
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getModifiers().contains(Modifier.PRIVATE)
-                      && sootField.getModifiers().contains(Modifier.STATIC)
-                      && sootField.getName().equals("i");
-                }));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PRIVATE)
+                        && sootField.getModifiers().contains(FieldModifier.STATIC)
+                        && sootField.getName().equals("i")));
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
-                sootField -> {
-                  return sootField.getModifiers().contains(Modifier.PUBLIC)
-                      && sootField.getModifiers().contains(Modifier.FINAL)
-                      && sootField.getName().equals("s");
-                }));
+                sootField ->
+                    sootField.getModifiers().contains(FieldModifier.PUBLIC)
+                        && sootField.getModifiers().contains(FieldModifier.FINAL)
+                        && sootField.getName().equals("s")));
   }
 
   public List<String> expectedBodyStmts() {

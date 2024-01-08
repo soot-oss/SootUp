@@ -24,6 +24,7 @@ package sootup.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -34,6 +35,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.BodySource;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.ResolveException;
@@ -56,6 +58,7 @@ import sootup.core.util.printer.StmtPrinter;
  */
 public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
 
+  @Nonnull private final ImmutableSet<MethodModifier> modifiers;
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
@@ -71,13 +74,14 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public SootMethod(
       @Nonnull BodySource source,
       @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<MethodModifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       @Nonnull Position position) {
-    super(methodSignature, modifiers, position);
+    super(methodSignature, position);
 
     this.bodySource = source;
     this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 
@@ -97,6 +101,46 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       throw new ResolveException(
           "Could not resolve a corresponding body for " + getSignature(), Paths.get(""), e);
     }
+  }
+
+  @Override
+  public boolean isProtected() {
+    return MethodModifier.isProtected(this.getModifiers());
+  }
+
+  @Override
+  public boolean isPrivate() {
+    return MethodModifier.isPrivate(this.getModifiers());
+  }
+
+  @Override
+  public boolean isPublic() {
+    return MethodModifier.isPublic(this.getModifiers());
+  }
+
+  @Override
+  public boolean isStatic() {
+    return MethodModifier.isStatic(this.getModifiers());
+  }
+
+  @Override
+  public boolean isFinal() {
+    return MethodModifier.isFinal(this.getModifiers());
+  }
+
+  /**
+   * Gets the modifiers of this class member in an immutable set.
+   *
+   * @see MethodModifier
+   */
+  @Nonnull
+  public Set<MethodModifier> getModifiers() {
+    return modifiers;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return Objects.hash(modifiers, getSignature());
   }
 
   /** Returns true if this method is not abstract or native, i.e. this method can have a body. */
@@ -151,24 +195,22 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   /** Convenience method returning true if this method is abstract. */
   public boolean isAbstract() {
-    return Modifier.isAbstract(this.getModifiers());
+    return MethodModifier.isAbstract(this.getModifiers());
   }
 
   /** Convenience method returning true if this method is native. */
   public boolean isNative() {
-    return Modifier.isNative(this.getModifiers());
+    return MethodModifier.isNative(this.getModifiers());
   }
 
   /** Convenience method returning true if this method is synchronized. */
   public boolean isSynchronized() {
-    return Modifier.isSynchronized(this.getModifiers());
+    return MethodModifier.isSynchronized(this.getModifiers());
   }
 
   /** @return yes if this is the main method */
-  public boolean isMain() {
-    return isPublic()
-        && isStatic()
-        && getSignature().getSubSignature().toString().equals("void main(java.lang.String[])");
+  public boolean isMain(@Nonnull IdentifierFactory idf) {
+    return isPublic() && isStatic() && idf.isMainSubSignature(getSignature().getSubSignature());
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
@@ -183,9 +225,9 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public void toString(@Nonnull StmtPrinter printer) {
 
     // print modifiers
-    final Set<Modifier> modifiers = getModifiers();
-    printer.modifier(Modifier.toString(modifiers));
-    if (modifiers.size() != 0) {
+    final Set<MethodModifier> modifiers = getModifiers();
+    printer.modifier(MethodModifier.toString(modifiers));
+    if (!modifiers.isEmpty()) {
       printer.literal(" ");
     }
 
@@ -228,7 +270,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   @Nonnull
-  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+  public SootMethod withModifiers(Iterable<MethodModifier> modifiers) {
     return new SootMethod(
         bodySource, getSignature(), modifiers, getExceptionSignatures(), getPosition());
   }
@@ -271,10 +313,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   public interface ModifierStep {
     @Nonnull
-    ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifier);
+    ThrownExceptionsStep withModifier(@Nonnull Iterable<MethodModifier> modifier);
 
     @Nonnull
-    default ThrownExceptionsStep withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
+    default ThrownExceptionsStep withModifiers(
+        @Nonnull MethodModifier first, @Nonnull MethodModifier... rest) {
       return withModifier(EnumSet.of(first, rest));
     }
   }
@@ -304,13 +347,13 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
 
     @Nullable private BodySource source;
-    @Nonnull private Iterable<Modifier> modifiers = Collections.emptyList();
+    @Nonnull private Iterable<MethodModifier> modifiers = Collections.emptyList();
     @Nullable private MethodSignature methodSignature;
     @Nonnull private Iterable<ClassType> thrownExceptions = Collections.emptyList();
     @Nonnull private Position position = NoPositionInformation.getInstance();
 
     @Nonnull
-    public Iterable<Modifier> getModifiers() {
+    public Iterable<MethodModifier> getModifiers() {
       return modifiers;
     }
 
@@ -350,7 +393,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     @Override
     @Nonnull
-    public ThrownExceptionsStep withModifier(@Nonnull Iterable<Modifier> modifiers) {
+    public ThrownExceptionsStep withModifier(@Nonnull Iterable<MethodModifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }

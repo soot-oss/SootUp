@@ -1,23 +1,35 @@
 site_name: SootUp
-#site_url: https://example.com/
+site_url: https://soot-oss.github.io/SootUp/
 repo_url: https://github.com/soot-oss/SootUp/
 edit_uri: edit/develop/docs/
 
 nav:
     - Home: index.md
-    - How to Start:
+    - Announcements: announce.md
+    - Design Decisions: whatsnew.md
+
+    - Basics:
       - Installation: installation.md
+#      - Configure your Input: analysisinputlocations.md
       - Getting started: getting-started.md
-    - General information:
-      - Design Decisions: whatsnew.md
       - Jimple: jimple.md
+
+    - Advanced Topics:
+      - BodyInterceptors: bodyinterceptors.md
       - Call Graph Construction: call-graph-construction.md
-      - Advanced Topics: advanced-topics.md
+      - SootUp Utilities: advanced-topics.md
+
+    - How to..:
+      - Write an Analysis: write_analyses.md
+    #  - Modify a StmtGraph: mutable_stmtgraph.md
+    #  - Modify a View: mutable_view.md
+    #  - Implement a BodyInterceptor: body_interceptor.md
+    #  - Implement an AnalysisTool: write_analysis_tool.md
+
     - More information:
       - Javadoc: /SootUp/apidocs
-      - FAQ: faq.md
-#    - Used by: tools.md
-#    - Analyses: analyses.md
+      - Troubleshooting & FAQ: faq.md
+      # - Based on SootUp: tools.md
 
 theme:
   palette:
@@ -57,3 +69,6 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 
+extra:
+  version:
+    provider: mike
