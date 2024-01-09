@@ -39,12 +39,15 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
+import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.expr.*;
-import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
@@ -194,7 +197,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // add converted insn as stmts into the graph
     try {
-      arrangeStmts(graph, preambleStmts, bodyBuilder);
+      arrangeStmts(graph, preambleStmts);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -1587,8 +1590,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
-  private void arrangeStmts(
-      MutableBlockStmtGraph graph, List<Stmt> stmtList, Body.BodyBuilder builder) {
+  private void arrangeStmts(MutableBlockStmtGraph graph, List<Stmt> stmtList) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
@@ -1605,6 +1607,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // https://asm.ow2.io/javadoc/org/objectweb/asm/Label.html
       // there can be multiple labels assigned to the following stmt! (and other AbstractNodes in
       // between!)
+      if (insn instanceof LineNumberNode) {
+        continue;
+      }
+
       final boolean isLabelNode = insn instanceof LabelNode;
       if (isLabelNode) {
         // Save the label to assign it then to the next real Stmt
@@ -1624,9 +1630,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt identityRef = findIdentityRefInStmtContainer(stmt);
-          if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
+          JIdentityStmt caughtExceptionRefStmt = findIdentityRefInStmtContainer(stmt);
+          if (caughtExceptionRefStmt != null
+              && caughtExceptionRefStmt.getRightOp() instanceof JCaughtExceptionRef) {
+            danglingLabel.forEach(label -> trapHandler.put(label, caughtExceptionRefStmt));
           }
         }
         danglingLabel.clear();
