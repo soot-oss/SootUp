@@ -16,7 +16,7 @@ public class FixMissingTraphandlerPredecessor {
     public void testMissingTrapHandlerPredecessor() {
         AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(directory);
         JavaView view = new JavaView(inputLocation);
-        view.getClass( view.getIdentifierFactory().getClassType("MissingTrapHandlerAssignment")).get().getMethods().forEach(SootMethod::getBody);
+        view.getMethod( view.getIdentifierFactory().parseMethodSignature("<MissingTrapHandlerAssignment: long run()>")).get().getBody();
 
     }
 
