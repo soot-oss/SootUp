@@ -39,7 +39,6 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.*;
 import sootup.core.frontend.BodySource;
-import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.*;
@@ -438,6 +437,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       operandStack.push(opr);
     }
+
+    Local local = newStackLocal();
+    Operand operand = new Operand(insn, local, this);
+    operandStack.push(v.getType(), operand);
+    JAssignStmt as = Jimple.newAssignStmt(local, v, getStmtPositionInfo());
+    setStmt(insn, as);
   }
 
   private void convertArrayLoadInsn(@Nonnull InsnNode insn) {

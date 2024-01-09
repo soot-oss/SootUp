@@ -139,24 +139,24 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     traps.sort(getTrapComparator(trapstmtToIdx));
     /* debug print:
-    traps.forEach(
-        t ->
-            System.out.println(
-                t.getExceptionType()
-                    + "\t"
-                    + trapstmtToIdx.get(t.getBeginStmt())
-                    + ":"
-                    + trapstmtToIdx.get(t.getEndStmt())
-                    + "\t\t("
-                    + stmts.get(trapstmtToIdx.get(t.getBeginStmt()))
-                    + " -> "
-                    + stmts.get(trapstmtToIdx.get(t.getEndStmt()))
-                    + ")"
-                    + "\t\t--> "
-                    + trapstmtToIdx.get(t.getHandlerStmt())
-                    + " \t "
-                    + t.getHandlerStmt()));
-*/
+        traps.forEach(
+            t ->
+                System.out.println(
+                    t.getExceptionType()
+                        + "\t"
+                        + trapstmtToIdx.get(t.getBeginStmt())
+                        + ":"
+                        + trapstmtToIdx.get(t.getEndStmt())
+                        + "\t\t("
+                        + stmts.get(trapstmtToIdx.get(t.getBeginStmt()))
+                        + " -> "
+                        + stmts.get(trapstmtToIdx.get(t.getEndStmt()))
+                        + ")"
+                        + "\t\t--> "
+                        + trapstmtToIdx.get(t.getHandlerStmt())
+                        + " \t "
+                        + t.getHandlerStmt()));
+    */
 
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
