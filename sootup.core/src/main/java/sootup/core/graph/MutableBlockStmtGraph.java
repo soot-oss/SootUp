@@ -137,10 +137,27 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           trapEnd.add(trap);
         });
 
-    // traps.sort(getTrapComparator(trapstmtToIdx));
+    traps.sort(getTrapComparator(trapstmtToIdx));
     /* debug print:
-         traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
-    */
+    traps.forEach(
+        t ->
+            System.out.println(
+                t.getExceptionType()
+                    + "\t"
+                    + trapstmtToIdx.get(t.getBeginStmt())
+                    + ":"
+                    + trapstmtToIdx.get(t.getEndStmt())
+                    + "\t\t("
+                    + stmts.get(trapstmtToIdx.get(t.getBeginStmt()))
+                    + " -> "
+                    + stmts.get(trapstmtToIdx.get(t.getEndStmt()))
+                    + ")"
+                    + "\t\t--> "
+                    + trapstmtToIdx.get(t.getHandlerStmt())
+                    + " \t "
+                    + t.getHandlerStmt()));
+*/
+
     setStartingStmt(stmts.get(0));
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> currentTrapMap = new HashMap<>();
@@ -148,27 +165,35 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     Trap nextStartingTrap = trapStart.poll();
     Trap nextEndingTrap = trapEnd.poll();
-    for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
+    final int stmtsSize = stmts.size();
+    for (int i = 0; i < stmtsSize; i++) {
       Stmt stmt = stmts.get(i);
+
+      // System.out.println("---- next stmt " + stmt + "--- ");
 
       boolean trapsChanged = false;
       while (nextEndingTrap != null && nextEndingTrap.getEndStmt() == stmt) {
+        // System.out.println("remove trap ---> " + nextEndingTrap);
         Trap trap = nextEndingTrap;
         nextEndingTrap = trapEnd.poll();
         // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
         final ClassType exceptionType = trap.getExceptionType();
-        final boolean isRemoved = currentTrapMap.remove(exceptionType, trap);
+        final boolean isRemovedFromActive = currentTrapMap.remove(exceptionType, trap);
         final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
         if (overridenTrapHandlers != null) {
-          if (!isRemoved && !overridenTrapHandlers.isEmpty()) {
-            // check if theres an overlapping trap that has a less specific TrapRange which is
+          // System.out.println("overlapping traps found");
+          if (isRemovedFromActive) {
+            // is there an overridden traprange that needs to take its place?
+            if (!overridenTrapHandlers.isEmpty()) {
+              // System.out.println("update currentTrapMap with next trap from overlaps");
+              currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
+            }
+          } else {
+            // check if there is an overlapping trap that has a less specific TrapRange which is
             // ending before it gets the active exception information again
             // not logical as a compiler output... but possible.
             overridenTrapHandlers.remove(trap);
-          }
-
-          if (!overridenTrapHandlers.isEmpty()) {
-            currentTrapMap.put(exceptionType, overridenTrapHandlers.poll());
+            // System.out.println("remove from overlapping: " + trap);
           }
         }
 
@@ -176,12 +201,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       }
 
       while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == stmt) {
+        // System.out.println("add trap ---> " + nextStartingTrap);
         Trap trap = nextStartingTrap;
         nextStartingTrap = trapStart.poll();
         final Trap existingTrapForException = currentTrapMap.get(trap.getExceptionType());
         if (existingTrapForException == null) {
           currentTrapMap.put(trap.getExceptionType(), trap);
         } else {
+          // System.out.println("collision for exception " + existingTrapForException);
           final PriorityQueue<Trap> overridenTraps =
               overlappingTraps.computeIfAbsent(
                   trap.getExceptionType(),
@@ -205,11 +232,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           // remove element which is the trap with the next ending traprange
           Trap trapToApply = overridenTraps.poll();
           currentTrapMap.put(trapToApply.getExceptionType(), trapToApply);
+
+          // System.out.println("multiple candidates - chose: " + trapToApply);
         }
         trapsChanged = true;
       }
       // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
       if (trapsChanged) {
+        // System.out.println("set traps -> " + currentTrapMap);
         exceptionToHandlerMap.clear();
         currentTrapMap.forEach(
             (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
@@ -384,6 +414,28 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
     block.removeExceptionalSuccessorBlock(exceptionType);
     tryMergeIntoSurroundingBlocks(block);
+  }
+
+  @Override
+  public void removeBlock(BasicBlock<?> block) {
+    MutableBasicBlock blockOf = stmtToBlock.get(block.getHead());
+    if (blockOf != block) {
+      throw new IllegalArgumentException(
+          "The given block is not contained in this MutableBlockStmtGraph.");
+    }
+
+    List<Stmt> stmts = block.getStmts();
+    stmts.forEach(
+        stmt -> {
+          stmtToBlock.remove(stmt);
+        });
+
+    // unlink block from graph
+    blockOf.clearPredecessorBlocks();
+    blockOf.clearSuccessorBlocks();
+    blockOf.clearExceptionalSuccessorBlocks();
+
+    blocks.remove(blockOf);
   }
 
   @Override
