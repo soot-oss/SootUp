@@ -27,11 +27,10 @@ public class TypeAssignerTestSuite {
 
   public void buildView(String baseDir, String className) {
 
-    AnalysisInputLocation<? extends JavaSootClass> analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir);
-    AnalysisInputLocation<? extends JavaSootClass> rtJar = new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation analysisInputLocation = new JavaClassPathAnalysisInputLocation(baseDir);
+    AnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation();
 
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(analysisInputLocation);
     inputLocations.add(rtJar);
 

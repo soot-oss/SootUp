@@ -35,7 +35,7 @@ import sootup.core.views.View;
 public class InvokeArgumentValidator implements BodyValidator {
 
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * for (Unit u : body.getUnits()) { Stmt s = (Stmt) u; if (s.containsInvokeExpr()) { InvokeExpr iinvExpr =

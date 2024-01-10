@@ -9,13 +9,12 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new DefaultRTJarAnalysisInputLocation(
             SourceType.Library, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

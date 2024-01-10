@@ -53,9 +53,9 @@ public class AugEvalFunction {
   private final ClassType methodTypeClassType;
   private final ClassType throwableClassType;
 
-  View<? extends SootClass<?>> view;
+  View view;
 
-  public AugEvalFunction(View<? extends SootClass<?>> view) {
+  public AugEvalFunction(View view) {
     this.view = view;
 
     // one time setup

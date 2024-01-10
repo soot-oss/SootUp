@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
@@ -36,7 +35,7 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
 
 /**
@@ -46,7 +45,7 @@ import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
  *
  * @author Linghui Luo
  */
-public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation {
 
   private static final Logger log =
       LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
@@ -160,16 +159,14 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
     return classProvider.getClassSources(srcType);
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
     for (String path : sourcePaths) {
       try {
         return classProvider.createClassSource(this, Paths.get(path), type);

@@ -29,7 +29,7 @@ import sootup.core.views.View;
 public class CheckInitValidator implements BodyValidator {
 
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
 
     // TODO: #535 implement validator
     //  check code copied from old soot

@@ -36,7 +36,7 @@ public class LocalsValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View<?> view) {
+  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
     // TODO : Write tests
     List<ValidationException> exception = new ArrayList<>();
 

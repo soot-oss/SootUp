@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.signatures.ModuleSignature;
 
 /** @author Kaustubh Kelkar */
@@ -19,7 +18,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void discoverJarModuleByName() {
     ModuleFinder moduleFinder = new ModuleFinder(jar.toString());
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("MiniApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
@@ -34,7 +33,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void discoverWarModuleByName() {
     ModuleFinder moduleFinder = new ModuleFinder(war.toString());
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }

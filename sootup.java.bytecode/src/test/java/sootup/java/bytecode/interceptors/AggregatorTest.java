@@ -24,7 +24,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -157,8 +156,7 @@ public class AggregatorTest {
     //     String classPath =
     // "../sootup.tests/src/test/resources/bugs/664_struce-compiled/org/apache";
     String classPath = "../sootup.tests/src/test/resources/interceptor/";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath);
+    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(classPath);
 
     JavaView view = new JavaView(inputLocation);
     {
@@ -180,7 +178,7 @@ public class AggregatorTest {
   @Test
   public void testIssue739() {
 
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             "../shared-test-resources/bugfixes/Issue739_Aggregator.class",
             SourceType.Application,

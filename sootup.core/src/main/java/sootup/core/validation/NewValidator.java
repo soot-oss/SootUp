@@ -49,7 +49,7 @@ public class NewValidator implements BodyValidator {
 
   //  Checks whether after each new-instruction a constructor call follows.
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
 
     List<ValidationException> exceptions = new ArrayList<>();
 

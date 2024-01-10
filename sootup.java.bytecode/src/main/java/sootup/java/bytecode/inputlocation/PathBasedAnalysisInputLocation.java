@@ -20,7 +20,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -64,8 +63,7 @@ import sootup.java.core.types.JavaClassType;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public abstract class PathBasedAnalysisInputLocation
-    implements AnalysisInputLocation<JavaSootClass> {
+public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
   private final SourceType sourceType;
   private final List<BodyInterceptor> bodyInterceptors;
   protected Path path;
@@ -164,10 +162,10 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   @Nonnull
-  Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
+  Collection<JavaSootClassSource> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+      @Nonnull ClassProvider classProvider) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
@@ -180,6 +178,7 @@ public abstract class PathBasedAnalysisInputLocation
               p ->
                   StreamUtils.optionalToStream(
                       classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
+          .map(src -> (JavaSootClassSource) src)
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -188,10 +187,8 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   @Nonnull
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getClassSourceInternal(
-      @Nonnull JavaClassType signature,
-      @Nonnull Path path,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+  protected Optional<JavaSootClassSource> getClassSourceInternal(
+      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
 
     Path pathToClass =
         path.resolve(
@@ -203,13 +200,14 @@ public abstract class PathBasedAnalysisInputLocation
       return Optional.empty();
     }
 
-    return classProvider.createClassSource(this, pathToClass, signature);
+    Optional<? extends SootClassSource> classSource =
+        classProvider.createClassSource(this, pathToClass, signature);
+
+    return classSource.map(src -> (JavaSootClassSource) src);
   }
 
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getSingleClass(
-      @Nonnull JavaClassType signature,
-      @Nonnull Path path,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+  protected Optional<JavaSootClassSource> getSingleClass(
+      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
 
     Path pathToClass = Paths.get(path.toString());
 
@@ -217,7 +215,10 @@ public abstract class PathBasedAnalysisInputLocation
       return Optional.empty();
     }
 
-    return classProvider.createClassSource(this, pathToClass, signature);
+    Optional<? extends SootClassSource> classSource =
+        classProvider.createClassSource(this, pathToClass, signature);
+
+    return classSource.map(src -> (JavaSootClassSource) src);
   }
 
   private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
@@ -236,20 +237,21 @@ public abstract class PathBasedAnalysisInputLocation
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
       return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
 
     @Nonnull
     @Override
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
       AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
       IdentifierFactory factory = view.getIdentifierFactory();
       Path dirPath = this.path.getParent();
-      Optional<SootClassSource<JavaSootClass>> classSource =
-          classProvider.createClassSource(this, path, factory.fromPath(dirPath, path));
+      Optional<JavaSootClassSource> classSource =
+          classProvider
+              .createClassSource(this, path, factory.fromPath(dirPath, path))
+              .map(src -> (JavaSootClassSource) src);
       return Collections.singletonList(classSource.get());
     }
   }
@@ -269,22 +271,21 @@ public abstract class PathBasedAnalysisInputLocation
 
     @Override
     @Nonnull
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
       return walkDirectory(path, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     }
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
       return getClassSourceInternal((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
   }
 
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
-    public List<AnalysisInputLocation<JavaSootClass>> containedInputLocations = new ArrayList<>();
+    public List<AnalysisInputLocation> containedInputLocations = new ArrayList<>();
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
@@ -331,27 +332,28 @@ public abstract class PathBasedAnalysisInputLocation
 
     @Override
     @Nonnull
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
-      Set<AbstractClassSource<JavaSootClass>> foundClasses = new HashSet<>();
+      Set<SootClassSource> foundClasses = new HashSet<>();
 
-      for (AnalysisInputLocation<JavaSootClass> inputLoc : containedInputLocations) {
+      for (AnalysisInputLocation inputLoc : containedInputLocations) {
         foundClasses.addAll(inputLoc.getClassSources(view));
       }
-      return foundClasses;
+      return foundClasses.stream()
+          .map(src -> (JavaSootClassSource) src)
+          .collect(Collectors.toList());
     }
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
 
-      for (AnalysisInputLocation<JavaSootClass> inputLocation : containedInputLocations) {
-        final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+      for (AnalysisInputLocation inputLocation : containedInputLocations) {
+        final Optional<? extends SootClassSource> classSource =
             inputLocation.getClassSource(type, view);
         if (classSource.isPresent()) {
-          return classSource;
+          return classSource.map(src -> (JavaSootClassSource) src);
         }
       }
 

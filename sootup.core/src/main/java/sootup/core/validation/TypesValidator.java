@@ -33,7 +33,7 @@ import sootup.core.views.View;
 public class TypesValidator implements BodyValidator {
 
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     /*
      * SootMethod methodRef = body.getMethod();
      *

@@ -119,14 +119,18 @@ public class OverridingClassSource extends SootClassSource {
 
   @Nonnull
   @Override
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
-    return overriddenSootMethods != null ? overriddenSootMethods : delegate.resolveMethods();
+  public Collection<SootMethod> resolveMethods() throws ResolveException {
+    return overriddenSootMethods != null
+        ? overriddenSootMethods
+        : (Collection<SootMethod>) delegate.resolveMethods();
   }
 
   @Nonnull
   @Override
-  public Collection<? extends SootField> resolveFields() throws ResolveException {
-    return overriddenSootFields != null ? overriddenSootFields : delegate.resolveFields();
+  public Collection<SootField> resolveFields() throws ResolveException {
+    return overriddenSootFields != null
+        ? overriddenSootFields
+        : (Collection<SootField>) delegate.resolveFields();
   }
 
   @Nonnull
@@ -138,19 +142,25 @@ public class OverridingClassSource extends SootClassSource {
   @Nonnull
   @Override
   public Set<ClassType> resolveInterfaces() {
-    return overriddenInterfaces != null ? overriddenInterfaces : delegate.resolveInterfaces();
+    return overriddenInterfaces != null
+        ? overriddenInterfaces
+        : (Set<ClassType>) delegate.resolveInterfaces();
   }
 
   @Nonnull
   @Override
   public Optional<ClassType> resolveSuperclass() {
-    return overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveSuperclass();
+    return overriddenSuperclass != null
+        ? overriddenSuperclass
+        : (Optional<ClassType>) delegate.resolveSuperclass();
   }
 
   @Nonnull
   @Override
-  public Optional<? extends ClassType> resolveOuterClass() {
-    return overriddenOuterClass != null ? overriddenOuterClass : delegate.resolveOuterClass();
+  public Optional<ClassType> resolveOuterClass() {
+    return overriddenOuterClass != null
+        ? overriddenOuterClass
+        : (Optional<ClassType>) delegate.resolveOuterClass();
   }
 
   @Nonnull
@@ -160,8 +170,8 @@ public class OverridingClassSource extends SootClassSource {
   }
 
   @Override
-  public SootClass<?> buildClass(@Nonnull SourceType sourceType) {
-    return new SootClass<>(this, sourceType);
+  public SootClass buildClass(@Nonnull SourceType sourceType) {
+    return new SootClass(this, sourceType);
   }
 
   @Override

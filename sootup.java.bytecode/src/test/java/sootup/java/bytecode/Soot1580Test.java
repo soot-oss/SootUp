@@ -12,7 +12,6 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -22,7 +21,7 @@ public class Soot1580Test {
   @Test
   @Ignore("Localsplitter fails; bytecode itself is somehow strange")
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             jar, null, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

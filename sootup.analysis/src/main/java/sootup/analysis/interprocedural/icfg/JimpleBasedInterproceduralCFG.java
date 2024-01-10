@@ -41,7 +41,6 @@ import sootup.callgraph.CallGraphAlgorithm;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -210,7 +209,7 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull CallGraph cg) {
+      @Nonnull View view, @Nonnull CallGraph cg) {
     Set<MethodSignature> methodSigs = cg.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {

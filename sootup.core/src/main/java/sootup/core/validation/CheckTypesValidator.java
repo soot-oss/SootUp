@@ -29,7 +29,7 @@ import sootup.core.views.View;
 public class CheckTypesValidator implements BodyValidator {
 
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check code from old soot in the comment below
     /*
      * for (Unit u : body.getUnits()) { String errorSuffix = " at " + u + " in " + body.getMethod();

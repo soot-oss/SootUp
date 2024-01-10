@@ -29,7 +29,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import sootup.callgraph.CallGraph;
 import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
@@ -53,7 +52,7 @@ public class CGEdgeUtil {
   }
 
   public static Set<Pair<MethodSignature, CalleeMethodSignature>> getCallEdges(
-      View<? extends SootClass> view, CallGraph cg) {
+      View view, CallGraph cg) {
     Set<MethodSignature> methodSigs = cg.getMethodSignatures();
     Set<Pair<MethodSignature, CalleeMethodSignature>> callEdges = new HashSet<>();
     for (MethodSignature caller : methodSigs) {
