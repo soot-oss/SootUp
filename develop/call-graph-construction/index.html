@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../icon.svg">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
     
     
       
@@ -848,7 +848,7 @@ Below, we show how to create a type hierarchy:</p>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="p">();</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="p">();</span>
 <span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;src/test/resources/Callgraph/binary&quot;</span><span class="p">));</span>
 <span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRTJarAnalysisInputLocation</span><span class="p">());</span>
 
@@ -906,7 +906,7 @@ Below, we show how to create a type hierarchy:</p>
 <span class="normal">6</span>
 <span class="normal">7</span>
 <span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">);</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">);</span>
 
 <span class="n">MethodSignature</span><span class="w"> </span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>

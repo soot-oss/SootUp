@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../icon.svg">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.2">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
     
     
       
@@ -903,7 +903,7 @@
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Binary&quot;</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
@@ -919,7 +919,7 @@
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JavaSourcePathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Source&quot;</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
@@ -935,7 +935,7 @@
 <span class="normal">5</span>
 <span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">pathToJimple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;path2Jimple&quot;</span><span class="p">);</span>
 
-<span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JimpleAnalysisInputLocation</span><span class="p">(</span><span class="n">pathToJimple</span><span class="p">);</span>
 
 <span class="n">JimpleView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JimpleView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
@@ -998,16 +998,14 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <div class="admonition example">
 <p class="admonition-title">Defining a ClassType</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;example.HelloWorld&quot;</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <p>Once we have a <code>ClassType</code> that identifies the <code>HelloWorld</code> class, we can use it to retrieve the corresponding <code>SootClass</code> object from the <code>view</code> as shown below:</p>
 <div class="admonition example">
 <p class="admonition-title">Retrieving a SootClass</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SootClass</span><span class="o">&lt;</span><span class="n">JavaSootClassSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span>
-<span class="w">        </span><span class="p">(</span><span class="n">SootClass</span><span class="o">&lt;</span><span class="n">JavaSootClassSource</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaSootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <h2 id="retrieving-a-method">Retrieving a Method</h2>
@@ -1052,10 +1050,10 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Optional</span><span class="o">&lt;?</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">SootMethod</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">());</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Optional</span><span class="o">&lt;</span><span class="n">JavaSootMethod</span><span class="o">&gt;</span><span class="w"> </span><span class="n">opt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">());</span>
 
 <span class="k">if</span><span class="p">(</span><span class="n">opt</span><span class="p">.</span><span class="na">isPresent</span><span class="p">()){</span>
-<span class="w">  </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opt</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
+<span class="w">  </span><span class="n">JavaSootMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">opt</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1094,14 +1092,12 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
 <span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Binary&quot;</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 
-<span class="n">ClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
 <span class="w">        </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;HelloWorld&quot;</span><span class="p">);</span>
 
 <span class="n">MethodSignature</span><span class="w"> </span><span class="n">methodSignature</span><span class="w"> </span><span class="o">=</span>
@@ -1111,11 +1107,9 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <span class="w">            </span><span class="s">&quot;main&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">classType</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;void&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="s">&quot;java.lang.String[]&quot;</span><span class="p">));</span>
 
-<span class="n">SootClass</span><span class="o">&lt;</span><span class="n">JavaSootClassSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="p">(</span><span class="n">SootClass</span><span class="o">&lt;</span><span class="n">JavaSootClassSource</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">JavaSootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 
-<span class="n">SootMethod</span><span class="w"> </span><span class="n">sootMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">JavaSootMethod</span><span class="w"> </span><span class="n">sootMethod</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
 
 <span class="n">sootMethod</span><span class="p">.</span><span class="na">getBody</span><span class="p">().</span><span class="na">getStmts</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
