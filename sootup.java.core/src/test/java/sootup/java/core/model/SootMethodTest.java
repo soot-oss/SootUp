@@ -23,7 +23,6 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
@@ -38,7 +37,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    View<?> view = new JavaView(Collections.singletonList(new EagerInputLocation<>()));
+    JavaView view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
@@ -76,7 +75,7 @@ public class SootMethodTest {
     JavaSootClass mainClass =
         new JavaSootClass(
             new OverridingJavaClassSource(
-                new EagerInputLocation<>(),
+                new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

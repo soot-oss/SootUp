@@ -41,7 +41,7 @@ public class JimpleTrapValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * Set<Unit> caughtUnits = new HashSet<Unit>(); for (Trap trap : body.getTraps()) {

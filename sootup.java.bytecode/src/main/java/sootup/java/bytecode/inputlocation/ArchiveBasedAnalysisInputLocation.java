@@ -35,13 +35,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 
 public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
@@ -85,8 +84,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
     try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
@@ -99,8 +97,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
     // we don't use the filesystem cache here as it could close the filesystem after the timeout
     // while we are still iterating
     try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {

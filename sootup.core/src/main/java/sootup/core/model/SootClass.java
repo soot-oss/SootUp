@@ -44,12 +44,12 @@ import sootup.core.util.printer.JimplePrinter;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extends AbstractClass<S> {
+public class SootClass extends AbstractClass {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
 
-  public SootClass(@Nonnull S classSource, @Nonnull SourceType sourceType) {
+  public SootClass(@Nonnull SootClassSource classSource, @Nonnull SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
@@ -57,7 +57,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   @Nonnull
   private Set<? extends SootField> lazyFieldInitializer() {
-    Set<? extends SootField> fields;
+    Set<SootField> fields;
 
     try {
       fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
@@ -71,7 +71,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
   }
 
   @Nonnull
-  private Set<SootMethod> lazyMethodInitializer() {
+  private Set<? extends SootMethod> lazyMethodInitializer() {
     Set<SootMethod> methods;
 
     try {
@@ -267,7 +267,7 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
 
   @Nonnull
   @Override
-  public S getClassSource() {
+  public SootClassSource getClassSource() {
     return classSource;
   }
 
@@ -278,12 +278,12 @@ public class SootClass<S extends SootClassSource<? extends SootClass<S>>> extend
   }
 
   @Nonnull
-  public SootClass<S> withClassSource(@Nonnull S classSource) {
-    return new SootClass<S>(classSource, sourceType);
+  public SootClass withClassSource(@Nonnull SootClassSource classSource) {
+    return new SootClass(classSource, sourceType);
   }
 
   @Nonnull
-  public SootClass<S> withSourceType(@Nonnull SourceType sourceType) {
-    return new SootClass<S>(classSource, sourceType);
+  public SootClass withSourceType(@Nonnull SourceType sourceType) {
+    return new SootClass(classSource, sourceType);
   }
 }

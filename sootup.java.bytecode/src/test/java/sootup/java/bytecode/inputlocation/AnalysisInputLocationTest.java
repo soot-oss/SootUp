@@ -8,11 +8,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 /*-
@@ -55,17 +54,16 @@ public abstract class AnalysisInputLocationTest {
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation<JavaSootClass> ns, List<ClassType> sigs, int classesFound) {
+      AnalysisInputLocation ns, List<ClassType> sigs, int classesFound) {
 
     final JavaView view = new JavaView(ns);
 
     for (ClassType classType : sigs) {
-      final Optional<? extends AbstractClassSource<JavaSootClass>> clazzOpt =
-          ns.getClassSource(classType, view);
+      final Optional<? extends SootClassSource> clazzOpt = ns.getClassSource(classType, view);
       assertTrue(clazzOpt.isPresent());
       assertEquals(classType, clazzOpt.get().getClassType());
     }
-    final Collection<? extends AbstractClassSource<?>> classSources = ns.getClassSources(view);
+    final Collection<? extends SootClassSource> classSources = ns.getClassSources(view);
 
     assertEquals(classSources.size(), classesFound);
   }

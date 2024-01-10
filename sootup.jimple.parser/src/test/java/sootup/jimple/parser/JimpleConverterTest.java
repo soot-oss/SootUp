@@ -30,11 +30,11 @@ import sootup.jimple.parser.categories.Java8Test;
 @Category(Java8Test.class)
 public class JimpleConverterTest {
 
-  private SootClass<?> parseJimpleClass(CharStream cs) throws ResolveException {
+  private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
     JimpleConverter jimpleVisitor = new JimpleConverter();
     final OverridingClassSource scs =
-        jimpleVisitor.run(cs, new EagerInputLocation<>(), Paths.get(""));
-    return new SootClass<>(scs, SourceType.Application);
+        jimpleVisitor.run(cs, new EagerInputLocation(), Paths.get(""));
+    return new SootClass(scs, SourceType.Application);
   }
 
   @Test
@@ -276,7 +276,7 @@ public class JimpleConverterTest {
                 + "/* SecondComment */"
                 + "} \n");
 
-    SootClass<?> sc = parseJimpleClass(cs);
+    SootClass sc = parseJimpleClass(cs);
     assertTrue(
         sc.getMethod(
                 new MethodSubSignature("another", Collections.emptyList(), VoidType.getInstance()))
@@ -538,14 +538,14 @@ public class JimpleConverterTest {
     {
       CharStream cs =
           CharStreams.fromString("public class escaped.'class' extends java.lang.Object {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("escaped.class", sc.getClassSource().getClassType().toString());
     }
     // old kind of escaping: at the beginning
     {
       CharStream cs =
           CharStreams.fromString("public class 'class'.is.escaped extends java.lang.Object {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("class.is.escaped", sc.getClassSource().getClassType().toString());
     }
 
@@ -554,7 +554,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class some.'pckg'.'class'.More extends java.lang.Object {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("some.pckg.class.More", sc.getClassSource().getClassType().toString());
     }
 
@@ -562,7 +562,7 @@ public class JimpleConverterTest {
       // current escaping
       CharStream cs =
           CharStreams.fromString("public class 'annotationinterface' extends java.lang.Object {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("annotationinterface", sc.getClassSource().getClassType().toString());
     }
 
@@ -570,7 +570,7 @@ public class JimpleConverterTest {
       // no escaping needed as "class" is not considered a token if its nested into more
       CharStream cs =
           CharStreams.fromString("public class some.pckg.class extends java.lang.Object \n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("some.pckg.class", sc.getClassSource().getClassType().toString());
     }
 
@@ -589,7 +589,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class \\'some.pckg.ClassObj\\' extends java.lang.Object \n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("'some.pckg.ClassObj'", sc.getClassSource().getClassType().toString());
     }
 
@@ -598,7 +598,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class 'some.'.pckg.'.ClassObj' extends java.lang.Object \n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("some..pckg..ClassObj", sc.getClassSource().getClassType().toString());
     }
 
@@ -607,7 +607,7 @@ public class JimpleConverterTest {
       CharStream cs =
           CharStreams.fromString(
               "public class some.\\'.pckg.\\'.ClassObj extends java.lang.Object \n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
       assertEquals("some.'.pckg.'.ClassObj", sc.getClassSource().getClassType().toString());
     }
 
@@ -628,7 +628,7 @@ public class JimpleConverterTest {
       // escaped quotes in escaped sequence
       CharStream cs =
           CharStreams.fromString("public class \\'class\\' extends java.lang.Object \n {}");
-      SootClass<?> sc = parseJimpleClass(cs);
+      SootClass sc = parseJimpleClass(cs);
 
       assertEquals("'class'", Jimple.unescape("\\'class\\'"));
       assertEquals("'class'", sc.getClassSource().getClassType().toString());
@@ -785,7 +785,7 @@ public class JimpleConverterTest {
 
   @Test
   public void testQuotedTypeParsing() throws IOException {
-    SootClass<?> clazz =
+    SootClass clazz =
         parseJimpleClass(
             CharStreams.fromFileName("src/test/java/resources/jimple/SubTypeValidator.jimple"));
     Set<? extends SootMethod> methods = clazz.getMethods();
@@ -796,7 +796,7 @@ public class JimpleConverterTest {
 
   @Test
   public void testEdgeCaseDoubleParsing() throws IOException {
-    SootClass<?> clazz =
+    SootClass clazz =
         parseJimpleClass(
             CharStreams.fromFileName("src/test/java/resources/jimple/EdgeCaseDoubleNumber.jimple"));
     Set<? extends SootField> fields = clazz.getFields();

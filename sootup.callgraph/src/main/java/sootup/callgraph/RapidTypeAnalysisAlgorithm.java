@@ -31,7 +31,6 @@ import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.MethodModifier;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -70,7 +69,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *
    * @param view it contains the data of the classes and methods
    */
-  public RapidTypeAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+  public RapidTypeAnalysisAlgorithm(@Nonnull View view) {
     super(view);
   }
 
@@ -219,7 +218,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void preProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
@@ -267,7 +266,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    */
   @Override
   protected void postProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {

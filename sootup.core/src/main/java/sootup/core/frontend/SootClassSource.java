@@ -42,8 +42,7 @@ import sootup.core.types.ClassType;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class SootClassSource<S extends SootClass<? extends SootClassSource<S>>>
-    extends AbstractClassSource<S> {
+public abstract class SootClassSource extends AbstractClassSource {
 
   /**
    * Creates and a {@link SootClassSource} for a specific source file. The file should be passed as
@@ -58,13 +57,13 @@ public abstract class SootClassSource<S extends SootClass<? extends SootClassSou
    * @param classSignature the signature that has been used to resolve this class
    */
   public SootClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
   }
 
-  protected SootClassSource(SootClassSource<S> delegate) {
+  protected SootClassSource(SootClassSource delegate) {
     super(delegate.classSource, delegate.getClassType(), delegate.getSourcePath());
   }
 

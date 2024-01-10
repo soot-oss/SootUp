@@ -8,7 +8,6 @@ import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -18,8 +17,7 @@ public class Soot1577Test {
   @Test
   @Ignore("conversion fails - could be a dex2jar conversion problem")
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation(directory);
+    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(directory);
 
     JavaView view = new JavaView(inputLocation);
 

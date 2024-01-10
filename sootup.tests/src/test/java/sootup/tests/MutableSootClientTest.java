@@ -20,6 +20,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
 
 /**
@@ -29,7 +30,7 @@ import sootup.java.core.views.MutableJavaView;
 @Category(Java8Test.class)
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  static AnalysisInputLocation<JavaSootClass> location;
+  static AnalysisInputLocation location;
   MutableJavaView mv;
 
   /** Load the jar file for analysis as input location. */
@@ -66,7 +67,7 @@ public class MutableSootClientTest {
    */
   @Test
   public void classAdditionTest() {
-    ClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
+    JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
     OverridingJavaClassSource newClass =
         new OverridingJavaClassSource(
             location,
@@ -100,7 +101,7 @@ public class MutableSootClientTest {
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 
-    SootClass<JavaSootClassSource> utilsClass = utilsClassOpt.get();
+    SootClass utilsClass = utilsClassOpt.get();
     MethodSignature ms =
         mv.getIdentifierFactory()
             .parseMethodSignature("<utils.Operations: void removeDepartment(ds.Department)>");
@@ -116,7 +117,7 @@ public class MutableSootClientTest {
     // longer in the view
     Optional<JavaSootClass> updatedUtilsClassOpt = mv.getClass(classType);
     assertTrue(updatedUtilsClassOpt.isPresent());
-    SootClass<JavaSootClassSource> updatedUtilsClass = updatedUtilsClassOpt.get();
+    SootClass updatedUtilsClass = updatedUtilsClassOpt.get();
     assertFalse(updatedUtilsClass.getMethods().contains(removeDepartmentMethod));
   }
 
@@ -144,7 +145,7 @@ public class MutableSootClientTest {
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 
-    SootClass<JavaSootClassSource> utilsClass = utilsClassOpt.get();
+    SootClass utilsClass = utilsClassOpt.get();
     assertFalse(utilsClass.getMethods().contains(newMethod));
     mv.addMethod(newMethod);
 
@@ -152,7 +153,7 @@ public class MutableSootClientTest {
     // longer in the view
     Optional<JavaSootClass> updatedUtilsClassOpt = mv.getClass(classType);
     assertTrue(updatedUtilsClassOpt.isPresent());
-    SootClass<JavaSootClassSource> updatedUtilsClass = updatedUtilsClassOpt.get();
+    SootClass updatedUtilsClass = updatedUtilsClassOpt.get();
     assertTrue(updatedUtilsClass.getMethods().contains(newMethod));
   }
 }

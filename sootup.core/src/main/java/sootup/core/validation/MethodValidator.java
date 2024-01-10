@@ -38,7 +38,7 @@ public class MethodValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; } if (methodRef.isStaticInitializer()

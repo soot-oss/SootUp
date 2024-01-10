@@ -49,7 +49,7 @@ import sootup.core.views.View;
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     List<Stmt> defs = new ArrayList<>();
 
     // Perform a constant/local propagation pass

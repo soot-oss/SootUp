@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -40,10 +39,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -79,11 +75,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType classType, @Nonnull View<?> view) {
+  public Optional<JavaSootClassSource> getClassSource(
+      @Nonnull ClassType classType, @Nonnull View view) {
     JavaClassType klassType = (JavaClassType) classType;
 
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(view);
+    ClassProvider classProvider = new AsmJavaClassProvider(view);
     Path filepath =
         theFileSystem.getPath(
             klassType.getFullyQualifiedName().replace('.', '/')
@@ -99,7 +95,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
               "modules", modulePackageSignature.getModuleSignature().getModuleName());
       Path foundClass = module.resolve(filepath);
       if (Files.isRegularFile(foundClass)) {
-        return classProvider.createClassSource(this, foundClass, klassType);
+        return classProvider
+            .createClassSource(this, foundClass, klassType)
+            .map(src -> (JavaSootClassSource) src);
       } else {
         return Optional.empty();
       }
@@ -113,7 +111,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return classProvider.createClassSource(this, foundfile, klassType);
+            return classProvider
+                .createClassSource(this, foundfile, klassType)
+                .map(src -> (JavaSootClassSource) src);
           }
         }
       }
@@ -127,19 +127,20 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   /** Retreive CLassSources of a module specified by methodSignature */
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View<?> view) {
+  public Collection<JavaSootClassSource> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
     return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
+        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
   @Nonnull
-  protected Stream<AbstractClassSource<JavaSootClass>> getClassSourcesInternal(
+  protected Stream<JavaSootClassSource> getClassSourcesInternal(
       @Nonnull ModuleSignature moduleSignature,
       @Nonnull IdentifierFactory identifierFactory,
-      @Nonnull View<?> view) {
+      @Nonnull View view) {
 
-    ClassProvider<JavaSootClass> classProvider = new AsmJavaClassProvider(view);
+    ClassProvider classProvider = new AsmJavaClassProvider(view);
 
     String moduleInfoFilename =
         JavaModuleIdentifierFactory.MODULE_INFO_FILE
@@ -163,17 +164,15 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                           this,
                           p,
                           this.fromPath(
-                              p.subpath(2, p.getNameCount()),
-                              p.subpath(1, 2),
-                              identifierFactory))));
+                              p.subpath(2, p.getNameCount()), p.subpath(1, 2), identifierFactory))))
+          .map(src -> (JavaSootClassSource) src);
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
     }
   }
 
   @Override
-  public @Nonnull Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public @Nonnull Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
     Collection<ModuleSignature> moduleSignatures = discoverModules();
     return moduleSignatures.stream()
@@ -234,7 +233,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull
   @Override
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View<?> view) {
+  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view) {
     if (!isResolved) {
       discoverModules();
     }
@@ -243,7 +242,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull
   @Override
-  public Set<ModuleSignature> getModules(View<?> view) {
+  public Set<ModuleSignature> getModules(View view) {
     if (!isResolved) {
       discoverModules();
     }

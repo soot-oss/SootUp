@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.*;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -43,16 +43,16 @@ import sootup.core.views.View;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractClass<T extends AbstractClassSource<?>> {
+public abstract class AbstractClass {
 
-  @Nonnull protected final T classSource;
+  @Nonnull protected final SootClassSource classSource;
 
-  public AbstractClass(@Nonnull T cs) {
+  public AbstractClass(@Nonnull SootClassSource cs) {
     this.classSource = cs;
   }
 
   @Nonnull
-  public T getClassSource() {
+  public SootClassSource getClassSource() {
     return classSource;
   }
 

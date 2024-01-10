@@ -26,14 +26,13 @@ import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 
-public abstract class JavaSootClassSource extends SootClassSource<JavaSootClass> {
+public abstract class JavaSootClassSource extends SootClassSource {
 
   public JavaSootClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
@@ -47,7 +46,7 @@ public abstract class JavaSootClassSource extends SootClassSource<JavaSootClass>
     return new JavaSootClass(this, sourceType);
   }
 
-  protected JavaSootClassSource(SootClassSource<JavaSootClass> delegate) {
+  protected JavaSootClassSource(SootClassSource delegate) {
     super(delegate);
   }
 }
