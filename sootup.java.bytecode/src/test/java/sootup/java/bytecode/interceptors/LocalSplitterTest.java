@@ -133,7 +133,8 @@ public class LocalSplitterTest {
             "$l2#4 = $l2#2 + 1;\n" +
             "\n" +
             "return;";
-    System.out.println(newBody.getStmtGraph());
+    System.out.println(originalBody);
+    System.out.println(newBody);
     //assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
   }
 
