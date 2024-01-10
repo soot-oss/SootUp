@@ -69,7 +69,6 @@ class Operand {
     if (stackLocal == null) {
       changeStackLocal(methodSource.newStackLocal());
     }
-
     return stackLocal;
   }
 
@@ -134,7 +133,6 @@ class Operand {
     if (stackLocal == null && value instanceof Immediate) {
       return (Immediate) value;
     }
-
     return getOrAssignValueToStackLocal();
   }
 
