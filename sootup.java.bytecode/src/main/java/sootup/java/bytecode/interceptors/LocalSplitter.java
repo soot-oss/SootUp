@@ -25,6 +25,7 @@ package sootup.java.bytecode.interceptors;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+import sootup.core.graph.*;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -63,85 +64,140 @@ import sootup.core.views.View;
  */
 public class LocalSplitter implements BodyInterceptor {
 
+    private DominanceFinder dominanceFinder;
+    private Map<Integer, Map<Local, Integer>> mostRecentDefBlock;
+    private Map<Stmt, Stmt> originalToNewStmt;
+
     @Override
     public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
         Set<Local> localsToSplit = findLocalsToSplit(builder);
-        Map<Local, Integer> mostRecentDef = new HashMap<>();
-        Map<Stmt, Stmt> originalToNewStmt = new HashMap<>();
-        for (Local local : localsToSplit) {
-            mostRecentDef.put(local, 0);
-        }
-        int i = 0;
-        for (Stmt stmt : builder.getStmts()) {
-            List<LValue> defs = stmt.getDefs();
-            if(defs.size()==0){
-                continue;
-            }
-            if (defs.size()==1) {
-                LValue def = defs.get(0);
-                if (def instanceof Local) {
-                    Local oldLocal = (Local) def;
-                    if (localsToSplit.contains(oldLocal)) {
-                        handleSelfUse(builder, stmt, oldLocal, mostRecentDef, originalToNewStmt);
-                        Local newLocal = oldLocal.withName(oldLocal.getName() + '#' + (++i)); // renaming should not be done here
-                        mostRecentDef.put(oldLocal, i);
-                        builder.addLocal(newLocal);
-                        Stmt toReplace;
-                        if (originalToNewStmt.containsKey(stmt)) {
-                            toReplace = originalToNewStmt.get(stmt);
-                        } else {
-                            toReplace = stmt;
-                        }
-                        Stmt withNewDef = new JAssignStmt(newLocal, toReplace.getUses().get(0), stmt.getPositionInfo());
-                        builder.getStmtGraph().replaceNode(toReplace, withNewDef);
-                        originalToNewStmt.put(stmt, withNewDef);
-                    }
-                }
-            } else{
-                throw new RuntimeException("stmt with more than 1 def!");
-            }
+        init(localsToSplit, builder);
+        for (Stmt stmt : builder.getStmtGraph()) {
 
-            for (Value use : stmt.getUses()) {
-                if (!(use instanceof Local)) {
-                    continue;
-                }
-                Local oldLocalUse = (Local) use;
-                if (localsToSplit.contains(use)) {
-                    Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + mostRecentDef.get(oldLocalUse)); // use the most recent split name
-                    Stmt toReplace;
-                    if (originalToNewStmt.containsKey(stmt)) {
-                        toReplace = originalToNewStmt.get(stmt);
-                    } else {
-                        toReplace = stmt;
-                    }
-                    Stmt withNewUse = toReplace.withNewUse(oldLocalUse, newLocal);
-                    //Stmt withNewUse = new JAssignStmt(toReplace.getDefs().get(0), newLocal, stmt.getPositionInfo());
-                    builder.getStmtGraph().replaceNode(toReplace, withNewUse);
-                    originalToNewStmt.put(stmt, withNewUse);
-                }
-            }
+            handleDefs(builder, localsToSplit, stmt);
+
+            handleUses(builder, localsToSplit, stmt);
 
         }
     }
 
-    private void handleSelfUse(Body.BodyBuilder builder, Stmt stmt, Local def, Map<Local, Integer> mostRecentDef, Map<Stmt, Stmt> originalToNewStmt) {
+    private void init(Set<Local> localsToSplit, Body.BodyBuilder builder){
+        originalToNewStmt = new HashMap<>();
+        dominanceFinder = new DominanceFinder(builder.getStmtGraph());
+        mostRecentDefBlock = new HashMap<>();
+        Map<BasicBlock<?>, Integer> blockToIdx = dominanceFinder.getBlockToIdx();
+        for (Integer val : blockToIdx.values()) {
+            Map<Local, Integer> localToDefId = new HashMap<>();
+            for (Local local : localsToSplit) {
+                localToDefId.put(local, 0); // init to zero
+            }
+            mostRecentDefBlock.put(val, localToDefId);
+        }
+    }
+
+    private int getMostRecentDefInPredBlock(Local local, StmtGraph stmtGraph, Stmt stmt){
+        BasicBlock currentBlock = stmtGraph.getBlockOf(stmt);
+        List<BasicBlock> predBlocks = currentBlock.getPredecessors();
+        if(!predBlocks.isEmpty()){
+            BasicBlock predBlock = predBlocks.get(0);
+            Integer idx = dominanceFinder.getBlockToIdx().get(predBlock);
+            return mostRecentDefBlock.get(idx).get(local);
+        }
+        Integer currentBlockId = dominanceFinder.getBlockToIdx().get(currentBlock);
+        return mostRecentDefBlock.get(currentBlockId).get(local); // entry block
+    }
+
+    private void putMostRecentDefInBlock(int id, Local local, StmtGraph stmtGraph, Stmt stmt){
+        BasicBlock block = stmtGraph.getBlockOf(stmt);
+        Integer blockId = dominanceFinder.getBlockToIdx().get(block);
+        Map<Local, Integer> LocalToDefIdInBlock = mostRecentDefBlock.get(blockId);
+        if(LocalToDefIdInBlock!=null){
+            LocalToDefIdInBlock.put(local, id);
+        }else{
+            LocalToDefIdInBlock = new HashMap<>();
+            LocalToDefIdInBlock.put(local, id);
+        }
+    }
+
+    private void handleUses(Body.BodyBuilder builder, Set<Local> localsToSplit, Stmt stmt) {
         for (Value use : stmt.getUses()) {
-            if(use.equals(def)){
-                Local oldLocalUse = (Local) use;
-                Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + mostRecentDef.get(oldLocalUse)); // use the most recent split name
-                Stmt withNewUse = stmt.withNewUse(oldLocalUse, newLocal);
+            if (!(use instanceof Local)) {
+                continue;
+            }
+            Local oldLocalUse = (Local) use;
+            if (localsToSplit.contains(use)) {
                 Stmt toReplace;
                 if (originalToNewStmt.containsKey(stmt)) {
                     toReplace = originalToNewStmt.get(stmt);
                 } else {
                     toReplace = stmt;
                 }
+                int mostRecentDefId = getMostRecentDefInPredBlock(oldLocalUse, builder.getStmtGraph(), toReplace);
+                Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + mostRecentDefId); // use the most recent split name
+                Stmt withNewUse = toReplace.withNewUse(oldLocalUse, newLocal);
+                //Stmt withNewUse = new JAssignStmt(toReplace.getDefs().get(0), newLocal, stmt.getPositionInfo());
                 builder.getStmtGraph().replaceNode(toReplace, withNewUse);
                 originalToNewStmt.put(stmt, withNewUse);
             }
         }
     }
 
+    private void handleDefs(Body.BodyBuilder builder, Set<Local> localsToSplit, Stmt stmt) {
+        List<LValue> defs = stmt.getDefs();
+        if(defs.size()==0){
+            return;
+        }
+        if (defs.size()==1) {
+            LValue def = defs.get(0);
+            if (def instanceof Local) {
+                Local oldLocal = (Local) def;
+                if (localsToSplit.contains(oldLocal)) {
+                    Stmt toReplace;
+                    if (originalToNewStmt.containsKey(stmt)) {
+                        toReplace = originalToNewStmt.get(stmt);
+                    } else {
+                        toReplace = stmt;
+                    }
+                    int id = getMostRecentDefInPredBlock(oldLocal, builder.getStmtGraph(), toReplace);
+                    handleSelfUse(builder, stmt, oldLocal);
+                    Local newLocal = oldLocal.withName(oldLocal.getName() + '#' + (++id)); // renaming should not be done here
+                    putMostRecentDefInBlock(id, oldLocal, builder.getStmtGraph(), stmt);
+                    builder.addLocal(newLocal);
+
+                    Stmt withNewDef = new JAssignStmt(newLocal, toReplace.getUses().get(0), stmt.getPositionInfo());
+                    builder.getStmtGraph().replaceNode(toReplace, withNewDef);
+                    originalToNewStmt.put(stmt, withNewDef);
+                }
+            }
+        } else{
+            throw new RuntimeException("stmt with more than 1 def!");
+        }
+    }
+
+    private void handleSelfUse(Body.BodyBuilder builder, Stmt stmt, Local def) {
+        for (Value use : stmt.getUses()) {
+            if(use.equals(def)){
+                Local oldLocalUse = (Local) use;
+                Stmt toReplace;
+                if (originalToNewStmt.containsKey(stmt)) {
+                    toReplace = originalToNewStmt.get(stmt);
+                } else {
+                    toReplace = stmt;
+                }
+                int id = getMostRecentDefInPredBlock(oldLocalUse, builder.getStmtGraph(), toReplace);
+                Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + id); // use the most recent split name
+                Stmt withNewUse = stmt.withNewUse(oldLocalUse, newLocal);
+                builder.getStmtGraph().replaceNode(toReplace, withNewUse);
+                originalToNewStmt.put(stmt, withNewUse);
+            }
+        }
+    }
+
+    /**
+     * Multiple defs of the same local are to split.
+     * @param builder
+     * @return
+     */
     private Set<Local> findLocalsToSplit(Body.BodyBuilder builder) {
         Set<Local> visitedLocals = new LinkedHashSet<>();
         Set<Local> localsToSplit = new LinkedHashSet<>();
