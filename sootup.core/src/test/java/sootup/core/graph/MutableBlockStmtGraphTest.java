@@ -631,7 +631,7 @@ public class MutableBlockStmtGraphTest {
 
     {
       final List<Trap> traps = graph1.getTraps();
-      final Trap containedTrap = new Trap(exception1, stmt2, catchStmt1, catchStmt1);
+      final Trap containedTrap = new Trap(exception1, stmt2, catchStmt1, catchStmt2);
       assertTrue(traps.contains(containedTrap));
       assertEquals(2, traps.size());
     }
