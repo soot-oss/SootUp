@@ -165,6 +165,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                 new NonIndexOutofBoundsArrayList<>(
                         maxLocals
                                 + Math.max((maxLocals / 2), 5)); // [ms] initial capacity is just roughly estimated.
+        // TODO: [ms] check if these really need to be Linked*
         stmtsThatBranchToLabel = LinkedListMultimap.create();
         insnToStmt = new LinkedHashMap<>(instructions.size());
         operandStack = new OperandStack(this, instructions.size());
@@ -192,11 +193,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
 
         // collect used Locals
+        // some Local indices are not assigned (=>null) - because of dword values
         Set<Local> bodyLocals =
                 locals.stream()
                         .filter(Objects::nonNull)
-                        // [ms] find out why some Local indices are not assigned(null)
-                        // ms -> guess because of dword values i.e. +=2 ?
                         .collect(Collectors.toCollection(LinkedHashSet::new));
         bodyBuilder.setLocals(bodyLocals);
 
@@ -295,8 +295,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
         Stmt put = insnToStmt.putIfAbsent(insn, stmt);
-        if (put != null) {
-            throw new IllegalStateException("Stmt " + stmt + " should override "+ put );
+        if (put != null && !put.toString().equals(stmt.toString())) {
+            // throw new IllegalStateException("Stmt " + stmt + " wants to override "+ put );
         }
     }
 
@@ -426,7 +426,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         int op = insn.getOpcode();
         OperandMerging merging = operandStack.getOrCreateMerging(insn);
         Value v;
-        // TODO: [ms] transform to a switch
+        // TODO: [ms] transform to switch
         if (op == ACONST_NULL) {
             v = NullConstant.getInstance();
         } else if (op >= ICONST_M1 && op <= ICONST_5) {
@@ -1377,13 +1377,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
             currentLineNumber = edge.getLineNumber();
             operandStack.setOperandStack(
                     new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
+
+            System.out.println("### " + edge);
+
             do {
-                // TODO: don't reassign?
-                if( insnToStmt.containsKey(insn)){
-                    continue;
+                int type = insn.getType();
+                if( type != LINE ) {
+                    System.out.println("->" + insn);
                 }
 
-                int type = insn.getType();
                 if (type == FIELD_INSN) {
                     convertFieldInsn((FieldInsnNode) insn);
                 } else if (type == IINC_INSN) {
@@ -1449,7 +1451,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
                     } else {
                         throw new RuntimeException("Unknown instruction type: " + type);
                     }
+
+                System.out.println("->" + insnToStmt.get(insn));
             } while ((insn = insn.getNext()) != null);
+            System.out.println("-->" + insnToStmt.get(insn));
         } while (!worklist.isEmpty());
     }
 

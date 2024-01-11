@@ -69,4 +69,9 @@ class BranchedInsnInfo {
   public int getLineNumber() {
     return this.lineNumber;
   }
+
+  @Override
+  public String toString() {
+    return "BranchInsnsInfo: "+ insn;
+  }
 }
