@@ -19,7 +19,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
 
   final JavaClassType innerClassType =
       JavaIdentifierFactory.getInstance()
-          .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "InnerClass");
+          .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
 
   @Override
   public MethodSignature getMethodSignature() {
