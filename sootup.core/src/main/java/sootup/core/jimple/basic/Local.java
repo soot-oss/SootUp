@@ -31,7 +31,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
-import sootup.core.model.Position;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.core.util.Copyable;
@@ -48,22 +47,15 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
-  @Nonnull private final Position position; // position of the declaration
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this(name, type, NoPositionInformation.getInstance());
-  }
-
-  /** Constructs a JimpleLocal of the given name and type. */
-  public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
     this.name = name;
     if (type instanceof VoidType) {
       throw new RuntimeException("Type should not be VoidType");
     } else {
       this.type = type;
     }
-    this.position = position;
   }
 
   @Override
@@ -116,11 +108,6 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
   @Nonnull
   public final List<Value> getUses() {
     return Collections.emptyList();
-  }
-
-  @Nonnull
-  public Position getPosition() {
-    return position;
   }
 
   /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
