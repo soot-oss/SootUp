@@ -156,10 +156,12 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         final ClassType classType2 =
                 getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
-        MultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation = new MultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, new JavaLanguage(8));
-        final JavaView view_8 = new JavaView(Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation));
+        MultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation8 = new MultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, new JavaLanguage(8));
+        final JavaView view_8 = new JavaView(Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation8));
 
-        final JavaModuleView view_9 = new JavaModuleView(Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation), Collections.emptyList());
+
+        MultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation9 = new MultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, new JavaLanguage(9));
+        final JavaModuleView view_9 = new JavaModuleView(Collections.emptyList(), Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation9));
 
         ModuleSignature moduleSignature =
                 JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");

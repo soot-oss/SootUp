@@ -299,7 +299,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   @Nonnull
   @Override
-  public Set<ModuleSignature> getModules(View view) {
+  public Set<ModuleSignature> getModules(@Nonnull View view) {
     return inputLocations.get(language.getVersion()).stream()
         .filter(e -> e instanceof ModuleInfoAnalysisInputLocation)
         .map(e -> ((ModuleInfoAnalysisInputLocation) e).getModules(view))
@@ -329,7 +329,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @Nonnull
   @Override
   protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
-    // FIXME: [ms] implement specific handling of the versioned path
+    // FIXME: [ms] implement specific handling of the versioned path -> /META-INF/versions/{Java_Version}/ -> cut 3 directories
     return super.fromPath(baseDirPath, packageNamePathAndClass);
   }
 
