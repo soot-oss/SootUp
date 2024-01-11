@@ -108,7 +108,24 @@ public class LocalSplitter implements BodyInterceptor {
         }
         List<BasicBlock> predBlocks = currentBlock.getPredecessors();
         if (!predBlocks.isEmpty()) {
-            if(predBlocks.size()>0){
+            if(predBlocks.size()==1){
+                BasicBlock predBlock = predBlocks.get(0);
+                Integer blockId = dominanceFinder.getBlockToIdx().get(predBlock);
+                Integer recentDefId = mostRecentDefBlock.get(blockId).get(local);
+                if(recentDefId==0){ // so no def in the pred Block, let's check uses
+                    List<Stmt> stmts = predBlock.getStmts();
+                    for (Stmt stmt1 : stmts) {
+                        List<Value> uses = stmt1.getUses();
+                        for (Value use : uses) {
+                            if(use.toString().contains(local.getName())){
+                                return Integer.parseInt(use.toString().substring(use.toString().indexOf('#')+1));
+                            }
+                        }
+                    }
+                }
+                return recentDefId;
+            }
+            if(predBlocks.size()>1){
                 List<BasicBlock> sortedPreds = new ArrayList<>();
                 List<BasicBlock> blocksSorted = stmtGraph.getBlocksSorted();
                 for (BasicBlock basicBlock : blocksSorted) {
@@ -128,14 +145,16 @@ public class LocalSplitter implements BodyInterceptor {
                     for (Stmt s : stmtsInOtherBlock) {
                         if(s.getDefs().size()==1){
                             Local def = (Local) s.getDefs().get(0);
-                            if(def.toString().equals(local.toString() + "#" + recentDefInOtherBlock)){
+                            if(def.toString().equals(local.toString() + '#' + recentDefInOtherBlock)){
                                 String originalLocalName = def.toString().substring(0, def.toString().indexOf("#"));
-                                String newName = originalLocalName + "#" + recentDefId;
+                                String newName = originalLocalName + '#' + recentDefId;
                                 Local newLocal = def.withName(newName);
                                 Local original = def.withName(originalLocalName);
                                 putMostRecentDefInBlock(recentDefId, original, stmtGraph, s);
-                                builder.addLocal(newLocal); // can omit
-
+                                builder.removeLocal(def);
+                                if(globalDefCounter==recentDefInOtherBlock){
+                                    globalDefCounter--; // because we will use that number again
+                                }
                                 Stmt withNewDef = new JAssignStmt(newLocal, s.getUses().get(0), s.getPositionInfo());
                                 builder.getStmtGraph().replaceNode(s, withNewDef);
                                 originalToNewStmt.put(s, withNewDef);
@@ -147,29 +166,6 @@ public class LocalSplitter implements BodyInterceptor {
             BasicBlock predBlock = predBlocks.get(0);
             Integer blockId = dominanceFinder.getBlockToIdx().get(predBlock);
             return mostRecentDefBlock.get(blockId).get(local);
-        }
-        return -1;
-    }
-
-    private int getMostRecentDefInOtherBranch(Local local, StmtGraph stmtGraph, Stmt stmt) {
-        Iterator<Stmt> iter = stmtGraph.iterator();
-        while (iter.hasNext()) {
-            Stmt curr = iter.next();
-            if (curr instanceof BranchingStmt) {
-                List<Stmt> branchTargets = stmtGraph.getBranchTargetsOf((BranchingStmt) curr);
-                Stmt otherBranchHead = null;
-                if (branchTargets.contains(stmt)) {
-                    Optional<Stmt> otherOpt = branchTargets.stream().filter(e -> !e.equals(stmt)).findFirst();
-                    if (otherOpt.isPresent()) {
-                        otherBranchHead = otherOpt.get();
-                    }
-                }
-                if (otherBranchHead != null) {
-                    BasicBlock otherBlock = stmtGraph.getBlockOf(otherBranchHead);
-                    Integer otherBlockId = dominanceFinder.getBlockToIdx().get(otherBlock);
-                    return mostRecentDefBlock.get(otherBlockId).get(local);
-                }
-            }
         }
         return -1;
     }
