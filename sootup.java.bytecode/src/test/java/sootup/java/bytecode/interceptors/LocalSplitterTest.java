@@ -114,28 +114,35 @@ public class LocalSplitterTest {
     List<Local> expectedLocals = new ArrayList<>();
     expectedLocals.addAll(originalBody.getLocals());
     expectedLocals.add(new Local("$l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-    expectedLocals.add(new Local("$l2#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    expectedLocals.add(new Local("$l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
     expectedLocals.add(new Local("$l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-    expectedLocals.add(new Local("$l2#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    expectedLocals.add(new Local("$l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
 
     Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
     LocalSplitter localSplitter = new LocalSplitter();
     localSplitter.interceptBody(builder, view);
 
     Body newBody = builder.build();
-    //assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-    //assertTrue(newBody.getLocals().containsAll(expectedLocals));
+    assertTrue(expectedLocals.containsAll(newBody.getLocals()));
+    assertTrue(newBody.getLocals().containsAll(expectedLocals));
 
     String expectedStmts = "$l0 := @this: LocalSplitterTarget;\n" +
             "$l1#1 = 0;\n" +
-            "$l2#2 = 1;\n" +
-            "$l1#3 = $l1#1 + 1;\n" +
-            "$l2#4 = $l2#2 + 1;\n" +
             "\n" +
-            "return;";
+            "if $l1#1 >= 0 goto label1;\n" +
+            "$l1#2 = $l1#1 + 1;\n" +
+            "\n" +
+            "goto label2;\n" +
+            "\n" +
+            "label1:\n" +
+            "$l1#3 = $l1#1 - 1;\n" +
+            "$l1#2 = $l1#3 + 2;\n" +
+            "\n" +
+            "label2:\n" +
+            "return $l1#2;";
     System.out.println(originalBody);
     System.out.println(newBody);
-    //assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
+    assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
   }
 
 

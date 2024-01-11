@@ -101,29 +101,44 @@ public class LocalSplitter implements BodyInterceptor {
 
     private int getMostRecentDefInPredBlock(Local local, Body.BodyBuilder builder, StmtGraph stmtGraph, Stmt stmt) {
         BasicBlock currentBlock = stmtGraph.getBlockOf(stmt);
+        Integer currentBlockId = dominanceFinder.getBlockToIdx().get(currentBlock);
+        Integer defId = mostRecentDefBlock.get(currentBlockId).get(local);// entry block
+        if(defId!=null && defId!=0){ // if it is not the first def in the block, it should find the defId in the current block
+            return defId;
+        }
         List<BasicBlock> predBlocks = currentBlock.getPredecessors();
         if (!predBlocks.isEmpty()) {
             if(predBlocks.size()>0){
-                BasicBlock firstPred = predBlocks.get(0);
+                List<BasicBlock> sortedPreds = new ArrayList<>();
+                List<BasicBlock> blocksSorted = stmtGraph.getBlocksSorted();
+                for (BasicBlock basicBlock : blocksSorted) {
+                    if(predBlocks.contains(basicBlock)){
+                        sortedPreds.add(basicBlock);
+                    }
+                }
+                BasicBlock firstPred = sortedPreds.get(0);
                 Integer blockId = dominanceFinder.getBlockToIdx().get(firstPred);
                 Integer recentDefId = mostRecentDefBlock.get(blockId).get(local);
                 // update other branches
-                for (int i = 1; i < predBlocks.size(); i++) {
-                    BasicBlock otherBlock = predBlocks.get(i);
+                for (int i = 1; i < sortedPreds.size(); i++) {
+                    BasicBlock otherBlock = sortedPreds.get(i);
                     Integer otherBlockId = dominanceFinder.getBlockToIdx().get(otherBlock);
-                    Integer recentDefInOtherBlock = mostRecentDefBlock.get(blockId).get(local);
+                    Integer recentDefInOtherBlock = mostRecentDefBlock.get(otherBlockId).get(local);
                     List<Stmt> stmtsInOtherBlock = otherBlock.getStmts();
                     for (Stmt s : stmtsInOtherBlock) {
                         if(s.getDefs().size()==1){
                             Local def = (Local) s.getDefs().get(0);
                             if(def.toString().equals(local.toString() + "#" + recentDefInOtherBlock)){
-                                Local newLocal = def.withName(def.getName() + '#' + recentDefId); // renaming should not be done here
-                                putMostRecentDefInBlock(globalDefCounter, def, stmtGraph, s);
+                                String originalLocalName = def.toString().substring(0, def.toString().indexOf("#"));
+                                String newName = originalLocalName + "#" + recentDefId;
+                                Local newLocal = def.withName(newName);
+                                Local original = def.withName(originalLocalName);
+                                putMostRecentDefInBlock(recentDefId, original, stmtGraph, s);
                                 builder.addLocal(newLocal); // can omit
 
                                 Stmt withNewDef = new JAssignStmt(newLocal, s.getUses().get(0), s.getPositionInfo());
                                 builder.getStmtGraph().replaceNode(s, withNewDef);
-                                originalToNewStmt.put(stmt, withNewDef);
+                                originalToNewStmt.put(s, withNewDef);
                             }
                         }
                     }
@@ -133,8 +148,7 @@ public class LocalSplitter implements BodyInterceptor {
             Integer blockId = dominanceFinder.getBlockToIdx().get(predBlock);
             return mostRecentDefBlock.get(blockId).get(local);
         }
-        Integer currentBlockId = dominanceFinder.getBlockToIdx().get(currentBlock);
-        return mostRecentDefBlock.get(currentBlockId).get(local); // entry block
+        return -1;
     }
 
     private int getMostRecentDefInOtherBranch(Local local, StmtGraph stmtGraph, Stmt stmt) {
@@ -185,7 +199,7 @@ public class LocalSplitter implements BodyInterceptor {
                 } else {
                     toReplace = stmt;
                 }
-                int mostRecentDefId = getMostRecentDefInPredBlock(oldLocalUse, builder.getStmtGraph(), toReplace);
+                int mostRecentDefId = getMostRecentDefInPredBlock(oldLocalUse, builder, builder.getStmtGraph(), toReplace);
                 Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + mostRecentDefId); // use the most recent split name
                 Stmt withNewUse = toReplace.withNewUse(oldLocalUse, newLocal);
                 //Stmt withNewUse = new JAssignStmt(toReplace.getDefs().get(0), newLocal, stmt.getPositionInfo());
@@ -237,7 +251,7 @@ public class LocalSplitter implements BodyInterceptor {
                 } else {
                     toReplace = stmt;
                 }
-                int id = getMostRecentDefInPredBlock(oldLocalUse, builder.getStmtGraph(), toReplace);
+                int id = getMostRecentDefInPredBlock(oldLocalUse, builder, builder.getStmtGraph(), toReplace);
                 Local newLocal = oldLocalUse.withName(oldLocalUse.getName() + '#' + id); // use the most recent split name
                 Stmt withNewUse = toReplace.withNewUse(oldLocalUse, newLocal);
                 builder.getStmtGraph().replaceNode(toReplace, withNewUse);
