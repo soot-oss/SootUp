@@ -28,14 +28,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
 
 /**
@@ -45,7 +45,7 @@ import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
  *
  * @author Linghui Luo
  */
-public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation {
 
   private static final Logger log =
       LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
@@ -59,6 +59,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    * Variable to track if user has specified the SourceType. By default, it will be set to false.
    */
   private SourceType srcType = null;
+
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
@@ -82,9 +84,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    this.sourcePaths = sourcePaths;
-    this.exclusionFilePath = exclusionFilePath;
-    this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+    this(null, sourcePaths, exclusionFilePath, Collections.emptyList());
 
     final Optional<String> any =
         sourcePaths.stream().filter(path -> !Files.exists(Paths.get(path))).findAny();
@@ -103,10 +103,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nullable SourceType srcType, @Nonnull Set<String> sourcePaths) {
-    this(sourcePaths, null);
-    setSpecifiedAsBuiltInByUser(srcType);
-    // this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath,
-    // DefaultSourceTypeSpecifier.getInstance());
+    this(srcType, sourcePaths, null, Collections.emptyList());
   }
 
   /**
@@ -117,9 +114,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    * @param sourcePath the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nullable SourceType srcType, @Nonnull String sourcePath) {
-    this(Collections.singleton(sourcePath), null);
-    setSpecifiedAsBuiltInByUser(srcType);
+      @Nonnull SourceType srcType, @Nonnull String sourcePath) {
+    this(srcType, Collections.singleton(sourcePath), null, Collections.emptyList());
   }
 
   /**
@@ -130,12 +126,14 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    * @param sourcePaths the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nonnull SourceType srcType,
+      @Nullable SourceType srcType,
       @Nonnull Set<String> sourcePaths,
-      @Nullable String exclusionFilePath) {
+      @Nullable String exclusionFilePath,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
     this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+    this.bodyInterceptors = bodyInterceptors;
     setSpecifiedAsBuiltInByUser(srcType);
   }
 
@@ -155,16 +153,20 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
+  @Override
+  @Nonnull
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
     return classProvider.getClassSources(srcType);
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
     for (String path : sourcePaths) {
       try {
         return classProvider.createClassSource(this, Paths.get(path), type);

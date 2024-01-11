@@ -22,12 +22,11 @@ import sootup.core.model.FieldModifier;
 import sootup.core.model.SootField;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /** @author Linghui Luo */
@@ -38,20 +37,18 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    view = project.createView();
+    view = new JavaView(Collections.singletonList(new EagerInputLocation()));
   }
 
   @Ignore
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
-    ClassType declaringClassSignature =
+    JavaClassType declaringClassSignature =
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
-    SootField field =
-        new SootField(
-            fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+    JavaSootField field =
+        new JavaSootField(
+            fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(
@@ -83,12 +80,12 @@ public class JFieldRefTest {
   @Ignore
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
-    ClassType declaringClassSignature =
+    JavaClassType declaringClassSignature =
         JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
-    SootField field =
-        new SootField(
-            fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+    JavaSootField field =
+        new JavaSootField(
+            fieldSig, EnumSet.of(FieldModifier.FINAL), null, NoPositionInformation.getInstance());
 
     JavaSootClass mainClass =
         new JavaSootClass(

@@ -12,15 +12,14 @@ import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -48,18 +47,16 @@ public abstract class MinimalSourceTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        JavaProject project =
-            JavaProject.builder(new JavaLanguage(8))
-                .addInputLocation(
-                    new JavaSourcePathAnalysisInputLocation(
-                        baseDir
-                            + File.separator
-                            + getTestDirectoryName(getClassPath())
-                            + File.separator
-                            + "source"
-                            + File.separator))
-                .build();
-        javaView = project.createView();
+        AnalysisInputLocation inputLocation =
+            new JavaSourcePathAnalysisInputLocation(
+                baseDir
+                    + File.separator
+                    + getTestDirectoryName(getClassPath())
+                    + File.separator
+                    + "source"
+                    + File.separator);
+
+        javaView = new JavaView(inputLocation);
         setJavaView(javaView);
       }
     }

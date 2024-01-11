@@ -96,22 +96,6 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   @Nonnull
-  private String getOriginalStyleDeclaration() {
-    if (this.getModifiers().isEmpty()) {
-      return this.getSignature().getSubSignature().toString();
-    } else {
-      return FieldModifier.toString(this.getModifiers())
-          + ' '
-          + this.getSignature().getSubSignature();
-    }
-  }
-
-  @Nonnull
-  public String getDeclaration() {
-    return getOriginalStyleDeclaration();
-  }
-
-  @Nonnull
   public SootField withSignature(@Nonnull FieldSignature signature) {
     return new SootField(signature, getModifiers(), getPosition());
   }

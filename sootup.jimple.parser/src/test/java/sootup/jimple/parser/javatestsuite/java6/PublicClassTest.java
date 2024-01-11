@@ -23,7 +23,7 @@ public class PublicClassTest extends JimpleTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.of(ClassModifier.PUBLIC, ClassModifier.SUPER), clazz.getModifiers());
 
     SootMethod method;

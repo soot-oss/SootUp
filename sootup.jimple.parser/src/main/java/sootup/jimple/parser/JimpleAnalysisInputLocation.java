@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -16,18 +14,17 @@ import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.FileType;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
-    implements AnalysisInputLocation<T> {
+public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
+  private final List<BodyInterceptor> bodyInterceptors;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
@@ -37,6 +34,13 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+    this(path, srcType, Collections.emptyList());
+  }
+
+  public JimpleAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     if (!Files.exists(path)) {
       throw new IllegalArgumentException(
           "The configured path '"
@@ -54,12 +58,17 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     return srcType;
   }
 
-  @Override
   @Nonnull
-  public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
-    IdentifierFactory factory = view.getIdentifierFactory();
-    ClassProvider<T> classProvider = new JimpleClassProvider<>(view.getBodyInterceptors(this));
-    final FileType handledFileType = classProvider.getHandledFileType();
+  @Override
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
+  @Nonnull
+  List<SootClassSource> walkDirectory(
+      @Nonnull Path dirPath,
+      @Nonnull IdentifierFactory factory,
+      @Nonnull ClassProvider classProvider) {
 
     try (final Stream<Path> walk = Files.walk(path)) {
       return walk.filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
@@ -84,10 +93,15 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
 
   @Override
   @Nonnull
-  public Optional<? extends SootClassSource<T>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    final JimpleClassProvider<T> classProvider =
-        new JimpleClassProvider<>(view.getBodyInterceptors(this));
+  public Collection<SootClassSource> getClassSources(@Nonnull View view) {
+    return walkDirectory(
+        path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors));
+  }
+
+  @Override
+  @Nonnull
+  public Optional<SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+    final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 
@@ -115,7 +129,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     if (!(o instanceof JimpleAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((JimpleAnalysisInputLocation<?>) o).path);
+    return path.equals(((JimpleAnalysisInputLocation) o).path);
   }
 
   @Override

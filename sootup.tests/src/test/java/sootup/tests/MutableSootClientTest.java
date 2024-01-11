@@ -20,7 +20,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
 
 /**
@@ -30,21 +30,21 @@ import sootup.java.core.views.MutableJavaView;
 @Category(Java8Test.class)
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
-  static AnalysisInputLocation<JavaSootClass> location;
-  static JavaProject p;
+  static AnalysisInputLocation location;
   MutableJavaView mv;
 
   /** Load the jar file for analysis as input location. */
   @BeforeClass
   public static void setupProject() {
     location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
-    p = JavaProject.builder(new JavaLanguage(8)).addInputLocation(location).build();
   }
 
   /** Create a new mutable view that the tests should be performed on. */
   @Before
   public void setupMutableView() {
-    mv = p.createMutableView();
+    mv =
+        new MutableJavaView(
+            PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application));
   }
 
   /**
@@ -54,7 +54,7 @@ public class MutableSootClientTest {
   @Test
   public void classRemovalTest() {
     int classesBeforeSize = mv.getClasses().size();
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     mv.removeClass(classType);
     int classesAfterSize = mv.getClasses().size();
 
@@ -67,7 +67,7 @@ public class MutableSootClientTest {
    */
   @Test
   public void classAdditionTest() {
-    ClassType addedClassType = p.getIdentifierFactory().getClassType("AddedClass");
+    JavaClassType addedClassType = mv.getIdentifierFactory().getClassType("AddedClass");
     OverridingJavaClassSource newClass =
         new OverridingJavaClassSource(
             location,
@@ -97,13 +97,13 @@ public class MutableSootClientTest {
    */
   @Test
   public void methodRemovalTest() {
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 
-    SootClass<JavaSootClassSource> utilsClass = utilsClassOpt.get();
+    SootClass utilsClass = utilsClassOpt.get();
     MethodSignature ms =
-        p.getIdentifierFactory()
+        mv.getIdentifierFactory()
             .parseMethodSignature("<utils.Operations: void removeDepartment(ds.Department)>");
     Optional<? extends SootMethod> removeDepartmentMethodOpt =
         utilsClass.getMethod(ms.getSubSignature());
@@ -117,7 +117,7 @@ public class MutableSootClientTest {
     // longer in the view
     Optional<JavaSootClass> updatedUtilsClassOpt = mv.getClass(classType);
     assertTrue(updatedUtilsClassOpt.isPresent());
-    SootClass<JavaSootClassSource> updatedUtilsClass = updatedUtilsClassOpt.get();
+    SootClass updatedUtilsClass = updatedUtilsClassOpt.get();
     assertFalse(updatedUtilsClass.getMethods().contains(removeDepartmentMethod));
   }
 
@@ -128,7 +128,7 @@ public class MutableSootClientTest {
   @Test
   public void methodAdditionTest() {
     MethodSignature methodSignature =
-        p.getIdentifierFactory()
+        mv.getIdentifierFactory()
             .getMethodSignature("utils.Operations", "addedMethod", "void", Collections.emptyList());
     Body.BodyBuilder bodyBuilder = Body.builder();
     Body body = bodyBuilder.setMethodSignature(methodSignature).build();
@@ -141,11 +141,11 @@ public class MutableSootClientTest {
             Collections.emptyList(),
             NoPositionInformation.getInstance());
 
-    ClassType classType = p.getIdentifierFactory().getClassType("utils.Operations");
+    ClassType classType = mv.getIdentifierFactory().getClassType("utils.Operations");
     Optional<JavaSootClass> utilsClassOpt = mv.getClass(classType);
     assertTrue(utilsClassOpt.isPresent());
 
-    SootClass<JavaSootClassSource> utilsClass = utilsClassOpt.get();
+    SootClass utilsClass = utilsClassOpt.get();
     assertFalse(utilsClass.getMethods().contains(newMethod));
     mv.addMethod(newMethod);
 
@@ -153,7 +153,7 @@ public class MutableSootClientTest {
     // longer in the view
     Optional<JavaSootClass> updatedUtilsClassOpt = mv.getClass(classType);
     assertTrue(updatedUtilsClassOpt.isPresent());
-    SootClass<JavaSootClassSource> updatedUtilsClass = updatedUtilsClassOpt.get();
+    SootClass updatedUtilsClass = updatedUtilsClassOpt.get();
     assertTrue(updatedUtilsClass.getMethods().contains(newMethod));
   }
 }

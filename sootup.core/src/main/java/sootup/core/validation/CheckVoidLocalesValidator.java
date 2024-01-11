@@ -24,16 +24,18 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class CheckVoidLocalesValidator implements BodyValidator {
 
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * for (Local l : body.getLocals()) { if (l.getType() instanceof VoidType) { exception.add(new ValidationException(l,
      * "Local " + l + " in " + body.getMethod() + " defined with void type")); } }
      */
+    return null;
   }
 
   @Override

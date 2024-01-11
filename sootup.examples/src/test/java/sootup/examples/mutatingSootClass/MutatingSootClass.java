@@ -12,21 +12,17 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -42,39 +38,31 @@ public class MutatingSootClass {
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.create(
             Paths.get("src/test/resources/BasicSetup/binary"), null);
 
-    // Specify the language of the JavaProject. This is especially relevant for Multi-release jars,
-    // where classes are loaded depending on the language level of the analysis
-    JavaLanguage language = new JavaLanguage(8);
-
-    // Create a new JavaProject based on the input location
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
+    // Create a view for project, which allows us to retrieve classes
+    JavaView view = new JavaView(inputLocation);
 
     // Create a signature for the class we want to analyze
-    ClassType classType = project.getIdentifierFactory().getClassType("HelloWorld");
+    JavaClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
 
     // Create a signature for the method we want to analyze
     MethodSignature methodSignature =
-        project
-            .getIdentifierFactory()
+        view.getIdentifierFactory()
             .getMethodSignature(
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
-
-    // Create a view for project, which allows us to retrieve classes
-    JavaView view = project.createView();
 
     // Assert that class is present
     assertTrue(view.getClass(classType).isPresent());
 
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass = view.getClass(classType).get();
+    JavaSootClass sootClass = view.getClass(classType).get();
 
     // Retrieve method
     assertTrue(view.getMethod(methodSignature).isPresent());
-    SootMethod method = view.getMethod(methodSignature).get();
+    JavaSootMethod method = view.getMethod(methodSignature).get();
     Body oldBody = method.getBody();
 
     System.out.println(oldBody);
@@ -98,11 +86,11 @@ public class MutatingSootClass {
         new OverridingJavaClassSource(sootClass.getClassSource());
 
     // Create new Method
-    SootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);
+    JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);
 
     OverridingJavaClassSource newClassSource =
         overridingJavaClassSource.withReplacedMethod(method, newMethod);
-    SootClass<JavaSootClassSource> newClass = sootClass.withClassSource(newClassSource);
+    SootClass newClass = sootClass.withClassSource(newClassSource);
 
     System.out.println(newClass.getMethods().stream().findFirst().get().getBody());
 

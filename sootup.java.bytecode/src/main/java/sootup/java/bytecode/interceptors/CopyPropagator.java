@@ -53,7 +53,7 @@ import sootup.core.views.View;
 public class CopyPropagator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     final StmtGraph<?> stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {

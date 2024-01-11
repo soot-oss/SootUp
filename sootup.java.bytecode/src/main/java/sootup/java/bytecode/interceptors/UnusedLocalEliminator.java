@@ -47,7 +47,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     Set<Local> locals = new LinkedHashSet<>();
 

@@ -23,38 +23,28 @@ package sootup.core.views;
  */
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.Project;
-import sootup.core.Scope;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.transform.BodyInterceptor;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
 
 /**
- * A View is essentially a collection of code belonging to a {@link Project}.
+ * A View is essentially a collection of code.
  *
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface View<T extends SootClass> {
-
-  Project getProject();
-
-  @Nonnull
-  List<BodyInterceptor> getBodyInterceptors(AnalysisInputLocation inputLocation);
+public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<T> getClasses();
+  Collection<? extends SootClass> getClasses();
 
   /**
    * Return a class with given signature.
@@ -62,19 +52,11 @@ public interface View<T extends SootClass> {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<T> getClass(@Nonnull ClassType signature);
+  Optional<? extends SootClass> getClass(@Nonnull ClassType signature);
 
   Optional<? extends SootField> getField(@Nonnull FieldSignature signature);
 
   Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature);
-
-  /**
-   * Returns the scope if the view is scoped.
-   *
-   * @return The scope that led to the view
-   */
-  @Nonnull
-  Optional<Scope> getScope();
 
   @Nonnull
   TypeHierarchy getTypeHierarchy();
@@ -84,7 +66,7 @@ public interface View<T extends SootClass> {
   IdentifierFactory getIdentifierFactory();
 
   @Nonnull
-  default T getClassOrThrow(@Nonnull ClassType classType) {
+  default SootClass getClassOrThrow(@Nonnull ClassType classType) {
     return getClass(classType)
         .orElseThrow(
             () -> new IllegalArgumentException("Could not find " + classType + " in View."));

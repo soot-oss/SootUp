@@ -30,7 +30,6 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -41,9 +40,7 @@ import sootup.core.views.View;
 public class ICFGDotExporter {
 
   public static String buildICFGGraph(
-      Map<MethodSignature, StmtGraph> signatureToStmtGraph,
-      View<? extends SootClass<?>> view,
-      CallGraph callGraph) {
+      Map<MethodSignature, StmtGraph> signatureToStmtGraph, View view, CallGraph callGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;
@@ -61,9 +58,7 @@ public class ICFGDotExporter {
    * methods.
    */
   public static Map<Integer, MethodSignature> computeCalls(
-      Map<MethodSignature, StmtGraph> stmtGraphSet,
-      View<? extends SootClass<?>> view,
-      CallGraph callgraph) {
+      Map<MethodSignature, StmtGraph> stmtGraphSet, View view, CallGraph callgraph) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
     for (Map.Entry<MethodSignature, StmtGraph> entry : stmtGraphSet.entrySet()) {
       StmtGraph stmtGraph = entry.getValue();
@@ -126,7 +121,7 @@ public class ICFGDotExporter {
   public static void connectEdgesToSubClasses(
       MethodSignature source,
       MethodSignature target,
-      View<? extends SootClass<?>> view,
+      View view,
       Map<Integer, MethodSignature> calls,
       CallGraph callgraph) {
     Set<MethodSignature> methodSignatureInSubClass =

@@ -29,29 +29,18 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import javax.annotation.Nonnull;
-import org.junit.Assert;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.BodySource;
 import sootup.core.inputlocation.EagerInputLocation;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSubSignature;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
-import sootup.java.core.signatures.ModuleSignature;
-import sootup.java.core.types.ModuleJavaClassType;
-import sootup.java.core.views.JavaModuleView;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -329,29 +318,23 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
-    // Create a project
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
-            .build();
-
     // Get the view
-    JavaView view = p.createView();
+    JavaView view = new JavaView(new JavaClassPathAnalysisInputLocation(warFile));
 
     assertEquals(19, view.getClasses().size());
 
     // Create java class signature
-    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
+    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
-    SootClass<JavaSootClassSource> utilsClass = view.getClass(utilsClassSignature).get();
+    JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
-    SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
+    JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
     assertNotNull(foundMethod.getBody());
 
     // Print method
@@ -366,11 +349,19 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+
+    JavaSootField field =
+        new JavaSootField(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(classSignature, nameFieldSubSignature),
+            Collections.singleton(FieldModifier.PUBLIC),
+            null,
+            NoPositionInformation.getInstance());
 
     // Build a soot class
-    SootClass<?> c =
-        new SootClass(
+    JavaSootClass c =
+        new JavaSootClass(
             new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
@@ -378,43 +369,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 null,
                 null,
                 null,
-                Collections.singleton(
-                    SootField.builder()
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getFieldSignature(classSignature, nameFieldSubSignature))
-                        .withModifiers(FieldModifier.PUBLIC)
-                        .build()),
-                ImmutableUtils.immutableSet(
-                    SootMethod.builder()
-                        .withSource(
-                            new BodySource() {
-                              @Nonnull
-                              @Override
-                              public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) {
-                                /* [ms] violating @Nonnull */
-                                return null;
-                              }
-
-                              @Override
-                              public Object resolveAnnotationsDefaultValue() {
-                                return null;
-                              }
-
-                              @Override
-                              @Nonnull
-                              public MethodSignature getSignature() {
-                                return JavaIdentifierFactory.getInstance()
-                                    .getMethodSignature(
-                                        utilsClass.getType(), optionalToStreamMethodSubSignature);
-                              }
-                            })
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getMethodSignature(
-                                    classSignature, optionalToStreamMethodSubSignature))
-                        .withModifiers(MethodModifier.PUBLIC)
-                        .build()),
+                Collections.singleton(field),
+                Collections.emptySet(),
                 null,
                 EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
@@ -435,11 +391,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testRuntimeJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace = new DefaultRTJarAnalysisInputLocation();
 
-    JavaView v =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(pathBasedNamespace)
-            .build()
-            .createView();
+    JavaView v = new JavaView(pathBasedNamespace);
 
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
@@ -457,17 +409,11 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
    */
   @Test
   public void testInputLocationLibraryMode() {
+    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
-            .build();
-    JavaView view = javaProject.createView();
+    Collection<SootClass> classes = new HashSet<>(); // Set to track the classes to check
 
-    Collection<SootClass<JavaSootClassSource>> classes =
-        new HashSet<>(); // Set to track the classes to check
-
-    for (SootClass<JavaSootClassSource> aClass : view.getClasses()) {
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }

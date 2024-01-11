@@ -10,30 +10,28 @@ import java.util.stream.Collectors;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.model.SootClass;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 @Category(Java8Test.class)
 public class HierarchyComparatorTest {
 
-  private static View<? extends SootClass<?>> view;
+  private static View view;
 
   @BeforeClass
   public static void setUp() {
-    JavaProject project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaSourcePathAnalysisInputLocation(
-                    Collections.singleton("src/test/resources/javatypehierarchy/Comparator")))
-            .addInputLocation(new DefaultRTJarAnalysisInputLocation())
-            .build();
-    view = project.createView();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(
+        new JavaSourcePathAnalysisInputLocation(
+            Collections.singleton("src/test/resources/javatypehierarchy/Comparator")));
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+
+    view = new JavaView(inputLocations);
   }
 
   @Test
