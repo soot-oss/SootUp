@@ -66,11 +66,6 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
     this.position = position;
   }
 
-  /** Hint: the naming is just an indicator! */
-  public boolean isFieldLocal() {
-    return getName().charAt(0) != '$';
-  }
-
   @Override
   public final boolean equals(Object o) {
     if (!(o instanceof Local)) {

@@ -74,11 +74,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
         type = view.getIdentifierFactory().getClassType("java.lang.Object");
       }
 
-      if (local.isFieldLocal()) {
-        newLocal = lgen.generateFieldLocal(type);
-      } else {
-        newLocal = lgen.generateLocal(type);
-      }
+      newLocal = lgen.generateLocal(type);
       builder.replaceLocal(local, newLocal);
     }
   }
