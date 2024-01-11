@@ -50,9 +50,6 @@ import sootup.core.views.View;
  * @author Marcus Nachtigall
  */
 public class DeadAssignmentEliminator implements BodyInterceptor {
-
-  // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field (ms: possibly
-  // more?)
   boolean eliminateOnlyStackLocals;
 
   public DeadAssignmentEliminator() {
