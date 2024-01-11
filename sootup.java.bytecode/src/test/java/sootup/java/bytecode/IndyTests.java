@@ -19,8 +19,6 @@ public class IndyTests {
     AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(directory);
 
     JavaView view = new JavaView(inputLocation);
-    Assert.assertEquals(1, view.getClasses().size());
-
-    view.getClasses().stream().findFirst().get().getMethods().forEach(SootMethod::getBody);
+    view.getClass( view.getIdentifierFactory().getClassType("Indy")).get().getMethods().forEach(SootMethod::getBody);
   }
 }

@@ -214,8 +214,8 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Map<String, Type> map = new HashMap<>();
-    map.put("$l1", AugmentIntegerTypes.getInteger1());
-    map.put("$l2", PrimitiveType.getByte());
+    map.put("l1", AugmentIntegerTypes.getInteger1());
+    map.put("l2", PrimitiveType.getByte());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
     for (Stmt s : graph.getStmts()) {
@@ -241,8 +241,8 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Map<String, Type> map = new HashMap<>();
-    map.put("$l1", AugmentIntegerTypes.getInteger1());
-    map.put("$l2", PrimitiveType.getFloat());
+    map.put("l1", AugmentIntegerTypes.getInteger1());
+    map.put("l2", PrimitiveType.getFloat());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
     for (Stmt s : graph.getStmts()) {
