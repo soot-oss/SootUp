@@ -33,20 +33,20 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
     Assert.assertEquals(
         Stream.of(
-                "CastCounterDemos $r0",
-                "Sub1 $r1, $r2",
-                "Sub2 $r3, $r4",
-                "byte $b0",
-                "$r0 := @this: CastCounterDemos",
-                "$r1 = new Sub1",
-                "specialinvoke $r1.<Sub1: void <init>()>()",
-                "$r2 = $r1",
-                "$b0 = 1",
-                "$r3 = new Sub2",
-                "specialinvoke $r3.<Sub2: void <init>()>()",
-                "$r4 = $r3",
-                "virtualinvoke $r2.<Super1: void m(int,Sub2)>($b0, $r4)",
-                "return")
+                        "CastCounterDemos r0",
+                        "Sub1 $r1, r2",
+                        "Sub2 $r3, r4",
+                        "byte b0",
+                        "r0 := @this: CastCounterDemos",
+                        "$r1 = new Sub1",
+                        "specialinvoke $r1.<Sub1: void <init>()>()",
+                        "r2 = $r1",
+                        "b0 = 1",
+                        "$r3 = new Sub2",
+                        "specialinvoke $r3.<Sub2: void <init>()>()",
+                        "r4 = $r3",
+                        "virtualinvoke r2.<Super1: void m(int,Sub2)>(b0, r4)",
+                        "return")
             .collect(Collectors.toList()),
         actualStmts);
   }
@@ -60,18 +60,17 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
     Assert.assertEquals(
-        Stream.of(
-                "CastCounterDemos $r0",
-                "Sub1 $r1",
-                "Super1 $r2",
-                "Super1[] $r3",
-                "$r0 := @this: CastCounterDemos",
-                "$r3 = newarray (Super1)[10]",
-                "$r1 = new Sub1",
-                "specialinvoke $r1.<Sub1: void <init>()>()",
-                "$r3[0] = $r1",
-                "$r2 = $r3[2]",
-                "return")
+        Stream.of(      "CastCounterDemos r0",
+                        "Sub1 $r1",
+                        "Super1 r2",
+                        "Super1[] r3",
+                        "r0 := @this: CastCounterDemos",
+                        "r3 = newarray (Super1)[10]",
+                        "$r1 = new Sub1",
+                        "specialinvoke $r1.<Sub1: void <init>()>()",
+                        "r3[0] = $r1",
+                        "r2 = r3[2]",
+                        "return")
             .collect(Collectors.toList()),
         actualStmts);
   }

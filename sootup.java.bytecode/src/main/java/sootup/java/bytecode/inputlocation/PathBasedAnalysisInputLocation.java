@@ -221,7 +221,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     return classSource.map(src -> (JavaSootClassSource) src);
   }
 
-  private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
