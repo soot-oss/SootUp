@@ -115,57 +115,23 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @Nonnull Path path,
       @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    final PathBasedAnalysisInputLocation inputLocation;
     if (Files.isDirectory(path)) {
-      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
+      return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
+        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
-          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors);
+          return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
-      } else {
-        throw new IllegalArgumentException(
-            "Path '"
-                + path.toAbsolutePath()
-                + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
       }
-    } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
-      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
-    } else {
-      throw new IllegalArgumentException(
+    }
+    throw new IllegalArgumentException(
           "Path '"
               + path.toAbsolutePath()
               + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
-    }
-    return inputLocation;
-  }
-
-  private static boolean isMultiReleaseJar(Path path) {
-    try {
-      FileInputStream inputStream = new FileInputStream(path.toFile());
-      JarInputStream jarStream = new JarInputStream(inputStream);
-      Manifest mf = jarStream.getManifest();
-
-      if (mf == null) {
-        return false;
-      }
-
-      Attributes attributes = mf.getMainAttributes();
-
-      String value = attributes.getValue("Multi-Release");
-
-      return Boolean.parseBoolean(value);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return false;
   }
 
   @Nonnull
@@ -198,7 +164,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   }
 
   @Nonnull
-  private static String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+  protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
     return FilenameUtils.removeExtension(
         packageNamePathAndClass
             .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
@@ -216,9 +182,6 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
                         + classProvider.getHandledFileType().getExtensionWithDot()));
-    if (!Files.exists(pathToClass)) {
-      return Optional.empty();
-    }
 
     Optional<? extends SootClassSource> classSource =
         classProvider.createClassSource(this, pathToClass, signature);
@@ -231,10 +194,6 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     Path pathToClass = Paths.get(path.toString());
 
-    if (!Files.exists(pathToClass)) {
-      return Optional.empty();
-    }
-
     Optional<? extends SootClassSource> classSource =
         classProvider.createClassSource(this, pathToClass, signature);
 
@@ -243,16 +202,26 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
   public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
+    @Nonnull
+    private final String omittedPackageName;
+
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
-      this(classFilePath, srcType, Collections.emptyList());
+        @Nonnull Path classFilePath, @Nonnull String omittedPackageName, @Nonnull SourceType srcType) {
+      this(classFilePath, omittedPackageName, srcType, Collections.emptyList());
     }
 
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath,
+        @Nonnull String omittedPackageName,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors) {
       super(classFilePath, srcType, bodyInterceptors);
+      this.omittedPackageName = omittedPackageName;
+
+      if (!Files.isRegularFile(classFilePath) || Files.isDirectory(classFilePath)) {
+        throw new IllegalArgumentException("Needs to point to a regular file - not to a directory.");
+      }
+
     }
 
     @Override
@@ -275,6 +244,18 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
           classProvider.createClassSource(this, path, factory.getClassType(fullyQualifiedName)) .map(src -> (JavaSootClassSource) src);
       return Collections.singletonList(classSource.get());
     }
+
+    @Nonnull
+    protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+      String str = FilenameUtils.removeExtension(
+              packageNamePathAndClass
+                      .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
+                      .toString()
+                      .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
+
+      return omittedPackageName.isEmpty() ? str : omittedPackageName + "." + str;
+    }
+
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

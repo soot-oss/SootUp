@@ -22,6 +22,8 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
@@ -29,6 +31,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -318,5 +323,33 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @Override
   public int hashCode() {
     return path.hashCode();
+  }
+
+
+  @Nonnull
+  @Override
+  protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+    // FIXME: [ms] implement specific handling of the versioned path
+    return super.fromPath(baseDirPath, packageNamePathAndClass);
+  }
+
+  private static boolean isMultiReleaseJar(Path path) {
+    try {
+      FileInputStream inputStream = new FileInputStream(path.toFile());
+      JarInputStream jarStream = new JarInputStream(inputStream);
+      Manifest mf = jarStream.getManifest();
+
+      if (mf == null) {
+        return false;
+      }
+
+      Attributes attributes = mf.getMainAttributes();
+
+      String value = attributes.getValue("Multi-Release");
+
+      return Boolean.parseBoolean(value);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("File not found.", e);
+    }
   }
 }
