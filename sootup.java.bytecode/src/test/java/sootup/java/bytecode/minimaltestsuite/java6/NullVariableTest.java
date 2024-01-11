@@ -33,7 +33,7 @@ public class NullVariableTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: NullVariable", "$l1 = null", "return")
+    return Stream.of("l0 := @this: NullVariable", "l1 = null", "return")
         .collect(Collectors.toList());
   }
 
