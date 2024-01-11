@@ -14,6 +14,7 @@ import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.inputlocation.FileType;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -24,13 +25,13 @@ import sootup.core.views.View;
 /** @author Markus Schmidt */
 public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
-  private final List<BodyInterceptor> bodyInterceptors;
-
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
+  @Nonnull
+  private final List<BodyInterceptor> bodyInterceptors;
 
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
-    this(path, SourceType.Application);
+    this(path, SourceType.Application, Collections.emptyList());
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
@@ -38,17 +39,18 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   public JimpleAnalysisInputLocation(
-      @Nonnull Path path,
-      @Nullable SourceType srcType,
-      @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    if (!Files.exists(path)) {
-      throw new IllegalArgumentException(
+          @Nonnull Path path,
+          @Nullable SourceType srcType,
+          @Nonnull List<BodyInterceptor> bodyInterceptors) {
+      if (!Files.exists(path)) {
+        throw new IllegalArgumentException(
           "The configured path '"
               + path
               + "' pointing to '"
               + path.toAbsolutePath()
               + "' does not exist.");
-    }
+      }
+    this.bodyInterceptors = bodyInterceptors;
     this.path = path;
     this.srcType = srcType;
   }
@@ -71,7 +73,7 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
       @Nonnull ClassProvider classProvider) {
 
     try (final Stream<Path> walk = Files.walk(path)) {
-      return walk.filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+      return walk.filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
           .flatMap(
               p -> {
                 String fullyQualifiedName =
