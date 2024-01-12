@@ -33,12 +33,7 @@ public class StatementEvalTest extends MinimalSourceTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: StatementEval",
-            "i0 = 1",
-            "i0 = 3",
-            "i1 = i0 + 3",
-            "i0 = i1",
-            "return")
+            "r0 := @this: StatementEval", "i0 = 1", "i0 = 3", "i1 = i0 + 3", "i0 = i1", "return")
         .collect(Collectors.toList());
   }
 

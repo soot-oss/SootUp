@@ -80,10 +80,7 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "r0 := @this: MethodOverloading",
-            "i0 := @parameter0: int",
-            "i1 = i0 + i0",
-            "return i1")
+            "r0 := @this: MethodOverloading", "i0 := @parameter0: int", "i1 = i0 + i0", "return i1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }
