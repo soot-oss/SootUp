@@ -43,8 +43,8 @@ public class FinalMethodTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: FinalMethod",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"final method\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"final method\")",
             "return")
         .collect(Collectors.toList());
   }

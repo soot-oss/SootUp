@@ -37,7 +37,7 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: ThrowExceptionMethod", "$i0 = 8 / 0", "return")
+    return Stream.of("r0 := @this: ThrowExceptionMethod", "i0 = 8 / 0", "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -58,9 +58,9 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: ThrowExceptionMethod",
-            "$r1 = new CustomException",
-            "specialinvoke $r1.<CustomException: void <init>(java.lang.String)>(\"Custom Exception\")",
-            "throw $r1")
+            "r1 = new CustomException",
+            "specialinvoke r1.<CustomException: void <init>(java.lang.String)>(\"Custom Exception\")",
+            "throw r1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 

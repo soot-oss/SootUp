@@ -31,7 +31,7 @@ public class UnderscoreInIntTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: UnderscoreInInt", "$i0 = 2147483647", "return")
+    return Stream.of("r0 := @this: UnderscoreInInt", "i0 = 2147483647", "return")
         .collect(Collectors.toList());
   }
 

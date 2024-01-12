@@ -41,8 +41,8 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DefaultMethodInterfaceImpl",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Method interfaceMethod() is implemented\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"Method interfaceMethod() is implemented\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
@@ -64,8 +64,8 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DefaultMethodInterfaceImpl",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Method defaultInterfaceMethod() is implemented\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"Method defaultInterfaceMethod() is implemented\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

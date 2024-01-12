@@ -57,7 +57,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharCharacter() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 97", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 97", "return")
         .collect(Collectors.toList());
   }
 
@@ -71,7 +71,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSymbol() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 37", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 37", "return")
         .collect(Collectors.toList());
   }
 
@@ -83,7 +83,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslashT() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 9", "return").collect(Collectors.toList());
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 9", "return").collect(Collectors.toList());
   }
 
   /**
@@ -96,7 +96,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslash() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 92", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 92", "return")
         .collect(Collectors.toList());
   }
 
@@ -110,7 +110,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSingleQuote() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 39", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 39", "return")
         .collect(Collectors.toList());
   }
 
@@ -124,7 +124,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharUnicode() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 937", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 937", "return")
         .collect(Collectors.toList());
   }
 
@@ -138,7 +138,7 @@ public class CharLiteralsTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsSpecialChar() {
-    return Stream.of("r0 := @this: CharLiterals", "$i0 = 8482", "return")
+    return Stream.of("r0 := @this: CharLiterals", "i0 = 8482", "return")
         .collect(Collectors.toList());
   }
 }

@@ -46,9 +46,9 @@ public class AnonymousClassInsideMethodTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: AnonymousClassInsideMethod",
-            "$r1 = new AnonymousClassInsideMethod$1",
-            "specialinvoke $r1.<AnonymousClassInsideMethod$1: void <init>()>()",
-            "interfaceinvoke $r1.<AnonymousClassInsideMethod$MathOperation: void addition()>()",
+            "r1 = new AnonymousClassInsideMethod$1",
+            "specialinvoke r1.<AnonymousClassInsideMethod$1: void <init>()>()",
+            "interfaceinvoke r1.<AnonymousClassInsideMethod$MathOperation: void addition()>()",
             "return")
         .collect(Collectors.toList());
   }

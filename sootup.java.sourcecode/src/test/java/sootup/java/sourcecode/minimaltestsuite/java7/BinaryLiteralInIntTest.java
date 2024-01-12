@@ -34,7 +34,7 @@ public class BinaryLiteralInIntTest extends MinimalSourceTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: BinaryLiteralInInt", "$i0 = -1589272251", "$i1 = 5", "$i2 = 5", "return")
+            "r0 := @this: BinaryLiteralInInt", "i0 = -1589272251", "i1 = 5", "i2 = 5", "return")
         .collect(Collectors.toList());
   }
 

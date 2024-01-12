@@ -35,11 +35,11 @@ public class GenericTypeParamOnClassTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: GenericTypeParamOnClass",
-            "$r1 = new GenericTypeParamOnClass$A",
-            "specialinvoke $r1.<GenericTypeParamOnClass$A: void <init>()>()",
-            "specialinvoke $r1.<GenericTypeParamOnClass$A: void set(java.lang.Object)>(5)",
-            "$r2 = virtualinvoke $r1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
-            "$r3 = (java.lang.Integer) $r2",
+            "r1 = new GenericTypeParamOnClass$A",
+            "specialinvoke r1.<GenericTypeParamOnClass$A: void <init>()>()",
+            "specialinvoke r1.<GenericTypeParamOnClass$A: void set(java.lang.Object)>(5)",
+            "r2 = virtualinvoke r1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
+            "r3 = (java.lang.Integer) r2",
             "return")
         .collect(Collectors.toList());
   }

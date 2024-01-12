@@ -32,7 +32,7 @@ public class FinalVariableTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: FinalVariable", "$i0 = 5", "return")
+    return Stream.of("r0 := @this: FinalVariable", "i0 = 5", "return")
         .collect(Collectors.toList());
   }
 

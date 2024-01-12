@@ -35,7 +35,7 @@ public class NullVariableTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")
+    return Stream.of("r0 := @this: NullVariable", "r1 = null", "return")
         .collect(Collectors.toList());
   }
 
@@ -44,7 +44,7 @@ public class NullVariableTest extends MinimalSourceTestSuiteBase {
     // FIXME see InstructionConverter.convertUnaryOpInstruction(...)
     SootMethod method = loadMethod(getMethodSignature());
     assertEquals(
-        "[java.lang.String $r1, NullVariable r0, r0 := @this: NullVariable, $r1 = null, return]",
+        "[java.lang.String r1, NullVariable r0, r0 := @this: NullVariable, r1 = null, return]",
         Utils.filterJimple(method.getBody().toString()));
     assertJimpleStmts(method, expectedBodyStmts());
   }
