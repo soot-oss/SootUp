@@ -26,15 +26,15 @@ class B extends A
     public void bar()
     {
         B r0;
-        int $i0, $i1;
+        int i0, i1;
 
         r0 := @this: B;
 
-        $i0 = r0.<B: int value>;
+        i0 = r0.<B: int value>;
 
-        $i1 = $i0 * 2;
+        i1 = i0 * 2;
 
-        r0.<B: int value> = $i1;
+        r0.<B: int value> = i1;
 
         return;
     }

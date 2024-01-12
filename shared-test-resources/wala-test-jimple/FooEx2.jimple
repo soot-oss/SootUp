@@ -15,13 +15,13 @@ class FooEx2 extends java.lang.Object
     public void bar()
     {
         FooEx2 r0;
-        java.lang.NullPointerException $r1;
+        java.lang.NullPointerException r1;
 
         r0 := @this: FooEx2;
 
-        $r1 = new java.lang.NullPointerException;
+        r1 = new java.lang.NullPointerException;
 
-        specialinvoke $r1.<java.lang.NullPointerException: void <init>()>();
+        specialinvoke r1.<java.lang.NullPointerException: void <init>()>();
 
         throw $r1;
     }

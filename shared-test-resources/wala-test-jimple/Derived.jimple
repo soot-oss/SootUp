@@ -27,7 +27,7 @@ class Derived extends Base
     {
         Derived r0;
         int i0;
-        java.lang.String $r1;
+        java.lang.String r1;
 
         r0 := @this: Derived;
 
