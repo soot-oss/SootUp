@@ -2,7 +2,10 @@
   {
     "version": "revert_dollarSignFlood_preview",
     "title": "PR Preview revert_dollarSignFlood",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
