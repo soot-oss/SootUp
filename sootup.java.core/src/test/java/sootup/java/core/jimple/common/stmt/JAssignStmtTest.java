@@ -84,9 +84,7 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("i0", PrimitiveType.getInt()),
-                new JAddExpr(numConst1, numConst2),
-                nop)));
+                new Local("i0", PrimitiveType.getInt()), new JAddExpr(numConst1, numConst2), nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
