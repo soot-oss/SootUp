@@ -10,11 +10,11 @@ public class LocalGeneratorTest extends TestCase {
 
   public void testGenerate() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
-    final Local i0 = localGenerator.generateFieldLocal(PrimitiveType.IntType.getInstance());
-    final Local i1 = localGenerator.generateFieldLocal(PrimitiveType.IntType.getInstance());
-    final Local s0 = localGenerator.generateFieldLocal(PrimitiveType.ShortType.getInstance());
+    final Local i0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());
+    final Local i1 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());
+    final Local s0 = localGenerator.generateLocal(PrimitiveType.ShortType.getInstance());
     final Local r0 =
-        localGenerator.generateFieldLocal(
+        localGenerator.generateLocal(
             new ClassType() {
               @Override
               public boolean isBuiltInClass() {
@@ -53,10 +53,10 @@ public class LocalGeneratorTest extends TestCase {
 
   public void testGenerateFieldCollisionHandling() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
-    final Local i0 = localGenerator.generateFieldLocal(PrimitiveType.IntType.getInstance());
+    final Local i0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());
 
     final LocalGenerator localGenerator2 = new LocalGenerator(localGenerator.getLocals());
-    final Local i1 = localGenerator2.generateFieldLocal(PrimitiveType.IntType.getInstance());
+    final Local i1 = localGenerator2.generateLocal(PrimitiveType.IntType.getInstance());
     final Local di2 = localGenerator2.generateLocal(PrimitiveType.IntType.getInstance());
 
     assertEquals("i0", i0.toString());
@@ -70,7 +70,7 @@ public class LocalGeneratorTest extends TestCase {
 
     final LocalGenerator localGenerator2 = new LocalGenerator(localGenerator.getLocals());
     final Local di1 = localGenerator2.generateLocal(PrimitiveType.IntType.getInstance());
-    final Local i2 = localGenerator2.generateFieldLocal(PrimitiveType.IntType.getInstance());
+    final Local i2 = localGenerator2.generateLocal(PrimitiveType.IntType.getInstance());
 
     assertEquals("$i0", di0.toString());
     assertEquals("$i1", di1.toString());
@@ -87,7 +87,7 @@ public class LocalGeneratorTest extends TestCase {
         "$i5", localGenerator2.generateLocal(PrimitiveType.IntType.getInstance()).toString());
     // "old" Localgenerator
     assertEquals(
-        "i4", localGenerator.generateFieldLocal(PrimitiveType.IntType.getInstance()).toString());
+        "i4", localGenerator.generateLocal(PrimitiveType.IntType.getInstance()).toString());
     // ->no collision but not necessarily a continuous increment by 1 if you intertwine multiple
     // LocalGenerators
   }
