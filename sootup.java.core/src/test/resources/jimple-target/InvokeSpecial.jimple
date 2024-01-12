@@ -24,15 +24,15 @@ public class InvokeSpecial extends java.lang.Object
     public void specialInvokeInstanceInit()
     {
         InvokeSpecial r0;
-        java.util.ArrayList $r2;
+        java.util.ArrayList r2;
 
         r0 := @this: InvokeSpecial;
 
-        $r2 = new java.util.ArrayList;
+        r2 = new java.util.ArrayList;
 
-        specialinvoke $r2.<java.util.ArrayList: void <init>()>();
+        specialinvoke r2.<java.util.ArrayList: void <init>()>();
 
-        virtualinvoke $r2.<java.util.ArrayList: boolean add(java.lang.Object)>("item1");
+        virtualinvoke r2.<java.util.ArrayList: boolean add(java.lang.Object)>("item1");
 
         return;
     }

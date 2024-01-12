@@ -23,6 +23,6 @@ class FooEx2 extends java.lang.Object
 
         specialinvoke r1.<java.lang.NullPointerException: void <init>()>();
 
-        throw $r1;
+        throw r1;
     }
 }

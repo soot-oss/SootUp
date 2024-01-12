@@ -15,13 +15,13 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
     void noParameter()
     {
         de.upb.sootup.instructions.ref.ParameterRef r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.ref.ParameterRef;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
 
         return;
     }
@@ -30,27 +30,27 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
     {
         de.upb.sootup.instructions.ref.ParameterRef r0;
         int i0;
-        java.lang.StringBuilder $r1, $r3, $r4;
-        java.io.PrintStream $r2;
-        java.lang.String $r5;
+        java.lang.StringBuilder r1, r3, r4;
+        java.io.PrintStream r2;
+        java.lang.String r5;
 
         r0 := @this: de.upb.sootup.instructions.ref.ParameterRef;
 
         i0 := @parameter0: int;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r1 = new java.lang.StringBuilder;
+        r1 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r1.<java.lang.StringBuilder: void <init>()>();
 
-        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
+        r3 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+        r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+        r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>(r5);
 
         return;
     }
@@ -60,9 +60,9 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
         de.upb.sootup.instructions.ref.ParameterRef r0;
         int i0;
         double d0;
-        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6;
-        java.io.PrintStream $r2;
-        java.lang.String $r7;
+        java.lang.StringBuilder r1, r3, r4, r5, r6;
+        java.io.PrintStream r2;
+        java.lang.String r7;
 
         r0 := @this: de.upb.sootup.instructions.ref.ParameterRef;
 
@@ -70,23 +70,23 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
 
         d0 := @parameter1: double;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r1 = new java.lang.StringBuilder;
+        r1 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r1.<java.lang.StringBuilder: void <init>()>();
 
-        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
+        r3 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+        r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("b = ");
+        r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("b = ");
 
-        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>(d0);
+        r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>(d0);
 
-        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+        r7 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r7);
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>(r7);
 
         return;
     }
@@ -96,9 +96,9 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
         de.upb.sootup.instructions.ref.ParameterRef r0;
         int i0;
         double d0;
-        java.lang.String r1, $r10;
-        java.lang.StringBuilder $r2, $r4, $r5, $r6, $r7, $r8, $r9;
-        java.io.PrintStream $r3;
+        java.lang.String r1, r10;
+        java.lang.StringBuilder r2, r4, r5, r6, r7, r8, r9;
+        java.io.PrintStream r3;
 
         r0 := @this: de.upb.sootup.instructions.ref.ParameterRef;
 
@@ -108,27 +108,27 @@ public class de.upb.sootup.instructions.ref.ParameterRef extends java.lang.Objec
 
         r1 := @parameter2: java.lang.String;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        $r2 = new java.lang.StringBuilder;
+        r2 = new java.lang.StringBuilder;
 
-        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r2.<java.lang.StringBuilder: void <init>()>();
 
-        $r4 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
+        r4 = virtualinvoke r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a =");
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+        r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" b = ");
+        r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" b = ");
 
-        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>(d0);
+        r7 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.StringBuilder append(double)>(d0);
 
-        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" str = ");
+        r8 = virtualinvoke r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" str = ");
 
-        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+        r9 = virtualinvoke r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
 
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.String toString()>();
+        r10 = virtualinvoke r9.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r10);
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>(r10);
 
         return;
     }

@@ -23,12 +23,12 @@ final enum class javaonepointfive.NotSoSimpleEnums$Direction$4 extends javaonepo
     public javaonepointfive.NotSoSimpleEnums$Direction getOpposite()
     {
         javaonepointfive.NotSoSimpleEnums$Direction$4 r0;
-        javaonepointfive.NotSoSimpleEnums$Direction $r1;
+        javaonepointfive.NotSoSimpleEnums$Direction r1;
 
         r0 := @this: javaonepointfive.NotSoSimpleEnums$Direction$4;
 
-        $r1 = <javaonepointfive.NotSoSimpleEnums$Direction$4: javaonepointfive.NotSoSimpleEnums$Direction EAST>;
+        r1 = <javaonepointfive.NotSoSimpleEnums$Direction$4: javaonepointfive.NotSoSimpleEnums$Direction EAST>;
 
-        return $r1;
+        return r1;
     }
 }

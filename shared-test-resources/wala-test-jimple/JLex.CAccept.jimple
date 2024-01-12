@@ -7,9 +7,9 @@ class JLex.CAccept extends java.lang.Object
     void <init>(char[], int, int)
     {
         JLex.CAccept r0;
-        char[] r1, $r2, $r3;
-        int i0, i1, $i2, $i3, i5;
-        char $c4;
+        char[] r1, r2, r3;
+        int i0, i1, i2, i3, i5;
+        char c4;
 
         r0 := @this: JLex.CAccept;
 
@@ -23,24 +23,24 @@ class JLex.CAccept extends java.lang.Object
 
         r0.<JLex.CAccept: int m_action_read> = i0;
 
-        $i2 = r0.<JLex.CAccept: int m_action_read>;
+        i2 = r0.<JLex.CAccept: int m_action_read>;
 
-        $r2 = newarray (char)[$i2];
+        r2 = newarray (char)[i2];
 
-        r0.<JLex.CAccept: char[] m_action> = $r2;
+        r0.<JLex.CAccept: char[] m_action> = r2;
 
         i5 = 0;
 
      label1:
-        $i3 = r0.<JLex.CAccept: int m_action_read>;
+        i3 = r0.<JLex.CAccept: int m_action_read>;
 
-        if i5 >= $i3 goto label2;
+        if i5 >= i3 goto label2;
 
-        $r3 = r0.<JLex.CAccept: char[] m_action>;
+        r3 = r0.<JLex.CAccept: char[] m_action>;
 
-        $c4 = r1[i5];
+        c4 = r1[i5];
 
-        $r3[i5] = $c4;
+        r3[i5] = c4;
 
         i5 = i5 + 1;
 
@@ -55,9 +55,9 @@ class JLex.CAccept extends java.lang.Object
     void <init>(JLex.CAccept)
     {
         JLex.CAccept r0, r1;
-        int $i0, $i1, $i2, $i3, i5;
-        char[] $r2, $r3, $r4;
-        char $c4;
+        int i0, i1, i2, i3, i5;
+        char[] r2, r3, r4;
+        char c4;
 
         r0 := @this: JLex.CAccept;
 
@@ -65,39 +65,39 @@ class JLex.CAccept extends java.lang.Object
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $i0 = r1.<JLex.CAccept: int m_action_read>;
+        i0 = r1.<JLex.CAccept: int m_action_read>;
 
-        r0.<JLex.CAccept: int m_action_read> = $i0;
+        r0.<JLex.CAccept: int m_action_read> = i0;
 
-        $i1 = r0.<JLex.CAccept: int m_action_read>;
+        i1 = r0.<JLex.CAccept: int m_action_read>;
 
-        $r2 = newarray (char)[$i1];
+        r2 = newarray (char)[i1];
 
-        r0.<JLex.CAccept: char[] m_action> = $r2;
+        r0.<JLex.CAccept: char[] m_action> = r2;
 
         i5 = 0;
 
      label1:
-        $i2 = r0.<JLex.CAccept: int m_action_read>;
+        i2 = r0.<JLex.CAccept: int m_action_read>;
 
-        if i5 >= $i2 goto label2;
+        if i5 >= i2 goto label2;
 
-        $r4 = r0.<JLex.CAccept: char[] m_action>;
+        r4 = r0.<JLex.CAccept: char[] m_action>;
 
-        $r3 = r1.<JLex.CAccept: char[] m_action>;
+        r3 = r1.<JLex.CAccept: char[] m_action>;
 
-        $c4 = $r3[i5];
+        c4 = r3[i5];
 
-        $r4[i5] = $c4;
+        r4[i5] = c4;
 
         i5 = i5 + 1;
 
         goto label1;
 
      label2:
-        $i3 = r1.<JLex.CAccept: int m_line_number>;
+        i3 = r1.<JLex.CAccept: int m_line_number>;
 
-        r0.<JLex.CAccept: int m_line_number> = $i3;
+        r0.<JLex.CAccept: int m_line_number> = i3;
 
         return;
     }
@@ -105,38 +105,38 @@ class JLex.CAccept extends java.lang.Object
     void mimic(JLex.CAccept)
     {
         JLex.CAccept r0, r1;
-        int $i0, $i1, $i2, i4;
-        char[] $r2, $r3, $r4;
-        char $c3;
+        int i0, i1, i2, i4;
+        char[] r2, r3, r4;
+        char c3;
 
         r0 := @this: JLex.CAccept;
 
         r1 := @parameter0: JLex.CAccept;
 
-        $i0 = r1.<JLex.CAccept: int m_action_read>;
+        i0 = r1.<JLex.CAccept: int m_action_read>;
 
-        r0.<JLex.CAccept: int m_action_read> = $i0;
+        r0.<JLex.CAccept: int m_action_read> = i0;
 
-        $i1 = r0.<JLex.CAccept: int m_action_read>;
+        i1 = r0.<JLex.CAccept: int m_action_read>;
 
-        $r2 = newarray (char)[$i1];
+        r2 = newarray (char)[i1];
 
-        r0.<JLex.CAccept: char[] m_action> = $r2;
+        r0.<JLex.CAccept: char[] m_action> = r2;
 
         i4 = 0;
 
      label1:
-        $i2 = r0.<JLex.CAccept: int m_action_read>;
+        i2 = r0.<JLex.CAccept: int m_action_read>;
 
-        if i4 >= $i2 goto label2;
+        if i4 >= i2 goto label2;
 
-        $r4 = r0.<JLex.CAccept: char[] m_action>;
+        r4 = r0.<JLex.CAccept: char[] m_action>;
 
-        $r3 = r1.<JLex.CAccept: char[] m_action>;
+        r3 = r1.<JLex.CAccept: char[] m_action>;
 
-        $c3 = $r3[i4];
+        c3 = r3[i4];
 
-        $r4[i4] = $c3;
+        r4[i4] = c3;
 
         i4 = i4 + 1;
 

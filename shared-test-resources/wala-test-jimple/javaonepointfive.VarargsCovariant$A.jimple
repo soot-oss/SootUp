@@ -16,15 +16,15 @@ class javaonepointfive.VarargsCovariant$A extends java.lang.Object
     {
         javaonepointfive.VarargsCovariant$A r0;
         int[] r1;
-        java.io.PrintStream $r2;
+        java.io.PrintStream r2;
 
         r0 := @this: javaonepointfive.VarargsCovariant$A;
 
         r1 := @parameter0: int[];
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("a hello");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("a hello");
 
         return r0;
     }

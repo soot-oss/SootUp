@@ -17,8 +17,8 @@ public class foo.SimpleNames extends java.lang.Object
     public void hello()
     {
         foo.SimpleNames r0;
-        int $i0;
-        foo.SimpleNames$1 $r1;
+        int i0;
+        foo.SimpleNames$1 r1;
 
         r0 := @this: foo.SimpleNames;
 
@@ -26,13 +26,13 @@ public class foo.SimpleNames extends java.lang.Object
 
         <foo.SimpleNames: int s> = 4;
 
-        $i0 = <foo.SimpleNames: int s>;
+        i0 = <foo.SimpleNames: int s>;
 
-        <foo.SimpleNames: int s> = $i0;
+        <foo.SimpleNames: int s> = i0;
 
-        $r1 = new foo.SimpleNames$1;
+        r1 = new foo.SimpleNames$1;
 
-        specialinvoke $r1.<foo.SimpleNames$1: void <init>(foo.SimpleNames)>(r0);
+        specialinvoke r1.<foo.SimpleNames$1: void <init>(foo.SimpleNames)>(r0);
 
         return;
     }
@@ -40,15 +40,15 @@ public class foo.SimpleNames extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        foo.SimpleNames $r1;
+        foo.SimpleNames r1;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new foo.SimpleNames;
+        r1 = new foo.SimpleNames;
 
-        specialinvoke $r1.<foo.SimpleNames: void <init>()>();
+        specialinvoke r1.<foo.SimpleNames: void <init>()>();
 
-        virtualinvoke $r1.<foo.SimpleNames: void hello()>();
+        virtualinvoke r1.<foo.SimpleNames: void hello()>();
 
         return;
     }
