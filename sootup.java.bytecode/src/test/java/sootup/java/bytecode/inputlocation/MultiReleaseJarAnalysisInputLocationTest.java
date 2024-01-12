@@ -23,6 +23,7 @@ package sootup.java.bytecode.inputlocation;
  */
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.nio.file.Path;
@@ -74,6 +75,9 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
     final ClassType classType2 =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+
+    assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mrj));
+    assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mmrj));
 
     // for java10
     Assert.assertEquals(

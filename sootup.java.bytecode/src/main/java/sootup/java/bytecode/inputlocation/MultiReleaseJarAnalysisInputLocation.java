@@ -93,17 +93,12 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       throw new IllegalStateException("Can not index the given file.", e);
     }
 
-    discoverInputLocations();
+    discoverInputLocations(fs);
   }
 
   /** Discovers all input locations for different java versions in this multi release jar */
-  private void discoverInputLocations() {
-    FileSystem fs;
-    try {
-      fs = fileSystemCache.get(path);
-    } catch (ExecutionException e) {
-      throw new IllegalStateException("Can not index the given file.", e);
-    }
+  private void discoverInputLocations(@Nonnull FileSystem fs) {
+
     final Path archiveRoot = fs.getPath("/");
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
@@ -329,7 +324,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return super.fromPath(baseDirPath, packageNamePathAndClass);
   }
 
-  private static boolean isMultiReleaseJar(Path path) {
+  public static boolean isMultiReleaseJar(Path path) {
     try {
       FileInputStream inputStream = new FileInputStream(path.toFile());
       JarInputStream jarStream = new JarInputStream(inputStream);
