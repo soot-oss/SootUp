@@ -15,7 +15,6 @@ import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
