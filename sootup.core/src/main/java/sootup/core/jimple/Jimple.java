@@ -365,7 +365,6 @@ public abstract class Jimple {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
-
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
       Local base, MethodSignature method, Immediate arg) {
     return newSpecialInvokeExpr(base, method, Collections.singletonList(arg));

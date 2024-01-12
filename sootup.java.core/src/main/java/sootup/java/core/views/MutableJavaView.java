@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
@@ -28,8 +27,7 @@ public class MutableJavaView extends JavaView implements MutableView {
     this(Collections.singletonList(inputLocation));
   }
 
-  public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations) {
+  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
     super(inputLocations, new MutableFullCacheProvider());
   }
 

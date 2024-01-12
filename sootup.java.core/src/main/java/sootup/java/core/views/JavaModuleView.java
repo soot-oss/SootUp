@@ -27,7 +27,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;

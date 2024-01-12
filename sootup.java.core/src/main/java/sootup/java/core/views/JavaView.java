@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
@@ -143,7 +142,8 @@ public class JavaView extends AbstractView {
     JavaSootClass theClass;
     if (!cache.hasClass(classType)) {
       theClass =
-          (JavaSootClass) classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+          (JavaSootClass)
+              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     } else {
       theClass = (JavaSootClass) cache.getClass(classType);

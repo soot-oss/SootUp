@@ -25,6 +25,8 @@ package sootup.java.bytecode.inputlocation;
 import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,12 +43,11 @@ import sootup.java.core.views.JavaView;
 @Category(Java8Test.class)
 public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
+  final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
+
   @Test
   public void multiReleaseJar() {
-    final ClassType classType =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-    final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     final JavaView view_min =
         new JavaView(
@@ -68,6 +69,11 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(Integer.MAX_VALUE)));
+
+    final ClassType classType =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+    final ClassType classType2 =
+        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
     // for java10
     Assert.assertEquals(
