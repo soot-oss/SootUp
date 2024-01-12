@@ -252,13 +252,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   private JavaLocal getOrCreateLocal(int idx) {
+    return getOrCreateLocal(idx, null);
+  }
+
+  @Nonnull
+  private JavaLocal getOrCreateLocal(int idx, @Nullable Type typeHint) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
       String name = determineLocalName(idx, false); // FIXME: isField
-      local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
+      local = JavaJimple.newLocal(name, typeHint != null ? typeHint : UnknownType.getInstance(), Collections.emptyList());
       locals.set(idx, local);
     }
     return local;
@@ -291,9 +296,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   Local newStackLocal() {
+    return newStackLocal(UnknownType.getInstance());
+  }
+
+  @Nonnull
+  Local newStackLocal(Type type) {
     int idx = nextLocal++;
     JavaLocal l =
-        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
+            JavaJimple.newLocal("$stack" + idx, type, Collections.emptyList());
     locals.set(idx, l);
     return l;
   }
@@ -1213,7 +1223,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     OperandMerging merging = operandStack.getOrCreateMerging(insn);
     Operand opr = dword ? operandStack.popDual() : operandStack.pop();
     merging.mergeInputs(opr);
-    Local local = getOrCreateLocal(insn.var);
+    Local local = getOrCreateLocal(insn.var, opr.value.getType());
     AbstractDefinitionStmt as;
     if (opr.stackLocal == null || opr.stackLocal == local) {
       // Can skip creating a new stack local for the operand

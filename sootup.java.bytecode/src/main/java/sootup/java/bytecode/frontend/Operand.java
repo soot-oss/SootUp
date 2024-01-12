@@ -67,7 +67,7 @@ class Operand {
 
   Local getOrAssignValueToStackLocal() {
     if (stackLocal == null) {
-      changeStackLocal(methodSource.newStackLocal());
+      changeStackLocal(methodSource.newStackLocal(value.getType()));
     }
 
     return stackLocal;
