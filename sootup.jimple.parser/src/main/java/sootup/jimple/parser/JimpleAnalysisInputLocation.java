@@ -27,8 +27,8 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
-  @Nonnull
-  private final List<BodyInterceptor> bodyInterceptors;
+
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
     this(path, SourceType.Application, Collections.emptyList());
@@ -39,22 +39,23 @@ public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   }
 
   public JimpleAnalysisInputLocation(
-          @Nonnull Path path,
-          @Nullable SourceType srcType,
-          @Nonnull List<BodyInterceptor> bodyInterceptors) {
-      if (!Files.exists(path)) {
-        throw new IllegalArgumentException(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    if (!Files.exists(path)) {
+      throw new IllegalArgumentException(
           "The configured path '"
               + path
               + "' pointing to '"
               + path.toAbsolutePath()
               + "' does not exist.");
-      }
+    }
     this.bodyInterceptors = bodyInterceptors;
     this.path = path;
     this.srcType = srcType;
   }
 
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return srcType;

@@ -2,12 +2,7 @@ package sootup.java.bytecode.inputlocation;
 
 import java.io.*;
 import java.nio.file.*;
-import java.nio.file.FileSystem;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.jar.Attributes;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -24,7 +19,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -36,9 +30,7 @@ import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
-import sootup.java.bytecode.frontend.AsmModuleSource;
 import sootup.java.core.*;
-import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 
 /*-
@@ -71,8 +63,8 @@ import sootup.java.core.types.JavaClassType;
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
 public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
-  private final SourceType sourceType;
-  private final List<BodyInterceptor> bodyInterceptors;
+  protected final SourceType sourceType;
+  protected final List<BodyInterceptor> bodyInterceptors;
   protected Path path;
 
   protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
@@ -92,8 +84,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     }
   }
 
-  @Nullable
   @Override
+  @Nonnull
   public SourceType getSourceType() {
     return sourceType;
   }
@@ -129,9 +121,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       }
     }
     throw new IllegalArgumentException(
-          "Path '"
-              + path.toAbsolutePath()
-              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
+        "Path '"
+            + path.toAbsolutePath()
+            + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
   }
 
   @Nonnull
@@ -155,8 +147,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
                     classProvider.createClassSource(
                         this, p, factory.getClassType(fullyQualifiedName)));
               })
-              .map(src -> (JavaSootClassSource) src)
-              .collect(Collectors.toList());
+          .map(src -> (JavaSootClassSource) src)
+          .collect(Collectors.toList());
 
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
@@ -202,11 +194,12 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
   public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    @Nonnull
-    private final String omittedPackageName;
+    @Nonnull private final String omittedPackageName;
 
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classFilePath, @Nonnull String omittedPackageName, @Nonnull SourceType srcType) {
+        @Nonnull Path classFilePath,
+        @Nonnull String omittedPackageName,
+        @Nonnull SourceType srcType) {
       this(classFilePath, omittedPackageName, srcType, Collections.emptyList());
     }
 
@@ -219,9 +212,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       this.omittedPackageName = omittedPackageName;
 
       if (!Files.isRegularFile(classFilePath) || Files.isDirectory(classFilePath)) {
-        throw new IllegalArgumentException("Needs to point to a regular file - not to a directory.");
+        throw new IllegalArgumentException(
+            "Needs to point to a regular file - not to a directory.");
       }
-
     }
 
     @Override
@@ -241,21 +234,23 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       final String fullyQualifiedName = fromPath(dirPath, path);
 
       Optional<JavaSootClassSource> classSource =
-          classProvider.createClassSource(this, path, factory.getClassType(fullyQualifiedName)) .map(src -> (JavaSootClassSource) src);
+          classProvider
+              .createClassSource(this, path, factory.getClassType(fullyQualifiedName))
+              .map(src -> (JavaSootClassSource) src);
       return Collections.singletonList(classSource.get());
     }
 
     @Nonnull
     protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
-      String str = FilenameUtils.removeExtension(
+      String str =
+          FilenameUtils.removeExtension(
               packageNamePathAndClass
-                      .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
-                      .toString()
-                      .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
+                  .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
+                  .toString()
+                  .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
 
       return omittedPackageName.isEmpty() ? str : omittedPackageName + "." + str;
     }
-
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {

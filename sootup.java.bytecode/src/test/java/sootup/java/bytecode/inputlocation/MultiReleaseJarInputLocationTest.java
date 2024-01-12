@@ -29,6 +29,7 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.language.JavaLanguage;
@@ -47,25 +48,26 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
     final ClassType classType2 =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
-    final JavaLanguage minLanguage = new JavaLanguage(Integer.MIN_VALUE);
     final JavaView view_min =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, minLanguage));
-
-    final JavaLanguage language8 = new JavaLanguage(8);
+        new JavaView(
+            new MultiReleaseJarAnalysisInputLocation(
+                mrj, SourceType.Application, new JavaLanguage(1)));
     final JavaView view_8 =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language8));
-
-    final JavaLanguage language9 = new JavaLanguage(9);
+        new JavaView(
+            new MultiReleaseJarAnalysisInputLocation(
+                mrj, SourceType.Application, new JavaLanguage(8)));
     final JavaView view_9 =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language9));
-
-    final JavaLanguage language10 = new JavaLanguage(10);
+        new JavaView(
+            new MultiReleaseJarAnalysisInputLocation(
+                mrj, SourceType.Application, new JavaLanguage(9)));
     final JavaView view_10 =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, language10));
-
-    final JavaLanguage maxLanguage = new JavaLanguage(Integer.MAX_VALUE);
+        new JavaView(
+            new MultiReleaseJarAnalysisInputLocation(
+                mrj, SourceType.Application, new JavaLanguage(10)));
     final JavaView view_max =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mrj, null, maxLanguage));
+        new JavaView(
+            new MultiReleaseJarAnalysisInputLocation(
+                mrj, SourceType.Application, new JavaLanguage(Integer.MAX_VALUE)));
 
     // for java10
     Assert.assertEquals(
@@ -151,16 +153,17 @@ public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest 
     final ClassType classType2 =
         getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
 
-    final JavaLanguage language8 = new JavaLanguage(8);
+    MultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation8 =
+        new MultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, new JavaLanguage(8));
     final JavaView view_8 =
-        new JavaView(new MultiReleaseJarAnalysisInputLocation(mmrj, null, language8));
+        new JavaView(Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation8));
 
-    final JavaLanguage language9 = new JavaLanguage(9);
+    MultiReleaseJarAnalysisInputLocation moduleMultiReleaseJarAnalysisInputLocation9 =
+        new MultiReleaseJarAnalysisInputLocation(mmrj, SourceType.Application, new JavaLanguage(9));
     final JavaModuleView view_9 =
         new JavaModuleView(
             Collections.emptyList(),
-            Collections.singletonList(
-                new MultiReleaseJarAnalysisInputLocation(mmrj, null, language9)));
+            Collections.singletonList(moduleMultiReleaseJarAnalysisInputLocation9));
 
     ModuleSignature moduleSignature =
         JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");

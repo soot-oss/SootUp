@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
@@ -120,7 +119,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
         .collect(Collectors.toList());
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourcetype;

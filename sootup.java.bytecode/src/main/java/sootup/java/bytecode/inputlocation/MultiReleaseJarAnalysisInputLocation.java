@@ -23,7 +23,6 @@ package sootup.java.bytecode.inputlocation;
  */
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
@@ -35,15 +34,18 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.Language;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.*;
+import sootup.java.core.JavaModuleIdentifierFactory;
+import sootup.java.core.JavaModuleInfo;
+import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
 
@@ -55,7 +57,13 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     implements ModuleInfoAnalysisInputLocation {
 
   @Nonnull private final Language language;
-  @Nonnull private final int[] availableVersions;
+
+  @Nonnull
+  public List<Integer> getAvailableVersions() {
+    return availableVersions;
+  }
+
+  @Nonnull private final List<Integer> availableVersions;
 
   @Nonnull
   private final Map<Integer, Map<ModuleSignature, JavaModuleInfo>> moduleInfoMap = new HashMap<>();
@@ -67,55 +75,59 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   boolean isResolved = false;
 
   public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nullable SourceType srcType, @Nonnull Language language) {
+      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
     super(path, srcType);
     this.language = language;
 
-    int[] tmp;
-    try {
-      FileSystem fs = fileSystemCache.get(path);
-      final Path archiveRoot = fs.getPath("/");
-      tmp =
-          Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))
-              .map(dir -> dir.getFileName().toString().replace("/", ""))
-              .mapToInt(Integer::new)
-              .sorted()
-              .toArray();
-    } catch (IOException | ExecutionException e) {
-      e.printStackTrace();
-      tmp = new int[] {};
-    }
-    availableVersions = tmp;
+    FileSystem fs;
 
-    discoverInputLocations(srcType);
-  }
-
-  /** Discovers all input locations for different java versions in this multi release jar */
-  private void discoverInputLocations(@Nullable SourceType srcType) {
-    FileSystem fs = null;
     try {
       fs = fileSystemCache.get(path);
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      throw new IllegalArgumentException("Could not open filesystemcache.", e);
+    }
+    final Path archiveRoot = fs.getPath("/").getFileSystem().getPath("/META-INF/versions/");
+
+    try (Stream<Path> list = Files.list(archiveRoot)) {
+      availableVersions =
+          list.map(dir -> dir.getFileName().toString().replace("/", ""))
+              .map(Integer::new)
+              .sorted()
+              .collect(Collectors.toList());
+    } catch (IOException e) {
+      throw new IllegalStateException("Can not index the given file.", e);
+    }
+
+    discoverInputLocations();
+  }
+
+  /** Discovers all input locations for different java versions in this multi release jar */
+  private void discoverInputLocations() {
+    FileSystem fs;
+    try {
+      fs = fileSystemCache.get(path);
+    } catch (ExecutionException e) {
+      throw new IllegalStateException("Can not index the given file.", e);
     }
     final Path archiveRoot = fs.getPath("/");
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
-    baseInputLocations.add(PathBasedAnalysisInputLocation.create(archiveRoot, srcType));
+    baseInputLocations.add(PathBasedAnalysisInputLocation.create(archiveRoot, sourceType));
 
     String sep = archiveRoot.getFileSystem().getSeparator();
 
     if (!isResolved) {
 
-      for (int i = availableVersions.length - 1; i >= 0; i--) {
-        inputLocations.put(availableVersions[i], new ArrayList<>());
+      for (int i = availableVersions.size() - 1; i >= 0; i--) {
+        Integer version = availableVersions.get(i);
+        inputLocations.put(version, new ArrayList<>());
 
         final Path versionRoot =
-            archiveRoot.getFileSystem().getPath("/META-INF/versions/" + availableVersions[i] + sep);
+            archiveRoot.getFileSystem().getPath("/META-INF/versions/" + version + sep);
 
         // only versions >= 9 support java modules
-        if (availableVersions[i] > 8) {
-          moduleInfoMap.put(availableVersions[i], new HashMap<>());
+        if (version > 8) {
+          moduleInfoMap.put(version, new HashMap<>());
           try (DirectoryStream<Path> stream = Files.newDirectoryStream(versionRoot)) {
             for (Path entry : stream) {
 
@@ -128,8 +140,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                     new JavaModulePathAnalysisInputLocation(
                         versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
-                inputLocations.get(availableVersions[i]).add(inputLocation);
-                moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
+                inputLocations.get(version).add(inputLocation);
+                moduleInfoMap.get(version).put(moduleSignature, moduleInfo);
               }
 
               if (Files.isDirectory(entry)) {
@@ -142,23 +154,23 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                       new JavaModulePathAnalysisInputLocation(
                           versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
 
-                  inputLocations.get(availableVersions[i]).add(inputLocation);
-                  moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
+                  inputLocations.get(version).add(inputLocation);
+                  moduleInfoMap.get(version).put(moduleSignature, moduleInfo);
                 }
                 // else TODO [bh] can we have automatic modules here?
               }
             }
           } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Could not index the file.", e);
           }
         }
 
         // if there was no module or the version is not > 8, we just add a directory based input
         // location
-        if (inputLocations.get(availableVersions[i]).size() == 0) {
+        if (inputLocations.get(version).isEmpty()) {
           inputLocations
-              .get(availableVersions[i])
-              .add(PathBasedAnalysisInputLocation.create(versionRoot, srcType));
+              .get(version)
+              .add(PathBasedAnalysisInputLocation.create(versionRoot, sourceType));
         }
       }
     }
@@ -238,11 +250,12 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
    * @return best match or base input locations
    */
   private Collection<AnalysisInputLocation> getBestMatchingInputLocationsRaw(int javaVersion) {
-    for (int i = availableVersions.length - 1; i >= 0; i--) {
+    for (int i = availableVersions.size() - 1; i >= 0; i--) {
 
-      if (availableVersions[i] > javaVersion) continue;
+      Integer version = availableVersions.get(i);
+      if (version > javaVersion) continue;
 
-      return new ArrayList<>(inputLocations.get(availableVersions[i]));
+      return new ArrayList<>(inputLocations.get(version));
     }
 
     return getBaseInputLocations();
@@ -325,11 +338,11 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return path.hashCode();
   }
 
-
   @Nonnull
   @Override
   protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
-    // FIXME: [ms] implement specific handling of the versioned path -> /META-INF/versions/{Java_Version}/ -> cut 3 directories
+    // FIXME: [ms] implement specific handling of the versioned path ->
+    // /META-INF/versions/{Java_Version}/ -> cut 3 directories
     return super.fromPath(baseDirPath, packageNamePathAndClass);
   }
 

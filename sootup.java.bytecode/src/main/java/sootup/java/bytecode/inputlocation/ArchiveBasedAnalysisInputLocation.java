@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -71,13 +70,13 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                     }
                   }));
 
-  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   public ArchiveBasedAnalysisInputLocation(
       @Nonnull Path path,
-      @Nullable SourceType srcType,
+      @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(path, srcType, bodyInterceptors);
   }

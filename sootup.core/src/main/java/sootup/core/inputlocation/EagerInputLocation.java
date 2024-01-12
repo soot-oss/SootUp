@@ -74,6 +74,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
     return map.values();
   }
 
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourceType;
