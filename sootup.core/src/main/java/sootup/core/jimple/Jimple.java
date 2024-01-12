@@ -348,11 +348,6 @@ public abstract class Jimple {
     return new JStaticInvokeExpr(method, args);
   }
 
-  @Deprecated // use the version with List<Immediate> args instead
-  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Immediate... args) {
-    return newStaticInvokeExpr(method, Arrays.asList(args));
-  }
-
   public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, Immediate arg) {
     return newStaticInvokeExpr(method, Collections.singletonList(arg));
   }
@@ -370,15 +365,6 @@ public abstract class Jimple {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
-  /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
-   * chunk.
-   */
-  @Deprecated // use the version with List<Immediate> args instead
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
-    return newSpecialInvokeExpr(base, method, Arrays.asList(args));
-  }
 
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
       Local base, MethodSignature method, Immediate arg) {
@@ -424,16 +410,6 @@ public abstract class Jimple {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
-  /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
-   * chunk.
-   */
-  @Deprecated // use the version with List<Immediate> args instead
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
-    return newVirtualInvokeExpr(base, method, Arrays.asList(args));
-  }
-
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
       Local base, MethodSignature method, Immediate arg) {
     return newVirtualInvokeExpr(base, method, Collections.singletonList(arg));
@@ -450,16 +426,6 @@ public abstract class Jimple {
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
       Local base, MethodSignature method, List<Immediate> args) {
     return new JInterfaceInvokeExpr(base, method, args);
-  }
-
-  /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
-   * chunk.
-   */
-  @Deprecated // use the version with List<Immediate> args instead
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      Local base, MethodSignature method, Immediate... args) {
-    return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(

@@ -28,14 +28,9 @@ public class MutableJavaView extends JavaView implements MutableView {
     this(Collections.singletonList(inputLocation));
   }
 
-  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
-    super(inputLocations, new MutableFullCacheProvider());
-  }
-
   public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(inputLocations, new MutableFullCacheProvider(), sourceTypeSpecifier);
+      @Nonnull List<AnalysisInputLocation> inputLocations) {
+    super(inputLocations, new MutableFullCacheProvider());
   }
 
   /**

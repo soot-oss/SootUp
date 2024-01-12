@@ -47,16 +47,8 @@ public class JimpleView extends AbstractView {
   public JimpleView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull ClassCacheProvider cacheProvider) {
-    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
-  }
-
-  public JimpleView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-    this.sourceTypeSpecifier = sourceTypeSpecifier;
   }
 
   @Override

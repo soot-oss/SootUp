@@ -39,7 +39,7 @@ import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
-public class MultiReleaseJarInputLocationTest extends AnalysisInputLocationTest {
+public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
   public void multiReleaseJar() {
