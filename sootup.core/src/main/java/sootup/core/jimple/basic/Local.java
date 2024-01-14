@@ -31,6 +31,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
+import sootup.core.model.HasPosition;
 import sootup.core.model.Position;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
@@ -44,7 +45,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor>, HasPosition {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
@@ -124,6 +125,7 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
   }
 
   @Nonnull
+  @Override
   public Position getPosition() {
     return position;
   }
