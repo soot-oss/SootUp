@@ -54,42 +54,21 @@ public class LocalGenerator {
   /** generate this local with given type */
   public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
-      this.thisLocal = generateFieldLocal(type);
+      this.thisLocal = generateLocal(type);
     }
     return this.thisLocal;
   }
 
-  /** generates a new {@link Local} given the type for field. */
-  public Local generateFieldLocal(@Nonnull Type type) {
-    // field Locals traditionally do not begin with "$"
-
-    Local localCandidate;
-    StringBuilder name = ns.getResult();
-    // is there a name collision? retry!
-    do {
-      name.setLength(0);
-      type.accept(ns);
-      localCandidate = Jimple.newLocal(name.toString(), type);
-    } while (locals.contains(localCandidate));
-
-    locals.add(localCandidate);
-    return localCandidate;
-  }
-
   /** generates a new {@link Local} given the type for local. */
   public Local generateLocal(@Nonnull Type type) {
-    // non-field Locals traditionally begin with "$"
-
     StringBuilder name = ns.getResult();
     name.setLength(0); // clear buffer - remove possible leftovers from last generate call
-    name.append("$");
 
     Local localCandidate;
     type.accept(ns);
     localCandidate = Jimple.newLocal(name.toString(), type);
     // is there a name collision? retry!
     while (locals.contains(localCandidate)) {
-      name.setLength(1);
       type.accept(ns);
       localCandidate = Jimple.newLocal(name.toString(), type);
     }

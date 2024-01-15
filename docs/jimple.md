@@ -28,11 +28,11 @@ It might help to visualize how the Jimple version of a Java code looks like. Hav
       public static void main(java.lang.String[])
       {
         java.lang.String[] r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
             
         r0 := @parameter0: java.lang.String[];
-        $r1 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $r1.<java.io.PrintStream: 
+        r1 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke r1.<java.io.PrintStream: 
         void println(java.lang.String)>("Hello world!");
         return;
       }
@@ -2123,7 +2123,7 @@ NullType
       boolean check;
       target.exercise1.DemoClass this;
       int i;
-      null_type $r0;
+      null_type r0;
       java.lang.NullPointerException soot0;
       this := @this: target.exercise1.DemoClass;
       check := @parameter0: boolean;
@@ -2133,11 +2133,11 @@ NullType
       label1:
         if i >= 5 goto label3;
           if check == 0 goto label2;
-          $r0 = (null_type) i;
+          r0 = (null_type) i;
           soot0 = new java.lang.NullPointerException;
           specialinvoke soot0.<java.lang.NullPointerException: 
             void <init>(java.lang.String)>
-              ("This statement would have triggered an Exception: a[i#1] = $r0");
+              ("This statement would have triggered an Exception: a[i#1] = r0");
           throw soot0;
 
       label2:
@@ -2157,7 +2157,7 @@ NullType
     }
     /*
       The JimpleLocal b is of ArrayType,
-        and JimpleLocal $r0 is of NullType.
+        and JimpleLocal r0 is of NullType.
     */
     ```
 
@@ -2289,7 +2289,7 @@ NullType
 
 #### Local
 ```jimple
-$i0 
+i0 
 ```
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.  
@@ -2434,7 +2434,7 @@ referencing a position inside an array.
 ```jimple
 <SomePackage.ExampleClass: fieldname>
 // or
-$r1.<SomePackage.ExampleClass: fieldname>
+r1.<SomePackage.ExampleClass: fieldname>
 ```
 referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.
 
@@ -2455,8 +2455,8 @@ represents the value of the thrown exception (caught by this exceptionhandler).
 
 ##### JParameterRef
 ```jimple
-$i0 := @parameter0
-$i1 := @parameter1 
+i0 := @parameter0
+i1 := @parameter1 
 ```
 represents a parameter of a method, identified by its index.
 

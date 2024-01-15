@@ -34,8 +34,8 @@ public class VariableShadowingTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: VariableShadowing",
-            "$i0 = r0.<VariableShadowing: int num>",
-            "$i1 = 10",
+            "i0 = r0.<VariableShadowing: int num>",
+            "i1 = 10",
             "return")
         .collect(Collectors.toList());
   }

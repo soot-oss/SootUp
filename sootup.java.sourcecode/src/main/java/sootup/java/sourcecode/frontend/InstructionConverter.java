@@ -312,7 +312,7 @@ public class InstructionConverter {
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
-        identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
+        identifierFactory.getFieldSignature("assertionsDisabled", cSig, "boolean");
     JavaSootField assertionsDisabled =
         new JavaSootField(
             fieldSig,

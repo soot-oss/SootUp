@@ -30,12 +30,12 @@ class javaonepointfive.ConcreteGeneric2 extends javaonepointfive.ConcreteGeneric
     public java.lang.Object foo()
     {
         javaonepointfive.ConcreteGeneric2 r0;
-        java.lang.Object $r1;
+        java.lang.Object r1;
 
         r0 := @this: javaonepointfive.ConcreteGeneric2;
 
-        $r1 = r0.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
+        r1 = r0.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
 
-        return $r1;
+        return r1;
     }
 }

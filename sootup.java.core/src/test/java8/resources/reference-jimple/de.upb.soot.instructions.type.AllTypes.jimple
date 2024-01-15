@@ -14,7 +14,7 @@ public class de.upb.sootup.instructions.type.AllTypes extends java.lang.Object
 
     public void <init>()
     {
-        de.upb.sootup.instructions.type.AllTypes r0, $r1;
+        de.upb.sootup.instructions.type.AllTypes r0, r1;
 
         r0 := @this: de.upb.sootup.instructions.type.AllTypes;
 
@@ -22,11 +22,11 @@ public class de.upb.sootup.instructions.type.AllTypes extends java.lang.Object
 
         r0.<de.upb.sootup.instructions.type.AllTypes: java.lang.Object n> = null;
 
-        $r1 = new de.upb.sootup.instructions.type.AllTypes;
+        r1 = new de.upb.sootup.instructions.type.AllTypes;
 
-        specialinvoke $r1.<de.upb.sootup.instructions.type.AllTypes: void <init>()>();
+        specialinvoke r1.<de.upb.sootup.instructions.type.AllTypes: void <init>()>();
 
-        r0.<de.upb.sootup.instructions.type.AllTypes: de.upb.sootup.instructions.type.AllTypes ref> = $r1;
+        r0.<de.upb.sootup.instructions.type.AllTypes: de.upb.sootup.instructions.type.AllTypes ref> = r1;
 
         return;
     }
@@ -34,13 +34,13 @@ public class de.upb.sootup.instructions.type.AllTypes extends java.lang.Object
     void methodSignature()
     {
         de.upb.sootup.instructions.type.AllTypes r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.type.AllTypes;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("void");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("void");
 
         return;
     }

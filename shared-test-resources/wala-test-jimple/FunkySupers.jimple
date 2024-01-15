@@ -27,20 +27,20 @@ public class FunkySupers extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        SubFunkySupers $r1;
-        FunkySupers $r2;
+        SubFunkySupers r1;
+        FunkySupers r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new SubFunkySupers;
+        r1 = new SubFunkySupers;
 
-        specialinvoke $r1.<SubFunkySupers: void <init>()>();
+        specialinvoke r1.<SubFunkySupers: void <init>()>();
 
-        $r2 = new FunkySupers;
+        r2 = new FunkySupers;
 
-        specialinvoke $r2.<FunkySupers: void <init>()>();
+        specialinvoke r2.<FunkySupers: void <init>()>();
 
-        virtualinvoke $r1.<SubFunkySupers: int funky(FunkySupers)>($r2);
+        virtualinvoke r1.<SubFunkySupers: int funky(FunkySupers)>(r2);
 
         return;
     }

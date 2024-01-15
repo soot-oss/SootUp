@@ -23,13 +23,13 @@ public class de.upb.sootup.instructions.stmt.ReturnStmts extends java.lang.Objec
     public void returnnothing()
     {
         de.upb.sootup.instructions.stmt.ReturnStmts r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmts;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         return;
     }
@@ -37,13 +37,13 @@ public class de.upb.sootup.instructions.stmt.ReturnStmts extends java.lang.Objec
     public void pointofnoreturn()
     {
         de.upb.sootup.instructions.stmt.ReturnStmts r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmts;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         return;
     }
@@ -81,14 +81,14 @@ public class de.upb.sootup.instructions.stmt.ReturnStmts extends java.lang.Objec
     public java.lang.Integer returnObject()
     {
         de.upb.sootup.instructions.stmt.ReturnStmts r0;
-        java.lang.Integer $r1;
+        java.lang.Integer r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.ReturnStmts;
 
-        $r1 = new java.lang.Integer;
+        r1 = new java.lang.Integer;
 
-        specialinvoke $r1.<java.lang.Integer: void <init>(int)>(5);
+        specialinvoke r1.<java.lang.Integer: void <init>(int)>(5);
 
-        return $r1;
+        return r1;
     }
 }

@@ -116,12 +116,12 @@ public class JInvokeStmtTest {
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("$r0", sootClass.getType()), smethodSig, Collections.emptyList()),
+                new Local("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
             nop);
 
     // toString
     Assert.assertEquals(
-        "specialinvoke $r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
+        "specialinvoke r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));

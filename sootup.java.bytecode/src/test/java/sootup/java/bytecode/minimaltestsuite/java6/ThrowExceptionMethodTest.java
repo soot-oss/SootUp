@@ -39,7 +39,7 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: ThrowExceptionMethod", "$l1 = 8 / 0", "return")
+    return Stream.of("l0 := @this: ThrowExceptionMethod", "l1 = 8 / 0", "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -50,7 +50,7 @@ public class ThrowExceptionMethodTest extends MinimalBytecodeTestSuiteBase {
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "$l0 := @this: ThrowExceptionMethod",
+            "l0 := @this: ThrowExceptionMethod",
             "$stack1 = new CustomException",
             "specialinvoke $stack1.<CustomException: void <init>(java.lang.String)>(\"Custom Exception\")",
             "throw $stack1")

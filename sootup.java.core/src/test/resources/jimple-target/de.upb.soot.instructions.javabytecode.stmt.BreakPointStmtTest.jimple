@@ -15,21 +15,21 @@ public class de.upb.sootup.instructions.javabytecode.stmt.BreakPointStmtTest ext
     public void breaker()
     {
         de.upb.sootup.instructions.javabytecode.stmt.BreakPointStmtTest r0;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.BreakPointStmtTest;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("B");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("B");
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("C");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("C");
 
         return;
     }

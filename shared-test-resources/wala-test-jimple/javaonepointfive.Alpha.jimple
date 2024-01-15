@@ -16,7 +16,7 @@ class javaonepointfive.Alpha extends java.lang.Object
     {
         javaonepointfive.Alpha r0;
         java.lang.String r1, r2;
-        java.io.PrintStream $r3;
+        java.io.PrintStream r3;
 
         r0 := @this: javaonepointfive.Alpha;
 
@@ -24,9 +24,9 @@ class javaonepointfive.Alpha extends java.lang.Object
 
         r2 := @parameter1: java.lang.String;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("non-varargs not overridden");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("non-varargs not overridden");
 
         return;
     }

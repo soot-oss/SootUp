@@ -15,13 +15,13 @@ public class de.upb.sootup.concrete.inheritance.D extends de.upb.sootup.concrete
     void print()
     {
         de.upb.sootup.concrete.inheritance.D r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.D;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("D");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("D");
 
         return;
     }

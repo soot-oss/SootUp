@@ -21,14 +21,14 @@ class Bar extends java.lang.Object
     public static Bar create(char)
     {
         char c0;
-        Bar $r0;
+        Bar r0;
 
         c0 := @parameter0: char;
 
-        $r0 = new Bar;
+        r0 = new Bar;
 
-        specialinvoke $r0.<Bar: void <init>(char)>(c0);
+        specialinvoke r0.<Bar: void <init>(char)>(c0);
 
-        return $r0;
+        return r0;
     }
 }

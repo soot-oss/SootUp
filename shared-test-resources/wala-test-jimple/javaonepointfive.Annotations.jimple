@@ -24,15 +24,15 @@ public class javaonepointfive.Annotations extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        javaonepointfive.Annotations $r1;
+        javaonepointfive.Annotations r1;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new javaonepointfive.Annotations;
+        r1 = new javaonepointfive.Annotations;
 
-        specialinvoke $r1.<javaonepointfive.Annotations: void <init>()>();
+        specialinvoke r1.<javaonepointfive.Annotations: void <init>()>();
 
-        virtualinvoke $r1.<javaonepointfive.Annotations: int mymethod()>();
+        virtualinvoke r1.<javaonepointfive.Annotations: int mymethod()>();
 
         return;
     }
