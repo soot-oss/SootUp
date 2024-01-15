@@ -18,39 +18,39 @@ public class InnerClassA extends java.lang.Object
         java.lang.String[] r0;
         InnerClassA$AB r3;
         int i0, i1;
-        InnerClassA $r4;
-        InnerClassA$AA $r5;
-        java.io.PrintStream $r7, $r8;
+        InnerClassA r4;
+        InnerClassA$AA r5;
+        java.io.PrintStream r7, r8;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r4 = new InnerClassA;
+        r4 = new InnerClassA;
 
-        specialinvoke $r4.<InnerClassA: void <init>()>();
+        specialinvoke r4.<InnerClassA: void <init>()>();
 
-        $r5 = new InnerClassA$AA;
+        r5 = new InnerClassA$AA;
 
-        virtualinvoke $r4.<java.lang.Object: java.lang.Class getClass()>();
+        virtualinvoke r4.<java.lang.Object: java.lang.Class getClass()>();
 
-        specialinvoke $r5.<InnerClassA$AA: void <init>(InnerClassA)>($r4);
+        specialinvoke r5.<InnerClassA$AA: void <init>(InnerClassA)>(r4);
 
-        r3 = virtualinvoke $r5.<InnerClassA$AA: InnerClassA$AB makeAB()>();
+        r3 = virtualinvoke r5.<InnerClassA$AA: InnerClassA$AB makeAB()>();
 
-        $r4.<InnerClassA: int a_x> = 5;
+        r4.<InnerClassA: int a_x> = 5;
 
         i0 = virtualinvoke r3.<InnerClassA$AB: int getA_X_from_AB()>();
 
-        $r7 = <java.lang.System: java.io.PrintStream out>;
+        r7 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r7.<java.io.PrintStream: void println(int)>(i0);
 
         i1 = virtualinvoke r3.<InnerClassA$AB: int getA_X_thru_AB()>();
 
-        $r8 = <java.lang.System: java.io.PrintStream out>;
+        r8 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r8.<java.io.PrintStream: void println(int)>(i1);
 
-        virtualinvoke $r5.<InnerClassA$AA: void doSomeCrazyStuff()>();
+        virtualinvoke r5.<InnerClassA$AA: void doSomeCrazyStuff()>();
 
         return;
     }
@@ -58,12 +58,12 @@ public class InnerClassA extends java.lang.Object
     public int getA_X()
     {
         InnerClassA r0;
-        int $i0;
+        int i0;
 
         r0 := @this: InnerClassA;
 
-        $i0 = r0.<InnerClassA: int a_x>;
+        i0 = r0.<InnerClassA: int a_x>;
 
-        return $i0;
+        return i0;
     }
 }

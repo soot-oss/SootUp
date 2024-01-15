@@ -182,7 +182,7 @@ public class CastCounter extends TypeChecker {
   }
 
   private Local generateTempLocal(@Nonnull Type type) {
-    String name = "$#l" + newLocalsCount++;
+    String name = "#l" + newLocalsCount++;
     return Jimple.newLocal(name, type);
   }
 }

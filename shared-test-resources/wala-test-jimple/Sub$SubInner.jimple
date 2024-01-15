@@ -6,7 +6,7 @@ class Sub$SubInner extends java.lang.Object
     {
         Sub$SubInner r0;
         Sub r1;
-        InnerClassSuper$SuperOuter $r3;
+        InnerClassSuper$SuperOuter r3;
 
         r0 := @this: Sub$SubInner;
 
@@ -16,11 +16,11 @@ class Sub$SubInner extends java.lang.Object
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $r3 = new InnerClassSuper$SuperOuter;
+        r3 = new InnerClassSuper$SuperOuter;
 
-        specialinvoke $r3.<InnerClassSuper$SuperOuter: void <init>(InnerClassSuper)>(r1);
+        specialinvoke r3.<InnerClassSuper$SuperOuter: void <init>(InnerClassSuper)>(r1);
 
-        virtualinvoke $r3.<InnerClassSuper$SuperOuter: void test()>();
+        virtualinvoke r3.<InnerClassSuper$SuperOuter: void test()>();
 
         return;
     }

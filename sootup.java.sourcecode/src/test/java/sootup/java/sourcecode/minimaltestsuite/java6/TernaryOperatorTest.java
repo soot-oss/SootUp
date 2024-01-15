@@ -31,15 +31,15 @@ public class TernaryOperatorTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TernaryOperator",
-            "$i0 = r0.<TernaryOperator: int num>",
-            "$z0 = $i0 < 0",
-            "if $z0 == 0 goto label1",
-            "$z1 = 0",
+            "i0 = r0.<TernaryOperator: int num>",
+            "z0 = i0 < 0",
+            "if z0 == 0 goto label1",
+            "z1 = 0",
             "goto label2",
             "label1:",
-            "$z1 = 1",
+            "z1 = 1",
             "label2:",
-            "return $z1")
+            "return z1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 

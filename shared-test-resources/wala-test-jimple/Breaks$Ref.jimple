@@ -5,13 +5,13 @@ class Breaks$Ref extends java.lang.Object
     java.lang.String[] getClasses()
     {
         Breaks$Ref r0;
-        java.lang.String[] $r1;
+        java.lang.String[] r1;
 
         r0 := @this: Breaks$Ref;
 
-        $r1 = r0.<Breaks$Ref: java.lang.String[] classes>;
+        r1 = r0.<Breaks$Ref: java.lang.String[] classes>;
 
-        return $r1;
+        return r1;
     }
 
     private void <init>(java.lang.String[])

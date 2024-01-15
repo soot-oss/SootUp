@@ -16,7 +16,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -28,25 +28,25 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         if i0 >= i1 goto label1;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r3.<java.io.PrintStream: void println(int)>(i0);
 
         goto label3;
 
      label1:
         if i0 >= i2 goto label2;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(i1);
 
         goto label3;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
      label3:
         return;
@@ -111,8 +111,8 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         double d0, d1, d2;
-        byte $b0, $b1;
-        java.io.PrintStream $r1, $r2, $r3;
+        byte b0, b1;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -122,31 +122,31 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         d2 := @parameter2: double;
 
-        $b0 = d0 cmpg d1;
+        b0 = d0 cmpg d1;
 
-        if $b0 >= 0 goto label1;
+        if b0 >= 0 goto label1;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(double)>(d0);
+        virtualinvoke r3.<java.io.PrintStream: void println(double)>(d0);
 
         goto label3;
 
      label1:
-        $b1 = d0 cmpg d2;
+        b1 = d0 cmpg d2;
 
-        if $b1 >= 0 goto label2;
+        if b1 >= 0 goto label2;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(double)>(d1);
+        virtualinvoke r2.<java.io.PrintStream: void println(double)>(d1);
 
         goto label3;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
      label3:
         return;
@@ -156,8 +156,8 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         float f0, f1;
-        byte $b0;
-        java.io.PrintStream $r1, $r2;
+        byte b0;
+        java.io.PrintStream r1, r2;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -165,20 +165,20 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         f1 := @parameter1: float;
 
-        $b0 = f0 cmpg f1;
+        b0 = f0 cmpg f1;
 
-        if $b0 >= 0 goto label1;
+        if b0 >= 0 goto label1;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(float)>(f0);
+        virtualinvoke r2.<java.io.PrintStream: void println(float)>(f0);
 
         goto label2;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(float)>(f1);
+        virtualinvoke r1.<java.io.PrintStream: void println(float)>(f1);
 
      label2:
         return;
@@ -188,7 +188,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         byte b0, b1;
-        java.io.PrintStream $r1, $r2;
+        java.io.PrintStream r1, r2;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -198,16 +198,16 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         if b0 >= b1 goto label1;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(b0);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(b0);
 
         goto label2;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
      label2:
         return;
@@ -217,7 +217,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -231,19 +231,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(i0);
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0);
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r3.<java.io.PrintStream: void println(int)>(i0);
 
         return;
     }
@@ -252,7 +252,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i1;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -266,19 +266,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(3);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(3);
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(3);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(3);
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(3);
+        virtualinvoke r3.<java.io.PrintStream: void println(int)>(3);
 
         return;
     }
@@ -287,7 +287,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -301,19 +301,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(i0);
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0);
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r3.<java.io.PrintStream: void println(int)>(i0);
 
         return;
     }
@@ -322,9 +322,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         java.lang.String r1;
-        int $i0;
-        boolean $z0, $z1;
-        java.io.PrintStream $r3, $r4, $r5;
+        int i0;
+        boolean z0, z1;
+        java.io.PrintStream r3, r4, r5;
         byte b1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
@@ -333,9 +333,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         b1 = -1;
 
-        $i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
+        i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
 
-        lookupswitch($i0)
+        lookupswitch(i0)
         {
             case 97299: goto label2;
             case 101574: goto label1;
@@ -343,18 +343,18 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
+        z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
 
-        if $z0 == 0 goto label3;
+        if z0 == 0 goto label3;
 
         b1 = 0;
 
         goto label3;
 
      label2:
-        $z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
+        z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
 
-        if $z1 == 0 goto label3;
+        if z1 == 0 goto label3;
 
         b1 = 1;
 
@@ -367,19 +367,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label5:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label6:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
         return;
     }
@@ -388,9 +388,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         java.lang.String r1;
-        int $i0;
-        boolean $z0, $z1;
-        java.io.PrintStream $r3, $r4, $r5;
+        int i0;
+        boolean z0, z1;
+        java.io.PrintStream r3, r4, r5;
         byte b1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
@@ -399,9 +399,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         b1 = -1;
 
-        $i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
+        i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
 
-        lookupswitch($i0)
+        lookupswitch(i0)
         {
             case 97299: goto label2;
             case 101574: goto label1;
@@ -409,18 +409,18 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
+        z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
 
-        if $z0 == 0 goto label3;
+        if z0 == 0 goto label3;
 
         b1 = 0;
 
         goto label3;
 
      label2:
-        $z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
+        z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
 
-        if $z1 == 0 goto label3;
+        if z1 == 0 goto label3;
 
         b1 = 1;
 
@@ -433,19 +433,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label5:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label6:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
         return;
     }
@@ -454,9 +454,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         java.lang.String r1;
-        int $i0;
-        boolean $z0, $z1;
-        java.io.PrintStream $r3, $r4, $r5;
+        int i0;
+        boolean z0, z1;
+        java.io.PrintStream r3, r4, r5;
         byte b1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
@@ -465,9 +465,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
 
         b1 = -1;
 
-        $i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
+        i0 = virtualinvoke r1.<java.lang.String: int hashCode()>();
 
-        lookupswitch($i0)
+        lookupswitch(i0)
         {
             case 97299: goto label2;
             case 101574: goto label1;
@@ -475,18 +475,18 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label1:
-        $z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
+        z0 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("foo");
 
-        if $z0 == 0 goto label3;
+        if z0 == 0 goto label3;
 
         b1 = 0;
 
         goto label3;
 
      label2:
-        $z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
+        z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("bar");
 
-        if $z1 == 0 goto label3;
+        if z1 == 0 goto label3;
 
         b1 = 1;
 
@@ -499,19 +499,19 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         };
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label5:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
      label6:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
         return;
     }
@@ -520,7 +520,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0, i1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -531,9 +531,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
      label1:
         if i1 >= i0 goto label2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i1);
 
         i1 = i1 + 1;
 
@@ -547,7 +547,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0, i1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -556,9 +556,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         i0 := @parameter1: int;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i1);
 
         i1 = i1 + 1;
 
@@ -571,7 +571,7 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0, i1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
@@ -582,9 +582,9 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
      label1:
         if i1 >= i0 goto label2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i1);
 
         i1 = i1 + 1;
 
@@ -598,31 +598,31 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
     {
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         int i0, i1, i2;
-        int[] $r3;
-        java.io.PrintStream $r4;
+        int[] r3;
+        java.io.PrintStream r4;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
-        $r3 = newarray (int)[3];
+        r3 = newarray (int)[3];
 
-        $r3[0] = 1;
+        r3[0] = 1;
 
-        $r3[1] = 2;
+        r3[1] = 2;
 
-        $r3[2] = 3;
+        r3[2] = 3;
 
-        i0 = lengthof $r3;
+        i0 = lengthof r3;
 
         i2 = 0;
 
      label1:
         if i2 >= i0 goto label2;
 
-        i1 = $r3[i2];
+        i1 = r3[i2];
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r4.<java.io.PrintStream: void println(int)>(i1);
 
         i2 = i2 + 1;
 
@@ -637,37 +637,37 @@ public class de.upb.sootup.concrete.controlStatements.ControlStatements extends 
         de.upb.sootup.concrete.controlStatements.ControlStatements r0;
         java.util.Iterator r2;
         java.lang.String r3;
-        java.util.ArrayList $r4;
-        boolean $z3;
-        java.lang.Object $r5;
-        java.io.PrintStream $r6;
+        java.util.ArrayList r4;
+        boolean z3;
+        java.lang.Object r5;
+        java.io.PrintStream r6;
 
         r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements;
 
-        $r4 = new java.util.ArrayList;
+        r4 = new java.util.ArrayList;
 
-        specialinvoke $r4.<java.util.ArrayList: void <init>()>();
+        specialinvoke r4.<java.util.ArrayList: void <init>()>();
 
-        virtualinvoke $r4.<java.util.ArrayList: boolean add(java.lang.Object)>("1");
+        virtualinvoke r4.<java.util.ArrayList: boolean add(java.lang.Object)>("1");
 
-        virtualinvoke $r4.<java.util.ArrayList: boolean add(java.lang.Object)>("2");
+        virtualinvoke r4.<java.util.ArrayList: boolean add(java.lang.Object)>("2");
 
-        virtualinvoke $r4.<java.util.ArrayList: boolean add(java.lang.Object)>("3");
+        virtualinvoke r4.<java.util.ArrayList: boolean add(java.lang.Object)>("3");
 
-        r2 = virtualinvoke $r4.<java.util.ArrayList: java.util.Iterator iterator()>();
+        r2 = virtualinvoke r4.<java.util.ArrayList: java.util.Iterator iterator()>();
 
      label1:
-        $z3 = interfaceinvoke r2.<java.util.Iterator: boolean hasNext()>();
+        z3 = interfaceinvoke r2.<java.util.Iterator: boolean hasNext()>();
 
-        if $z3 == 0 goto label2;
+        if z3 == 0 goto label2;
 
-        $r5 = interfaceinvoke r2.<java.util.Iterator: java.lang.Object next()>();
+        r5 = interfaceinvoke r2.<java.util.Iterator: java.lang.Object next()>();
 
-        r3 = (java.lang.String) $r5;
+        r3 = (java.lang.String) r5;
 
-        $r6 = <java.lang.System: java.io.PrintStream out>;
+        r6 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>(r3);
+        virtualinvoke r6.<java.io.PrintStream: void println(java.lang.String)>(r3);
 
         goto label1;
 

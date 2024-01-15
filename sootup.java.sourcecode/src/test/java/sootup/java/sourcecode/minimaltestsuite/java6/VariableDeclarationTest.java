@@ -47,9 +47,9 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
   @Ignore
   public void classTypeDefWithoutAssignment() {
-    // TODO: [ms] fix: Type of Local $r1 is should be (java.lang.)String
-    // TODO [kk]: Actual   :[unknown $u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,
-    // $u0 = null, return]
+    // TODO: [ms] fix: Type of Local r1 is should be (java.lang.)String
+    // TODO [kk]: Actual   :[unknown u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,
+    // u0 = null, return]
     SootMethod method = loadMethod(getMethodSignature("classTypeDefWithoutAssignment"));
     Body body = method.getBody();
     assertNotNull(body);
@@ -57,10 +57,10 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
     List<String> actualStmts = filterJimple(body.toString());
     assertEquals(
         expectedBodyStmts(
-            "java.lang.String $r1",
+            "java.lang.String r1",
             "VariableDeclaration r0",
             "r0 := @this: VariableDeclaration",
-            "$r1 = null",
+            "r1 = null",
             "return"),
         actualStmts);
   }
@@ -80,7 +80,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsShortVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "i0 = 10", "return")
         .collect(Collectors.toList());
   }
 
@@ -94,7 +94,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsByteVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "i0 = 0", "return")
         .collect(Collectors.toList());
   }
 
@@ -108,7 +108,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "i0 = 97", "return")
         .collect(Collectors.toList());
   }
 
@@ -122,7 +122,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsIntVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "i0 = 512", "return")
         .collect(Collectors.toList());
   }
 
@@ -136,7 +136,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsLongVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "i0 = 123456789", "return")
         .collect(Collectors.toList());
   }
 
@@ -150,7 +150,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsFloatVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "f0 = 3.14F", "return")
         .collect(Collectors.toList());
   }
 
@@ -164,7 +164,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsDoubleVariable() {
-    return Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
+    return Stream.of("r0 := @this: VariableDeclaration", "d0 = 1.96969654", "return")
         .collect(Collectors.toList());
   }
 }

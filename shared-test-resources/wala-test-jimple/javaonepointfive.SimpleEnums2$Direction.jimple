@@ -8,31 +8,31 @@ public final enum class javaonepointfive.SimpleEnums2$Direction extends java.lan
 
     public static javaonepointfive.SimpleEnums2$Direction[] values()
     {
-        javaonepointfive.SimpleEnums2$Direction[] $r0, $r2;
-        java.lang.Object $r1;
+        javaonepointfive.SimpleEnums2$Direction[] r0, r2;
+        java.lang.Object r1;
 
-        $r0 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] $VALUES>;
+        r0 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] $VALUES>;
 
-        $r1 = virtualinvoke $r0.<java.lang.Object: java.lang.Object clone()>();
+        r1 = virtualinvoke r0.<java.lang.Object: java.lang.Object clone()>();
 
-        $r2 = (javaonepointfive.SimpleEnums2$Direction[]) $r1;
+        r2 = (javaonepointfive.SimpleEnums2$Direction[]) r1;
 
-        return $r2;
+        return r2;
     }
 
     public static javaonepointfive.SimpleEnums2$Direction valueOf(java.lang.String)
     {
         java.lang.String r0;
-        java.lang.Enum $r1;
-        javaonepointfive.SimpleEnums2$Direction $r2;
+        java.lang.Enum r1;
+        javaonepointfive.SimpleEnums2$Direction r2;
 
         r0 := @parameter0: java.lang.String;
 
-        $r1 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "Ljavaonepointfive/SimpleEnums2$Direction;", r0);
+        r1 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "Ljavaonepointfive/SimpleEnums2$Direction;", r0);
 
-        $r2 = (javaonepointfive.SimpleEnums2$Direction) $r1;
+        r2 = (javaonepointfive.SimpleEnums2$Direction) r1;
 
-        return $r2;
+        return r2;
     }
 
     private void <init>(java.lang.String, int)
@@ -54,92 +54,92 @@ public final enum class javaonepointfive.SimpleEnums2$Direction extends java.lan
 
     public static void hello()
     {
-        javaonepointfive.SimpleEnums2$Direction $r0;
-        java.io.PrintStream $r1;
+        javaonepointfive.SimpleEnums2$Direction r0;
+        java.io.PrintStream r1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        $r0 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
+        r0 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.Object)>($r0);
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.Object)>(r0);
 
         return;
     }
 
     public static javaonepointfive.SimpleEnums2$Direction[] myValues()
     {
-        javaonepointfive.SimpleEnums2$Direction[] $r0;
-        javaonepointfive.SimpleEnums2$Direction $r1, $r2, $r3, $r4;
+        javaonepointfive.SimpleEnums2$Direction[] r0;
+        javaonepointfive.SimpleEnums2$Direction r1, r2, r3, r4;
 
-        $r0 = newarray (javaonepointfive.SimpleEnums2$Direction)[4];
+        r0 = newarray (javaonepointfive.SimpleEnums2$Direction)[4];
 
-        $r1 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
+        r1 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
 
-        $r0[0] = $r1;
+        r0[0] = r1;
 
-        $r2 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST>;
+        r2 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST>;
 
-        $r0[1] = $r2;
+        r0[1] = r2;
 
-        $r3 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH>;
+        r3 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH>;
 
-        $r0[2] = $r3;
+        r0[2] = r3;
 
-        $r4 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST>;
+        r4 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST>;
 
-        $r0[3] = $r4;
+        r0[3] = r4;
 
-        return $r0;
+        return r0;
     }
 
     static void <clinit>()
     {
-        javaonepointfive.SimpleEnums2$Direction $r0, $r1, $r2, $r3, $r5, $r6, $r7, $r8;
-        javaonepointfive.SimpleEnums2$Direction[] $r4;
+        javaonepointfive.SimpleEnums2$Direction r0, r1, r2, r3, r5, r6, r7, r8;
+        javaonepointfive.SimpleEnums2$Direction[] r4;
 
-        $r0 = new javaonepointfive.SimpleEnums2$Direction;
+        r0 = new javaonepointfive.SimpleEnums2$Direction;
 
-        specialinvoke $r0.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("NORTH", 0);
+        specialinvoke r0.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("NORTH", 0);
 
-        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH> = $r0;
+        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH> = r0;
 
-        $r1 = new javaonepointfive.SimpleEnums2$Direction;
+        r1 = new javaonepointfive.SimpleEnums2$Direction;
 
-        specialinvoke $r1.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("EAST", 1);
+        specialinvoke r1.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("EAST", 1);
 
-        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST> = $r1;
+        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST> = r1;
 
-        $r2 = new javaonepointfive.SimpleEnums2$Direction;
+        r2 = new javaonepointfive.SimpleEnums2$Direction;
 
-        specialinvoke $r2.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("SOUTH", 2);
+        specialinvoke r2.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("SOUTH", 2);
 
-        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH> = $r2;
+        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH> = r2;
 
-        $r3 = new javaonepointfive.SimpleEnums2$Direction;
+        r3 = new javaonepointfive.SimpleEnums2$Direction;
 
-        specialinvoke $r3.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("WEST", 3);
+        specialinvoke r3.<javaonepointfive.SimpleEnums2$Direction: void <init>(java.lang.String,int)>("WEST", 3);
 
-        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST> = $r3;
+        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST> = r3;
 
-        $r4 = newarray (javaonepointfive.SimpleEnums2$Direction)[4];
+        r4 = newarray (javaonepointfive.SimpleEnums2$Direction)[4];
 
-        $r5 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
+        r5 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
 
-        $r4[0] = $r5;
+        r4[0] = r5;
 
-        $r6 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST>;
+        r6 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST>;
 
-        $r4[1] = $r6;
+        r4[1] = r6;
 
-        $r7 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH>;
+        r7 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH>;
 
-        $r4[2] = $r7;
+        r4[2] = r7;
 
-        $r8 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST>;
+        r8 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST>;
 
-        $r4[3] = $r8;
+        r4[3] = r8;
 
-        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] $VALUES> = $r4;
+        <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] $VALUES> = r4;
 
         return;
     }

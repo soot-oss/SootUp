@@ -18,19 +18,19 @@ public class Monitor extends java.lang.Object
     public void incr()
     {
         Monitor r0;
-        int $i0, $i1;
-        java.lang.Throwable $r4;
+        int i0, i1;
+        java.lang.Throwable r4;
 
         r0 := @this: Monitor;
 
         entermonitor r0;
 
      label1:
-        $i0 = r0.<Monitor: int i>;
+        i0 = r0.<Monitor: int i>;
 
-        $i1 = $i0 + 1;
+        i1 = i0 + 1;
 
-        r0.<Monitor: int i> = $i1;
+        r0.<Monitor: int i> = i1;
 
         exitmonitor r0;
 
@@ -38,12 +38,12 @@ public class Monitor extends java.lang.Object
         goto label5;
 
      label3:
-        $r4 := @caughtexception;
+        r4 := @caughtexception;
 
         exitmonitor r0;
 
      label4:
-        throw $r4;
+        throw r4;
 
      label5:
         return;
@@ -55,15 +55,15 @@ public class Monitor extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        Monitor $r1;
+        Monitor r1;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new Monitor;
+        r1 = new Monitor;
 
-        specialinvoke $r1.<Monitor: void <init>()>();
+        specialinvoke r1.<Monitor: void <init>()>();
 
-        virtualinvoke $r1.<Monitor: void incr()>();
+        virtualinvoke r1.<Monitor: void incr()>();
 
         return;
     }

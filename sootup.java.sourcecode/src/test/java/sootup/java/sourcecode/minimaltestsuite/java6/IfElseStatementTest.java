@@ -78,14 +78,14 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label1",
-            "$i1 = 1",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label1",
+            "i1 = 1",
             "goto label1",
             "label1:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -107,16 +107,16 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label1",
-            "$i1 = 1",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label1",
+            "i1 = 1",
             "goto label2",
             "label1:",
-            "$i1 = 2",
+            "i1 = 2",
             "label2:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -140,21 +140,21 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseIfStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label1",
-            "$i1 = 1",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label1",
+            "i1 = 1",
             "goto label3",
             "label1:",
-            "$z1 = $i0 > 123",
-            "if $z1 == 0 goto label2",
-            "$i1 = 2",
+            "z1 = i0 > 123",
+            "if z1 == 0 goto label2",
+            "i1 = 2",
             "goto label3",
             "label2:",
-            "$i1 = 3",
+            "i1 = 3",
             "label3:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -180,22 +180,22 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseCascadingStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label3",
-            "$z1 = $i0 < 42",
-            "if $z1 == 0 goto label1",
-            "$i1 = 11",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label3",
+            "z1 = i0 < 42",
+            "if z1 == 0 goto label1",
+            "i1 = 11",
             "goto label2",
             "label1:",
-            "$i1 = 12",
+            "i1 = 12",
             "label2:",
             "goto label4",
             "label3:",
-            "$i1 = 3",
+            "i1 = 3",
             "label4:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -221,21 +221,21 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseCascadingInElseStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label1",
-            "$i1 = 1",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label1",
+            "i1 = 1",
             "goto label3",
             "label1:",
-            "$z1 = $i0 < 42",
-            "if $z1 == 0 goto label2",
-            "$i1 = 21",
+            "z1 = i0 < 42",
+            "if z1 == 0 goto label2",
+            "i1 = 21",
             "goto label3",
             "label2:",
-            "$i1 = 22",
+            "i1 = 22",
             "label3:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -263,27 +263,27 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseCascadingElseIfStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label4",
-            "$z1 = $i0 < 42",
-            "if $z1 == 0 goto label1",
-            "$i1 = 11",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label4",
+            "z1 = i0 < 42",
+            "if z1 == 0 goto label1",
+            "i1 = 11",
             "goto label3",
             "label1:",
-            "$z2 = $i0 > 123",
-            "if $z2 == 0 goto label2",
-            "$i1 = 12",
+            "z2 = i0 > 123",
+            "if z2 == 0 goto label2",
+            "i1 = 12",
             "goto label3",
             "label2:",
-            "$i1 = 13",
+            "i1 = 13",
             "label3:",
             "goto label5",
             "label4:",
-            "$i1 = 2",
+            "i1 = 2",
             "label5:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 
@@ -311,26 +311,26 @@ public class IfElseStatementTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsIfElseCascadingElseIfInElseStatement() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
-            "$i0 := @parameter0: int",
-            "$i1 = 0",
-            "$z0 = $i0 < 42",
-            "if $z0 == 0 goto label1",
-            "$i1 = 1",
+            "i0 := @parameter0: int",
+            "i1 = 0",
+            "z0 = i0 < 42",
+            "if z0 == 0 goto label1",
+            "i1 = 1",
             "goto label4",
             "label1:",
-            "$z1 = $i0 < 42",
-            "if $z1 == 0 goto label2",
-            "$i1 = 21",
+            "z1 = i0 < 42",
+            "if z1 == 0 goto label2",
+            "i1 = 21",
             "goto label4",
             "label2:",
-            "$z2 = $i0 > 123",
-            "if $z2 == 0 goto label3",
-            "$i1 = 22",
+            "z2 = i0 > 123",
+            "if z2 == 0 goto label3",
+            "i1 = 22",
             "goto label4",
             "label3:",
-            "$i1 = 23",
+            "i1 = 23",
             "label4:",
-            "return $i1")
+            "return i1")
         .collect(Collectors.toList());
   }
 }

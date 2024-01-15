@@ -16,11 +16,11 @@ class de.upb.sootup.basic.staticFields.A extends java.lang.Object
 
     public static void methodA()
     {
-        java.io.PrintStream $r0;
+        java.io.PrintStream r0;
 
-        $r0 = <java.lang.System: java.io.PrintStream out>;
+        r0 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Static methodA");
+        virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>("Static methodA");
 
         return;
     }

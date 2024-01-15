@@ -52,6 +52,37 @@ jobs:
       - name: Build with JDK8
         run: mvn -B compile -Dfmt.skip -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+  Style:
+    needs: Compilation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: get cached compilation
+        id: cache-compilation
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/target/
+          key: cache-compilation-${{ github.sha }}
+
+      - name: cache maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+
+      - name: Check Format
+        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
   JDK8:
     needs: Compilation
     runs-on: ubuntu-latest
@@ -143,11 +174,6 @@ jobs:
           path: |
             */target/surefire-reports
 
-      # style check is not clean here but does not consume additional time as the other parallel running tests take (way) longer
-      - name: Check Format
-        run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      
-
     # takes a long time to run - so just run them when PR is not draft anymore
   IntegrationTest:
     if: ${{ !github.event.pull_request.draft }}
@@ -193,8 +219,6 @@ jobs:
           name: test-reports-integrationtest
           path: |
             */target/surefire-reports
-
-
 
   CoverageReport:
     runs-on: ubuntu-latest

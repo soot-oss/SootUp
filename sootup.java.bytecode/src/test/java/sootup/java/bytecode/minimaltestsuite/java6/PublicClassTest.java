@@ -70,6 +70,6 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: PublicClass", "return").collect(Collectors.toList());
+    return Stream.of("l0 := @this: PublicClass", "return").collect(Collectors.toList());
   }
 }

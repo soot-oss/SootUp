@@ -21,30 +21,30 @@ class InnerClassA$AB extends java.lang.Object
     public int getA_X_from_AB()
     {
         InnerClassA$AB r0;
-        InnerClassA $r1;
-        int $i0;
+        InnerClassA r1;
+        int i0;
 
         r0 := @this: InnerClassA$AB;
 
-        $r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
+        r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
 
-        $i0 = $r1.<InnerClassA: int a_x>;
+        i0 = r1.<InnerClassA: int a_x>;
 
-        return $i0;
+        return i0;
     }
 
     public int getA_X_thru_AB()
     {
         InnerClassA$AB r0;
-        InnerClassA $r1;
-        int $i0;
+        InnerClassA r1;
+        int i0;
 
         r0 := @this: InnerClassA$AB;
 
-        $r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
+        r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
 
-        $i0 = virtualinvoke $r1.<InnerClassA: int getA_X()>();
+        i0 = virtualinvoke r1.<InnerClassA: int getA_X()>();
 
-        return $i0;
+        return i0;
     }
 }

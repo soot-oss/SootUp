@@ -15,17 +15,17 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        boolean $z0, $z1, $z2, $z3;
-        java.lang.String $r1, $r2, $r10, $r11, $r12, r13, r15, r16, r19, r20, r21;
-        java.lang.StringBuilder $r3, $r5, $r6, $r7, $r8, $r9;
-        java.io.PrintStream $r4;
-        int $i0, i3, i5, i6, i8, i10;
+        boolean z0, z1, z2, z3;
+        java.lang.String r1, r2, r10, r11, r12, r13, r15, r16, r19, r20, r21;
+        java.lang.StringBuilder r3, r5, r6, r7, r8, r9;
+        java.io.PrintStream r4;
+        int i0, i3, i5, i6, i8, i10;
 
         r0 := @parameter0: java.lang.String[];
 
-        $z0 = null instanceof java.lang.String;
+        z0 = null instanceof java.lang.String;
 
-        if $z0 == 0 goto label01;
+        if z0 == 0 goto label01;
 
         r13 = (java.lang.String) null;
 
@@ -35,13 +35,13 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
 
         virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
 
-        $r11 = virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
+        r11 = virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
 
-        r19 = (java.lang.String) $r11;
+        r19 = (java.lang.String) r11;
 
-        $r12 = virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
+        r12 = virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
 
-        r20 = (java.lang.String) $r12;
+        r20 = (java.lang.String) r12;
 
         r21 = virtualinvoke r15.<java.lang.Object: java.lang.String toString()>();
 
@@ -50,11 +50,11 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
         goto label02;
 
      label01:
-        $r1 = "war";
+        r1 = "war";
 
-        $z1 = virtualinvoke $r1.<java.lang.String: boolean equals(java.lang.Object)>("peace");
+        z1 = virtualinvoke r1.<java.lang.String: boolean equals(java.lang.Object)>("peace");
 
-        if $z1 == 0 goto label02;
+        if z1 == 0 goto label02;
 
         goto label02;
 
@@ -67,27 +67,27 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
      label04:
         if i3 >= 4 goto label05;
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        $r3 = new java.lang.StringBuilder;
+        r3 = new java.lang.StringBuilder;
 
-        specialinvoke $r3.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r3.<java.lang.StringBuilder: void <init>()>();
 
-        $r5 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i3);
+        r5 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i3);
 
-        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("*");
+        r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("*");
 
-        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(0);
+        r7 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(0);
 
-        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("=");
+        r8 = virtualinvoke r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("=");
 
-        $i0 = i3 * 0;
+        i0 = i3 * 0;
 
-        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+        r9 = virtualinvoke r8.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.String toString()>();
+        r10 = virtualinvoke r9.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r10);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r10);
 
         i3 = i3 + 1;
 
@@ -117,9 +117,9 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
         goto label08;
 
      label10:
-        $z3 = null instanceof java.lang.Object;
+        z3 = null instanceof java.lang.Object;
 
-        if $z3 == 0 goto label11;
+        if z3 == 0 goto label11;
 
         goto label12;
 
@@ -147,11 +147,11 @@ public class foo.bar.hello.world.LoopsAndLabels extends java.lang.Object
         goto label15;
 
      label16:
-        $r2 = "freedom";
+        r2 = "freedom";
 
-        $z2 = virtualinvoke $r2.<java.lang.String: boolean equals(java.lang.Object)>("slavery");
+        z2 = virtualinvoke r2.<java.lang.String: boolean equals(java.lang.Object)>("slavery");
 
-        if $z2 == 0 goto label17;
+        if z2 == 0 goto label17;
 
         goto label18;
 

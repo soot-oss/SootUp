@@ -75,8 +75,8 @@ public class PrivateMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: PrivateMethodInterfaceImpl",
-            "virtualinvoke $l0.<PrivateMethodInterfaceImpl: void methodInterface(int,int)>(4, 2)",
+            "l0 := @this: PrivateMethodInterfaceImpl",
+            "virtualinvoke l0.<PrivateMethodInterfaceImpl: void methodInterface(int,int)>(4, 2)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

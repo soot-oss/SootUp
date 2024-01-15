@@ -33,8 +33,8 @@ public class GenericTypeParamOnMethodTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: GenericTypeParamOnMethod",
-            "virtualinvoke $l0.<GenericTypeParamOnMethod: void a(java.lang.Object)>(\"Hello World\")",
+            "l0 := @this: GenericTypeParamOnMethod",
+            "virtualinvoke l0.<GenericTypeParamOnMethod: void a(java.lang.Object)>(\"Hello World\")",
             "return")
         .collect(Collectors.toList());
   }
