@@ -23,9 +23,7 @@ package sootup.java.bytecode.interceptors;
  */
 
 import org.apache.commons.lang3.tuple.Pair;
-import sootup.core.graph.BasicBlock;
-import sootup.core.graph.DominanceFinder;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.*;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -41,6 +39,8 @@ import java.util.*;
 public class LocalSplitter implements BodyInterceptor {
 
     private Map<Stmt, List<Pair<Stmt, Local>>> stmtToUses;
+
+    private Map<Stmt, Stmt> oldToNewStmt;
 
     /**
      * Multiple defs of the same local are to split.
@@ -68,6 +68,8 @@ public class LocalSplitter implements BodyInterceptor {
 
     @Override
     public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+        oldToNewStmt  = new HashMap<>();
+
         Set<Local> localsToSplit = findLocalsToSplit(builder);
         int w = 0;
 
@@ -108,14 +110,16 @@ public class LocalSplitter implements BodyInterceptor {
                         for (LValue def : head.getDefs()) {
                             if (def instanceof Local) {
                                 int idx = builder.getStmts().indexOf(head);
-                                addNewDef(builder, head, newLocal, oldLocal);
-                                if (queue.contains(head)) {
-
+                                if(idx==-1){
+                                    Stmt newStmt = oldToNewStmt.get(head);
+                                    idx = builder.getStmts().indexOf(newStmt);
                                 }
+                                addNewDef(builder, head, newLocal, oldLocal);
                                 head = builder.getStmts().get(idx);
                             }
                         }
                     }
+                    System.out.println(builder.getStmtGraph());
                 } while (!queue.isEmpty());
 
                 visited.remove(stmt);
@@ -127,8 +131,14 @@ public class LocalSplitter implements BodyInterceptor {
 
     private void addNewDef(Body.BodyBuilder builder, Stmt stmt, Local newDef, Local oldDef) {
         if (stmt.getDefs().contains(oldDef)) {
-            Stmt witNewDef = new JAssignStmt(newDef, stmt.getUses().get(0), stmt.getPositionInfo());
-            builder.getStmtGraph().replaceNode(stmt, witNewDef);
+            Stmt withNewDef = new JAssignStmt(newDef, stmt.getUses().get(0), stmt.getPositionInfo());
+            if(builder.getStmtGraph().containsNode(stmt)){
+                builder.getStmtGraph().replaceNode(stmt, withNewDef);
+            }else if(builder.getStmtGraph().containsNode(oldToNewStmt.get(stmt))){
+                // we cannot update the references from oldStmt to newStmt unlike soot.
+                builder.getStmtGraph().replaceNode(oldToNewStmt.get(stmt), withNewDef);
+            }
+            oldToNewStmt.put(stmt, withNewDef);
         }
     }
 
@@ -136,6 +146,7 @@ public class LocalSplitter implements BodyInterceptor {
         if (stmt.getUses().contains(old)) {
             Stmt withNewUse = stmt.withNewUse(old, newLocal);
             builder.getStmtGraph().replaceNode(stmt, withNewUse);
+            oldToNewStmt.put(stmt, withNewUse);
         }
     }
 
@@ -149,7 +160,9 @@ public class LocalSplitter implements BodyInterceptor {
             while (!queue.isEmpty()) {
                 Stmt s = queue.removeFirst();
                 if (s.getUses().contains(def)) {
-                    usesUntilNewDef.add(s);
+                    if(!usesUntilNewDef.add(s)){
+                        break; // if it is already there maybe we started looping?
+                    }
                 }
                 if (!stmt.equals(s)) {
                     if (s.getDefs().contains(def)) {
@@ -162,24 +175,52 @@ public class LocalSplitter implements BodyInterceptor {
         return usesUntilNewDef;
     }
 
-    private List<Stmt> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt until) {
+    private List<Stmt> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt mStmt) {
         List<Stmt> defsBefore = new ArrayList<>();
-        BasicBlock<?> block = builder.getStmtGraph().getBlockOf(until);
-        List<BasicBlock> predBlocks = (List<BasicBlock>) block.getPredecessors();
-        for (BasicBlock predBlock : predBlocks) {
-            Deque<Stmt> queue = new ArrayDeque<>();
-            queue.add(predBlock.getTail());
-            while (!queue.isEmpty()) {
-                Stmt s = queue.removeFirst();
+        Set<BasicBlock> visited = new HashSet<>();
+        BasicBlock<?> block = builder.getStmtGraph().getBlockOf(mStmt);
+        Deque<BasicBlock> blockQueue = new ArrayDeque<>();
+        blockQueue.addFirst(block);
+        boolean firstPass = true;
+        do {
+            block = blockQueue.removeFirst();
 
+            if (firstPass) {
+                ;; // to visit the same block once more when looping
+            } else if (!visited.add(block)) {
+                continue;
+            }
+            Deque<Stmt> stmtQueue = new ArrayDeque<>();
+            if (firstPass) {
+                stmtQueue.addAll(predsInSameBlock(builder, mStmt));
+                firstPass = false;
+            } else {
+                stmtQueue.add(block.getTail());
+            }
+            while (!stmtQueue.isEmpty()) {
+                Stmt s = stmtQueue.removeFirst();
                 if (s.getDefs().contains(local)) {
                     defsBefore.add(s);
                     break;
                 }
-                queue.addAll(builder.getStmtGraph().predecessors(s));
+                // iterate only in the same block here.
+                stmtQueue.addAll(predsInSameBlock(builder, s));
+            }
+            blockQueue.addAll(block.getPredecessors());
+        } while (!blockQueue.isEmpty());
+        return defsBefore;
+    }
+
+    private List<Stmt> predsInSameBlock(Body.BodyBuilder builder, Stmt stmt) {
+        List<Stmt> predsInSameBlock = new ArrayList<>();
+        MutableStmtGraph stmtGraph = builder.getStmtGraph();
+        List<Stmt> preds = stmtGraph.predecessors(stmt);
+        for (Stmt pred : preds) {
+            if (stmtGraph.getBlockOf(pred).equals(stmtGraph.getBlockOf(stmt))) {
+                predsInSameBlock.add(pred);
             }
         }
-        return defsBefore;
+        return predsInSameBlock;
     }
 
 

@@ -3,6 +3,7 @@ package sootup.java.bytecode.interceptors;
 import categories.Java8Test;
 import com.sun.jdi.IntegerType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
@@ -291,6 +292,60 @@ public class LocalSplitterTest {
                         "label3:\n" +
                         "return $l1#3;";
         assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
+    }
+
+
+    @Test
+    public void testForLoop() {
+        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case6", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
+        SootMethod sootMethod = view.getMethod(sig).get();
+        Body originalBody = sootMethod.getBody();
+
+        List<Local> expectedLocals = new ArrayList<>();
+        expectedLocals.addAll(originalBody.getLocals());
+        expectedLocals.add(new Local("$l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+        expectedLocals.add(new Local("$l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+        expectedLocals.add(new Local("$l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+        expectedLocals.add(new Local("$l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+        expectedLocals.add(new Local("$l1#5", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+
+        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
+        LocalSplitter localSplitter = new LocalSplitter();
+        localSplitter.interceptBody(builder, view);
+
+
+        Body newBody = builder.build();
+
+        System.out.println(newBody);
+
+//        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
+//        assertTrue(newBody.getLocals().containsAll(expectedLocals));
+
+        String expectedStmts =
+                "$l0 := @this: LocalSplitterTarget;\n" +
+                        "$l1#1 = 0;\n" +
+                        "\n" +
+                        "if $l1#1 >= 0 goto label1;\n" +
+                        "$l1#2 = $l1#1 + 1;\n" +
+                        "$l1#3 = $l1#2 + 2;\n" +
+                        "\n" +
+                        "goto label3;\n" +
+                        "\n" +
+                        "label1:\n" +
+                        "if $l1#1 >= 5 goto label2;\n" +
+                        "$l1#4 = $l1#1 - 1;\n" +
+                        "$l1#3 = $l1#4 - 2;\n" +
+                        "\n" +
+                        "goto label3;\n" +
+                        "\n" +
+                        "label2:\n" +
+                        "$l1#5 = $l1#1 * 1;\n" +
+                        "$l1#3 = $l1#5 * 2;\n" +
+                        "\n" +
+                        "label3:\n" +
+                        "return $l1#3;";
+//        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
     }
 
 }
