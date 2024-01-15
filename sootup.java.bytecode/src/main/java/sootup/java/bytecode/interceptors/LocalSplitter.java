@@ -116,7 +116,6 @@ public class LocalSplitter implements BodyInterceptor {
                             }
                         }
                     }
-                    System.out.println(builder.getStmtGraph());
                 } while (!queue.isEmpty());
 
                 visited.remove(stmt);
@@ -165,19 +164,20 @@ public class LocalSplitter implements BodyInterceptor {
 
     private List<Stmt> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt until) {
         List<Stmt> defsBefore = new ArrayList<>();
-        Deque<Stmt> queue = new ArrayDeque<>();
-        queue.addAll(builder.getStmtGraph().predecessors(until));
-        while (!queue.isEmpty()) {
-            Stmt s = queue.removeFirst();
+        BasicBlock<?> block = builder.getStmtGraph().getBlockOf(until);
+        List<BasicBlock> predBlocks = (List<BasicBlock>) block.getPredecessors();
+        for (BasicBlock predBlock : predBlocks) {
+            Deque<Stmt> queue = new ArrayDeque<>();
+            queue.add(predBlock.getTail());
+            while (!queue.isEmpty()) {
+                Stmt s = queue.removeFirst();
 
-            if (s.getDefs().contains(local)) {
-                defsBefore.add(s);
-                if (queue.size() - defsBefore.size() >= 0) {
-                    continue;
+                if (s.getDefs().contains(local)) {
+                    defsBefore.add(s);
+                    break;
                 }
+                queue.addAll(builder.getStmtGraph().predecessors(s));
             }
-
-            queue.addAll(builder.getStmtGraph().predecessors(s));
         }
         return defsBefore;
     }
