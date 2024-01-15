@@ -1459,11 +1459,11 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
   <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">main</span>(<span class="nc">java.lang.String</span>[])
   {
     <span class="nc">java.lang.String[]</span> <span class="nv">r0</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$r1</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">r1</span>;
 
     <span class="nv">r0</span> := <span class="k">@parameter0</span>: <span class="nc">java.lang.String</span>[];
-    <span class="nv">$r1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$r1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+    <span class="nv">r1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">r1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
     <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Hello world!&quot;</span>);
     <span class="k">return</span>;
   }
@@ -5196,7 +5196,7 @@ NullType  </p>
   <span class="nc">boolean</span> <span class="nv">check</span>;
   <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
   <span class="nc">int</span> <span class="nv">i</span>;
-  <span class="nc">null_type</span> <span class="nv">$r0</span>;
+  <span class="nc">null_type</span> <span class="nv">r0</span>;
   <span class="nc">java.lang.NullPointerException</span> <span class="nv">soot0</span>;
   <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
   <span class="nv">check</span> := <span class="k">@parameter0</span>: <span class="nc">boolean</span>;
@@ -5206,11 +5206,11 @@ NullType  </p>
   label1:
     <span class="k">if</span> <span class="nv">i</span> <span class="o">&gt;=</span> <span class="m">5</span> <span class="k">goto</span> label3;
       <span class="k">if</span> <span class="nv">check</span> <span class="o">==</span> <span class="m">0</span> <span class="k">goto</span> label2;
-      <span class="nv">$r0</span> = (<span class="nc">null_type</span>) <span class="nv">i</span>;
+      <span class="nv">r0</span> = (<span class="nc">null_type</span>) <span class="nv">i</span>;
       <span class="nv">soot0</span> = <span class="k">new</span> <span class="nc">java.lang.NullPointerException</span>;
       <span class="k">specialinvoke</span> <span class="nv">soot0</span>.&lt;<span class="nv">java.lang.NullPointerException</span>: 
         <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;
-          (<span class="nv">&quot;This statement would have triggered an Exception: a[i#1] = $r0&quot;</span>);
+          (<span class="nv">&quot;This statement would have triggered an Exception: a[i#1] = r0&quot;</span>);
       <span class="k">throw</span> <span class="nv">soot0</span>;
 
   label2:
@@ -5230,7 +5230,7 @@ NullType  </p>
 }
 /*
   The JimpleLocal b is of ArrayType,
-    and JimpleLocal $r0 is of NullType.
+    and JimpleLocal r0 is of NullType.
 */
 </code></pre></div></td></tr></table></div>
 </div>
@@ -5472,7 +5472,7 @@ public compute(Z)V
 </div>
 <h4 id="local">Local</h4>
 <p><code>jimple
-$i0</code>
+i0</code>
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.  </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="19:3"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><input id="__tabbed_19_3" name="__tabbed_19" type="radio" /><div class="tabbed-labels"><label for="__tabbed_19_1">Jimple</label><label for="__tabbed_19_2">Java</label><label for="__tabbed_19_3">Byte Code</label></div>
@@ -5671,7 +5671,7 @@ referencing a position inside an array.</p>
 <p><code>jimple
 &lt;SomePackage.ExampleClass: fieldname&gt;
 // or
-$r1.&lt;SomePackage.ExampleClass: fieldname&gt;</code>
+r1.&lt;SomePackage.ExampleClass: fieldname&gt;</code>
 referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.</p>
 <h4 id="identityref">IdentityRef</h4>
 <p>The IdentityRef makes those implicit special value assignments explicit.</p>
@@ -5685,8 +5685,8 @@ represents the this pointer of the current class.</p>
 represents the value of the thrown exception (caught by this exceptionhandler).</p>
 <h5 id="jparameterref">JParameterRef</h5>
 <p><code>jimple
-$i0 := @parameter0
-$i1 := @parameter1</code>
+i0 := @parameter0
+i1 := @parameter1</code>
 represents a parameter of a method, identified by its index.</p>
 
 

@@ -2,67 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/advanced-topics/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/announce/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/bodyinterceptors/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/call-graph-construction/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/docguide/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/faq/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/getting-started/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/installation/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/jimple/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/tools/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/whatsnew/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/develop/write_analyses/</loc>
-         <lastmod>2024-01-10</lastmod>
+         <lastmod>2024-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
