@@ -35,12 +35,28 @@ import sootup.core.views.View;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LocalSplitter implements BodyInterceptor {
 
     private Map<Stmt, List<Pair<Stmt, Local>>> stmtToUses;
 
-    private Map<Stmt, Stmt> oldToNewStmt;
+    private Map<Stmt, Stmt> newToOriginalStmt;
+
+
+    static class RefBox {
+        Stmt stmt;
+
+        public RefBox(Stmt stmt) {
+            this.stmt = stmt;
+        }
+
+        @Override
+        public String toString() {
+            return stmt.toString();
+        }
+    }
+
 
     /**
      * Multiple defs of the same local are to split.
@@ -68,17 +84,18 @@ public class LocalSplitter implements BodyInterceptor {
 
     @Override
     public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-        oldToNewStmt  = new HashMap<>();
+        newToOriginalStmt = new HashMap<>();
 
         Set<Local> localsToSplit = findLocalsToSplit(builder);
         int w = 0;
 
-        Set<Stmt> visited = new HashSet<>();
+        Set<RefBox> visited = new HashSet<>();
         for (int i = 0; i < builder.getStmts().size(); i++) {
             Stmt stmt = builder.getStmts().get(i);
-            if (stmt.getDefs().size() == 1) {
-                LValue singleDef = stmt.getDefs().get(0);
-                if (!(singleDef instanceof Local) || visited.remove(stmt)) {
+            RefBox ref = new RefBox(stmt);
+            if (ref.stmt.getDefs().size() == 1) {
+                LValue singleDef = ref.stmt.getDefs().get(0);
+                if (!(singleDef instanceof Local) || visited.remove(ref.stmt)) {
                     continue;
                 }
 
@@ -90,67 +107,56 @@ public class LocalSplitter implements BodyInterceptor {
                 Local newLocal = oldLocal.withName(oldLocal.getName() + "#" + (++w));
                 builder.addLocal(newLocal);
 
-                Deque<Stmt> queue = new ArrayDeque<>();
-                queue.addFirst(stmt);
+                Deque<RefBox> queue = new ArrayDeque<>();
+                queue.addFirst(ref);
                 do {
-                    Stmt head = queue.removeFirst();
+                    RefBox head = queue.removeFirst();
                     if (visited.add(head)) {
-                        Set<Stmt> useStmts = usesUntilNewDef(builder, head);
-                        for (Stmt useStmt : useStmts) {
-                            for (Value use : useStmt.getUses()) {
+                        Set<RefBox> useStmts = usesUntilNewDef(builder, head.stmt);
+                        for (RefBox useRef : useStmts) {
+                            for (Value use : useRef.stmt.getUses()) {
                                 if (use == newLocal) {
                                     continue;
                                 }
                                 if (use instanceof Local) {
-                                    queue.addAll(getDefsBefore(oldLocal, builder, useStmt));
-                                    addNewUse(builder, useStmt, newLocal, oldLocal);
+                                    queue.addAll(getDefsBefore(oldLocal, builder, useRef.stmt));
+                                    addNewUse(builder, useRef, newLocal, oldLocal);
                                 }
                             }
                         }
-                        for (LValue def : head.getDefs()) {
+                        for (LValue def : head.stmt.getDefs()) {
                             if (def instanceof Local) {
-                                int idx = builder.getStmts().indexOf(head);
-                                if(idx==-1){
-                                    Stmt newStmt = oldToNewStmt.get(head);
-                                    idx = builder.getStmts().indexOf(newStmt);
-                                }
                                 addNewDef(builder, head, newLocal, oldLocal);
-                                head = builder.getStmts().get(idx);
                             }
                         }
                     }
                     System.out.println(builder.getStmtGraph());
                 } while (!queue.isEmpty());
 
-                visited.remove(stmt);
+                visited.remove(ref);
             }
 
         }
 
     }
 
-    private void addNewDef(Body.BodyBuilder builder, Stmt stmt, Local newDef, Local oldDef) {
-        if (stmt.getDefs().contains(oldDef)) {
-            Stmt withNewDef = new JAssignStmt(newDef, stmt.getUses().get(0), stmt.getPositionInfo());
-            if(builder.getStmtGraph().containsNode(stmt)){
-                builder.getStmtGraph().replaceNode(stmt, withNewDef);
-            }else if(builder.getStmtGraph().containsNode(oldToNewStmt.get(stmt))){
-                // we cannot update the references from oldStmt to newStmt unlike soot.
-                builder.getStmtGraph().replaceNode(oldToNewStmt.get(stmt), withNewDef);
-            }
-            oldToNewStmt.put(stmt, withNewDef);
+    private void addNewDef(Body.BodyBuilder builder, RefBox ref, Local newDef, Local oldDef) {
+        if (ref.stmt.getDefs().contains(oldDef)) {
+            Stmt withNewDef = new JAssignStmt(newDef, ref.stmt.getUses().get(0), ref.stmt.getPositionInfo());
+            builder.getStmtGraph().replaceNode(ref.stmt, withNewDef);
+            ref.stmt = withNewDef;
         }
     }
 
-    private void addNewUse(Body.BodyBuilder builder, Stmt stmt, Local newLocal, Local old) {
-        if (stmt.getUses().contains(old)) {
-            Stmt withNewUse = stmt.withNewUse(old, newLocal);
-            builder.getStmtGraph().replaceNode(stmt, withNewUse);
-            oldToNewStmt.put(stmt, withNewUse);
+    private void addNewUse(Body.BodyBuilder builder, RefBox ref, Local newLocal, Local old) {
+        if (ref.stmt.getUses().contains(old)) {
+            Stmt withNewUse = ref.stmt.withNewUse(old, newLocal);
+            builder.getStmtGraph().replaceNode(ref.stmt, withNewUse);
+            ref.stmt = withNewUse;
         }
     }
 
-    private Set<Stmt> usesUntilNewDef(Body.BodyBuilder builder, Stmt stmt) {
+    private Set<RefBox> usesUntilNewDef(Body.BodyBuilder builder, Stmt stmt) {
         Set<Stmt> usesUntilNewDef = new HashSet<>();
         List<LValue> defs = stmt.getDefs();
         if (defs.size() == 1) {
@@ -160,7 +166,7 @@ public class LocalSplitter implements BodyInterceptor {
             while (!queue.isEmpty()) {
                 Stmt s = queue.removeFirst();
                 if (s.getUses().contains(def)) {
-                    if(!usesUntilNewDef.add(s)){
+                    if (!usesUntilNewDef.add(s)) {
                         break; // if it is already there maybe we started looping?
                     }
                 }
@@ -172,10 +178,10 @@ public class LocalSplitter implements BodyInterceptor {
                 queue.addAll(builder.getStmtGraph().successors(s));
             }
         }
-        return usesUntilNewDef;
+        return usesUntilNewDef.stream().map(e -> new RefBox(e)).collect(Collectors.toSet());
     }
 
-    private List<Stmt> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt mStmt) {
+    private List<RefBox> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt mStmt) {
         List<Stmt> defsBefore = new ArrayList<>();
         Set<BasicBlock> visited = new HashSet<>();
         BasicBlock<?> block = builder.getStmtGraph().getBlockOf(mStmt);
@@ -186,7 +192,8 @@ public class LocalSplitter implements BodyInterceptor {
             block = blockQueue.removeFirst();
 
             if (firstPass) {
-                ;; // to visit the same block once more when looping
+                ;
+                ; // to visit the same block once more when looping
             } else if (!visited.add(block)) {
                 continue;
             }
@@ -208,7 +215,7 @@ public class LocalSplitter implements BodyInterceptor {
             }
             blockQueue.addAll(block.getPredecessors());
         } while (!blockQueue.isEmpty());
-        return defsBefore;
+        return defsBefore.stream().map(e -> new RefBox(e)).collect(Collectors.toList());
     }
 
     private List<Stmt> predsInSameBlock(Body.BodyBuilder builder, Stmt stmt) {
