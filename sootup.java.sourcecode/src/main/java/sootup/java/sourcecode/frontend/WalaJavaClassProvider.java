@@ -172,8 +172,7 @@ public class WalaJavaClassProvider implements ClassProvider {
    * @param moduleFiles
    */
   public WalaJavaClassProvider(
-      @Nonnull Collection<? extends Module> moduleFiles,
-      @Nonnull SourceType sourceType) {
+      @Nonnull Collection<? extends Module> moduleFiles, @Nonnull SourceType sourceType) {
     this.sourceType = sourceType;
     addScopesForJava();
     for (Module m : moduleFiles) {

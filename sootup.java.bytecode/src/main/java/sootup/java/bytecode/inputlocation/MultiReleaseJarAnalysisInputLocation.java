@@ -81,7 +81,11 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
     availableVersions = new ArrayList<>();
     try (Stream<Path> list = Files.list(versionedRoot)) {
-      list.map(dir -> dir.getFileName().toString().replace("/", ""))
+      list.map(
+              dir -> {
+                String versionDirName = dir.getFileName().toString();
+                return versionDirName.substring(0, versionDirName.length() - 1);
+              })
           .map(Integer::new)
           .sorted()
           .forEach(availableVersions::add);
@@ -92,6 +96,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     for (int i = availableVersions.size() - 1; i >= 0; i--) {
       Integer version = availableVersions.get(i);
       if (version > language.getVersion()) {
+        // TODO: use binSearch to find desired versions more efficiently?
         continue;
       }
       final Path versionRoot =
@@ -102,6 +107,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   protected AnalysisInputLocation createAnalysisInputLocation(Path archiveRoot) {
+    // FIXME: make the inputlocation ignore /META_INF/*
     return PathBasedAnalysisInputLocation.create(archiveRoot, sourceType);
   }
 

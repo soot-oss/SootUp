@@ -34,8 +34,9 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
   @Override
   public Collection<? extends SootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    // FIXME: implement
-    return null;
+    // TODO: check if we need to combine modules as well or if only versioned .class files are
+    return ((ModuleInfoAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
+        .getModulesClassSources(moduleSignature, view);
   }
 
   @Nonnull
