@@ -44,7 +44,7 @@ public class JGotoStmtTest {
     StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
-    Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
+    Local local = new Local("r0", typeFactory.getType("java.lang.Exception"));
 
     // Stmt
     Stmt targetStmt = new JThrowStmt(local, nop);

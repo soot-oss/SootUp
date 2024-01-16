@@ -41,7 +41,6 @@ import sootup.core.util.PathUtils;
 import sootup.java.bytecode.frontend.AsmModuleSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.signatures.ModuleSignature;
 
 /**
@@ -57,8 +56,7 @@ public class ModuleFinder {
 
   // associate a module name with the input location, that represents the module
   @Nonnull
-  private final Map<ModuleSignature, AnalysisInputLocation<JavaSootClass>> moduleInputLocation =
-      new HashMap<>();
+  private final Map<ModuleSignature, AnalysisInputLocation> moduleInputLocation = new HashMap<>();
 
   @Nonnull private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
@@ -126,11 +124,10 @@ public class ModuleFinder {
    * @return the input location that resolves classes contained in the module
    */
   @Nullable
-  public AnalysisInputLocation<JavaSootClass> getModule(@Nonnull ModuleSignature moduleName) {
+  public AnalysisInputLocation getModule(@Nonnull ModuleSignature moduleName) {
 
     // check if module is cached
-    AnalysisInputLocation<JavaSootClass> inputLocationForModule =
-        moduleInputLocation.get(moduleName);
+    AnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;
     }

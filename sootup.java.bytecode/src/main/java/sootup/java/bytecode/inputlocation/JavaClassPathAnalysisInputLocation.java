@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -40,7 +40,7 @@ import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java class path. Handles
@@ -50,12 +50,12 @@ import sootup.java.core.JavaSootClass;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 20.07.2020
  */
-public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  @Nonnull private final Collection<AnalysisInputLocation<JavaSootClass>> cpEntries;
+  @Nonnull private final Collection<AnalysisInputLocation> cpEntries;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
   private final SourceType srcType;
@@ -176,33 +176,31 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
-    Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
-    for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
+    Set<SootClassSource> found = new HashSet<>();
+    for (AnalysisInputLocation inputLocation : cpEntries) {
       found.addAll(inputLocation.getClassSources(view));
     }
-    return found;
+    return found.stream().map(src -> (JavaSootClassSource) src).collect(Collectors.toList());
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
-      final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      final Optional<? extends SootClassSource> classSource =
           inputLocation.getClassSource(type, view);
       if (classSource.isPresent()) {
-        return classSource;
+        return classSource.map(src -> (JavaSootClassSource) src);
       }
     }
     return Optional.empty();
   }
 
   @Nonnull
-  private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
+  private Optional<AnalysisInputLocation> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType, bodyInterceptors));
     } else {
@@ -217,7 +215,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param jarPath The jar path for which the classes need to be listed
    * @return list of classpath entries
    */
-  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(@Nonnull String jarPath) {
+  private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
     return explodeClassPath(jarPath, FileSystems.getDefault());
   }
 
@@ -228,7 +226,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param fileSystem the filesystem the path should be resolved for
    * @return list of classpath entries
    */
-  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(
+  private List<AnalysisInputLocation> explodeClassPath(
       @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
     return explode(jarPath, fileSystem)
         .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))

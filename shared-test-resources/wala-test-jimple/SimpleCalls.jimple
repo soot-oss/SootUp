@@ -15,13 +15,13 @@ public class SimpleCalls extends java.lang.Object implements ISimpleCalls
     public void helloWorld()
     {
         SimpleCalls r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: SimpleCalls;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("hello world!");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("hello world!");
 
         return;
     }
@@ -29,7 +29,7 @@ public class SimpleCalls extends java.lang.Object implements ISimpleCalls
     public int anotherCall()
     {
         SimpleCalls r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: SimpleCalls;
 
@@ -37,9 +37,9 @@ public class SimpleCalls extends java.lang.Object implements ISimpleCalls
 
         virtualinvoke r0.<SimpleCalls: void helloWorld()>();
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("another call");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("another call");
 
         return 5;
     }
@@ -47,17 +47,17 @@ public class SimpleCalls extends java.lang.Object implements ISimpleCalls
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        SimpleCalls $r3;
+        SimpleCalls r3;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r3 = new SimpleCalls;
+        r3 = new SimpleCalls;
 
-        specialinvoke $r3.<SimpleCalls: void <init>()>();
+        specialinvoke r3.<SimpleCalls: void <init>()>();
 
-        interfaceinvoke $r3.<ISimpleCalls: void helloWorld()>();
+        interfaceinvoke r3.<ISimpleCalls: void helloWorld()>();
 
-        virtualinvoke $r3.<SimpleCalls: int anotherCall()>();
+        virtualinvoke r3.<SimpleCalls: int anotherCall()>();
 
         return;
     }

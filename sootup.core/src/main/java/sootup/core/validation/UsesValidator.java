@@ -34,7 +34,7 @@ public class UsesValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: auto generated stub
     /*
      * // Conservative validation of uses: add edges to exception handlers // even if they are not reachable. // // class C {

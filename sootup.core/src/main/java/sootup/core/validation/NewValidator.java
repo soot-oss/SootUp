@@ -49,7 +49,7 @@ public class NewValidator implements BodyValidator {
 
   //  Checks whether after each new-instruction a constructor call follows.
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
 
     List<ValidationException> exceptions = new ArrayList<>();
 
@@ -133,9 +133,9 @@ public class NewValidator implements BodyValidator {
           Local originalLocal = aliasingLocals.iterator().next();
           if (originalLocal.equals(assignCheck.getLeftOp())) { // In case of dead assignments:
 
-            // Handles cases like // $r0 = new x; // $r0 = null;
+            // Handles cases like // r0 = new x; // r0 = null;
 
-            // But not cases like // $r0 = new x; // $r1 = $r0; // $r1 = null; // Because we check
+            // But not cases like // r0 = new x; // r1 = r0; // r1 = null; // Because we check
             // for the original local
             continue;
           } else {

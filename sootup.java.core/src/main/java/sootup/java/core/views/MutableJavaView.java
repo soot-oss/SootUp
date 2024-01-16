@@ -10,7 +10,6 @@ import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
@@ -25,19 +24,18 @@ public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
-  public MutableJavaView(@Nonnull AnalysisInputLocation<? extends JavaSootClass> inputLocation) {
+  public MutableJavaView(@Nonnull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations) {
-    super(inputLocations, new MutableFullCacheProvider<>());
+  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+    super(inputLocations, new MutableFullCacheProvider());
   }
 
   public MutableJavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(inputLocations, new MutableFullCacheProvider<>(), sourceTypeSpecifier);
+    super(inputLocations, new MutableFullCacheProvider(), sourceTypeSpecifier);
   }
 
   /**
@@ -59,7 +57,7 @@ public class MutableJavaView extends JavaView implements MutableView {
    */
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
-        ((MutableClassCache<JavaSootClass>) this.cache).removeClass(classType);
+        (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 
@@ -82,11 +80,11 @@ public class MutableJavaView extends JavaView implements MutableView {
     ClassType classType = method.getDeclaringClassType();
     MethodSubSignature mss = method.getSignature().getSubSignature();
 
-    JavaSootClass clazz = this.cache.getClass(classType);
+    JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
     if (clazz == null) return;
 
-    Set<? extends JavaSootMethod> methods = clazz.getMethods();
-    Set<SootMethod> filteredMethods =
+    Set<JavaSootMethod> methods = clazz.getMethods();
+    Set<JavaSootMethod> filteredMethods =
         methods.stream()
             .filter(met -> !met.getSignature().getSubSignature().equals(mss))
             .collect(Collectors.toSet());
@@ -100,11 +98,11 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void addMethod(JavaSootMethod method) {
     ClassType classType = method.getDeclaringClassType();
 
-    JavaSootClass clazz = this.cache.getClass(classType);
+    JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
     if (clazz == null) return;
 
-    Set<? extends JavaSootMethod> methods = clazz.getMethods();
-    Set<SootMethod> newMethods = new HashSet<>(methods);
+    Set<JavaSootMethod> methods = clazz.getMethods();
+    Set<JavaSootMethod> newMethods = new HashSet<>(methods);
     newMethods.add(method);
     JavaSootClass newClazz = clazz.withMethods(newMethods);
 

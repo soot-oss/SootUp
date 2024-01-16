@@ -37,7 +37,7 @@ import sootup.core.views.View;
 public class LocalPacker implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local

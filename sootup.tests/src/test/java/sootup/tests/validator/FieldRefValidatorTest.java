@@ -26,7 +26,7 @@ public class FieldRefValidatorTest {
 
   FieldRefValidator fieldRefValidator;
   JimpleView jimpleView;
-  Collection<SootClass<?>> classes;
+  Collection<SootClass> classes;
 
   @Before
   public void Setup() {
@@ -61,12 +61,12 @@ public class FieldRefValidatorTest {
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
     jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass<?>> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
+    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
     assertFalse(classSource1.isPresent());
 
     classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass<?> aClass : jimpleView.getClasses()) {
+    for (SootClass aClass : jimpleView.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }

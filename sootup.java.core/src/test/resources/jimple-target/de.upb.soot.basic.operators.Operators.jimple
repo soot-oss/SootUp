@@ -16,7 +16,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -26,9 +26,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = i0 + i1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -37,7 +37,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -47,9 +47,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = i1 - i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -58,7 +58,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -68,9 +68,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = i1 * i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -79,7 +79,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -89,9 +89,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = i1 / i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -100,7 +100,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -110,9 +110,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = i1 % i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -121,7 +121,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -129,9 +129,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i0 := @parameter1: int;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -140,7 +140,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -148,9 +148,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i0 := @parameter1: int;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -159,15 +159,15 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
         i0 := @parameter0: int;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0);
 
         return;
     }
@@ -176,7 +176,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -184,9 +184,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 + i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -195,7 +195,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -203,9 +203,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 - i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -214,7 +214,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -222,9 +222,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 * i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -233,7 +233,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -241,9 +241,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 / i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -252,7 +252,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -260,9 +260,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 % i0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -271,7 +271,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -279,9 +279,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         i2 = 0 << 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -290,7 +290,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         byte b2;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
@@ -299,9 +299,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         b2 = 0 >> 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -310,7 +310,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         byte b2;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
@@ -319,9 +319,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         b2 = 0 & 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -330,7 +330,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         byte b2;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
@@ -339,9 +339,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         b2 = 0 ^ 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -350,7 +350,7 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         byte b2;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
@@ -359,9 +359,9 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         b2 = 0 | 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -370,8 +370,8 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -381,17 +381,17 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         if i0 != i1 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -400,8 +400,8 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -411,17 +411,17 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         if i0 == i1 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -430,8 +430,8 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -441,17 +441,17 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         if i0 <= i1 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -460,8 +460,8 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 
@@ -471,17 +471,17 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
 
         if i0 >= i1 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -490,8 +490,8 @@ public class de.upb.sootup.basic.operators.Operators extends java.lang.Object
     {
         de.upb.sootup.basic.operators.Operators r0;
         int i0, i1;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.basic.operators.Operators;
 

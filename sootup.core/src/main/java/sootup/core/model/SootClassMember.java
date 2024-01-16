@@ -32,7 +32,7 @@ import sootup.core.types.ClassType;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<S extends SootClassMemberSignature> {
+public abstract class SootClassMember<S extends SootClassMemberSignature> implements HasPosition {
 
   @Nonnull private final S signature;
 
@@ -87,6 +87,7 @@ public abstract class SootClassMember<S extends SootClassMemberSignature> {
   }
 
   @Nonnull
+  @Override
   public Position getPosition() {
     return position;
   }

@@ -370,6 +370,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         super(annotation, Collections.emptyMap());
       }
 
+      @Nonnull
       @Override
       public Map<String, Object> getValuesWithDefaults() {
         Map<String, Object> map = new HashMap<>();

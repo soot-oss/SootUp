@@ -17,34 +17,34 @@ class StaticInitializers$X extends java.lang.Object
     int sum()
     {
         StaticInitializers$X r0;
-        int $i0, $i1, $i2;
+        int i0, i1, i2;
 
         r0 := @this: StaticInitializers$X;
 
-        $i1 = r0.<StaticInitializers$X: int x>;
+        i1 = r0.<StaticInitializers$X: int x>;
 
-        $i0 = r0.<StaticInitializers$X: int y>;
+        i0 = r0.<StaticInitializers$X: int y>;
 
-        $i2 = $i1 + $i0;
+        i2 = i1 + i0;
 
-        return $i2;
+        return i2;
     }
 
     int diff()
     {
         StaticInitializers$X r0;
-        int $i0, $i1, $i2, $i3;
+        int i0, i1, i2, i3;
 
         r0 := @this: StaticInitializers$X;
 
-        $i2 = r0.<StaticInitializers$X: int x>;
+        i2 = r0.<StaticInitializers$X: int x>;
 
-        $i0 = r0.<StaticInitializers$X: int y>;
+        i0 = r0.<StaticInitializers$X: int y>;
 
-        $i1 = neg $i0;
+        i1 = neg i0;
 
-        $i3 = $i2 + $i1;
+        i3 = i2 + i1;
 
-        return $i3;
+        return i3;
     }
 }

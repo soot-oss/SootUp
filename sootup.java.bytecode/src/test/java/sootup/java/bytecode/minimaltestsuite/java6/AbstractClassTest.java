@@ -20,9 +20,9 @@ public class AbstractClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
-    SootClass<?> superClazz = loadClass(clazz.getSuperclass().get());
+    SootClass superClazz = loadClass(clazz.getSuperclass().get());
     assertTrue(superClazz.isAbstract());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
@@ -47,11 +47,11 @@ public class AbstractClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: AbstractClass",
+            "l0 := @this: AbstractClass",
             "$stack2 = new AbstractClass",
             "specialinvoke $stack2.<AbstractClass: void <init>()>()",
-            "$l1 = $stack2",
-            "virtualinvoke $l1.<A: void a()>()",
+            "l1 = $stack2",
+            "virtualinvoke l1.<A: void a()>()",
             "return")
         .collect(Collectors.toList());
   }

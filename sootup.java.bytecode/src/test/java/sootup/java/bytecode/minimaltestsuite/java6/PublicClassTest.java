@@ -23,7 +23,7 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertEquals(EnumSet.of(ClassModifier.PUBLIC, ClassModifier.SUPER), clazz.getModifiers());
 
     SootMethod method;
@@ -70,6 +70,6 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: PublicClass", "return").collect(Collectors.toList());
+    return Stream.of("l0 := @this: PublicClass", "return").collect(Collectors.toList());
   }
 }

@@ -21,10 +21,10 @@ public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     // only care if it terminates here..
 
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     clazz.getMethods().forEach(SootMethod::getBody);
 
-    SootClass<?> innerClazz =
+    SootClass innerClazz =
         loadClass(JavaIdentifierFactory.getInstance().getClassType("CossiInput$CossiInputBuilder"));
 
     innerClazz.getMethod("build", Collections.emptyList()).get().getBody();

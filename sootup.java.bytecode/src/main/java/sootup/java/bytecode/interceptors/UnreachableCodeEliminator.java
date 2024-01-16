@@ -36,7 +36,7 @@ import sootup.core.views.View;
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     MutableStmtGraph graph = builder.getStmtGraph();
 

@@ -37,15 +37,15 @@ public class ContinueInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: ContinueInWhileLoop",
-            "$l1 = 0",
+            "l0 := @this: ContinueInWhileLoop",
+            "l1 = 0",
             "label1:",
-            "if $l1 >= 10 goto label3",
-            "if $l1 != 5 goto label2",
-            "$l1 = $l1 + 1",
+            "if l1 >= 10 goto label3",
+            "if l1 != 5 goto label2",
+            "l1 = l1 + 1",
             "goto label1",
             "label2:",
-            "$l1 = $l1 + 1",
+            "l1 = l1 + 1",
             "goto label1",
             "label3:",
             "return")

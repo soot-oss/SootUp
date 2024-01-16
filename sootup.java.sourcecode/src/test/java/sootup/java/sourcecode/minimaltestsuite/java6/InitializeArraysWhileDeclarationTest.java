@@ -65,10 +65,10 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (int)[3]",
-            "$r1[0] = 1",
-            "$r1[1] = 2",
-            "$r1[2] = 3",
+            "r1 = newarray (int)[3]",
+            "r1[0] = 1",
+            "r1[1] = 2",
+            "r1[2] = 3",
             "return")
         .collect(Collectors.toList());
   }
@@ -86,10 +86,10 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (byte)[3]",
-            "$r1[0] = 4",
-            "$r1[1] = 5",
-            "$r1[2] = 6",
+            "r1 = newarray (byte)[3]",
+            "r1[0] = 4",
+            "r1[1] = 5",
+            "r1[2] = 6",
             "return")
         .collect(Collectors.toList());
   }
@@ -107,10 +107,10 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (short)[3]",
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
+            "r1 = newarray (short)[3]",
+            "r1[0] = 10",
+            "r1[1] = 20",
+            "r1[2] = 30",
             "return")
         .collect(Collectors.toList());
   }
@@ -128,10 +128,10 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (long)[3]",
-            "$r1[0] = 547087L",
-            "$r1[1] = 564645L",
-            "$r1[2] = 654786L",
+            "r1 = newarray (long)[3]",
+            "r1[0] = 547087L",
+            "r1[1] = 564645L",
+            "r1[2] = 654786L",
             "return")
         .collect(Collectors.toList());
   }
@@ -149,11 +149,11 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (float)[4]",
-            "$r1[0] = 3.14F",
-            "$r1[1] = 5.46F",
-            "$r1[2] = 2.987F",
-            "$r1[3] = 4.87F",
+            "r1 = newarray (float)[4]",
+            "r1[0] = 3.14F",
+            "r1[1] = 5.46F",
+            "r1[2] = 2.987F",
+            "r1[3] = 4.87F",
             "return")
         .collect(Collectors.toList());
   }
@@ -172,9 +172,9 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (double)[2]",
-            "$r1[0] = 6.765414",
-            "$r1[1] = 9.676565646",
+            "r1 = newarray (double)[2]",
+            "r1[0] = 6.765414",
+            "r1[1] = 9.676565646",
             "return")
         .collect(Collectors.toList());
   }
@@ -192,9 +192,9 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (boolean)[2]",
-            "$r1[0] = 1",
-            "$r1[1] = 0",
+            "r1 = newarray (boolean)[2]",
+            "r1[0] = 1",
+            "r1[1] = 0",
             "return")
         .collect(Collectors.toList());
   }
@@ -207,10 +207,10 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (char)[3]",
-            "$r1[0] = 65",
-            "$r1[1] = 98",
-            "$r1[2] = 38",
+            "r1 = newarray (char)[3]",
+            "r1[0] = 65",
+            "r1[1] = 98",
+            "r1[2] = 38",
             "return")
         .collect(Collectors.toList());
   }
@@ -227,9 +227,9 @@ public class InitializeArraysWhileDeclarationTest extends MinimalSourceTestSuite
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
             "r0 := @this: InitializeArraysWhileDeclaration",
-            "$r1 = newarray (java.lang.String)[2]",
-            "$r1[0] = \"Hello World\"",
-            "$r1[1] = \"Greetings\"",
+            "r1 = newarray (java.lang.String)[2]",
+            "r1[0] = \"Hello World\"",
+            "r1[1] = \"Greetings\"",
             "return")
         .collect(Collectors.toList());
   }

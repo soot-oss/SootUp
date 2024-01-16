@@ -15,7 +15,7 @@ final class JLex.SparseBitSet$3 extends java.lang.Object implements JLex.SparseB
     public final long op(long, long)
     {
         JLex.SparseBitSet$3 r0;
-        long l0, l1, $l2;
+        long l0, l1, l2;
 
         r0 := @this: JLex.SparseBitSet$3;
 
@@ -23,8 +23,8 @@ final class JLex.SparseBitSet$3 extends java.lang.Object implements JLex.SparseB
 
         l1 := @parameter1: long;
 
-        $l2 = l0 ^ l1;
+        l2 = l0 ^ l1;
 
-        return $l2;
+        return l2;
     }
 }

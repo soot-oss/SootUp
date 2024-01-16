@@ -45,7 +45,7 @@ public class NopEliminator implements BodyInterceptor {
    * @param builder The current body before interception.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     StmtGraph<?> graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();

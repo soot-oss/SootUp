@@ -39,7 +39,7 @@ public class IdentityValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * boolean hasThisLocal = false; int paramCount = body.getMethod().getParameterCount(); boolean[] parameterRefs = new

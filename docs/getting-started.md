@@ -37,7 +37,7 @@ You can use bytecode analysis typically when you do not have access to the sourc
 !!! example "Create a view to analyze Java bytecode"
 
     ~~~java
-    AnalysisInputLocation<JavaSootClass> inputLocation = 
+    AnalysisInputLocation inputLocation = 
             new JavaClassPathAnalysisInputLocation("path2Binary");
             
     JavaView view = new JavaView(inputLocation);
@@ -52,7 +52,7 @@ If you have access to the source code, it is also possible to create a view for 
 !!! example "Create a view to analyze Java source code"
 
     ~~~java
-    AnalysisInputLocation<JavaSootClass> inputLocation = 
+    AnalysisInputLocation inputLocation = 
             new JavaSourcePathAnalysisInputLocation("path2Source");
             
     JavaView view = new JavaView(inputLocation);
@@ -65,7 +65,7 @@ If you have a [Jimple](../jimple) file, you can create a view for analyzing jimp
     ~~~java
     Path pathToJimple = Paths.get("path2Jimple");
     
-    AnalysisInputLocation<JavaSootClass> inputLocation = 
+    AnalysisInputLocation inputLocation = 
             new JimpleAnalysisInputLocation(pathToJimple);
     
     JimpleView view = new JimpleView(inputLocation);
@@ -120,7 +120,7 @@ Then, we could define the `ClassType` of the `HelloWorld` class as follows:
 !!! example "Defining a ClassType"
 
     ```java
-    ClassType classType = 
+    JavaClassType classType = 
             view.getIdentifierFactory().getClassType("example.HelloWorld");
     ```
 
@@ -129,8 +129,7 @@ Once we have a `ClassType` that identifies the `HelloWorld` class, we can use it
 !!! example "Retrieving a SootClass"
 
     ```java
-    SootClass<JavaSootClassSource> sootClass =
-            (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    JavaSootClass sootClass = view.getClass(classType).get();
     ```
 
 ## Retrieving a Method
@@ -165,10 +164,10 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 !!! example "Retrieving a SootMethod from a SootClass"
 
     ```java
-    Optional<? extends SootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
+    Optional<JavaSootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
     
     if(opt.isPresent()){
-      SootMethod method = opt.get();
+      JavaSootMethod method = opt.get();
     }
     ```
 
@@ -200,7 +199,7 @@ Below we show a comparison of the code so far with the same functionality in soo
 
     JavaView view = new JavaView(inputLocation);
 
-    ClassType classType = 
+    JavaClassType classType = 
             view.getIdentifierFactory().getClassType("HelloWorld");
 
     MethodSignature methodSignature =
@@ -210,11 +209,9 @@ Below we show a comparison of the code so far with the same functionality in soo
                 "main", classType, "void",
                 Collections.singletonList("java.lang.String[]"));
 
-    SootClass<JavaSootClassSource> sootClass =
-        (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    JavaSootClass sootClass = view.getClass(classType).get();
 
-    SootMethod sootMethod = 
-            sootClass.getMethod(methodSignature.getSubSignature()).get();
+    JavaSootMethod sootMethod =  sootClass.getMethod(methodSignature.getSubSignature()).get();
     
     sootMethod.getBody().getStmts();
     ```

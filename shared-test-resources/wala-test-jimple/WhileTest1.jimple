@@ -15,15 +15,15 @@ public class WhileTest1 extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        WhileTest1 $r2;
-        int $i0, $i1, i2, i3;
-        boolean z0, $z1, $z2;
+        WhileTest1 r2;
+        int i0, i1, i2, i3;
+        boolean z0, z1, z2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r2 = new WhileTest1;
+        r2 = new WhileTest1;
 
-        specialinvoke $r2.<WhileTest1: void <init>()>();
+        specialinvoke r2.<WhileTest1: void <init>()>();
 
         i2 = 235834;
 
@@ -36,19 +36,19 @@ public class WhileTest1 extends java.lang.Object
 
         i2 = i3 ^ -1431677611;
 
-        $i1 = i2 & 4680;
+        i1 = i2 & 4680;
 
-        if $i1 == 0 goto label2;
+        if i1 == 0 goto label2;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label3;
 
      label2:
-        $z1 = 0;
+        z1 = 0;
 
      label3:
-        z0 = $z1;
+        z0 = z1;
 
         goto label1;
 
@@ -64,19 +64,19 @@ public class WhileTest1 extends java.lang.Object
      label5:
         i2 = i2 ^ -1431677611;
 
-        $i0 = i2 & 4680;
+        i0 = i2 & 4680;
 
-        if $i0 == 0 goto label6;
+        if i0 == 0 goto label6;
 
-        $z2 = 1;
+        z2 = 1;
 
         goto label7;
 
      label6:
-        $z2 = 0;
+        z2 = 0;
 
      label7:
-        z0 = $z2;
+        z0 = z2;
 
         goto label4;
 

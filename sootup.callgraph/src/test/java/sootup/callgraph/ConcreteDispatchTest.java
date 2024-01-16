@@ -19,7 +19,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 /** @author : Hasitha Rajapakse, Jonas Klauke * */
@@ -33,7 +32,7 @@ public class ConcreteDispatchTest {
 
   @BeforeClass
   public static void setUp() {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(
             "src/test/resources/callgraph/ConcreteDispatch/binary"));

@@ -72,6 +72,6 @@ class BranchedInsnInfo {
 
   @Override
   public String toString() {
-    return "BranchInsnsInfo: "+ insn;
+    return "BranchInsnsInfo: " + insn;
   }
 }

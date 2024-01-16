@@ -77,16 +77,16 @@ public class SelectedInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: AnonymousClass",
-                "$r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(7)",
-                "$r2 = new AnonymousClass$2",
-                "$i0 = 0 - 4",
-                "specialinvoke $r2.<AnonymousClass$2: void <init>(int)>($i0)",
-                "$r3 = <java.lang.System: java.io.PrintStream out>",
-                "$i1 = interfaceinvoke $r2.<AnonymousClass$Foo: int getValue()>()",
-                "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i1)",
-                "$r4 = <java.lang.System: java.io.PrintStream out>",
-                "$i2 = interfaceinvoke $r2.<AnonymousClass$Foo: int getValueBase()>()",
-                "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i2)",
+                "r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(7)",
+                "r2 = new AnonymousClass$2",
+                "i0 = 0 - 4",
+                "specialinvoke r2.<AnonymousClass$2: void <init>(int)>(i0)",
+                "r3 = <java.lang.System: java.io.PrintStream out>",
+                "i1 = interfaceinvoke r2.<AnonymousClass$Foo: int getValue()>()",
+                "virtualinvoke r3.<java.io.PrintStream: void println(int)>(i1)",
+                "r4 = <java.lang.System: java.io.PrintStream out>",
+                "i2 = interfaceinvoke r2.<AnonymousClass$Foo: int getValueBase()>()",
+                "virtualinvoke r4.<java.io.PrintStream: void println(int)>(i2)",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -115,20 +115,20 @@ public class SelectedInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: alreadywalaunittests.InnerClassAA",
-                "$r1 = new alreadywalaunittests.InnerClassAA$AA",
-                "specialinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r0)",
-                "$r2 = new alreadywalaunittests.InnerClassAA$AA",
-                "specialinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r1)",
-                "$r1 = $r2",
-                "$r3 = virtualinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>()",
-                "$r0.<alreadywalaunittests.InnerClassAA: int a_x> = 5",
-                "$i0 = virtualinvoke $r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>()",
-                "$r4 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0)",
-                "$i1 = virtualinvoke $r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>()",
-                "$r5 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1)",
-                "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>()",
+                "r1 = new alreadywalaunittests.InnerClassAA$AA",
+                "specialinvoke r1.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>(r0)",
+                "r2 = new alreadywalaunittests.InnerClassAA$AA",
+                "specialinvoke r2.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>(r1)",
+                "r1 = r2",
+                "r3 = virtualinvoke r1.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>()",
+                "r0.<alreadywalaunittests.InnerClassAA: int a_x> = 5",
+                "i0 = virtualinvoke r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>()",
+                "r4 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke r4.<java.io.PrintStream: void println(int)>(i0)",
+                "i1 = virtualinvoke r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>()",
+                "r5 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke r5.<java.io.PrintStream: void println(int)>(i1)",
+                "virtualinvoke r1.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>()",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -153,10 +153,10 @@ public class SelectedInstructionConversionTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "$r0 := @parameter0: java.lang.String[]",
-                "$r1 = new alreadywalaunittests.InnerClassAA",
-                "specialinvoke $r1.<alreadywalaunittests.InnerClassAA: void <init>()>()",
-                "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA: void doAllThis()>()",
+                "r0 := @parameter0: java.lang.String[]",
+                "r1 = new alreadywalaunittests.InnerClassAA",
+                "specialinvoke r1.<alreadywalaunittests.InnerClassAA: void <init>()>()",
+                "virtualinvoke r1.<alreadywalaunittests.InnerClassAA: void doAllThis()>()",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -228,9 +228,9 @@ public class SelectedInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: FooEx1",
-                "$r1 = new BadLanguageExceptionEx1",
-                "specialinvoke $r1.<BadLanguageExceptionEx1: void <init>()>()",
-                "throw $r1")
+                "r1 = new BadLanguageExceptionEx1",
+                "specialinvoke r1.<BadLanguageExceptionEx1: void <init>()>()",
+                "throw r1")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

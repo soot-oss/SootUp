@@ -15,13 +15,13 @@ class de.upb.sootup.basic.interfaces.B extends java.lang.Object implements de.up
     public void printA1()
     {
         de.upb.sootup.basic.interfaces.B r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.interfaces.B;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
 
         return;
     }

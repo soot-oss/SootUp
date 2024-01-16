@@ -35,10 +35,10 @@ public class AutoboxingTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: Autoboxing",
-            "$l1 = 5",
-            "$l1 = $l1 + 1",
-            "$l2 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>($l1)",
+            "l0 := @this: Autoboxing",
+            "l1 = 5",
+            "l1 = l1 + 1",
+            "l2 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1)",
             "return")
         .collect(Collectors.toList());
   }

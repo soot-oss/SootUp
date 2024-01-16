@@ -34,7 +34,7 @@ public class NewCodeBlockInMethodTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: NewCodeBlockInMethod", "$l1 = 5", "return")
+    return Stream.of("l0 := @this: NewCodeBlockInMethod", "l1 = 5", "return")
         .collect(Collectors.toList());
   }
 

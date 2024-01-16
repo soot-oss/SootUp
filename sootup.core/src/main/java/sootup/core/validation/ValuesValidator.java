@@ -34,7 +34,7 @@ public class ValuesValidator implements BodyValidator {
    * @return
    */
   @Override
-  public List<ValidationException> validate(Body body, View<?> view) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check code from old soot below
     /*
      * Set<ValueBox> set = newSetFromMap(new IdentityHashMap<ValueBox, Boolean>());

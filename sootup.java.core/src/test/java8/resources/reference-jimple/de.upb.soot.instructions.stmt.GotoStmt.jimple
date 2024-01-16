@@ -26,7 +26,7 @@ public class de.upb.sootup.instructions.stmt.GotoStmt extends java.lang.Object
     {
         de.upb.sootup.instructions.stmt.GotoStmt r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.GotoStmt;
 
@@ -35,9 +35,9 @@ public class de.upb.sootup.instructions.stmt.GotoStmt extends java.lang.Object
      label1:
         if i0 >= 42 goto label2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         goto label1;
 
@@ -48,7 +48,7 @@ public class de.upb.sootup.instructions.stmt.GotoStmt extends java.lang.Object
     public void forloop()
     {
         de.upb.sootup.instructions.stmt.GotoStmt r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         int i0;
 
         r0 := @this: de.upb.sootup.instructions.stmt.GotoStmt;
@@ -58,9 +58,9 @@ public class de.upb.sootup.instructions.stmt.GotoStmt extends java.lang.Object
      label1:
         if i0 >= 10 goto label2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         i0 = i0 + 1;
 
@@ -74,16 +74,16 @@ public class de.upb.sootup.instructions.stmt.GotoStmt extends java.lang.Object
     {
         de.upb.sootup.instructions.stmt.GotoStmt r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.GotoStmt;
 
         i0 := @parameter0: int;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         if i0 != 0 goto label1;
 

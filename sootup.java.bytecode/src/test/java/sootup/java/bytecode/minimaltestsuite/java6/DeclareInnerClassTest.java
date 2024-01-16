@@ -36,8 +36,11 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
+  }
 
-    method = loadMethod(getInnerMethodSignature());
+  @Test
+  public void testInner() {
+    SootMethod method = loadMethod(getInnerMethodSignature());
     assertJimpleStmts(method, expectedInnerClassBodyStmts());
   }
 
@@ -53,7 +56,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: DeclareInnerClass",
+            "l0 := @this: DeclareInnerClass",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayOuter\")",
             "return")
@@ -71,7 +74,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedInnerClassBodyStmts() {
     return Stream.of(
-            "$l0 := @this: DeclareInnerClass$InnerClass",
+            "l0 := @this: DeclareInnerClass$InnerClass",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayInner\")",
             "return")
