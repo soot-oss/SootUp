@@ -44,7 +44,7 @@ import sootup.core.util.printer.JimplePrinter;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass {
+public class SootClass extends AbstractClass implements HasPosition {
 
   @Nonnull protected final SourceType sourceType;
   @Nonnull protected final ClassType classSignature;
@@ -261,6 +261,7 @@ public class SootClass extends AbstractClass {
   private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
 
   @Nonnull
+  @Override
   public Position getPosition() {
     return lazyPosition.get();
   }

@@ -46,10 +46,9 @@ public class RecordTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: RecordTest",
-            "$l1 := @parameter0: java.lang.Object",
-            "$stack2 = dynamicinvoke \"equals"
-                + "\" <boolean (RecordTest,java.lang.Object)>($l0, $l1) <java.lang.runtime.ObjectMethods: java.lang.Object bootstrap(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.TypeDescriptor,java.lang.Class,java.lang.String,java.lang.invoke.MethodHandle[])>(class \"LRecordTest;\", \"a;b\", methodhandle: \"REF_GET_FIELD\" <RecordTest: int a>, methodhandle: \"REF_GET_FIELD\" <RecordTest: java.lang.String b>)",
+            "l0 := @this: RecordTest",
+            "l1 := @parameter0: java.lang.Object",
+            "$stack2 = dynamicinvoke \"equals\" <boolean (RecordTest,java.lang.Object)>(l0, l1) <java.lang.runtime.ObjectMethods: java.lang.Object bootstrap(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.TypeDescriptor,java.lang.Class,java.lang.String,java.lang.invoke.MethodHandle[])>(class \"LRecordTest;\", \"a;b\", methodhandle: \"REF_GET_FIELD\" <RecordTest: int a>, methodhandle: \"REF_GET_FIELD\" <RecordTest: java.lang.String b>)",
             "return $stack2")
         .collect(Collectors.toCollection(ArrayList::new));
   }

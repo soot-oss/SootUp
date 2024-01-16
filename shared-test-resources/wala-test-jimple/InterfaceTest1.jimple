@@ -15,20 +15,20 @@ public class InterfaceTest1 extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        InterfaceTest1 $r3;
-        FooIT1 $r4;
+        InterfaceTest1 r3;
+        FooIT1 r4;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r3 = new InterfaceTest1;
+        r3 = new InterfaceTest1;
 
-        specialinvoke $r3.<InterfaceTest1: void <init>()>();
+        specialinvoke r3.<InterfaceTest1: void <init>()>();
 
-        $r4 = new FooIT1;
+        r4 = new FooIT1;
 
-        specialinvoke $r4.<FooIT1: void <init>(char)>(97);
+        specialinvoke r4.<FooIT1: void <init>(char)>(97);
 
-        interfaceinvoke $r4.<IFoo: char getValue()>();
+        interfaceinvoke r4.<IFoo: char getValue()>();
 
         return;
     }

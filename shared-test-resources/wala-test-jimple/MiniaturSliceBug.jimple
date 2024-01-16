@@ -17,9 +17,9 @@ public class MiniaturSliceBug extends java.lang.Object
     {
         MiniaturSliceBug r0;
         IntWrapper r1;
-        boolean $z0;
-        int $i0;
-        java.lang.AssertionError $r2;
+        boolean z0;
+        int i0;
+        java.lang.AssertionError r2;
 
         r0 := @this: MiniaturSliceBug;
 
@@ -27,19 +27,19 @@ public class MiniaturSliceBug extends java.lang.Object
 
         virtualinvoke r1.<IntWrapper: void setIntValue(int)>(3);
 
-        $z0 = <MiniaturSliceBug: boolean $assertionsDisabled>;
+        z0 = <MiniaturSliceBug: boolean $assertionsDisabled>;
 
-        if $z0 != 0 goto label1;
+        if z0 != 0 goto label1;
 
-        $i0 = virtualinvoke r1.<IntWrapper: int intValue()>();
+        i0 = virtualinvoke r1.<IntWrapper: int intValue()>();
 
-        if $i0 == 3 goto label1;
+        if i0 == 3 goto label1;
 
-        $r2 = new java.lang.AssertionError;
+        r2 = new java.lang.AssertionError;
 
-        specialinvoke $r2.<java.lang.AssertionError: void <init>()>();
+        specialinvoke r2.<java.lang.AssertionError: void <init>()>();
 
-        throw $r2;
+        throw r2;
 
      label1:
         virtualinvoke r1.<IntWrapper: boolean equals(java.lang.Object)>(r1);
@@ -50,44 +50,44 @@ public class MiniaturSliceBug extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        MiniaturSliceBug $r1;
-        IntWrapper $r2;
+        MiniaturSliceBug r1;
+        IntWrapper r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new MiniaturSliceBug;
+        r1 = new MiniaturSliceBug;
 
-        specialinvoke $r1.<MiniaturSliceBug: void <init>()>();
+        specialinvoke r1.<MiniaturSliceBug: void <init>()>();
 
-        $r2 = new IntWrapper;
+        r2 = new IntWrapper;
 
-        specialinvoke $r2.<IntWrapper: void <init>(int)>(-1);
+        specialinvoke r2.<IntWrapper: void <init>(int)>(-1);
 
-        virtualinvoke $r1.<MiniaturSliceBug: void validNonDispatchedCall(IntWrapper)>($r2);
+        virtualinvoke r1.<MiniaturSliceBug: void validNonDispatchedCall(IntWrapper)>(r2);
 
         return;
     }
 
     static void <clinit>()
     {
-        java.lang.Class $r0;
-        boolean $z0, $z1;
+        java.lang.Class r0;
+        boolean z0, z1;
 
-        $r0 = class "LMiniaturSliceBug;";
+        r0 = class "LMiniaturSliceBug;";
 
-        $z0 = virtualinvoke $r0.<java.lang.Class: boolean desiredAssertionStatus()>();
+        z0 = virtualinvoke r0.<java.lang.Class: boolean desiredAssertionStatus()>();
 
-        if $z0 != 0 goto label1;
+        if z0 != 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        <MiniaturSliceBug: boolean $assertionsDisabled> = $z1;
+        <MiniaturSliceBug: boolean $assertionsDisabled> = z1;
 
         return;
     }

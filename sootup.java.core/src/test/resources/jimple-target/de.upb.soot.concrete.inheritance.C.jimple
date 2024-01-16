@@ -18,13 +18,13 @@ public class de.upb.sootup.concrete.inheritance.C extends de.upb.sootup.concrete
     public void methodA()
     {
         de.upb.sootup.concrete.inheritance.C r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.C;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodAinC");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("methodAinC");
 
         return;
     }
@@ -32,13 +32,13 @@ public class de.upb.sootup.concrete.inheritance.C extends de.upb.sootup.concrete
     public void methodC()
     {
         de.upb.sootup.concrete.inheritance.C r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.C;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodC");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("methodC");
 
         return;
     }

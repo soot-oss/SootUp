@@ -16,18 +16,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b2;
-        int $i3;
-        java.io.PrintStream $r1;
+        int i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i3 = 5 + 5;
+        i3 = 5 + 5;
 
-        b2 = (byte) $i3;
+        b2 = (byte) i3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -36,18 +36,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b2;
-        int $i3;
-        java.io.PrintStream $r1;
+        int i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i3 = 5 - 5;
+        i3 = 5 - 5;
 
-        b2 = (byte) $i3;
+        b2 = (byte) i3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -56,18 +56,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b2;
-        int $i3;
-        java.io.PrintStream $r1;
+        int i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i3 = 5 * 5;
+        i3 = 5 * 5;
 
-        b2 = (byte) $i3;
+        b2 = (byte) i3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -76,18 +76,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b2;
-        int $i3;
-        java.io.PrintStream $r1;
+        int i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i3 = 5 / 5;
+        i3 = 5 / 5;
 
-        b2 = (byte) $i3;
+        b2 = (byte) i3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -96,18 +96,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b2;
-        int $i3;
-        java.io.PrintStream $r1;
+        int i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i3 = 5 % 5;
+        i3 = 5 % 5;
 
-        b2 = (byte) $i3;
+        b2 = (byte) i3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -115,13 +115,13 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void simpleAssignmentOperator()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(5);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(5);
 
         return;
     }
@@ -129,18 +129,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseAnd()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b2, $b3;
-        java.io.PrintStream $r1;
+        byte b2, b3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b3 = 5 & 5;
+        b3 = 5 & 5;
 
-        b2 = (byte) $b3;
+        b2 = (byte) b3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -148,18 +148,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseOr()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b2, $b3;
-        java.io.PrintStream $r1;
+        byte b2, b3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b3 = 5 | 5;
+        b3 = 5 | 5;
 
-        b2 = (byte) $b3;
+        b2 = (byte) b3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -167,18 +167,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseXor()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b2, $b3;
-        java.io.PrintStream $r1;
+        byte b2, b3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b3 = 5 ^ 5;
+        b3 = 5 ^ 5;
 
-        b2 = (byte) $b3;
+        b2 = (byte) b3;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -186,18 +186,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseCompliment()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b1, $b2;
-        java.io.PrintStream $r1;
+        byte b1, b2;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b2 = 5 ^ -1;
+        b2 = 5 ^ -1;
 
-        b1 = (byte) $b2;
+        b1 = (byte) b2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -206,18 +206,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
         byte b1;
-        int $i2;
-        java.io.PrintStream $r1;
+        int i2;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $i2 = 5 << 2;
+        i2 = 5 << 2;
 
-        b1 = (byte) $i2;
+        b1 = (byte) i2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -225,18 +225,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseRightShift()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b1, $b2;
-        java.io.PrintStream $r1;
+        byte b1, b2;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b2 = 5 >> 2;
+        b2 = 5 >> 2;
 
-        b1 = (byte) $b2;
+        b1 = (byte) b2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -244,18 +244,18 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void bitwiseRightShiftZerofill()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        byte b1, $b2;
-        java.io.PrintStream $r1;
+        byte b1, b2;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $b2 = 5 >>> 2;
+        b2 = 5 >>> 2;
 
-        b1 = (byte) $b2;
+        b1 = (byte) b2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -263,19 +263,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void equals()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label1;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -283,19 +283,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void notEquals()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
         goto label1;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -303,19 +303,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void greateThan()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
         goto label1;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -323,19 +323,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void lessThan()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
         goto label1;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -343,19 +343,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void greaterOrEqualsThan()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label1;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -363,19 +363,19 @@ public class de.upb.sootup.concrete.operators.ByteOps extends java.lang.Object
     public void lessOrEqualsThan()
     {
         de.upb.sootup.concrete.operators.ByteOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.ByteOps;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label1;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }

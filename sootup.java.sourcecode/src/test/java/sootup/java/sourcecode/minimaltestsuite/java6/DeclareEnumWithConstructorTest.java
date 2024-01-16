@@ -103,12 +103,12 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedMainBodyStmts() {
     return Stream.of(
-            "$r0 := @parameter0: java.lang.String[]",
-            "$r1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
-            "$r2 = $r1",
-            "$r3 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = specialinvoke $r2.<DeclareEnumWithConstructor$Number: int getValue()>()",
-            "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i0)",
+            "r0 := @parameter0: java.lang.String[]",
+            "r1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
+            "r2 = r1",
+            "r3 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = specialinvoke r2.<DeclareEnumWithConstructor$Number: int getValue()>()",
+            "virtualinvoke r3.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toList());
   }
@@ -131,18 +131,18 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedEnumConstructorStmts() {
     return Stream.of(
-            "$r0 = new DeclareEnumWithConstructor$Number",
-            "specialinvoke $r0.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ZERO\", 0, 0)",
-            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ZERO> = $r0",
-            "$r1 = new DeclareEnumWithConstructor$Number",
-            "specialinvoke $r1.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ONE\", 1, 1)",
-            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE> = $r1",
-            "$r2 = new DeclareEnumWithConstructor$Number",
-            "specialinvoke $r2.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"TWO\", 2, 2)",
-            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number TWO> = $r2",
-            "$r3 = new DeclareEnumWithConstructor$Number",
-            "specialinvoke $r3.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"THREE\", 3, 3)",
-            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number THREE> = $r3",
+            "r0 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke r0.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ZERO\", 0, 0)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ZERO> = r0",
+            "r1 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke r1.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ONE\", 1, 1)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE> = r1",
+            "r2 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke r2.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"TWO\", 2, 2)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number TWO> = r2",
+            "r3 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke r3.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"THREE\", 3, 3)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number THREE> = r3",
             "return")
         .collect(Collectors.toList());
   }
@@ -167,8 +167,8 @@ public class DeclareEnumWithConstructorTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedGetValueStmts() {
     return Stream.of(
             "r0 := @this: DeclareEnumWithConstructor$Number",
-            "$i0 = r0.<DeclareEnumWithConstructor$Number: int value>",
-            "return $i0")
+            "i0 = r0.<DeclareEnumWithConstructor$Number: int value>",
+            "return i0")
         .collect(Collectors.toList());
   }
 }

@@ -40,15 +40,15 @@ class SubFunkySupers extends FunkySupers
     {
         SubFunkySupers r0;
         FunkySupers r1;
-        int $i0;
+        int i0;
 
         r0 := @parameter0: SubFunkySupers;
 
         r1 := @parameter1: FunkySupers;
 
-        $i0 = specialinvoke r0.<FunkySupers: int funky(FunkySupers)>(r1);
+        i0 = specialinvoke r0.<FunkySupers: int funky(FunkySupers)>(r1);
 
-        return $i0;
+        return i0;
     }
 
     static int access$103(SubFunkySupers, int)

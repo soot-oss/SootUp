@@ -35,15 +35,15 @@ public class TwoClasses extends java.lang.Object
     public static void doStuff(int)
     {
         int i0, i2;
-        TwoClasses $r1;
+        TwoClasses r1;
 
         i0 := @parameter0: int;
 
-        $r1 = new TwoClasses;
+        r1 = new TwoClasses;
 
-        specialinvoke $r1.<TwoClasses: void <init>()>();
+        specialinvoke r1.<TwoClasses: void <init>()>();
 
-        virtualinvoke $r1.<TwoClasses: void instanceMethod1()>();
+        virtualinvoke r1.<TwoClasses: void instanceMethod1()>();
 
         i2 = 0;
 

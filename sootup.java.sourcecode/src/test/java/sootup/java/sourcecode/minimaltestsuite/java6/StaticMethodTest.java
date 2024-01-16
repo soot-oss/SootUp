@@ -42,8 +42,8 @@ public class StaticMethodTest extends MinimalSourceTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>(\"static method\")",
+            "r0 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>(\"static method\")",
             "return")
         .collect(Collectors.toList());
   }

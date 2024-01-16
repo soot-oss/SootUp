@@ -4,15 +4,15 @@ public class de.upb.sootup.concrete.inheritance.SuperConstructor extends java.la
     public void <init>()
     {
         de.upb.sootup.concrete.inheritance.SuperConstructor r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.SuperConstructor;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("sup");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("sup");
 
         return;
     }
@@ -21,7 +21,7 @@ public class de.upb.sootup.concrete.inheritance.SuperConstructor extends java.la
     {
         de.upb.sootup.concrete.inheritance.SuperConstructor r0;
         java.lang.String r1;
-        java.io.PrintStream $r2;
+        java.io.PrintStream r2;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.SuperConstructor;
 
@@ -29,9 +29,9 @@ public class de.upb.sootup.concrete.inheritance.SuperConstructor extends java.la
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
         return;
     }

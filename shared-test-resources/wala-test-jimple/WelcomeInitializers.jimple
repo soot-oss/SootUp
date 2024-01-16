@@ -32,15 +32,15 @@ public class WelcomeInitializers extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        WelcomeInitializers $r1;
+        WelcomeInitializers r1;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new WelcomeInitializers;
+        r1 = new WelcomeInitializers;
 
-        specialinvoke $r1.<WelcomeInitializers: void <init>()>();
+        specialinvoke r1.<WelcomeInitializers: void <init>()>();
 
-        virtualinvoke $r1.<WelcomeInitializers: void hey()>();
+        virtualinvoke r1.<WelcomeInitializers: void hey()>();
 
         return;
     }

@@ -2,6 +2,7 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
@@ -179,8 +181,8 @@ public class AggregatorTest {
   public void testIssue739() {
 
     AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            "../shared-test-resources/bugfixes/Issue739_Aggregator.class",
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             SourceType.Application,
             BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

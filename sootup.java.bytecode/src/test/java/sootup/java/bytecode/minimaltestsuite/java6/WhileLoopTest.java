@@ -34,12 +34,12 @@ public class WhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: WhileLoop",
-            "$l1 = 10",
-            "$l2 = 0",
+            "l0 := @this: WhileLoop",
+            "l1 = 10",
+            "l2 = 0",
             "label1:",
-            "if $l1 <= $l2 goto label2",
-            "$l1 = $l1 + -1",
+            "if l1 <= l2 goto label2",
+            "l1 = l1 + -1",
             "goto label1",
             "label2:",
             "return")

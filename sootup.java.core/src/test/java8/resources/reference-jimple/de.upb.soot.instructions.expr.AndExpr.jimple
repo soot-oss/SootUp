@@ -15,8 +15,8 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
     public void logicalAND(boolean, boolean)
     {
         de.upb.sootup.instructions.expr.AndExpr r0;
-        boolean z0, z1, $z3;
-        java.io.PrintStream $r1;
+        boolean z0, z1, z3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.expr.AndExpr;
 
@@ -28,17 +28,17 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
 
         if z1 == 0 goto label1;
 
-        $z3 = 1;
+        z3 = 1;
 
         goto label2;
 
      label1:
-        $z3 = 0;
+        z3 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z3);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z3);
 
         return;
     }
@@ -47,7 +47,7 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
     {
         de.upb.sootup.instructions.expr.AndExpr r0;
         int i0, i1, i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.expr.AndExpr;
 
@@ -57,9 +57,9 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
 
         i2 = i0 & i1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -68,7 +68,7 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
     {
         de.upb.sootup.instructions.expr.AndExpr r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
         byte b2;
 
         r0 := @this: de.upb.sootup.instructions.expr.AndExpr;
@@ -77,9 +77,9 @@ public class de.upb.sootup.instructions.expr.AndExpr extends java.lang.Object
 
         b2 = 0 & 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }

@@ -35,14 +35,14 @@ public class DoWhileLoopTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DoWhileLoop",
-            "$i0 = 10",
-            "$i1 = 0",
+            "i0 = 10",
+            "i1 = 0",
             "label1:",
-            "$i2 = $i1",
-            "$i3 = $i1 + 1",
-            "$i1 = $i3",
-            "$z0 = $i0 > $i1",
-            "if $z0 != 0 goto label1",
+            "i2 = i1",
+            "i3 = i1 + 1",
+            "i1 = i3",
+            "z0 = i0 > i1",
+            "if z0 != 0 goto label1",
             "return")
         .collect(Collectors.toList());
   }

@@ -505,7 +505,7 @@ public class JimpleConverterTest {
 
     assertEquals("a", Jimple.escape("a"));
     assertEquals("name$morename", Jimple.escape("name$morename"));
-    assertEquals("$i0", Jimple.escape("$i0"));
+    assertEquals("i0", Jimple.escape("i0"));
 
     // keywords
     assertEquals("\"class\"", Jimple.escape("class"));

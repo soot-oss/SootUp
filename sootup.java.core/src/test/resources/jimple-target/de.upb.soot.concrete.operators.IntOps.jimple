@@ -16,15 +16,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i2 = 5 + 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -33,15 +33,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i2 = 5 - 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -50,15 +50,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i2 = 5 * 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -67,15 +67,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i2 = 5 / 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -84,15 +84,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i2 = 5 % 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -100,13 +100,13 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     public void simpleAssignmentOperator()
     {
         de.upb.sootup.concrete.operators.IntOps r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(5);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(5);
 
         return;
     }
@@ -115,15 +115,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b2 = 5 & 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -132,15 +132,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b2 = 5 | 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -149,15 +149,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b2 = 5 ^ 5;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -166,15 +166,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b1 = 5 ^ -1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -183,15 +183,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         int i1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         i1 = 5 << 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i1);
 
         return;
     }
@@ -200,15 +200,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b1 = 5 >> 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -217,15 +217,15 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.IntOps r0;
         byte b1;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
         b1 = 5 >>> 2;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b1);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(b1);
 
         return;
     }
@@ -233,19 +233,19 @@ public class de.upb.sootup.concrete.operators.IntOps extends java.lang.Object
     public void equals()
     {
         de.upb.sootup.concrete.operators.IntOps r0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.IntOps;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label1;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }

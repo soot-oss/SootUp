@@ -46,9 +46,9 @@ public class StaticVariableTest extends MinimalSourceTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = <StaticVariable: int num>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)",
+            "r0 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = <StaticVariable: int num>",
+            "virtualinvoke r0.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
