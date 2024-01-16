@@ -43,7 +43,6 @@ import java.util.*;
 import java.util.jar.JarFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -62,6 +61,7 @@ import sootup.java.core.types.JavaClassType;
  */
 public class WalaJavaClassProvider implements ClassProvider {
 
+  private final SourceType sourceType;
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
   private List<JavaSootClass> sootClasses;
@@ -86,6 +86,7 @@ public class WalaJavaClassProvider implements ClassProvider {
       @Nonnull Set<String> sourcePath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    this.sourceType = SourceType.Application;
     // add the source directory to scope
     for (String path : sourcePath) {
       scope.addToScope(
@@ -100,6 +101,7 @@ public class WalaJavaClassProvider implements ClassProvider {
       @Nonnull Set<String> libPath,
       @Nonnull String exclusionFilePath) {
     addScopesForJava();
+    this.sourceType = SourceType.Application;
     this.sourcePath = sourcePath;
     // add the source directory to scope
     for (String path : sourcePath) {
@@ -125,6 +127,7 @@ public class WalaJavaClassProvider implements ClassProvider {
       @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    this.sourceType = SourceType.Application;
     try {
       // add the source directory to scope
       for (String path : sourcePath) {
@@ -152,7 +155,8 @@ public class WalaJavaClassProvider implements ClassProvider {
   public WalaJavaClassProvider(
       @Nonnull String sourceDirPath,
       @Nullable String exclusionFilePath,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
     // add the source directory to scope
@@ -169,7 +173,8 @@ public class WalaJavaClassProvider implements ClassProvider {
    */
   public WalaJavaClassProvider(
       @Nonnull Collection<? extends Module> moduleFiles,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     addScopesForJava();
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);

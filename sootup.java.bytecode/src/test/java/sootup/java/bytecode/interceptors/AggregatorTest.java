@@ -183,6 +183,7 @@ public class AggregatorTest {
     AnalysisInputLocation inputLocation =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
             Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
+            "",
             SourceType.Application,
             BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
@@ -16,6 +15,7 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 
@@ -32,23 +32,25 @@ public class JimpleView extends AbstractView {
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
   @Nonnull private final ClassCache cache;
-  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
+  @Nonnull protected final SourceType sourceType;
 
   private volatile boolean isFullyResolved = false;
 
   public JimpleView(@Nonnull AnalysisInputLocation inputLocation) {
-    this(Collections.singletonList(inputLocation), new FullCacheProvider());
+    this(Collections.singletonList(inputLocation));
   }
 
   public JimpleView(@Nonnull List<AnalysisInputLocation> inputLocations) {
-    this(inputLocations, new FullCacheProvider());
+    this(inputLocations, new FullCacheProvider(), SourceType.Application);
   }
 
   public JimpleView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider) {
+      @Nonnull ClassCacheProvider cacheProvider,
+      SourceType sourceType) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
+    this.sourceType = sourceType;
   }
 
   @Override
@@ -112,7 +114,7 @@ public class JimpleView extends AbstractView {
     ClassType classType = classSource.getClassType();
     SootClass theClass;
     if (!cache.hasClass(classType)) {
-      theClass = classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
+      theClass = classSource.buildClass(sourceType);
       cache.putClass(classType, theClass);
     } else {
       theClass = cache.getClass(classType);
