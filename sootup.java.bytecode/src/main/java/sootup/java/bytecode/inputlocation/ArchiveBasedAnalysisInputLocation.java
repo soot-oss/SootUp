@@ -78,7 +78,15 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
       @Nonnull Path path,
       @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    super(path, srcType, bodyInterceptors);
+    this(path, srcType, bodyInterceptors, Collections.emptyList());
+  }
+
+  public ArchiveBasedAnalysisInputLocation(
+      Path path,
+      SourceType srcType,
+      List<BodyInterceptor> bodyInterceptors,
+      Collection<Path> ignoredPaths) {
+    super(path, srcType, bodyInterceptors, ignoredPaths);
   }
 
   @Override

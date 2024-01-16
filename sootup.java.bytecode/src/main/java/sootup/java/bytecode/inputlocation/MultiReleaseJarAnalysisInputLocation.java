@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.jar.Attributes;
@@ -107,8 +108,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   protected AnalysisInputLocation createAnalysisInputLocation(Path archiveRoot) {
-    // FIXME: make the inputlocation ignore /META_INF/*
-    return PathBasedAnalysisInputLocation.create(archiveRoot, sourceType);
+    return PathBasedAnalysisInputLocation.create(archiveRoot, sourceType, bodyInterceptors, Collections.singletonList(Paths.get("/META_INF")));
   }
 
   @Override

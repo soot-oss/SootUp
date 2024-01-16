@@ -66,6 +66,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   protected final SourceType sourceType;
   protected final List<BodyInterceptor> bodyInterceptors;
   protected Path path;
+  protected Collection<Path> ignoredPaths = new ArrayList<>();
 
   protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
     this(path, srcType, Collections.emptyList());
@@ -75,7 +76,16 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @Nonnull Path path,
       @Nullable SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this(path, srcType, bodyInterceptors, Collections.emptyList());
+  }
+
+  protected PathBasedAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nullable SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull Collection<Path> ignoredPaths) {
     this.path = path;
+    this.ignoredPaths = ignoredPaths;
     this.sourceType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
@@ -99,7 +109,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
   @Nonnull
   public static PathBasedAnalysisInputLocation create(
       @Nonnull Path path, @Nonnull SourceType sourceType) {
-    return PathBasedAnalysisInputLocation.create(path, sourceType, Collections.emptyList());
+    return create(path, sourceType, Collections.emptyList());
   }
 
   @Nonnull
@@ -107,14 +117,23 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @Nonnull Path path,
       @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    return create(path, srcType, bodyInterceptors, Collections.emptyList());
+  }
+
+  @Nonnull
+  public static PathBasedAnalysisInputLocation create(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull Collection<Path> ignoredPaths) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
+      return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
     } else if (PathUtils.isArchive(path)) {
       if (PathUtils.hasExtension(path, FileType.JAR)) {
-        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
+        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
       } else if (PathUtils.hasExtension(path, FileType.WAR)) {
         try {
-          return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors);
+          return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -137,6 +156,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     try (final Stream<Path> walk = Files.walk(dirPath)) {
       return walk.filter(
               filePath ->
+                      ignoredPaths.stream().noneMatch(filePath::startsWith) &&
                   PathUtils.hasExtension(filePath, handledFileType)
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
@@ -263,7 +283,15 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
         @Nonnull Path path,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors) {
-      super(path, srcType, bodyInterceptors);
+      this(path, srcType, bodyInterceptors, Collections.emptyList());
+    }
+
+    public DirectoryBasedAnalysisInputLocation(
+        @Nonnull Path path,
+        @Nonnull SourceType srcType,
+        @Nonnull List<BodyInterceptor> bodyInterceptors,
+        @Nonnull Collection<Path> ignoredPaths) {
+      super(path, srcType, bodyInterceptors, ignoredPaths);
     }
 
     @Override
@@ -288,18 +316,20 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
         throws IOException {
-      this(warPath, srcType, Collections.emptyList());
+      this(warPath, srcType, Collections.emptyList(), Collections.emptyList());
     }
 
     private WarArchiveAnalysisInputLocation(
         @Nonnull Path warPath,
         @Nonnull SourceType srcType,
-        @Nonnull List<BodyInterceptor> bodyInterceptors)
+        @Nonnull List<BodyInterceptor> bodyInterceptors,
+        @Nonnull Collection<Path> ignoredPaths)
         throws IOException {
       super(
           Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(),
           srcType,
-          bodyInterceptors);
+          bodyInterceptors,
+          ignoredPaths);
 
       extractWarFile(warPath, path);
 
@@ -325,6 +355,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
           throw new RuntimeException(e);
         }
       }
+    }
+
+    public WarArchiveAnalysisInputLocation(
+        Path path, SourceType srcType, List<BodyInterceptor> bodyInterceptors) throws IOException {
+      this(path, srcType, bodyInterceptors, Collections.emptyList());
     }
 
     @Override

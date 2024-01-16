@@ -69,9 +69,7 @@ public class AsmJavaClassProvider implements ClassProvider {
           "ASM could not resolve class source of "
               + classType
               + " in "
-              + sourcePath
-              + " causing "
-              + exception.getMessage());
+              + sourcePath, exception);
       return Optional.empty();
     }
 
