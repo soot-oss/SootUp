@@ -24,7 +24,6 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
