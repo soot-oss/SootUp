@@ -66,10 +66,7 @@ public class AsmJavaClassProvider implements ClassProvider {
       }
     } catch (IOException | IllegalArgumentException exception) {
       logger.warn(
-          "ASM could not resolve class source of "
-              + classType
-              + " in "
-              + sourcePath, exception);
+          "ASM could not resolve class source of " + classType + " in " + sourcePath, exception);
       return Optional.empty();
     }
 

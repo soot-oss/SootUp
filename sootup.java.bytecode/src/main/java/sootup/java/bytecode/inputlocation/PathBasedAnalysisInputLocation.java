@@ -156,8 +156,8 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     try (final Stream<Path> walk = Files.walk(dirPath)) {
       return walk.filter(
               filePath ->
-                      ignoredPaths.stream().noneMatch(filePath::startsWith) &&
-                  PathUtils.hasExtension(filePath, handledFileType)
+                  ignoredPaths.stream().noneMatch(filePath::startsWith)
+                      && PathUtils.hasExtension(filePath, handledFileType)
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
               p -> {

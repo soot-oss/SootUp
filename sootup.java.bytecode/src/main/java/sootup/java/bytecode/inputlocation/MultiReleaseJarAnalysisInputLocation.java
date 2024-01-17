@@ -108,7 +108,11 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   protected AnalysisInputLocation createAnalysisInputLocation(Path archiveRoot) {
-    return PathBasedAnalysisInputLocation.create(archiveRoot, sourceType, bodyInterceptors, Collections.singletonList(Paths.get("/META_INF")));
+    return PathBasedAnalysisInputLocation.create(
+        archiveRoot,
+        sourceType,
+        bodyInterceptors,
+        Collections.singletonList(Paths.get("/META_INF")));
   }
 
   @Override
