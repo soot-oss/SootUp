@@ -56,7 +56,7 @@ public class AsmJavaClassProvider implements ClassProvider {
 
     try {
       final String actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-      if (!actualClassSignature.replace('/', '.').equals(classType.toString())) {
+      if (!actualClassSignature.replace('/', '.').equals(classType.getFullyQualifiedName().toString())) {
         throw new IllegalArgumentException(
             "The given Classtype '"
                 + classType
