@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.Method;
 import sootup.core.frontend.BodySource;
@@ -19,8 +21,10 @@ import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 public class DexMethodSource implements BodySource {
 
@@ -30,14 +34,22 @@ public class DexMethodSource implements BodySource {
   private final Method method;
   private final List<Type> parameterTypes;
 
+  private final List<BodyInterceptor> bodyInterceptors;
+
+  @Nonnull private final View<?> view;
+
   public DexMethodSource(
       ClassType classType,
       Set<Local> locals,
       MutableStmtGraph mutableStmtGraph,
       Method method,
-      List<Type> parameterTypes) {
+      List<Type> parameterTypes,
+      List<BodyInterceptor> bodyInterceptors,
+      @Nonnull View<?> view) {
+    this.view = view;
     this.classType = classType;
     this.locals = locals;
+    this.bodyInterceptors = bodyInterceptors;
     this.mutableStmtGraph = mutableStmtGraph;
     this.method = method;
     this.parameterTypes = parameterTypes;
@@ -47,11 +59,17 @@ public class DexMethodSource implements BodySource {
   @Override
   public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers)
       throws ResolveException, IOException {
+    Set<MethodModifier> modifiersSet =
+        StreamSupport.stream(modifiers.spliterator(), false).collect(Collectors.toSet());
     Body.BodyBuilder bodyBuilder =
         Body.builder(mutableStmtGraph)
+            .setModifiers(modifiersSet)
             .setMethodSignature(getSignature())
             .setPosition(NoPositionInformation.getInstance())
             .setLocals(locals);
+    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+      bodyInterceptor.interceptBody(bodyBuilder, view);
+    }
     return bodyBuilder.build();
   }
 

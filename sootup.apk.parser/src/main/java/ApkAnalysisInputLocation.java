@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import main.AndroidVersionInfo;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jf.dexlib2.iface.DexFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,19 +50,20 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
 
   private static final Logger logger = LoggerFactory.getLogger(ApkAnalysisInputLocation.class);
 
-  public ApkAnalysisInputLocation(Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
+  public ApkAnalysisInputLocation(
+      Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
     this.bodyInterceptors = bodyInterceptors;
     this.android_jar_path = getAndroidJarPath(android_jar_path, apkPath.toString());
     this.classNamesList = extractDexFilesFromPath();
-    SourceLocator.getInstance().setClassPath(this.apk_path.toString(), this.android_jar_path);
+//    SourceLocator.getInstance().setClassPath(this.apk_path.toString(), this.android_jar_path);
   }
 
   private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
     List<DexFileProvider.DexContainer<? extends DexFile>> dexFromSource;
     try {
       dexFromSource =
-          new DexFileProvider().getDexFromSource(new File(apk_path.toString()), api_version);
+          DexFileProvider.getInstance().getDexFromSource(new File(apk_path.toString()), api_version);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

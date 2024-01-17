@@ -13,7 +13,9 @@ import org.jf.dexlib2.iface.MultiDexContainer;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.*;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClassSource;
 
@@ -21,18 +23,23 @@ public class DexClassSource extends JavaSootClassSource {
 
   DexLibWrapper wrapper;
 
-  protected Map<File, DexLibWrapper> cache = new TreeMap<File, DexLibWrapper>();
-
   DexLibWrapper.ClassInformation classInformation;
 
+  List<BodyInterceptor> bodyInterceptors;
+
+  @Nonnull private final View<?> view;
+
   public DexClassSource(
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> srcNamespace,
+      @Nonnull View<?> view,
+      @Nonnull AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
-    super(srcNamespace, classSignature, sourcePath);
+    super(analysisInputLocation, classSignature, sourcePath);
     // Initialize only for the first time.
+    this.view = view;
+    this.bodyInterceptors = analysisInputLocation.getBodyInterceptors();
     if (this.wrapper == null) {
-      this.wrapper = initializeDexFile(new File(sourcePath.toString()));
+      this.wrapper = DexResolver.getInstance().initializeDexFile(new File(sourcePath.toString()));
     }
     this.classInformation = wrapper.getClassInformation(classSignature);
   }
@@ -100,18 +107,7 @@ public class DexClassSource extends JavaSootClassSource {
     return new DexMethod(dexEntry, declaringClass);
   }
 
-  private DexLibWrapper initializeDexFile(File file) {
-    DexLibWrapper wrapper = cache.get(file);
-    if (wrapper == null) {
-      wrapper = new DexLibWrapper(file);
-      cache.put(file, wrapper);
-      wrapper.initialize();
-    }
-    return wrapper;
-  }
-
   private SootMethod loadMethod(Method method, DexMethod dexMethod) {
-    SootMethod sootMethod = dexMethod.makeSootMethod(method);
-    return sootMethod;
+    return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 }

@@ -36,9 +36,10 @@ public class DexClassProvider implements ClassProvider<JavaSootClass> {
       AnalysisInputLocation<? extends SootClass<?>> inputLocation,
       Path sourcePath,
       ClassType classSignature) {
-    // TODO : In soot, they wrote this. This code makes sense, but dont know where to add this or what will happen if we dont use it.
-//    ensureDexIndex();
-    return Optional.of(new DexClassSource(inputLocation, classSignature, sourcePath));
+    // TODO : In soot, they wrote this. This code makes sense, but dont know where to add this or
+    // what will happen if we dont use it.
+    //    ensureDexIndex();
+    return Optional.of(new DexClassSource(view, inputLocation, classSignature, sourcePath));
   }
 
   private void ensureDexIndex() {
@@ -57,7 +58,7 @@ public class DexClassProvider implements ClassProvider<JavaSootClass> {
         File dexFile = new File(path);
         if (dexFile.exists()) {
           for (DexFileProvider.DexContainer<? extends DexFile> container :
-              new DexFileProvider()
+              DexFileProvider.getInstance()
                   .getDexFromSource(dexFile, getAPI_VERSIONFromClassPath(classPath))) {
             for (String className : classesOfDex(container.getBase().getDexFile())) {
               if (!index.containsKey(className)) {

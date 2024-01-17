@@ -47,8 +47,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     } else {
       // TODO : Dont know which local to use here, as of now using null which will throw an error
       // for sure.
-      JInstanceFieldRef jInstanceFieldRef = new JInstanceFieldRef(null, fieldSignature);
-      return jInstanceFieldRef;
+        return new JInstanceFieldRef(null, fieldSignature);
     }
   }
 

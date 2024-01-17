@@ -180,7 +180,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         final List<Stmt> successors = successors(stmt);
         final int successorCount = successors.size();
 
-        if (predecessors(stmt).size() == 0) {
+        if (predecessors(stmt).isEmpty()) {
           if (!(stmt == getStartingStmt()
               || getTraps().stream()
                   .map(Trap::getHandlerStmt)

@@ -33,13 +33,14 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
-import transformer.DexTrapStackTransformer;
 
 public class DexBody {
 
@@ -313,18 +314,24 @@ public class DexBody {
         + parameterNames;
   }
 
-  public SootMethod makeSootMethod(Method method, ClassType classType) {
+  public SootMethod makeSootMethod(
+      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View<?> view) {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
+    // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
+    // It is only for the case where there is a JNop Statement after the return statement. Crazy
+    // android code :(
     stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
-        new DexMethodSource(classType, locals, graph, method, parameterTypes);
+        new DexMethodSource(
+            classType, locals, graph, method, parameterTypes, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
   }
 
-  // Just a conversion code from LinkedListMultimap<BranchingStmt, List<Stmt>> to Map<BranchingStmt, List<Stmt>>.
+  // Just a conversion code from LinkedListMultimap<BranchingStmt, List<Stmt>> to Map<BranchingStmt,
+  // List<Stmt>>.
   public Map<BranchingStmt, List<Stmt>> convertMultimap(
       LinkedListMultimap<BranchingStmt, List<Stmt>> multimap) {
     Map<BranchingStmt, List<Stmt>> resultMap = new HashMap<>();
@@ -469,9 +476,6 @@ public class DexBody {
     dangling = null;
     tries = null;
     parameterNames.clear();
-    // Fix traps that do not catch exceptions
-    new DexTrapStackTransformer().transform(stmtList, traps, locals);
-    
 
     for (ReTypeableInstruction reTypeableInstruction : instructionsToRetype) {
       //                reTypeableInstruction.retype(this);
@@ -541,10 +545,9 @@ public class DexBody {
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
             logger.debug(
-                ""
-                    + String.format(
-                        "First instruction of trap handler unit not MoveException but %s",
-                        instruction.getClass().getName()));
+                    String.format(
+                            "First instruction of trap handler unit not MoveException but %s",
+                            instruction.getClass().getName()));
           } else {
             ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
@@ -560,7 +563,7 @@ public class DexBody {
   }
 
   protected String freshLocalName(String hint) {
-    if (hint == null || hint.equals("")) {
+    if (hint == null || hint.isEmpty()) {
       hint = "$local";
     }
     String fresh;
@@ -568,7 +571,7 @@ public class DexBody {
       fresh = hint;
     } else {
       for (int i = 1; ; i++) {
-        fresh = hint + Integer.toString(i);
+        fresh = hint + i;
         if (!takenLocalNames.contains(fresh)) {
           break;
         }

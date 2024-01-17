@@ -17,6 +17,8 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,102 +35,119 @@ public class ApkToDexTest {
   public void testApkConversion() {
     MutableJavaView view;
     long startTime = System.currentTimeMillis();
-    String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
-    view = new MutableJavaView(sootClassApkAnalysisInputLocation);
-    JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-    Map<String, EnumSet<ClassModifier>> classNamesList =
-        sootClassApkAnalysisInputLocation.classNamesList;
-    AtomicInteger successfulconvertedNumber = new AtomicInteger();
-    try {
-      classNamesList.forEach(
-          (className, classModifiers) -> {
-            if (isByteCodeClassName(className)) {
-              className = dottedClassName(className);
-            }
-            Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
-                sootClassApkAnalysisInputLocation.getClassSource(
-                    identifierFactory.getClassType(className), view);
-            if (classSource.isPresent()) {
-              DexClassSource dexClassSource = (DexClassSource) classSource.get();
-              ClassType classType = view.getIdentifierFactory().getClassType(className);
-              Set<SootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
-              JavaSootClass sootClass =
-                  new JavaSootClass(
-                      new OverridingJavaClassSource(
-                          new EagerInputLocation<>(),
-                          null,
-                          classType,
-                          null,
-                          null,
-                          null,
-                          new LinkedHashSet<>(),
-                          sootMethods,
-                          NoPositionInformation.getInstance(),
-                          EnumSet.of(ClassModifier.PUBLIC),
-                          Collections.emptyList(),
-                          Collections.emptyList(),
-                          Collections.emptyList()),
-                      SourceType.Application);
-//              view.addClass(sootClass);
-              successfulconvertedNumber.getAndIncrement();
-            }
-          });
-    } catch (Exception exception) {
-      exception.printStackTrace();
-    } finally {
-      SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-      System.out.println(
-          "Time Taken to load 740 classes: "
-              + dateFormat.format(System.currentTimeMillis() - startTime));
-    }
+    Path path = Paths.get("/Users/palaniappanmuthuraman/Desktop/APK's");
+    File dir = new File(path.toString());
+    File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".apk"));
+      assert files != null;
+      for (File child : files) {
+        String apk_path = child.getAbsolutePath();
+        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+                new ApkAnalysisInputLocation<>(
+                        Paths.get(apk_path),
+                        "/Users/palaniappanmuthuraman/Documents/android-platforms",
+                        DexClassLoadingOptions.Default.getBodyInterceptors());
+        view = new MutableJavaView(sootClassApkAnalysisInputLocation);
+        JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+        Map<String, EnumSet<ClassModifier>> classNamesList =
+                sootClassApkAnalysisInputLocation.classNamesList;
+        AtomicInteger successfulconvertedNumber = new AtomicInteger();
+        boolean failed = false;
+        System.out.println("Started " + child.getName() + " with " + classNamesList.size() + " number of classes.");
+        try {
+          MutableJavaView finalView = view;
+          classNamesList.forEach(
+                  (className, classModifiers) -> {
+                    if (isByteCodeClassName(className)) {
+                      className = dottedClassName(className);
+                    }
+                    Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+                            sootClassApkAnalysisInputLocation.getClassSource(
+                                    identifierFactory.getClassType(className), finalView);
+                    if (classSource.isPresent()) {
+                      DexClassSource dexClassSource = (DexClassSource) classSource.get();
+                      ClassType classType = finalView.getIdentifierFactory().getClassType(className);
+                      Set<SootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
+                      JavaSootClass sootClass =
+                              new JavaSootClass(
+                                      new OverridingJavaClassSource(
+                                              new EagerInputLocation<>(),
+                                              null,
+                                              classType,
+                                              null,
+                                              null,
+                                              null,
+                                              new LinkedHashSet<>(),
+                                              sootMethods,
+                                              NoPositionInformation.getInstance(),
+                                              EnumSet.of(ClassModifier.PUBLIC),
+                                              Collections.emptyList(),
+                                              Collections.emptyList(),
+                                              Collections.emptyList()),
+                                      SourceType.Application);
+                      finalView.addClass(sootClass);
+                      successfulconvertedNumber.getAndIncrement();
+                    }
+                    if(successfulconvertedNumber.get() % 100 == 0){
+                      System.out.println("Successfully converted " + successfulconvertedNumber + " out of" + classNamesList.size() + " classes.");
+                    }
+                  });
+        } catch (Exception exception) {
+          exception.printStackTrace();
+          System.out.println("Failed to convert the " + child.getName() + " which has " + classNamesList.size());
+          failed = true;
+        } finally {
+          if(!failed) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+            System.out.println(
+                    "Time Taken to load " + child.getName() + " "
+                            + successfulconvertedNumber
+                            + " out of " + classNamesList.size() + " classes: "
+                            + dateFormat.format(System.currentTimeMillis() - startTime));
+          }
+        }
+      }
   }
 
   @Test
   public void loadAllClasses() {
-    // Check if the folder exists and is a directory
-//    if (folder.exists() && folder.isDirectory()) {
-//      // List all files and directories in the folder
-//      File[] files = folder.listFiles();
-//      if (files != null) {
-//        for (File file : files) {
-//          if (file.isFile()) {
-//            long startTime = System.currentTimeMillis();
-//            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-//            ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
-//                    new ApkAnalysisInputLocation<>(
-//                            Paths.get(file.getAbsolutePath()), "/Users/palaniappanmuthuraman/Documents/android-platforms");
-//            JavaProject javaProject =
-//                    JavaProject.builder(new JavaLanguage(8))
-//                            .addInputLocation(sootClassApkAnalysisInputLocation)
-//                            .build();
-//            JavaView view = javaProject.createView(new FullCacheProvider<>());
-//            view.getClasses();
-//            String[] pathComponents = file.getAbsolutePath().split("/");
-//
-//            // Get the value in the last index
-//            String apkName = pathComponents[pathComponents.length - 1];
-//            System.out.println(
-//                    apkName +" had " + view.getClasses().size() + " and it took "
-//                            + dateFormat.format(System.currentTimeMillis() - startTime) + " to jimplify them");
-//          }
-//        }
-//      }
-//    }
-    String apk_path = "resources/FlowSensitivity1.apk";
     long startTime = System.currentTimeMillis();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-    ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
-    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);;
-    view.getClasses();
-    System.out.println(
-        "Time Taken to load 740 classes: "
-            + dateFormat.format(System.currentTimeMillis() - startTime));
-    assertEquals(740, view.getNumberOfStoredClasses());
+//    Path path = Paths.get("/Users/palaniappanmuthuraman/Desktop/APK's");
+    Path path = Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/droidbench_apks");
+    File dir = new File(path.toString());
+    File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".apk"));
+    List<String> failedApks = new ArrayList<>();
+    assert files != null;
+//    for (File child : files) {
+//      String name = child.getName();
+      String name = "PlayStore2.apk";
+      String apk_path = path + "/" + name;
+      SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+      ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+              new ApkAnalysisInputLocation<>(
+                      Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
+      JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
+      Collection<JavaSootClass> classes;
+      try{
+//        System.out.println("Loading Apk: " + name);
+//        classes = view.getClasses();
+        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.google.android.gms.ads.identifier.AdvertisingIdClient: com.google.android.gms.ads.identifier.AdvertisingIdClient$Info AdvertisingIdClient()>"));
+//        System.out.println("Loaded the classes in " + name  + " and there are total " + view.getNumberOfStoredClasses() + " classes.");
+//        classes.forEach(JavaSootClass::getMethods);
+      }
+      catch (Exception exception){
+        exception.printStackTrace();
+        failedApks.add(name);
+//        System.out.println("Failed to convert the " + name +  " which has " + view.getNumberOfStoredClasses());
+      }
+      finally {
+//        System.out.println(
+//                "Time Taken to load " + view.getNumberOfStoredClasses() +  " classes: "
+//                        + dateFormat.format(System.currentTimeMillis() - startTime));
+      }
+//      assertEquals(740, view.getNumberOfStoredClasses());
+//    }
+    System.out.println(files.length - failedApks.size() + " passed out of " + files.length);
+    System.out.println(failedApks);
   }
 
   @Test

@@ -2,13 +2,17 @@ package dexpler;
 
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
 import main.DexBody;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.model.SootMethod;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 public class DexMethod {
 
@@ -21,7 +25,8 @@ public class DexMethod {
     this.declaringclassType = declaringClass;
   }
 
-  public SootMethod makeSootMethod(final Method method) {
+  public SootMethod makeSootMethod(
+      final Method method, List<BodyInterceptor> bodyInterceptors, @Nonnull View<?> view) {
     //        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" +
     // "**********");
     int modifierFlags = method.getAccessFlags();
@@ -32,11 +37,14 @@ public class DexMethod {
               Collections.emptySet(),
               new MutableBlockStmtGraph(),
               method,
-              Collections.emptyList());
+              Collections.emptyList(),
+              bodyInterceptors,
+              view);
       return dexMethodSource.makeSootMethod();
     } else {
       DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
-      SootMethod sootMethod = dexBody.makeSootMethod(method, declaringclassType);
+      SootMethod sootMethod =
+          dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
       //            System.out.println(sootMethod.getBody() + "\n" + "*********");
       return sootMethod;
     }

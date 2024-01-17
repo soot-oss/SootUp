@@ -1,13 +1,14 @@
+import java.util.List;
+import javax.annotation.Nonnull;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.transform.BodyInterceptor;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-public class DexClassLoadingOptions implements ClassLoadingOptions {
+public enum DexClassLoadingOptions implements ClassLoadingOptions {
+  Default {
     @Nonnull
     @Override
     public List<BodyInterceptor> getBodyInterceptors() {
-        return null;
+      return DexBodyInterceptors.Default.bodyInterceptors();
     }
+  }
 }

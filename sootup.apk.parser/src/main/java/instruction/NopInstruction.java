@@ -11,9 +11,8 @@ public class NopInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     setStmt(jNopStmt);
-    // TODO: In one example, there comes NoOp Instruction after the return statement, dont know how
-    // to handle. Should discuss with Kadiray.
-    //        body.add(jNopStmt);
+    // TODO: In one example, there comes NoOp Instruction after the return statement, dont know how to handle
+    body.add(jNopStmt);
   }
 
   public NopInstruction(Instruction instruction, int codeAddress) {

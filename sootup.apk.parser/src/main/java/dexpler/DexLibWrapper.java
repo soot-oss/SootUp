@@ -44,7 +44,7 @@ public class DexLibWrapper {
     try {
       // TODO Change the api_version to some common place
       List<DexFileProvider.DexContainer<? extends DexFile>> containers =
-          new DexFileProvider().getDexFromSource(dexSource, 15);
+          DexFileProvider.getInstance().getDexFromSource(dexSource, 15);
       this.dexFiles = new ArrayList<>(containers.size());
       for (DexFileProvider.DexContainer<? extends DexFile> container : containers) {
         this.dexFiles.add(container.getBase());
@@ -72,10 +72,10 @@ public class DexLibWrapper {
         for (DexBackedTypeReference typeRef : ((DexBackedDexFile) dexFile).getTypeReferences()) {
           String t = typeRef.getType();
 
-          Type st = DexUtil.toSootType(t, 0);
-          if (st != null && st instanceof ArrayType) {
-            st = ((ArrayType) st).getBaseType();
-          }
+//          Type st = DexUtil.toSootType(t, 0);
+//          if (st != null && st instanceof ArrayType) {
+//            st = ((ArrayType) st).getBaseType();
+//          }
           //                    String sootTypeName = st.toString();
           //                    if (!Scene.v().containsClass(sootTypeName)) {
           //                        if (st instanceof PrimType || st instanceof VoidType ||

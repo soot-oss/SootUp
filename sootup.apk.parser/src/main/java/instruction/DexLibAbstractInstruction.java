@@ -25,22 +25,6 @@ public abstract class DexLibAbstractInstruction {
     return instruction;
   }
 
-  //    public void addBranchingStmtMap(BranchingStmt branchingStmt, DexLibAbstractInstruction
-  // dexLibAbstractInstruction){
-  //        branchingStmtInstructionHashMap.put(branchingStmt, dexLibAbstractInstruction);
-  //    }
-
-  //    public BranchingStmt getFirstEntryFromBranchingMap(){
-  //        Iterator<Map.Entry<BranchingStmt, DexLibAbstractInstruction>> iterator =
-  // branchingStmtInstructionHashMap.entrySet().iterator();
-  //        return iterator.hasNext() ? iterator.next().getKey() : null;
-  //    }
-
-  //    public HashMap<BranchingStmt, DexLibAbstractInstruction>
-  // getBranchingStmtInstructionHashMap() {
-  //        return branchingStmtInstructionHashMap;
-  //    }
-
   /**
    * Jimplify this instruction.
    *

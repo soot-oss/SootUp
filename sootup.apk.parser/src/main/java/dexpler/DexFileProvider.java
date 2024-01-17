@@ -17,7 +17,14 @@ public class DexFileProvider {
 
   private int api_version;
 
-  public DexFileProvider() {}
+  private static DexFileProvider instance;
+
+  public static DexFileProvider getInstance() {
+    if (instance == null) {
+      instance = new DexFileProvider();
+    }
+    return instance;
+  }
 
   private static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
       new Comparator<DexContainer<? extends DexFile>>() {
@@ -148,7 +155,7 @@ public class DexFileProvider {
       String entryName = entryNameIterator.previous();
       MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
       entryName = deriveDexName(entryName);
-      logger.debug(
+      logger.info(
           ""
               + String.format(
                   "Found dex file '%s' with %d classes in '%s'",

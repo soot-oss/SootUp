@@ -282,6 +282,10 @@ public class InstructionFactory {
       case INT_TO_CHAR:
       case INT_TO_SHORT:
         return new CastInstruction(instruction, codeAddress);
+      case FILLED_NEW_ARRAY:
+        return new FilledNewArrayInstruction(instruction, codeAddress);
+      case FILLED_NEW_ARRAY_RANGE:
+        return new FilledNewArrayRangeInstruction(instruction, codeAddress);
       default:
         throw new IllegalArgumentException(
             "Opcode: " + opcode + " @ 0x" + Integer.toHexString(codeAddress));

@@ -282,7 +282,9 @@ public class LocalSplitter implements BodyInterceptor {
       @Nonnull Stmt oldStmt,
       @Nonnull Stmt newStmt) {
 
-    builder.replaceStmt(oldStmt, newStmt);
+    if (builder.getStmts().contains(oldStmt)) {
+      builder.replaceStmt(oldStmt, newStmt);
+    }
 
     // adapt VisitList
     final int index = stmtIterationList.indexOf(oldStmt);
