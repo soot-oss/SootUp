@@ -86,28 +86,26 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   @Override
   @Nonnull
   public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
-    try (FileSystem fs = fileSystemCache.get(path)){
+      try{
+      FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       return getClassSourceInternal(
           (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-    } catch (IOException e) {
-        throw new RuntimeException(e);
     }
   }
 
   @Override
   @Nonnull
   public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    try (FileSystem fs = fileSystemCache.get(path)) {
+    try{
+        FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 }
