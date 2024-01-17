@@ -70,16 +70,16 @@ public class LocalSplitterTest {
         Map<Stmt, List<Pair<Stmt, Value>>> actual = localSplitter.getStmtToUses(Body.builder(originalBody, Collections.emptySet()));
         Map<Stmt, List<Pair<Stmt, Value>>> expected = new HashMap<>();
 
-        Stmt s1 = getStmt(originalBody, "$l2 = 1");
+        Stmt s1 = getStmt(originalBody, "$l1 = 0");
         List<Pair<Stmt, Value>> s1Uses = new ArrayList<>();
-        Stmt l1_gets_l2_plus_1 = getStmt(originalBody, "$l1 = $l2 + 1");
-        s1Uses.add(new MutablePair<>(l1_gets_l2_plus_1, l1_gets_l2_plus_1.getUses().get(1)));
+        Stmt l1_gets_l1_plus_1 = getStmt(originalBody, "$l1 = $l1 + 1");
+        s1Uses.add(new MutablePair<>(l1_gets_l1_plus_1, l1_gets_l1_plus_1.getUses().get(1)));
         expected.put(s1, s1Uses);
 
-        Stmt s2 = l1_gets_l2_plus_1;
-        Stmt l2_gets_l1_plus_1 = getStmt(originalBody, "$l2 = $l1 + 1");
+        Stmt s2 = getStmt(originalBody, "$l2 = 1");
+        Stmt l2_gets_l2_plus_1 = getStmt(originalBody, "$l2 = $l2 + 1");
         List<Pair<Stmt, Value>> s2Uses = new ArrayList<>();
-        s2Uses.add(new MutablePair<>(l2_gets_l1_plus_1, l2_gets_l1_plus_1.getUses().get(1)));
+        s2Uses.add(new MutablePair<>(l2_gets_l2_plus_1, l2_gets_l2_plus_1.getUses().get(1)));
         expected.put(s2, s2Uses);
 
         assertTrue(expected.keySet().containsAll(actual.keySet()));
