@@ -37,7 +37,6 @@ public class CheckInitValidator implements BodyValidator {
   public List<ValidationException> validate(Body body, View view) {
 
     List<ValidationException> validationException = new ArrayList<>();
-    StmtGraph<?> g = body.getStmtGraph();
     List<String> predecessors = new ArrayList<>();
     for (Stmt s : body.getStmts()) {
       predecessors.add(s.toString());
