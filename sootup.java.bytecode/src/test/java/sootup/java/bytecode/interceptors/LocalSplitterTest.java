@@ -1,29 +1,28 @@
 package sootup.java.bytecode.interceptors;
 
 import categories.Java8Test;
-import com.sun.jdi.IntegerType;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,11 +39,66 @@ public class LocalSplitterTest {
     }
 
     @Test
+    public void testStmtToUsesSimpleAssignment(){
+        Body originalBody = getBody("case0");
+        LocalSplitter localSplitter = new LocalSplitter();
+        Map<Stmt, List<Pair<Stmt, Value>>> actual = localSplitter.getStmtToUses(Body.builder(originalBody, Collections.emptySet()));
+        Map<Stmt, List<Pair<Stmt, Value>>> expected = new HashMap<>();
+
+        Stmt s1 = getStmt(originalBody, "$l2 = 1");
+        List<Pair<Stmt, Value>> s1Uses = new ArrayList<>();
+        Stmt l1_gets_l2_plus_1 = getStmt(originalBody, "$l1 = $l2 + 1");
+        s1Uses.add(new MutablePair<>(l1_gets_l2_plus_1, l1_gets_l2_plus_1.getUses().get(1)));
+        expected.put(s1, s1Uses);
+
+        Stmt s2 = l1_gets_l2_plus_1;
+        Stmt l2_gets_l1_plus_1 = getStmt(originalBody, "$l2 = $l1 + 1");
+        List<Pair<Stmt, Value>> s2Uses = new ArrayList<>();
+        s2Uses.add(new MutablePair<>(l2_gets_l1_plus_1, l2_gets_l1_plus_1.getUses().get(1)));
+        expected.put(s2, s2Uses);
+
+        assertTrue(expected.keySet().containsAll(actual.keySet()));
+        assertTrue(expected.values().containsAll(actual.values()));
+        assertTrue(actual.keySet().containsAll(expected.keySet()));
+        assertTrue(actual.values().containsAll(expected.values()));
+    }
+
+    @Test
+    public void testStmtToUsesSelfAssignment(){
+        Body originalBody = getBody("case1");
+        LocalSplitter localSplitter = new LocalSplitter();
+        Map<Stmt, List<Pair<Stmt, Value>>> actual = localSplitter.getStmtToUses(Body.builder(originalBody, Collections.emptySet()));
+        Map<Stmt, List<Pair<Stmt, Value>>> expected = new HashMap<>();
+
+        Stmt s1 = getStmt(originalBody, "$l2 = 1");
+        List<Pair<Stmt, Value>> s1Uses = new ArrayList<>();
+        Stmt l1_gets_l2_plus_1 = getStmt(originalBody, "$l1 = $l2 + 1");
+        s1Uses.add(new MutablePair<>(l1_gets_l2_plus_1, l1_gets_l2_plus_1.getUses().get(1)));
+        expected.put(s1, s1Uses);
+
+        Stmt s2 = l1_gets_l2_plus_1;
+        Stmt l2_gets_l1_plus_1 = getStmt(originalBody, "$l2 = $l1 + 1");
+        List<Pair<Stmt, Value>> s2Uses = new ArrayList<>();
+        s2Uses.add(new MutablePair<>(l2_gets_l1_plus_1, l2_gets_l1_plus_1.getUses().get(1)));
+        expected.put(s2, s2Uses);
+
+        assertTrue(expected.keySet().containsAll(actual.keySet()));
+        assertTrue(expected.values().containsAll(actual.values()));
+        assertTrue(actual.keySet().containsAll(expected.keySet()));
+        assertTrue(actual.values().containsAll(expected.values()));
+    }
+
+
+
+
+    private Stmt getStmt(Body body, String s){
+        return body.getStmts().stream().filter(e -> e.toString().equals(s)).findFirst().get();
+    }
+
+
+    @Test
     public void testSimpleAssignment() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case0", Collections.EMPTY_LIST, VoidType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case0");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -72,12 +126,17 @@ public class LocalSplitterTest {
         assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
     }
 
-    @Test
-    public void testSelfAssignment() {
+    private Body getBody(String methodName) {
         ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case1", Collections.EMPTY_LIST, VoidType.getInstance()));
+        MethodSignature sig = new MethodSignature(type, new MethodSubSignature(methodName, Collections.EMPTY_LIST, VoidType.getInstance()));
         SootMethod sootMethod = view.getMethod(sig).get();
         Body originalBody = sootMethod.getBody();
+        return originalBody;
+    }
+
+    @Test
+    public void testSelfAssignment() {
+        Body originalBody = getBody("case1");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -107,10 +166,7 @@ public class LocalSplitterTest {
 
     @Test
     public void testBranch() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case2", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case2");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -146,10 +202,7 @@ public class LocalSplitterTest {
 
     @Test
     public void testBranchMoreLocals() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case3", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case3");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -191,10 +244,7 @@ public class LocalSplitterTest {
 
     @Test
     public void testBranchMoreBranches() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case4", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case4");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -247,10 +297,7 @@ public class LocalSplitterTest {
 
     @Test
     public void testBranchElseIf() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case5", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case5");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
@@ -297,10 +344,7 @@ public class LocalSplitterTest {
 
     @Test
     public void testForLoop() {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        MethodSignature sig = new MethodSignature(type, new MethodSubSignature("case6", Collections.EMPTY_LIST, PrimitiveType.IntType.getInstance()));
-        SootMethod sootMethod = view.getMethod(sig).get();
-        Body originalBody = sootMethod.getBody();
+        Body originalBody = getBody("case6");
 
         List<Local> expectedLocals = new ArrayList<>();
         expectedLocals.addAll(originalBody.getLocals());
