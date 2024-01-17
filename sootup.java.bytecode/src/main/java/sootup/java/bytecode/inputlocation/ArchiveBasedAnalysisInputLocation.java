@@ -32,7 +32,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.model.SourceType;
@@ -50,8 +49,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   // cache can be safely shared in a static variable.
   protected static final LoadingCache<Path, FileSystem> fileSystemCache =
       CacheBuilder.newBuilder()
-              .weakValues()
-              .removalListener(
+          .weakValues()
+          .removalListener(
               (RemovalNotification<Path, FileSystem> removalNotification) -> {
                 try {
                   removalNotification.getValue().close();
@@ -86,7 +85,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   @Override
   @Nonnull
   public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
-      try{
+    try {
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       return getClassSourceInternal(
@@ -99,8 +98,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   @Override
   @Nonnull
   public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    try{
-        FileSystem fs = fileSystemCache.get(path);
+    try {
+      FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
