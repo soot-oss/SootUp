@@ -50,7 +50,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   // cache can be safely shared in a static variable.
   protected static final LoadingCache<Path, FileSystem> fileSystemCache =
       CacheBuilder.newBuilder()
-          .removalListener(
+              .weakValues()
+              .removalListener(
               (RemovalNotification<Path, FileSystem> removalNotification) -> {
                 try {
                   removalNotification.getValue().close();
@@ -59,7 +60,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                       "Could not close file system of " + removalNotification.getKey(), e);
                 }
               })
-          .expireAfterAccess(1, TimeUnit.SECONDS)
+          // .expireAfterAccess(1, TimeUnit.SECONDS)
           .build(
               CacheLoader.from(
                   path -> {
@@ -85,25 +86,26 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   @Override
   @Nonnull
   public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
-    try {
-      FileSystem fs = fileSystemCache.get(path);
+    try (FileSystem fs = fileSystemCache.get(path)){
       final Path archiveRoot = fs.getPath("/");
       return getClassSourceInternal(
           (JavaClassType) type, archiveRoot, new AsmJavaClassProvider(view));
     } catch (ExecutionException e) {
       throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
+    } catch (IOException e) {
+        throw new RuntimeException(e);
     }
   }
 
   @Override
   @Nonnull
   public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    // we don't use the filesystem cache here as it could close the filesystem after the timeout
-    // while we are still iterating
-    try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
+    try (FileSystem fs = fileSystemCache.get(path)) {
       final Path archiveRoot = fs.getPath("/");
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
+    } catch (ExecutionException e) {
+      throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
