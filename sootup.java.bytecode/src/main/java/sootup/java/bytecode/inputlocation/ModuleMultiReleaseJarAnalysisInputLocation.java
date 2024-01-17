@@ -25,7 +25,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
   protected ModuleInfoAnalysisInputLocation createAnalysisInputLocation(@Nonnull Path path) {
     try {
       return new JavaModulePathAnalysisInputLocation(
-          path.toString(), fileSystemCache.get(this.path), sourceType);
+          path, fileSystemCache.get(this.path), sourceType);
     } catch (ExecutionException e) {
       throw new IllegalArgumentException("Could not open filesystemcache.", e);
     }

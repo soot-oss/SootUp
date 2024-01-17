@@ -23,6 +23,7 @@ package sootup.java.bytecode.inputlocation;
 import com.google.common.base.Preconditions;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,17 +63,17 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
    *     SootClassSource}es for the files found on the class path
    */
-  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
+  public JavaModulePathAnalysisInputLocation(@Nonnull Path modulePath) {
     this(modulePath, SourceType.Application);
   }
 
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull SourceType sourcetype) {
+      @Nonnull Path modulePath, @Nonnull SourceType sourcetype) {
     this(modulePath, FileSystems.getDefault(), sourcetype);
   }
 
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
+      @Nonnull Path modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
     this(modulePath, fileSystem, sourcetype, new ArrayList<>());
   }
 
@@ -85,7 +86,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath,
+      @Nonnull Path modulePath,
       @Nonnull FileSystem fileSystem,
       @Nonnull SourceType sourcetype,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {

@@ -161,6 +161,10 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return language;
   }
 
+  /**
+   * lists all versions from the version directories inside the META_INF/ directory - excluding the
+   * default implemention version
+   */
   @Nonnull
   public List<Integer> getAvailableVersions() {
     return availableVersions;

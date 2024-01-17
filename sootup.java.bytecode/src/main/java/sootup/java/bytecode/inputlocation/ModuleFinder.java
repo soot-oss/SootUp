@@ -76,10 +76,10 @@ public class ModuleFinder {
    * @param sourceType
    */
   public ModuleFinder(
-      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourceType) {
+      @Nonnull Path modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourceType) {
     this.sourceType = sourceType;
     this.modulePathEntries =
-        JavaClassPathAnalysisInputLocation.explode(modulePath, fileSystem)
+        JavaClassPathAnalysisInputLocation.explode(modulePath.toString(), fileSystem)
             .collect(Collectors.toList());
     for (Path modulePathEntry : modulePathEntries) {
       if (!Files.exists(modulePathEntry)) {
@@ -93,11 +93,11 @@ public class ModuleFinder {
     }
   }
 
-  public ModuleFinder(@Nonnull String modulePath, @Nonnull SourceType sourceType) {
+  public ModuleFinder(@Nonnull Path modulePath, @Nonnull SourceType sourceType) {
     this(modulePath, FileSystems.getDefault(), sourceType);
   }
 
-  public ModuleFinder(@Nonnull String modulePath) {
+  public ModuleFinder(@Nonnull Path modulePath) {
     this(modulePath, FileSystems.getDefault(), SourceType.Application);
   }
 

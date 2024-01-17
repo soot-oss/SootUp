@@ -2,11 +2,15 @@ package sootup.java.bytecode.inputlocation;
 
 import static org.junit.Assert.*;
 
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import categories.Java9Test;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -18,6 +22,7 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
+@Category(Java9Test.class)
 public class JavaModulePathAnalysisInputLocationTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
@@ -26,7 +31,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testJarModule() {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar/"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "uses-provides/jar/")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -45,7 +50,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testExplodedModule() {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/exploded_module/"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "uses-provides/exploded_module/")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -64,7 +69,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testGetModuleInfo() {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -110,7 +115,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testGetClassSources() {
     JavaModulePathAnalysisInputLocation inputLocation =
-        new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
+        new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar"));
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(inputLocation);
@@ -123,7 +128,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   @Test
   public void testGetModules() {
     JavaModulePathAnalysisInputLocation inputLocation =
-        new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar");
+        new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar"));
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(inputLocation);
