@@ -19,6 +19,8 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
   public ModuleMultiReleaseJarAnalysisInputLocation(
       @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
     super(path, srcType, language);
+
+    throw new UnsupportedOperationException("not fully implemented, yet!");
   }
 
   @Override

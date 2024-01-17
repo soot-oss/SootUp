@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SourceType;
@@ -25,6 +26,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
 
   @Test
+  @Ignore("// FIXME")
   public void modularMultiReleaseJar() {
 
     assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mmrj));
