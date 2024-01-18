@@ -88,7 +88,6 @@ public class PTAOption extends Options {
         "ptsall",
         "dumpallpts",
         "Dump points-to of lib vars results to output/pts.txt (default value: false)");
-    addOption("pag", "dumppag", "Print PAG to terminal. (default value: false)");
     addOption("pts", "dumppts", "Dump points-to results to output/pts.txt (default value: false)");
 
     // general PTA configurations
@@ -237,9 +236,6 @@ public class PTAOption extends Options {
     if (cmd.hasOption("dumpallpts")) {
       PTAConfig.v().getOutConfig().dumppts = true;
       PTAConfig.v().getOutConfig().dumplibpts = true;
-    }
-    if (cmd.hasOption("dumppag")) {
-      PTAConfig.v().getOutConfig().dumppag = true;
     }
     if (cmd.hasOption("dumpstats")) {
       PTAConfig.v().getOutConfig().dumpStats = true;

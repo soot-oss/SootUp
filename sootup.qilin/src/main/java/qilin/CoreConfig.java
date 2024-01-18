@@ -101,9 +101,6 @@ public class CoreConfig {
     /** Main class for the application. */
     public String MAIN_CLASS = null;
 
-    /** include selected packages which are not analyzed by default */
-    public List<String> INCLUDE = null;
-
     /** exclude selected packages */
     public List<String> EXCLUDE = null;
 
@@ -122,9 +119,6 @@ public class CoreConfig {
 
     /** if true, dump pts of vars in library */
     public boolean dumplibpts = false;
-
-    /** print a PAG graph */
-    public boolean dumppag = false;
 
     /** if true, dump stats into files. */
     public boolean dumpStats = false;

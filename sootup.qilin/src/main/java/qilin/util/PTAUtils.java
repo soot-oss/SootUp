@@ -39,11 +39,7 @@ import qilin.util.queue.UniqueQueue;
 import soot.Context;
 import soot.Kind;
 import soot.MethodOrMethodContext;
-import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
-import soot.util.dot.DotGraph;
-import soot.util.dot.DotGraphConstants;
-import soot.util.dot.DotGraphNode;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
@@ -189,89 +185,6 @@ public final class PTAUtils {
     System.out.print(ret);
   }
 
-  /** dump callgraph to sootoutput/callgraph.dot */
-  public static void dumpCallGraph(Iterable<Edge> callgraph, boolean appOnly) {
-    String filename = "callgraph";
-    DotGraph canvas = setDotGraph(filename);
-
-    int mn = -1;
-    Set<String> methodSet = new HashSet<>();
-    List<String> methodList = new ArrayList<>();
-
-    for (Edge edge : callgraph) {
-      MethodOrMethodContext srcmtd = edge.getSrc();
-      if (appOnly && !PTAUtils.isApplicationMethod(srcmtd.method())) continue;
-      MethodOrMethodContext dstmtd = edge.getTgt();
-      String srcName = srcmtd.toString();
-
-      if (methodSet.add(srcName)) {
-        canvas.drawNode(srcName).setLabel("" + ++mn);
-        methodList.add(mn, srcName);
-      }
-      String dstName = dstmtd.toString();
-
-      if (methodSet.add(dstName)) {
-        canvas.drawNode(dstName).setLabel("" + ++mn);
-        methodList.add(mn, dstName);
-      }
-      canvas.drawEdge(srcName, dstName);
-    }
-
-    plotDotGraph(canvas, filename);
-    try {
-      PrintWriter out = new PrintWriter(new File(output_dir, "callgraphnodes"));
-      for (int i = 0; i < methodList.size(); i++) out.println(i + ":" + methodList.get(i));
-      out.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /** slice a callgrph, put nodes &edges related to method into set1&set2 */
-  private static void slice(
-      CallGraph callgraph,
-      MethodOrMethodContext method,
-      Set<MethodOrMethodContext> set1,
-      Set<Edge> set2) {
-    for (Iterator<Edge> it = callgraph.edgesInto(method); it.hasNext(); ) {
-      Edge edge = it.next();
-      set2.add(edge);
-      MethodOrMethodContext src = edge.getSrc();
-      if (set1.add(src)) slice(callgraph, src, set1, set2);
-    }
-  }
-
-  /** dump callgraph strench to method */
-  public static void dumpSlicedCallGraph(CallGraph callgraph, MethodOrMethodContext method) {
-    Set<MethodOrMethodContext> tgts = new HashSet<>();
-    Set<Edge> edges = new HashSet<>();
-    tgts.add(method);
-    slice(callgraph, method, tgts, edges);
-
-    dumpCallGraph(edges, false);
-  }
-
-  /** dump callgraph from entry to the method */
-  public static void dumpSlicedCallGraph2(CallGraph callgraph, MethodOrMethodContext method) {
-    Set<Edge> edges = new HashSet<>();
-    Set<MethodOrMethodContext> visited = new HashSet<>();
-    Queue<MethodOrMethodContext> queue = new UniqueQueue<>();
-    queue.add(method);
-    while (!queue.isEmpty()) {
-      MethodOrMethodContext front = queue.poll();
-      for (Iterator<Edge> it = callgraph.edgesInto(front); it.hasNext(); ) {
-        Edge edge = it.next();
-        MethodOrMethodContext src = edge.getSrc();
-        if (visited.add(src)) {
-          queue.add(src);
-          edges.add(edge);
-          break;
-        }
-      }
-    }
-    dumpCallGraph(edges, false);
-  }
-
   public static boolean isUnresolved(Type type) {
     if (type instanceof ArrayType) {
       ArrayType at = (ArrayType) type;
@@ -396,143 +309,6 @@ public final class PTAUtils {
     }
   }
 
-  public static void slicePAG(AllocNode allocNode, PAG pag, String filename) {
-    Map<Node, Set<Node>> edges = new HashMap<>();
-    Queue<ValNode> queue = new UniqueQueue<>();
-    Set<VarNode> tov = pag.allocLookup(allocNode);
-    edges.computeIfAbsent(allocNode, k -> new HashSet<>()).addAll(tov);
-    queue.addAll(tov);
-    Set<Node> visited = new HashSet<>(tov);
-    while (!queue.isEmpty()) {
-      ValNode front = queue.poll();
-      Set<ValNode> tovx = pag.simpleLookup(front);
-      Set<Node> toex = edges.computeIfAbsent(front, k -> new HashSet<>());
-      for (ValNode vn : tovx) {
-        if (toex.add(vn)) {
-          queue.add(vn);
-          visited.add(vn);
-        }
-      }
-    }
-    DotGraph canvas = setDotGraph("hello");
-    edges.forEach(
-        (n, elements) -> {
-          drawNode(canvas, n);
-          elements.forEach(
-              element -> {
-                drawNode(canvas, element);
-                drawEdge(canvas, n, element, "black");
-              });
-        });
-    canvas.plot(filename);
-    for (Node n : visited) {
-      System.out.println(n);
-    }
-  }
-
-  public static void dumpMPAG(PAG pag, SootMethod method) {
-    String filename = method.getSignature() + ".dot";
-    DotGraph canvas = setDotGraph(filename);
-    QueueReader<Node> reader = pag.getMethodPAG(method).getInternalReader().clone();
-    while (reader.hasNext()) {
-      Node src = reader.next();
-      Node dst = reader.next();
-      drawNode(canvas, src);
-      drawNode(canvas, dst);
-      String color =
-          src instanceof AllocNode
-              ? "green"
-              : // alloc
-              src instanceof FieldRefNode
-                  ? "red"
-                  : // load
-                  dst instanceof FieldRefNode
-                      ? "blue"
-                      : // store
-                      "black"; // simple
-      drawEdge(canvas, src, dst, color);
-    }
-    plotDotGraph(canvas, filename);
-  }
-
-  /** dump mPAGs to sootoutput/@filename.dot */
-  public static void dumpMPAGs(PTA pta, String filename) {
-    DotGraph canvas = setDotGraph(filename);
-    for (SootMethod m : pta.getNakedReachableMethods()) {
-      QueueReader<Node> reader = pta.getPag().getMethodPAG(m).getInternalReader().clone();
-      while (reader.hasNext()) {
-        Node src = reader.next();
-        Node dst = reader.next();
-        drawNode(canvas, src);
-        drawNode(canvas, dst);
-        String color =
-            src instanceof AllocNode
-                ? "green"
-                : // alloc
-                src instanceof FieldRefNode
-                    ? "red"
-                    : // load
-                    dst instanceof FieldRefNode
-                        ? "blue"
-                        : // store
-                        "black"; // simple
-        drawEdge(canvas, src, dst, color);
-      }
-    }
-    plotDotGraph(canvas, filename);
-  }
-
-  /** dump pag to sootoutput/@filename.dot */
-  public static void dumpPAG(PAG pag, String filename) {
-    DotGraph canvas = setDotGraph(filename);
-
-    // draw edges
-    drawPAGMap(canvas, pag.getAlloc(), "green");
-    drawPAGMap(canvas, pag.getSimple(), "black");
-    drawInvPAGMap(canvas, pag.getStoreInv(), "blue");
-    drawPAGMap(canvas, pag.getLoad(), "red");
-    // collect nodes.
-    Set<Node> nodes = new HashSet<>();
-    pag.getAlloc()
-        .forEach(
-            (k, v) -> {
-              nodes.add(k);
-              nodes.addAll(v);
-            });
-    pag.getSimple()
-        .forEach(
-            (k, v) -> {
-              nodes.add(k);
-              nodes.addAll(v);
-            });
-    pag.getStoreInv()
-        .forEach(
-            (k, v) -> {
-              nodes.add(k);
-              nodes.addAll(v);
-            });
-    pag.getLoad()
-        .forEach(
-            (k, v) -> {
-              nodes.add(k);
-              nodes.addAll(v);
-            });
-    // draw nodes.
-    nodes.forEach(node -> drawNode(canvas, node));
-    plotDotGraph(canvas, filename);
-  }
-
-  private static void plotDotGraph(DotGraph canvas, String filename) {
-    canvas.plot(output_dir + "/" + filename + ".dot");
-  }
-
-  private static DotGraph setDotGraph(String fileName) {
-    DotGraph canvas = new DotGraph(fileName);
-    canvas.setNodeShape(DotGraphConstants.NODE_SHAPE_BOX);
-    canvas.setGraphLabel(fileName);
-    return canvas;
-  }
-
   public static String getNodeLabel(Node node) {
     int num = node.getNumber();
     if (node instanceof LocalVarNode) return "L" + num;
@@ -545,50 +321,8 @@ public final class PTAUtils {
     else throw new RuntimeException("no such node type exists!");
   }
 
-  private static void drawNode(DotGraph canvas, Node node) {
-    DotGraphNode dotNode = canvas.drawNode(node.toString());
-    dotNode.setLabel("[" + getNodeLabel(node) + "]");
-    nodes.put("[" + getNodeLabel(node) + "]", node);
-  }
-
-  private static void drawEdge(DotGraph canvas, Node src, Node dst, String color) {
-    canvas.drawEdge(src.toString(), dst.toString()).setAttribute("color", color);
-  }
-
   private static void dumpNodeNames(PrintWriter file) {
     nodes.forEach((l, n) -> file.println(l + n));
-  }
-
-  public static void dumpNodeNames(String fileName) {
-    try {
-      PrintWriter out = new PrintWriter(new File(output_dir, fileName));
-      dumpNodeNames(out);
-      out.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private static void drawPAGMap(
-      DotGraph canvas, Map<? extends Node, ? extends Set<? extends Node>> map, String color) {
-    map.forEach(
-        (n, elements) -> {
-          elements.forEach(
-              element -> {
-                drawEdge(canvas, n, element, color);
-              });
-        });
-  }
-
-  private static void drawInvPAGMap(
-      DotGraph canvas, Map<? extends Node, ? extends Set<? extends Node>> map, String color) {
-    map.forEach(
-        (n, elements) -> {
-          elements.forEach(
-              element -> {
-                drawEdge(canvas, element, n, color);
-              });
-        });
   }
 
   public static boolean isThrowable(Type type) {
@@ -648,16 +382,6 @@ public final class PTAUtils {
     return method.getSignature().equals(sig);
   }
 
-  /**
-   * comma separated list of classes in which no matter what the length of k for object sensitivity,
-   * we want to limit the depth of the object sensitivity to 0. Also add subclasses of each
-   */
-  private static final String[] NO_CONTEXT = {
-    "java.lang.Throwable", "java.lang.StringBuffer", "java.lang.StringBuilder"
-  };
-
-  private static Set<SootClass> ignoreList = null;
-
   public static boolean isOfPrimitiveBaseType(AllocNode heap) {
     if (heap.getType() instanceof ArrayType) {
       ArrayType arrayType = (ArrayType) heap.getType();
@@ -704,32 +428,6 @@ public final class PTAUtils {
     for (SootClass clz : PTAScene.v().getApplicationClasses()) {
       writeJimple(outputDir, clz);
     }
-  }
-
-  /**
-   * Given a file name with separators, convert them in to . so it is a legal class name. modified:
-   * Ammonia: handle .* not only .class
-   */
-  public static String fromFileToClass(String name) {
-    return name.substring(0, name.lastIndexOf('.')).replace(File.separatorChar, '.');
-  }
-
-  /** Given a jarFile, return a list of the classes contained in the jarfile with . replacing /. */
-  public static List<String> getClassesFromJar(JarFile jarFile) {
-    LinkedList<String> classes = new LinkedList<>();
-    Enumeration<JarEntry> allEntries = jarFile.entries();
-
-    while (allEntries.hasMoreElements()) {
-      JarEntry entry = allEntries.nextElement();
-      String name = entry.getName();
-      if (!name.endsWith(".class")) {
-        continue;
-      }
-
-      String clsName = name.substring(0, name.length() - 6).replace('/', '.');
-      classes.add(clsName);
-    }
-    return classes;
   }
 
   public static String findMainFromMetaInfo(String appPath) {
