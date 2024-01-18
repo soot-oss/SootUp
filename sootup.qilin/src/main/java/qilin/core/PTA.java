@@ -139,11 +139,11 @@ public abstract class PTA implements PointsToAnalysis {
   public PointsToSet reachingObjects(Node n) {
     final PointsToSetInternal ret;
     if (n instanceof ContextVarNode) {
-        ContextVarNode cvn = (ContextVarNode) n;
-        ret = cvn.getP2Set();
+      ContextVarNode cvn = (ContextVarNode) n;
+      ret = cvn.getP2Set();
     } else if (n instanceof ContextField) {
-        ContextField cf = (ContextField) n;
-        ret = cf.getP2Set();
+      ContextField cf = (ContextField) n;
+      ret = cf.getP2Set();
     } else {
       VarNode varNode = (VarNode) n;
       ret = new HybridPointsToSet();

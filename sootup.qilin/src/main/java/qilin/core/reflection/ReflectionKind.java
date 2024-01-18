@@ -32,27 +32,27 @@ public enum ReflectionKind {
   FieldGetName;
 
   public static ReflectionKind parse(String kindStr) {
-      switch (kindStr) {
-          case "Class.forName":
-              return ClassForName;
-          case "Class.newInstance":
-              return ClassNewInstance;
-          case "Constructor.newInstance":
-              return ConstructorNewInstance;
-          case "Method.invoke":
-              return MethodInvoke;
-          case "Method.getName":
-              return MethodGet;
-          case "Field.set*":
-              return FieldSet;
-          case "Field.get*":
-              return FieldGet;
-          case "Field.getName":
-              return FieldGetName;
-          case "Array.newInstance":
-              return ArrayNewInstance;
-          default:
-              return null;
-      }
+    switch (kindStr) {
+      case "Class.forName":
+        return ClassForName;
+      case "Class.newInstance":
+        return ClassNewInstance;
+      case "Constructor.newInstance":
+        return ConstructorNewInstance;
+      case "Method.invoke":
+        return MethodInvoke;
+      case "Method.getName":
+        return MethodGet;
+      case "Field.set*":
+        return FieldSet;
+      case "Field.get*":
+        return FieldGet;
+      case "Field.getName":
+        return FieldGetName;
+      case "Array.newInstance":
+        return ArrayNewInstance;
+      default:
+        return null;
+    }
   }
 }

@@ -62,8 +62,8 @@ public class DebloatedPTA extends StagedPTA {
     CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
     basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
     if (basePTA instanceof StagedPTA) {
-        StagedPTA stagedPTA = (StagedPTA) basePTA;
-        this.prePTA = stagedPTA.getPrePTA();
+      StagedPTA stagedPTA = (StagedPTA) basePTA;
+      this.prePTA = stagedPTA.getPrePTA();
     } else {
       this.prePTA = new Spark();
     }

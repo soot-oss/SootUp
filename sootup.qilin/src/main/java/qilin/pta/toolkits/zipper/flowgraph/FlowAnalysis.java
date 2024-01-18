@@ -138,8 +138,8 @@ public class FlowAnalysis {
       // add unwrapped flow edges
       if (Global.isEnableUnwrappedFlow()) {
         if (node instanceof VarNode) {
-            VarNode var = (VarNode) node;
-            Collection<AllocNode> varPts = pta.reachingObjects(var).toCIPointsToSet().toCollection();
+          VarNode var = (VarNode) node;
+          Collection<AllocNode> varPts = pta.reachingObjects(var).toCIPointsToSet().toCollection();
           // Optimization: approximate unwrapped flows to make
           // Zipper and pointer analysis run faster
           pta.getCgb()
@@ -153,8 +153,8 @@ public class FlowAnalysis {
                       return;
                     }
                     if (callsiteStmt instanceof JAssignStmt) {
-                        JAssignStmt assignStmt = (JAssignStmt) callsiteStmt;
-                        Value lv = assignStmt.getLeftOp();
+                      JAssignStmt assignStmt = (JAssignStmt) callsiteStmt;
+                      Value lv = assignStmt.getLeftOp();
                       if (!(lv.getType() instanceof ReferenceType)) {
                         return;
                       }
@@ -177,78 +177,79 @@ public class FlowAnalysis {
       List<Edge> nextEdges = new ArrayList<>();
       for (Edge edge : outEdgesOf(node)) {
         switch (edge.getKind()) {
-          case UNWRAPPED_FLOW :{
-            nextEdges.add(edge);
-          }
-          case LOCAL_ASSIGN:
-          {
+          case UNWRAPPED_FLOW:
+            {
               nextEdges.add(edge);
-          }
+            }
+          case LOCAL_ASSIGN:
+            {
+              nextEdges.add(edge);
+            }
           case INTERPROCEDURAL_ASSIGN:
           case INSTANCE_LOAD:
           case WRAPPED_FLOW:
-          {
-            // next must be a variable
-            LocalVarNode next = (LocalVarNode) edge.getTarget();
-            SootMethod inMethod = next.getMethod();
-            // Optimization: filter out some potential spurious flows due to
-            // the imprecision of context-insensitive pre-analysis, which
-            // helps improve the performance of Zipper and pointer analysis.
-            if (pce.PCEMethodsOf(currentType).contains(inMethod)) {
-              nextEdges.add(edge);
-            }
-          }
-          case INSTANCE_STORE:
-          {
-            ContextField next = (ContextField) edge.getTarget();
-            AllocNode base = next.getBase();
-            if (base.getType().equals(currentType)) {
-              // add wrapped flow edges to this variable
-              if (Global.isEnableWrappedFlow()) {
-                methodsInvokedOn(currentType).stream()
-                    .map(
-                        m ->
-                            ToolUtil.getThis(
-                                pta.getPag(), m)) // filter this variable of native methods
-                    .map(n -> new Edge(Kind.WRAPPED_FLOW, next, n))
-                    .forEach(e -> addWUEdge(next, e));
+            {
+              // next must be a variable
+              LocalVarNode next = (LocalVarNode) edge.getTarget();
+              SootMethod inMethod = next.getMethod();
+              // Optimization: filter out some potential spurious flows due to
+              // the imprecision of context-insensitive pre-analysis, which
+              // helps improve the performance of Zipper and pointer analysis.
+              if (pce.PCEMethodsOf(currentType).contains(inMethod)) {
+                nextEdges.add(edge);
               }
-              nextEdges.add(edge);
-            } else if (pce.allocateesOf(currentType).contains(base)) {
-              // Optimization, similar as above.
-              if (Global.isEnableWrappedFlow()) {
-                Set<VarNode> r = new HashSet<>();
-                AllocNode mBase = (AllocNode) pta.parameterize(base, pta.emptyContext());
-                pta.getPag()
-                    .allocLookup(mBase)
-                    .forEach(
-                        v -> {
-                          if (v instanceof ContextVarNode) {
+            }
+          case INSTANCE_STORE:
+            {
+              ContextField next = (ContextField) edge.getTarget();
+              AllocNode base = next.getBase();
+              if (base.getType().equals(currentType)) {
+                // add wrapped flow edges to this variable
+                if (Global.isEnableWrappedFlow()) {
+                  methodsInvokedOn(currentType).stream()
+                      .map(
+                          m ->
+                              ToolUtil.getThis(
+                                  pta.getPag(), m)) // filter this variable of native methods
+                      .map(n -> new Edge(Kind.WRAPPED_FLOW, next, n))
+                      .forEach(e -> addWUEdge(next, e));
+                }
+                nextEdges.add(edge);
+              } else if (pce.allocateesOf(currentType).contains(base)) {
+                // Optimization, similar as above.
+                if (Global.isEnableWrappedFlow()) {
+                  Set<VarNode> r = new HashSet<>();
+                  AllocNode mBase = (AllocNode) pta.parameterize(base, pta.emptyContext());
+                  pta.getPag()
+                      .allocLookup(mBase)
+                      .forEach(
+                          v -> {
+                            if (v instanceof ContextVarNode) {
                               ContextVarNode cvn = (ContextVarNode) v;
                               if (cvn.base() instanceof LocalVarNode) {
                                 LocalVarNode lvn = (LocalVarNode) cvn.base();
                                 if (!lvn.isThis()) {
-                                r.add(lvn);
+                                  r.add(lvn);
+                                }
                               }
                             }
-                          }
-                        });
-                Iterator<VarNode> it = r.iterator();
-                if (it.hasNext()) {
-                  Node assigned = r.iterator().next();
-                  if (assigned != null) {
-                    Edge e = new Edge(Kind.WRAPPED_FLOW, next, assigned);
-                    addWUEdge(next, e);
+                          });
+                  Iterator<VarNode> it = r.iterator();
+                  if (it.hasNext()) {
+                    Node assigned = r.iterator().next();
+                    if (assigned != null) {
+                      Edge e = new Edge(Kind.WRAPPED_FLOW, next, assigned);
+                      addWUEdge(next, e);
+                    }
                   }
                 }
+                nextEdges.add(edge);
               }
-              nextEdges.add(edge);
             }
-          }
           default:
-          {
-            throw new RuntimeException("Unknown edge: " + edge);
-          }
+            {
+              throw new RuntimeException("Unknown edge: " + edge);
+            }
         }
       }
       for (Edge nextEdge : nextEdges) {

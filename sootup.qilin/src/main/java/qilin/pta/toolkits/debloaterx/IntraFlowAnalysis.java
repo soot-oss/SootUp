@@ -87,8 +87,8 @@ public class IntraFlowAnalysis {
     boolean flag = false;
     for (Node node : visit) {
       if (node instanceof LocalVarNode) {
-          LocalVarNode lvn = (LocalVarNode) node;
-          if (lvn.isReturn()) {
+        LocalVarNode lvn = (LocalVarNode) node;
+        if (lvn.isReturn()) {
           flag = true;
         }
       }
@@ -147,8 +147,8 @@ public class IntraFlowAnalysis {
       if (!(ie instanceof AbstractInstanceInvokeExpr)) {
         continue;
       }
-        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-        Local base = iie.getBase();
+      AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+      Local base = iie.getBase();
       LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
       if (!x.contains(receiver)) {
         continue;
@@ -185,8 +185,8 @@ public class IntraFlowAnalysis {
             if (args[i] != null) {
               ValNode argNode = pag.findValNode(args[i]);
               if (argNode instanceof LocalVarNode) {
-                  LocalVarNode lvn = (LocalVarNode) argNode;
-                  LocalVarNode param = (LocalVarNode) tgtnf.caseParm(i);
+                LocalVarNode lvn = (LocalVarNode) argNode;
+                LocalVarNode param = (LocalVarNode) tgtnf.caseParm(i);
                 if (inParams.contains(param)) {
                   ret.add(lvn);
                 }
@@ -235,29 +235,29 @@ public class IntraFlowAnalysis {
   private State nextState(State currState, EdgeKind kind) {
     switch (currState) {
       case O:
-      {
-        if (kind == EdgeKind.NEW) {
-          return State.VPlus;
+        {
+          if (kind == EdgeKind.NEW) {
+            return State.VPlus;
+          }
         }
-      }
       case VPlus:
-      {
-        if (kind == EdgeKind.ASSIGN) {
-          return State.VPlus;
-        } else if (kind == EdgeKind.STORE) {
-          return State.VMinus;
+        {
+          if (kind == EdgeKind.ASSIGN) {
+            return State.VPlus;
+          } else if (kind == EdgeKind.STORE) {
+            return State.VMinus;
+          }
         }
-      }
       case VMinus:
-      {
-        if (kind == EdgeKind.IASSIGN) {
-          return State.VMinus;
-        } else if (kind == EdgeKind.ILOAD) {
-          return State.VMinus;
-        } else if (kind == EdgeKind.INEW) {
-          return State.O;
+        {
+          if (kind == EdgeKind.IASSIGN) {
+            return State.VMinus;
+          } else if (kind == EdgeKind.ILOAD) {
+            return State.VMinus;
+          } else if (kind == EdgeKind.INEW) {
+            return State.O;
+          }
         }
-      }
     }
     return State.Error;
   }

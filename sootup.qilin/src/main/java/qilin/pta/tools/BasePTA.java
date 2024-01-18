@@ -68,12 +68,6 @@ public abstract class BasePTA extends CorePTA {
     if (CoreConfig.v().getOutConfig().dumppts) {
       PTAUtils.dumpPts(this, !CoreConfig.v().getOutConfig().dumplibpts);
     }
-    if (CoreConfig.v().getOutConfig().dumpCallGraph) {
-      PTAUtils.dumpCallGraph(getCallGraph(), false);
-      //            PTAUtils.dumpSlicedCallGraph(getCallGraph(),
-      //                    parameterize(PTAScene.v().getMethod("<java.lang.String: java.lang.String
-      // valueOf(java.lang.Object)>"), emptyContext()));
-    }
     if (CoreConfig.v().getOutConfig().dumppag) {
       PTAUtils.dumpPAG(pag, "pag");
       //            PTAUtils.dumpMPAGs(this, "mpags");

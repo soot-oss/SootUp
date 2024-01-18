@@ -130,8 +130,8 @@ public abstract class AbstractMVFG {
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         else if (to instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) to;
-            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+          FieldRefNode fr = (FieldRefNode) to;
+          this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
         } // local-global
 
       } else if (from instanceof AllocNode) {
@@ -142,8 +142,8 @@ public abstract class AbstractMVFG {
           }
         } // GlobalVarNode
       } else if (from instanceof FieldRefNode) {
-          FieldRefNode fr = (FieldRefNode) from;
-          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
+        FieldRefNode fr = (FieldRefNode) from;
+        this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
       } // global-local
     }
     // add exception edges that added dynamically during the pre-analysis.
@@ -175,8 +175,8 @@ public abstract class AbstractMVFG {
       }
       LocalVarNode receiver;
       if (ie instanceof AbstractInstanceInvokeExpr) {
-          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-          Local base = iie.getBase();
+        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+        Local base = iie.getBase();
         receiver = pag.findLocalVarNode(method, base, base.getType());
       } else {
         // static call
@@ -228,7 +228,11 @@ public abstract class AbstractMVFG {
       LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
       addStoreEdge(mret, thisRef);
     }
-    LocalVarNode mThrow = pag.findLocalVarNode(method, new Parm(method, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Exception"));
+    LocalVarNode mThrow =
+        pag.findLocalVarNode(
+            method,
+            new Parm(method, PointsToAnalysis.THROW_NODE),
+            PTAUtils.getClassType("java.lang.Exception"));
     if (mThrow != null) {
       addStoreEdge(mThrow, thisRef);
     }

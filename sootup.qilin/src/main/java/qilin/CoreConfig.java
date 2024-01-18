@@ -123,9 +123,6 @@ public class CoreConfig {
     /** if true, dump pts of vars in library */
     public boolean dumplibpts = false;
 
-    /** print a CG graph */
-    public boolean dumpCallGraph = false;
-
     /** print a PAG graph */
     public boolean dumppag = false;
 

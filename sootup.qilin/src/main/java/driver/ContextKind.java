@@ -51,19 +51,19 @@ public enum ContextKind {
 
   @Override
   public String toString() {
-      switch (this) {
-          case CALLSITE:
-              return "callsite";
-          case OBJECT:
-              return "object";
-          case HYBOBJ:
-              return "hybobj";
-          case HYBTYPE:
-              return "hybtype";
-          case TYPE:
-              return "type";
-          default:
-              return "insensitive";
-      }
+    switch (this) {
+      case CALLSITE:
+        return "callsite";
+      case OBJECT:
+        return "object";
+      case HYBOBJ:
+        return "hybobj";
+      case HYBTYPE:
+        return "hybtype";
+      case TYPE:
+        return "type";
+      default:
+        return "insensitive";
+    }
   }
 }

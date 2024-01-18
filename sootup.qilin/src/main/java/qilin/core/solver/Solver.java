@@ -85,8 +85,8 @@ public class Solver extends Propagator {
       pag.simpleLookup(curr).forEach(to -> propagatePTS(to, newset));
 
       if (curr instanceof VarNode) {
-          VarNode mSrc = (VarNode) curr;
-          // Step 1 continues.
+        VarNode mSrc = (VarNode) curr;
+        // Step 1 continues.
         Collection<ExceptionThrowSite> throwSites = eh.throwSitesLookUp(mSrc);
         for (ExceptionThrowSite site : throwSites) {
           eh.exceptionDispatch(newset, site);
@@ -115,7 +115,8 @@ public class Solver extends Propagator {
       }
       MethodPAG mpag = pag.getMethodPAG(method);
       addToPAG(mpag, momc.context());
-      // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple times.
+      // !FIXME in a context-sensitive pointer analysis, clinits in a method maybe added multiple
+      // times.
       if (CoreConfig.v().getPtaConfig().clinitMode == CoreConfig.ClinitMode.ONFLY) {
         // add <clinit> find in the method to reachableMethods.
         Iterator<SootMethod> it = mpag.triggeredClinits();
@@ -135,8 +136,8 @@ public class Solver extends Propagator {
       if (s.containsInvokeExpr()) {
         AbstractInvokeExpr ie = s.getInvokeExpr();
         if (ie instanceof AbstractInstanceInvokeExpr) {
-            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-            Local receiver = iie.getBase();
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local receiver = iie.getBase();
           VarNode recNode = cgb.getReceiverVarNode(receiver, m);
           MethodSubSignature subSig = iie.getMethodSignature().getSubSignature();
           VirtualCallSite virtualCallSite =
@@ -196,8 +197,8 @@ public class Solver extends Propagator {
       Node from = reader.next();
       Node to = reader.next();
       if (from instanceof AllocNode) {
-          AllocNode heap = (AllocNode) from;
-          from = pta.heapAbstractor().abstractHeap(heap);
+        AllocNode heap = (AllocNode) from;
+        from = pta.heapAbstractor().abstractHeap(heap);
       }
       if (from instanceof AllocNode && to instanceof GlobalVarNode) {
         pag.addGlobalPAGEdge(from, to);
@@ -304,11 +305,11 @@ public class Solver extends Propagator {
         final ValNode tgtv = (ValNode) addedTgt;
         propagatePTS(tgtv, srcv.getP2Set().getOldSet());
       } else if (addedSrc instanceof FieldRefNode) {
-          final FieldRefNode srcfrn = (FieldRefNode) addedSrc; // b = a.f
+        final FieldRefNode srcfrn = (FieldRefNode) addedSrc; // b = a.f
         handleLoadEdge(
             srcfrn.getBase().getP2Set().getOldSet(), srcfrn.getField(), (ValNode) addedTgt);
       } else if (addedTgt instanceof FieldRefNode) {
-          final FieldRefNode tgtfrn = (FieldRefNode) addedTgt; // a.f = b;
+        final FieldRefNode tgtfrn = (FieldRefNode) addedTgt; // a.f = b;
         handleStoreEdge(
             tgtfrn.getBase().getP2Set().getOldSet(), tgtfrn.getField(), (ValNode) addedSrc);
       } else if (addedSrc instanceof AllocNode) { // alloc x = new T;

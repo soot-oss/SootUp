@@ -76,8 +76,8 @@ public final class HybridPointsToSet extends PointsToSetInternal {
       return false;
     }
     if (other instanceof DoublePointsToSet) {
-        DoublePointsToSet dpts = (DoublePointsToSet) other;
-        return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
+      DoublePointsToSet dpts = (DoublePointsToSet) other;
+      return nativeAddAll(dpts.getNewSet(), exclude) | nativeAddAll(dpts.getOldSet(), exclude);
     }
     return nativeAddAll((HybridPointsToSet) other, exclude);
   }

@@ -114,8 +114,8 @@ public class TypeClientStat implements AbstractStat {
             }
           }
         } else if (st instanceof JAssignStmt) {
-            JAssignStmt assignStmt = (JAssignStmt) st;
-            Value rhs = assignStmt.getRightOp();
+          JAssignStmt assignStmt = (JAssignStmt) st;
+          Value rhs = assignStmt.getRightOp();
           Value lhs = assignStmt.getLeftOp();
           if (rhs instanceof JCastExpr && lhs.getType() instanceof ReferenceType) {
             final Type targetType = rhs.getType();

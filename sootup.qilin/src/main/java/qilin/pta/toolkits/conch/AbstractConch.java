@@ -178,8 +178,8 @@ public class AbstractConch {
     if (f.getType() instanceof PrimitiveType) {
       return true;
     } else if (f.getType() instanceof ArrayType) {
-        ArrayType at = (ArrayType) f.getType();
-        /*
+      ArrayType at = (ArrayType) f.getType();
+      /*
        * here, we let primitive array as primitive type as that in Turner.
        * this wont hurt precision of clients.
        * */

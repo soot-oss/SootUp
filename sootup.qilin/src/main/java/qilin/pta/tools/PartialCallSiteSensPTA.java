@@ -94,8 +94,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
           if (sparkNode instanceof LocalVarNode) {
             method = ((LocalVarNode) sparkNode).getMethod();
           } else if (sparkNode instanceof AllocNode) {
-              AllocNode allocNode = (AllocNode) sparkNode;
-              method = allocNode.getMethod();
+            AllocNode allocNode = (AllocNode) sparkNode;
+            method = allocNode.getMethod();
           }
 
           if (method != null) {
@@ -133,8 +133,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
         } else if (from instanceof AllocNode) {
           nodes.add(((AllocNode) from).getNewExpr());
         } else if (from instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) from;
-            VarNode base = fr.getBase();
+          FieldRefNode fr = (FieldRefNode) from;
+          VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -143,8 +143,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
         if (to instanceof LocalVarNode) {
           nodes.add(((VarNode) to).getVariable());
         } else if (to instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) to;
-            VarNode base = fr.getBase();
+          FieldRefNode fr = (FieldRefNode) to;
+          VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -168,8 +168,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
           }
         }
         if (ie instanceof AbstractInstanceInvokeExpr) {
-            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-            Local base = iie.getBase();
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
           nodes.add(base);
         }
       }

@@ -292,8 +292,8 @@ public class Eagle {
           if (to instanceof LocalVarNode)
             this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
           else if (to instanceof FieldRefNode) {
-              FieldRefNode fr = (FieldRefNode) to;
-              this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+            FieldRefNode fr = (FieldRefNode) to;
+            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
           } // local-global
 
         } else if (from instanceof AllocNode) {
@@ -301,8 +301,8 @@ public class Eagle {
             this.addNewEdge((AllocNode) from, (LocalVarNode) to);
           } // GlobalVarNode
         } else if (from instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) from;
-            this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
+          FieldRefNode fr = (FieldRefNode) from;
+          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
         } // global-local
       }
       // add exception edges that added dynamically during the pre-analysis.
@@ -325,7 +325,10 @@ public class Eagle {
       LocalVarNode mret =
           method.getReturnType() instanceof ReferenceType ? (LocalVarNode) srcnf.caseRet() : null;
       LocalVarNode throwFinal =
-          prePAG.findLocalVarNode(method, new Parm(method, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Throwable"));
+          prePAG.findLocalVarNode(
+              method,
+              new Parm(method, PointsToAnalysis.THROW_NODE),
+              PTAUtils.getClassType("java.lang.Throwable"));
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(
@@ -359,8 +362,8 @@ public class Eagle {
         }
         LocalVarNode receiver;
         if (ie instanceof AbstractInstanceInvokeExpr) {
-            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-            Local base = iie.getBase();
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
           receiver = prePAG.findLocalVarNode(method, base, base.getType());
         } else {
           // static call

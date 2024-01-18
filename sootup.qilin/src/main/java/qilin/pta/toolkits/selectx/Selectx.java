@@ -118,8 +118,8 @@ public class Selectx {
         workList.remove(node);
         node.forwardTargets().filter(BNode::setVisited).forEach(workList::add);
         if (node instanceof L) {
-            L l = (L) node;
-            l.getOutEntryEdges().stream()
+          L l = (L) node;
+          l.getOutEntryEdges().stream()
               .filter(tgt -> tgt.paras.add(tgt))
               .forEach(paraWorkList::add);
         }
@@ -130,8 +130,8 @@ public class Selectx {
         // para propagation.
         node.getOutTargets().stream().filter(i -> i.update(node)).forEach(paraWorkList::add);
         if (node instanceof L) {
-            L l = (L) node;
-            l.getOutGs().filter(BNode::setVisited).forEach(workList::add);
+          L l = (L) node;
+          l.getOutGs().filter(BNode::setVisited).forEach(workList::add);
           l.getOutEntryEdges().stream()
               .filter(tgt -> tgt.paras.add(tgt))
               .forEach(paraWorkList::add);
@@ -261,8 +261,8 @@ public class Selectx {
           if (to instanceof LocalVarNode) {
             this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
           } else if (to instanceof FieldRefNode) {
-              FieldRefNode fr = (FieldRefNode) to;
-              this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+            FieldRefNode fr = (FieldRefNode) to;
+            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
             this.sparkFields.add(fr.getField());
           } else { // local-global
             assert to instanceof GlobalVarNode;
@@ -273,8 +273,8 @@ public class Selectx {
             this.addNewEdge((AllocNode) from, (LocalVarNode) to);
           } // GlobalVarNode
         } else if (from instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) from;
-            // load edge is treated as assign.
+          FieldRefNode fr = (FieldRefNode) from;
+          // load edge is treated as assign.
           this.addAssignEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
           this.sparkFields.add(fr.getField());
         } else {
@@ -316,8 +316,8 @@ public class Selectx {
         }
         LocalVarNode receiver = null;
         if (ie instanceof AbstractInstanceInvokeExpr) {
-            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-            Local base = iie.getBase();
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
           receiver = prePAG.findLocalVarNode(method, base, base.getType());
         }
         for (Iterator<Edge> it = prePTA.getCallGraph().edgesOutOf(s); it.hasNext(); ) {
@@ -338,7 +338,10 @@ public class Selectx {
           }
           LocalVarNode stmtThrowNode = srcnf.makeInvokeStmtThrowVarNode(s, method);
           LocalVarNode throwFinal =
-              prePAG.findLocalVarNode(method, new Parm(tgtmtd, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Throwable"));
+              prePAG.findLocalVarNode(
+                  method,
+                  new Parm(tgtmtd, PointsToAnalysis.THROW_NODE),
+                  PTAUtils.getClassType("java.lang.Throwable"));
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }

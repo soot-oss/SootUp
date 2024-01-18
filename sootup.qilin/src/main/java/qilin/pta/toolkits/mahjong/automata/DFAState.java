@@ -73,8 +73,8 @@ public class DFAState {
     if (!(other instanceof DFAState)) {
       return false;
     }
-      DFAState anoDFAState = (DFAState) other;
-      return getObjects().equals(anoDFAState.getObjects());
+    DFAState anoDFAState = (DFAState) other;
+    return getObjects().equals(anoDFAState.getObjects());
   }
 
   @Override

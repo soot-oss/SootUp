@@ -82,7 +82,6 @@ public class PTAOption extends Options {
         "Name of the main class for the application (must be specified when appmode)");
 
     // output configurations.
-    addOption("cg", "dumpcallgraph", "Output .dot callgraph file (default value: false)");
     addOption("jimple", "dumpjimple", "Dump appclasses to jimple. (default value: false)");
     addOption("stats", "dumpstats", "Dump statistics into files. (default value: false)");
     addOption(
@@ -238,9 +237,6 @@ public class PTAOption extends Options {
     if (cmd.hasOption("dumpallpts")) {
       PTAConfig.v().getOutConfig().dumppts = true;
       PTAConfig.v().getOutConfig().dumplibpts = true;
-    }
-    if (cmd.hasOption("dumpcallgraph")) {
-      PTAConfig.v().getOutConfig().dumpCallGraph = true;
     }
     if (cmd.hasOption("dumppag")) {
       PTAConfig.v().getOutConfig().dumppag = true;

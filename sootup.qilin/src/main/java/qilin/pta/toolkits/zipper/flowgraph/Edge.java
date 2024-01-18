@@ -49,8 +49,8 @@ public class Edge {
     if (!(other instanceof Edge)) {
       return false;
     }
-      final Edge otherEdge = (Edge) other;
-      return this.kind.equals(otherEdge.kind)
+    final Edge otherEdge = (Edge) other;
+    return this.kind.equals(otherEdge.kind)
         && this.source.equals(otherEdge.source)
         && this.target.equals(otherEdge.target);
   }

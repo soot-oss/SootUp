@@ -151,8 +151,8 @@ public class MethodPAG {
                 // note, method.getExceptions() does not return implicit exceptions.
                 src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
               } else if (stmt instanceof JThrowStmt) {
-                  JThrowStmt ts = (JThrowStmt) stmt;
-                  src = nodeFactory.getNode(ts.getOp());
+                JThrowStmt ts = (JThrowStmt) stmt;
+                src = nodeFactory.getNode(ts.getOp());
               }
               if (src != null) {
                 addStmtTrap(src, stmt, trap);
@@ -189,8 +189,8 @@ public class MethodPAG {
       if (stmt.containsInvokeExpr()) {
         src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
       } else if (stmt instanceof JThrowStmt) {
-          JThrowStmt ts = (JThrowStmt) stmt;
-          src = nodeFactory.getNode(ts.getOp());
+        JThrowStmt ts = (JThrowStmt) stmt;
+        src = nodeFactory.getNode(ts.getOp());
       }
       if (src != null) {
         node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());

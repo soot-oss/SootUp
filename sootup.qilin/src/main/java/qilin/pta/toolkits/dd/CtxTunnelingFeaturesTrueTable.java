@@ -67,8 +67,8 @@ public class CtxTunnelingFeaturesTrueTable {
     int heapAllocCnt = 0;
     for (Stmt unit : body.getStmts()) {
       if (unit instanceof JAssignStmt) {
-          JAssignStmt assignStmt = (JAssignStmt) unit;
-          Value left = assignStmt.getLeftOp();
+        JAssignStmt assignStmt = (JAssignStmt) unit;
+        Value left = assignStmt.getLeftOp();
         if (left instanceof Local) {
           Value right = assignStmt.getRightOp();
           if (right instanceof Local) {
@@ -91,8 +91,8 @@ public class CtxTunnelingFeaturesTrueTable {
           this.f[16] = true;
         }
       } else if (unit instanceof JInvokeStmt) {
-          JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-          AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        JInvokeStmt invokeStmt = (JInvokeStmt) unit;
+        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
         if (expr instanceof JStaticInvokeExpr) {
           this.f[17] = true;
         } else if (expr instanceof JVirtualInvokeExpr || expr instanceof JInterfaceInvokeExpr) {

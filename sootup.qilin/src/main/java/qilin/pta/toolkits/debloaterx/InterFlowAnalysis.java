@@ -36,7 +36,8 @@ public class InterFlowAnalysis {
    * */
   public void reachabilityAnalysis() {
     Set<SparkField> fields = utility.getFields();
-    fields.parallelStream()
+    fields
+        .parallelStream()
         .forEach(
             field -> {
               // compute the value of field could be loaded to which outmethods.
@@ -69,8 +70,8 @@ public class InterFlowAnalysis {
       Pair<Node, State> front = queue.poll();
       if (front.getSecond() == State.End) {
         if (front.getFirst() instanceof LocalVarNode) {
-            LocalVarNode lvn = (LocalVarNode) front.getFirst();
-            ret.add(lvn);
+          LocalVarNode lvn = (LocalVarNode) front.getFirst();
+          ret.add(lvn);
         }
       }
       // visit the node and state.
@@ -113,49 +114,49 @@ public class InterFlowAnalysis {
   private State nextStateForOut(State currState, EdgeKind kind, boolean fieldMatch) {
     switch (currState) {
       case THIS:
-      {
-        if (kind == EdgeKind.ITHIS) {
-          return State.ThisAlias;
+        {
+          if (kind == EdgeKind.ITHIS) {
+            return State.ThisAlias;
+          }
         }
-      }
       case ThisAlias:
-      {
-        if (kind == EdgeKind.ASSIGN) {
-          return State.ThisAlias;
-        } else if (kind == EdgeKind.LOAD && fieldMatch) {
-          return State.VPlus;
+        {
+          if (kind == EdgeKind.ASSIGN) {
+            return State.ThisAlias;
+          } else if (kind == EdgeKind.LOAD && fieldMatch) {
+            return State.VPlus;
+          }
         }
-      }
       case VPlus:
-      {
-        if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
-          return State.VPlus;
-        } else if (kind == EdgeKind.RETURN) {
-          return State.End;
-        } else if (kind == EdgeKind.CSTORE
-            || kind == EdgeKind.STORE
-            || kind == EdgeKind.ICSTORE
-            || kind == EdgeKind.ISTORE) {
-          // kind == EdgeKind.ICSTORE || kind == EdgeKind.ISTORE can be removed.
-          return State.VMinus;
+        {
+          if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
+            return State.VPlus;
+          } else if (kind == EdgeKind.RETURN) {
+            return State.End;
+          } else if (kind == EdgeKind.CSTORE
+              || kind == EdgeKind.STORE
+              || kind == EdgeKind.ICSTORE
+              || kind == EdgeKind.ISTORE) {
+            // kind == EdgeKind.ICSTORE || kind == EdgeKind.ISTORE can be removed.
+            return State.VMinus;
+          }
         }
-      }
       case VMinus:
-      {
-        if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
-          return State.VMinus;
-        } else if (kind == EdgeKind.INEW) {
-          return State.O;
-        } else if (kind == EdgeKind.PARAM) {
-          return State.End;
+        {
+          if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
+            return State.VMinus;
+          } else if (kind == EdgeKind.INEW) {
+            return State.O;
+          } else if (kind == EdgeKind.PARAM) {
+            return State.End;
+          }
         }
-      }
       case O:
-      {
-        if (kind == EdgeKind.NEW) {
-          return State.VPlus;
+        {
+          if (kind == EdgeKind.NEW) {
+            return State.VPlus;
+          }
         }
-      }
     }
     return State.Error;
   }
@@ -181,54 +182,55 @@ public class InterFlowAnalysis {
   private State nextStateForIn(State currState, EdgeKind kind, boolean fieldMatch) {
     switch (currState) {
       case O:
-      {
-        if (kind == EdgeKind.NEW) {
-          return State.VPlus;
-        }
-      }
-      case THIS:
-      {
-        if (kind == EdgeKind.ITHIS) {
-          return State.ThisAlias;
-        }
-      }
-      case VPlus:
-      {
-        if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
-          return State.VPlus;
-        } else if (kind == EdgeKind.ISTORE
-            || kind == EdgeKind.STORE
-            || kind == EdgeKind.ICSTORE
-            || kind == EdgeKind.CSTORE) {
-          // kind == EdgeKind.STORE || kind == EdgeKind.ICSTORE can be deleted due to not occured in
-          // the real world.
-          return State.VMinus;
-        }
-      }
-      case VMinus:
-      {
-        if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
-          return State.VMinus;
-        } else if (kind == EdgeKind.INEW) {
-          return State.O;
-        } else if (kind == EdgeKind.PARAM) {
-          return State.End;
-        }
-      }
-      case ThisAlias:
-      {
-        if (kind == EdgeKind.ASSIGN) {
-          return State.ThisAlias;
-        } else if (kind == EdgeKind.ISTORE) {
-          if (fieldMatch) {
-            return State.VMinus;
-          }
-        } else if (kind == EdgeKind.LOAD) {
-          if (fieldMatch) {
+        {
+          if (kind == EdgeKind.NEW) {
             return State.VPlus;
           }
         }
-      }
+      case THIS:
+        {
+          if (kind == EdgeKind.ITHIS) {
+            return State.ThisAlias;
+          }
+        }
+      case VPlus:
+        {
+          if (kind == EdgeKind.ASSIGN || kind == EdgeKind.LOAD || kind == EdgeKind.CLOAD) {
+            return State.VPlus;
+          } else if (kind == EdgeKind.ISTORE
+              || kind == EdgeKind.STORE
+              || kind == EdgeKind.ICSTORE
+              || kind == EdgeKind.CSTORE) {
+            // kind == EdgeKind.STORE || kind == EdgeKind.ICSTORE can be deleted due to not occured
+            // in
+            // the real world.
+            return State.VMinus;
+          }
+        }
+      case VMinus:
+        {
+          if (kind == EdgeKind.IASSIGN || kind == EdgeKind.ILOAD || kind == EdgeKind.ICLOAD) {
+            return State.VMinus;
+          } else if (kind == EdgeKind.INEW) {
+            return State.O;
+          } else if (kind == EdgeKind.PARAM) {
+            return State.End;
+          }
+        }
+      case ThisAlias:
+        {
+          if (kind == EdgeKind.ASSIGN) {
+            return State.ThisAlias;
+          } else if (kind == EdgeKind.ISTORE) {
+            if (fieldMatch) {
+              return State.VMinus;
+            }
+          } else if (kind == EdgeKind.LOAD) {
+            if (fieldMatch) {
+              return State.VPlus;
+            }
+          }
+        }
     }
     return State.Error;
   }

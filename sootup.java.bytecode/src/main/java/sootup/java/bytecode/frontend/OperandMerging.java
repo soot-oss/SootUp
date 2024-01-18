@@ -70,7 +70,12 @@ final class OperandMerging {
       output = outputOperand;
     } else if (output.stackLocal != null) {
       if (output.stackLocal != outputOperand.stackLocal && outputOperand.stackLocal != null) {
-        throw new IllegalStateException("Incompatible StackLocals. There already exists more than one StackLocal (" + outputOperand.stackLocal + " != " + output.stackLocal+").");
+        throw new IllegalStateException(
+            "Incompatible StackLocals. There already exists more than one StackLocal ("
+                + outputOperand.stackLocal
+                + " != "
+                + output.stackLocal
+                + ").");
       }
       outputOperand.changeStackLocal(output.stackLocal);
     }

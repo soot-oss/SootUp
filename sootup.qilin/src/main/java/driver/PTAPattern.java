@@ -234,30 +234,30 @@ public class PTAPattern {
 
     @Override
     public String toString() {
-        switch (this) {
-            case DATADRIVEN:
-                return "data-driven";
-            case TUNNELING:
-                return "tunneling";
-            case BEAN:
-                return "bean";
-            case ZIPPER:
-                return "zipper";
-            case EAGLE:
-                return "eagle";
-            case TURNER:
-                return "turner";
-            case MERCURIAL:
-                return "mercurial";
-            case MAHJONG:
-                return "mahjong";
-            case SELECTX:
-                return "selectx";
-            case SPARK:
-                return "spark";
-            default:
-                return "";
-        }
+      switch (this) {
+        case DATADRIVEN:
+          return "data-driven";
+        case TUNNELING:
+          return "tunneling";
+        case BEAN:
+          return "bean";
+        case ZIPPER:
+          return "zipper";
+        case EAGLE:
+          return "eagle";
+        case TURNER:
+          return "turner";
+        case MERCURIAL:
+          return "mercurial";
+        case MAHJONG:
+          return "mahjong";
+        case SELECTX:
+          return "selectx";
+        case SPARK:
+          return "spark";
+        default:
+          return "";
+      }
     }
   }
 }

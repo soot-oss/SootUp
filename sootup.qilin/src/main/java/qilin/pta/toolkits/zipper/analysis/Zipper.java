@@ -91,9 +91,7 @@ public class Zipper {
     System.out.println();
   }
 
-  /**
-   * @return set of precision-critical methods in the program
-   */
+  /** @return set of precision-critical methods in the program */
   public Set<SootMethod> analyze() {
     reset();
     System.out.println(
@@ -277,8 +275,8 @@ public class Zipper {
     int totalPTSSize = 0;
     for (ValNode var : pta.getPag().getValNodes()) {
       if (var instanceof VarNode) {
-          VarNode varNode = (VarNode) var;
-          //                Collection<AllocNode> pts = ToolUtil.pointsToSetOf(pta, varNode);
+        VarNode varNode = (VarNode) var;
+        //                Collection<AllocNode> pts = ToolUtil.pointsToSetOf(pta, varNode);
         totalPTSSize += pta.reachingObjects(varNode).toCIPointsToSet().size();
       }
     }
@@ -295,8 +293,8 @@ public class Zipper {
 
   private SootMethod node2ContainingMethod(Node node) {
     if (node instanceof LocalVarNode) {
-        LocalVarNode lvn = (LocalVarNode) node;
-        return lvn.getMethod();
+      LocalVarNode lvn = (LocalVarNode) node;
+      return lvn.getMethod();
     } else {
       ContextField ctxField = (ContextField) node;
       return ctxField.getBase().getMethod();
@@ -316,8 +314,8 @@ public class Zipper {
       if (!(valnode instanceof LocalVarNode)) {
         continue;
       }
-        LocalVarNode lvn = (LocalVarNode) valnode;
-        SootMethod inMethod = lvn.getMethod();
+      LocalVarNode lvn = (LocalVarNode) valnode;
+      SootMethod inMethod = lvn.getMethod();
       int ptSize = ToolUtil.pointsToSetSizeOf(pta, lvn);
       if (results.containsKey(inMethod)) {
         int oldValue = results.get(inMethod);

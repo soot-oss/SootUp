@@ -42,17 +42,18 @@ public class ContainerFinder {
     for (AllocNode heap : pag.getAllocNodes()) {
       Type type = heap.getType();
       if (type instanceof ArrayType) {
-          ArrayType at = (ArrayType) type;
-          JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
+        ArrayType at = (ArrayType) type;
+        JNewArrayExpr nae = (JNewArrayExpr) heap.getNewExpr();
         Value vl = nae.getSize();
-        if (utility.isCoarseType(at) && (!(vl instanceof IntConstant) || ((IntConstant) vl).getValue() != 0)) {
+        if (utility.isCoarseType(at)
+            && (!(vl instanceof IntConstant) || ((IntConstant) vl).getValue() != 0)) {
           containers.computeIfAbsent(heap, k -> new HashSet<>()).add(ArrayElement.v());
         } else {
           notcontainers.add(heap);
         }
       } else if (type instanceof ClassType) {
-          ClassType refType = (ClassType) type;
-          if (utility.isCoarseType(refType) && heap.getMethod() != null) {
+        ClassType refType = (ClassType) type;
+        if (utility.isCoarseType(refType) && heap.getMethod() != null) {
           remainObjs.add(heap);
         } else {
           notcontainers.add(heap);
@@ -68,7 +69,8 @@ public class ContainerFinder {
     s2.stop();
     System.out.println(s2);
     Stopwatch s3 = Stopwatch.newAndStart("remain-containerFinder");
-    remainObjs.parallelStream()
+    remainObjs
+        .parallelStream()
         .forEach(
             heap -> {
               Set<SparkField> fields = utility.getFields(heap);

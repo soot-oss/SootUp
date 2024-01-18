@@ -70,11 +70,11 @@ public class Conch extends AbstractConch {
     MethodNodeFactory nodeFactory = cmpag.nodeFactory();
     for (Stmt unit : cmpag.getInvokeStmts()) {
       if (unit instanceof JInvokeStmt) {
-          JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-          AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        JInvokeStmt invokeStmt = (JInvokeStmt) unit;
+        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
         if (expr instanceof JSpecialInvokeExpr) {
-            JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
-            Value base = iie.getBase();
+          JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
+          Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           PointsToSet v1pts = pta.reachingObjects(baseNode);
           SootMethod target =
@@ -96,11 +96,11 @@ public class Conch extends AbstractConch {
     VarNode thisNode = nodeFactory.caseThis();
     for (Stmt unit : cmpag.getInvokeStmts()) {
       if (unit instanceof JInvokeStmt) {
-          JInvokeStmt invokeStmt = (JInvokeStmt) unit;
-          AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
+        JInvokeStmt invokeStmt = (JInvokeStmt) unit;
+        AbstractInvokeExpr expr = invokeStmt.getInvokeExpr();
         if (expr instanceof JSpecialInvokeExpr) {
-            JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
-            Value base = iie.getBase();
+          JSpecialInvokeExpr iie = (JSpecialInvokeExpr) expr;
+          Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           MethodSignature targetSig = iie.getMethodSignature();
           SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(targetSig).get();
@@ -143,8 +143,8 @@ public class Conch extends AbstractConch {
       if (otarget.isPresent() && otarget.get().equals(curr)) {
         for (Node n : params) {
           if (n instanceof VarNode) {
-              VarNode paramNode = (VarNode) n;
-              LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
+            VarNode paramNode = (VarNode) n;
+            LocalVarNode argNode = PTAUtils.paramToArg(pag, stmt, cmpag, paramNode);
             if (argNode != null) {
               ret.addAll(this.pfg.fetchReachableParamsOf(argNode));
             }

@@ -62,8 +62,8 @@ public class XPAG {
         if (to instanceof LocalVarNode) {
           this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         } else if (to instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) to;
-            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase(), fr.getField());
+          FieldRefNode fr = (FieldRefNode) to;
+          this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase(), fr.getField());
         } // local-global
 
       } else if (from instanceof AllocNode) {
@@ -71,8 +71,8 @@ public class XPAG {
           this.addNewEdge((AllocNode) from, (LocalVarNode) to);
         } // GlobalVarNode
       } else if (from instanceof FieldRefNode) {
-          FieldRefNode fr = (FieldRefNode) from;
-          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to, fr.getField());
+        FieldRefNode fr = (FieldRefNode) from;
+        this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to, fr.getField());
       } // global-local
     }
     // handle call statements.
@@ -93,12 +93,12 @@ public class XPAG {
         }
       }
       if (ie instanceof AbstractInstanceInvokeExpr) {
-          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-          Local base = iie.getBase();
+        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+        Local base = iie.getBase();
         LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
         if (iie instanceof JSpecialInvokeExpr) {
-            JSpecialInvokeExpr sie = (JSpecialInvokeExpr) iie;
-            SootMethod target =
+          JSpecialInvokeExpr sie = (JSpecialInvokeExpr) iie;
+          SootMethod target =
               (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
           inline(s, target);
         } else {
@@ -107,8 +107,8 @@ public class XPAG {
         }
       } else {
         if (ie instanceof JStaticInvokeExpr) {
-            JStaticInvokeExpr sie = (JStaticInvokeExpr) ie;
-            SootMethod target =
+          JStaticInvokeExpr sie = (JStaticInvokeExpr) ie;
+          SootMethod target =
               (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
           inline(s, target);
         }
@@ -168,8 +168,8 @@ public class XPAG {
     }
     LocalVarNode receiver = null;
     if (ie instanceof AbstractInstanceInvokeExpr) {
-        AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-        Local base = iie.getBase();
+      AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+      Local base = iie.getBase();
       receiver = pag.findLocalVarNode(method, base, base.getType());
     }
     MethodPAG mpag = pag.getMethodPAG(method);
@@ -185,8 +185,8 @@ public class XPAG {
         LocalVarNode param = (LocalVarNode) nodeFactory.caseParm(i);
         ValNode argVal = pag.findValNode(args[i]);
         if (argVal instanceof LocalVarNode) {
-            LocalVarNode argNode = (LocalVarNode) argVal;
-            addAssignEdge(argNode, param);
+          LocalVarNode argNode = (LocalVarNode) argVal;
+          addAssignEdge(argNode, param);
         }
       }
     }

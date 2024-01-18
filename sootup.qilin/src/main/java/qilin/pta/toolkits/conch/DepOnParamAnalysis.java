@@ -105,8 +105,8 @@ public class DepOnParamAnalysis extends AbstractPAG {
           // do something.
           SootMethod containingMethod;
           if (sourceParam instanceof LocalVarNode) {
-              LocalVarNode pj = (LocalVarNode) sourceParam;
-              containingMethod = pj.getMethod();
+            LocalVarNode pj = (LocalVarNode) sourceParam;
+            containingMethod = pj.getMethod();
           } else {
             AllocNode heap = (AllocNode) sourceParam;
             containingMethod = heap.getMethod();
@@ -121,12 +121,12 @@ public class DepOnParamAnalysis extends AbstractPAG {
             MethodNodeFactory srcnf = srcmpag.nodeFactory();
             Stmt invokeStmt = edge.srcUnit();
             if (invokeStmt instanceof JAssignStmt) {
-                JAssignStmt assignStmt = (JAssignStmt) invokeStmt;
+              JAssignStmt assignStmt = (JAssignStmt) invokeStmt;
 
-                VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
+              VarNode r = (VarNode) srcnf.getNode(assignStmt.getLeftOp());
               if (sourceParam instanceof LocalVarNode) {
-                  LocalVarNode pj = (LocalVarNode) sourceParam;
-                  VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
+                LocalVarNode pj = (LocalVarNode) sourceParam;
+                VarNode aj = PTAUtils.paramToArg(prePAG, invokeStmt, srcmpag, pj);
                 if (aj != null) {
                   addSummaryEdge(new TranEdge(aj, r, DFA.TranCond.INTER_ASSIGN));
                 }

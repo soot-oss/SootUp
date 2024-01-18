@@ -49,7 +49,6 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.StringConstant;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -296,8 +295,8 @@ public class PAG {
   /** Finds the ValNode for the variable value, or returns null. */
   public ValNode findValNode(Object value) {
     if (value instanceof Local) {
-        Local local = (Local) value;
-        Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
+      Local local = (Local) value;
+      Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
       return valToValNode.get(localTypePair);
     } else {
       return valToValNode.get(value);
@@ -369,12 +368,12 @@ public class PAG {
       valToValNode.put(localTriple, ret = new LocalVarNode(value, type, method));
       valNodeNumberer.add(ret);
       if (value instanceof Local) {
-          Local local = (Local) value;
-          locals.add(new Triple<>(method, local, type));
+        Local local = (Local) value;
+        locals.add(new Triple<>(method, local, type));
       }
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
-              "Value " + value + " of type " + type + " previously had type " + ret.getType());
+          "Value " + value + " of type " + type + " previously had type " + ret.getType());
     }
     return ret;
   }
@@ -552,8 +551,8 @@ public class PAG {
       if (s.containsInvokeExpr()) {
         AbstractInvokeExpr invokeExpr = s.getInvokeExpr();
         if (invokeExpr instanceof JStaticInvokeExpr) {
-            JStaticInvokeExpr sie = (JStaticInvokeExpr) invokeExpr;
-            String sig = sie.getMethodSignature().toString();
+          JStaticInvokeExpr sie = (JStaticInvokeExpr) invokeExpr;
+          String sig = sie.getMethodSignature().toString();
           if (sig.equals(
               "<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>")) {
             Value srcArr = sie.getArg(0);

@@ -47,8 +47,8 @@ public final class ContextMethod implements MethodOrMethodContext {
     if (!(o instanceof ContextMethod)) {
       return false;
     } else {
-        ContextMethod other = (ContextMethod) o;
-        return this.method.equals(other.method) && this.context.equals(other.context);
+      ContextMethod other = (ContextMethod) o;
+      return this.method.equals(other.method) && this.context.equals(other.context);
     }
   }
 

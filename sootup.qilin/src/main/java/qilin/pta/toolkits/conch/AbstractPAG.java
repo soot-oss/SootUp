@@ -68,7 +68,9 @@ public abstract class AbstractPAG {
   }
 
   protected void build() {
-    prePTA.getNakedReachableMethods().parallelStream()
+    prePTA
+        .getNakedReachableMethods()
+        .parallelStream()
         .filter(SootMethod::isConcrete)
         .forEach(this::buildFG);
   }
@@ -83,8 +85,8 @@ public abstract class AbstractPAG {
       if (from instanceof LocalVarNode) {
         if (to instanceof LocalVarNode) this.addAssignEdge((LocalVarNode) from, (LocalVarNode) to);
         else if (to instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) to;
-            this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
+          FieldRefNode fr = (FieldRefNode) to;
+          this.addStoreEdge((LocalVarNode) from, (LocalVarNode) fr.getBase());
         } // local-global
 
       } else if (from instanceof AllocNode) {
@@ -92,8 +94,8 @@ public abstract class AbstractPAG {
           this.addNewEdge((AllocNode) from, (LocalVarNode) to);
         } // GlobalVarNode
       } else if (from instanceof FieldRefNode) {
-          FieldRefNode fr = (FieldRefNode) from;
-          this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
+        FieldRefNode fr = (FieldRefNode) from;
+        this.addLoadEdge((LocalVarNode) fr.getBase(), (LocalVarNode) to);
       } // global-local
     }
 
@@ -111,7 +113,11 @@ public abstract class AbstractPAG {
       LocalVarNode mret = (LocalVarNode) srcnf.caseRet();
       addReturnEdge(mret);
     }
-    Node throwNode = prePAG.findLocalVarNode(method, new Parm(method, PointsToAnalysis.THROW_NODE), PTAUtils.getClassType("java.lang.Throwable"));
+    Node throwNode =
+        prePAG.findLocalVarNode(
+            method,
+            new Parm(method, PointsToAnalysis.THROW_NODE),
+            PTAUtils.getClassType("java.lang.Throwable"));
     if (throwNode != null) {
       addThrowEdge(throwNode);
     }

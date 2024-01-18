@@ -102,8 +102,8 @@ public class ZipperPTA extends StagedPTA {
         } else if (from instanceof AllocNode) {
           nodes.add(((AllocNode) from).getNewExpr());
         } else if (from instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) from;
-            VarNode base = fr.getBase();
+          FieldRefNode fr = (FieldRefNode) from;
+          VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -112,8 +112,8 @@ public class ZipperPTA extends StagedPTA {
         if (to instanceof LocalVarNode) {
           nodes.add(((VarNode) to).getVariable());
         } else if (to instanceof FieldRefNode) {
-            FieldRefNode fr = (FieldRefNode) to;
-            VarNode base = fr.getBase();
+          FieldRefNode fr = (FieldRefNode) to;
+          VarNode base = fr.getBase();
           if (base instanceof LocalVarNode) {
             nodes.add(base.getVariable());
           }
@@ -137,8 +137,8 @@ public class ZipperPTA extends StagedPTA {
           }
         }
         if (ie instanceof AbstractInstanceInvokeExpr) {
-            AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
-            Local base = iie.getBase();
+          AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
+          Local base = iie.getBase();
           nodes.add(base);
         }
       }

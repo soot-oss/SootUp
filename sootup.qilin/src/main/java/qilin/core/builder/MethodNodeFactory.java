@@ -27,7 +27,6 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
-import qilin.util.Pair;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -63,9 +62,7 @@ import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
 
-/**
- * @author Ondrej Lhotak
- */
+/** @author Ondrej Lhotak */
 public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
@@ -79,46 +76,46 @@ public class MethodNodeFactory {
 
   public Node getNode(Value v) {
     if (v instanceof Local) {
-        Local l = (Local) v;
-        return caseLocal(l);
+      Local l = (Local) v;
+      return caseLocal(l);
     } else if (v instanceof JCastExpr) {
-        JCastExpr castExpr = (JCastExpr) v;
-        return caseCastExpr(castExpr);
+      JCastExpr castExpr = (JCastExpr) v;
+      return caseCastExpr(castExpr);
     } else if (v instanceof JNewExpr) {
-        JNewExpr ne = (JNewExpr) v;
-        return caseNewExpr(ne);
+      JNewExpr ne = (JNewExpr) v;
+      return caseNewExpr(ne);
     } else if (v instanceof JStaticFieldRef) {
-        JStaticFieldRef sfr = (JStaticFieldRef) v;
-        return caseStaticFieldRef(sfr);
+      JStaticFieldRef sfr = (JStaticFieldRef) v;
+      return caseStaticFieldRef(sfr);
     } else if (v instanceof JNewArrayExpr) {
-        JNewArrayExpr nae = (JNewArrayExpr) v;
-        return caseNewArrayExpr(nae);
+      JNewArrayExpr nae = (JNewArrayExpr) v;
+      return caseNewArrayExpr(nae);
     } else if (v instanceof JArrayRef) {
-        JArrayRef ar = (JArrayRef) v;
-        return caseArrayRef(ar);
+      JArrayRef ar = (JArrayRef) v;
+      return caseArrayRef(ar);
     } else if (v instanceof ClassConstant) {
-        ClassConstant cc = (ClassConstant) v;
-        return caseClassConstant(cc);
+      ClassConstant cc = (ClassConstant) v;
+      return caseClassConstant(cc);
     } else if (v instanceof StringConstant) {
-        StringConstant sc = (StringConstant) v;
-        return caseStringConstant(sc);
+      StringConstant sc = (StringConstant) v;
+      return caseStringConstant(sc);
     } else if (v instanceof JCaughtExceptionRef) {
-        JCaughtExceptionRef cef = (JCaughtExceptionRef) v;
-        return caseCaughtExceptionRef(cef);
+      JCaughtExceptionRef cef = (JCaughtExceptionRef) v;
+      return caseCaughtExceptionRef(cef);
     } else if (v instanceof JParameterRef) {
-        JParameterRef pr = (JParameterRef) v;
-        return caseParameterRef(pr);
+      JParameterRef pr = (JParameterRef) v;
+      return caseParameterRef(pr);
     } else if (v instanceof NullConstant) {
-        NullConstant nc = (NullConstant) v;
-        return caseNullConstant(nc);
+      NullConstant nc = (NullConstant) v;
+      return caseNullConstant(nc);
     } else if (v instanceof JInstanceFieldRef) {
-        JInstanceFieldRef ifr = (JInstanceFieldRef) v;
-        return caseInstanceFieldRef(ifr);
+      JInstanceFieldRef ifr = (JInstanceFieldRef) v;
+      return caseInstanceFieldRef(ifr);
     } else if (v instanceof JThisRef) {
       return caseThis();
     } else if (v instanceof JNewMultiArrayExpr) {
-        JNewMultiArrayExpr nmae = (JNewMultiArrayExpr) v;
-        return caseNewMultiArrayExpr(nmae);
+      JNewMultiArrayExpr nmae = (JNewMultiArrayExpr) v;
+      return caseNewMultiArrayExpr(nmae);
     }
     System.out.println(v + ";;" + v.getClass());
     return null;
@@ -149,15 +146,15 @@ public class MethodNodeFactory {
       getNode(arg);
     }
     if (s instanceof JAssignStmt) {
-        JAssignStmt assignStmt = (JAssignStmt) s;
-        Value l = assignStmt.getLeftOp();
+      JAssignStmt assignStmt = (JAssignStmt) s;
+      Value l = assignStmt.getLeftOp();
       if ((l.getType() instanceof ReferenceType)) {
         getNode(l);
       }
     }
     if (ie instanceof AbstractInstanceInvokeExpr) {
-        AbstractInstanceInvokeExpr aie = (AbstractInstanceInvokeExpr) ie;
-        getNode(aie.getBase());
+      AbstractInstanceInvokeExpr aie = (AbstractInstanceInvokeExpr) ie;
+      getNode(aie.getBase());
     }
   }
 
@@ -376,8 +373,7 @@ public class MethodNodeFactory {
     VarNode stringConstantVar =
         pag.makeGlobalVarNode(sc, PTAUtils.getClassType("java.lang.String"));
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-    VarNode vn =
-        pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
+    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }

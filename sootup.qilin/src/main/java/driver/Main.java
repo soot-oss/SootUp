@@ -19,10 +19,6 @@
 package driver;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import qilin.core.PTA;
 import qilin.pta.PTAConfig;
 import qilin.util.MemoryWatcher;
@@ -49,6 +45,7 @@ public class Main {
     String jvmName = ManagementFactory.getRuntimeMXBean().getName();
     String s = jvmName.split("@")[0];
     long pid = Long.getLong(s);
+    System.out.println("xxxPid:" + pid);
     MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
     memoryWatcher.start();
     run(args);
