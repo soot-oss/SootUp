@@ -69,8 +69,8 @@ public class NativeTests extends JunitTests {
   }
 
   @Test
-  public void testTreadRun() {
-    checkAssertions(run("qilin.microben.core.natives.TreadRun"));
+  public void testThreadRun() {
+    checkAssertions(run("qilin.microben.core.natives.ThreadRun"));
   }
 
   @Test

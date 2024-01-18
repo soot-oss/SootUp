@@ -20,7 +20,7 @@ package qilin.microben.core.natives;
 
 import qilin.microben.utils.Assert;
 
-public class TreadRun {
+public class ThreadRun {
   static Object t;
 
   static class A extends Thread {

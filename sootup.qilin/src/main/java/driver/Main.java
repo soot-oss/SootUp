@@ -18,18 +18,16 @@
 
 package driver;
 
-import qilin.core.PTA;
-import qilin.pta.PTAConfig;
-import qilin.util.MemoryWatcher;
-import qilin.util.PTAUtils;
-import qilin.util.Stopwatch;
-import sun.management.VMManagement;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import qilin.core.PTA;
+import qilin.pta.PTAConfig;
+import qilin.util.MemoryWatcher;
+import qilin.util.PTAUtils;
+import qilin.util.Stopwatch;
 
 public class Main {
 
@@ -48,32 +46,16 @@ public class Main {
 
   public static void mainRun(String[] args) {
     Stopwatch ptaTimer = Stopwatch.newAndStart("Main PTA (including pre-analysis)");
-      long pid = 0;// ProcessHandle.current().pid();
-      try {
-          pid = getProcessId();
-      } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-          throw new IllegalStateException("Could not get the process id.");
-      }
-      MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
+    String jvmName = ManagementFactory.getRuntimeMXBean().getName();
+    String s = jvmName.split("@")[0];
+    long pid = Long.getLong(s);
+    MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
     memoryWatcher.start();
     run(args);
     ptaTimer.stop();
     System.out.println(ptaTimer);
     memoryWatcher.stop();
     System.out.println(memoryWatcher);
-  }
-
-  private static int getProcessId() throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-
-    RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
-    Field jvm = runtime.getClass().getDeclaredField("jvm");
-    jvm.setAccessible(true);
-
-    VMManagement management = (VMManagement) jvm.get(runtime);
-    Method method = management.getClass().getDeclaredMethod("getProcessId");
-    method.setAccessible(true);
-
-    return (Integer) method.invoke(management);
   }
 
   public static void main(String[] args) {
