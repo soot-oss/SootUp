@@ -16,15 +16,15 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
         double d2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
         d2 = 1.6777217E7 + 5.0;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
         return;
     }
@@ -33,15 +33,15 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
         double d2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
         d2 = 5.0 - 1.6777217E7;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
         return;
     }
@@ -50,15 +50,15 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
         double d2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
         d2 = 5.0 * 1.6777217E7;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
         return;
     }
@@ -67,15 +67,15 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
         double d2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
         d2 = 5.0 / 1.6777217E7;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
         return;
     }
@@ -84,15 +84,15 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
         double d2;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
         d2 = 5.0 % 1.6777217E7;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(d2);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(d2);
 
         return;
     }
@@ -100,13 +100,13 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void simpleAssignmentOperator()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(1.6777217E7);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(1.6777217E7);
 
         return;
     }
@@ -114,27 +114,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void equals()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpl 5.0;
+        b0 = 1.6777217E7 cmpl 5.0;
 
-        if $b0 != 0 goto label1;
+        if b0 != 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -142,27 +142,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void notEquals()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpl 5.0;
+        b0 = 1.6777217E7 cmpl 5.0;
 
-        if $b0 == 0 goto label1;
+        if b0 == 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -170,27 +170,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void greateThan()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpl 5.0;
+        b0 = 1.6777217E7 cmpl 5.0;
 
-        if $b0 <= 0 goto label1;
+        if b0 <= 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -198,27 +198,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void lessThan()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpg 5.0;
+        b0 = 1.6777217E7 cmpg 5.0;
 
-        if $b0 >= 0 goto label1;
+        if b0 >= 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -226,27 +226,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void greaterOrEqualsThan()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpl 5.0;
+        b0 = 1.6777217E7 cmpl 5.0;
 
-        if $b0 < 0 goto label1;
+        if b0 < 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -254,27 +254,27 @@ public class de.upb.sootup.concrete.operators.DoubleOps extends java.lang.Object
     public void lessOrEqualsThan()
     {
         de.upb.sootup.concrete.operators.DoubleOps r0;
-        byte $b0;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b0;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.concrete.operators.DoubleOps;
 
-        $b0 = 1.6777217E7 cmpg 5.0;
+        b0 = 1.6777217E7 cmpg 5.0;
 
-        if $b0 > 0 goto label1;
+        if b0 > 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }

@@ -104,7 +104,8 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      Optional<SootClass> osc = PTAScene.v().getView().getClass(method.getDeclaringClassType());
+      Optional<? extends SootClass> osc =
+          PTAScene.v().getView().getClass(method.getDeclaringClassType());
       if (osc.isPresent()) {
         SootClass sc = osc.get();
         PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);

@@ -34,10 +34,10 @@ public class StringConcatenationTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: StringConcatenation",
-            "$r2 = new java.lang.StringBuilder",
-            "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"the\")",
-            "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"string\")",
-            "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+            "r2 = new java.lang.StringBuilder",
+            "specialinvoke r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"the\")",
+            "r3 = virtualinvoke r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"string\")",
+            "r1 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
             "return")
         .collect(Collectors.toList());
   }

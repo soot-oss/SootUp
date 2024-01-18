@@ -36,14 +36,14 @@ public class JimpleConverter {
 
   public OverridingClassSource run(
       @Nonnull CharStream charStream,
-      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull AnalysisInputLocation inputlocation,
       @Nonnull Path sourcePath) {
     return run(charStream, inputlocation, sourcePath, Collections.emptyList());
   }
 
   public OverridingClassSource run(
       @Nonnull CharStream charStream,
-      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull AnalysisInputLocation inputlocation,
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
 
@@ -56,14 +56,14 @@ public class JimpleConverter {
 
   public OverridingClassSource run(
       @Nonnull JimpleParser parser,
-      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull AnalysisInputLocation inputlocation,
       @Nonnull Path sourcePath) {
     return run(parser, inputlocation, sourcePath, Collections.emptyList());
   }
 
   public OverridingClassSource run(
       @Nonnull JimpleParser parser,
-      @Nonnull AnalysisInputLocation<?> inputlocation,
+      @Nonnull AnalysisInputLocation inputlocation,
       @Nonnull Path sourcePath,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
 

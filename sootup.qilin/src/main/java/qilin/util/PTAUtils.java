@@ -79,12 +79,8 @@ public final class PTAUtils {
   public static boolean isApplicationMethod(SootMethod sm) {
     ClassType classType = sm.getDeclaringClassType();
     View view = PTAScene.v().getView();
-    Optional<SootClass> osc = view.getClass(classType);
-    if (osc.isPresent()) {
-      return osc.get().isApplicationClass();
-    } else {
-      return false;
-    }
+    Optional<? extends SootClass> osc = view.getClass(classType);
+    return osc.map(SootClass::isApplicationClass).orElse(false);
   }
 
   public static boolean isStaticInitializer(SootMethod method) {
@@ -195,7 +191,7 @@ public final class PTAUtils {
     //        if (!rt.hasSootClass()) {
     //            return true;
     //        }
-    Optional<SootClass> ocl = PTAScene.v().getView().getClass(rt);
+    Optional<? extends SootClass> ocl = PTAScene.v().getView().getClass(rt);
     return !ocl.isPresent();
     //        SootClass cl = rt.getSootClass();
     //        return cl.resolvingLevel() < SootClass.HIERARCHY;
@@ -539,32 +535,28 @@ public final class PTAUtils {
     Set<SootMethod> ret = new HashSet<>();
     Set<SootClass> visit = new HashSet<>();
     Queue<SootClass> worklist = new UniqueQueue<>();
-    Optional<ClassType> curr = Optional.of(cl.getType());
+    Optional<? extends ClassType> curr = Optional.of(cl.getType());
     while (curr.isPresent()) {
       ClassType ct = curr.get();
-      SootClass sc = (SootClass) PTAScene.v().getView().getClass(ct).get();
+      SootClass sc = PTAScene.v().getView().getClass(ct).get();
       worklist.add(sc);
       curr = sc.getSuperclass();
     }
     while (!worklist.isEmpty()) {
       SootClass sc = worklist.poll();
       if (visit.add(sc)) {
-        Set<ClassType> itfs = sc.getInterfaces();
+        Set<? extends ClassType> itfs = sc.getInterfaces();
         for (ClassType itf : itfs) {
-          Optional<SootClass> xsc = PTAScene.v().getView().getClass(itf);
-          if (xsc.isPresent()) {
-            worklist.add(xsc.get());
-          }
+          Optional<? extends SootClass> xsc = PTAScene.v().getView().getClass(itf);
+          xsc.ifPresent(worklist::add);
         }
       }
     }
     for (SootClass sc : visit) {
       MethodSubSignature subclinit =
           JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
-      final Optional<SootMethod> initStart = sc.getMethod(subclinit);
-      if (initStart.isPresent()) {
-        ret.add(initStart.get());
-      }
+      final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
+      initStart.ifPresent(ret::add);
     }
     return ret;
   }

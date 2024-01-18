@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class MethodValidator implements BodyValidator {
 
@@ -33,9 +34,11 @@ public class MethodValidator implements BodyValidator {
    * <ol>
    *   <li>static initializer should have 'static' modifier
    * </ol>
+   *
+   * @return
    */
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; } if (methodRef.isStaticInitializer()
@@ -43,6 +46,7 @@ public class MethodValidator implements BodyValidator {
      * " should be static! Static initializer without 'static'('0x8') modifier" +
      * " will cause problem when running on android platform: " + "\"<clinit> is not flagged correctly wrt/ static\"!")); }
      */
+    return null;
   }
 
   @Override

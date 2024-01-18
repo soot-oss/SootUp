@@ -25,7 +25,7 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
@@ -48,10 +48,10 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: VolatileVariable",
-            "$i0 = r0.<VolatileVariable: int counter>",
-            "$i1 = $i0 + 1",
-            "r0.<VolatileVariable: int counter> = $i1",
-            "return $i0")
+            "i0 = r0.<VolatileVariable: int counter>",
+            "i1 = i0 + 1",
+            "r0.<VolatileVariable: int counter> = i1",
+            "return i0")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

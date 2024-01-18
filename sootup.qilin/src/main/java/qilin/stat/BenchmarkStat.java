@@ -51,7 +51,7 @@ public class BenchmarkStat implements AbstractStat {
             .map(
                 m -> {
                   ClassType classType = m.getDeclaringClassType();
-                  Optional<SootClass> osc = view.getClass(classType);
+                  Optional<? extends SootClass> osc = view.getClass(classType);
                   return osc;
                 })
             .filter(Optional::isPresent)

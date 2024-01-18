@@ -52,7 +52,7 @@ import sootup.core.views.View;
 public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
     int nextFreeIdx = 0;

@@ -40,7 +40,7 @@ import sootup.core.views.View;
 public class EmptySwitchEliminator implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     // Iterate all stmts in the body
     for (Stmt stmt : new ArrayList<>(builder.getStmtGraph().getNodes())) {
       // If the observed stmt an instance of JSwitchStmt

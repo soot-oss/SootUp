@@ -15,43 +15,43 @@ public class de.upb.sootup.instructions.javabytecode.stmt.MonitorStmts extends j
     public void enterAndExit()
     {
         de.upb.sootup.instructions.javabytecode.stmt.MonitorStmts r0;
-        java.lang.StringBuffer $r4;
-        java.io.PrintStream $r8;
-        java.lang.String $r9;
-        java.lang.Throwable $r10;
+        java.lang.StringBuffer r4;
+        java.io.PrintStream r8;
+        java.lang.String r9;
+        java.lang.Throwable r10;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.MonitorStmts;
 
-        $r4 = new java.lang.StringBuffer;
+        r4 = new java.lang.StringBuffer;
 
-        specialinvoke $r4.<java.lang.StringBuffer: void <init>()>();
+        specialinvoke r4.<java.lang.StringBuffer: void <init>()>();
 
-        entermonitor $r4;
+        entermonitor r4;
 
      label1:
-        virtualinvoke $r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("monitored");
+        virtualinvoke r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("monitored");
 
-        exitmonitor $r4;
+        exitmonitor r4;
 
      label2:
         goto label5;
 
      label3:
-        $r10 := @caughtexception;
+        r10 := @caughtexception;
 
-        exitmonitor $r4;
+        exitmonitor r4;
 
      label4:
-        throw $r10;
+        throw r10;
 
      label5:
-        virtualinvoke $r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("unmonitored");
+        virtualinvoke r4.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>("unmonitored");
 
-        $r8 = <java.lang.System: java.io.PrintStream out>;
+        r8 = <java.lang.System: java.io.PrintStream out>;
 
-        $r9 = virtualinvoke $r4.<java.lang.StringBuffer: java.lang.String toString()>();
+        r9 = virtualinvoke r4.<java.lang.StringBuffer: java.lang.String toString()>();
 
-        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r9);
+        virtualinvoke r8.<java.io.PrintStream: void println(java.lang.String)>(r9);
 
         return;
 

@@ -300,13 +300,13 @@ public class FakeMainFactory extends ArtificialMethod {
     }
 
     protected void addMethod(List<SootMethod> set, SootClass cls, MethodSubSignature methodSubSig) {
-      Optional<SootMethod> osm = cls.getMethod(methodSubSig);
+      Optional<? extends SootMethod> osm = cls.getMethod(methodSubSig);
       osm.ifPresent(set::add);
     }
 
     protected void addMethod(List<SootMethod> set, String methodSig) {
       MethodSignature ms = JavaIdentifierFactory.getInstance().parseMethodSignature(methodSig);
-      Optional<SootMethod> osm = view.getMethod(ms);
+      Optional<? extends SootMethod> osm = view.getMethod(ms);
       osm.ifPresent(set::add);
     }
 
@@ -315,7 +315,7 @@ public class FakeMainFactory extends ArtificialMethod {
      * the VM.
      */
     public List<SootMethod> application() {
-      List<SootMethod> ret = new ArrayList<SootMethod>();
+      List<SootMethod> ret = new ArrayList<>();
       if (mainClass != null) {
         addMethod(ret, mainClass, sigMain);
         for (SootMethod clinit : clinitsOf(mainClass)) {
@@ -366,7 +366,7 @@ public class FakeMainFactory extends ArtificialMethod {
     /** Returns a list of all static initializers. */
     public List<SootMethod> clinits() {
       List<SootMethod> ret = new ArrayList<>();
-      Collection<SootClass> classes = view.getClasses();
+      Collection<? extends SootClass> classes = view.getClasses();
       for (SootClass cl : classes) {
         addMethod(ret, cl, sigClinit);
       }
@@ -377,12 +377,12 @@ public class FakeMainFactory extends ArtificialMethod {
     public Iterable<SootMethod> clinitsOf(SootClass cl) {
       // Do not create an actual list, since this method gets called quite often
       // Instead, callers usually just want to iterate over the result.
-      Optional<SootMethod> oinit = cl.getMethod(sigClinit);
-      Optional<ClassType> osuperClass = cl.getSuperclass();
+      Optional<? extends SootMethod> oinit = cl.getMethod(sigClinit);
+      Optional<? extends ClassType> osuperClass = cl.getSuperclass();
       // check super classes until finds a constructor or no super class there anymore.
       while (!oinit.isPresent() && osuperClass.isPresent()) {
         ClassType superType = osuperClass.get();
-        Optional<SootClass> oSuperClass = view.getClass(superType);
+        Optional<? extends SootClass> oSuperClass = view.getClass(superType);
         if (!oSuperClass.isPresent()) {
           break;
         }
@@ -407,23 +407,24 @@ public class FakeMainFactory extends ArtificialMethod {
 
               // Pre-fetch the next element
               current = null;
-              Optional<SootClass> oCurrentClass = view.getClass(n.getDeclaringClassType());
+              Optional<? extends SootClass> oCurrentClass =
+                  view.getClass(n.getDeclaringClassType());
               if (!oCurrentClass.isPresent()) {
                 return n;
               }
               SootClass currentClass = oCurrentClass.get();
               while (true) {
-                Optional<ClassType> osuperType1 = currentClass.getSuperclass();
+                Optional<? extends ClassType> osuperType1 = currentClass.getSuperclass();
                 if (!osuperType1.isPresent()) {
                   break;
                 }
                 ClassType classType = osuperType1.get();
-                Optional<SootClass> osuperClass1 = view.getClass(classType);
+                Optional<? extends SootClass> osuperClass1 = view.getClass(classType);
                 if (!osuperClass1.isPresent()) {
                   break;
                 }
                 SootClass superClass = osuperClass1.get();
-                Optional<SootMethod> om = superClass.getMethod(sigClinit);
+                Optional<? extends SootMethod> om = superClass.getMethod(sigClinit);
                 if (om.isPresent()) {
                   current = om.get();
                   break;

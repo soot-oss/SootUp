@@ -49,7 +49,6 @@ import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 public class PTAScene {
@@ -117,7 +116,7 @@ public class PTAScene {
   }
 
   private static JavaView createViewForClassPath(List<String> classPaths) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> analysisInputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     for (String clazzPath : classPaths) {
       analysisInputLocations.add(
           new JavaClassPathAnalysisInputLocation(
@@ -214,7 +213,7 @@ public class PTAScene {
   }
 
   public Collection<SootClass> getApplicationClasses() {
-    Collection<SootClass> classes = view.getClasses();
+    Collection<? extends SootClass> classes = view.getClasses();
     return classes.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
     //        for (SootClass sc : classes) {
     //            sc.isApplicationClass()
@@ -223,7 +222,7 @@ public class PTAScene {
   }
 
   public Collection<SootClass> getLibraryClasses() {
-    Collection<SootClass> classes = view.getClasses();
+    Collection<? extends SootClass> classes = view.getClasses();
     return classes.stream().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
     //        return sootScene.getLibraryClasses();
   }
@@ -240,7 +239,7 @@ public class PTAScene {
     return view.getField(fieldSig).isPresent();
   }
 
-  public Collection<SootClass> getClasses() {
+  public Collection<? extends SootClass> getClasses() {
     return view.getClasses();
   }
 
@@ -250,18 +249,18 @@ public class PTAScene {
 
   public SootClass getSootClass(String className) {
     ClassType classType = PTAUtils.getClassType(className);
-    return (SootClass) view.getClass(classType).get();
+    return view.getClass(classType).get();
   }
 
   public boolean containsClass(String className) {
     ClassType classType = PTAUtils.getClassType(className);
-    Optional<SootClass> oclazz = view.getClass(classType);
+    Optional<? extends SootClass> oclazz = view.getClass(classType);
     return oclazz.isPresent();
   }
 
   public SootField getField(String fieldSignature) {
     FieldSignature fieldSig =
         JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
-    return (SootField) view.getField(fieldSig).get();
+    return view.getField(fieldSig).get();
   }
 }

@@ -44,7 +44,7 @@ public class AllocNode extends Node implements ContextElement, Numberable {
     if (t instanceof ClassType) {
       ClassType rt = (ClassType) t;
       View view = PTAScene.v().getView();
-      Optional<SootClass> osc = view.getClass(rt);
+      Optional<? extends SootClass> osc = view.getClass(rt);
       if (osc.isPresent() && osc.get().isAbstract()) {
         boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
         if (!usesReflectionLog) {

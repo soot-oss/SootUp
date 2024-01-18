@@ -12,7 +12,6 @@ import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -33,7 +32,7 @@ public class ClassHierarchy {
   public void test() {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation("src/test/resources/ClassHierarchy/binary"));
     inputLocations.add(new DefaultRTJarAnalysisInputLocation()); // add rt.jar

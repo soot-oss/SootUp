@@ -33,7 +33,7 @@ public class NewCodeBlockInMethodTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: NewCodeBlockInMethod", "$i0 = 5", "return")
+    return Stream.of("r0 := @this: NewCodeBlockInMethod", "i0 = 5", "return")
         .collect(Collectors.toList());
   }
 

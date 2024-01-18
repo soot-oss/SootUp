@@ -93,16 +93,19 @@ public class CollectionHeuristic {
   private boolean isImplementingCollection(SootClass sc) {
     Set<ClassType> allInterfaces = new HashSet<>(sc.getInterfaces());
     while (sc.hasSuperclass()) {
-      sc = (SootClass) sc.getSuperclass().get();
+      ClassType classType = sc.getSuperclass().get();
+      sc = PTAScene.v().getView().getClass(classType).get();
       allInterfaces.addAll(sc.getInterfaces());
     }
     // interface may also have super class
     Set<SootClass> worklist = new HashSet<>();
     for (ClassType tmp : allInterfaces) {
-      SootClass msc = (SootClass) PTAScene.v().getView().getClass(tmp).get();
+      SootClass msc = PTAScene.v().getView().getClass(tmp).get();
       worklist.add(msc);
-      while (msc.hasSuperclass() && ((SootClass) msc.getSuperclass().get()).isInterface()) {
-        SootClass superClazz = (SootClass) msc.getSuperclass().get();
+      while (msc.hasSuperclass()) {
+        ClassType superType = msc.getSuperclass().get();
+        SootClass superClazz = PTAScene.v().getView().getClass(superType).get();
+        if (!superClazz.isInterface()) break;
         worklist.add(superClazz);
         msc = superClazz;
       }
@@ -122,7 +125,8 @@ public class CollectionHeuristic {
     if (!sc.isInnerClass()) {
       return false;
     }
-    SootClass outer = (SootClass) sc.getOuterClass().get();
+    ClassType outerType = sc.getOuterClass().get();
+    SootClass outer = PTAScene.v().getView().getClass(outerType).get();
     if (isImplementingCollection(outer)) {
       return true;
     }

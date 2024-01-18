@@ -13,13 +13,11 @@ import sootup.core.frontend.ResolveException;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.SootClass;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 
 /** @author Markus Schmidt */
-public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T>>>
-    implements ClassProvider<T> {
+public class JimpleClassProvider implements ClassProvider {
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
@@ -30,10 +28,8 @@ public class JimpleClassProvider<T extends SootClass<? extends SootClassSource<T
   }
 
   @Override
-  public Optional<SootClassSource<T>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputlocation,
-      Path sourcePath,
-      ClassType classSignature) {
+  public Optional<SootClassSource> createClassSource(
+      AnalysisInputLocation inputlocation, Path sourcePath, ClassType classSignature) {
 
     try {
       final JimpleConverter jimpleConverter = new JimpleConverter();

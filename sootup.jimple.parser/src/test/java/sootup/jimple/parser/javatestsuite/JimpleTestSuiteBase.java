@@ -60,15 +60,15 @@ public abstract class JimpleTestSuiteBase {
     return identifierFactory.getClassType(deriveClassName(this.getClass().getSimpleName()));
   }
 
-  public SootClass<?> loadClass(ClassType clazz) {
+  public SootClass loadClass(ClassType clazz) {
 
-    Optional<SootClass<?>> cs = view.getClass(clazz);
+    Optional<SootClass> cs = view.getClass(clazz);
     assertTrue("no matching class for " + clazz + " found", cs.isPresent());
     return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
-    SootClass<?> clazz = loadClass(methodSignature.getDeclClassType());
+    SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<? extends SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     if (!m.isPresent()) {
       System.out.println("existing methods:");

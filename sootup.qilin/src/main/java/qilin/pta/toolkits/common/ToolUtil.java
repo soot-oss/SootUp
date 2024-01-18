@@ -70,10 +70,9 @@ public class ToolUtil {
   public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
     final String pInnerStr = pInner.toString();
     while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
-      SootClass sc = (SootClass) PTAScene.v().getView().getClass(pOuter).get();
+      SootClass sc = PTAScene.v().getView().getClass(pOuter).get();
       if (sc.hasSuperclass()) {
-        SootClass otsuper = (SootClass) sc.getSuperclass().get();
-        pOuter = otsuper.getType();
+        pOuter = sc.getSuperclass().get();
       } else {
         return false;
       }

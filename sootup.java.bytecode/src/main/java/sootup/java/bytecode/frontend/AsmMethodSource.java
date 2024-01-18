@@ -96,7 +96,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nullable private JavaClassType declaringClass;
 
-  private final View<?> view;
+  private final View view;
   private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
@@ -114,7 +114,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      View<?> view,
+      View view,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
@@ -257,7 +257,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx, false); // FIXME: isField
+      String name = determineLocalName(idx);
       local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
       locals.set(idx, local);
     }
@@ -265,7 +265,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private String determineLocalName(int idx, boolean isField) {
+  private String determineLocalName(int idx) {
     String name;
     if (localVariables != null) {
       name = null;
@@ -282,7 +282,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       name = "l" + idx;
     }
-    return isField ? name : "$" + name;
+    return name;
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
@@ -1524,8 +1524,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal =
-          JavaJimple.newLocal(determineLocalName(localIdx, false), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
@@ -1537,7 +1536,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx, false),
+              determineLocalName(localIdx),
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));

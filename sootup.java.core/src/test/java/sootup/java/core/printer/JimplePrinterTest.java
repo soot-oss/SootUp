@@ -54,7 +54,7 @@ public class JimplePrinterTest {
 
   private SootClass buildClass() {
 
-    View view = new JavaView(new EagerInputLocation<>());
+    View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =

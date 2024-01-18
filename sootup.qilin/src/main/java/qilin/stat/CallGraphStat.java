@@ -72,7 +72,7 @@ public class CallGraphStat implements AbstractStat {
 
   private void init() {
     // stat method numbers
-    Collection<SootClass> clazzs = PTAScene.v().getView().getClasses();
+    Collection<? extends SootClass> clazzs = PTAScene.v().getView().getClasses();
     for (SootClass clazz : clazzs) {
       allMethods += clazz.getMethods().size();
     }

@@ -60,7 +60,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   @Nonnull protected final ClassNode classNode;
 
   public AsmAnnotationClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {

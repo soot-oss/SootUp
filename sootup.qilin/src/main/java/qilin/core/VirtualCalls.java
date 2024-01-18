@@ -102,21 +102,21 @@ public class VirtualCalls {
     if (ret != null) {
       return ret;
     }
-    SootClass cls = (SootClass) PTAScene.v().getView().getClass(t).get();
+    SootClass cls = PTAScene.v().getView().getClass(t).get();
     if (appOnly && cls.isLibraryClass()) {
       return null;
     }
-    Optional<SootMethod> om = cls.getMethod(subSig);
+    Optional<? extends SootMethod> om = cls.getMethod(subSig);
     if (om.isPresent()) {
       SootMethod m = om.get();
       if (!m.isAbstract()) {
         ret = m;
       }
     } else {
-      Optional<ClassType> oc = cls.getSuperclass();
+      Optional<? extends ClassType> oc = cls.getSuperclass();
       if (oc.isPresent()) {
         ClassType ct = oc.get();
-        SootClass c = (SootClass) PTAScene.v().getView().getClass(ct).get();
+        SootClass c = PTAScene.v().getView().getClass(ct).get();
         ret = resolveNonSpecial(c.getType(), subSig);
       }
     }

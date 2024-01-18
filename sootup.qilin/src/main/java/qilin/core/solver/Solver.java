@@ -147,7 +147,7 @@ public class Solver extends Propagator {
           }
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
-          Optional<SootMethod> otgt = PTAScene.v().getView().getMethod(tgtSig);
+          Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(tgtSig);
           if (otgt.isPresent()) {
             // static invoke or dynamic invoke
             VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();

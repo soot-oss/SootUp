@@ -15,14 +15,14 @@ class FooF1 extends java.lang.Object
     public void bar() throws BadLanguageExceptionF1
     {
         FooF1 r0;
-        BadLanguageExceptionF1 $r1;
+        BadLanguageExceptionF1 r1;
 
         r0 := @this: FooF1;
 
-        $r1 = new BadLanguageExceptionF1;
+        r1 = new BadLanguageExceptionF1;
 
-        specialinvoke $r1.<BadLanguageExceptionF1: void <init>()>();
+        specialinvoke r1.<BadLanguageExceptionF1: void <init>()>();
 
-        throw $r1;
+        throw r1;
     }
 }

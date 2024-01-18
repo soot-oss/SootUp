@@ -37,11 +37,11 @@ public class de.upb.sootup.basic.invoke.A extends java.lang.Object
 
     public static int methodA()
     {
-        java.io.PrintStream $r0;
+        java.io.PrintStream r0;
 
-        $r0 = <java.lang.System: java.io.PrintStream out>;
+        r0 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Method A called");
+        virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>("Method A called");
 
         return 0;
     }
@@ -49,13 +49,13 @@ public class de.upb.sootup.basic.invoke.A extends java.lang.Object
     public static int methodB(java.lang.String)
     {
         java.lang.String r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @parameter0: java.lang.String;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(r0);
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(r0);
 
         return 0;
     }

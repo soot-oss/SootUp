@@ -26,11 +26,11 @@ class JLex.CUtility extends java.lang.Object
 
     static void enter(java.lang.String, char, int)
     {
-        java.lang.String r0, $r10;
+        java.lang.String r0, r10;
         char c0;
         int i1;
-        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r7, $r8, $r9;
-        java.io.PrintStream $r2;
+        java.lang.StringBuilder r1, r3, r4, r5, r6, r7, r8, r9;
+        java.io.PrintStream r2;
 
         r0 := @parameter0: java.lang.String;
 
@@ -38,40 +38,40 @@ class JLex.CUtility extends java.lang.Object
 
         i1 := @parameter2: int;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r1 = new java.lang.StringBuilder;
+        r1 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r1.<java.lang.StringBuilder: void <init>()>();
 
-        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Entering ");
+        r3 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Entering ");
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
+        r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" [lexeme: ");
+        r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" [lexeme: ");
 
-        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
+        r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
 
-        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("] [token: ");
+        r7 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("] [token: ");
 
-        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+        r8 = virtualinvoke r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
 
-        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("]");
+        r9 = virtualinvoke r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("]");
 
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.String toString()>();
+        r10 = virtualinvoke r9.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r10);
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>(r10);
 
         return;
     }
 
     static void leave(java.lang.String, char, int)
     {
-        java.lang.String r0, $r10;
+        java.lang.String r0, r10;
         char c0;
         int i1;
-        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r7, $r8, $r9;
-        java.io.PrintStream $r2;
+        java.lang.StringBuilder r1, r3, r4, r5, r6, r7, r8, r9;
+        java.io.PrintStream r2;
 
         r0 := @parameter0: java.lang.String;
 
@@ -79,29 +79,29 @@ class JLex.CUtility extends java.lang.Object
 
         i1 := @parameter2: int;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r1 = new java.lang.StringBuilder;
+        r1 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r1.<java.lang.StringBuilder: void <init>()>();
 
-        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Leaving ");
+        r3 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Leaving ");
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
+        r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" [lexeme:");
+        r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" [lexeme:");
 
-        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
+        r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
 
-        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("] [token:");
+        r7 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("] [token:");
 
-        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+        r8 = virtualinvoke r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
 
-        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("]");
+        r9 = virtualinvoke r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("]");
 
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.String toString()>();
+        r10 = virtualinvoke r9.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r10);
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>(r10);
 
         return;
     }
@@ -109,22 +109,22 @@ class JLex.CUtility extends java.lang.Object
     static void ASSERT(boolean)
     {
         boolean z0;
-        java.io.PrintStream $r0;
-        java.lang.Error $r1;
+        java.io.PrintStream r0;
+        java.lang.Error r1;
 
         z0 := @parameter0: boolean;
 
         if 0 != z0 goto label1;
 
-        $r0 = <java.lang.System: java.io.PrintStream out>;
+        r0 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Assertion Failed");
+        virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>("Assertion Failed");
 
-        $r1 = new java.lang.Error;
+        r1 = new java.lang.Error;
 
-        specialinvoke $r1.<java.lang.Error: void <init>(java.lang.String)>("Assertion Failed.");
+        specialinvoke r1.<java.lang.Error: void <init>(java.lang.String)>("Assertion Failed.");
 
-        throw $r1;
+        throw r1;
 
      label1:
         return;
@@ -133,27 +133,27 @@ class JLex.CUtility extends java.lang.Object
     static char[] doubleSize(char[])
     {
         char[] r0, r1;
-        int $i0, $i1, $i2, i4;
-        char $c3;
+        int i0, i1, i2, i4;
+        char c3;
 
         r0 := @parameter0: char[];
 
-        $i0 = lengthof r0;
+        i0 = lengthof r0;
 
-        $i1 = 2 * $i0;
+        i1 = 2 * i0;
 
-        r1 = newarray (char)[$i1];
+        r1 = newarray (char)[i1];
 
         i4 = 0;
 
      label1:
-        $i2 = lengthof r0;
+        i2 = lengthof r0;
 
-        if i4 >= $i2 goto label2;
+        if i4 >= i2 goto label2;
 
-        $c3 = r0[i4];
+        c3 = r0[i4];
 
-        r1[i4] = $c3;
+        r1[i4] = c3;
 
         i4 = i4 + 1;
 
@@ -166,27 +166,27 @@ class JLex.CUtility extends java.lang.Object
     static byte[] doubleSize(byte[])
     {
         byte[] r0, r1;
-        int $i0, $i1, $i2, i4;
-        byte $b3;
+        int i0, i1, i2, i4;
+        byte b3;
 
         r0 := @parameter0: byte[];
 
-        $i0 = lengthof r0;
+        i0 = lengthof r0;
 
-        $i1 = 2 * $i0;
+        i1 = 2 * i0;
 
-        r1 = newarray (byte)[$i1];
+        r1 = newarray (byte)[i1];
 
         i4 = 0;
 
      label1:
-        $i2 = lengthof r0;
+        i2 = lengthof r0;
 
-        if i4 >= $i2 goto label2;
+        if i4 >= i2 goto label2;
 
-        $b3 = r0[i4];
+        b3 = r0[i4];
 
-        r1[i4] = $b3;
+        r1[i4] = b3;
 
         i4 = i4 + 1;
 
@@ -198,10 +198,10 @@ class JLex.CUtility extends java.lang.Object
 
     static char hex2bin(char)
     {
-        char c0, $c3, $c6, $c8;
-        java.lang.StringBuilder $r0, $r1, $r2;
-        java.lang.String $r3;
-        int $i1, $i2, $i4, $i5, $i7;
+        char c0, c3, c6, c8;
+        java.lang.StringBuilder r0, r1, r2;
+        java.lang.String r3;
+        int i1, i2, i4, i5, i7;
 
         c0 := @parameter0: char;
 
@@ -209,50 +209,50 @@ class JLex.CUtility extends java.lang.Object
 
         if 57 < c0 goto label1;
 
-        $i7 = c0 - 48;
+        i7 = c0 - 48;
 
-        $c8 = (char) $i7;
+        c8 = (char) i7;
 
-        return $c8;
+        return c8;
 
      label1:
         if 97 > c0 goto label2;
 
         if 102 < c0 goto label2;
 
-        $i4 = c0 - 97;
+        i4 = c0 - 97;
 
-        $i5 = $i4 + 10;
+        i5 = i4 + 10;
 
-        $c6 = (char) $i5;
+        c6 = (char) i5;
 
-        return $c6;
+        return c6;
 
      label2:
         if 65 > c0 goto label3;
 
         if 70 < c0 goto label3;
 
-        $i1 = c0 - 65;
+        i1 = c0 - 65;
 
-        $i2 = $i1 + 10;
+        i2 = i1 + 10;
 
-        $c3 = (char) $i2;
+        c3 = (char) i2;
 
-        return $c3;
+        return c3;
 
      label3:
-        $r0 = new java.lang.StringBuilder;
+        r0 = new java.lang.StringBuilder;
 
-        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r0.<java.lang.StringBuilder: void <init>()>();
 
-        $r1 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Bad hexidecimal digit");
+        r1 = virtualinvoke r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Bad hexidecimal digit");
 
-        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
+        r2 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
 
-        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.String toString()>();
+        r3 = virtualinvoke r2.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        staticinvoke <JLex.CError: void impos(java.lang.String)>($r3);
+        staticinvoke <JLex.CError: void impos(java.lang.String)>(r3);
 
         return 0;
     }
@@ -286,10 +286,10 @@ class JLex.CUtility extends java.lang.Object
 
     static char oct2bin(char)
     {
-        char c0, $c2;
-        java.lang.StringBuilder $r0, $r1, $r2;
-        java.lang.String $r3;
-        int $i1;
+        char c0, c2;
+        java.lang.StringBuilder r0, r1, r2;
+        java.lang.String r3;
+        int i1;
 
         c0 := @parameter0: char;
 
@@ -297,24 +297,24 @@ class JLex.CUtility extends java.lang.Object
 
         if 55 < c0 goto label1;
 
-        $i1 = c0 - 48;
+        i1 = c0 - 48;
 
-        $c2 = (char) $i1;
+        c2 = (char) i1;
 
-        return $c2;
+        return c2;
 
      label1:
-        $r0 = new java.lang.StringBuilder;
+        r0 = new java.lang.StringBuilder;
 
-        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke r0.<java.lang.StringBuilder: void <init>()>();
 
-        $r1 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Bad octal digit ");
+        r1 = virtualinvoke r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Bad octal digit ");
 
-        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
+        r2 = virtualinvoke r1.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(c0);
 
-        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.String toString()>();
+        r3 = virtualinvoke r2.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        staticinvoke <JLex.CError: void impos(java.lang.String)>($r3);
+        staticinvoke <JLex.CError: void impos(java.lang.String)>(r3);
 
         return 0;
     }
@@ -380,8 +380,8 @@ class JLex.CUtility extends java.lang.Object
     static int bytencmp(byte[], int, byte[], int, int)
     {
         byte[] r0, r1;
-        int i0, i1, i2, $i3, $i5, $i6, $i9, $i10, $i13, i15;
-        byte $b4, $b7, $b8, $b11, $b12, $b14;
+        int i0, i1, i2, i3, i5, i6, i9, i10, i13, i15;
+        byte b4, b7, b8, b11, b12, b14;
 
         r0 := @parameter0: byte[];
 
@@ -398,43 +398,43 @@ class JLex.CUtility extends java.lang.Object
      label1:
         if i15 >= i2 goto label5;
 
-        $i3 = i0 + i15;
+        i3 = i0 + i15;
 
-        $b4 = r0[$i3];
+        b4 = r0[i3];
 
-        if 0 != $b4 goto label2;
+        if 0 != b4 goto label2;
 
-        $i13 = i1 + i15;
+        i13 = i1 + i15;
 
-        $b14 = r1[$i13];
+        b14 = r1[i13];
 
-        if 0 != $b14 goto label2;
+        if 0 != b14 goto label2;
 
         return 0;
 
      label2:
-        $i5 = i0 + i15;
+        i5 = i0 + i15;
 
-        $b8 = r0[$i5];
+        b8 = r0[i5];
 
-        $i6 = i1 + i15;
+        i6 = i1 + i15;
 
-        $b7 = r1[$i6];
+        b7 = r1[i6];
 
-        if $b8 >= $b7 goto label3;
+        if b8 >= b7 goto label3;
 
         return 1;
 
      label3:
-        $i9 = i0 + i15;
+        i9 = i0 + i15;
 
-        $b12 = r0[$i9];
+        b12 = r0[i9];
 
-        $i10 = i1 + i15;
+        i10 = i1 + i15;
 
-        $b11 = r1[$i10];
+        b11 = r1[i10];
 
-        if $b12 <= $b11 goto label4;
+        if b12 <= b11 goto label4;
 
         return -1;
 
@@ -450,8 +450,8 @@ class JLex.CUtility extends java.lang.Object
     static int charncmp(char[], int, char[], int, int)
     {
         char[] r0, r1;
-        int i0, i1, i2, $i3, $i5, $i6, $i9, $i10, $i13, i15;
-        char $c4, $c7, $c8, $c11, $c12, $c14;
+        int i0, i1, i2, i3, i5, i6, i9, i10, i13, i15;
+        char c4, c7, c8, c11, c12, c14;
 
         r0 := @parameter0: char[];
 
@@ -468,43 +468,43 @@ class JLex.CUtility extends java.lang.Object
      label1:
         if i15 >= i2 goto label5;
 
-        $i3 = i0 + i15;
+        i3 = i0 + i15;
 
-        $c4 = r0[$i3];
+        c4 = r0[i3];
 
-        if 0 != $c4 goto label2;
+        if 0 != c4 goto label2;
 
-        $i13 = i1 + i15;
+        i13 = i1 + i15;
 
-        $c14 = r1[$i13];
+        c14 = r1[i13];
 
-        if 0 != $c14 goto label2;
+        if 0 != c14 goto label2;
 
         return 0;
 
      label2:
-        $i5 = i0 + i15;
+        i5 = i0 + i15;
 
-        $c8 = r0[$i5];
+        c8 = r0[i5];
 
-        $i6 = i1 + i15;
+        i6 = i1 + i15;
 
-        $c7 = r1[$i6];
+        c7 = r1[i6];
 
-        if $c8 >= $c7 goto label3;
+        if c8 >= c7 goto label3;
 
         return 1;
 
      label3:
-        $i9 = i0 + i15;
+        i9 = i0 + i15;
 
-        $c12 = r0[$i9];
+        c12 = r0[i9];
 
-        $i10 = i1 + i15;
+        i10 = i1 + i15;
 
-        $c11 = r1[$i10];
+        c11 = r1[i10];
 
-        if $c12 <= $c11 goto label4;
+        if c12 <= c11 goto label4;
 
         return -1;
 

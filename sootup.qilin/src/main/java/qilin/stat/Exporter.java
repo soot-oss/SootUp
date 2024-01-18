@@ -122,7 +122,7 @@ public class Exporter {
     dumpMethods(singleCallSingleReceiverMs, singleCallSingleReceivers);
   }
 
-  public void dumpClassTypes(Collection<SootClass> classes) {
+  public void dumpClassTypes(Collection<? extends SootClass> classes) {
     StringBuilder builder = new StringBuilder();
     for (SootClass sc : classes) {
       builder.append(sc.getName());

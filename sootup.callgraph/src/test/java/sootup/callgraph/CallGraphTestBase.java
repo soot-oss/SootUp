@@ -15,7 +15,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -36,7 +35,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   private JavaView createViewForClassPath(String classPath, boolean useSourceCodeFrontend) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     if (useSourceCodeFrontend) {
       inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
@@ -71,7 +70,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);
@@ -724,7 +723,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     String classPath = "src/test/resources/callgraph/Library/binary/";
 
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(
         new JavaClassPathAnalysisInputLocation(classPath + "application/", SourceType.Application));
@@ -741,7 +740,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     assertFalse(cg.callsFrom(mainMethodSignature).isEmpty());
 
-    SootClass<?> libraryClass =
+    SootClass libraryClass =
         view.getClass(view.getIdentifierFactory().getClassType("lib.Library")).orElse(null);
     assertNotNull(libraryClass);
     for (SootMethod method : libraryClass.getMethods()) {

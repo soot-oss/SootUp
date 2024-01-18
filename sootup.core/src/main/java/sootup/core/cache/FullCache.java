@@ -8,23 +8,23 @@ import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /** Cache that stores any class that has been resolved. */
-public class FullCache<S extends SootClass<?>> implements ClassCache<S> {
+public class FullCache implements ClassCache {
 
-  protected final Map<ClassType, S> cache = new HashMap<>();
+  protected final Map<ClassType, SootClass> cache = new HashMap<>();
 
   @Override
-  public synchronized S getClass(ClassType classType) {
+  public synchronized SootClass getClass(ClassType classType) {
     return cache.get(classType);
   }
 
   @Nonnull
   @Override
-  public synchronized Collection<S> getClasses() {
+  public synchronized Collection<SootClass> getClasses() {
     return cache.values();
   }
 
   @Override
-  public void putClass(ClassType classType, S sootClass) {
+  public void putClass(ClassType classType, SootClass sootClass) {
     cache.putIfAbsent(classType, sootClass);
   }
 

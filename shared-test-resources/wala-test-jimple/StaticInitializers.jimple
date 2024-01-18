@@ -17,55 +17,55 @@ public class StaticInitializers extends java.lang.Object
     private int sum()
     {
         StaticInitializers r0;
-        StaticInitializers$X $r1, $r2;
-        int $i0, $i1, $i2;
+        StaticInitializers$X r1, r2;
+        int i0, i1, i2;
 
         r0 := @this: StaticInitializers;
 
-        $r1 = <StaticInitializers: StaticInitializers$X x>;
+        r1 = <StaticInitializers: StaticInitializers$X x>;
 
-        $i0 = virtualinvoke $r1.<StaticInitializers$X: int sum()>();
+        i0 = virtualinvoke r1.<StaticInitializers$X: int sum()>();
 
-        $r2 = <StaticInitializers: StaticInitializers$X y>;
+        r2 = <StaticInitializers: StaticInitializers$X y>;
 
-        $i1 = virtualinvoke $r2.<StaticInitializers$X: int diff()>();
+        i1 = virtualinvoke r2.<StaticInitializers$X: int diff()>();
 
-        $i2 = $i0 * $i1;
+        i2 = i0 * i1;
 
-        return $i2;
+        return i2;
     }
 
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        StaticInitializers $r2;
+        StaticInitializers r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r2 = new StaticInitializers;
+        r2 = new StaticInitializers;
 
-        specialinvoke $r2.<StaticInitializers: void <init>()>();
+        specialinvoke r2.<StaticInitializers: void <init>()>();
 
-        specialinvoke $r2.<StaticInitializers: int sum()>();
+        specialinvoke r2.<StaticInitializers: int sum()>();
 
         return;
     }
 
     static void <clinit>()
     {
-        StaticInitializers$X $r0, $r1;
+        StaticInitializers$X r0, r1;
 
-        $r0 = new StaticInitializers$X;
+        r0 = new StaticInitializers$X;
 
-        specialinvoke $r0.<StaticInitializers$X: void <init>()>();
+        specialinvoke r0.<StaticInitializers$X: void <init>()>();
 
-        <StaticInitializers: StaticInitializers$X x> = $r0;
+        <StaticInitializers: StaticInitializers$X x> = r0;
 
-        $r1 = new StaticInitializers$X;
+        r1 = new StaticInitializers$X;
 
-        specialinvoke $r1.<StaticInitializers$X: void <init>()>();
+        specialinvoke r1.<StaticInitializers$X: void <init>()>();
 
-        <StaticInitializers: StaticInitializers$X y> = $r1;
+        <StaticInitializers: StaticInitializers$X y> = r1;
 
         return;
     }

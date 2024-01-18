@@ -27,21 +27,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
 import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
@@ -58,15 +54,15 @@ public class JavaModuleView extends JavaView {
   @Nonnull final HashMap<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
 
   public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations) {
-    this(inputLocations, moduleInputLocations, new FullCacheProvider<>());
+    this(inputLocations, moduleInputLocations, new FullCacheProvider());
   }
 
   public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
+      @Nonnull ClassCacheProvider cacheProvider) {
     this(
         inputLocations,
         moduleInputLocations,
@@ -75,12 +71,10 @@ public class JavaModuleView extends JavaView {
   }
 
   public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier) {
+      @Nonnull ClassCacheProvider cacheProvider,
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     this(
         inputLocations,
         moduleInputLocations,
@@ -97,12 +91,10 @@ public class JavaModuleView extends JavaView {
    *     options.
    */
   public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
-      @Nonnull
-          Function<AnalysisInputLocation<? extends JavaSootClass>, ClassLoadingOptions>
-              classLoadingOptionsSpecifier,
+      @Nonnull ClassCacheProvider cacheProvider,
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(inputLocations, cacheProvider, sourceTypeSpecifier);
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
@@ -171,14 +163,14 @@ public class JavaModuleView extends JavaView {
 
   @Override
   @Nonnull
-  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
-      @Nonnull ClassType type) {
+  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
 
-    Optional<? extends AbstractClassSource<JavaSootClass>> cs =
+    Optional<JavaSootClassSource> cs =
         moduleInfoAnalysisInputLocations.stream()
             .map(location -> location.getClassSource(type, this))
             .filter(Optional::isPresent)
             .map(Optional::get)
+            .map(src -> (JavaSootClassSource) src)
             .findAny();
 
     if (cs.isPresent()) {
@@ -202,11 +194,12 @@ public class JavaModuleView extends JavaView {
       // unnamed module
 
       // find type in all exported packages of modules on module path first
-      final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+      final List<JavaSootClassSource> foundClassSources =
           getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
               .filter(Optional::isPresent)
               .limit(1)
               .map(Optional::get)
+              .map(src -> (JavaSootClassSource) src)
               .collect(Collectors.toList());
 
       if (!foundClassSources.isEmpty()) {
@@ -229,11 +222,12 @@ public class JavaModuleView extends JavaView {
         // automatic module can read every exported package of an explicit module
 
         // find the class in exported packages of modules
-        final List<AbstractClassSource<JavaSootClass>> foundClassSources =
+        final List<JavaSootClassSource> foundClassSources =
             getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
                 .filter(Optional::isPresent)
                 .limit(1)
                 .map(Optional::get)
+                .map(src -> (JavaSootClassSource) src)
                 .collect(Collectors.toList());
 
         if (!foundClassSources.isEmpty()) {
@@ -250,10 +244,11 @@ public class JavaModuleView extends JavaView {
                 && ((ModulePackageName) type.getPackageName()).getModuleSignature()
                     == entryPackage.getModuleSignature();
 
-        final Optional<? extends AbstractClassSource<JavaSootClass>> foundClassSources =
+        final Optional<JavaSootClassSource> foundClassSources =
             getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(src -> (JavaSootClassSource) src)
                 .filter(
                     sc -> {
                       if (targetIsFromSameModule) {
@@ -335,11 +330,15 @@ public class JavaModuleView extends JavaView {
       return Collections.emptyList();
     }
 
-    Stream<? extends AbstractClassSource<? extends JavaSootClass>> stream;
+    Stream<JavaSootClassSource> stream;
     JavaModuleInfo moduleInfo = startOpt.get();
     if (moduleInfo.isUnnamedModule()) {
       // unnamed module
-      stream = inputLocations.stream().flatMap(input -> input.getClassSources(this).stream());
+      stream =
+          inputLocations.stream()
+              .flatMap(
+                  input ->
+                      input.getClassSources(this).stream().map(src -> (JavaSootClassSource) src));
 
     } else {
       // named module
@@ -347,29 +346,34 @@ public class JavaModuleView extends JavaView {
         // the automatic module
         stream =
             Stream.concat(
-                inputLocations.stream()
-                    .flatMap(
-                        input -> {
-                          // classpath
-                          return input.getClassSources(this).stream()
-                              .filter(
-                                  cs ->
-                                      moduleSignature.equals(
-                                          ((ModulePackageName) cs.getClassType().getPackageName())
-                                              .getModuleSignature()));
-                        }),
-                moduleInfoAnalysisInputLocations.stream()
-                    .flatMap(
-                        input -> {
-                          // modulepath
-                          return input.getModulesClassSources(moduleSignature, this).stream();
-                        }));
+                    inputLocations.stream()
+                        .flatMap(
+                            input -> {
+                              // classpath
+                              return input.getClassSources(this).stream()
+                                  .filter(
+                                      cs ->
+                                          moduleSignature.equals(
+                                              ((ModulePackageName)
+                                                      cs.getClassType().getPackageName())
+                                                  .getModuleSignature()));
+                            }),
+                    moduleInfoAnalysisInputLocations.stream()
+                        .flatMap(
+                            input -> {
+                              // modulepath
+                              return input.getModulesClassSources(moduleSignature, this).stream();
+                            }))
+                .map(src -> (JavaSootClassSource) src);
 
       } else {
         // explicit module
         stream =
             moduleInfoAnalysisInputLocations.stream()
-                .flatMap(input -> input.getModulesClassSources(moduleSignature, this).stream());
+                .flatMap(
+                    input ->
+                        input.getModulesClassSources(moduleSignature, this).stream()
+                            .map(src -> (JavaSootClassSource) src));
       }
     }
     return stream
@@ -428,13 +432,13 @@ public class JavaModuleView extends JavaView {
 
   @Nonnull
   @Override
-  public IdentifierFactory getIdentifierFactory() {
-    return new JavaLanguage(9).getIdentifierFactory();
+  public JavaModuleIdentifierFactory getIdentifierFactory() {
+    return (JavaModuleIdentifierFactory) new JavaLanguage(9).getIdentifierFactory();
   }
 
   @Nonnull
-  private Stream<? extends Optional<? extends AbstractClassSource<JavaSootClass>>>
-      getAbstractClassSourcesForModules(ModuleSignature moduleSig, @Nonnull JavaClassType type) {
+  private Stream<Optional<JavaSootClassSource>> getAbstractClassSourcesForModules(
+      ModuleSignature moduleSig, @Nonnull JavaClassType type) {
 
     // find the class in exported packages of modules
     return moduleInfoAnalysisInputLocations.stream()
@@ -445,7 +449,8 @@ public class JavaModuleView extends JavaView {
               // check if the package is exported by or living in the same module
               return isPackageVisibleToModule(moduleSig, (ModulePackageName) type.getPackageName())
                   || isProvidedInterfaceImplementation(type);
-            });
+            })
+        .map(srcOpt -> srcOpt.map(src -> (JavaSootClassSource) src));
   }
 
   private boolean isProvidedInterfaceImplementation(@Nonnull JavaClassType type) {
@@ -479,7 +484,9 @@ public class JavaModuleView extends JavaView {
   @Nonnull
   protected synchronized Collection<JavaSootClass> resolveAll() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses();
+      return cache.getClasses().stream()
+          .map(clazz -> (JavaSootClass) clazz)
+          .collect(Collectors.toList());
     }
 
     Collection<Optional<JavaSootClass>> resolvedClassesOpts =

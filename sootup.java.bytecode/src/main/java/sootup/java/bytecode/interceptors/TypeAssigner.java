@@ -38,7 +38,7 @@ public class TypeAssigner implements BodyInterceptor {
   public TypeAssigner() {}
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     new TypeResolver((JavaView) view).resolve(builder);
   }
 }

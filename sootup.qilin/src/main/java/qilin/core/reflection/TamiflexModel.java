@@ -109,7 +109,7 @@ public class TamiflexModel extends ReflectionModel {
         SootClass cls = PTAScene.v().getSootClass(clsName);
         MethodSubSignature initSubSig =
             JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <init>()");
-        Optional<SootMethod> omthd = cls.getMethod(initSubSig);
+        Optional<? extends SootMethod> omthd = cls.getMethod(initSubSig);
         if (omthd.isPresent()) {
           JNewExpr newExpr = new JNewExpr(cls.getType());
           ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.createNoStmtPositionInfo()));
@@ -415,7 +415,7 @@ public class TamiflexModel extends ReflectionModel {
     }
     SootClass sootClass = PTAScene.v().getSootClass(inClassStr);
     Set<SootMethod> ret = DataFactory.createSet();
-    Set<SootMethod> declMethods = sootClass.getMethods();
+    Set<? extends SootMethod> declMethods = sootClass.getMethods();
     for (SootMethod m : declMethods) {
       if (m.isConcrete() && m.getName().equals(inMethodStr)) {
         ret.add(m);

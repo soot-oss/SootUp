@@ -58,9 +58,9 @@ public class InstanceofInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InstanceOf",
-                "$r1 := @parameter0: java.lang.Object",
-                "$z0 = $r1 instanceof java.lang.String",
-                "return $z0")
+                "r1 := @parameter0: java.lang.Object",
+                "z0 = r1 instanceof java.lang.String",
+                "return z0")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

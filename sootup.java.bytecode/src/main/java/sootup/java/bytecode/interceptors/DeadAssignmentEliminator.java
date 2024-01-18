@@ -50,9 +50,6 @@ import sootup.core.views.View;
  * @author Marcus Nachtigall
  */
 public class DeadAssignmentEliminator implements BodyInterceptor {
-
-  // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field (ms: possibly
-  // more?)
   boolean eliminateOnlyStackLocals;
 
   public DeadAssignmentEliminator() {
@@ -64,7 +61,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   }
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
