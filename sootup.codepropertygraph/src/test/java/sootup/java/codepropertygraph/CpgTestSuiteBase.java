@@ -5,23 +5,33 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 public class CpgTestSuiteBase {
-  private JimpleView minimalTsView;
+  private JavaView minimalTsView;
   private JimpleView testResourcesView;
 
   @org.junit.Before
   public void setUp() {
-    String MINIMAL_TEST_SUITE_DIR = "../sootup.jimple.parser/src/test/java/resources/jimple";
+    String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
+    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(MINIMAL_TEST_SUITE_DIR));
+
     minimalTsView =
-            new JimpleView(new JimpleAnalysisInputLocation(Paths.get(MINIMAL_TEST_SUITE_DIR)));
+            new JavaView(inputLocations);
 
     String TEST_RESOURCES_DIR = "src/test/resources";
     testResourcesView =
