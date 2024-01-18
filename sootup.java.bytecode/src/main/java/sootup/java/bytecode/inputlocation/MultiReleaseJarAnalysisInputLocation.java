@@ -77,6 +77,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     } catch (ExecutionException e) {
       throw new IllegalArgumentException("Could not open filesystemcache.", e);
     }
+
     final Path archiveRoot = fs.getPath("/");
     Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
 
