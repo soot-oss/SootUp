@@ -51,6 +51,8 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   /** creates a whole BasicBlock with the details from the parameters */
   public abstract void addBlock(@Nonnull List<Stmt> stmts, @Nonnull Map<ClassType, Stmt> traps);
 
+  public abstract void removeBlock(BasicBlock<?> block);
+
   /**
    * creates a whole BasicBlock which contains the sequence of (n-1)*fallsthrough()-stmt + optional
    * a non-fallsthrough() stmt at the end of the list
