@@ -54,20 +54,20 @@ public class AsmJavaClassProvider implements ClassProvider {
       AnalysisInputLocation analysisInputLocation, Path sourcePath, ClassType classType) {
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
+    final String actualClassSignature;
     try {
-      final String actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-      if (!actualClassSignature.replace('/', '.').equals(classType.getFullyQualifiedName().toString())) {
-        throw new IllegalArgumentException(
-            "The given Classtype '"
-                + classType
-                + "' did not match the found ClassType in the compilation unit '"
-                + actualClassSignature
-                + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
-      }
-    } catch (IOException | IllegalArgumentException exception) {
-      logger.warn(
-          "ASM could not resolve class source of " + classType + " in " + sourcePath, exception);
+      actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
+    } catch (IOException exception) {
       return Optional.empty();
+    }
+
+    if (!actualClassSignature.replace('/', '.').equals(classType.getFullyQualifiedName().toString())) {
+      throw new IllegalStateException(
+              "The given Classtype '"
+                      + classType
+                      + "' did not match the found ClassType in the compilation unit '"
+                      + actualClassSignature
+                      + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
     }
 
     JavaClassType klassType = (JavaClassType) classType;
