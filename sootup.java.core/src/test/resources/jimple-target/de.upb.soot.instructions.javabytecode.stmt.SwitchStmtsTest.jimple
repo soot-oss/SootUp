@@ -16,7 +16,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+        java.io.PrintStream r1, r2, r3, r4, r5;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -33,29 +33,29 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
 
      label2:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("one");
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("two");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("two");
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("three");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("three");
 
      label5:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("four");
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>("four");
 
      label6:
         return;
@@ -65,7 +65,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4, $r5, $r6;
+        java.io.PrintStream r1, r2, r3, r4, r5, r6;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -82,34 +82,34 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
 
      label2:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("one");
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("two");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("two");
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("three");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("three");
 
      label5:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("four");
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>("four");
 
      label6:
-        $r6 = <java.lang.System: java.io.PrintStream out>;
+        r6 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+        virtualinvoke r6.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
 
         return;
     }
@@ -118,7 +118,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+        java.io.PrintStream r1, r2, r3, r4, r5;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -135,33 +135,33 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("zero");
 
      label2:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>("one");
 
         goto label6;
 
      label3:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("two");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("two");
 
      label4:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("three");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("three");
 
         goto label6;
 
      label5:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("four");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("four");
 
      label6:
         return;
@@ -171,7 +171,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4;
+        java.io.PrintStream r1, r2, r3, r4;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -187,24 +187,24 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("one");
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
 
      label5:
         return;
@@ -214,7 +214,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+        java.io.PrintStream r1, r2, r3, r4, r5;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -230,29 +230,29 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("one");
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("ten");
 
      label3:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("thousand");
 
      label4:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("a lot");
 
      label5:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
 
         return;
     }
@@ -261,7 +261,7 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
     {
         de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3, $r4, $r5;
+        java.io.PrintStream r1, r2, r3, r4, r5;
 
         r0 := @this: de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest;
 
@@ -277,33 +277,33 @@ public class de.upb.sootup.instructions.javabytecode.stmt.SwitchStmtsTest extend
         };
 
      label1:
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("one");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("one");
 
      label2:
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("ten");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("ten");
 
         goto label6;
 
      label3:
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("thousand");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("thousand");
 
      label4:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("a lot");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("a lot");
 
         goto label6;
 
      label5:
-        $r5 = <java.lang.System: java.io.PrintStream out>;
+        r5 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
+        virtualinvoke r5.<java.io.PrintStream: void println(java.lang.String)>("unspecified");
 
      label6:
         return;

@@ -16,17 +16,17 @@ public class de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals extends d
     {
         de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals r0;
         int[] r1;
-        de.upb.sootup.basic.nonPrimitiveLocals.A $r3;
+        de.upb.sootup.basic.nonPrimitiveLocals.A r3;
 
         r0 := @this: de.upb.sootup.basic.nonPrimitiveLocals.NonPrimitiveLocals;
 
         r1 = newarray (int)[10];
 
-        $r3 = new de.upb.sootup.basic.nonPrimitiveLocals.A;
+        r3 = new de.upb.sootup.basic.nonPrimitiveLocals.A;
 
-        specialinvoke $r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void <init>()>();
+        specialinvoke r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void <init>()>();
 
-        virtualinvoke $r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void foo()>();
+        virtualinvoke r3.<de.upb.sootup.basic.nonPrimitiveLocals.A: void foo()>();
 
         r1[1] = 10;
 

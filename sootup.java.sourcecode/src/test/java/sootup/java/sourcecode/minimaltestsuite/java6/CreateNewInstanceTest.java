@@ -34,8 +34,8 @@ public class CreateNewInstanceTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: CreateNewInstance",
-            "$r1 = new Person",
-            "specialinvoke $r1.<Person: void <init>(int)>(20)",
+            "r1 = new Person",
+            "specialinvoke r1.<Person: void <init>(int)>(20)",
             "return")
         .collect(Collectors.toList());
   }

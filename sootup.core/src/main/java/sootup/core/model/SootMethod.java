@@ -344,7 +344,12 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * @author Jan Martin Persch
    */
   public static class SootMethodBuilder
-      implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
+      implements MethodSourceStep,
+          SignatureStep,
+          ModifierStep,
+          ThrownExceptionsStep,
+          BuildStep,
+          HasPosition {
 
     @Nullable private BodySource source;
     @Nonnull private Iterable<MethodModifier> modifiers = Collections.emptyList();
@@ -368,6 +373,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     }
 
     @Nonnull
+    @Override
     public Position getPosition() {
       return position;
     }

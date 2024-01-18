@@ -33,7 +33,7 @@ public class AutomaticWideningTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: AutomaticWidening", "$l1 = 10", "$l2 = (long) $l1", "return")
+    return Stream.of("l0 := @this: AutomaticWidening", "l1 = 10", "l2 = (long) l1", "return")
         .collect(Collectors.toList());
   }
 

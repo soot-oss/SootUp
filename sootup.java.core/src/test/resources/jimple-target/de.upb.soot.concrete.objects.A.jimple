@@ -15,13 +15,13 @@ public class de.upb.sootup.concrete.objects.A extends java.lang.Object
     public void voidM()
     {
         de.upb.sootup.concrete.objects.A r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.objects.A;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("foo");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("foo");
 
         return;
     }
@@ -39,7 +39,7 @@ public class de.upb.sootup.concrete.objects.A extends java.lang.Object
     {
         de.upb.sootup.concrete.objects.A r0;
         java.lang.String r1, r2;
-        java.io.PrintStream $r3, $r4;
+        java.io.PrintStream r3, r4;
 
         r0 := @this: de.upb.sootup.concrete.objects.A;
 
@@ -47,13 +47,13 @@ public class de.upb.sootup.concrete.objects.A extends java.lang.Object
 
         r2 := @parameter1: java.lang.String;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>(r1);
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r2);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r2);
 
         return;
     }
@@ -64,7 +64,7 @@ public class de.upb.sootup.concrete.objects.A extends java.lang.Object
         java.lang.String[] r1;
         int i0, i1;
         java.lang.String r3;
-        java.io.PrintStream $r4;
+        java.io.PrintStream r4;
 
         r0 := @this: de.upb.sootup.concrete.objects.A;
 
@@ -79,9 +79,9 @@ public class de.upb.sootup.concrete.objects.A extends java.lang.Object
 
         r3 = r1[i1];
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r3);
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(r3);
 
         i1 = i1 + 1;
 

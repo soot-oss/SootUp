@@ -7,7 +7,7 @@ class InnerClass$WhatsIt extends java.lang.Object
     {
         InnerClass$WhatsIt r0;
         InnerClass r1;
-        int $i0;
+        int i0;
 
         r0 := @this: InnerClass$WhatsIt;
 
@@ -19,9 +19,9 @@ class InnerClass$WhatsIt extends java.lang.Object
 
         r0.<InnerClass$WhatsIt: int value> = 0;
 
-        $i0 = r0.<InnerClass$WhatsIt: int value>;
+        i0 = r0.<InnerClass$WhatsIt: int value>;
 
-        virtualinvoke r1.<InnerClass: int fromInner(int)>($i0);
+        virtualinvoke r1.<InnerClass: int fromInner(int)>(i0);
 
         specialinvoke r0.<InnerClass$WhatsIt: InnerClass$WhatsIt$NotAgain anotherMethod()>();
 
@@ -31,14 +31,14 @@ class InnerClass$WhatsIt extends java.lang.Object
     private InnerClass$WhatsIt$NotAgain anotherMethod()
     {
         InnerClass$WhatsIt r0;
-        InnerClass$WhatsIt$NotAgain $r1;
+        InnerClass$WhatsIt$NotAgain r1;
 
         r0 := @this: InnerClass$WhatsIt;
 
-        $r1 = new InnerClass$WhatsIt$NotAgain;
+        r1 = new InnerClass$WhatsIt$NotAgain;
 
-        specialinvoke $r1.<InnerClass$WhatsIt$NotAgain: void <init>(InnerClass$WhatsIt)>(r0);
+        specialinvoke r1.<InnerClass$WhatsIt$NotAgain: void <init>(InnerClass$WhatsIt)>(r0);
 
-        return $r1;
+        return r1;
     }
 }

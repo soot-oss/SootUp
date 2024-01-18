@@ -21,12 +21,12 @@ class FooIT1 extends java.lang.Object implements IFoo
     public char getValue()
     {
         FooIT1 r0;
-        char $c0;
+        char c0;
 
         r0 := @this: FooIT1;
 
-        $c0 = r0.<FooIT1: char fValue>;
+        c0 = r0.<FooIT1: char fValue>;
 
-        return $c0;
+        return c0;
     }
 }

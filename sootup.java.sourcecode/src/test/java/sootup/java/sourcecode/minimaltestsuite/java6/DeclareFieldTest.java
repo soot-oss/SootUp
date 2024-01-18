@@ -65,9 +65,9 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareField",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$r2 = r0.<DeclareField: java.lang.String s>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "r2 = r0.<DeclareField: java.lang.String s>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
@@ -84,9 +84,9 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DeclareField",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = <DeclareField: int i>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = <DeclareField: int i>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

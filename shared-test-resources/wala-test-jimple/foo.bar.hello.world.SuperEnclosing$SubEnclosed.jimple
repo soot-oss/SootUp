@@ -32,36 +32,36 @@ class foo.bar.hello.world.SuperEnclosing$SubEnclosed extends foo.bar.hello.world
     int hello()
     {
         foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
-        int $i0;
+        int i0;
 
         r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
 
-        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
+        i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
 
-        return $i0;
+        return i0;
     }
 
     int helloAgain()
     {
         foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
-        int $i0;
+        int i0;
 
         r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
 
-        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
+        i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
 
-        return $i0;
+        return i0;
     }
 
     int hello2()
     {
         foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
-        int $i0;
+        int i0;
 
         r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
 
-        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2>;
+        i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2>;
 
-        return $i0;
+        return i0;
     }
 }

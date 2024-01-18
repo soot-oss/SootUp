@@ -16,7 +16,7 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
     {
         de.upb.sootup.instructions.stmt.IfStmtTest r0;
         int i0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.IfStmtTest;
 
@@ -24,9 +24,9 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
 
         if i0 >= 42 goto label1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("A");
 
      label1:
         return;
@@ -36,7 +36,7 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
     {
         de.upb.sootup.instructions.stmt.IfStmtTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2;
+        java.io.PrintStream r1, r2;
 
         r0 := @this: de.upb.sootup.instructions.stmt.IfStmtTest;
 
@@ -44,16 +44,16 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
 
         if i0 >= 42 goto label1;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         goto label2;
 
      label1:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("B");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("B");
 
      label2:
         return;
@@ -63,7 +63,7 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
     {
         de.upb.sootup.instructions.stmt.IfStmtTest r0;
         int i0;
-        java.io.PrintStream $r1, $r2, $r3;
+        java.io.PrintStream r1, r2, r3;
 
         r0 := @this: de.upb.sootup.instructions.stmt.IfStmtTest;
 
@@ -71,25 +71,25 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
 
         if i0 >= 42 goto label1;
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        r3 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("A");
+        virtualinvoke r3.<java.io.PrintStream: void println(java.lang.String)>("A");
 
         goto label3;
 
      label1:
         if i0 <= 42 goto label2;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("B");
+        virtualinvoke r2.<java.io.PrintStream: void println(java.lang.String)>("B");
 
         goto label3;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("C");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("C");
 
      label3:
         return;
@@ -98,8 +98,8 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
     public void ternary(int, int)
     {
         de.upb.sootup.instructions.stmt.IfStmtTest r0;
-        int i0, i1, $i3;
-        java.io.PrintStream $r1;
+        int i0, i1, i3;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.IfStmtTest;
 
@@ -109,17 +109,17 @@ public class de.upb.sootup.instructions.stmt.IfStmtTest extends java.lang.Object
 
         if i0 >= 5 goto label1;
 
-        $i3 = i0;
+        i3 = i0;
 
         goto label2;
 
      label1:
-        $i3 = i1;
+        i3 = i1;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i3);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i3);
 
         return;
     }

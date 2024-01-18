@@ -40,9 +40,9 @@ public class NamedClassInsideMethodTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: NamedClassInsideMethod",
-            "$r1 = new NamedClassInsideMethod1$MyMathOperation",
-            "specialinvoke $r1.<NamedClassInsideMethod1$MyMathOperation: void <init>()>()",
-            "interfaceinvoke $r1.<NamedClassInsideMethod$MathOperation: void addition()>()",
+            "r1 = new NamedClassInsideMethod1$MyMathOperation",
+            "specialinvoke r1.<NamedClassInsideMethod1$MyMathOperation: void <init>()>()",
+            "interfaceinvoke r1.<NamedClassInsideMethod$MathOperation: void addition()>()",
             "return")
         .collect(Collectors.toList());
   }
