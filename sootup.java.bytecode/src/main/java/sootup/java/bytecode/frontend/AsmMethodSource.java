@@ -91,6 +91,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
 
+  /** Labels at which a trap handler range (try block) begins */
+  private final Map<LabelNode, TryCatchBlockNode> startTrapHandler = new HashMap<>();
+
+  /** Labels at which a trap handler range (try block) ends */
+  private final Map<LabelNode, TryCatchBlockNode> endTrapHandler = new HashMap<>();
+
+  /** Keeps track of all trap handlers that are active at the current instruction */
+  Set<TryCatchBlockNode> activeTrapHandlers =
+      new HashSet<>(); // TODO restore using `OperandStack`/`BranchedInsnInfo` for branches(?)
+
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
 
@@ -167,6 +177,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // reserve space/ insert labels in datastructure  - necessary?! its useless if not assigned
       // later.. -> check the meaning of that containsKey() check
       trapHandler.put(tc.handler, null);
+      startTrapHandler.put(tc.start, tc);
+      endTrapHandler.put(tc.end, tc);
     }
 
     /* build body (add stmts, locals, traps, etc.) */
@@ -1248,6 +1260,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
+    if (startTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.add(startTrapHandler.get(ln));
+    }
+
+    if (endTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.remove(endTrapHandler.get(ln));
+    }
+
     // only do it for Labels which are referring to a traphandler
     if (!trapHandler.containsKey(ln)) {
       return;
