@@ -98,8 +98,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private final Map<LabelNode, TryCatchBlockNode> endTrapHandler = new HashMap<>();
 
   /** Keeps track of all trap handlers that are active at the current instruction */
-  Set<TryCatchBlockNode> activeTrapHandlers =
-      new HashSet<>(); // TODO restore using `OperandStack`/`BranchedInsnInfo` for branches(?)
+  Set<TryCatchBlockNode> activeTrapHandlers = new HashSet<>();
 
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
@@ -1321,7 +1320,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack(), currentLineNumber);
+        edge =
+            new BranchedInsnInfo(
+                tgt, operandStack.getStack(), currentLineNumber, activeTrapHandlers);
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
@@ -1370,16 +1371,26 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         opr.stackLocal = local;
 
         worklist.add(
-            new BranchedInsnInfo(handlerNode, Collections.singletonList(opr), currentLineNumber));
+            new BranchedInsnInfo(
+                handlerNode,
+                Collections.singletonList(opr),
+                currentLineNumber,
+                activeTrapHandlers));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>(), currentLineNumber));
+        worklist.add(
+            new BranchedInsnInfo(
+                handlerNode, new ArrayList<>(), currentLineNumber, activeTrapHandlers));
       }
     }
     worklist.add(
-        new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList(), currentLineNumber));
+        new BranchedInsnInfo(
+            instructions.getFirst(),
+            Collections.emptyList(),
+            currentLineNumber,
+            activeTrapHandlers));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
@@ -1388,6 +1399,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       currentLineNumber = edge.getLineNumber();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
+      activeTrapHandlers = edge.getActiveTrapHandlers();
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
