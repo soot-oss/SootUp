@@ -324,9 +324,15 @@
                     <licenseName>lgpl_v2_1</licenseName>
                     <organizationName>Raja Vallée-Rai and others</organizationName>
                     <roots>
+                        <root>sootup.java.analysis/src/main/java</root>
                         <root>sootup.callgraph/src/main/java</root>
+                        <root>sootup.core/src/main/java</root>
+                        <root>sootup.java.examples/src/main/java</root>
                         <root>sootup.java.bytecode/src/main/java</root>
+                        <root>sootup.java.core/src/main/java</root>
                         <root>sootup.java.sourcecode/src/main/java</root>
+                        <root>sootup.jimple.parser/src/main/java</root>
+                        <root>sootup.tests/src/main/java</root>
                     </roots>
                 </configuration>
                 <executions>
@@ -335,7 +341,7 @@
                         <goals>
                             <goal>check-file-header</goal>
                         </goals>
-                        <phase>verify</phase>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

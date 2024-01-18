@@ -83,6 +83,9 @@ jobs:
       - name: Check Format
         run: mvn -B com.coveo:fmt-maven-plugin:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: License Headers
+        run: mvn -B org.codehaus.mojo:license-maven-plugin:check-file-header -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
   JDK8:
     needs: Compilation
     runs-on: ubuntu-latest
