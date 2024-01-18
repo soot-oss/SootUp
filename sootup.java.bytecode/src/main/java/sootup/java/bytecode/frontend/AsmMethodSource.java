@@ -1650,12 +1650,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
-        Stmt targetStmt =
-            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+        Stmt targetStmt = stmt;
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt identityRef = findIdentityRefInStmtContainer(stmt);
+          JIdentityStmt identityRef = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
           if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
             danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
           }
@@ -1719,25 +1718,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
-    if (handlerStmt instanceof StmtContainer) {
-      block.addAll(((StmtContainer) handlerStmt).getStmts());
-    } else {
-      block.add(handlerStmt);
-    }
-  }
-
-  @Nullable
-  private JIdentityStmt findIdentityRefInStmtContainer(@Nonnull Stmt stmt) {
-    if (stmt instanceof JIdentityStmt) {
-      return (JIdentityStmt) stmt;
-    } else if (stmt instanceof StmtContainer) {
-      for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
-        if (stmtEntry instanceof JIdentityStmt) {
-          return (JIdentityStmt) stmtEntry;
-        }
-      }
-    }
-    return null;
+    block.add(handlerStmt);
   }
 
   /**
@@ -1803,13 +1784,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream()
-            .flatMap(
-                stmt ->
-                    stmt instanceof StmtContainer
-                        ? ((StmtContainer) stmt).getStmts().stream()
-                        : Stream.of(stmt))
-            .filter(stmt -> stmt.getUses().contains(value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
