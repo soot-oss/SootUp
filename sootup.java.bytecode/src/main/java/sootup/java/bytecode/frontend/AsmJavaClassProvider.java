@@ -57,7 +57,7 @@ public class AsmJavaClassProvider implements ClassProvider {
     final String actualClassSignature;
     try {
       actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-    } catch (IOException exception) {
+    } catch (IOException | IllegalArgumentException exception) {
       return Optional.empty();
     }
 
