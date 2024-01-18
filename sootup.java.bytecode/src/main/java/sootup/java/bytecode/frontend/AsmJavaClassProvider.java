@@ -61,13 +61,15 @@ public class AsmJavaClassProvider implements ClassProvider {
       return Optional.empty();
     }
 
-    if (!actualClassSignature.replace('/', '.').equals(classType.getFullyQualifiedName().toString())) {
+    if (!actualClassSignature
+        .replace('/', '.')
+        .equals(classType.getFullyQualifiedName().toString())) {
       throw new IllegalStateException(
-              "The given Classtype '"
-                      + classType
-                      + "' did not match the found ClassType in the compilation unit '"
-                      + actualClassSignature
-                      + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
+          "The given Classtype '"
+              + classType
+              + "' did not match the found ClassType in the compilation unit '"
+              + actualClassSignature
+              + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
     }
 
     JavaClassType klassType = (JavaClassType) classType;

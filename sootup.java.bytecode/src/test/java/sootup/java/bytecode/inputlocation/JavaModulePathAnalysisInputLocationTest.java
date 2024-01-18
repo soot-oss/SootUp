@@ -2,13 +2,12 @@ package sootup.java.bytecode.inputlocation;
 
 import static org.junit.Assert.*;
 
+import categories.Java9Test;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import categories.Java9Test;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -51,7 +50,8 @@ public class JavaModulePathAnalysisInputLocationTest {
   public void testExplodedModule() {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "uses-provides/exploded_module/")));
+            new JavaModulePathAnalysisInputLocation(
+                Paths.get(testPath + "uses-provides/exploded_module/")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);

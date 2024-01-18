@@ -29,6 +29,12 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
   @Ignore("// FIXME")
   public void modularMultiReleaseJar() {
 
+    // TODO: test & create multiple types of input
+    // - [x] no module-info.class in root; module-info.class in version
+    // - [ ] no module-info.class in root; no module-info.class in version
+    // - [ ] module-info.class in root; no module-info.class in version
+    // - [ ] no module-info.class in root; no module-info.class in version -> non modular
+
     assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mmrj));
 
     final ClassType utilityNoModule =

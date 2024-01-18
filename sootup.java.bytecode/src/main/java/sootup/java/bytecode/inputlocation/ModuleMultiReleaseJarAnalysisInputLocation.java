@@ -14,6 +14,10 @@ import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModuleSignature;
 
+/**
+ * This AnalysisInputLocation models MultiRelease Jars or Directories if path points to a directory
+ * that is not packed into a jar see https://openjdk.org/jeps/238#Modular_multi-release_JAR_files
+ */
 public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarAnalysisInputLocation
     implements ModuleInfoAnalysisInputLocation {
   public ModuleMultiReleaseJarAnalysisInputLocation(
