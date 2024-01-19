@@ -83,7 +83,7 @@ public class AggregatorTest {
   public void noAggregationWithUse() {
     Body.BodyBuilder builder = Body.builder();
 
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
 
@@ -119,7 +119,7 @@ public class AggregatorTest {
   }
 
   private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());

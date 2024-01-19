@@ -41,7 +41,7 @@ public class JGotoStmtTest {
   @Test
   public void test() {
 
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     Local local = new Local("r0", typeFactory.getType("java.lang.Exception"));

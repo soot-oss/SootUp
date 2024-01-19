@@ -65,10 +65,10 @@ public class WitherTest {
         Jimple.newIdentityStmt(
             generator.generateLocal(declareClassSig),
             Jimple.newParameterRef(declareClassSig, 0),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     final JReturnStmt jReturnStmt =
         Jimple.newReturnStmt(
-            DoubleConstant.getInstance(12.34), StmtPositionInfo.createNoStmtPositionInfo());
+            DoubleConstant.getInstance(12.34), StmtPositionInfo.getNoStmtPositionInfo());
     // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
     Body body =

@@ -21,6 +21,7 @@ package sootup.java.bytecode.frontend;
  * #L%
  */
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -51,25 +52,41 @@ public class AsmJavaClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation analysisInputLocation, Path sourcePath, ClassType classType) {
+      @Nonnull AnalysisInputLocation analysisInputLocation,
+      @Nonnull Path sourcePath,
+      @Nonnull ClassType classType) {
+
+    if (!Files.exists(sourcePath)) {
+      return Optional.empty();
+    }
+
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
     final String actualClassSignature;
     try {
       actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
-    } catch (IOException | IllegalArgumentException exception) {
+    } catch (IOException exception) {
+      logger.warn("ioe", exception);
+      return Optional.empty();
+    } catch (IllegalArgumentException exception) {
+      logger.warn("iae", exception);
       return Optional.empty();
     }
 
-    if (!actualClassSignature
-        .replace('/', '.')
-        .equals(classType.getFullyQualifiedName().toString())) {
-      throw new IllegalStateException(
+    String name = classType.getPackageName().getName();
+    String wantedClassSigStr =
+        classType.getPackageName().getName()
+            + (name.isEmpty() ? "" : ".")
+            + classType.getClassName();
+    String replace = actualClassSignature.replace('/', '.');
+    if (!replace.equals(wantedClassSigStr)) {
+      logger.warn(
           "The given Classtype '"
               + classType
               + "' did not match the found ClassType in the compilation unit '"
               + actualClassSignature
               + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
+      return Optional.empty();
     }
 
     JavaClassType klassType = (JavaClassType) classType;

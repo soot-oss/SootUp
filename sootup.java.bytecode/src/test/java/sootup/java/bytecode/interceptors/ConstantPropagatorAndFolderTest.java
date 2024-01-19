@@ -77,7 +77,7 @@ public class ConstantPropagatorAndFolderTest {
   }
 
   private static Body.BodyBuilder createBody(boolean constantFolding) {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());

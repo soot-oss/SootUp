@@ -65,7 +65,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       Local thisLocal = localgen.generateThisLocal(thisType);
       Stmt stmt =
           Jimple.newIdentityStmt(
-              thisLocal, Jimple.newThisRef(thisType), StmtPositionInfo.createNoStmtPositionInfo());
+              thisLocal, Jimple.newThisRef(thisType), StmtPositionInfo.getNoStmtPositionInfo());
       stmts.add(stmt);
     }
     int i = 0;
@@ -74,7 +74,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           Jimple.newIdentityStmt(
               localgen.generateParameterLocal(parameterType, i),
               Jimple.newParameterRef(parameterType, i++),
-              StmtPositionInfo.createNoStmtPositionInfo());
+              StmtPositionInfo.getNoStmtPositionInfo());
       stmts.add(stmt);
     }
     if (!stmts.isEmpty()) {
@@ -1407,6 +1407,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     // it.getTraps() is valid/completely build when the iterator is done.
     HashMap<Stmt, Integer> stmtsBlockIdx = new HashMap<>();
     int i = 0;
+    // collect BlockIdx positions to sort the traps according to the numbering
     while (it.hasNext()) {
       final BasicBlock<?> nextBlock = it.next();
       stmtsBlockIdx.put(nextBlock.getHead(), i);
@@ -1414,7 +1415,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       i++;
     }
     final List<Trap> traps = it.getTraps();
-
     traps.sort(getTrapComparator(stmtsBlockIdx));
     return traps;
   }

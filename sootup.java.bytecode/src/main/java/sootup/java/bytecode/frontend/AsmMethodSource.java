@@ -153,7 +153,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   StmtPositionInfo getStmtPositionInfo() {
     return currentLineNumber > 0
         ? new SimpleStmtPositionInfo(currentLineNumber)
-        : StmtPositionInfo.createNoStmtPositionInfo();
+        : StmtPositionInfo.getNoStmtPositionInfo();
   }
 
   @Override
@@ -1543,7 +1543,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
       }
     }
-    return StmtPositionInfo.createNoStmtPositionInfo();
+    return StmtPositionInfo.getNoStmtPositionInfo();
   }
 
   @Nonnull

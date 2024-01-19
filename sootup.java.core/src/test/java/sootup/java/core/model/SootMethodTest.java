@@ -50,9 +50,9 @@ public class SootMethodTest {
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     final JReturnVoidStmt returnVoidStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     Body body =
         bodyBuilder

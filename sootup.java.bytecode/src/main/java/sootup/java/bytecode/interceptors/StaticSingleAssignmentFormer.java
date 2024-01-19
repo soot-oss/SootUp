@@ -336,7 +336,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
 
   private JAssignStmt createEmptyPhiStmt(Local local) {
     JPhiExpr phi = new JPhiExpr(Collections.emptyList(), Collections.emptyMap());
-    return new JAssignStmt(local, phi, StmtPositionInfo.createNoStmtPositionInfo());
+    return new JAssignStmt(local, phi, StmtPositionInfo.getNoStmtPositionInfo());
   }
 
   private Local getOriginalLocal(Local local, Set<Local> oriLocals) {

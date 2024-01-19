@@ -35,7 +35,7 @@ public class ReplaceUseExprVisitorTest {
   JavaClassType intType = factory.getClassType("int");
   JavaClassType testClass = factory.getClassType("TestClass");
   JavaClassType voidType = factory.getClassType("void");
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   Local op1 = JavaJimple.newLocal("op1", intType);
   Local op2 = JavaJimple.newLocal("op2", intType);
