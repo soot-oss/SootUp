@@ -73,8 +73,6 @@ public class UnreachableCodeEliminatorTest {
   FallsThroughStmt endStmt =
       JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
 
-  Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
-
   /**
    * Test the simpleBody l0:= @this Test -> l1 = 1 -> return l2 = 2 -> l3 = 3 -> return l2 = 2 and
    * l3 = 3 are unreachable

@@ -629,7 +629,8 @@ public class MutableBlockStmtGraphTest {
     graph1.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
     graph1.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
-    // FIXME:: check if this StmtGraph structure is even valid.. at least the part that is necessary for the test or if the order from Blocks/Stmts in Stmt.Iterator needs to be adapted
+    // FIXME:: check if this StmtGraph structure is even valid.. at least the part that is necessary
+    // for the test or if the order from Blocks/Stmts in Stmt.Iterator needs to be adapted
     /*{
       final List<Trap> traps = graph1.getTraps();
       final Trap containedTrap = new Trap(exception1, stmt2, catchStmt1, catchStmt2);
@@ -667,7 +668,6 @@ public class MutableBlockStmtGraphTest {
     {
       final List<Trap> traps = graph3.getTraps();
       assertEquals(5, graph2.getBlocks().size());
-      System.out.println(traps);
       assertEquals(2, traps.size());
     }
 

@@ -518,14 +518,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     MutableBasicBlock blockOf = stmtToBlock.get(block.getHead());
     if (blockOf != block) {
       throw new IllegalArgumentException(
-              "The given block is not contained in this MutableBlockStmtGraph.");
+          "The given block is not contained in this MutableBlockStmtGraph.");
     }
 
     List<Stmt> stmts = block.getStmts();
     stmts.forEach(
-            stmt -> {
-              stmtToBlock.remove(stmt);
-            });
+        stmt -> {
+          stmtToBlock.remove(stmt);
+        });
 
     // unlink block from graph
     blockOf.clearPredecessorBlocks();
