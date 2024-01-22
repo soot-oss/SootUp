@@ -33,7 +33,6 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
-import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -109,7 +108,7 @@ public class TypeResolver {
       if (stmt instanceof AbstractDefinitionStmt) {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
         Value lhs = defStmt.getLeftOp();
-        if (lhs instanceof Local || lhs instanceof JArrayRef || lhs instanceof JInstanceFieldRef) {
+        if (lhs instanceof Local || lhs instanceof JArrayRef) {
           final int id = assignments.size();
           this.assignments.add(defStmt);
           addDependsForRHS(defStmt.getRightOp(), id);
@@ -189,9 +188,10 @@ public class TypeResolver {
           local = (Local) lhs;
         } else if (lhs instanceof JArrayRef) {
           local = ((JArrayRef) lhs).getBase();
-        } else if (lhs instanceof JInstanceFieldRef) {
-          local = ((JInstanceFieldRef) lhs).getBase();
         } else {
+          // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
+          // The statements get filtered to only contain those assignments in the `init` method,
+          // so this branch shouldn't happen.
           throw new IllegalStateException("can not handle " + lhs.getClass());
         }
         Type t_old = actualTyping.getType(local);
