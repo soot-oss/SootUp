@@ -24,6 +24,7 @@ package sootup.java.bytecode.inputlocation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PipedReader;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,12 +63,28 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   @Nonnull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
+  public static ArchiveBasedAnalysisInputLocation create(@Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language){
+    if (isMultiReleaseJar(path)) {
+      return new MultiReleaseJarAnalysisInputLocation( path, srcType, language, true);
+    }
+    return new ArchiveBasedAnalysisInputLocation(path, srcType);
+  }
+
+  public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
+    this(path, SourceType.Application, language );
+  }
+
   public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
+          @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
+    this(path,srcType,language, isMultiReleaseJar(path) );
+  }
+
+  protected MultiReleaseJarAnalysisInputLocation(
+          @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language, boolean isMultiRelease) {
     super(path, srcType);
     this.language = language;
 
-    if (!isMultiReleaseJar(path)) {
+    if (!isMultiRelease) {
       throw new IllegalArgumentException("The given path does not point to a multi release jar.");
     }
 

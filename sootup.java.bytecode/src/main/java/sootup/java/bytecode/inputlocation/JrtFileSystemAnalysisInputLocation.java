@@ -164,8 +164,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
                       classProvider.createClassSource(
                           this,
                           p,
-                          this.fromPath(
-                              p.subpath(2, p.getNameCount()), p.subpath(1, 2), identifierFactory))))
+                          fromPath( p, identifierFactory))))
           .map(src -> (JavaSootClassSource) src);
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
@@ -216,8 +215,10 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   @Nonnull
-  private JavaClassType fromPath(
-      final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
+  private JavaClassType fromPath( @Nonnull Path p, @Nonnull final IdentifierFactory identifierFactory) {
+
+    final Path moduleDir = p.subpath(1, 2);
+    final Path filename =  p.subpath(2, p.getNameCount());
 
     final String fullyQualifiedName =
         FilenameUtils.removeExtension(
@@ -225,6 +226,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     JavaClassType sig = (JavaClassType) identifierFactory.getClassType(fullyQualifiedName);
 
+    // TODO: move to Module version
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(sig.getClassName(), sig.getPackageName().getName(), moduleDir.toString());
