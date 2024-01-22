@@ -219,9 +219,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   private JavaClassType fromPath(
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
-    final String fullyQualifiedName = FilenameUtils.removeExtension(
-            filename.toString()
-                    .replace(filename.getFileSystem().getSeparator(), "."));
+    final String fullyQualifiedName =
+        FilenameUtils.removeExtension(
+            filename.toString().replace(filename.getFileSystem().getSeparator(), "."));
 
     JavaClassType sig = (JavaClassType) identifierFactory.getClassType(fullyQualifiedName);
 
