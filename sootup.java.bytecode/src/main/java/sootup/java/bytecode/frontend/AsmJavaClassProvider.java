@@ -73,13 +73,13 @@ public class AsmJavaClassProvider implements ClassProvider {
       return Optional.empty();
     }
 
-    String name = classType.getPackageName().getName();
-    String wantedClassSigStr =
+    String requestedName = classType.getPackageName().getName();
+    String requestedFQClassName =
         classType.getPackageName().getName()
-            + (name.isEmpty() ? "" : ".")
+            + (requestedName.isEmpty() ? "" : ".")
             + classType.getClassName();
-    String replace = actualClassSignature.replace('/', '.');
-    if (!replace.equals(wantedClassSigStr)) {
+    String actualFQClassName = actualClassSignature.replace('/', '.');
+    if (!actualFQClassName.equals(requestedFQClassName)) {
       logger.warn(
           "The given Classtype '"
               + classType

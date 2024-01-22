@@ -52,8 +52,9 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
+  // FIXME: handle closing the filesystem resource
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
-  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;
 
   @Nonnull private final SourceType sourceType;
@@ -131,7 +132,6 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   public Collection<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
     return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
-        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
@@ -219,11 +219,9 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   private JavaClassType fromPath(
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
-    // else use the module system and create fully class signature
-    // we do not have a base directory here, the moduleDir is actually not a directory
-    final Path rootDirectory = Paths.get("");
-
-    final String fullyQualifiedName = fromPath(rootDirectory, filename);
+    final String fullyQualifiedName = FilenameUtils.removeExtension(
+            filename.toString()
+                    .replace(filename.getFileSystem().getSeparator(), "."));
 
     JavaClassType sig = (JavaClassType) identifierFactory.getClassType(fullyQualifiedName);
 
@@ -234,15 +232,6 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
     // if we are using the normal signature factory, then trim the module from the path
     return sig;
-  }
-
-  @Nonnull
-  private static String fromPath(@Nonnull Path rootDirectory, @Nonnull Path filename) {
-    return FilenameUtils.removeExtension(
-        filename
-            .subpath(rootDirectory.getNameCount(), filename.getNameCount())
-            .toString()
-            .replace(filename.getFileSystem().getSeparator(), "."));
   }
 
   @Nonnull
