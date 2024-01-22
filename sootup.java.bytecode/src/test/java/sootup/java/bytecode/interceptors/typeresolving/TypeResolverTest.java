@@ -15,10 +15,12 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -126,5 +128,36 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     Assert.assertTrue(any.isPresent());
     Assert.assertEquals("int[]", any.get().getType().toString());
     Assert.assertEquals(ArrayType.class, any.get().getType().getClass());
+  }
+
+  @Test
+  public void testFieldAssignment() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Application,
+                Collections.singletonList(new TypeAssigner())));
+    Body body =
+        view.getMethod(
+                view.getIdentifierFactory()
+                    .getMethodSignature(
+                        "FieldAssignment", "entry", "void", Collections.emptyList()))
+            .get()
+            .getBody();
+
+    Assert.assertEquals(
+        Stream.of(
+                "FieldAssignment$A $stack2, l0",
+                "java.lang.String l1",
+                "$stack2 = new FieldAssignment$A",
+                "specialinvoke $stack2.<FieldAssignment$A: void <init>()>()",
+                "l0 = $stack2",
+                "l1 = \"abc\"",
+                // the assignment to a field of l0 doesn't change the type of l0
+                "l0.<FieldAssignment$A: java.lang.String s> = l1",
+                "return")
+            .collect(Collectors.toList()),
+        Utils.filterJimple(body.toString()));
   }
 }
