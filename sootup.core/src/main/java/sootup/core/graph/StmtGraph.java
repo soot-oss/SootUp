@@ -485,10 +485,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
         throw new IllegalStateException("Iterator needs to be iterated completely!");
       }
 
-      // check for dangling trap data
+      // check for dangling traps that are not collected as the endStmt was not visited.
       if (!trapStarts.isEmpty()) {
         throw new IllegalArgumentException(
-            "Invalid StmtGraph. A Trap is not created. Maybe a Traprange covers the last Stmt as well, which is not possible.");
+            "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
       }
       return collectedTraps;
     }
