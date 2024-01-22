@@ -30,10 +30,9 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JThisRef implements IdentityRef, Copyable {
+public final class JThisRef implements IdentityRef {
 
   private final ClassType thisType;
 

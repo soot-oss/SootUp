@@ -27,14 +27,13 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
-import sootup.core.util.Copyable;
 
 /**
  * Represents a try-catch construct.
  *
  * <p>Prefer to use the factory methods in {@link Jimple}.
  */
-public final class Trap implements Copyable {
+public final class Trap {
 
   /** The exception being caught. */
   @Nonnull private final ClassType exception;

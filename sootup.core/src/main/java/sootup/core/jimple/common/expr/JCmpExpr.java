@@ -26,9 +26,8 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
-public final class JCmpExpr extends AbstractIntBinopExpr implements Copyable {
+public final class JCmpExpr extends AbstractIntBinopExpr {
 
   public JCmpExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

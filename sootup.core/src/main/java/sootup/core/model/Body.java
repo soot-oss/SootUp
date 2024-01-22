@@ -36,17 +36,15 @@ import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
 import sootup.core.util.printer.JimplePrinter;
-import sootup.core.validation.*;
 
 /**
  * Class that models the Jimple body (code attribute) of a method.
  *
  * @author Linghui Luo
  */
-public class Body implements Copyable, HasPosition {
+public class Body implements HasPosition {
 
   /** The locals for this Body. */
   private final Set<Local> locals;

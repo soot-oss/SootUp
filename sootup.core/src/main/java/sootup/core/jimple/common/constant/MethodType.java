@@ -29,9 +29,8 @@ import sootup.core.jimple.visitor.ConstantVisitor;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 
-public class MethodType implements Constant, Copyable {
+public class MethodType implements Constant {
 
   // FIXME: [AD] adapt this class
   private final Type type;

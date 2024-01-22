@@ -32,11 +32,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that checks whether a value is of a certain type. */
-public final class JInstanceOfExpr implements Expr, Copyable {
+public final class JInstanceOfExpr implements Expr {
 
   private final Immediate op;
   private final Type checkType;

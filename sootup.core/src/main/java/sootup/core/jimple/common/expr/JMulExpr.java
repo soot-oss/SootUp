@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** An expression that multiplies two numbers. */
-public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
+public final class JMulExpr extends AbstractFloatBinopExpr {
 
   public JMulExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

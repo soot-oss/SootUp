@@ -29,10 +29,9 @@ import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
-import sootup.core.util.Copyable;
 
 /** Similar to {@link JShrExpr}, but shifts zero into the leftmost position. */
-public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyable {
+public final class JUshrExpr extends AbstractIntLongBinopExpr {
   public JUshrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);
   }
