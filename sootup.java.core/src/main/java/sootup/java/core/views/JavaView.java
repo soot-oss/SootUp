@@ -90,16 +90,13 @@ public class JavaView extends AbstractView {
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache
-          .getClasses()
-          .stream()
+      return cache.getClasses().stream()
           .map(clazz -> (JavaSootClass) clazz)
           .collect(Collectors.toList());
     }
 
     Collection<JavaSootClass> resolvedClasses =
-        inputLocations
-            .stream()
+        inputLocations.stream()
             .flatMap(location -> location.getClassSources(this).stream())
             .map(this::buildClassFrom)
             .filter(Optional::isPresent)
@@ -128,20 +125,20 @@ public class JavaView extends AbstractView {
   @Nonnull
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
     final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-      if (aClass.isPresent()) {
-          return aClass.get().getMethod(signature.getSubSignature());
-      }
-      return Optional.empty();
+    if (aClass.isPresent()) {
+      return aClass.get().getMethod(signature.getSubSignature());
+    }
+    return Optional.empty();
   }
 
   @Override
   @Nonnull
   public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
     final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-      if (aClass.isPresent()) {
-          return aClass.get().getField(signature.getSubSignature());
-      }
-      return Optional.empty();
+    if (aClass.isPresent()) {
+      return aClass.get().getField(signature.getSubSignature());
+    }
+    return Optional.empty();
   }
 
   @Nonnull
@@ -189,5 +186,4 @@ public class JavaView extends AbstractView {
 
     return Optional.of(theClass);
   }
-
 }
