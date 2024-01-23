@@ -164,7 +164,7 @@ public class JavaModuleView extends JavaView {
 
   @Override
   @Nonnull
-  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
+  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
 
     Optional<JavaSootClassSource> cs =
         moduleInfoAnalysisInputLocations.stream()
@@ -178,7 +178,7 @@ public class JavaModuleView extends JavaView {
       return cs;
     }
 
-    return super.getAbstractClass(type);
+    return super.getClassSource(type);
   }
 
   @Nonnull

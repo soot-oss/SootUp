@@ -126,7 +126,7 @@ public class JavaView extends AbstractView {
       return Optional.of(cachedClass);
     }
 
-    Optional<JavaSootClassSource> abstractClass = getAbstractClass(type);
+    Optional<JavaSootClassSource> abstractClass = getClassSource(type);
     return abstractClass.flatMap(this::buildClassFrom);
   }
 
@@ -162,7 +162,7 @@ public class JavaView extends AbstractView {
   }
 
   @Nonnull
-  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
+  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
     return inputLocations
         .parallelStream()
         .map(location -> location.getClassSource(type, this))
