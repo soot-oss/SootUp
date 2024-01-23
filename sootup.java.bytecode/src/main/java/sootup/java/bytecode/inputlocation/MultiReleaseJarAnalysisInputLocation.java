@@ -24,7 +24,6 @@ package sootup.java.bytecode.inputlocation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PipedReader;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,12 +33,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.Language;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClassSource;
@@ -58,31 +59,49 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   protected static final Integer DEFAULT_VERSION = 0;
 
   @Nonnull protected final Language language;
-  @Nonnull protected final List<Integer> availableVersions;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull
   protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
-  public static ArchiveBasedAnalysisInputLocation create(@Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language){
+  public static AnalysisInputLocation create(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      List<BodyInterceptor> bodyInterceptors) {
     if (isMultiReleaseJar(path)) {
-      return new MultiReleaseJarAnalysisInputLocation( path, srcType, language, true);
+      return new MultiReleaseJarAnalysisInputLocation(
+          path, srcType, language, bodyInterceptors, true);
     }
-    return new ArchiveBasedAnalysisInputLocation(path, srcType);
+    return createAnalysisInputLocation(path, srcType, bodyInterceptors);
   }
 
   public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
-    this(path, SourceType.Application, language );
+    this(path, SourceType.Application, language);
   }
 
   public MultiReleaseJarAnalysisInputLocation(
-          @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    this(path,srcType,language, isMultiReleaseJar(path) );
+      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
+    this(path, srcType, language, Collections.emptyList());
+  }
+
+  public MultiReleaseJarAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this(path, srcType, language, bodyInterceptors, isMultiReleaseJar(path));
   }
 
   protected MultiReleaseJarAnalysisInputLocation(
-          @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language, boolean isMultiRelease) {
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      boolean isMultiRelease) {
     super(path, srcType);
     this.language = language;
+    this.bodyInterceptors = bodyInterceptors;
 
     if (!isMultiRelease) {
       throw new IllegalArgumentException("The given path does not point to a multi release jar.");
@@ -98,7 +117,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     final Path archiveRoot = fs.getPath("/");
     Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
 
-    availableVersions = new ArrayList<>();
     try (Stream<Path> list = Files.list(versionedRoot)) {
       list.map(
               dir -> {
@@ -106,26 +124,29 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                 return versionDirName.substring(0, versionDirName.length() - 1);
               })
           .map(Integer::new)
+          .filter(version -> version <= language.getVersion())
           .sorted()
-          .forEach(availableVersions::add);
+          .forEach(
+              version -> {
+                final Path versionRoot =
+                    archiveRoot
+                        .getFileSystem()
+                        .getPath("/META-INF", "versions", version.toString());
+                inputLocations.put(
+                    version,
+                    createAnalysisInputLocation(versionRoot, srcType, getBodyInterceptors()));
+              });
+
+      inputLocations.put(
+          DEFAULT_VERSION,
+          createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
     } catch (IOException e) {
       throw new IllegalStateException("Can not index the given file.", e);
     }
-
-    for (int i = availableVersions.size() - 1; i >= 0; i--) {
-      Integer version = availableVersions.get(i);
-      if (version > language.getVersion()) {
-        // TODO: use binSearch to find desired versions more efficiently?
-        continue;
-      }
-      final Path versionRoot =
-          archiveRoot.getFileSystem().getPath("/META-INF", "versions", version.toString());
-      inputLocations.put(version, createAnalysisInputLocation(versionRoot));
-    }
-    inputLocations.put(DEFAULT_VERSION, createAnalysisInputLocation(archiveRoot));
   }
 
-  protected AnalysisInputLocation createAnalysisInputLocation(Path archiveRoot) {
+  protected static AnalysisInputLocation createAnalysisInputLocation(
+      Path archiveRoot, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
     return PathBasedAnalysisInputLocation.create(
         archiveRoot,
         sourceType,
@@ -179,15 +200,6 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     return language;
   }
 
-  /**
-   * lists all versions from the version directories inside the META_INF/ directory - excluding the
-   * default implemention version
-   */
-  @Nonnull
-  public List<Integer> getAvailableVersions() {
-    return availableVersions;
-  }
-
   public static boolean isMultiReleaseJar(Path path) {
     try {
       FileInputStream inputStream = new FileInputStream(path.toFile());
@@ -208,7 +220,42 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
       return Boolean.parseBoolean(value);
     } catch (IOException e) {
-      throw new IllegalArgumentException("File not found.", e);
+      throw new IllegalArgumentException("Manifest file not found.", e);
+    }
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
+  /**
+   * lists all versions from the version directories inside the META_INF/ directory - excluding the
+   * default implemention version
+   */
+  protected static List<Integer> getLanguageVersions(@Nonnull Path path) {
+    FileSystem fs;
+    try {
+      fs = fileSystemCache.get(path);
+    } catch (ExecutionException e) {
+      throw new IllegalArgumentException("Could not open filesystemcache.", e);
+    }
+
+    final Path archiveRoot = fs.getPath("/");
+    Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
+
+    try (Stream<Path> list = Files.list(versionedRoot)) {
+      return list.map(
+              dir -> {
+                String versionDirName = dir.getFileName().toString();
+                return versionDirName.substring(0, versionDirName.length() - 1);
+              })
+          .map(Integer::new)
+          .sorted()
+          .collect(Collectors.toCollection(ArrayList::new));
+    } catch (IOException e) {
+      throw new IllegalStateException("Can not index the given file.", e);
     }
   }
 

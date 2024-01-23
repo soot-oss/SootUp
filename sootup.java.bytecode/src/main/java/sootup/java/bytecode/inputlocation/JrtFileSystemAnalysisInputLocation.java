@@ -161,10 +161,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      classProvider.createClassSource(
-                          this,
-                          p,
-                          fromPath( p, identifierFactory))))
+                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
           .map(src -> (JavaSootClassSource) src);
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
@@ -215,10 +212,11 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   @Nonnull
-  private JavaClassType fromPath( @Nonnull Path p, @Nonnull final IdentifierFactory identifierFactory) {
+  private JavaClassType fromPath(
+      @Nonnull Path p, @Nonnull final IdentifierFactory identifierFactory) {
 
     final Path moduleDir = p.subpath(1, 2);
-    final Path filename =  p.subpath(2, p.getNameCount());
+    final Path filename = p.subpath(2, p.getNameCount());
 
     final String fullyQualifiedName =
         FilenameUtils.removeExtension(
