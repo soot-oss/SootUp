@@ -480,7 +480,6 @@ public class JavaModuleView extends JavaView {
     return modules;
   }
 
-  @Override
   @Nonnull
   protected synchronized Collection<JavaSootClass> resolveAll() {
     if (isFullyResolved && cache instanceof FullCache) {
