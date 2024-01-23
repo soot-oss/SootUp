@@ -28,7 +28,9 @@ import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SourceType;
@@ -40,35 +42,44 @@ import sootup.java.core.views.JavaView;
 public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   final Path mrj = Paths.get("../shared-test-resources/multi-release-jar/mrjar.jar");
+  JavaView view_min;
+  JavaView view_8;
+  JavaView view_9;
+  JavaView view_10;
+  JavaView view_max;
+  ClassType classType;
+  ClassType classType2;
 
-  @Test
-  public void multiReleaseJar() {
+  @Before
+  public void setup() {
 
-    final JavaView view_min =
+    view_min =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(1)));
-    final JavaView view_8 =
+    view_8 =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(8)));
-    final JavaView view_9 =
+    view_9 =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(9)));
-    final JavaView view_10 =
+    view_10 =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(10)));
-    final JavaView view_max =
+    view_max =
         new JavaView(
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(Integer.MAX_VALUE)));
 
-    final ClassType classType =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-    final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+    classType = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
+    classType2 = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
+  }
+
+  @Test
+  public void multiReleaseJar() {
 
     assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mrj));
 
@@ -143,4 +154,12 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         "/de/upb/swt/multirelease/Main.class",
         view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
   }
+
+  @Test
+  public void testVersions() {
+    List<Integer> languageVersions = MultiReleaseJarAnalysisInputLocation.getLanguageVersions(mrj);
+    Assert.assertTrue(languageVersions.contains(9));
+    Assert.assertTrue(languageVersions.contains(10));
+  }
+
 }
