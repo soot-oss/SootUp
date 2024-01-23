@@ -38,7 +38,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.AnnotationType;
 
 /**
@@ -49,6 +48,7 @@ import sootup.java.core.types.AnnotationType;
  * @author Jan Martin Persch
  */
 public class JavaView extends AbstractView {
+  @Nonnull protected final JavaIdentifierFactory identifierFactory;
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
   @Nonnull protected final ClassCache cache;
@@ -83,6 +83,7 @@ public class JavaView extends AbstractView {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
     this.sourceTypeSpecifier = sourceTypeSpecifier;
+    this.identifierFactory = JavaIdentifierFactory.getInstance();
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
@@ -144,11 +145,11 @@ public class JavaView extends AbstractView {
   @Nonnull
   @Override
   public JavaIdentifierFactory getIdentifierFactory() {
-    return (JavaIdentifierFactory) new JavaLanguage(8).getIdentifierFactory();
+    return identifierFactory;
   }
 
   /** Returns the number of classes that are currently stored in the cache. */
-  public int getNumberOfStoredClasses() {
+  public int getCachedClassesCount() {
     return cache.size();
   }
 
