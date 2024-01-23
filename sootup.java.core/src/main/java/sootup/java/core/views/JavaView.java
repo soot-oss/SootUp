@@ -141,7 +141,7 @@ public class JavaView extends AbstractView {
 
   @Nonnull
   protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
-    return inputLocations.stream()
+    return inputLocations.parallelStream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
@@ -157,15 +157,15 @@ public class JavaView extends AbstractView {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
-    if (!cache.hasClass(classType)) {
-      theClass =
-          (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
-      cache.putClass(classType, theClass);
-    } else {
-      theClass = (JavaSootClass) cache.getClass(classType);
-    }
+      if (cache.hasClass(classType)) {
+        theClass = (JavaSootClass) cache.getClass(classType);
+      } else {
+        theClass =
+            (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
+        cache.putClass(classType, theClass);
+      }
 
-    if (theClass.getType() instanceof AnnotationType) {
+      if (theClass.getType() instanceof AnnotationType) {
       JavaAnnotationSootClass jasc = (JavaAnnotationSootClass) theClass;
       jasc.getAnnotations(Optional.of(this)).forEach(AnnotationUsage::getValuesWithDefaults);
     }
@@ -176,14 +176,14 @@ public class JavaView extends AbstractView {
   @Nonnull
   protected synchronized Collection<JavaSootClass> resolveAll() {
     if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream()
+      return cache.getClasses().parallelStream()
           .map(clazz -> (JavaSootClass) clazz)
           .collect(Collectors.toList());
     }
 
       Collection<JavaSootClass> resolvedClasses =
-        inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
+        inputLocations.parallelStream()
+            .flatMap(location -> location.getClassSources(this).parallelStream())
             .map(this::buildClassFrom)
             .filter(Optional::isPresent)
             .map(Optional::get)
