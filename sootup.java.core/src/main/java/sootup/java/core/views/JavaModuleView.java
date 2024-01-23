@@ -94,7 +94,11 @@ public class JavaModuleView extends JavaView {
       @Nonnull ClassCacheProvider cacheProvider,
       @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(inputLocations, cacheProvider, sourceTypeSpecifier, JavaModuleIdentifierFactory.getInstance());
+    super(
+        inputLocations,
+        cacheProvider,
+        sourceTypeSpecifier,
+        JavaModuleIdentifierFactory.getInstance());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);

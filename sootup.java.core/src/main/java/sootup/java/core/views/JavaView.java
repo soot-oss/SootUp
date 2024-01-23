@@ -25,8 +25,6 @@ package sootup.java.core.views;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-
-import sootup.core.IdentifierFactory;
 import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
@@ -82,14 +80,14 @@ public class JavaView extends AbstractView {
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull ClassCacheProvider cacheProvider,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(inputLocations,cacheProvider, sourceTypeSpecifier, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, sourceTypeSpecifier, JavaIdentifierFactory.getInstance());
   }
 
   protected JavaView(
-          @Nonnull List<AnalysisInputLocation> inputLocations,
-          @Nonnull ClassCacheProvider cacheProvider,
-          @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
-          @Nonnull JavaIdentifierFactory idf) {
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
+      @Nonnull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
     this.sourceTypeSpecifier = sourceTypeSpecifier;
