@@ -1,55 +1,95 @@
 package org.sootup.java.codepropertygraph.evaluation.joern;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import io.joern.dataflowengineoss.dotgenerator.DdgGenerator;
+import io.joern.jimple2cpg.Config;
+import io.joern.jimple2cpg.Jimple2Cpg;
+import io.shiftleft.codepropertygraph.cpgloading.CpgLoader;
+import io.shiftleft.codepropertygraph.cpgloading.CpgLoaderConfig;
+import io.shiftleft.codepropertygraph.generated.Cpg;
+import io.shiftleft.codepropertygraph.generated.nodes.Call;
+import io.shiftleft.codepropertygraph.generated.nodes.Method;
+import io.shiftleft.codepropertygraph.generated.nodes.StoredNode;
+import io.shiftleft.semanticcpg.dotgenerator.AstGenerator;
+import io.shiftleft.semanticcpg.dotgenerator.CdgGenerator;
+import io.shiftleft.semanticcpg.dotgenerator.CfgGenerator;
+import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import scala.Option;
+import scala.collection.immutable.Seq;
+import scala.jdk.CollectionConverters;
+import scala.util.Try;
 
 public class JoernCfgGenerator {
 
   public void generateCFG(String jarFilePath, String outputDirectory) {
-    try {
-      String cpgFilePath = "sootup.codepropertygraph.evaluation/src/main/temp/out.cpg";
-      // Step 1: Parse the source code
-      executeCommand(
-          new String[] {
-            "joern-parse.bat", "--output", cpgFilePath, jarFilePath, "--language", "java"
-          });
+    Seq<String> dynamicDirs =
+        CollectionConverters.ListHasAsScala(Collections.singletonList(jarFilePath))
+            .asScala()
+            .toSeq();
 
-      // Step 2: Export the CFG as a dot file
-      executeCommand(
-          new String[] {
-            "joern-export.bat",
-            "--format",
-            "dot",
-            "--out",
-            outputDirectory,
-            cpgFilePath,
-            "--repr",
-            "cfg"
-          });
+    Config config =
+        new Config(
+            Option.empty(),
+            dynamicDirs,
+            CollectionConverters.ListHasAsScala(new ArrayList<String>()).asScala().toSeq(),
+            false);
+    config = (Config) config.withInputPath(jarFilePath);
+    config = (Config) config.withOutputPath(outputDirectory);
 
-    } catch (IOException | InterruptedException e) {
-      e.printStackTrace();
+    Try<Cpg> cpgTry = new Jimple2Cpg().createCpg(config);
+
+    if (cpgTry.isSuccess()) {
+      Cpg cpg = cpgTry.get();
+      return;
+    } else if (cpgTry.isFailure()) {
+      Throwable exception = cpgTry.failed().get();
+      throw new RuntimeException(exception.getMessage());
     }
   }
 
-  private void executeCommand(String[] command) throws IOException, InterruptedException {
-    ProcessBuilder processBuilder = new ProcessBuilder(command);
-    Process process = processBuilder.start();
-
-    // Reading the output of the command
-    try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        System.out.println(line);
-      }
+  public Cpg readCpg(String cpgPath) {
+    overflowdb.Config odbConfig = new overflowdb.Config().withStorageLocation(cpgPath);
+    CpgLoaderConfig cpgLoaderConfig = new CpgLoaderConfig(true, odbConfig);
+    if (CpgLoader.isLegacyCpg(cpgPath)) {
+      System.out.println("legacy");
     }
+    return new CpgLoader().loadFromOverflowDb(cpgLoaderConfig);
+  }
 
-    // Wait for the process to finish
-    int exitCode = process.waitFor();
-    if (exitCode != 0) {
-      System.out.println("Process exited with error code: " + exitCode);
+  public static void main(String[] args) {
+    JoernCfgGenerator example = new JoernCfgGenerator();
+    example.generateCFG(
+        "sootup.codepropertygraph.evaluation/src/main/resources/commons-lang3-3.14.0.jar",
+        "sootup.codepropertygraph.evaluation/src/main/temp/someout.cpg");
+    if (true) return;
+    Cpg cpg = example.readCpg("sootup.codepropertygraph.evaluation/src/main/temp/out.cpg");
+
+    ArrayList<Method> methods = new ArrayList<>();
+    cpg.graph().nodes("METHOD").forEachRemaining(node -> methods.add((Method) node));
+    System.out.println(methods.get(0).code());
+
+    AstGenerator astGen = new AstGenerator();
+    CfgGenerator cfgGen = new CfgGenerator();
+    CdgGenerator cdgGen = new CdgGenerator();
+    DdgGenerator ddgGen = new DdgGenerator();
+
+    for (Method method : methods) {
+      // List<CfgNode> cfgNodes =
+      // CollectionConverters.SeqHasAsJava(method.get().cfgFirst().toList()).asJava();
+
+      Graph cfgGraph = cfgGen.generate(method);
+
+      List<StoredNode> vertices =
+          CollectionConverters.SeqHasAsJava(cfgGraph.vertices().toSeq()).asJava();
+      List<Edge> edges = CollectionConverters.SeqHasAsJava(cfgGraph.edges().toSeq()).asJava();
+
+      System.out.println(((Call) vertices.get(0)).code());
+      System.out.println(edges.get(0));
+
+      cfgGraph.edges();
+      break;
     }
   }
 }
