@@ -91,6 +91,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
 
+  /** Labels at which a trap handler range (try block) begins */
+  private final Map<LabelNode, TryCatchBlockNode> startTrapHandler = new HashMap<>();
+
+  /** Labels at which a trap handler range (try block) ends */
+  private final Map<LabelNode, TryCatchBlockNode> endTrapHandler = new HashMap<>();
+
+  /** Keeps track of all trap handlers that are active at the current instruction */
+  Set<TryCatchBlockNode> activeTrapHandlers = new HashSet<>();
+
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
 
@@ -167,6 +176,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // reserve space/ insert labels in datastructure  - necessary?! its useless if not assigned
       // later.. -> check the meaning of that containsKey() check
       trapHandler.put(tc.handler, null);
+      startTrapHandler.put(tc.start, tc);
+      endTrapHandler.put(tc.end, tc);
     }
 
     /* build body (add stmts, locals, traps, etc.) */
@@ -257,7 +268,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx, false); // FIXME: isField
+      String name = determineLocalName(idx);
       local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
       locals.set(idx, local);
     }
@@ -265,7 +276,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private String determineLocalName(int idx, boolean isField) {
+  private String determineLocalName(int idx) {
     String name;
     if (localVariables != null) {
       name = null;
@@ -282,7 +293,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     } else {
       name = "l" + idx;
     }
-    return isField ? name : "$" + name;
+    return name;
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
@@ -1248,6 +1259,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
+    if (startTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.add(startTrapHandler.get(ln));
+    }
+
+    if (endTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.remove(endTrapHandler.get(ln));
+    }
+
     // only do it for Labels which are referring to a traphandler
     if (!trapHandler.containsKey(ln)) {
       return;
@@ -1301,7 +1320,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack(), currentLineNumber);
+        edge =
+            new BranchedInsnInfo(
+                tgt, operandStack.getStack(), currentLineNumber, activeTrapHandlers);
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
@@ -1350,16 +1371,26 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         opr.stackLocal = local;
 
         worklist.add(
-            new BranchedInsnInfo(handlerNode, Collections.singletonList(opr), currentLineNumber));
+            new BranchedInsnInfo(
+                handlerNode,
+                Collections.singletonList(opr),
+                currentLineNumber,
+                activeTrapHandlers));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>(), currentLineNumber));
+        worklist.add(
+            new BranchedInsnInfo(
+                handlerNode, new ArrayList<>(), currentLineNumber, activeTrapHandlers));
       }
     }
     worklist.add(
-        new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList(), currentLineNumber));
+        new BranchedInsnInfo(
+            instructions.getFirst(),
+            Collections.emptyList(),
+            currentLineNumber,
+            activeTrapHandlers));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
@@ -1368,6 +1399,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       currentLineNumber = edge.getLineNumber();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
+      activeTrapHandlers = edge.getActiveTrapHandlers();
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
@@ -1524,8 +1556,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal =
-          JavaJimple.newLocal(determineLocalName(localIdx, false), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
@@ -1537,7 +1568,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx, false),
+              determineLocalName(localIdx),
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));

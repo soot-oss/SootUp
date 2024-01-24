@@ -21,19 +21,19 @@ class InnerClassSuper$SuperOuter extends java.lang.Object
     public void test()
     {
         InnerClassSuper$SuperOuter r0;
-        InnerClassSuper $r1;
-        int $i0;
-        java.io.PrintStream $r2;
+        InnerClassSuper r1;
+        int i0;
+        java.io.PrintStream r2;
 
         r0 := @this: InnerClassSuper$SuperOuter;
 
-        $r2 = <java.lang.System: java.io.PrintStream out>;
+        r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r1 = r0.<InnerClassSuper$SuperOuter: InnerClassSuper this$0>;
+        r1 = r0.<InnerClassSuper$SuperOuter: InnerClassSuper this$0>;
 
-        $i0 = $r1.<InnerClassSuper: int x>;
+        i0 = r1.<InnerClassSuper: int x>;
 
-        virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i0);
+        virtualinvoke r2.<java.io.PrintStream: void println(int)>(i0);
 
         return;
     }

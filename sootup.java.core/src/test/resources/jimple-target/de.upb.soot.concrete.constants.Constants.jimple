@@ -15,13 +15,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void intConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(512);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(512);
 
         return;
     }
@@ -29,13 +29,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void byteConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(0);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(0);
 
         return;
     }
@@ -43,13 +43,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void charConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(char)>(97);
+        virtualinvoke r1.<java.io.PrintStream: void println(char)>(97);
 
         return;
     }
@@ -57,13 +57,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void shortConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(10);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(10);
 
         return;
     }
@@ -71,13 +71,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void floatConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(float)>(3.14F);
+        virtualinvoke r1.<java.io.PrintStream: void println(float)>(3.14F);
 
         return;
     }
@@ -85,13 +85,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void longConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(123456789L);
+        virtualinvoke r1.<java.io.PrintStream: void println(long)>(123456789L);
 
         return;
     }
@@ -99,13 +99,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void doubleConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(1.96969654);
+        virtualinvoke r1.<java.io.PrintStream: void println(double)>(1.96969654);
 
         return;
     }
@@ -113,13 +113,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void classConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.Object)>(class "Lde/upb/soot/concrete/constants/Constants;");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.Object)>(class "Lde/upb/soot/concrete/constants/Constants;");
 
         return;
     }
@@ -127,13 +127,13 @@ public class de.upb.sootup.concrete.constants.Constants extends java.lang.Object
     public void stringConstant()
     {
         de.upb.sootup.concrete.constants.Constants r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.constants.Constants;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("foo");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("foo");
 
         return;
     }

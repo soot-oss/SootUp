@@ -41,9 +41,9 @@ public class UnaryOpIntTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: UnaryOpInt",
-            "$i0 = r0.<UnaryOpInt: int i>",
-            "$i1 = r0.<UnaryOpInt: int j>",
-            "$i2 = $i0 + $i1",
+            "i0 = r0.<UnaryOpInt: int i>",
+            "i1 = r0.<UnaryOpInt: int j>",
+            "i2 = i0 + i1",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

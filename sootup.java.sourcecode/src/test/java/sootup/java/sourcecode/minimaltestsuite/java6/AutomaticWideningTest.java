@@ -32,7 +32,7 @@ public class AutomaticWideningTest extends MinimalSourceTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: AutomaticWidening", "$i0 = 10", "$i1 = $i0", "return")
+    return Stream.of("r0 := @this: AutomaticWidening", "i0 = 10", "i1 = i0", "return")
         .collect(Collectors.toList());
   }
 

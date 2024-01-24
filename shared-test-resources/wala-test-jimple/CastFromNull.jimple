@@ -15,13 +15,13 @@ public class CastFromNull extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        CastFromNull $r1;
+        CastFromNull r1;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new CastFromNull;
+        r1 = new CastFromNull;
 
-        specialinvoke $r1.<CastFromNull: void <init>()>();
+        specialinvoke r1.<CastFromNull: void <init>()>();
 
         return;
     }

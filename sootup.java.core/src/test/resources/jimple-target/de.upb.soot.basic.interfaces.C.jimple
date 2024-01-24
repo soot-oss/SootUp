@@ -15,13 +15,13 @@ public class de.upb.sootup.basic.interfaces.C extends java.lang.Object implement
     public void printA1()
     {
         de.upb.sootup.basic.interfaces.C r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.interfaces.C;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
 
         return;
     }
@@ -29,13 +29,13 @@ public class de.upb.sootup.basic.interfaces.C extends java.lang.Object implement
     public void printA2()
     {
         de.upb.sootup.basic.interfaces.C r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.basic.interfaces.C;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A2");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A2");
 
         return;
     }

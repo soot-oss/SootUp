@@ -44,9 +44,9 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TransientVariable",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = r0.<TransientVariable: int transientVar>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = r0.<TransientVariable: int transientVar>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

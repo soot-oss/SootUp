@@ -40,17 +40,17 @@ public class StaticImportTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: StaticImport",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$d0 = staticinvoke <java.lang.Math: double sqrt(double)>(4)",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(double)>($d0)",
-            "$r2 = <java.lang.System: java.io.PrintStream out>",
-            "$d1 = staticinvoke <java.lang.Math: double pow(double,double)>(2, 5)",
-            "virtualinvoke $r2.<java.io.PrintStream: void println(double)>($d1)",
-            "$r3 = <java.lang.System: java.io.PrintStream out>",
-            "$d2 = staticinvoke <java.lang.Math: double ceil(double)>(5.6)",
-            "virtualinvoke $r3.<java.io.PrintStream: void println(double)>($d2)",
-            "$r4 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(\"Static import for System.out\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "d0 = staticinvoke <java.lang.Math: double sqrt(double)>(4)",
+            "virtualinvoke r1.<java.io.PrintStream: void println(double)>(d0)",
+            "r2 = <java.lang.System: java.io.PrintStream out>",
+            "d1 = staticinvoke <java.lang.Math: double pow(double,double)>(2, 5)",
+            "virtualinvoke r2.<java.io.PrintStream: void println(double)>(d1)",
+            "r3 = <java.lang.System: java.io.PrintStream out>",
+            "d2 = staticinvoke <java.lang.Math: double ceil(double)>(5.6)",
+            "virtualinvoke r3.<java.io.PrintStream: void println(double)>(d2)",
+            "r4 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>(\"Static import for System.out\")",
             "return")
         .collect(Collectors.toList());
   }

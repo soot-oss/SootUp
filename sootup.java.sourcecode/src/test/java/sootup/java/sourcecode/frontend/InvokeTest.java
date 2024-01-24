@@ -56,9 +56,9 @@ public class InvokeTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeSpecial",
-                "$r1 = new java.util.ArrayList",
-                "specialinvoke $r1.<java.util.ArrayList: void <init>()>()",
-                "$z0 = virtualinvoke $r1.<java.util.ArrayList: boolean add(java.lang.Object)>(\"item1\")",
+                "r1 = new java.util.ArrayList",
+                "specialinvoke r1.<java.util.ArrayList: void <init>()>()",
+                "z0 = virtualinvoke r1.<java.util.ArrayList: boolean add(java.lang.Object)>(\"item1\")",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -84,7 +84,7 @@ public class InvokeTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeSpecial",
-                "$i0 = specialinvoke r0.<InvokeSpecial: int privateMethod()>()",
+                "i0 = specialinvoke r0.<InvokeSpecial: int privateMethod()>()",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -113,8 +113,8 @@ public class InvokeTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeSpecial",
-                "$r1 = specialinvoke r0.<java.lang.Object: java.lang.String toString()>()",
-                "return $r1")
+                "r1 = specialinvoke r0.<java.lang.Object: java.lang.String toString()>()",
+                "return r1")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -138,9 +138,9 @@ public class InvokeTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "$r0 = new java.lang.String",
-                "specialinvoke $r0.<java.lang.String: void <init>()>()",
-                "<InvokeStatic: java.lang.String string> = $r0",
+                "r0 = new java.lang.String",
+                "specialinvoke r0.<java.lang.String: void <init>()>()",
+                "<InvokeStatic: java.lang.String string> = r0",
                 "<InvokeStatic: java.lang.String x> = \"abc\"",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
@@ -169,9 +169,9 @@ public class InvokeTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "$i0 := @parameter0: int",
-                "$r0 := @parameter1: java.lang.String",
-                "$z0 := @parameter2: boolean",
+                "i0 := @parameter0: int",
+                "r0 := @parameter1: java.lang.String",
+                "z0 := @parameter2: boolean",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -196,9 +196,9 @@ public class InvokeTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "$r0 := @parameter0: java.lang.Object",
-                "$r1 = $r0",
-                "$r2 = virtualinvoke $r1.<java.lang.Object: java.lang.String toString()>()",
+                "r0 := @parameter0: java.lang.Object",
+                "r1 = r0",
+                "r2 = virtualinvoke r1.<java.lang.Object: java.lang.String toString()>()",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -223,21 +223,21 @@ public class InvokeTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "$r0 := @parameter0: java.lang.Object",
-                "$r1 = \"\"",
-                "$r2 = virtualinvoke $r1.<java.lang.Object: java.lang.String toString()>()",
-                "$r3 = \"A\"",
-                "$r4 = \"B\"",
-                "$z0 = $r3 == $r4",
-                "if $z0 == 0 goto label1",
+                "r0 := @parameter0: java.lang.Object",
+                "r1 = \"\"",
+                "r2 = virtualinvoke r1.<java.lang.Object: java.lang.String toString()>()",
+                "r3 = \"A\"",
+                "r4 = \"B\"",
+                "z0 = r3 == r4",
+                "if z0 == 0 goto label1",
                 "return",
                 "label1:",
-                "$z1 = 5 < 3",
-                "if $z1 == 0 goto label2",
+                "z1 = 5 < 3",
+                "if z1 == 0 goto label2",
                 "return",
                 "label2:",
-                "$z2 = 5.0 < 3.0",
-                "if $z2 == 0 goto label3",
+                "z2 = 5.0 < 3.0",
+                "if z2 == 0 goto label3",
                 "return",
                 "label3:",
                 "return")
@@ -264,11 +264,11 @@ public class InvokeTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeVirtual",
-                "$r1 := @parameter0: InvokeVirtual",
-                "$r2 = r0.<InvokeVirtual: java.lang.String x>",
-                "$r3 = $r1.<InvokeVirtual: java.lang.String x>",
-                "$z0 = virtualinvoke $r2.<java.lang.String: boolean equals(java.lang.Object)>($r3)",
-                "return $z0")
+                "r1 := @parameter0: InvokeVirtual",
+                "r2 = r0.<InvokeVirtual: java.lang.String x>",
+                "r3 = r1.<InvokeVirtual: java.lang.String x>",
+                "z0 = virtualinvoke r2.<java.lang.String: boolean equals(java.lang.Object)>(r3)",
+                "return z0")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -293,8 +293,8 @@ public class InvokeTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeVirtual",
-                "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"abc\")",
+                "r1 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"abc\")",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

@@ -61,11 +61,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpAnd() {
     return Stream.of(
-            "r0 := @this: BitwiseOperationsInt",
-            "$i0 = 70",
-            "$i1 = 20",
-            "$i2 = $i0 & $i1",
-            "return")
+            "r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = 20", "i2 = i0 & i1", "return")
         .collect(Collectors.toList());
   }
 
@@ -82,11 +78,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpOr() {
     return Stream.of(
-            "r0 := @this: BitwiseOperationsInt",
-            "$i0 = 70",
-            "$i1 = 20",
-            "$i2 = $i0 | $i1",
-            "return")
+            "r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = 20", "i2 = i0 | i1", "return")
         .collect(Collectors.toList());
   }
 
@@ -103,11 +95,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpXor() {
     return Stream.of(
-            "r0 := @this: BitwiseOperationsInt",
-            "$i0 = 70",
-            "$i1 = 20",
-            "$i2 = $i0 ^ $i1",
-            "return")
+            "r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = 20", "i2 = i0 ^ i1", "return")
         .collect(Collectors.toList());
   }
 
@@ -122,7 +110,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpComplement() {
-    return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = neg $i0", "return")
+    return Stream.of("r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = neg i0", "return")
         .collect(Collectors.toList());
   }
 
@@ -137,7 +125,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpSignedRightShift() {
-    return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >> 5", "return")
+    return Stream.of("r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = i0 >> 5", "return")
         .collect(Collectors.toList());
   }
 
@@ -152,7 +140,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpLeftShift() {
-    return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 << 5", "return")
+    return Stream.of("r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = i0 << 5", "return")
         .collect(Collectors.toList());
   }
 
@@ -167,7 +155,7 @@ public class BitwiseOperationsIntTest extends MinimalSourceTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpUnsignedRightShift() {
-    return Stream.of("r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >>> 5", "return")
+    return Stream.of("r0 := @this: BitwiseOperationsInt", "i0 = 70", "i1 = i0 >>> 5", "return")
         .collect(Collectors.toList());
   }
 }

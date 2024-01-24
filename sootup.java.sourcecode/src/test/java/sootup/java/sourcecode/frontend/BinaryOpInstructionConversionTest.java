@@ -97,7 +97,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b0", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
@@ -105,7 +105,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b1", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
         });
 
@@ -113,9 +113,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -123,9 +123,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$b1", PrimitiveType.getByte()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("b1", PrimitiveType.getByte()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -133,11 +133,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JAddExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -145,16 +144,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b2", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b2", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getByte()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getByte()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$b2", PrimitiveType.getByte()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("b2", PrimitiveType.getByte()), stmt.getOp()));
   }
 
   @Test
@@ -191,7 +190,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d0", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
@@ -199,7 +198,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$f0", PrimitiveType.getFloat()), stmt.getLeftOp());
+          assertEquiv(new Local("f0", PrimitiveType.getFloat()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
         });
 
@@ -207,9 +206,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d1", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d1", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$f0", PrimitiveType.getFloat()), PrimitiveType.getDouble()),
+              new JCastExpr(new Local("f0", PrimitiveType.getFloat()), PrimitiveType.getDouble()),
               stmt.getRightOp());
         });
 
@@ -217,18 +216,18 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d2", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d2", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(
               new JAddExpr(
-                  new Local("$d0", PrimitiveType.getDouble()),
-                  new Local("$d1", PrimitiveType.getDouble())),
+                  new Local("d0", PrimitiveType.getDouble()),
+                  new Local("d1", PrimitiveType.getDouble())),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(5),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$d2", PrimitiveType.getDouble()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("d2", PrimitiveType.getDouble()), stmt.getOp()));
   }
 
   @Test
@@ -265,7 +264,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d0", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
@@ -273,7 +272,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d1", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d1", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
         });
 
@@ -281,11 +280,11 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d2", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d2", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(
               new JMulExpr(
-                  new Local("$d0", PrimitiveType.getDouble()),
-                  new Local("$d1", PrimitiveType.getDouble())),
+                  new Local("d0", PrimitiveType.getDouble()),
+                  new Local("d1", PrimitiveType.getDouble())),
               stmt.getRightOp());
         });
 
@@ -293,7 +292,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JReturnStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d2", PrimitiveType.getDouble()), stmt.getOp());
+          assertEquiv(new Local("d2", PrimitiveType.getDouble()), stmt.getOp());
         });
   }
 
@@ -329,7 +328,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c0", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
@@ -337,7 +336,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c1", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
@@ -345,9 +344,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -355,9 +354,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -365,11 +364,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JSubExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -377,16 +375,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getOp()));
   }
 
   @Test
@@ -421,7 +419,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s0", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
@@ -429,7 +427,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s1", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 1), stmt.getRightOp());
         });
 
@@ -437,9 +435,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$s0", PrimitiveType.getShort()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("s0", PrimitiveType.getShort()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -447,9 +445,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$s1", PrimitiveType.getShort()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("s1", PrimitiveType.getShort()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -457,11 +455,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JMulExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -469,16 +466,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s2", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getShort()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getShort()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("s2", PrimitiveType.getShort()), stmt.getOp()));
   }
 
   @Test
@@ -513,7 +510,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
@@ -521,7 +518,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
@@ -529,18 +526,17 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JDivExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getOp()));
   }
 
   @Test
@@ -575,7 +571,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c0", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
@@ -583,7 +579,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c1", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
@@ -591,9 +587,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -601,9 +597,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -611,11 +607,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JRemExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -623,16 +618,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getOp()));
   }
 
   @Test
@@ -668,7 +663,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s0", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
@@ -676,17 +671,17 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getRightOp());
+          assertEquiv(new Local("s1", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s0", PrimitiveType.getShort()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s2", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(
-              new JAddExpr(new Local("$s0", PrimitiveType.getShort()), IntConstant.getInstance(1)),
+              new JAddExpr(new Local("s0", PrimitiveType.getShort()), IntConstant.getInstance(1)),
               stmt.getRightOp());
         });
 
@@ -694,14 +689,14 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getRightOp());
+          assertEquiv(new Local("s0", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s2", PrimitiveType.getShort()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(5),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("s1", PrimitiveType.getShort()), stmt.getOp()));
   }
 
   @Test
@@ -737,7 +732,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
@@ -745,9 +740,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JSubExpr(new Local("$i0", PrimitiveType.getInt()), IntConstant.getInstance(1)),
+              new JSubExpr(new Local("i0", PrimitiveType.getInt()), IntConstant.getInstance(1)),
               stmt.getRightOp());
         });
 
@@ -755,14 +750,14 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getRightOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getOp()));
   }
 
   @Test
@@ -799,7 +794,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l0", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
@@ -807,7 +802,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l1", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
         });
 
@@ -815,18 +810,18 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l2", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l2", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(
               new JOrExpr(
-                  new Local("$l0", PrimitiveType.getLong()),
-                  new Local("$l1", PrimitiveType.getLong())),
+                  new Local("l0", PrimitiveType.getLong()),
+                  new Local("l1", PrimitiveType.getLong())),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$l2", PrimitiveType.getLong()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("l2", PrimitiveType.getLong()), stmt.getOp()));
   }
 
   @Test
@@ -861,7 +856,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
@@ -869,7 +864,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
@@ -877,18 +872,17 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JXorExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getOp()));
   }
 
   @Test
@@ -923,7 +917,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c0", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
@@ -931,7 +925,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c1", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
@@ -939,9 +933,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -949,9 +943,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -959,11 +953,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JAndExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -971,16 +964,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getChar()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$c2", PrimitiveType.getChar()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("c2", PrimitiveType.getChar()), stmt.getOp()));
   }
 
   @Test
@@ -1015,7 +1008,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b0", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
@@ -1023,9 +1016,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1033,9 +1026,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JShlExpr(new Local("$i0", PrimitiveType.getInt()), IntConstant.getInstance(2)),
+              new JShlExpr(new Local("i0", PrimitiveType.getInt()), IntConstant.getInstance(2)),
               stmt.getRightOp());
         });
 
@@ -1043,16 +1036,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b1", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i1", PrimitiveType.getInt()), PrimitiveType.getByte()),
+              new JCastExpr(new Local("i1", PrimitiveType.getInt()), PrimitiveType.getByte()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(5),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("b1", PrimitiveType.getByte()), stmt.getOp()));
   }
 
   @Test
@@ -1087,7 +1080,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s0", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
@@ -1095,7 +1088,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
@@ -1103,9 +1096,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$s0", PrimitiveType.getShort()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("s0", PrimitiveType.getShort()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1113,11 +1106,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JShrExpr(
-                  new Local("$i1", PrimitiveType.getInt()),
-                  new Local("$i0", PrimitiveType.getInt())),
+                  new Local("i1", PrimitiveType.getInt()), new Local("i0", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
@@ -1125,16 +1117,16 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("s1", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$i2", PrimitiveType.getInt()), PrimitiveType.getShort()),
+              new JCastExpr(new Local("i2", PrimitiveType.getInt()), PrimitiveType.getShort()),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(6),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("s1", PrimitiveType.getShort()), stmt.getOp()));
   }
 
   @Test
@@ -1170,7 +1162,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l0", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
@@ -1178,14 +1170,14 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(new JNegExpr(new Local("$l0", PrimitiveType.getLong())), stmt.getRightOp());
+          assertEquiv(new Local("l1", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new JNegExpr(new Local("l0", PrimitiveType.getLong())), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(3),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("l1", PrimitiveType.getLong()), stmt.getOp()));
   }
 
   @Test
@@ -1221,7 +1213,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
@@ -1229,7 +1221,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
@@ -1237,18 +1229,17 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
               new JUshrExpr(
-                  new Local("$i0", PrimitiveType.getInt()),
-                  new Local("$i1", PrimitiveType.getInt())),
+                  new Local("i0", PrimitiveType.getInt()), new Local("i1", PrimitiveType.getInt())),
               stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i2", PrimitiveType.getInt()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("i2", PrimitiveType.getInt()), stmt.getOp()));
   }
 
   @Test
@@ -1284,7 +1275,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
@@ -1292,7 +1283,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
         });
 
@@ -1301,14 +1292,14 @@ public class BinaryOpInstructionConversionTest {
         JIfStmt.class,
         stmt -> {
           assertEquiv(
-              new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
+              new JEqExpr(new Local("z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
               stmt.getTargetStmts(body).get(0),
               JAssignStmt.class,
               target -> {
-                assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
+                assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
                 assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
               });
         });
@@ -1317,8 +1308,8 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getRightOp());
+          assertEquiv(new Local("z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z1", PrimitiveType.getBoolean()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1329,20 +1320,20 @@ public class BinaryOpInstructionConversionTest {
                 stmt.getTargetStmts(body).get(0),
                 JReturnStmt.class,
                 target ->
-                    assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
+                    assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getOp())));
 
     assertInstanceOfSatisfying(
         stmts.get(6),
         JAssignStmt.class,
         target -> {
-          assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
+          assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
           assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z2", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1377,7 +1368,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
@@ -1385,7 +1376,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
         });
 
@@ -1394,15 +1385,15 @@ public class BinaryOpInstructionConversionTest {
         JIfStmt.class,
         stmt -> {
           assertEquiv(
-              new JEqExpr(new Local("$z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
+              new JEqExpr(new Local("z0", PrimitiveType.getBoolean()), IntConstant.getInstance(0)),
               stmt.getCondition());
           // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
               stmt.getTargetStmts(body).get(0),
               JAssignStmt.class,
               target -> {
-                assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-                assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), target.getRightOp());
+                assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
+                assertEquiv(new Local("z1", PrimitiveType.getBoolean()), target.getRightOp());
               });
         });
 
@@ -1410,7 +1401,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(BooleanConstant.getTrue(), stmt.getRightOp());
         });
 
@@ -1422,20 +1413,20 @@ public class BinaryOpInstructionConversionTest {
                 stmt.getTargetStmts(body).get(0),
                 JReturnStmt.class,
                 target ->
-                    assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getOp())));
+                    assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getOp())));
 
     assertInstanceOfSatisfying(
         stmts.get(6),
         JAssignStmt.class,
         target -> {
-          assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-          assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), target.getRightOp());
+          assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
+          assertEquiv(new Local("z1", PrimitiveType.getBoolean()), target.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(7),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z2", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1472,7 +1463,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
@@ -1480,15 +1471,14 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(
-              new JNegExpr(new Local("$z0", PrimitiveType.getBoolean())), stmt.getRightOp());
+          assertEquiv(new Local("z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new JNegExpr(new Local("z0", PrimitiveType.getBoolean())), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(3),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z1", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1525,7 +1515,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
@@ -1533,7 +1523,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
@@ -1541,20 +1531,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JEqExpr.class,
               expr -> {
-                assertEquiv(new Local("$i0", PrimitiveType.getInt()), expr.getOp1());
-                assertEquiv(new Local("$i1", PrimitiveType.getInt()), expr.getOp2());
+                assertEquiv(new Local("i0", PrimitiveType.getInt()), expr.getOp1());
+                assertEquiv(new Local("i1", PrimitiveType.getInt()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1591,7 +1581,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$f0", PrimitiveType.getFloat()), stmt.getLeftOp());
+          assertEquiv(new Local("f0", PrimitiveType.getFloat()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 0), stmt.getRightOp());
         });
 
@@ -1599,7 +1589,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$f1", PrimitiveType.getFloat()), stmt.getLeftOp());
+          assertEquiv(new Local("f1", PrimitiveType.getFloat()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
         });
 
@@ -1607,20 +1597,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JNeExpr.class,
               expr -> {
-                assertEquiv(new Local("$f0", PrimitiveType.getFloat()), expr.getOp1());
-                assertEquiv(new Local("$f1", PrimitiveType.getFloat()), expr.getOp2());
+                assertEquiv(new Local("f0", PrimitiveType.getFloat()), expr.getOp1());
+                assertEquiv(new Local("f1", PrimitiveType.getFloat()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1657,7 +1647,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d0", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
@@ -1665,7 +1655,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$d1", PrimitiveType.getDouble()), stmt.getLeftOp());
+          assertEquiv(new Local("d1", PrimitiveType.getDouble()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
         });
 
@@ -1673,20 +1663,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JGtExpr.class,
               expr -> {
-                assertEquiv(new Local("$d0", PrimitiveType.getDouble()), expr.getOp1());
-                assertEquiv(new Local("$d1", PrimitiveType.getDouble()), expr.getOp2());
+                assertEquiv(new Local("d0", PrimitiveType.getDouble()), expr.getOp1());
+                assertEquiv(new Local("d1", PrimitiveType.getDouble()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1723,7 +1713,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l0", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
@@ -1731,7 +1721,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getLeftOp());
+          assertEquiv(new Local("l1", PrimitiveType.getLong()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
         });
 
@@ -1739,20 +1729,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JLtExpr.class,
               expr -> {
-                assertEquiv(new Local("$l0", PrimitiveType.getLong()), expr.getOp1());
-                assertEquiv(new Local("$l1", PrimitiveType.getLong()), expr.getOp2());
+                assertEquiv(new Local("l0", PrimitiveType.getLong()), expr.getOp1());
+                assertEquiv(new Local("l1", PrimitiveType.getLong()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(4),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1789,7 +1779,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c0", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
@@ -1797,7 +1787,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
+          assertEquiv(new Local("c1", PrimitiveType.getChar()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
@@ -1805,9 +1795,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c0", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1815,9 +1805,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("c1", PrimitiveType.getChar()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1825,20 +1815,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JGeExpr.class,
               expr -> {
-                assertEquiv(new Local("$i0", PrimitiveType.getInt()), expr.getOp1());
-                assertEquiv(new Local("$i1", PrimitiveType.getInt()), expr.getOp2());
+                assertEquiv(new Local("i0", PrimitiveType.getInt()), expr.getOp1());
+                assertEquiv(new Local("i1", PrimitiveType.getInt()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(6),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1875,7 +1865,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b0", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
@@ -1883,7 +1873,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getLeftOp());
+          assertEquiv(new Local("b1", PrimitiveType.getByte()), stmt.getLeftOp());
           assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
         });
 
@@ -1891,9 +1881,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("b0", PrimitiveType.getByte()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1901,9 +1891,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i1", PrimitiveType.getInt()), stmt.getLeftOp());
           assertEquiv(
-              new JCastExpr(new Local("$b1", PrimitiveType.getByte()), PrimitiveType.getInt()),
+              new JCastExpr(new Local("b1", PrimitiveType.getByte()), PrimitiveType.getInt()),
               stmt.getRightOp());
         });
 
@@ -1911,20 +1901,20 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
+          assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JLeExpr.class,
               expr -> {
-                assertEquiv(new Local("$i0", PrimitiveType.getInt()), expr.getOp1());
-                assertEquiv(new Local("$i1", PrimitiveType.getInt()), expr.getOp2());
+                assertEquiv(new Local("i0", PrimitiveType.getInt()), expr.getOp1());
+                assertEquiv(new Local("i1", PrimitiveType.getInt()), expr.getOp2());
               });
         });
 
     assertInstanceOfSatisfying(
         stmts.get(6),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
 
   @Test
@@ -1951,12 +1941,12 @@ public class BinaryOpInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BinaryOperations",
-                "$r1 := @parameter0: java.lang.String",
-                "$r3 = new java.lang.StringBuilder",
-                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
-                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r1)",
-                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-                "return $r2")
+                "r1 := @parameter0: java.lang.String",
+                "r3 = new java.lang.StringBuilder",
+                "specialinvoke r3.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1)",
+                "r2 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return r2")
             .collect(Collectors.toCollection(ArrayList::new));
     assertEquals(expectedStmts, actualStmts);
   }
@@ -1985,12 +1975,12 @@ public class BinaryOpInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BinaryOperations",
-                "$r1 := @parameter0: java.lang.String",
-                "$r3 = new java.lang.StringBuilder",
-                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
-                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
-                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-                "return $r2")
+                "r1 := @parameter0: java.lang.String",
+                "r3 = new java.lang.StringBuilder",
+                "specialinvoke r3.<java.lang.StringBuilder: void <init>(java.lang.String)>(r1)",
+                "r4 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "r2 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return r2")
             .collect(Collectors.toCollection(ArrayList::new));
     assertEquals(expectedStmts, actualStmts);
   }
@@ -2019,13 +2009,13 @@ public class BinaryOpInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BinaryOperations",
-                "$r1 := @parameter0: java.lang.String",
-                "$r2 := @parameter1: java.lang.String",
-                "$r4 = new java.lang.StringBuilder",
-                "specialinvoke $r4.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
-                "$r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r2)",
-                "$r3 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-                "return $r3")
+                "r1 := @parameter0: java.lang.String",
+                "r2 := @parameter1: java.lang.String",
+                "r4 = new java.lang.StringBuilder",
+                "specialinvoke r4.<java.lang.StringBuilder: void <init>(java.lang.String)>(r1)",
+                "r5 = virtualinvoke r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r2)",
+                "r3 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return r3")
             .collect(Collectors.toCollection(ArrayList::new));
     assertEquals(expectedStmts, actualStmts);
   }
@@ -2049,15 +2039,15 @@ public class BinaryOpInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BinaryOperations",
-                "$r2 = new java.lang.StringBuilder",
-                "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
-                "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
-                "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-                "$r5 = new java.lang.StringBuilder",
-                "specialinvoke $r5.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
-                "$r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"efg\")",
-                "$r4 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
-                "return $r4")
+                "r2 = new java.lang.StringBuilder",
+                "specialinvoke r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "r3 = virtualinvoke r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "r1 = virtualinvoke r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "r5 = new java.lang.StringBuilder",
+                "specialinvoke r5.<java.lang.StringBuilder: void <init>(java.lang.String)>(r1)",
+                "r6 = virtualinvoke r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"efg\")",
+                "r4 = virtualinvoke r6.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return r4")
             .collect(Collectors.toCollection(ArrayList::new));
     assertEquals(expectedStmts, actualStmts);
   }

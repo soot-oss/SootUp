@@ -47,7 +47,7 @@ import sootup.core.validation.*;
  *
  * @author Linghui Luo
  */
-public class Body implements Copyable {
+public class Body implements Copyable, HasPosition {
 
   /** The locals for this Body. */
   private final Set<Local> locals;
@@ -70,8 +70,7 @@ public class Body implements Copyable {
           new UsesValidator(),
           new ValuesValidator(),
           new CheckInitValidator(),
-          new CheckTypesValidator(),
-          new CheckVoidLocalesValidator());
+          new CheckTypesValidator());
 
   /**
    * Creates an body which is not associated to any method.
@@ -256,6 +255,7 @@ public class Body implements Copyable {
   }
 
   @Nonnull
+  @Override
   public Position getPosition() {
     return position;
   }
@@ -338,7 +338,7 @@ public class Body implements Copyable {
   }
 
   /** The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern) */
-  public static class BodyBuilder {
+  public static class BodyBuilder implements HasPosition {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
     @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
 
@@ -481,6 +481,7 @@ public class Body implements Copyable {
     }
 
     @Nullable
+    @Override
     public Position getPosition() {
       return position;
     }

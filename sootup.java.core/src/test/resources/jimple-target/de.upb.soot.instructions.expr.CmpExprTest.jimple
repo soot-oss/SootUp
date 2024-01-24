@@ -16,9 +16,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -26,21 +26,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 == 0 goto label1;
+        if b2 == 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -49,9 +49,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -59,21 +59,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 != 0 goto label1;
+        if b2 != 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -82,9 +82,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -92,21 +92,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 >= 0 goto label1;
+        if b2 >= 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -115,9 +115,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -125,21 +125,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 > 0 goto label1;
+        if b2 > 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -148,9 +148,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -158,21 +158,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 <= 0 goto label1;
+        if b2 <= 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }
@@ -181,9 +181,9 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
     {
         de.upb.sootup.instructions.expr.CmpExprTest r0;
         long l0, l1;
-        byte $b2;
-        java.io.PrintStream $r1;
-        boolean $z1;
+        byte b2;
+        java.io.PrintStream r1;
+        boolean z1;
 
         r0 := @this: de.upb.sootup.instructions.expr.CmpExprTest;
 
@@ -191,21 +191,21 @@ public class de.upb.sootup.instructions.expr.CmpExprTest extends java.lang.Objec
 
         l1 := @parameter1: long;
 
-        $b2 = l0 cmp l1;
+        b2 = l0 cmp l1;
 
-        if $b2 < 0 goto label1;
+        if b2 < 0 goto label1;
 
-        $z1 = 1;
+        z1 = 1;
 
         goto label2;
 
      label1:
-        $z1 = 0;
+        z1 = 0;
 
      label2:
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+        virtualinvoke r1.<java.io.PrintStream: void println(boolean)>(z1);
 
         return;
     }

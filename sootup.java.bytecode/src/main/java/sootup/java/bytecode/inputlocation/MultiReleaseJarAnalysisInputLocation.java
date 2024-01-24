@@ -87,12 +87,13 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   /** Discovers all input locations for different java versions in this multi release jar */
   private void discoverInputLocations(@Nullable SourceType srcType) {
-    FileSystem fs = null;
+    FileSystem fs;
     try {
       fs = fileSystemCache.get(path);
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
+
     final Path archiveRoot = fs.getPath("/");
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
 
