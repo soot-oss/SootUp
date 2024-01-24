@@ -11,7 +11,7 @@ import sootup.java.core.views.JavaView;
 
 public class JimplePrintingUtils {
   public void printJimple(String path) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new JavaClassPathAnalysisInputLocation(path));
     JavaView view = new JavaView(inputLocations);
 

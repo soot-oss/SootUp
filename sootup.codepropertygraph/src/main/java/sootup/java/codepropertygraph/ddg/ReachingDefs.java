@@ -1,7 +1,6 @@
 package sootup.java.codepropertygraph.ddg;
 
 import java.util.*;
-import javafx.util.Pair;
 import javax.annotation.Nonnull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
@@ -22,16 +21,16 @@ public class ReachingDefs {
       if (stmt.getUses().size() == 0) continue;
 
       List<Value> usedVars = stmt.getUses();
-      Set<Pair<Value, Stmt>> inset = analysis.getFlowBefore(stmt);
+      Set<VariableDefinition> inset = analysis.getFlowBefore(stmt);
       reachingDefs.put(stmt, new ArrayList<>());
 
-      for (Pair<Value, Stmt> def : inset) {
-        Stmt definingStmt = def.getValue();
-        Value definedVar = def.getKey();
+      for (VariableDefinition def : inset) {
+        Value definedVar = def.getValue();
+        Optional<Stmt> definingStmt = def.getStmt();
 
         for (Value usedVar : usedVars)
-          if (definedVar == usedVar && definingStmt != null && definingStmt != stmt)
-            reachingDefs.get(stmt).add(definingStmt);
+          if (definedVar == usedVar && definingStmt.isPresent() && definingStmt.get() != stmt)
+            reachingDefs.get(stmt).add(definingStmt.get());
       }
     }
   }
@@ -40,7 +39,7 @@ public class ReachingDefs {
     return reachingDefs;
   }
 
-  static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<Pair<Value, Stmt>>> {
+  static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<VariableDefinition>> {
 
     /** Construct the analysis from StmtGraph. */
     public <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
@@ -51,21 +50,21 @@ public class ReachingDefs {
 
     @Nonnull
     @Override
-    protected Set<Pair<Value, Stmt>> newInitialFlow() {
-      Set<Pair<Value, Stmt>> initialValues = new HashSet<>();
+    protected Set<VariableDefinition> newInitialFlow() {
+      Set<VariableDefinition> initialValues = new HashSet<>();
       ArrayList<LValue> defList = new ArrayList<>();
       for (Stmt stmt : graph.getNodes()) {
         defList.addAll(stmt.getDefs());
       }
-      defList.forEach(def -> initialValues.add(new Pair<>(def, null)));
+      defList.forEach(def -> initialValues.add(new VariableDefinition(def, null)));
       return initialValues;
     }
 
     @Override
     protected void merge(
-        @Nonnull Set<Pair<Value, Stmt>> in1,
-        @Nonnull Set<Pair<Value, Stmt>> in2,
-        @Nonnull Set<Pair<Value, Stmt>> out) {
+        @Nonnull Set<VariableDefinition> in1,
+        @Nonnull Set<VariableDefinition> in2,
+        @Nonnull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in1);
       out.addAll(in2);
@@ -73,37 +72,38 @@ public class ReachingDefs {
 
     @Override
     protected void copy(
-        @Nonnull Set<Pair<Value, Stmt>> source, @Nonnull Set<Pair<Value, Stmt>> dest) {
+        @Nonnull Set<VariableDefinition> source, @Nonnull Set<VariableDefinition> dest) {
       dest.clear();
       dest.addAll(source);
     }
 
     @Override
     protected void flowThrough(
-        @Nonnull Set<Pair<Value, Stmt>> in, Stmt d, @Nonnull Set<Pair<Value, Stmt>> out) {
+        @Nonnull Set<VariableDefinition> in, Stmt d, @Nonnull Set<VariableDefinition> out) {
       out.clear();
       out.addAll(in);
       kill(d).forEach(out::remove);
       out.addAll(gen(d));
     }
 
-    private List<Pair<Value, Stmt>> kill(Stmt d) {
+    private List<VariableDefinition> kill(Stmt d) {
       if (d.getDefs().size() == 0) return new ArrayList<>();
 
       LValue definedValue = d.getDefs().get(0);
-      List<Pair<Value, Stmt>> output = new ArrayList<>();
-      output.add(new Pair<>(definedValue, null));
+      List<VariableDefinition> output = new ArrayList<>();
+      output.add(new VariableDefinition(definedValue, null));
 
       for (Stmt stmt : graph) {
-        if (stmt.getDefs().contains(definedValue)) output.add(new Pair<>(definedValue, stmt));
+        if (stmt.getDefs().contains(definedValue))
+          output.add(new VariableDefinition(definedValue, stmt));
       }
       return output;
     }
 
-    private List<Pair<Value, Stmt>> gen(Stmt d) {
+    private List<VariableDefinition> gen(Stmt d) {
       if (d.getDefs().size() == 0) return new ArrayList<>();
 
-      return Collections.singletonList(new Pair<>(d.getDefs().get(0), d));
+      return Collections.singletonList(new VariableDefinition(d.getDefs().get(0), d));
     }
   }
 }
