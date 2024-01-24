@@ -77,12 +77,12 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.FieldModifier;
-import sootup.core.model.SootField;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.*;
 import sootup.java.core.ConstantUtil;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -312,11 +312,12 @@ public class InstructionConverter {
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
-        identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
-    SootField assertionsDisabled =
-        new SootField(
+        identifierFactory.getFieldSignature("assertionsDisabled", cSig, "boolean");
+    JavaSootField assertionsDisabled =
+        new JavaSootField(
             fieldSig,
             EnumSet.of(FieldModifier.FINAL, FieldModifier.STATIC),
+            null,
             NoPositionInformation.getInstance());
 
     converter.addSootField(assertionsDisabled);
@@ -419,9 +420,12 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field =
-            new SootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+        JavaSootField field =
+            new JavaSootField(
+                fieldSig,
+                EnumSet.of(FieldModifier.FINAL),
+                null,
+                NoPositionInformation.getInstance());
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
         // TODO in old jimple this is not supported
@@ -452,9 +456,12 @@ public class InstructionConverter {
         FieldSignature fieldSig =
             identifierFactory.getFieldSignature(
                 "val$" + access.variableName, cSig, type.toString());
-        SootField field =
-            new SootField(
-                fieldSig, EnumSet.of(FieldModifier.FINAL), NoPositionInformation.getInstance());
+        JavaSootField field =
+            new JavaSootField(
+                fieldSig,
+                EnumSet.of(FieldModifier.FINAL),
+                null,
+                NoPositionInformation.getInstance());
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
       } else {

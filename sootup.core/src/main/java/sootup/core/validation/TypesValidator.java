@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 /**
  * Checks whether the types used for locals, method parameters, and method return values are allowed
@@ -32,7 +33,7 @@ import sootup.core.model.Body;
 public class TypesValidator implements BodyValidator {
 
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View view) {
     /*
      * SootMethod methodRef = body.getMethod();
      *
@@ -45,6 +46,7 @@ public class TypesValidator implements BodyValidator {
      * exceptions.add(new ValidationException(l, "Local type not allowed in final code: " + t, "(" + methodRef +
      * ") local type not allowed in final code: " + t + " local: " + l)); } }
      */
+    return null;
   }
 
   @Override

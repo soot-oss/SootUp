@@ -10,7 +10,7 @@ Below, we show how to create a type hierarchy:
 === "SootUp"
 
     ```java
-    List<AnalysisInputLocation<JavaSootClass>> inputLocations = new ArrayList();
+    List<AnalysisInputLocation> inputLocations = new ArrayList();
     inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
 
@@ -46,7 +46,7 @@ All the call graph construction algorithms require an entry method to start with
 === "SootUp"
 
     ```java
-    ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
+    JavaClassType classTypeA = view.getIdentifierFactory().getClassType("A");
 
     MethodSignature entryMethodSignature =
         view.getIdentifierFactory()

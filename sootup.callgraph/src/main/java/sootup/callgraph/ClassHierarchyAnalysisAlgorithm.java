@@ -49,7 +49,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    *
    * @param view it contains the data of the classes and methods
    */
-  public ClassHierarchyAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view) {
     super(view);
   }
 
@@ -120,7 +120,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         .subtypesOf(targetMethodSignature.getDeclClassType())
         .forEach(
             classType -> {
-              SootClass<?> clazz = view.getClass(classType).orElse(null);
+              SootClass clazz = view.getClass(classType).orElse(null);
               if (clazz == null) return;
               // check if method is implemented
               SootMethod method =
@@ -149,7 +149,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void postProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
@@ -158,7 +158,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void preProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {

@@ -47,7 +47,7 @@ public abstract class MinimalSourceTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        AnalysisInputLocation<JavaSootClass> inputLocation =
+        AnalysisInputLocation inputLocation =
             new JavaSourcePathAnalysisInputLocation(
                 baseDir
                     + File.separator

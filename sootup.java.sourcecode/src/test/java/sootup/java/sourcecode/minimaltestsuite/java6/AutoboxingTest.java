@@ -35,11 +35,11 @@ public class AutoboxingTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: Autoboxing",
-            "$i0 = 5",
-            "$i1 = $i0",
-            "$i2 = $i0 + 1",
-            "$i0 = $i2",
-            "$i3 = $i0",
+            "i0 = 5",
+            "i1 = i0",
+            "i2 = i0 + 1",
+            "i0 = i2",
+            "i3 = i0",
             "return")
         .collect(Collectors.toList());
   }

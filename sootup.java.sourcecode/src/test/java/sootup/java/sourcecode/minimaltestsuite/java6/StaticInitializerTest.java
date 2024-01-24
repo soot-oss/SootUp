@@ -28,7 +28,7 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(sootField -> sootField.getName().equals("i") && sootField.isStatic()));
@@ -55,9 +55,9 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmtsOfClinit() {
     return Stream.of(
             "<StaticInitializer: int i> = 5",
-            "$i0 = <StaticInitializer: int i>",
-            "$z0 = $i0 > 4",
-            "if $z0 == 0 goto label1",
+            "i0 = <StaticInitializer: int i>",
+            "z0 = i0 > 4",
+            "if z0 == 0 goto label1",
             "<StaticInitializer: int i> = 4",
             "goto label1",
             "label1:",
@@ -77,9 +77,9 @@ public class StaticInitializerTest extends MinimalSourceTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = <StaticInitializer: int i>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)",
+            "r0 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = <StaticInitializer: int i>",
+            "virtualinvoke r0.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toList());
   }

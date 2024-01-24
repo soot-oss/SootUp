@@ -40,7 +40,7 @@ import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 public class LocalNameStandardizer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     StmtGraph<?> graph = builder.getStmtGraph();
     // Get the order of all Locals' occurrences and store them into a map
@@ -74,11 +74,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
         type = view.getIdentifierFactory().getClassType("java.lang.Object");
       }
 
-      if (local.isFieldLocal()) {
-        newLocal = lgen.generateFieldLocal(type);
-      } else {
-        newLocal = lgen.generateLocal(type);
-      }
+      newLocal = lgen.generateLocal(type);
       builder.replaceLocal(local, newLocal);
     }
   }

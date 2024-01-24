@@ -6,14 +6,14 @@ import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 
 /** Interface for different caching strategies of resolved classes. */
-public interface ClassCache<S extends SootClass<?>> {
+public interface ClassCache {
 
-  S getClass(ClassType classType);
+  SootClass getClass(ClassType classType);
 
   @Nonnull
-  Collection<S> getClasses();
+  Collection<SootClass> getClasses();
 
-  void putClass(ClassType classType, S sootClass);
+  void putClass(ClassType classType, SootClass sootClass);
 
   boolean hasClass(ClassType classType);
 

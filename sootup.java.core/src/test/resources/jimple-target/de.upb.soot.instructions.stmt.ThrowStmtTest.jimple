@@ -15,14 +15,14 @@ public class de.upb.sootup.instructions.stmt.ThrowStmtTest extends java.lang.Obj
     public void throwsth() throws java.lang.Exception
     {
         de.upb.sootup.instructions.stmt.ThrowStmtTest r0;
-        java.lang.Exception $r1;
+        java.lang.Exception r1;
 
         r0 := @this: de.upb.sootup.instructions.stmt.ThrowStmtTest;
 
-        $r1 = new java.lang.Exception;
+        r1 = new java.lang.Exception;
 
-        specialinvoke $r1.<java.lang.Exception: void <init>(java.lang.String)>("Banana");
+        specialinvoke r1.<java.lang.Exception: void <init>(java.lang.String)>("Banana");
 
-        throw $r1;
+        throw r1;
     }
 }

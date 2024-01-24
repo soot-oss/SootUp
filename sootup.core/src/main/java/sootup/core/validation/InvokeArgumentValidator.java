@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 /**
  * A basic validator that checks whether the length of the invoke statement's argument list matches
@@ -34,13 +35,14 @@ import sootup.core.model.Body;
 public class InvokeArgumentValidator implements BodyValidator {
 
   @Override
-  public void validate(Body body, List<ValidationException> exceptions) {
+  public List<ValidationException> validate(Body body, View view) {
     // TODO: check copied code from old soot
     /*
      * for (Unit u : body.getUnits()) { Stmt s = (Stmt) u; if (s.containsInvokeExpr()) { InvokeExpr iinvExpr =
      * s.getInvokeExpr(); SootMethod callee = iinvExpr.getMethod(); if (callee != null && iinvExpr.getArgCount() !=
      * callee.getParameterCount()) { exceptions.add(new ValidationException(s, "Invalid number of arguments")); } } }
      */
+    return null;
   }
 
   @Override

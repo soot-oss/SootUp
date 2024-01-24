@@ -21,10 +21,13 @@ package sootup.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -52,6 +55,13 @@ class Operand {
   @Nonnull private final StmtPositionInfo positionInfo;
 
   /**
+   * All trap handlers (catch blocks) that were active at the instruction where the operand was
+   * created. This is important because when the operand is used, the active trap handlers might
+   * differ, in which case the operand can't be inlined into its usage.
+   */
+  private final Set<TryCatchBlockNode> activeTrapHandlers;
+
+  /**
    * Constructs a new stack operand.
    *
    * @param insn the instruction that produced this operand.
@@ -63,6 +73,8 @@ class Operand {
     this.value = value;
     this.methodSource = methodSource;
     this.positionInfo = methodSource == null ? null : methodSource.getStmtPositionInfo();
+    this.activeTrapHandlers =
+        methodSource == null ? new HashSet<>() : new HashSet<>(methodSource.activeTrapHandlers);
   }
 
   Local getOrAssignValueToStackLocal() {
@@ -131,7 +143,12 @@ class Operand {
   }
 
   Immediate toImmediate() {
-    if (stackLocal == null && value instanceof Immediate) {
+    // Don't inline when the trap handlers (catch blocks) change between the operand and the usage.
+    // Even though immediates are just locals or constants,
+    // the corresponding instructions could still throw a `VirtualMachineError`.
+    boolean matchingTrapHandlers = this.activeTrapHandlers.equals(methodSource.activeTrapHandlers);
+
+    if (stackLocal == null && value instanceof Immediate && matchingTrapHandlers) {
       return (Immediate) value;
     }
 

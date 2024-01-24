@@ -24,12 +24,19 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class StmtsValidator implements BodyValidator {
 
-  /** Verifies that the Units of this Body all point to a Unit contained within this body. */
+  /**
+   * Verifies that the Units of this Body all point to a Unit contained within this body.
+   *
+   * @return
+   */
   @Override
-  public void validate(Body body, List<ValidationException> exception) {}
+  public List<ValidationException> validate(Body body, View view) {
+    return null;
+  }
 
   @Override
   public boolean isBasicValidator() {

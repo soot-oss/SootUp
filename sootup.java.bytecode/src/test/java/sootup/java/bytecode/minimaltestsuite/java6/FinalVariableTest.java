@@ -35,7 +35,7 @@ public class FinalVariableTest extends MinimalBytecodeTestSuiteBase {
   // needs a use like in sout
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("$l0 := @this: FinalVariable", "return").collect(Collectors.toList());
+    return Stream.of("l0 := @this: FinalVariable", "return").collect(Collectors.toList());
   }
 
   @Test

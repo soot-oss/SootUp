@@ -2,6 +2,7 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,8 +24,8 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -157,8 +158,7 @@ public class AggregatorTest {
     //     String classPath =
     // "../sootup.tests/src/test/resources/bugs/664_struce-compiled/org/apache";
     String classPath = "../sootup.tests/src/test/resources/interceptor/";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath);
+    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(classPath);
 
     JavaView view = new JavaView(inputLocation);
     {
@@ -180,9 +180,9 @@ public class AggregatorTest {
   @Test
   public void testIssue739() {
 
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            "../shared-test-resources/bugfixes/Issue739_Aggregator.class",
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             SourceType.Application,
             BytecodeClassLoadingOptions.Default.getBodyInterceptors());
 

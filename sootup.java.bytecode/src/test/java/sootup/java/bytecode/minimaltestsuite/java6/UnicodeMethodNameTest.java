@@ -36,8 +36,8 @@ public class UnicodeMethodNameTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: αρετη",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"this is αρετη class\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"this is αρετη class\")",
             "return")
         .collect(Collectors.toList());
   }

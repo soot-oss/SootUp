@@ -33,12 +33,12 @@ public class DoWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: DoWhileLoop",
-            "$l1 = 10",
-            "$l2 = 0",
+            "l0 := @this: DoWhileLoop",
+            "l1 = 10",
+            "l2 = 0",
             "label1:",
-            "$l2 = $l2 + 1",
-            "if $l1 > $l2 goto label1",
+            "l2 = l2 + 1",
+            "if l1 > l2 goto label1",
             "return")
         .collect(Collectors.toList());
   }

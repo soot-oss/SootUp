@@ -35,6 +35,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
@@ -186,7 +187,7 @@ public class ViewTypeHierarchyTest {
 
   @Test
   public void addType() {
-    IdentifierFactory factory = view.getIdentifierFactory();
+    JavaIdentifierFactory factory = view.getIdentifierFactory();
     OverridingJavaClassSource classSource =
         new OverridingJavaClassSource(
             analysisInputLocation,

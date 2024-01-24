@@ -7,7 +7,7 @@ class InnerClass$WhatsThat extends java.lang.Object
     {
         InnerClass$WhatsThat r0;
         InnerClass r1;
-        int $i0;
+        int i0;
 
         r0 := @this: InnerClass$WhatsThat;
 
@@ -19,9 +19,9 @@ class InnerClass$WhatsThat extends java.lang.Object
 
         r0.<InnerClass$WhatsThat: int otherValue> = 3;
 
-        $i0 = r0.<InnerClass$WhatsThat: int otherValue>;
+        i0 = r0.<InnerClass$WhatsThat: int otherValue>;
 
-        virtualinvoke r1.<InnerClass: int fromInner2(int)>($i0);
+        virtualinvoke r1.<InnerClass: int fromInner2(int)>(i0);
 
         return;
     }

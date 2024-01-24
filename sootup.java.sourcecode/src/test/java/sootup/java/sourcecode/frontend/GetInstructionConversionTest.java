@@ -77,7 +77,7 @@ public class GetInstructionConversionTest {
         stmts.get(1),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JInstanceFieldRef.class,
@@ -99,6 +99,6 @@ public class GetInstructionConversionTest {
     assertInstanceOfSatisfying(
         stmts.get(2),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("i0", PrimitiveType.getInt()), stmt.getOp()));
   }
 }

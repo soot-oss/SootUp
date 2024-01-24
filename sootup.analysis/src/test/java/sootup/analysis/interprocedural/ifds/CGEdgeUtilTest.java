@@ -45,7 +45,6 @@ import sootup.core.types.Type;
 import sootup.core.util.printer.StmtPrinter;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -136,7 +135,7 @@ public class CGEdgeUtilTest {
       fail("The rt.jar is not available after Java 8. You are using version " + version);
     }
 
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaSourcePathAnalysisInputLocation("src/test/resources/callgraph/"));
 
@@ -148,7 +147,7 @@ public class CGEdgeUtilTest {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);

@@ -27,27 +27,27 @@ class javaonepointfive.MyGeneric extends java.lang.Object
     public java.lang.Object doFoo()
     {
         javaonepointfive.MyGeneric r0;
-        javaonepointfive.IGeneric $r1;
-        java.lang.Object $r2;
+        javaonepointfive.IGeneric r1;
+        java.lang.Object r2;
 
         r0 := @this: javaonepointfive.MyGeneric;
 
-        $r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
+        r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
 
-        $r2 = interfaceinvoke $r1.<javaonepointfive.IGeneric: java.lang.Object foo()>();
+        r2 = interfaceinvoke r1.<javaonepointfive.IGeneric: java.lang.Object foo()>();
 
-        return $r2;
+        return r2;
     }
 
     public javaonepointfive.IGeneric getB()
     {
         javaonepointfive.MyGeneric r0;
-        javaonepointfive.IGeneric $r1;
+        javaonepointfive.IGeneric r1;
 
         r0 := @this: javaonepointfive.MyGeneric;
 
-        $r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
+        r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
 
-        return $r1;
+        return r1;
     }
 }

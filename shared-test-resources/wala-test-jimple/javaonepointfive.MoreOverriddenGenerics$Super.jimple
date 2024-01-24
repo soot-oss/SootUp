@@ -22,12 +22,12 @@ class javaonepointfive.MoreOverriddenGenerics$Super extends java.lang.Object
     public java.lang.Object get()
     {
         javaonepointfive.MoreOverriddenGenerics$Super r0;
-        java.lang.Object $r1;
+        java.lang.Object r1;
 
         r0 := @this: javaonepointfive.MoreOverriddenGenerics$Super;
 
-        $r1 = r0.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object x>;
+        r1 = r0.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object x>;
 
-        return $r1;
+        return r1;
     }
 }
