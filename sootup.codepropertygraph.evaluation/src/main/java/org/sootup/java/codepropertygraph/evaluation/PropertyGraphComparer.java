@@ -56,5 +56,4 @@ public class PropertyGraphComparer {
       return null;
     }
   }
-
 }
