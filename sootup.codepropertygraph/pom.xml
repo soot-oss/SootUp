@@ -10,7 +10,7 @@
     <artifactId>sootup.codepropertygraph</artifactId>
     <packaging>jar</packaging>
 
-    <name>sootup.codepropertygraph</name>
+    <name>SootUp Code Property Graph</name>
     <url>http://maven.apache.org</url>
 
     <properties>
