@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -63,25 +62,25 @@ import sootup.java.core.types.JavaClassType;
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
 public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
-  protected final SourceType sourceType;
-  protected final List<BodyInterceptor> bodyInterceptors;
-  protected Path path;
-  protected Collection<Path> ignoredPaths = new ArrayList<>();
+  @Nonnull protected Path path;
+  @Nonnull protected Collection<Path> ignoredPaths;
+  @Nonnull protected final SourceType sourceType;
+  @Nonnull protected final List<BodyInterceptor> bodyInterceptors;
 
-  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
       @Nonnull Path path,
-      @Nullable SourceType srcType,
+      @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this(path, srcType, bodyInterceptors, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
       @Nonnull Path path,
-      @Nullable SourceType srcType,
+      @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors,
       @Nonnull Collection<Path> ignoredPaths) {
     this.path = path;
@@ -400,7 +399,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
      *
      * @param warFilePath The path to war file to be extracted
      */
-    protected void extractWarFile(Path warFilePath, final Path destDirectory) {
+    void extractWarFile(Path warFilePath, final Path destDirectory) {
       int extractedSize = 0;
       try {
         File dest = destDirectory.toFile();

@@ -69,11 +69,14 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
       @Nonnull SourceType srcType,
       @Nonnull Language language,
       List<BodyInterceptor> bodyInterceptors) {
+
     if (isMultiReleaseJar(path)) {
       return new MultiReleaseJarAnalysisInputLocation(
           path, srcType, language, bodyInterceptors, true);
     }
-    return createAnalysisInputLocation(path, srcType, bodyInterceptors);
+
+    return PathBasedAnalysisInputLocation.create(
+        path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META_INF")));
   }
 
   public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
@@ -145,7 +148,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     }
   }
 
-  protected static AnalysisInputLocation createAnalysisInputLocation(
+  protected AnalysisInputLocation createAnalysisInputLocation(
       Path archiveRoot, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
     return PathBasedAnalysisInputLocation.create(
         archiveRoot,

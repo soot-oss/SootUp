@@ -161,5 +161,4 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
     Assert.assertTrue(languageVersions.contains(9));
     Assert.assertTrue(languageVersions.contains(10));
   }
-
 }
