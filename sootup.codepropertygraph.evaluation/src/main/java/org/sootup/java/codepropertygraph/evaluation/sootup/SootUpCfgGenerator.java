@@ -40,7 +40,7 @@ public class SootUpCfgGenerator {
   }
 
   public void generateCFG(String jarFilePath, String outputDirectory) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new JavaClassPathAnalysisInputLocation(jarFilePath));
 
     JavaView view = new JavaView(inputLocations);
