@@ -2,7 +2,6 @@ package sootup.java.codepropertygraph;
 
 import java.util.List;
 import java.util.Set;
-
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;

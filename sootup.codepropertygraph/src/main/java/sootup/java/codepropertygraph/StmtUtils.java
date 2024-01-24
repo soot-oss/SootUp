@@ -5,7 +5,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 
 public class StmtUtils {
-   public static String getStmtSource(Stmt currStmt, Body body) {
+  public static String getStmtSource(Stmt currStmt, Body body) {
 
     if (currStmt.getClass().getSimpleName().equals("JGotoStmt")) {
       JGotoStmt stmt = (JGotoStmt) currStmt;

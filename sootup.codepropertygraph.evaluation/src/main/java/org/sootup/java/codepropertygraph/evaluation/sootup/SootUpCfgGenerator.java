@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -78,15 +79,16 @@ public class SootUpCfgGenerator {
             "("
                 + method.getParameterTypes().stream()
                     .map(Object::toString)
-                    .collect(Collectors.joining(", "))
+                    .collect(Collectors.joining(","))
                 + ")";
 
         String merged = part1 + "." + part2 + ":" + part3 + part4;
 
-        //methodNames.add(method.getSignature().toString());
+        // methodNames.add(method.getSignature().toString());
         methodNames.add(merged);
       }
     }
+    Collections.sort(methodNames);
 
     // Create the output folder if it doesn't exist
     File folder = file.getParentFile();

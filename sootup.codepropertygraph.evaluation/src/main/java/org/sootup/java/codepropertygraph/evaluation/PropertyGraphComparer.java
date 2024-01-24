@@ -2,29 +2,48 @@ package org.sootup.java.codepropertygraph.evaluation;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import sootup.java.core.JavaIdentifierFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import com.google.gson.GsonBuilder;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class PropertyGraphComparer {
-  private int numberOfDifferentMethods;
 
   public PropertyGraphComparer(String joernOutputDirectory, String sootUpOutputDirectory) {
 
-    File joernMethodNamesFile = new File(String.format("%s/methodNames.json", joernOutputDirectory));
-    File sootUpMethodNamesFile = new File(String.format("%s/methodNames.json", sootUpOutputDirectory));
+    File joernMethodNamesFile =
+        new File(String.format("%s/methodNames.json", joernOutputDirectory));
+    File sootUpMethodNamesFile =
+        new File(String.format("%s/methodNames.json", sootUpOutputDirectory));
 
-    List<String> joernMethodNames = readJsonFile(joernMethodNamesFile, new TypeToken<ArrayList<String>>(){}.getType());
-    List<String> sootUpMethodNames = readJsonFile(sootUpMethodNamesFile, new TypeToken<ArrayList<String>>(){}.getType());
+    List<String> joernMethodNames =
+        readJsonFile(joernMethodNamesFile, new TypeToken<ArrayList<String>>() {}.getType());
+    List<String> sootUpMethodNames =
+        readJsonFile(sootUpMethodNamesFile, new TypeToken<ArrayList<String>>() {}.getType());
 
-    joernMethodNames.forEach(a -> System.out.println("-- " + a));
-    sootUpMethodNames.forEach(a -> System.out.println("## " + a));
+    // joernMethodNames.forEach(a -> System.out.println("-- " + a));
+    // sootUpMethodNames.forEach(a -> System.out.println("## " + a));
+
+    // Todo: Remove this section
+    Collections.sort(joernMethodNames);
+    Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    try (BufferedWriter writer =
+        new BufferedWriter(
+            new OutputStreamWriter(
+                Files.newOutputStream(joernMethodNamesFile.toPath()), StandardCharsets.UTF_8))) {
+      gson.toJson(joernMethodNames, writer);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    if (!new HashSet<>(joernMethodNames).containsAll(sootUpMethodNames)) {
+      System.out.println("names are matching");
+    } else throw new RuntimeException("UNEXPECTED!");
   }
 
   private static <T> ArrayList<T> readJsonFile(File file, Type listType) {
@@ -38,7 +57,4 @@ public class PropertyGraphComparer {
     }
   }
 
-  public int getNumberOfDifferentMethods() {
-    return numberOfDifferentMethods;
-  }
 }

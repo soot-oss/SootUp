@@ -3,12 +3,11 @@ package sootup.java.codepropertygraph.propertygraph;
 import java.util.Objects;
 
 class PropertyGraphEdge {
-  private PropertyGraphNode source;
-  private PropertyGraphNode destination;
-  private String label;
+  private final PropertyGraphNode source;
+  private final PropertyGraphNode destination;
+  private final String label;
 
-  public PropertyGraphEdge(
-      PropertyGraphNode source, PropertyGraphNode destination, String label) {
+  public PropertyGraphEdge(PropertyGraphNode source, PropertyGraphNode destination, String label) {
     this.source = source;
     this.destination = destination;
     this.label = label;
@@ -31,7 +30,9 @@ class PropertyGraphEdge {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     PropertyGraphEdge that = (PropertyGraphEdge) o;
-    return Objects.equals(source, that.source) && Objects.equals(destination, that.destination) && Objects.equals(label, that.label);
+    return Objects.equals(source, that.source)
+        && Objects.equals(destination, that.destination)
+        && Objects.equals(label, that.label);
   }
 
   @Override

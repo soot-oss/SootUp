@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -30,12 +29,11 @@ public class CpgTestSuiteBase {
     List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
     inputLocations.add(new JavaClassPathAnalysisInputLocation(MINIMAL_TEST_SUITE_DIR));
 
-    minimalTsView =
-            new JavaView(inputLocations);
+    minimalTsView = new JavaView(inputLocations);
 
     String TEST_RESOURCES_DIR = "src/test/resources";
     testResourcesView =
-            new JimpleView(new JimpleAnalysisInputLocation(Paths.get(TEST_RESOURCES_DIR)));
+        new JimpleView(new JimpleAnalysisInputLocation(Paths.get(TEST_RESOURCES_DIR)));
   }
 
   protected Optional<? extends SootMethod> getMinimalTestSuiteMethod(String methodName) {

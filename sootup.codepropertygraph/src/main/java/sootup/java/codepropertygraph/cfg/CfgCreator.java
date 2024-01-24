@@ -22,12 +22,12 @@ public class CfgCreator {
                       Body body = methodInfo.getBody();
                       StmtPropertyGraphNode sourceNode =
                           new StmtPropertyGraphNode(
-                                  StmtUtils.getStmtSource(currStmt, body),
+                              StmtUtils.getStmtSource(currStmt, body),
                               NodeType.STMT,
                               currStmt.getPositionInfo());
                       StmtPropertyGraphNode destinationNode =
                           new StmtPropertyGraphNode(
-                                  StmtUtils.getStmtSource(successor, body),
+                              StmtUtils.getStmtSource(successor, body),
                               NodeType.STMT,
                               successor.getPositionInfo());
                       cfgGraph.addEdge(sourceNode, destinationNode, "CFG");
