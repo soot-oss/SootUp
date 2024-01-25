@@ -1,108 +1,63 @@
 package org.sootup.java.codepropertygraph.evaluation.sootup;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
+import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.codepropertygraph.MethodInfo;
 import sootup.java.codepropertygraph.cfg.CfgCreator;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootMethod;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraphEdge;
+import sootup.java.codepropertygraph.propertygraph.PropertyGraphNode;
 import sootup.java.core.views.JavaView;
 
 public class SootUpCfgGenerator {
+  private final Map<String, SootMethod> methods = new HashMap<>();
 
-  private static int counter = 0;
-
-  private static void writeToFile(String outputDirectory, String dotGraph, String graphType) {
-    File file =
-        new File(String.format("%s/%d-%s.dot", outputDirectory, counter, graphType.toLowerCase()));
-
-    // Create the output folder if it doesn't exist
-    File folder = file.getParentFile();
-    if (folder != null && !folder.exists()) {
-      folder.mkdirs();
-    }
-
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.write(dotGraph);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void generateCFG(String jarFilePath, String outputDirectory) {
+  public SootUpCfgGenerator(String sourceCodeDirPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new JavaClassPathAnalysisInputLocation(jarFilePath));
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(sourceCodeDirPath));
+    View view = new JavaView(inputLocations);
 
-    JavaView view = new JavaView(inputLocations);
-
-    for (JavaSootClass cl : view.getClasses()) {
-      System.out.printf("[%s]%n", cl.getName());
-      for (JavaSootMethod method : cl.getMethods()) {
-        try {
-          PropertyGraph graph =
-              CfgCreator.convert(new MethodInfo(view.getMethod(method.getSignature()).get()));
-          writeToFile(outputDirectory, graph.toDotGraph("CFG"), "CFG");
-        } catch (Exception e) {
-          String methodType = method.isAbstract() ? "abstract" : "";
-          System.out.printf(
-              "Failed for %s method: %s%n",
-              methodType, method.getSignature().getSubSignature().getName());
-        }
-        counter++;
-      }
-      if (counter > 100) break; // Todo: Remove this stmt
-    }
-
-    writeMethodNamesFile(outputDirectory, view);
+    view.getClasses()
+        .forEach(cl -> cl.getMethods().forEach(m -> methods.put(getMethodSignatureAsJoern(m), m)));
   }
 
-  private void writeMethodNamesFile(String outputDirectory, JavaView view) {
-    File file = new File(String.format("%s/methodNames.json", outputDirectory));
+  public List<SootMethod> getMethods() {
+    return new ArrayList<>(methods.values());
+  }
 
-    ArrayList<String> methodNames = new ArrayList<>();
-    for (JavaSootClass cl : view.getClasses()) {
-      for (JavaSootMethod method : cl.getMethods()) {
-        String part1 = cl.getClassSource().getClassType().getFullyQualifiedName();
-        String part2 = method.getName();
-        String part3 = method.getReturnType().toString();
-        String part4 =
-            "("
-                + method.getParameterTypes().stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining(","))
-                + ")";
+  public PropertyGraph getCfg(SootMethod method) {
+    return CfgCreator.convert(new MethodInfo(method));
+  }
 
-        String merged = part1 + "." + part2 + ":" + part3 + part4;
+  public List<PropertyGraphEdge> getGraphEdges(PropertyGraph graph) {
+    return graph.getEdges();
+  }
 
-        // methodNames.add(method.getSignature().toString());
-        methodNames.add(merged);
-      }
-    }
-    Collections.sort(methodNames);
+  public List<PropertyGraphNode> getGraphVertices(PropertyGraph graph) {
+    return graph.getNodes();
+  }
 
-    // Create the output folder if it doesn't exist
-    File folder = file.getParentFile();
-    if (folder != null && !folder.exists()) {
-      folder.mkdirs();
-    }
+  public String getMethodSignatureAsJoern(SootMethod method) {
+    ClassType declaringClassType = method.getDeclaringClassType();
+    String className = declaringClassType.getFullyQualifiedName();
+    String methodName = method.getName();
+    String methodReturnType = method.getReturnType().toString();
+    String methodParams =
+        String.format(
+            "(%s)",
+            method.getParameterTypes().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(",")));
 
-    Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    try (BufferedWriter writer =
-        new BufferedWriter(
-            new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
-      gson.toJson(methodNames, writer);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    return String.format("%s.%s:%s%s", className, methodName, methodReturnType, methodParams);
   }
 }

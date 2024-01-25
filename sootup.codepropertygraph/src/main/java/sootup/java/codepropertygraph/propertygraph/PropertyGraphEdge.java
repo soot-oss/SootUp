@@ -2,7 +2,7 @@ package sootup.java.codepropertygraph.propertygraph;
 
 import java.util.Objects;
 
-class PropertyGraphEdge {
+public class PropertyGraphEdge {
   private final PropertyGraphNode source;
   private final PropertyGraphNode destination;
   private final String label;

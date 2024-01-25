@@ -20,11 +20,6 @@ public class StmtPropertyGraphNode extends PropertyGraphNode {
     if (!super.equals(o)) return false;
     if (getClass() != o.getClass()) return false;
     StmtPropertyGraphNode that = (StmtPropertyGraphNode) o;
-    return Objects.equals(positionInfo, that.positionInfo);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), positionInfo);
+    return positionInfo.getStmtPosition().compareTo(that.positionInfo.getStmtPosition()) == 0;
   }
 }
