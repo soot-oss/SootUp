@@ -523,12 +523,12 @@ public class DexBody {
       // if the try block ends on the last instruction of the body, add a
       // nop instruction so Soot can include
       // the last instruction in the try block.
-      if (stmtList.get(stmtList.size() - 1) == endStmt
-          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-        insertAfter(nop, endStmt);
-        endStmt = nop;
-      }
+//      if (stmtList.get(stmtList.size() - 1) == endStmt
+//          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
+//        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+//        insertAfter(endStmt, endStmt);
+//        endStmt = nop;
+//      }
 
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {

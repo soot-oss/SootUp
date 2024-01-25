@@ -93,8 +93,12 @@ public class LocalGenerator {
       type.accept(ns);
       localCandidate = Jimple.newLocal(name.toString(), type);
     }
-
-    locals.add(localCandidate);
+    try{
+      locals.add(localCandidate);
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
     return localCandidate;
   }
 

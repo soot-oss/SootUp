@@ -6,6 +6,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.java.core.interceptors.*;
 import sootup.java.core.interceptors.Dex.DexNullTransformer;
 import sootup.java.core.interceptors.Dex.DexNumberTranformer;
+import sootup.java.core.interceptors.Dex.DexTrapStackTransformer;
 
 public enum DexBodyInterceptors {
   Default(
@@ -20,6 +21,7 @@ public enum DexBodyInterceptors {
 //      new ConditionalBranchFolder(),
 //      new EmptySwitchEliminator(),
 //      new LocalNameStandardizer()
+//      new DexTrapStackTransformer(),
       new DexNumberTranformer(),
       new DexNullTransformer());
 

@@ -111,41 +111,43 @@ public class ApkToDexTest {
   @Test
   public void loadAllClasses() {
     long startTime = System.currentTimeMillis();
-//    Path path = Paths.get("/Users/palaniappanmuthuraman/Desktop/APK's");
     Path path = Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/droidbench_apks");
+//    Path path = Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/taintbench_apks");
     File dir = new File(path.toString());
     File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".apk"));
     List<String> failedApks = new ArrayList<>();
     assert files != null;
-//    for (File child : files) {
-//      String name = child.getName();
-      String name = "PlayStore2.apk";
+    for (File child : files) {
+      String name = child.getName();
+//      String name = "FieldSourceTest.apk";
+//      String name = "PlayStore2.apk";
       String apk_path = path + "/" + name;
       SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
       ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
               new ApkAnalysisInputLocation<>(
-                      Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
+                      Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms",DexClassLoadingOptions.Default.getBodyInterceptors());
       JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
       Collection<JavaSootClass> classes;
       try{
-//        System.out.println("Loading Apk: " + name);
-//        classes = view.getClasses();
-        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.google.android.gms.ads.identifier.AdvertisingIdClient: com.google.android.gms.ads.identifier.AdvertisingIdClient$Info AdvertisingIdClient()>"));
+        System.out.println("Loading Apk: " + name);
+        classes = view.getClasses();
+//        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.google.android.vending.expansion.downloader.impl.a: void a()>"));
+//        System.out.println("Loaded the method <com.google.android.vending.expansion.downloader.impl.a: void a()>");
+//        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.google.android.gms.ads.identifier.AdvertisingIdClient: com.google.android.gms.ads.identifier.AdvertisingIdClient$Info AdvertisingIdClient()>"));
 //        System.out.println("Loaded the classes in " + name  + " and there are total " + view.getNumberOfStoredClasses() + " classes.");
-//        classes.forEach(JavaSootClass::getMethods);
+        classes.forEach(JavaSootClass::getMethods);
       }
       catch (Exception exception){
         exception.printStackTrace();
         failedApks.add(name);
-//        System.out.println("Failed to convert the " + name +  " which has " + view.getNumberOfStoredClasses());
+        System.out.println("Failed to convert the " + name +  " which has " + view.getNumberOfStoredClasses());
       }
-      finally {
+//      finally {
 //        System.out.println(
 //                "Time Taken to load " + view.getNumberOfStoredClasses() +  " classes: "
 //                        + dateFormat.format(System.currentTimeMillis() - startTime));
-      }
-//      assertEquals(740, view.getNumberOfStoredClasses());
-//    }
+//      }
+    }
     System.out.println(files.length - failedApks.size() + " passed out of " + files.length);
     System.out.println(failedApks);
   }

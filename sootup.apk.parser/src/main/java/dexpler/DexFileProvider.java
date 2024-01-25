@@ -155,13 +155,12 @@ public class DexFileProvider {
       String entryName = entryNameIterator.previous();
       MultiDexContainer.DexEntry<? extends DexFile> entry = dexContainer.getEntry(entryName);
       entryName = deriveDexName(entryName);
-      logger.info(
-          ""
-              + String.format(
-                  "Found dex file '%s' with %d classes in '%s'",
-                  entryName,
-                  entry.getDexFile().getClasses().size(),
-                  dexSourceFile.getCanonicalPath()));
+      logger.debug(
+              String.format(
+                      "Found dex file '%s' with %d classes in '%s'",
+                      entryName,
+                      entry.getDexFile().getClasses().size(),
+                      dexSourceFile.getCanonicalPath()));
 
       if (multiple_dex) {
         dexMap.put(entryName, new DexContainer<>(entry, entryName, dexSourceFile));
