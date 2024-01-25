@@ -84,7 +84,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @Nonnull List<BodyInterceptor> bodyInterceptors,
       @Nonnull Collection<Path> ignoredPaths) {
     this.path = path;
-    this.ignoredPaths = ignoredPaths;
+    this.ignoredPaths = ignoredPaths.stream().map(Path::toAbsolutePath).collect(Collectors.toCollection(HashSet::new));
     this.sourceType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
@@ -155,7 +155,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     try (final Stream<Path> walk = Files.walk(dirPath)) {
       return walk.filter(
               filePath ->
-                  ignoredPaths.stream().noneMatch(filePath::startsWith)
+                 ignoredPaths.stream().map(Path::toString).noneMatch(p -> filePath.toString().startsWith(p))
                       && PathUtils.hasExtension(filePath, handledFileType)
                       && !filePath.toString().endsWith(moduleInfoFilename))
           .flatMap(
