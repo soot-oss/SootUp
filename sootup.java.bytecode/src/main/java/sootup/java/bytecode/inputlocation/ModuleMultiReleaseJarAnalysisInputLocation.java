@@ -48,6 +48,54 @@ public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarA
       @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
     super(path, srcType, language);
 
+
+    /*
+
+
+
+        // only versions >= 9 support java modules
+        if (availableVersions[i] > 8) {
+          moduleInfoMap.put(availableVersions[i], new HashMap<>());
+          try (DirectoryStream<Path> stream = Files.newDirectoryStream(versionRoot)) {
+            for (Path entry : stream) {
+
+              Path mi = path.resolve(moduleInfoFilename);
+
+              if (Files.exists(mi)) {
+                JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+                ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
+                JavaModulePathAnalysisInputLocation inputLocation =
+                    new JavaModulePathAnalysisInputLocation(
+                        versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
+
+                inputLocations.get(availableVersions[i]).add(inputLocation);
+                moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
+              }
+
+              if (Files.isDirectory(entry)) {
+                mi = versionRoot.resolve(moduleInfoFilename);
+
+                if (Files.exists(mi)) {
+                  JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
+                  ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
+                  JavaModulePathAnalysisInputLocation inputLocation =
+                      new JavaModulePathAnalysisInputLocation(
+                          versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
+
+                  inputLocations.get(availableVersions[i]).add(inputLocation);
+                  moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
+                }
+                // else TODO [bh] can we have automatic modules here?
+              }
+            }
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+
+
+     */
+
     throw new UnsupportedOperationException("not fully implemented, yet!");
   }
 
