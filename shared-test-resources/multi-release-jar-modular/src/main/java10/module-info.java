@@ -1,3 +1,3 @@
 module multirelease {
-exports multirelease;
+    exports de.upb.sse.multirelease;
 }
