@@ -22,10 +22,7 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.cache.ClassCache;
@@ -39,7 +36,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.AnnotationType;
 
 /**
@@ -50,6 +46,7 @@ import sootup.java.core.types.AnnotationType;
  * @author Jan Martin Persch
  */
 public class JavaView extends AbstractView {
+  @Nonnull protected final JavaIdentifierFactory identifierFactory;
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
   @Nonnull protected final ClassCache cache;
@@ -67,15 +64,39 @@ public class JavaView extends AbstractView {
   public JavaView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull ClassCacheProvider cacheProvider) {
+    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
+  }
+
+  protected JavaView(
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider,
+      @Nonnull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
+    this.identifierFactory = idf;
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
-    return resolveAll();
+    if (isFullyResolved && cache instanceof FullCache) {
+      return cache.getClasses().stream()
+          .map(clazz -> (JavaSootClass) clazz)
+          .collect(Collectors.toList());
+    }
+
+    Collection<JavaSootClass> resolvedClasses =
+        inputLocations.stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    isFullyResolved = true;
+
+    return resolvedClasses;
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
@@ -87,7 +108,7 @@ public class JavaView extends AbstractView {
       return Optional.of(cachedClass);
     }
 
-    Optional<JavaSootClassSource> abstractClass = getAbstractClass(type);
+    Optional<JavaSootClassSource> abstractClass = getClassSource(type);
     return abstractClass.flatMap(this::buildClassFrom);
   }
 
@@ -95,36 +116,37 @@ public class JavaView extends AbstractView {
   @Nonnull
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
     final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
-      return Optional.empty();
+    if (aClass.isPresent()) {
+      return aClass.get().getMethod(signature.getSubSignature());
     }
-    return aClass.get().getMethod(signature.getSubSignature());
+    return Optional.empty();
   }
 
   @Override
   @Nonnull
   public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
     final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-    if (!aClass.isPresent()) {
-      return Optional.empty();
+    if (aClass.isPresent()) {
+      return aClass.get().getField(signature.getSubSignature());
     }
-    return aClass.get().getField(signature.getSubSignature());
+    return Optional.empty();
   }
 
   @Nonnull
   @Override
   public JavaIdentifierFactory getIdentifierFactory() {
-    return (JavaIdentifierFactory) new JavaLanguage(8).getIdentifierFactory();
+    return identifierFactory;
   }
 
   /** Returns the number of classes that are currently stored in the cache. */
-  public int getNumberOfStoredClasses() {
+  public int getCachedClassesCount() {
     return cache.size();
   }
 
   @Nonnull
-  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
-    return inputLocations.stream()
+  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
+    return inputLocations
+        .parallelStream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
@@ -140,13 +162,13 @@ public class JavaView extends AbstractView {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
-    if (!cache.hasClass(classType)) {
+    if (cache.hasClass(classType)) {
+      theClass = (JavaSootClass) cache.getClass(classType);
+    } else {
       theClass =
           (JavaSootClass)
               classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
-    } else {
-      theClass = (JavaSootClass) cache.getClass(classType);
     }
 
     if (theClass.getType() instanceof AnnotationType) {
@@ -155,30 +177,5 @@ public class JavaView extends AbstractView {
     }
 
     return Optional.of(theClass);
-  }
-
-  @Nonnull
-  protected synchronized Collection<JavaSootClass> resolveAll() {
-    if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream()
-          .map(clazz -> (JavaSootClass) clazz)
-          .collect(Collectors.toList());
-    }
-
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
-        inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
-            .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<JavaSootClass> resolvedClasses =
-        resolvedClassesOpts.stream()
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
-    isFullyResolved = true;
-
-    return resolvedClasses;
   }
 }

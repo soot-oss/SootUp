@@ -36,7 +36,6 @@ import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
@@ -80,9 +79,8 @@ public class JavaModuleView extends JavaView {
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @Nonnull ClassCacheProvider cacheProvider,
       @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
-    super(inputLocations, cacheProvider);
+    super(inputLocations, cacheProvider, JavaModuleIdentifierFactory.getInstance());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
-
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);
   }
@@ -147,7 +145,7 @@ public class JavaModuleView extends JavaView {
 
   @Override
   @Nonnull
-  protected Optional<JavaSootClassSource> getAbstractClass(@Nonnull ClassType type) {
+  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
 
     Optional<JavaSootClassSource> cs =
         moduleInfoAnalysisInputLocations.stream()
@@ -161,7 +159,7 @@ public class JavaModuleView extends JavaView {
       return cs;
     }
 
-    return super.getAbstractClass(type);
+    return super.getClassSource(type);
   }
 
   @Nonnull
@@ -417,7 +415,7 @@ public class JavaModuleView extends JavaView {
   @Nonnull
   @Override
   public JavaModuleIdentifierFactory getIdentifierFactory() {
-    return (JavaModuleIdentifierFactory) new JavaLanguage(9).getIdentifierFactory();
+    return (JavaModuleIdentifierFactory) identifierFactory;
   }
 
   @Nonnull
@@ -462,41 +460,5 @@ public class JavaModuleView extends JavaView {
       modules.addAll(moduleInputLocation.getModules(this));
     }
     return modules;
-  }
-
-  @Override
-  @Nonnull
-  protected synchronized Collection<JavaSootClass> resolveAll() {
-    if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses().stream()
-          .map(clazz -> (JavaSootClass) clazz)
-          .collect(Collectors.toList());
-    }
-
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
-        inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
-            .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<Optional<JavaSootClass>> resolvedModuleClassesOpts =
-        moduleInfoAnalysisInputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
-            .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<Optional<JavaSootClass>> combinedResolvedClassesOpts =
-        Stream.concat(resolvedClassesOpts.stream(), resolvedModuleClassesOpts.stream())
-            .collect(Collectors.toList());
-
-    Collection<JavaSootClass> resolvedClasses =
-        combinedResolvedClassesOpts.stream()
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
-    isFullyResolved = true;
-
-    return resolvedClasses;
   }
 }
