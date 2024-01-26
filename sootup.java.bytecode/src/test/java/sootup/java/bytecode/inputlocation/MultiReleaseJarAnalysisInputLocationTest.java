@@ -30,7 +30,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SourceType;
@@ -50,8 +49,8 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
   ClassType classType;
   ClassType classType2;
 
-  @Before
-  public void setup() {
+  @Test
+  public void multiReleaseJar() {
 
     view_min =
         new JavaView(
@@ -74,53 +73,17 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
             new MultiReleaseJarAnalysisInputLocation(
                 mrj, SourceType.Application, new JavaLanguage(Integer.MAX_VALUE)));
 
-    classType = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-    classType2 = getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
-  }
-
-  @Test
-  public void multiReleaseJar() {
+    classType = getIdentifierFactory().getClassType("de.upb.sse.multirelease.Utility");
+    classType2 = getIdentifierFactory().getClassType("de.upb.sse.multirelease.Main");
 
     assertTrue(MultiReleaseJarAnalysisInputLocation.isMultiReleaseJar(mrj));
 
-    // for java10
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
-    // assert that method is correctly resolved
-    Assert.assertTrue(
-        view_10
-            .getClass(classType)
-            .get()
-            .getMethod(
-                getIdentifierFactory()
-                    .getMethodSubSignature(
-                        "printVersion",
-                        getIdentifierFactory().getType("void"),
-                        Collections.emptyList()))
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 9"));
-
-    // for java 9
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
     // for java 8
     Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
+        "/de/upb/sse/multirelease/Utility.class",
         view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
+        "/de/upb/sse/multirelease/Main.class",
         view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
     Assert.assertTrue(
@@ -138,21 +101,53 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
             .toString()
             .contains("java 8"));
 
-    // for max int
+    // for java 9
     Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
+        "/META-INF/versions/9/de/upb/sse/multirelease/Utility.class",
+        view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
+        "/de/upb/sse/multirelease/Main.class",
+        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
+
+    // for java10
+    Assert.assertEquals(
+        "/META-INF/versions/10/de/upb/sse/multirelease/Utility.class",
+        view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/sse/multirelease/Main.class",
+        view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
+
+    // assert that method is correctly resolved
+    Assert.assertTrue(
+        view_10
+            .getClass(classType)
+            .get()
+            .getMethod(
+                getIdentifierFactory()
+                    .getMethodSubSignature(
+                        "printVersion",
+                        getIdentifierFactory().getType("void"),
+                        Collections.emptyList()))
+            .get()
+            .getBody()
+            .toString()
+            .contains("java 10"));
 
     // for min int
     Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
+        "/de/upb/sse/multirelease/Utility.class",
         view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
     Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
+        "/de/upb/sse/multirelease/Main.class",
         view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
+
+    // for max int
+    Assert.assertEquals(
+        "/META-INF/versions/10/de/upb/sse/multirelease/Utility.class",
+        view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
+    Assert.assertEquals(
+        "/de/upb/sse/multirelease/Main.class",
+        view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
   }
 
   @Test

@@ -128,7 +128,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
               })
           .map(Integer::new)
           .filter(version -> version <= language.getVersion())
-          .sorted()
+          .sorted(Comparator.reverseOrder())
           .forEach(
               version -> {
                 final Path versionRoot =
@@ -137,7 +137,8 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
                         .getPath("/META-INF", "versions", version.toString());
                 inputLocations.put(
                     version,
-                    createAnalysisInputLocation(versionRoot, srcType, getBodyInterceptors()));
+                    PathBasedAnalysisInputLocation.create(
+                        versionRoot, sourceType, bodyInterceptors, Collections.emptyList()));
               });
 
       inputLocations.put(

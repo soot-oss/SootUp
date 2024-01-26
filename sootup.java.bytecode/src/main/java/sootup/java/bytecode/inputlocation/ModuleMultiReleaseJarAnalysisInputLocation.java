@@ -22,6 +22,13 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.annotation.Nonnull;
 import sootup.core.Language;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SourceType;
@@ -31,61 +38,53 @@ import sootup.java.core.JavaModuleInfo;
 import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModuleSignature;
 
-import javax.annotation.Nonnull;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
 /**
  * This AnalysisInputLocation models MultiRelease Jars or Directories if path points to a directory
  * that is not packed into a jar see https://openjdk.org/jeps/238#Modular_multi-release_JAR_files
  */
 public class ModuleMultiReleaseJarAnalysisInputLocation extends MultiReleaseJarAnalysisInputLocation
-        implements ModuleInfoAnalysisInputLocation {
-    public ModuleMultiReleaseJarAnalysisInputLocation(
-            @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-        super(path, srcType, language);
+    implements ModuleInfoAnalysisInputLocation {
+  public ModuleMultiReleaseJarAnalysisInputLocation(
+      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
+    super(path, srcType, language);
 
-        throw new UnsupportedOperationException("not fully implemented, yet!");
-    }
+    throw new UnsupportedOperationException("not fully implemented, yet!");
+  }
 
-    @Override
-    protected ModuleInfoAnalysisInputLocation createAnalysisInputLocation(
-            @Nonnull Path path, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
-        try {
-            return new JavaModulePathAnalysisInputLocation(
-                    path, fileSystemCache.get(this.path), sourceType, bodyInterceptors);
-        } catch (ExecutionException e) {
-            throw new IllegalArgumentException("Could not open filesystemcache.", e);
-        }
+  @Override
+  protected ModuleInfoAnalysisInputLocation createAnalysisInputLocation(
+      @Nonnull Path path, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
+    try {
+      return new JavaModulePathAnalysisInputLocation(
+          path, fileSystemCache.get(this.path), sourceType, bodyInterceptors);
+    } catch (ExecutionException e) {
+      throw new IllegalArgumentException("Could not open filesystemcache.", e);
     }
+  }
 
-    @Override
-    public Collection<? extends SootClassSource> getModulesClassSources(
-            @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-        // TODO: check if we need to combine modules as well or if only versioned .class files are
-        return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
-                .getModulesClassSources(moduleSignature, view);
-    }
+  @Override
+  public Collection<? extends SootClassSource> getModulesClassSources(
+      @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
+    // TODO: check if we need to combine modules as well or if only versioned .class files are
+    return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
+        .getModulesClassSources(moduleSignature, view);
+  }
 
-    @Nonnull
-    @Override
-    public Optional<JavaModuleInfo> getModuleInfo(@Nonnull ModuleSignature sig, @Nonnull View view) {
-        // TODO: check if we need to combine modules as well or if only versioned .class files are
-        // allowed
-        return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
-                .getModuleInfo(sig, view);
-    }
+  @Nonnull
+  @Override
+  public Optional<JavaModuleInfo> getModuleInfo(@Nonnull ModuleSignature sig, @Nonnull View view) {
+    // TODO: check if we need to combine modules as well or if only versioned .class files are
+    // allowed
+    return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
+        .getModuleInfo(sig, view);
+  }
 
-    @Nonnull
-    @Override
-    public Set<ModuleSignature> getModules(@Nonnull View view) {
-        // TODO: check if we need to combine modules as well or if only versioned .class files are
-        // allowed
-        return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
-                .getModules(view);
-    }
+  @Nonnull
+  @Override
+  public Set<ModuleSignature> getModules(@Nonnull View view) {
+    // TODO: check if we need to combine modules as well or if only versioned .class files are
+    // allowed
+    return ((JavaModulePathAnalysisInputLocation) inputLocations.get(DEFAULT_VERSION))
+        .getModules(view);
+  }
 }
