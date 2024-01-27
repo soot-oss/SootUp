@@ -1,16 +1,14 @@
 package org.sootup.java.codepropertygraph.evaluation.sootup;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.sootup.java.codepropertygraph.evaluation.HashOneEliminator;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.interceptors.*;
 import sootup.java.codepropertygraph.MethodInfo;
 import sootup.java.codepropertygraph.cfg.CfgCreator;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
@@ -23,7 +21,12 @@ public class SootUpCfgGenerator {
 
   public SootUpCfgGenerator(String sourceCodeDirPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(new JavaClassPathAnalysisInputLocation(sourceCodeDirPath));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            sourceCodeDirPath,
+            null,
+            Arrays.asList(
+                new LocalSplitter(), new HashOneEliminator(), new UnreachableCodeEliminator())));
     View view = new JavaView(inputLocations);
 
     view.getClasses()

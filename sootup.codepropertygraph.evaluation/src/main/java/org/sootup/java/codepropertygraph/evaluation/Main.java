@@ -5,6 +5,7 @@ import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Graph;
 import java.util.Optional;
 import org.sootup.java.codepropertygraph.evaluation.joern.JoernCfgGenerator;
 import org.sootup.java.codepropertygraph.evaluation.sootup.SootUpCfgGenerator;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.MethodInfo;
 import sootup.java.codepropertygraph.cfg.CfgCreator;
@@ -12,8 +13,11 @@ import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
 public class Main {
   public static void main(String[] args) {
-    String sourceCodeDirPath = "sootup.codepropertygraph.evaluation/src/test/resources/basicTS";
-    String cpgPath = "sootup.codepropertygraph.evaluation/src/test/resources/out.cpg";
+    // String sourceCodeDirPath = "sootup.codepropertygraph.evaluation/src/test/resources/basicTS";
+    // String cpgPath = "sootup.codepropertygraph.evaluation/src/test/resources/out.cpg";
+
+    String sourceCodeDirPath = "sootup.codepropertygraph.evaluation/src/test/resources/commons-lang3-3.14.0.jar";
+    String cpgPath = "sootup.codepropertygraph.evaluation/src/test/resources/commons.bin";
 
     SootUpCfgGenerator sootUpCfgGenerator = new SootUpCfgGenerator(sourceCodeDirPath);
     JoernCfgGenerator joernCfgGenerator = new JoernCfgGenerator(cpgPath);
@@ -40,8 +44,13 @@ public class Main {
                                       new RuntimeException(
                                               "Joern method was not found: " + methodSignatureAsJoern)));
 
-      System.out.println(comparer.compareCfg(joernCfg, joernAst, sootUpCfg));
-      //break;
+
+      // if (!sootupMethod.getName().equals("ifElseCascadingElseIfInElseStatement")) continue;
+
+      //System.out.println(comparer.compareCfg(joernCfg, joernAst, sootUpCfg));
+      System.out.println("Method Name               : " + sootupMethod.getName());
+      comparer.compareCfg(joernCfg, joernAst, sootUpCfg);
+      // break;
     }
   }
 }
