@@ -92,7 +92,7 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourcetype = sourcetype;
     this.bodyInterceptors = bodyInterceptors;
-    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype);
+    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype, bodyInterceptors);
   }
 
   @Nonnull

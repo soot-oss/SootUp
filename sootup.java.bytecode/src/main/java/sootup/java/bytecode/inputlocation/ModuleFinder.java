@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.java.bytecode.frontend.AsmModuleSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -64,6 +65,7 @@ public class ModuleFinder {
 
   @Nonnull private final List<Path> modulePathEntries;
   private final SourceType sourceType;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   public boolean hasMoreToResolve() {
     return next < modulePathEntries.size();
@@ -76,8 +78,12 @@ public class ModuleFinder {
    * @param sourceType
    */
   public ModuleFinder(
-      @Nonnull Path modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourceType) {
+      @Nonnull Path modulePath,
+      @Nonnull FileSystem fileSystem,
+      @Nonnull SourceType sourceType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
+    this.bodyInterceptors = bodyInterceptors;
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath.toString(), fileSystem)
             .collect(Collectors.toList());
@@ -93,12 +99,15 @@ public class ModuleFinder {
     }
   }
 
-  public ModuleFinder(@Nonnull Path modulePath, @Nonnull SourceType sourceType) {
-    this(modulePath, FileSystems.getDefault(), sourceType);
+  public ModuleFinder(
+      @Nonnull Path modulePath,
+      @Nonnull SourceType sourceType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this(modulePath, FileSystems.getDefault(), sourceType, bodyInterceptors);
   }
 
   public ModuleFinder(@Nonnull Path modulePath) {
-    this(modulePath, FileSystems.getDefault(), SourceType.Application);
+    this(modulePath, FileSystems.getDefault(), SourceType.Application, Collections.emptyList());
   }
 
   @Nonnull
