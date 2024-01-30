@@ -76,7 +76,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
     }
 
     return PathBasedAnalysisInputLocation.create(
-        path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META_INF")));
+        path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
   public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
@@ -155,7 +155,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
         archiveRoot,
         sourceType,
         bodyInterceptors,
-        Collections.singletonList(Paths.get("/META_INF")));
+        Collections.singletonList(Paths.get("/META-INF")));
   }
 
   @Override
@@ -179,8 +179,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
     Collection<JavaSootClassSource> classSources = new ArrayList<>();
     inputLocations.values().stream()
-        .map(location -> location.getClassSources(view))
-        .flatMap(Collection::stream)
+        .flatMap(location -> location.getClassSources(view).stream())
         .map(src -> (JavaSootClassSource) src)
         .forEach(
             cs -> {
@@ -235,7 +234,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
   }
 
   /**
-   * lists all versions from the version directories inside the META_INF/ directory - excluding the
+   * lists all versions from the version directories inside the META-INF/ directory - excluding the
    * default implemention version
    */
   protected static List<Integer> getLanguageVersions(@Nonnull Path path) {

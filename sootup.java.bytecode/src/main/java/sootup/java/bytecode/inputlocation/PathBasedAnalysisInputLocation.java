@@ -128,6 +128,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors,
       @Nonnull Collection<Path> ignoredPaths) {
+
+    if(ignoredPaths.stream().anyMatch( ignoPath -> path.toString().startsWith(ignoPath.toString()) )){
+      throw new IllegalArgumentException("The Path for the AnalysisInputLocation is in the ignored paths.");
+    }
+
     if (Files.isDirectory(path)) {
       return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
     } else if (PathUtils.isArchive(path)) {
@@ -157,12 +162,10 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
     try (final Stream<Path> walk = Files.walk(dirPath)) {
       return walk.filter(
-              filePath ->
-                  ignoredPaths.stream()
-                          .map(Path::toString)
-                          .noneMatch(p -> filePath.toString().startsWith(p))
-                      && PathUtils.hasExtension(filePath, handledFileType)
-                      && !filePath.toString().endsWith(moduleInfoFilename))
+              filePath -> PathUtils.hasExtension(filePath, handledFileType)
+                      && !filePath.toString().endsWith(moduleInfoFilename)
+                      && ignoredPaths.stream().noneMatch(p -> filePath.toString().startsWith(p.toString()))
+              )
           .flatMap(
               p -> {
                 final String fullyQualifiedName = fromPath(dirPath, p);

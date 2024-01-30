@@ -116,7 +116,6 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
     return allModules.stream()
         .flatMap(sig -> getClassSourcesInternal(sig, view))
-        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
