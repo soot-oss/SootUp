@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -91,17 +90,15 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         "/de/upb/sse/multirelease/Main.class",
         view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
-    MethodSubSignature printBodyMethodSubSig = getIdentifierFactory()
+    MethodSubSignature printBodyMethodSubSig =
+        getIdentifierFactory()
             .getMethodSubSignature(
-                    "printVersion",
-                    getIdentifierFactory().getType("void"),
-                    Collections.emptyList());
+                "printVersion", getIdentifierFactory().getType("void"), Collections.emptyList());
     Assert.assertTrue(
         view_8
             .getClass(classType)
             .get()
-            .getMethod(
-                    printBodyMethodSubSig)
+            .getMethod(printBodyMethodSubSig)
             .get()
             .getBody()
             .toString()
@@ -128,8 +125,7 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         view_10
             .getClass(classType)
             .get()
-            .getMethod(
-                    printBodyMethodSubSig)
+            .getMethod(printBodyMethodSubSig)
             .get()
             .getBody()
             .toString()
@@ -151,16 +147,24 @@ public class MultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocat
         "/de/upb/sse/multirelease/Main.class",
         view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
 
-
     // getClasses
-    List<String> collectedClassesWPrintBody9 = view_9.getClasses().stream().map(c -> c.getMethod(printBodyMethodSubSig)).filter(Optional::isPresent).map(m -> m.get().getBody().toString()).collect(Collectors.toList());
+    List<String> collectedClassesWPrintBody9 =
+        view_9.getClasses().stream()
+            .map(c -> c.getMethod(printBodyMethodSubSig))
+            .filter(Optional::isPresent)
+            .map(m -> m.get().getBody().toString())
+            .collect(Collectors.toList());
     assertEquals(1, collectedClassesWPrintBody9.size());
     assertTrue(collectedClassesWPrintBody9.get(0).contains("java 9"));
 
-    List<String> collectedClassesWPrintBody10 = view_10.getClasses().stream().map(c -> c.getMethod(printBodyMethodSubSig)).filter(Optional::isPresent).map(m -> m.get().getBody().toString()).collect(Collectors.toList());
+    List<String> collectedClassesWPrintBody10 =
+        view_10.getClasses().stream()
+            .map(c -> c.getMethod(printBodyMethodSubSig))
+            .filter(Optional::isPresent)
+            .map(m -> m.get().getBody().toString())
+            .collect(Collectors.toList());
     assertEquals(1, collectedClassesWPrintBody10.size());
     assertTrue(collectedClassesWPrintBody10.get(0).contains("java 10"));
-
   }
 
   @Test
