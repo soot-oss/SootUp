@@ -4,7 +4,6 @@ public class CheckInitValidator extends java.lang.Object
     {
         CheckInitValidator $l0;
 
-
         $l0 := @this: CheckInitValidator;
         specialinvoke $l0.<java.lang.Object: void <init>()>();
 
@@ -15,7 +14,6 @@ public class CheckInitValidator extends java.lang.Object
     {
         CheckInitValidator $l0;
         unknown $l1, $l2, $l3;
-
 
         $l0 := @this: CheckInitValidator;
         $l1 = 2;

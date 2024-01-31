@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,13 +37,15 @@ public class CheckInitValidator implements BodyValidator {
   public List<ValidationException> validate(Body body, View view) {
 
     List<ValidationException> validationException = new ArrayList<>();
-    List<String> predecessors = new ArrayList<>();
+
+    List<LValue> localList = new ArrayList<>();
+
     for (Stmt s : body.getStmts()) {
-      predecessors.add(s.toString());
+      localList.addAll(s.getDefs());
       for (Value v : s.getUses()) {
         if (v instanceof Local) {
           Local l = (Local) v;
-          if (!predecessors.contains(getStmtDefinition(l, body))) {
+          if (!localList.contains(l)) {
             validationException.add(
                 new ValidationException(
                     l,
@@ -59,11 +62,6 @@ public class CheckInitValidator implements BodyValidator {
       }
     }
     return validationException;
-  }
-
-  private String getStmtDefinition(Local l, Body body) {
-    String def = l.getDefs(body.getStmts()).toString();
-    return def.substring(1, def.length() - 1);
   }
 
   @Override
