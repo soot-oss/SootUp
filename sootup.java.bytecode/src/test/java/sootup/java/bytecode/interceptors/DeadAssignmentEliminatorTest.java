@@ -50,7 +50,7 @@ public class DeadAssignmentEliminatorTest {
    */
   @Test
   public void conditionalToRemovedBlock() {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Set<Local> locals = ImmutableUtils.immutableSet(a);
@@ -112,7 +112,7 @@ public class DeadAssignmentEliminatorTest {
   private static Body.BodyBuilder createBody(boolean essentialOption) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
 

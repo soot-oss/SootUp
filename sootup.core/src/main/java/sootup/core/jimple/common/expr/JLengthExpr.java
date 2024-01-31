@@ -28,11 +28,10 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that returns the length of an array. */
-public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
+public final class JLengthExpr extends AbstractUnopExpr {
 
   public JLengthExpr(@Nonnull Immediate op) {
     super(op);

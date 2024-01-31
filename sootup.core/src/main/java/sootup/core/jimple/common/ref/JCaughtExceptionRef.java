@@ -29,10 +29,9 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JCaughtExceptionRef implements IdentityRef, Copyable {
+public final class JCaughtExceptionRef implements IdentityRef {
 
   private final Type type;
 

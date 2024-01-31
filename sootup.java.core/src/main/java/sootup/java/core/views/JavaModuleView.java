@@ -27,12 +27,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -68,19 +66,6 @@ public class JavaModuleView extends JavaView {
         analysisInputLocation -> EmptyClassLoadingOptions.Default);
   }
 
-  public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
-    this(
-        inputLocations,
-        moduleInputLocations,
-        cacheProvider,
-        classLoadingOptionsSpecifier,
-        DefaultSourceTypeSpecifier.getInstance());
-  }
-
   /**
    * Creates a new instance of the {@link JavaModuleView} class.
    *
@@ -92,13 +77,8 @@ public class JavaModuleView extends JavaView {
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(
-        inputLocations,
-        cacheProvider,
-        sourceTypeSpecifier,
-        JavaModuleIdentifierFactory.getInstance());
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+    super(inputLocations, cacheProvider, JavaModuleIdentifierFactory.getInstance());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
     moduleInfoMap.put(unnamedModuleInfo.getModuleSignature(), unnamedModuleInfo);

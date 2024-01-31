@@ -64,7 +64,7 @@ public class JInvokeStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
 

@@ -68,7 +68,7 @@ public class LegacyJimplePrinterTest {
   @Test
   public void printSwitchStmt() {
 
-    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));

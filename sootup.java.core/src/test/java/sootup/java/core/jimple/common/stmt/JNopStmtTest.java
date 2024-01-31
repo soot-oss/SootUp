@@ -40,7 +40,7 @@ public class JNopStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nopos = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nopos = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt nop = new JNopStmt(nopos);
 
     Assert.assertTrue(nop.equivTo(nop));

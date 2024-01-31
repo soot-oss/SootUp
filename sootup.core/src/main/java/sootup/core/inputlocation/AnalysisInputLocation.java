@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -71,7 +70,7 @@ public interface AnalysisInputLocation {
    *
    * @return returns null as source type
    */
-  @Nullable
+  @Nonnull
   SourceType getSourceType();
 
   @Nonnull

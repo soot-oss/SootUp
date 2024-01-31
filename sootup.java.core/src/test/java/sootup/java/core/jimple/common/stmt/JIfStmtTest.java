@@ -40,7 +40,7 @@ public class JIfStmtTest {
   // TODO: [ms] incorporate Printer i.e. Body+Targets
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt target = new JNopStmt(nop);
 
     AbstractConditionExpr condition =

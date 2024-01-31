@@ -24,7 +24,6 @@ package sootup.core.jimple.basic;
 
 import javax.annotation.Nonnull;
 import sootup.core.model.Position;
-import sootup.core.util.Copyable;
 
 /**
  * This class stores position information stored for a statement. line number + information about
@@ -32,7 +31,7 @@ import sootup.core.util.Copyable;
  *
  * @author Linghui Luo, Markus Schmidt
  */
-public class FullStmtPositionInfo extends SimpleStmtPositionInfo implements Copyable {
+public class FullStmtPositionInfo extends SimpleStmtPositionInfo {
   @Nonnull protected final Position[] operandPositions;
 
   /**

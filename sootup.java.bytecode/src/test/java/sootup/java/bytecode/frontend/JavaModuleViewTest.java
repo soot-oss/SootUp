@@ -3,6 +3,7 @@ package sootup.java.bytecode.frontend;
 import static org.junit.Assert.*;
 
 import categories.Java9Test;
+import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class JavaModuleViewTest {
 
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "annotations/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "annotations/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
@@ -145,7 +146,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
-        new JavaModulePathAnalysisInputLocation(testPath + "requires-static/jar"));
+        new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires-static/jar")));
     moduleInfoAnalysisInputLocations.add(new JrtFileSystemAnalysisInputLocation());
 
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -186,7 +187,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName modMain =
@@ -236,7 +237,7 @@ public class JavaModuleViewTest {
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
         new JavaModulePathAnalysisInputLocation(
-            testPath + "requires_exports_requires-transitive_exports-to/jar"));
+            Paths.get(testPath + "requires_exports_requires-transitive_exports-to/jar")));
     moduleInfoAnalysisInputLocations.add(new JrtFileSystemAnalysisInputLocation());
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
@@ -285,7 +286,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "reflection/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "reflection/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
@@ -338,7 +339,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "uses-provides/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainModmainSig =
@@ -385,7 +386,8 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "uses-provides_uses-in-client/jar"));
+            new JavaModulePathAnalysisInputLocation(
+                Paths.get(testPath + "uses-provides_uses-in-client/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainModmainSig =
@@ -435,7 +437,7 @@ public class JavaModuleViewTest {
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
             new JavaModulePathAnalysisInputLocation(
-                testPath + "derived_private-package-protected/jar"));
+                Paths.get(testPath + "derived_private-package-protected/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
@@ -482,7 +484,7 @@ public class JavaModuleViewTest {
 
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "exceptions/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "exceptions/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
@@ -519,7 +521,8 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "interface-callback/jar"));
+            new JavaModulePathAnalysisInputLocation(
+                Paths.get(testPath + "interface-callback/jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModuleJavaClassType mainClass =
@@ -555,7 +558,7 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
             new JavaModulePathAnalysisInputLocation(
-                testPath + "splitpackage_automatic-modules/jar"));
+                Paths.get(testPath + "splitpackage_automatic-modules/jar")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -591,7 +594,7 @@ public class JavaModuleViewTest {
     // TODO: adapt
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "splitpackage"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "splitpackage")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -608,7 +611,7 @@ public class JavaModuleViewTest {
     // i.e. main is in non exported package
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(
-            new JavaModulePathAnalysisInputLocation(testPath + "hiddenmain/jar"));
+            new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "hiddenmain/jar")));
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations =
         Collections.emptyList();
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
@@ -633,7 +636,8 @@ public class JavaModuleViewTest {
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
         new JavaModulePathAnalysisInputLocation(
-            testPath + "unnamed-module_access-from-automatic-module/jar/modmain.auto.jar"));
+            Paths.get(
+                testPath + "unnamed-module_access-from-automatic-module/jar/modmain.auto.jar")));
 
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
@@ -662,10 +666,10 @@ public class JavaModuleViewTest {
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
         new JavaModulePathAnalysisInputLocation(
-            testPath + "unnamed-module_access-from-explicit-module/jar/modb.jar"));
+            Paths.get(testPath + "unnamed-module_access-from-explicit-module/jar/modb.jar")));
     moduleInfoAnalysisInputLocations.add(
         new JavaModulePathAnalysisInputLocation(
-            testPath + "unnamed-module_access-from-explicit-module/jar/modmain.jar"));
+            Paths.get(testPath + "unnamed-module_access-from-explicit-module/jar/modmain.jar")));
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
     ModulePackageName cpb = JavaModuleIdentifierFactory.getInstance().getPackageName("pkgb", "");
@@ -712,7 +716,7 @@ public class JavaModuleViewTest {
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
         new JavaModulePathAnalysisInputLocation(
-            testPath + "unnamed-module_accessing-module-path/jar/modb.jar"));
+            Paths.get(testPath + "unnamed-module_accessing-module-path/jar/modb.jar")));
 
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
@@ -800,9 +804,9 @@ public class JavaModuleViewTest {
     List<AnalysisInputLocation> inputLocations = Collections.emptyList();
     List<ModuleInfoAnalysisInputLocation> moduleInfoAnalysisInputLocations = new ArrayList<>();
     moduleInfoAnalysisInputLocations.add(
-        new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"));
+        new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar")));
     moduleInfoAnalysisInputLocations.add(
-        new JavaModulePathAnalysisInputLocation(testPath + "requires_exports/jar"));
+        new JavaModulePathAnalysisInputLocation(Paths.get(testPath + "requires_exports/jar")));
 
     JavaModuleView view = new JavaModuleView(inputLocations, moduleInfoAnalysisInputLocations);
 
