@@ -39,41 +39,41 @@ public class CacheTest {
   @Test
   public void fullCacheTest() {
     JavaView view = new JavaView(inputLocations, new FullCacheProvider());
-    assertEquals(0, view.getNumberOfStoredClasses());
+    assertEquals(0, view.getCachedClassesCount());
 
     ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
     view.getClass(miniAppClassType);
-    assertEquals(1, view.getNumberOfStoredClasses());
+    assertEquals(1, view.getCachedClassesCount());
 
     ClassType utilsOperationClassType =
         view.getIdentifierFactory().getClassType("utils.Operations");
     view.getClass(utilsOperationClassType);
-    assertEquals(2, view.getNumberOfStoredClasses());
+    assertEquals(2, view.getCachedClassesCount());
 
     view.getClasses();
-    assertEquals(6, view.getNumberOfStoredClasses());
+    assertEquals(6, view.getCachedClassesCount());
   }
 
   /** Test the {@link sootup.core.cache.LRUCache} class */
   @Test
   public void lruCacheTest() {
     JavaView view = new JavaView(inputLocations, new LRUCacheProvider(1));
-    assertEquals(0, view.getNumberOfStoredClasses());
+    assertEquals(0, view.getCachedClassesCount());
 
     ClassType miniAppClassType = view.getIdentifierFactory().getClassType("MiniApp");
     view.getClass(miniAppClassType);
-    assertEquals(1, view.getNumberOfStoredClasses());
+    assertEquals(1, view.getCachedClassesCount());
 
     ClassType utilsOperationClassType =
         view.getIdentifierFactory().getClassType("utils.Operations");
     view.getClass(utilsOperationClassType);
-    assertEquals(1, view.getNumberOfStoredClasses());
+    assertEquals(1, view.getCachedClassesCount());
 
     view.getClasses();
-    assertEquals(1, view.getNumberOfStoredClasses());
+    assertEquals(1, view.getCachedClassesCount());
 
     JavaView newView = new JavaView(inputLocations, new LRUCacheProvider());
     newView.getClasses();
-    assertEquals(6, newView.getNumberOfStoredClasses());
+    assertEquals(6, newView.getCachedClassesCount());
   }
 }
