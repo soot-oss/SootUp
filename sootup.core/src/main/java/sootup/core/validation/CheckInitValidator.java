@@ -4,7 +4,7 @@ package sootup.core.validation;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo, Markus Schmidt, Akshita Dubey
+ * Copyright (C) 1997-2020 Raja Vallée-Rai, Linghui Luo, Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,11 +22,7 @@ package sootup.core.validation;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.List;
-import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -35,35 +31,18 @@ public class CheckInitValidator implements BodyValidator {
   @Override
   public List<ValidationException> validate(Body body, View view) {
 
-    List<ValidationException> validationException = new ArrayList<>();
-    List<String> predecessors = new ArrayList<>();
-    for (Stmt s : body.getStmts()) {
-      predecessors.add(s.toString());
-      for (Value v : s.getUses()) {
-        if (v instanceof Local) {
-          Local l = (Local) v;
-          if (!predecessors.contains(getStmtDefinition(l, body))) {
-            validationException.add(
-                new ValidationException(
-                    l,
-                    "Local variable $1 is not definitively defined at this point"
-                        .replace("$1", l.getName()),
-                    "Warning: Local variable "
-                        + l
-                        + " not definitely defined at "
-                        + s
-                        + " in "
-                        + body.getMethodSignature()));
-          }
-        }
-      }
-    }
-    return validationException;
-  }
-
-  private String getStmtDefinition(Local l, Body body) {
-    String def = l.getDefs(body.getStmts()).toString();
-    return def.substring(1, def.length() - 1);
+    // TODO: #535 implement validator
+    //  check code copied from old soot
+    /*
+     * ExceptionalUnitGraph g = new ExceptionalUnitGraph(body, ThrowAnalysisFactory.checkInitThrowAnalysis(), false);
+     *
+     * InitAnalysis analysis = new InitAnalysis(g); for (Unit s : body.getUnits()) { FlowSet<Local> init =
+     * analysis.getFlowBefore(s); for (ValueBox vBox : s.getUseBoxes()) { Value v = vBox.getValue(); if (v instanceof Local)
+     * { Local l = (Local) v; if (!init.contains(l)) { throw new ValidationException(s,
+     * "Local variable $1 is not definitively defined at this point".replace("$1", l.getName()), "Warning: Local variable " +
+     * l + " not definitely defined at " + s + " in " + body.getMethod(), false); } } } }
+     */
+    return null;
   }
 
   @Override
