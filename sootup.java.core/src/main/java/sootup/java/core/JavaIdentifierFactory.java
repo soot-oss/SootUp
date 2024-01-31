@@ -55,20 +55,23 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   @Nonnull
-  public final MethodSubSignature STATIC_INITIALIZER =
+  public static final MethodSubSignature STATIC_INITIALIZER =
       new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
 
   @Override
   public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
-    return methodSubSignature.getName().equals("<clinit>")
-        && methodSubSignature.getParameterTypes().isEmpty()
-        && methodSubSignature.getType() == VoidType.getInstance();
+    return methodSubSignature.equals(STATIC_INITIALIZER);
   }
 
   @Override
-  public boolean isConstructorSubSignature(@Nonnull MethodSignature methodSignature) {
-    return methodSignature.getName().equals("<init>")
-        && methodSignature.getType() == VoidType.getInstance();
+  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
+    return isConstructorSubSignature(methodSignature.getSubSignature());
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>")
+        && methodSubSignature.getType() == VoidType.getInstance();
   }
 
   @Override
