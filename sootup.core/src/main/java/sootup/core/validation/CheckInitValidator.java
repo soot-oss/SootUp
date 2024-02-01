@@ -31,8 +31,17 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
+/**
+ * This validator checks whether local variables are defined before they are used.
+ *
+ */
 public class CheckInitValidator implements BodyValidator {
-
+  /**
+   * Checks that local variables present in body are defined before use.
+   * @param body the body to check
+   * @param view the view
+   * @return
+   */
   @Override
   public List<ValidationException> validate(Body body, View view) {
 
@@ -41,13 +50,11 @@ public class CheckInitValidator implements BodyValidator {
     List<LValue> localList = new ArrayList<>();
 
     for (Stmt s : body.getStmts()) {
-      // Add locals defined in the statement in localList.
+      // Add locals defined in the statement to list.
       localList.addAll(s.getDefs());
       for (Value v : s.getUses()) {
         if (v instanceof Local) {
           Local l = (Local) v;
-          // Check if the local is defined before it is being used.
-          // localList contains all locals defined before the current statement.
           if (!localList.contains(l)) {
             validationException.add(
                 new ValidationException(
