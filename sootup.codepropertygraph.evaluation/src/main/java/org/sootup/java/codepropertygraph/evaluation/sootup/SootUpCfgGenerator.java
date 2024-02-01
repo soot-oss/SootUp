@@ -3,6 +3,7 @@ package org.sootup.java.codepropertygraph.evaluation.sootup;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.sootup.java.codepropertygraph.evaluation.HashOneEliminator;
+import org.sootup.java.codepropertygraph.evaluation.HashSuffixEliminator;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
@@ -26,7 +27,8 @@ public class SootUpCfgGenerator {
             sourceCodeDirPath,
             null,
             Arrays.asList(
-                new LocalSplitter(), new HashOneEliminator(), new UnreachableCodeEliminator())));
+                /*new LocalSplitter(),*/ new HashSuffixEliminator(),
+                new UnreachableCodeEliminator())));
     View view = new JavaView(inputLocations);
 
     view.getClasses()
