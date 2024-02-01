@@ -264,7 +264,7 @@ public class JoernCfgAdapter {
     String methodFullName = call.methodFullName();
 
     if (MethodSignatureParser.isDynamicInvoke(methodFullName)) {
-      MethodDetails methodDetails = MethodSignatureParser.parseMethodSignature(methodFullName);
+      /*MethodDetails methodDetails = MethodSignatureParser.parseMethodSignature(methodFullName);
 
       MethodSignature methodSignature =
           new MethodSignature(
@@ -289,7 +289,8 @@ public class JoernCfgAdapter {
                   .map(this::getNodeType)
                   .collect(Collectors.toList()),
               getNodeType(methodDetails.returnType));
-      return new JDynamicInvokeExpr(methodSignature, args, testDynamicMethod, testParameterList);
+      return new JDynamicInvokeExpr(methodSignature, args, testDynamicMethod, testParameterList);*/
+      return getDummyDynamicInvokeExpr();
     }
 
     if (call.dispatchType().equals("DYNAMIC_DISPATCH")) {
@@ -313,12 +314,12 @@ public class JoernCfgAdapter {
               methodSubSignature);
 
       args.remove(0);
-      if (Arrays.asList("this", "superType").contains(referencedObject.name())) {
+      /*if (Arrays.asList("this", "superType").contains(referencedObject.name())) {
         return new JSpecialInvokeExpr(
             (Local) evaluateExpr(referencedObject), methodSignature, args);
-      }
-      return new JInterfaceInvokeExpr(
-          (Local) evaluateExpr(referencedObject), methodSignature, args);
+      }*/
+      return new JVirtualInvokeExpr((Local) evaluateExpr(referencedObject), methodSignature, args);
+
     }
 
     MethodDetails methodDetails = MethodSignatureParser.parseMethodSignature(call.methodFullName());
@@ -345,12 +346,29 @@ public class JoernCfgAdapter {
               methodSubSignature);
 
       args.remove(0);
-      if (Arrays.asList("this", "superType").contains(referencedObject.name())) {
+      /*if (Arrays.asList("this", "superType").contains(referencedObject.name())) {
         return new JSpecialInvokeExpr(
             (Local) evaluateExpr(referencedObject), methodSignature, args);
-      }
+      }*/
       return new JVirtualInvokeExpr((Local) evaluateExpr(referencedObject), methodSignature, args);
     }
+  }
+
+  private JDynamicInvokeExpr getDummyDynamicInvokeExpr() {
+    List<Immediate> testParameterList = Collections.singletonList(IntConstant.getInstance(1));
+    List<Immediate> args = Collections.emptyList();
+    MethodSignature testDynamicMethod =
+        new MethodSignature(
+            new JavaClassType(
+                JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME.substring(
+                    JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME.lastIndexOf(".") + 1),
+                new PackageName(
+                    JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME.substring(
+                        0, JDynamicInvokeExpr.INVOKEDYNAMIC_DUMMY_CLASS_NAME.lastIndexOf(".")))),
+            "bootstrap$",
+            Collections.emptyList(),
+            PrimitiveType.getInt());
+    return new JDynamicInvokeExpr(testDynamicMethod, args, testDynamicMethod, testParameterList);
   }
 
   private List<Type> getMethodParamTypes(String methodFullName) {
@@ -480,7 +498,7 @@ public class JoernCfgAdapter {
   }
 
   private sootup.core.types.Type getNodeType(String typeStr) {
-    switch (typeStr) {
+      switch (typeStr) {
       case "byte":
         return PrimitiveType.getByte();
       case "int":

@@ -43,15 +43,4 @@ public class MethodSignatureParser {
     }
     return parameterTypes;
   }
-
-  public static void main(String[] args) {
-    String signature =
-        "org.apache.commons.lang3.AnnotationUtils$1$isAssignableFrom__1.bootstrap$:java.util.function.Predicate(java.lang.Class)";
-    MethodDetails details = parseMethodSignature(signature);
-
-    System.out.println("Class Name: " + details.className);
-    System.out.println("Method Name: " + details.methodName);
-    System.out.println("Return Type: " + details.returnType);
-    System.out.println("Parameter Types: " + details.parameterTypes);
-  }
 }

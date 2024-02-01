@@ -36,24 +36,33 @@ public class PropertyGraphComparer {
     sameEdgesCount = diffEdgesCount = 0;
     List<String> simEdges = new ArrayList<>();
     List<String> diffEdges = new ArrayList<>();
-    for (PropertyGraphEdge e : joernPropertyGraph.getEdges()) {
+    for (PropertyGraphEdge e : sootUpPropertyGraph.getEdges()) {
       /*if (sootUpPropertyGraph.getEdges().contains(e))
       throw new RuntimeException("ACHIEVED !!!!!!!!!!!!!!!!!!!!!!!!!!!!");*/
       foundEquivEdge = false;
 
-      for (PropertyGraphEdge otherE : sootUpPropertyGraph.getEdges()) {
+      String a = e.getSource().getName();
+      String b = e.getDestination().getName();
+      String s1 = String.format("%s -> %s", a, b);
+      s1 = s1.replace("\\\"", "").replace("'", "");
+      s1 = s1.replaceAll("\\$stack\\d+", "\\$stack");
+
+      for (PropertyGraphEdge otherE : joernPropertyGraph.getEdges()) {
         if (Arrays.asList(
                 e.getSource(), e.getDestination(), otherE.getSource(), otherE.getDestination())
             .contains(null)) continue;
 
-        String a = e.getSource().getName();
-        String b = e.getDestination().getName();
         String c = otherE.getSource().getName();
         String d = otherE.getDestination().getName();
 
-        String s1 = String.format("%s -> %s", a, b);
-
         String s2 = String.format("%s -> %s", c, d);
+
+        s2 =
+            s2.replace("\\\"", "")
+                .replace("'", ""); // Todo: Remove the \" occurences in the through the adapter
+        s2 =
+            s2.replaceAll(
+                "\\$stack\\d+", "\\$stack"); // Todo: Rename stack variables in a more accurate way
 
         if (s1.equals(s2)) {
           // throw new RuntimeException("Should be equal !!!!!!!!!!!!!");
@@ -62,7 +71,7 @@ public class PropertyGraphComparer {
           simEdges.add(s1);
           break;
         }
-        if (e.getSource().getType().equals(otherE.getSource().getType())
+        /*if (e.getSource().getType().equals(otherE.getSource().getType())
             && e.getDestination().getType().equals(otherE.getDestination().getType())
             && e.getSource()
                 .getName()
@@ -73,14 +82,17 @@ public class PropertyGraphComparer {
                 .split(" ")[0]
                 .equals(otherE.getDestination().getName().split(" ")[0])) {
           // diffEdges.add(s1 + "    &    " + s2);
-          diffEdges.add("[src1] " + a);
-          diffEdges.add("[src2] " + c);
-          diffEdges.add("[dst1] " + b);
-          diffEdges.add("[dst2] " + d);
+          diffEdges.add("[src-s] " + a);
+          diffEdges.add("[src-j] " + c);
+          diffEdges.add("[dst-s] " + b);
+          diffEdges.add("[dst-j] " + d);
           diffEdges.add("--");
-        }
+        }*/
       }
-      if (!foundEquivEdge) diffEdgesCount++;
+      if (!foundEquivEdge) {
+        diffEdgesCount++;
+        diffEdges.add(s1);
+      }
     }
 
     System.out.println("********************************************************");

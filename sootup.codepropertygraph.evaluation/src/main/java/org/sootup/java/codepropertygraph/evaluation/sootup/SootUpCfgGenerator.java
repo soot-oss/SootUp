@@ -2,8 +2,10 @@ package org.sootup.java.codepropertygraph.evaluation.sootup;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.sootup.java.codepropertygraph.evaluation.HashOneEliminator;
+import org.sootup.java.codepropertygraph.evaluation.DynamicInvokeNormalizer;
 import org.sootup.java.codepropertygraph.evaluation.HashSuffixEliminator;
+import org.sootup.java.codepropertygraph.evaluation.InterfaceInvokeNormalizer;
+import org.sootup.java.codepropertygraph.evaluation.SpecialInvokeNormalizer;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
@@ -27,8 +29,12 @@ public class SootUpCfgGenerator {
             sourceCodeDirPath,
             null,
             Arrays.asList(
-                /*new LocalSplitter(),*/ new HashSuffixEliminator(),
-                new UnreachableCodeEliminator())));
+                new UnreachableCodeEliminator(),
+                // new LocalSplitter(),
+                new HashSuffixEliminator(),
+                new DynamicInvokeNormalizer(),
+                new SpecialInvokeNormalizer(),
+                new InterfaceInvokeNormalizer())));
     View view = new JavaView(inputLocations);
 
     view.getClasses()

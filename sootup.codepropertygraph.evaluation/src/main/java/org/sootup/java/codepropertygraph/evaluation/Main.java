@@ -38,8 +38,8 @@ public class Main {
 
     int sampleSize = Math.min(sootUpCfgGenerator.getMethods().size(), 100);
 
-    // for (SootMethod sootupMethod : sootUpCfgGenerator.getMethods()) {
-    for (SootMethod sootupMethod : sootUpCfgGenerator.getMethods().subList(0, sampleSize)) {
+    for (SootMethod sootupMethod : sootUpCfgGenerator.getMethods()) {
+    // for (SootMethod sootupMethod : sootUpCfgGenerator.getMethods().subList(0, sampleSize)) {
       String methodSignatureAsJoern = sootUpCfgGenerator.getMethodSignatureAsJoern(sootupMethod);
       Optional<Method> joernMethodOpt = joernCfgGenerator.getMethod(methodSignatureAsJoern);
 
@@ -58,9 +58,10 @@ public class Main {
       Graph joernAst = joernCfgGenerator.getAst(joernMethod);
 
       // if (!sootupMethod.getName().equals("access$600")) continue;
+      // if (!methodSignatureAsJoern.equals("org.apache.commons.lang3.builder.DiffBuilder.append:org.apache.commons.lang3.builder.DiffBuilder(java.lang.String,java.lang.Object,java.lang.Object)")) continue;
 
       // System.out.println(comparer.compareCfg(joernCfg, joernAst, sootUpCfg));
-      System.out.println("Method Name               : " + sootupMethod.getName());
+      System.out.println("Method Name               : " + sootupMethod.getName() + String.format(" (%s)", methodSignatureAsJoern));
       comparer.compareCfg(joernCfg, joernAst, sootUpCfg);
       // break;
 
@@ -72,8 +73,9 @@ public class Main {
     double similarityPercentage = ((double) similarEdgesCount / totalEdges) * 100;
     similarityPercentage = Math.round(similarityPercentage * 10000) / 10000.0;
 
-    System.out.println("Total similar Edges     : " + similarEdgesCount);
-    System.out.println("Total different Edges   : " + differentEdgesCount);
+    System.out.println("Total no. of methods    : " + sootUpCfgGenerator.getMethods().size());
+    System.out.println("Total similar edges     : " + similarEdgesCount);
+    System.out.println("Total different edges   : " + differentEdgesCount);
     System.out.println("Similarity Percentage   : " + similarityPercentage + " %");
 
     long endTime = System.currentTimeMillis();
