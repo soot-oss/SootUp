@@ -30,17 +30,27 @@ import sootup.core.model.SootClass;
  *
  * @author Steven Arzt
  */
-public class ClassFlagsValidator implements ClassValidator {
+public class ClassModifiersValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
-    // TODO: check code from old soot in the comment
 
-    /*
-     * if (sc.isInterface() && sc.isEnum()) { exceptions.add(new ValidationException(sc,
-     * "Class is both an interface and an enum")); } if (sc.isSynchronized()) { exceptions.add(new ValidationException(sc,
-     * "Classes cannot be synchronized")); }
-     */
+      if(sc.isInterface() && sc.isEnum()){
+        exceptions.add(new ValidationException(sc, "Class is both an interface and an enum"));
+      }
+      if(sc.isInterface() && sc.isSuper()){
+        exceptions.add(new ValidationException(sc, "Class is both an interface and a super class"));
+      }
+      if(sc.isInterface() && sc.isFinal()){
+        exceptions.add(new ValidationException(sc,"Class is both an interface and final"));
+      }
+      if(!(sc.isInterface() && sc.isAbstract())){
+        exceptions.add(new ValidationException(sc, "Class must be both an interface and an abstract class"));
+      }
+      if(!sc.isAnnotation() && sc.isInterface()){
+        exceptions.add(new ValidationException(sc,"Class must be both an annotation and an interface"));
+      }
+
   }
 
   @Override
