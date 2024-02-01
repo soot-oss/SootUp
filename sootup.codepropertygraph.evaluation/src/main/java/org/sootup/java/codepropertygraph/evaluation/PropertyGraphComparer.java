@@ -17,6 +17,7 @@ public class PropertyGraphComparer {
   private final SootUpCfgAdapter sootUpCfgAdapter;
   private int totalSameEdges;
   private int totalDiffEdges;
+  private int totalMethods;
 
   public PropertyGraphComparer(
       JoernCfgGenerator joernCfgGenerator, SootUpCfgGenerator sootUpCfgGenerator) {
@@ -30,6 +31,8 @@ public class PropertyGraphComparer {
 
     PropertyGraph joernPropertyGraph = joernCfgAdapter.getCfg(joernCfg, joernAst);
     PropertyGraph sootUpPropertyGraph = sootUpCfgAdapter.getCfg(sootUpCfg);
+
+    totalMethods++;
 
     int sameEdgesCount, diffEdgesCount;
     boolean foundEquivEdge;
@@ -128,5 +131,9 @@ public class PropertyGraphComparer {
 
   public int getTotalDiffEdges() {
     return totalDiffEdges;
+  }
+
+  public int getTotalMethods() {
+    return totalMethods;
   }
 }
