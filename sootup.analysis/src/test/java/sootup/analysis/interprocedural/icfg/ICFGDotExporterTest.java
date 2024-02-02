@@ -164,7 +164,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   /** Compute the Edges of the given methodSignature from the provided callGraph */
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
     icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
     Map<Integer, MethodSignature> calls;
     calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
