@@ -21,6 +21,7 @@ package sootup.java.bytecode.frontend;
  * #L%
  */
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -51,23 +52,45 @@ public class AsmJavaClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation analysisInputLocation, Path sourcePath, ClassType classType) {
+      @Nonnull AnalysisInputLocation analysisInputLocation,
+      @Nonnull Path sourcePath,
+      @Nonnull ClassType classType) {
+
+    if (!Files.exists(sourcePath)) {
+      return Optional.empty();
+    }
+
     SootClassNode classNode = new SootClassNode(analysisInputLocation);
 
+    final String actualClassSignature;
     try {
-      AsmUtil.initAsmClassSource(sourcePath, classNode);
-    } catch (IOException | IllegalArgumentException exception) {
+      actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
+    } catch (IOException exception) {
+      logger.warn("ioe", exception);
+      return Optional.empty();
+    } catch (IllegalArgumentException exception) {
+      logger.warn("iae", exception);
+      return Optional.empty();
+    }
+
+    String requestedName = classType.getPackageName().getName();
+    String requestedFQClassName =
+        classType.getPackageName().getName()
+            + (requestedName.isEmpty() ? "" : ".")
+            + classType.getClassName();
+    String actualFQClassName = actualClassSignature.replace('/', '.');
+    if (!actualFQClassName.equals(requestedFQClassName)) {
       logger.warn(
-          "ASM could not resolve class source of "
+          "The given Classtype '"
               + classType
-              + " in "
-              + sourcePath
-              + " causing "
-              + exception.getMessage());
+              + "' did not match the found ClassType in the compilation unit '"
+              + actualClassSignature
+              + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
       return Optional.empty();
     }
 
     JavaClassType klassType = (JavaClassType) classType;
+
     if (klassType instanceof ModuleJavaClassType
         && klassType.getClassName().equals(JavaModuleIdentifierFactory.MODULE_INFO_FILE)) {
       logger.warn("Can not create ClassSource from a module info descriptor! path:" + sourcePath);

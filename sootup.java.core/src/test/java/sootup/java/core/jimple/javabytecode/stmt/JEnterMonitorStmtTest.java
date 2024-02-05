@@ -41,7 +41,7 @@ public class JEnterMonitorStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Local sandman = new Local("sandman", PrimitiveType.getInt());
     Local night = new Local("night", PrimitiveType.getBoolean());
     Local light = new Local("light", PrimitiveType.getBoolean());

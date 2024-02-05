@@ -25,14 +25,12 @@ package sootup.java.core.views;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -52,7 +50,6 @@ public class JavaView extends AbstractView {
 
   @Nonnull protected final List<AnalysisInputLocation> inputLocations;
   @Nonnull protected final ClassCache cache;
-  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
   protected volatile boolean isFullyResolved = false;
 
@@ -64,33 +61,18 @@ public class JavaView extends AbstractView {
     this(inputLocations, new FullCacheProvider());
   }
 
-  /**
-   * Creates a new instance of the {@link JavaView} class.
-   *
-   * <p>{@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
-   * options.
-   */
   public JavaView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull ClassCacheProvider cacheProvider) {
-    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
-  }
-
-  public JavaView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(inputLocations, cacheProvider, sourceTypeSpecifier, JavaIdentifierFactory.getInstance());
+    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
   }
 
   protected JavaView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
       @Nonnull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-    this.sourceTypeSpecifier = sourceTypeSpecifier;
     this.identifierFactory = idf;
   }
 
@@ -184,7 +166,8 @@ public class JavaView extends AbstractView {
       theClass = (JavaSootClass) cache.getClass(classType);
     } else {
       theClass =
-          (JavaSootClass) classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
+          (JavaSootClass)
+              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
       cache.putClass(classType, theClass);
     }
 

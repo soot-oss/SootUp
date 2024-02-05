@@ -23,11 +23,11 @@ package sootup.java.bytecode.inputlocation;
 import com.google.common.base.Preconditions;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
@@ -63,17 +63,17 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
    *     SootClassSource}es for the files found on the class path
    */
-  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
+  public JavaModulePathAnalysisInputLocation(@Nonnull Path modulePath) {
     this(modulePath, SourceType.Application);
   }
 
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull SourceType sourcetype) {
+      @Nonnull Path modulePath, @Nonnull SourceType sourcetype) {
     this(modulePath, FileSystems.getDefault(), sourcetype);
   }
 
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
+      @Nonnull Path modulePath, @Nonnull FileSystem fileSystem, @Nonnull SourceType sourcetype) {
     this(modulePath, fileSystem, sourcetype, new ArrayList<>());
   }
 
@@ -86,13 +86,13 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
    * @param fileSystem filesystem for the path
    */
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath,
+      @Nonnull Path modulePath,
       @Nonnull FileSystem fileSystem,
       @Nonnull SourceType sourcetype,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourcetype = sourcetype;
     this.bodyInterceptors = bodyInterceptors;
-    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype);
+    moduleFinder = new ModuleFinder(modulePath, fileSystem, sourcetype, bodyInterceptors);
   }
 
   @Nonnull
@@ -116,11 +116,10 @@ public class JavaModulePathAnalysisInputLocation implements ModuleInfoAnalysisIn
     Collection<ModuleSignature> allModules = moduleFinder.getAllModules();
     return allModules.stream()
         .flatMap(sig -> getClassSourcesInternal(sig, view))
-        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourcetype;

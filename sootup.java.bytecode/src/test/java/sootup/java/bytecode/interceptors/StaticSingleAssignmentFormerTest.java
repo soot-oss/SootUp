@@ -31,7 +31,7 @@ public class StaticSingleAssignmentFormerTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaJimple javaJimple = JavaJimple.getInstance();
 
   JavaClassType intType = factory.getClassType("int");

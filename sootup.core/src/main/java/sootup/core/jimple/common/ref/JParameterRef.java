@@ -29,7 +29,6 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
@@ -39,7 +38,7 @@ import sootup.core.util.printer.StmtPrinter;
  * <p>For instance, in a method, the first statement will often be <code>
  *  this := @parameter0; </code>
  */
-public final class JParameterRef implements IdentityRef, Copyable {
+public final class JParameterRef implements IdentityRef {
 
   private final int index;
   private final Type paramType;

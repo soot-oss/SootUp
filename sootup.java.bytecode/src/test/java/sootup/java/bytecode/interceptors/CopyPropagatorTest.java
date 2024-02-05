@@ -33,7 +33,7 @@ public class CopyPropagatorTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType refType = factory.getClassType("ref");
   JavaClassType classType = factory.getClassType("Test");

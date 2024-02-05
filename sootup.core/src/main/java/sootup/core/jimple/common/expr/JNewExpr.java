@@ -30,11 +30,10 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ClassType;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that creates a new instance of a class. */
-public final class JNewExpr implements Expr, Copyable {
+public final class JNewExpr implements Expr {
 
   @Nonnull private final ClassType type;
 

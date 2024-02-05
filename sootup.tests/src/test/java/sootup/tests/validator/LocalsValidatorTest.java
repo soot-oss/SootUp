@@ -5,34 +5,31 @@ import static org.junit.Assert.assertFalse;
 
 import categories.Java8Test;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.validation.CheckInitValidator;
+import sootup.core.validation.LocalsValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 @Category(Java8Test.class)
-public class CheckInitValidatorTest {
-  CheckInitValidator checkInitValidator;
+public class LocalsValidatorTest {
+  LocalsValidator localsValidator;
   JimpleView jimpleView;
-
   Collection<SootClass> classes;
 
   @Before
   public void Setup() {
 
-    checkInitValidator = new CheckInitValidator();
+    localsValidator = new LocalsValidator();
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {
@@ -43,12 +40,12 @@ public class CheckInitValidatorTest {
 
           @Override
           public String getFullyQualifiedName() {
-            return "jimple.CheckInitValidator";
+            return "jimple.LocalsValidator";
           }
 
           @Override
           public String getClassName() {
-            return "CheckInitValidator";
+            return "LocalsValidator";
           }
 
           @Override
@@ -79,14 +76,14 @@ public class CheckInitValidatorTest {
     List<ValidationException> validationExceptions_success;
 
     validationExceptions_success =
-        checkInitValidator.validate(
+        localsValidator.validate(
             classes.stream()
-                .filter(c -> c.getType().getClassName().equals("CheckInitValidator"))
+                .filter(c -> c.getType().getClassName().equals("LocalsValidator"))
                 .findFirst()
                 .get()
                 .getMethods()
                 .stream()
-                .filter(m -> m.getName().equals("checkInitValidator_success"))
+                .filter(m -> m.getName().equals("localsValidator_success"))
                 .map(SootMethod::getBody)
                 .findFirst()
                 .get(),
@@ -97,22 +94,25 @@ public class CheckInitValidatorTest {
 
   @Test
   public void testCheckInitValidatorFail() {
-    List<ValidationException> validationExceptions_fail;
+    List<ValidationException> validationExceptions_success;
 
-    validationExceptions_fail =
-        checkInitValidator.validate(
-            classes.stream()
-                .filter(c -> c.getType().getClassName().equals("CheckInitValidator"))
-                .findFirst()
-                .get()
-                .getMethods()
-                .stream()
-                .filter(m -> m.getName().equals("checkInitValidator_fail"))
-                .map(SootMethod::getBody)
-                .findFirst()
-                .get(),
-            jimpleView);
+    Body body =
+        classes.stream()
+            .filter(c -> c.getType().getClassName().equals("LocalsValidator"))
+            .findFirst()
+            .get()
+            .getMethods()
+            .stream()
+            .filter(m -> m.getName().equals("localsValidator_fail"))
+            .map(SootMethod::getBody)
+            .findFirst()
+            .get();
 
-    assertEquals(1, validationExceptions_fail.size());
+    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
+    builder.setLocals(new HashSet<>());
+
+    validationExceptions_success = localsValidator.validate(builder.build(), jimpleView);
+
+    assertEquals(3, validationExceptions_success.size());
   }
 }

@@ -29,10 +29,9 @@ import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
-import sootup.core.util.Copyable;
 
 /** An expression that shifts its operand to the left (&lt;&lt;). */
-public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable {
+public final class JShlExpr extends AbstractIntLongBinopExpr {
 
   public JShlExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

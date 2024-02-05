@@ -64,7 +64,7 @@ public abstract class AbstractClassSource {
     return classSignature;
   }
 
-  public AnalysisInputLocation getClassSource() {
+  public AnalysisInputLocation getAnalysisInputLocation() {
     return classSource;
   }
 

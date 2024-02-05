@@ -57,7 +57,7 @@ public class UnusedLocalEliminatorTest {
   private static Body.BodyBuilder createBody(boolean unusedLocals) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
     JavaClassType stringType = factory.getClassType("java.lang.String");

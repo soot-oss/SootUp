@@ -40,7 +40,7 @@ public class JRetStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt stmt = new JRetStmt(IntConstant.getInstance(33102), nop);
     Stmt stmt2 = new JRetStmt(IntConstant.getInstance(42), nop);
 

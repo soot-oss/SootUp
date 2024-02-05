@@ -18,7 +18,7 @@ import sootup.core.types.PrimitiveType;
 @Category(Java8Test.class)
 public class DominanceFinderTest {
 
-  StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   @Test
   public void testDominanceFinder() {

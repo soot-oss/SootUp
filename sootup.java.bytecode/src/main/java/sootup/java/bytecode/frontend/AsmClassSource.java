@@ -168,7 +168,7 @@ class AsmClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @Nonnull

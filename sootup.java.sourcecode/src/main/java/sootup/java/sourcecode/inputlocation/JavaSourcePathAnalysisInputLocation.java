@@ -146,6 +146,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.srcType = srcType;
   }
 
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return srcType;

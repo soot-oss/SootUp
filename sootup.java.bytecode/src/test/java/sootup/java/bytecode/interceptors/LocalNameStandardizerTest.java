@@ -30,7 +30,7 @@ import sootup.java.core.types.JavaClassType;
 public class LocalNameStandardizerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());

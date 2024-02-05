@@ -32,11 +32,10 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** @author Zun Wang */
-public final class JPhiExpr implements Expr, Copyable {
+public final class JPhiExpr implements Expr {
 
   private final List<Local> args;
   private final Map<BasicBlock<?>, Local> blockToArg = new HashMap<>();

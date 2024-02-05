@@ -31,11 +31,10 @@ import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that negates its operand (-). */
-public final class JNegExpr extends AbstractUnopExpr implements Copyable {
+public final class JNegExpr extends AbstractUnopExpr {
 
   public JNegExpr(@Nonnull Immediate op) {
     super(op);

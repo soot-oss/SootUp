@@ -32,7 +32,7 @@ public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType classType = factory.getClassType("Test");
   JavaClassType intType = factory.getClassType("int");
