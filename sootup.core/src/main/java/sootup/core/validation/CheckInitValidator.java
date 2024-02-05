@@ -31,13 +31,11 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
-/**
- * This validator checks whether local variables are defined before they are used.
- *
- */
+/** This validator checks whether local variables are defined before they are used. */
 public class CheckInitValidator implements BodyValidator {
   /**
-   * Checks that local variables present in body are defined before use.
+   * Checks that local variables present in method body are defined before use.
+   *
    * @param body the body to check
    * @param view the view
    * @return
