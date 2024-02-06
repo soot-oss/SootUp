@@ -1,0 +1,34 @@
+name: Deploy to Maven Central
+run-name: Deploy run ${{ github.run_number }} # Enumerates entries in the "workflow runs" view
+on:
+  workflow_dispatch: # Only run when manually started
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3 # Does also set up Maven and GPG
+        with:
+          distribution: 'zulu' # As good as any other, see: https://github.com/actions/setup-java#supported-distributions
+          java-package: 'jdk'
+          java-version: '8'
+          check-latest: true
+          server-id: 'ossrh' # must match the serverId configured for the nexus-staging-maven-plugin
+          server-username: OSSRH_USERNAME # Env var that holds your OSSRH user name
+          server-password: OSSRH_PASSWORD # Env var that holds your OSSRH user pw
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }} # Substituted with the value stored in the referenced secret
+          gpg-passphrase: SIGN_KEY_PASS # Env var that holds the key's passphrase
+          cache: 'maven'
+      - name: Build & Deploy
+        run: |
+          # -U force updates just to make sure we are using latest dependencies
+          # -B Batch mode (do not ask for user input), just in case
+          # -P activate profile
+          mvn -U -B clean deploy -P release
+        env:
+          SIGN_KEY_PASS: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
+          OSSRH_USERNAME: ${{ secrets.SONATYPE_USER }}
+          OSSRH_PASSWORD: ${{ secrets.SONATYPE_PW }}
