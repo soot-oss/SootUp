@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../icon.svg">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.7">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.f2e4d321.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -893,7 +893,29 @@ Take a look at the <a href="../whatsnew/#modular-architecture">Modules</a> to le
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;dependencies&gt;
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;repositories&gt;
+ &lt;repository&gt;
+  &lt;id&gt;jitpack.io&lt;/id&gt;
+  &lt;url&gt;https://jitpack.io&lt;/url&gt;
+ &lt;/repository&gt;
+ &lt;repository&gt;
+  &lt;id&gt;/maven.google.com&lt;/id&gt;
+  &lt;url&gt;https://maven.google.com&lt;/url&gt;
+ &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
  &lt;dependency&gt;
    &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
    &lt;artifactId&gt;sootup.core&lt;/artifactId&gt;
@@ -933,13 +955,29 @@ Take a look at the <a href="../whatsnew/#modular-architecture">Modules</a> to le
 </code></pre></div></td></tr></table></div>
 <h3 id="gradle">Gradle</h3>
 <p>Add the following dependency in the <code>build.gradle</code> file of your project to include all SootUp modules into your project.</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>compile &quot;org.soot-oss:sootup.core:1.1.2&quot;
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code>repositories {
+    mavenCentral()
+    google()
+    maven {
+        url &quot;https://jitpack.io&quot;
+    }
+}
+
+compile &quot;org.soot-oss:sootup.core:1.1.2&quot;
 compile &quot;org.soot-oss:sootup.java.core1.1.2&quot;
 compile &quot;org.soot-oss:sootup.java.sourcecode1.1.2&quot;
 compile &quot;org.soot-oss:sootup.java.bytecode1.1.2&quot;
@@ -1005,10 +1043,10 @@ You can download the project as a zip file, or clone it using your favorite git 
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      <script src="../assets/javascripts/bundle.caa56a14.min.js"></script>
       
     
   </body>
