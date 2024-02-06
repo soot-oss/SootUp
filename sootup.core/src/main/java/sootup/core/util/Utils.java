@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,10 +42,29 @@ import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.util.printer.JimplePrinter;
+import sootup.core.views.View;
 
 /** @author Linghui Luo */
 public class Utils {
+
+  String extractRawBytecode(View view, String methodSignatureStr) {
+
+    MethodSignature methodSignature =
+        view.getIdentifierFactory().parseMethodSignature(methodSignatureStr);
+    Optional<? extends SootClass> aClass = view.getClass(methodSignature.getDeclClassType());
+    if (!aClass.isPresent()) {
+      throw new IllegalArgumentException("MethodSignature is not found in the View.");
+    }
+
+    Path path = aClass.get().getClassSource().getSourcePath();
+    try {
+      return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Nullable
   Path compileJavaOTF(String className, String javaSourceContent) {
