@@ -22,298 +22,211 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.checkerframework.checker.units.qual.A;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import sootup.core.graph.*;
-import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class LocalSplitter implements BodyInterceptor {
 
-    private Map<Stmt, List<Pair<Stmt, Local>>> stmtToUses;
+  /**
+   * Contains disjoint sets of nodes which are implemented as trees. Every set is represented by a
+   * tree in the forest. Each set is identified by the root node of its tree, also known as its
+   * representative.
+   *
+   * <p><a href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">Disjoint-set data
+   * structure</a>
+   */
+  static class DisjointSetForest<T> {
+    /** Every node points to its parent in its tree. Roots of trees point to themselves. */
+    private final Map<T, T> parent = new HashMap<>();
 
-    private Map<Stmt, Stmt> newToOriginalStmt;
+    /** Stores the size of a tree under the key. Only updated for roots of trees. */
+    private final Map<T, Integer> sizes = new HashMap<>();
 
-
-    static class RefBox {
-        Stmt stmt;
-
-        public RefBox(Stmt stmt) {
-            this.stmt = stmt;
-        }
-
-        @Override
-        public String toString() {
-            return stmt.toString();
-        }
-
-    }
-
+    private int setCount = 0;
 
     /**
-     * Multiple defs of the same local are to split.
-     *
-     * @param builder
-     * @return
+     * Creates a new set that only contains the {@code node}. Does nothing when the forest already
+     * contains the {@code node}.
      */
-    private Set<Local> findLocalsToSplit(Body.BodyBuilder builder) {
-        Set<Local> visitedLocals = new LinkedHashSet<>();
-        Set<Local> localsToSplit = new LinkedHashSet<>();
-        for (Stmt stmt : builder.getStmts()) {
-            for (LValue def : stmt.getDefs()) {
-                if (def instanceof Local) {
-                    if (visitedLocals.contains(def)) {
-                        localsToSplit.add((Local) def);
-                    } else {
-                        visitedLocals.add((Local) def);
-                    }
-                }
-            }
-        }
-        return localsToSplit;
+    void add(T node) {
+      if (parent.containsKey(node)) return;
+
+      parent.put(node, node);
+      sizes.put(node, 1);
+      setCount++;
     }
 
+    /** Finds the representative of the set that contains the {@code node}. */
+    T find(T node) {
+      if (!parent.containsKey(node))
+        throw new IllegalArgumentException("The DisjointSetForest does not contain the node.");
+
+      while (parent.get(node) != node) {
+        // Path Halving to get amortized constant operations
+        T grandparent = parent.get(parent.get(node));
+        parent.put(node, grandparent);
+
+        node = grandparent;
+      }
+      return node;
+    }
+
+    /**
+     * Combines the sets of {@code first} and {@code second}. Returns the representative of the
+     * combined set.
+     */
+    T union(T first, T second) {
+      first = find(first);
+      second = find(second);
+
+      if (first == second) return first;
+
+      T smaller = (sizes.get(first) > sizes.get(second)) ? second : first;
+      T larger = (smaller == first) ? second : first;
+
+      // adding the smaller subtree to the larger tree keeps the tree flatter
+      parent.put(smaller, larger);
+      sizes.put(larger, sizes.get(smaller) + sizes.get(larger));
+      sizes.remove(smaller);
+
+      setCount--;
+
+      return larger;
+    }
+
+    int getSetCount() {
+      return setCount;
+    }
+  }
+
+  static class WrappedStmt {
+    @Nonnull final Stmt inner;
+    final boolean isDef;
+
+    WrappedStmt(@Nonnull Stmt inner, boolean isDef) {
+      this.inner = inner;
+      this.isDef = isDef;
+    }
 
     @Override
-    public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-        newToOriginalStmt = new HashMap<>();
-        getStmtToUses(builder);
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
 
-        Set<Local> localsToSplit = findLocalsToSplit(builder);
-        int w = 0;
+      WrappedStmt that = (WrappedStmt) o;
 
-        Set<RefBox> visited = new HashSet<>();
-        for (int i = 0; i < builder.getStmts().size(); i++) {
-            Stmt stmt = builder.getStmts().get(i);
-            RefBox ref = new RefBox(stmt);
-            if (ref.stmt.getDefs().size() == 1) {
-                LValue singleDef = ref.stmt.getDefs().get(0);
-                if (!(singleDef instanceof Local) || visited.remove(ref)) {
-                    continue;
-                }
+      if (isDef != that.isDef) return false;
+      return inner.equals(that.inner);
+    }
 
-                Local oldLocal = (Local) singleDef;
-                if (!localsToSplit.contains(oldLocal)) {
-                    continue;
-                }
+    @Override
+    public int hashCode() {
+      int result = inner.hashCode();
+      result = 31 * result + (isDef ? 1 : 0);
+      return result;
+    }
+  }
 
-                Local newLocal = oldLocal.withName(oldLocal.getName() + "#" + (++w));
-                builder.addLocal(newLocal);
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    MutableStmtGraph graph = builder.getStmtGraph();
 
-                Deque<RefBox> queue = new ArrayDeque<>();
-                queue.addFirst(ref);
-                do {
-                    RefBox head = queue.removeFirst();
-                    if (addVisited(visited, head)) {
-                        Set<RefBox> useStmts = usesUntilNewDef(builder, head.stmt);
-                        for (RefBox useRef : useStmts) {
-                            for (Value use : useRef.stmt.getUses()) {
-                                if (use == newLocal) {
-                                    continue;
-                                }
-                                if (use instanceof Local) {
-                                    queue.addAll(getDefsBefore(oldLocal, builder, useRef.stmt));
-                                    addNewUse(builder, useRef, newLocal, oldLocal, queue);
-                                }
-                            }
-                        }
-                        for (LValue def : head.stmt.getDefs()) {
-                            if (def instanceof Local) {
-                                addNewDef(builder, head, newLocal, oldLocal, queue);
-                            }
-                        }
-                    }
-                    System.out.println(builder.getStmtGraph());
-                } while (!queue.isEmpty());
-                removeVisited(visited, ref);
-            }
+    // `#` is used as a special character for splitting the locals,
+    // so it can't be in any of the original local names since it might cause name collisions
+    assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
 
+    Set<Local> newLocals = new HashSet<>();
+
+    for (Local local : builder.getLocals()) {
+      // TODO explain why a disjoint set is used here
+      DisjointSetForest<WrappedStmt> disjointSet = new DisjointSetForest<>();
+
+      List<AbstractDefinitionStmt> assignments = findAllAssignmentsToLocal(builder, local);
+      for (AbstractDefinitionStmt assignment : assignments) {
+        WrappedStmt defStmt = new WrappedStmt(assignment, true);
+        disjointSet.add(defStmt);
+
+        Queue<Stmt> queue = new ArrayDeque<>(graph.successors(assignment));
+        Set<Stmt> visited = new HashSet<>();
+
+        while (!queue.isEmpty()) {
+          Stmt stmt = queue.remove();
+          if (!visited.add(stmt)) {
+            continue;
+          }
+
+          if (stmt.getUses().contains(local)) {
+            // TODO might be able to stop short when running into a non-trivial set
+            //  since from that point onward the previous walk that crated
+            //  that set already walked everything following the current statement
+            WrappedStmt useStmt = new WrappedStmt(stmt, false);
+            disjointSet.add(useStmt);
+            disjointSet.union(defStmt, useStmt);
+          }
+
+          // a new assignment to the local -> end walk here
+          // otherwise continue by adding all successors to the queue
+          if (!stmt.getDefs().contains(local)) {
+            queue.addAll(graph.successors(stmt));
+          }
+        }
+      }
+
+      if (disjointSet.getSetCount() <= 1) {
+        // There is only a single that local that can't be split
+        newLocals.add(local);
+        continue;
+      }
+
+      Map<WrappedStmt, Local> representativeToNewLocal = new HashMap<>();
+      final int[] nextId = {0};
+
+      for (Stmt stmt : builder.getStmts()) {
+        if (!stmt.getUsesAndDefs().contains(local)) {
+          continue;
         }
 
-    }
+        Stmt oldStmt = stmt;
 
-    private boolean addVisited(Set<RefBox> visited, RefBox ref){
-        Optional<RefBox> first = visited.stream().filter(e -> e.stmt == ref.stmt).findFirst();
-        if(first.isPresent()){
-            RefBox refBox = first.get();
-            return visited.add(refBox);
-        }
-        return visited.add(ref);
-    }
-
-
-    private boolean removeVisited(Set<RefBox> visited, RefBox ref){
-        Optional<RefBox> first = visited.stream().filter(e -> e.stmt == ref.stmt).findFirst();
-        if(first.isPresent()){
-            RefBox refBox = first.get();
-            return visited.remove(refBox);
-        }
-        return visited.remove(ref);
-    }
-
-
-    private void addNewDef(Body.BodyBuilder builder, RefBox ref, Local newDef, Local oldDef, Deque<RefBox> queue) {
-        if (ref.stmt.getDefs().contains(oldDef)) {
-            Stmt withNewDef = new JAssignStmt(newDef, ref.stmt.getUses().get(0), ref.stmt.getPositionInfo());
-            builder.getStmtGraph().replaceNode(ref.stmt, withNewDef);
-            //update the reference to the same statement in the queue
-            Set<RefBox> allRefs = queue.stream().filter(e -> e.stmt == ref.stmt).collect(Collectors.toSet());
-            for (RefBox r : allRefs) {
-                r.stmt = withNewDef;
-            }
-            ref.stmt = withNewDef;
-        }
-    }
-
-    private void addNewUse(Body.BodyBuilder builder, RefBox ref, Local newLocal, Local old, Deque<RefBox> queue) {
-        if (ref.stmt.getUses().contains(old)) {
-            Stmt withNewUse = ref.stmt.withNewUse(old, newLocal);
-            builder.getStmtGraph().replaceNode(ref.stmt, withNewUse);
-            // update refs on queue
-            Set<RefBox> allRefs = queue.stream().filter(e -> e.stmt == ref.stmt).collect(Collectors.toSet());
-            for (RefBox r : allRefs) {
-                r.stmt = withNewUse;
-            }
-            ref.stmt = withNewUse;
-        }
-    }
-
-
-
-
-    private Set<RefBox> usesUntilNewDef(Body.BodyBuilder builder, Stmt stmt) {
-        Set<Stmt> usesUntilNewDef = new HashSet<>();
-        List<LValue> defs = stmt.getDefs();
-        if (defs.size() == 1) {
-            Local def = (Local) defs.get(0);
-            Deque<Stmt> queue = new ArrayDeque<>();
-            queue.add(builder.getStmts().get(0));
-            Set<Stmt> visited = new HashSet<>();
-            while (!queue.isEmpty()) {
-                Stmt s = queue.removeFirst();
-                if(visited.contains(s)){
-                    break;
-                }
-                System.out.println("loop " + s);
-                if (s.getUses().contains(def)) {
-                    if (!usesUntilNewDef.add(s)) {
-                        break; // if it is already there maybe we started looping?
-                    }
-                }
-                if (!stmt.equals(s)) {
-                    if (s.getDefs().contains(def)) {
-                        continue;
-                    }
-                }
-                queue.addAll(builder.getStmtGraph().successors(s));
-                visited.add(s);
-            }
-        }
-        return usesUntilNewDef.stream().map(e -> new RefBox(e)).collect(Collectors.toSet());
-    }
-
-
-    public Map<Stmt, List<Pair<Stmt, Value>>> getStmtToUses(Body.BodyBuilder builder){
-        Map<Stmt, List<Pair<Stmt, Value>>> stmtToUses = new HashMap<>();
-        DominanceFinder df = new DominanceFinder(builder.getStmtGraph());
-
-        Deque<Stmt> queue = new ArrayDeque<>();
-        queue.addAll(builder.getStmtGraph().getTails());
-        while (!queue.isEmpty()){
-            Stmt stmt = queue.removeFirst();
-            BasicBlock<?> dominator = df.getImmediateDominator(builder.getStmtGraph().getBlockOf(stmt));
-            Deque<BasicBlock> domQueue = new ArrayDeque<>();
-            domQueue.add(dominator);
-            while (!domQueue.isEmpty()){
-                BasicBlock block = domQueue.removeFirst();
-                Stmt tail = block.getTail();
-                Deque<Stmt> stmtsInBlock = new ArrayDeque<>();
-                stmtsInBlock.addAll(builder.getStmtGraph().predecessors(tail));
-                while(!stmtsInBlock.isEmpty()){
-                    Stmt stmtInBlock = stmtsInBlock.removeFirst();
-                    if(!stmtInBlock.getUses().isEmpty()){
-                        for (Value use : stmtInBlock.getUses()) {
-                            if(use instanceof Local){ // local use
-                                List<RefBox> defs = getDefsBefore((Local) use, builder, stmtInBlock);
-                                List<Pair<Stmt, Value>> list = new ArrayList<>();
-                                list.add(new MutablePair<>(stmtInBlock, use));
-                                for (RefBox def : defs) {
-                                    stmtToUses.put(def.stmt, list);
-                                }
-                            }
-                        }
-                    }
-                    stmtsInBlock.addAll(builder.getStmtGraph().predecessors(stmtInBlock));
-                }
-                BasicBlock<?> nextDom = df.getImmediateDominator(dominator);
-                if(!nextDom.equals(dominator)){
-                    domQueue.add(nextDom);
-                }
-            }
+        if (stmt.getDefs().contains(local)) {
+          Local newDefLocal =
+              representativeToNewLocal.computeIfAbsent(
+                  disjointSet.find(new WrappedStmt(oldStmt, true)),
+                  s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+          newLocals.add(newDefLocal);
+          stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
         }
 
-        return stmtToUses;
-    }
-
-    private List<RefBox> getDefsBefore(Local local, Body.BodyBuilder builder, Stmt mStmt) {
-        List<Stmt> defsBefore = new ArrayList<>();
-        Set<BasicBlock> visited = new HashSet<>();
-        BasicBlock<?> block = builder.getStmtGraph().getBlockOf(mStmt);
-        Deque<BasicBlock> blockQueue = new ArrayDeque<>();
-        blockQueue.addFirst(block);
-        boolean firstPass = true;
-        do {
-            block = blockQueue.removeFirst();
-
-            if (firstPass) {
-                ;
-                ; // to visit the same block once more when looping
-            } else if (!visited.add(block)) {
-                continue;
-            }
-            Deque<Stmt> stmtQueue = new ArrayDeque<>();
-            if (firstPass) {
-                stmtQueue.addAll(predsInSameBlock(builder, mStmt));
-                firstPass = false;
-            } else {
-                stmtQueue.add(block.getTail());
-            }
-            while (!stmtQueue.isEmpty()) {
-                Stmt s = stmtQueue.removeFirst();
-                if (s.getDefs().contains(local)) {
-                    defsBefore.add(s);
-                    break;
-                }
-                // iterate only in the same block here.
-                stmtQueue.addAll(predsInSameBlock(builder, s));
-            }
-            blockQueue.addAll(block.getPredecessors());
-        } while (!blockQueue.isEmpty());
-        return defsBefore.stream().map(e -> new RefBox(e)).collect(Collectors.toList());
-    }
-
-    private List<Stmt> predsInSameBlock(Body.BodyBuilder builder, Stmt stmt) {
-        List<Stmt> predsInSameBlock = new ArrayList<>();
-        MutableStmtGraph stmtGraph = builder.getStmtGraph();
-        List<Stmt> preds = stmtGraph.predecessors(stmt);
-        for (Stmt pred : preds) {
-            if (stmtGraph.getBlockOf(pred).equals(stmtGraph.getBlockOf(stmt))) {
-                predsInSameBlock.add(pred);
-            }
+        if (stmt.getUses().contains(local)) {
+          Local newUseLocal =
+              representativeToNewLocal.computeIfAbsent(
+                  disjointSet.find(new WrappedStmt(oldStmt, false)),
+                  s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+          newLocals.add(newUseLocal);
+          stmt = stmt.withNewUse(local, newUseLocal);
         }
-        return predsInSameBlock;
+
+        graph.replaceNode(oldStmt, stmt);
+      }
     }
 
+    builder.setLocals(newLocals);
+  }
 
+  List<AbstractDefinitionStmt> findAllAssignmentsToLocal(
+      @Nonnull Body.BodyBuilder builder, Local local) {
+    return builder.getStmts().stream()
+        .filter(stmt -> stmt instanceof AbstractDefinitionStmt)
+        .map(stmt -> (AbstractDefinitionStmt) stmt)
+        .filter(stmt -> stmt.getLeftOp() == local)
+        .collect(Collectors.toList());
+  }
 }

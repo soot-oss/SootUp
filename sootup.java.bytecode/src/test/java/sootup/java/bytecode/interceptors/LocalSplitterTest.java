@@ -1,389 +1,330 @@
 package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.util.*;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.types.UnknownType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
 public class LocalSplitterTest {
-    JavaView view;
+  JavaView view;
+  LocalSplitter localSplitter = new LocalSplitter();
 
-    @Before
-    public void Setup() {
-        String classPath = "src/test/java/resources/interceptors";
-        JavaClassPathAnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(classPath);
-        view = new JavaView(inputLocation);
-    }
+  @Before
+  public void setup() {
+    String classPath = "src/test/java/resources/interceptors";
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(classPath);
+    view = new JavaView(inputLocation);
+  }
 
-    @Test
-    public void testStmtToUsesSimpleAssignment(){
-        Body originalBody = getBody("case0");
-        LocalSplitter localSplitter = new LocalSplitter();
-        Map<Stmt, List<Pair<Stmt, Value>>> actual = localSplitter.getStmtToUses(Body.builder(originalBody, Collections.emptySet()));
-        Map<Stmt, List<Pair<Stmt, Value>>> expected = new HashMap<>();
+  private Body getBody(String methodName) {
+    ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+    SootMethod sootMethod =
+        view.getClass(type).get().getMethods().stream()
+            .filter(method -> method.getName().equals(methodName))
+            .findFirst()
+            .get();
+    return sootMethod.getBody();
+  }
 
-        Stmt s1 = getStmt(originalBody, "l2 = 1");
-        List<Pair<Stmt, Value>> s1Uses = new ArrayList<>();
-        Stmt l1_gets_l2_plus_1 = getStmt(originalBody, "l1 = l2 + 1");
-        s1Uses.add(new MutablePair<>(l1_gets_l2_plus_1, l1_gets_l2_plus_1.getUses().get(1)));
-        expected.put(s1, s1Uses);
+  void assertLocals(Set<String> localNames, Body.BodyBuilder builder) {
+    assertEquals(
+        localNames, builder.getLocals().stream().map(Local::getName).collect(Collectors.toSet()));
+  }
 
-        Stmt s2 = l1_gets_l2_plus_1;
-        Stmt l2_gets_l1_plus_1 = getStmt(originalBody, "l2 = l1 + 1");
-        List<Pair<Stmt, Value>> s2Uses = new ArrayList<>();
-        s2Uses.add(new MutablePair<>(l2_gets_l1_plus_1, l2_gets_l1_plus_1.getUses().get(1)));
-        expected.put(s2, s2Uses);
+  @Test
+  public void testSimpleAssignment() {
+    Body.BodyBuilder builder = Body.builder(getBody("simpleAssignment"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        assertTrue(expected.keySet().containsAll(actual.keySet()));
-        assertTrue(expected.values().containsAll(actual.values()));
-        assertTrue(actual.keySet().containsAll(expected.keySet()));
-        assertTrue(actual.values().containsAll(expected.values()));
-    }
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
-    @Test
-    public void testStmtToUsesSelfAssignment(){
-        Body originalBody = getBody("case1");
-        LocalSplitter localSplitter = new LocalSplitter();
-        Map<Stmt, List<Pair<Stmt, Value>>> actual = localSplitter.getStmtToUses(Body.builder(originalBody, Collections.emptySet()));
-        Map<Stmt, List<Pair<Stmt, Value>>> expected = new HashMap<>();
+    assertLocals(expectedLocals, builder);
 
-        Stmt s1 = getStmt(originalBody, "l1 = 0");
-        List<Pair<Stmt, Value>> s1Uses = new ArrayList<>();
-        Stmt l1_gets_l1_plus_1 = getStmt(originalBody, "l1 = l1 + 1");
-        s1Uses.add(new MutablePair<>(l1_gets_l1_plus_1, l1_gets_l1_plus_1.getUses().get(1)));
-        expected.put(s1, s1Uses);
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "l2#0 = 1;\n"
+            + "l1#1 = l2#0 + 1;\n"
+            + "l2#1 = l1#1 + 1;\n"
+            + "\n"
+            + "return;";
 
-        Stmt s2 = getStmt(originalBody, "l2 = 1");
-        Stmt l2_gets_l2_plus_1 = getStmt(originalBody, "l2 = l2 + 1");
-        List<Pair<Stmt, Value>> s2Uses = new ArrayList<>();
-        s2Uses.add(new MutablePair<>(l2_gets_l2_plus_1, l2_gets_l2_plus_1.getUses().get(1)));
-        expected.put(s2, s2Uses);
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-        assertTrue(expected.keySet().containsAll(actual.keySet()));
-        assertTrue(expected.values().containsAll(actual.values()));
-        assertTrue(actual.keySet().containsAll(expected.keySet()));
-        assertTrue(actual.values().containsAll(expected.values()));
-    }
+  @Test
+  public void testSelfAssignment() {
+    Body.BodyBuilder builder = Body.builder(getBody("selfAssignment"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
+    assertLocals(expectedLocals, builder);
 
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "l2#0 = 1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l2#1 = l2#0 + 1;\n"
+            + "\n"
+            + "return;";
 
-    private Stmt getStmt(Body body, String s){
-        return body.getStmts().stream().filter(e -> e.toString().equals(s)).findFirst().get();
-    }
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
+  @Test
+  public void testBranch() {
+    Body.BodyBuilder builder = Body.builder(getBody("branch"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    @Test
-    public void testSimpleAssignment() {
-        Body originalBody = getBody("case0");
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
 
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l2#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l2#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    assertLocals(expectedLocals, builder);
 
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#2 = l1#0 - 1;\n"
+            + "l1#1 = l1#2 + 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1#1;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
+  @Test
+  public void testBranchMoreLocals() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchMoreLocals"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        String expectedStmts = "l0 := @this: LocalSplitterTarget;\n" +
-                "l1#1 = 0;\n" +
-                "l2#2 = 1;\n" +
-                "l1#3 = l2#2 + 1;\n" +
-                "l2#4 = l1#3 + 1;\n" +
-                "\n" +
-                "return;";
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
+    expectedLocals.add("l1#5");
 
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
+    assertLocals(expectedLocals, builder);
 
-    private Body getBody(String methodName) {
-        ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
-        SootMethod sootMethod = view.getClass(type).get().getMethods().stream().filter(method -> method.getName().equals(methodName)).findFirst().get();
-        return sootMethod.getBody();
-    }
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "l1#3 = l1#2 + 3;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#4 = l1#0 - 1;\n"
+            + "l1#5 = l1#4 - 2;\n"
+            + "l1#3 = l1#5 - 3;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1#3;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-    @Test
-    public void testSelfAssignment() {
-        Body originalBody = getBody("case1");
+  @Test
+  public void testBranchMoreBranches() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchMoreBranches"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l2#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l2#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
+    expectedLocals.add("l1#5");
+    expectedLocals.add("l1#6");
 
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
+    assertLocals(expectedLocals, builder);
 
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#3 = l1#0 - 1;\n"
+            + "l1#2 = l1#3 - 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "if l1#2 <= 1 goto label3;\n"
+            + "l1#4 = l1#2 + 3;\n"
+            + "l1#5 = l1#4 + 5;\n"
+            + "\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "l1#6 = l1#2 - 3;\n"
+            + "l1#5 = l1#6 - 5;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#5;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-        String expectedStmts = "l0 := @this: LocalSplitterTarget;\n" +
-                "l1#1 = 0;\n" +
-                "l2#2 = 1;\n" +
-                "l1#3 = l1#1 + 1;\n" +
-                "l2#4 = l2#2 + 1;\n" +
-                "\n" +
-                "return;";
+  @Test
+  public void testBranchElseIf() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchElseIf"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
 
-    @Test
-    public void testBranch() {
-        Body originalBody = getBody("case2");
+    assertLocals(expectedLocals, builder);
 
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "\n"
+            + "goto label3;\n"
+            + "\n"
+            + "label1:\n"
+            + "if l1#0 >= 5 goto label2;\n"
+            + "l1#3 = l1#0 - 1;\n"
+            + "l1#2 = l1#3 - 2;\n"
+            + "\n"
+            + "goto label3;\n"
+            + "\n"
+            + "label2:\n"
+            + "l1#4 = l1#0 * 1;\n"
+            + "l1#2 = l1#4 * 2;\n"
+            + "\n"
+            + "label3:\n"
+            + "return l1#2;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
+  @Test
+  public void testForLoop() {
+    Body.BodyBuilder builder = Body.builder(getBody("forLoop"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
-        String expectedStmts = "l0 := @this: LocalSplitterTarget;\n" +
-                "l1#1 = 0;\n" +
-                "\n" +
-                "if l1#1 >= 0 goto label1;\n" +
-                "l1#2 = l1#1 + 1;\n" +
-                "\n" +
-                "goto label2;\n" +
-                "\n" +
-                "label1:\n" +
-                "l1#3 = l1#1 - 1;\n" +
-                "l1#2 = l1#3 + 2;\n" +
-                "\n" +
-                "label2:\n" +
-                "return l1#2;";
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
+    assertLocals(expectedLocals, builder);
 
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1 = 0;\n"
+            + "l2#0 = 0;\n"
+            + "\n"
+            + "label1:\n"
+            + "if l2#0 >= 10 goto label2;\n"
+            + "l2#1 = l2#0 + 1;\n"
+            + "l1 = l1 + 1;\n"
+            + "l2#0 = l2#1 + 1;\n"
+            + "\n"
+            + "goto label1;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 
-    @Test
-    public void testBranchMoreLocals() {
-        Body originalBody = getBody("case3");
+  @Test
+  public void testReusedLocals() {
+    Body.BodyBuilder builder = Body.builder(getBody("reusedLocals"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#5", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#6", UnknownType.getInstance(), NoPositionInformation.getInstance()));
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
+    expectedLocals.add("$stack3");
+    expectedLocals.add("$stack4");
+    expectedLocals.add("$stack5");
+    expectedLocals.add("$stack6");
 
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
+    assertLocals(expectedLocals, builder);
 
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
-
-        String expectedStmts = "l0 := @this: LocalSplitterTarget;\n" +
-                "l1#1 = 0;\n" +
-                "\n" +
-                "if l1#1 >= 0 goto label1;\n" +
-                "l1#2 = l1#1 + 1;\n" +
-                "l1#3 = l1#2 + 2;\n" +
-                "l1#4 = l1#3 + 3;\n" +
-                "\n" +
-                "goto label2;\n" +
-                "\n" +
-                "label1:\n" +
-                "l1#5 = l1#1 - 1;\n" +
-                "l1#6 = l1#5 - 2;\n" +
-                "l1#4 = l1#6 - 3;\n" +
-                "\n" +
-                "label2:\n" +
-                "return l1#4;";
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
-
-
-    @Test
-    public void testBranchMoreBranches() {
-        Body originalBody = getBody("case4");
-
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#5", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#6", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#7", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
-
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
-
-        String expectedStmts =
-                "l0 := @this: LocalSplitterTarget;\n" +
-                        "l1#1 = 0;\n" +
-                        "\n" +
-                        "if l1#1 >= 0 goto label1;\n" +
-                        "l1#2 = l1#1 + 1;\n" +
-                        "l1#3 = l1#2 + 2;\n" +
-                        "\n" +
-                        "goto label2;\n" +
-                        "\n" +
-                        "label1:\n" +
-                        "l1#4 = l1#1 - 1;\n" +
-                        "l1#3 = l1#4 - 2;\n" +
-                        "\n" +
-                        "label2:\n" +
-                        "if l1#3 <= 1 goto label3;\n" +
-                        "l1#5 = l1#3 + 3;\n" +
-                        "l1#6 = l1#5 + 5;\n" +
-                        "\n" +
-                        "goto label4;\n" +
-                        "\n" +
-                        "label3:\n" +
-                        "l1#7 = l1#3 - 3;\n" +
-                        "l1#6 = l1#7 - 5;\n" +
-                        "\n" +
-                        "label4:\n" +
-                        "return l1#6;";
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
-
-
-    @Test
-    public void testBranchElseIf() {
-        Body originalBody = getBody("case5");
-
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#5", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
-
-        Body newBody = builder.build();
-        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-        assertTrue(newBody.getLocals().containsAll(expectedLocals));
-
-        String expectedStmts =
-                "l0 := @this: LocalSplitterTarget;\n" +
-                        "l1#1 = 0;\n" +
-                        "\n" +
-                        "if l1#1 >= 0 goto label1;\n" +
-                        "l1#2 = l1#1 + 1;\n" +
-                        "l1#3 = l1#2 + 2;\n" +
-                        "\n" +
-                        "goto label3;\n" +
-                        "\n" +
-                        "label1:\n" +
-                        "if l1#1 >= 5 goto label2;\n" +
-                        "l1#4 = l1#1 - 1;\n" +
-                        "l1#3 = l1#4 - 2;\n" +
-                        "\n" +
-                        "goto label3;\n" +
-                        "\n" +
-                        "label2:\n" +
-                        "l1#5 = l1#1 * 1;\n" +
-                        "l1#3 = l1#5 * 2;\n" +
-                        "\n" +
-                        "label3:\n" +
-                        "return l1#3;";
-        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
-
-
-    @Test
-    public void testForLoop() {
-        Body originalBody = getBody("case6");
-
-        List<Local> expectedLocals = new ArrayList<>();
-        expectedLocals.addAll(originalBody.getLocals());
-        expectedLocals.add(new Local("l1#1", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#2", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#3", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#4", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-        expectedLocals.add(new Local("l1#5", UnknownType.getInstance(), NoPositionInformation.getInstance()));
-
-        Body.BodyBuilder builder = Body.builder(originalBody, Collections.emptySet());
-        LocalSplitter localSplitter = new LocalSplitter();
-        localSplitter.interceptBody(builder, view);
-
-
-        Body newBody = builder.build();
-
-        System.out.println(newBody);
-
-//        assertTrue(expectedLocals.containsAll(newBody.getLocals()));
-//        assertTrue(newBody.getLocals().containsAll(expectedLocals));
-
-        String expectedStmts =
-                "l0 := @this: LocalSplitterTarget;\n" +
-                        "l1#1 = 0;\n" +
-                        "\n" +
-                        "if l1#1 >= 0 goto label1;\n" +
-                        "l1#2 = l1#1 + 1;\n" +
-                        "l1#3 = l1#2 + 2;\n" +
-                        "\n" +
-                        "goto label3;\n" +
-                        "\n" +
-                        "label1:\n" +
-                        "if l1#1 >= 5 goto label2;\n" +
-                        "l1#4 = l1#1 - 1;\n" +
-                        "l1#3 = l1#4 - 2;\n" +
-                        "\n" +
-                        "goto label3;\n" +
-                        "\n" +
-                        "label2:\n" +
-                        "l1#5 = l1#1 * 1;\n" +
-                        "l1#3 = l1#5 * 2;\n" +
-                        "\n" +
-                        "label3:\n" +
-                        "return l1#3;";
-//        assertEquals(expectedStmts, newBody.getStmtGraph().toString().trim());
-    }
-
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "$stack3 = staticinvoke <java.lang.Math: double random()>();\n"
+            + "$stack4 = $stack3 cmpl 0.0;\n"
+            + "\n"
+            + "if $stack4 != 0 goto label1;\n"
+            + "l2#0 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(1);\n"
+            + "l1#0 = l2#0;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l2#1 = \"\";\n"
+            + "l1#0 = l2#1;\n"
+            + "\n"
+            + "label2:\n"
+            + "$stack5 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l1#0);\n"
+            + "l1#1 = null;\n"
+            + "$stack6 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.Object)>(l1#1);\n"
+            + "\n"
+            + "return;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 }
