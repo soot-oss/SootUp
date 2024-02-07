@@ -50,8 +50,6 @@ public class LocalSplitter implements BodyInterceptor {
     /** Stores the size of a tree under the key. Only updated for roots of trees. */
     private final Map<T, Integer> sizes = new HashMap<>();
 
-    private int setCount = 0;
-
     /**
      * Creates a new set that only contains the {@code node}. Does nothing when the forest already
      * contains the {@code node}.
@@ -61,7 +59,6 @@ public class LocalSplitter implements BodyInterceptor {
 
       parent.put(node, node);
       sizes.put(node, 1);
-      setCount++;
     }
 
     /** Finds the representative of the set that contains the {@code node}. */
@@ -97,13 +94,13 @@ public class LocalSplitter implements BodyInterceptor {
       sizes.put(larger, sizes.get(smaller) + sizes.get(larger));
       sizes.remove(smaller);
 
-      setCount--;
-
       return larger;
     }
 
     int getSetCount() {
-      return setCount;
+      // `sizes` only contains values for the root of the trees,
+      // so its size matches the total number of sets
+      return sizes.size();
     }
   }
 
