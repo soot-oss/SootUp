@@ -27,6 +27,7 @@ jobs:
           # -U force updates just to make sure we are using latest dependencies
           # -B Batch mode (do not ask for user input), just in case
           # -P activate profile
+          gpg --list-secret-keys
           mvn -X -U -B clean deploy -Prelease -DskipTests
         env:
           SIGN_KEY_PASS: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
