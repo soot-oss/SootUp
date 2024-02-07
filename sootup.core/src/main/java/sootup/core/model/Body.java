@@ -370,12 +370,6 @@ public class Body implements HasPosition {
       return this;
     }
 
-    @Nonnull
-    public BodyBuilder removeLocal(@Nonnull Local local) {
-      locals.remove(local);
-      return this;
-    }
-
     public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
       if (!locals.contains(oldLocal)) {
         throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");

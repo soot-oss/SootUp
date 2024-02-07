@@ -538,6 +538,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
               return nestedBlocks.pollFirst();
             }
           }
+
           return null;
         }
 
