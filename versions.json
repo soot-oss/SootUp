@@ -34,5 +34,10 @@
     "aliases": [
       "latest"
     ]
+  },
+  {
+    "version": "v1_2_0",
+    "title": "v1_2_0",
+    "aliases": []
   }
 ]
