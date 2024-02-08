@@ -223,7 +223,7 @@ public class LocalSplitter implements BodyInterceptor {
     return builder.getStmts().stream()
         .filter(stmt -> stmt instanceof AbstractDefinitionStmt)
         .map(stmt -> (AbstractDefinitionStmt) stmt)
-        .filter(stmt -> stmt.getLeftOp() == local)
+        .filter(stmt -> stmt.getLeftOp().equals(local))
         .collect(Collectors.toList());
   }
 }
