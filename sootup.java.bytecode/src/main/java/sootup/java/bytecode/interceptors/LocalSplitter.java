@@ -23,20 +23,15 @@ package sootup.java.bytecode.interceptors;
  */
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LValue;
+import sootup.core.graph.*;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.Body.BodyBuilder;
 import sootup.core.transform.BodyInterceptor;
-import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /**
@@ -58,349 +53,237 @@ import sootup.core.views.View;
  *
  * <pre>
  *    l0 := @this Test
- *    l1#1 = 0
- *    l2#2 = 1
- *    l1#3 = l1#1 + 1
- *    l2#4 = l2#2 + 1
+ *    l1#0 = 0
+ *    l2#0 = 1
+ *    l1#1 = l1#0 + 1
+ *    l2#1 = l2#0 + 1
  *    return
  * </pre>
- *
- * @author Zun Wang
  */
 public class LocalSplitter implements BodyInterceptor {
-  // FIXME: [ms] assumes that names of Locals do not contain a '#' already -> could lead to problems
-  // TODO: [ms] check equivTo()'s - I guess they can be equals()'s - or even: '=='s
+
+  /**
+   * Contains disjoint sets of nodes which are implemented as trees. Every set is represented by a
+   * tree in the forest. Each set is identified by the root node of its tree, also known as its
+   * representative.
+   *
+   * <p><a href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure">Disjoint-set data
+   * structure</a>
+   */
+  static class DisjointSetForest<T> {
+    /** Every node points to its parent in its tree. Roots of trees point to themselves. */
+    private final Map<T, T> parent = new HashMap<>();
+
+    /** Stores the size of a tree under the key. Only updated for roots of trees. */
+    private final Map<T, Integer> sizes = new HashMap<>();
+
+    /**
+     * Creates a new set that only contains the {@code node}. Does nothing when the forest already
+     * contains the {@code node}.
+     */
+    void add(T node) {
+      if (parent.containsKey(node)) return;
+
+      parent.put(node, node);
+      sizes.put(node, 1);
+    }
+
+    /** Finds the representative of the set that contains the {@code node}. */
+    T find(T node) {
+      if (!parent.containsKey(node))
+        throw new IllegalArgumentException("The DisjointSetForest does not contain the node.");
+
+      while (parent.get(node) != node) {
+        // Path Halving to get amortized constant operations
+        T grandparent = parent.get(parent.get(node));
+        parent.put(node, grandparent);
+
+        node = grandparent;
+      }
+      return node;
+    }
+
+    /**
+     * Combines the sets of {@code first} and {@code second}. Returns the representative of the
+     * combined set.
+     */
+    void union(T first, T second) {
+      first = find(first);
+      second = find(second);
+
+      if (first == second) return;
+
+      T smaller = (sizes.get(first) > sizes.get(second)) ? second : first;
+      T larger = (smaller == first) ? second : first;
+
+      // adding the smaller subtree to the larger tree keeps the tree flatter
+      parent.put(smaller, larger);
+      sizes.put(larger, sizes.get(smaller) + sizes.get(larger));
+      sizes.remove(smaller);
+    }
+
+    int getSetCount() {
+      // `sizes` only contains values for the root of the trees,
+      // so its size matches the total number of sets
+      return sizes.size();
+    }
+  }
+
+  static class PartialStmt {
+    @Nonnull final Stmt inner;
+
+    /**
+     * Whether the partial statement refers to only the definitions of the inner statement or only
+     * to the uses.
+     */
+    final boolean isDef;
+
+    PartialStmt(@Nonnull Stmt inner, boolean isDef) {
+      this.inner = inner;
+      this.isDef = isDef;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      PartialStmt that = (PartialStmt) o;
+
+      if (isDef != that.isDef) return false;
+      return inner.equals(that.inner);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = inner.hashCode();
+      result = 31 * result + (isDef ? 1 : 0);
+      return result;
+    }
+  }
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    MutableStmtGraph graph = builder.getStmtGraph();
 
-    // Find all Locals that must be split
-    // If a local as a definition appears two or more times, then this local must be split
-    List<Stmt> stmts = builder.getStmts();
-    Set<Local> visitedLocals = new LinkedHashSet<>();
-    Set<Local> toSplitLocals = new LinkedHashSet<>();
-    for (Stmt stmt : stmts) {
-      final List<LValue> defs = stmt.getDefs();
-      if (!defs.isEmpty()) {
-        Value def = defs.get(0);
-        if (def instanceof Local) {
-          if (visitedLocals.contains(def)) {
-            toSplitLocals.add((Local) def);
-          }
-          visitedLocals.add((Local) def);
-        }
+    // `#` is used as a special character for splitting the locals,
+    // so it can't be in any of the original local names since it might cause name collisions
+    assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
+
+    // Cache the statements to not have to retrieve them for every local
+    List<Stmt> statements = new ArrayList<>(graph.getStmts());
+    // Maps every local to its assignment statements.
+    // Contains indices to the above list to reduce bookkeeping when modifying statements.
+    Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(statements);
+
+    Set<Local> newLocals = new HashSet<>();
+
+    for (Local local : builder.getLocals()) {
+      // Use a disjoint set while walking the statement graph to union all uses of the local that
+      // can be reached from each definition. This will automatically union definitions that have
+      // overlapping uses and therefore can't be split.
+      // It uses a `PartialStmt` instead of `Stmt` because a statement might contain both a
+      // definition and use of a local, and they need to be processed separately.
+      DisjointSetForest<PartialStmt> disjointSet = new DisjointSetForest<>();
+
+      List<AbstractDefinitionStmt> assignments =
+          assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
+              .map(i -> (AbstractDefinitionStmt) statements.get(i))
+              .collect(Collectors.toList());
+
+      if (assignments.size() <= 1) {
+        // There is only a single assignment to the local, so no splitting is necessary
+        newLocals.add(local);
+        continue;
       }
-    }
 
-    StmtGraph<?> graph = builder.getStmtGraph();
+      // Walk the statement graph starting from every definition and union all uses until a
+      // different definition is encountered.
+      for (AbstractDefinitionStmt assignment : assignments) {
+        PartialStmt defStmt = new PartialStmt(assignment, true);
+        disjointSet.add(defStmt);
 
-    // Create a new Local-Set for the modified new body.
-    Set<Local> newLocals = new LinkedHashSet<>(builder.getLocals());
-    int localIndex = 1;
+        List<Stmt> stack = new ArrayList<>(graph.successors(assignment));
+        stack.addAll(graph.exceptionalSuccessors(assignment).values());
+        Set<Stmt> visited = new HashSet<>();
 
-    // iterate stmts
-    while (!stmts.isEmpty()) {
-      Stmt currentStmt = stmts.remove(0);
-      // At first Check the definition(left side) of the currentStmt is a local which must be split:
-      final List<LValue> defs = currentStmt.getDefs();
-      if (!defs.isEmpty() && defs.get(0) instanceof Local && toSplitLocals.contains(defs.get(0))) {
-        // then assign a new name to the oriLocal to get a new local which is called newLocal
-        Local oriLocal = (Local) defs.get(0);
-        Local newLocal = oriLocal.withName(oriLocal.getName() + "#" + localIndex);
-        newLocals.add(newLocal);
-        localIndex++;
-
-        // create newStmt whose definition is replaced with the newLocal,
-        Stmt newStmt = ((AbstractDefinitionStmt) currentStmt).withNewDef(newLocal);
-        // replace corresponding oldStmt with newStmt in builder
-        replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
-
-        // Build the forwardsQueue which is used to iterate all Stmts before the orilocal is defined
-        // again.
-        // The direction of iteration is from root of the StmtGraph to leafs. So the successors of
-        // the newStmt are added into the forwardsQueue.
-        Deque<Stmt> forwardsQueue = new ArrayDeque<>(graph.successors(newStmt));
-        // Create the visitedStmt to store the visited Stmts for the forwardsQueue, to avoid, a
-        // Stmt is added twice into the forwardQueue.
-        Set<Stmt> visitedStmts = new HashSet<>();
-
-        while (!forwardsQueue.isEmpty()) {
-          Stmt head = forwardsQueue.remove();
-          visitedStmts.add(head);
-
-          // 1.case: if useList of head contains oriLocal, then replace the oriLocal with
-          // newLocal.
-          if (head.getUses().contains(oriLocal)) {
-            Stmt newHead = head.withNewUse(oriLocal, newLocal);
-            replaceStmtInBuilder(builder, stmts, head, newHead);
-
-            // if head doesn't define the the oriLocal again, then add all successors which are
-            // not in forwardsQueue and visitedUsesStmt, into the forwardsQueue.
-            if (newHead.getDefs().isEmpty() || !newHead.getDefs().get(0).equivTo(oriLocal)) {
-              for (Stmt succ : graph.successors(newHead)) {
-                if (!visitedStmts.contains(succ) && !forwardsQueue.contains(succ)) {
-                  forwardsQueue.addLast(succ);
-                }
-              }
-            }
+        while (!stack.isEmpty()) {
+          Stmt stmt = stack.remove(stack.size() - 1);
+          if (!visited.add(stmt)) {
+            continue;
           }
 
-          // 2.case: if uses of head contains the modified orilocal, so a conflict maybe arise,
-          // then trace the StmtGraph backwards to resolve the conflict.
-          else if (hasModifiedUse(head, oriLocal)) {
-
-            Local modifiedLocal = getModifiedUse(head, oriLocal);
-            if (modifiedLocal == null) {
-              throw new IllegalStateException("Modified Use is not found.");
-            }
-
-            // if modifed name is not same as the newLocal's name then -> conflict arises -> trace
-            // backwards
-            if (!modifiedLocal.getName().equals(newLocal.getName())) {
-              localIndex--;
-
-              // Build the backwardsQueue which is used to iterate all Stmts between head and the
-              // Stmts which define the oriLocal in last time.
-              // The direction of iteration is from leave of the StmtGraph to the root. So the
-              // predecessors of head are added into the BackwardsQueue.
-              Deque<Stmt> backwardsQueue = new ArrayDeque<>(graph.predecessors(head));
-
-              while (!backwardsQueue.isEmpty()) {
-                // Remove the first Stmt of backwardQueue, and name it as backStmt.
-                Stmt backStmt = backwardsQueue.remove();
-
-                // 2.1 case: if backStmt's definition is the modified and has a higher
-                // local-name-index than the modifiedLocal of head
-                // then replace the definition of backStmt with the modifiedLocal of head, and
-                // remove the corresponding Local(definition of backStmt) from the set: newLocals
-                if (hasModifiedDef(backStmt, oriLocal)) {
-                  if (hasHigherLocalName((Local) backStmt.getDefs().get(0), modifiedLocal)) {
-                    Stmt newBackStmt =
-                        ((AbstractDefinitionStmt) backStmt).withNewDef(modifiedLocal);
-                    replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
-                    newLocals.remove(newLocal);
-                  }
-                }
-                // 2.2 case: if backStmt's uses contains the modified oriLocal, and this
-                // modified oriLocal has a higher local-name-index that the modifiedLocal of head
-                // then replace the corresponding use of backStmt with modifiedLocal of head, and
-                // add all predecessors of the backStmt into the backwardsQueue.
-                else if (hasModifiedUse(backStmt, oriLocal)) {
-                  Local modifiedUse = getModifiedUse(backStmt, oriLocal);
-                  if (hasHigherLocalName(modifiedUse, modifiedLocal)) {
-                    Stmt newBackStmt = backStmt.withNewUse(modifiedUse, modifiedLocal);
-                    replaceStmtInBuilder(builder, stmts, backStmt, newBackStmt);
-                    backwardsQueue.addAll(graph.predecessors(newBackStmt));
-                  }
-                }
-                // 2.3 case: if there's no relationship between backStmt's defs/uses and
-                // oriLocal, then add all predecessors of the backStmt into the backwardsQueue.
-                else {
-                  backwardsQueue.addAll(graph.predecessors(backStmt));
-                }
-              }
-            }
+          if (stmt.getUses().contains(local)) {
+            PartialStmt useStmt = new PartialStmt(stmt, false);
+            disjointSet.add(useStmt);
+            disjointSet.union(defStmt, useStmt);
           }
-          // 3.case: if uses of head contains neither orilocal nor the modified orilocal,
-          // then add all successors of head which are not in forwardsQueue and visitedStmts,
-          // into the forwardsQueue.
-          else {
-            final List<LValue> headDefs = head.getDefs();
-            if (headDefs.isEmpty() || !headDefs.get(0).equivTo(oriLocal)) {
-              for (Stmt succ : graph.successors(head)) {
-                if (!visitedStmts.contains(succ) && !forwardsQueue.contains(succ)) {
-                  forwardsQueue.addLast(succ);
-                }
-              }
-            }
-          }
-        }
-        // Then check the uses of currentStmt:
-      } else {
-        // For each Local(oriL) which is to be split, check whether it is used in currentStmt
-        // without definition before.
-        // We define a StmtGraph consists of a mainStmtGraph and none or more trapStmtGraphs.
-        // This situation could arise just in a trapStmtGraph.
-        for (Local oriLocal : toSplitLocals) {
-          // If so:
-          // 1.step: find out all trapStmtGraphs' root(handlerStmts) which contain currentStmt,
-          // namely a set of handlerStmts.
-          // 2.step: find out all stmts whose exceptional destination-traps are with the found
-          // handlerStmts.
-          // 3.step: iterate these stmts, find a modified oriL((Local) with a maximum name index.
-          // 4.step: Use this modified oriL to modify the visitedStmt
-          if (currentStmt.getUses().contains(oriLocal)) {
-            // 1.step:
-            Set<Stmt> handlerStmts = traceHandlerStmts(graph, currentStmt);
-            // 2.step:
-            Set<Stmt> stmtsWithDests = new HashSet<>();
-            for (Stmt handlerStmt : handlerStmts) {
-              for (Stmt exceptionalPred : graph.predecessors(handlerStmt)) {
-                Map<ClassType, Stmt> dests = graph.exceptionalSuccessors(exceptionalPred);
-                List<Stmt> destHandlerStmts = new ArrayList<>();
-                dests.forEach((key, dest) -> destHandlerStmts.add(dest));
-                if (destHandlerStmts.contains(handlerStmt)) {
-                  stmtsWithDests.add(exceptionalPred);
-                }
-              }
-            }
-            // 3.step:
-            Local lastChange = null;
-            for (Stmt stmt : stmtsWithDests) {
-              if (hasModifiedDef(stmt, oriLocal)) {
-                Local modifiedLocal = (Local) stmt.getDefs().get(0);
-                if (lastChange == null || hasHigherLocalName(modifiedLocal, lastChange)) {
-                  lastChange = modifiedLocal;
-                }
-              }
-            }
-            // 4.step:
-            if (lastChange != null) {
-              Stmt newStmt = currentStmt.withNewUse(oriLocal, lastChange);
-              replaceStmtInBuilder(builder, stmts, currentStmt, newStmt);
-            }
+
+          // a new assignment to the local -> end walk here
+          // otherwise continue by adding all successors to the stack
+          if (!stmt.getDefs().contains(local)) {
+            stack.addAll(graph.successors(stmt));
+            stack.addAll(graph.exceptionalSuccessors(stmt).values());
           }
         }
       }
+
+      if (disjointSet.getSetCount() <= 1) {
+        // There is only a single that local that can't be split
+        newLocals.add(local);
+        continue;
+      }
+
+      // Split locals, according to the disjoint sets found above.
+      Map<PartialStmt, Local> representativeToNewLocal = new HashMap<>();
+      final int[] nextId = {0}; // Java quirk; just an `int` doesn't work
+
+      for (int i = 0; i < statements.size(); i++) {
+        Stmt stmt = statements.get(i);
+        if (!stmt.getUsesAndDefs().contains(local)) {
+          continue;
+        }
+
+        Stmt oldStmt = stmt;
+
+        Function<Boolean, Local> getNewLocal =
+            isDef ->
+                representativeToNewLocal.computeIfAbsent(
+                    disjointSet.find(new PartialStmt(oldStmt, isDef)),
+                    s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+
+        if (stmt.getDefs().contains(local)) {
+          Local newDefLocal = getNewLocal.apply(true);
+          newLocals.add(newDefLocal);
+          stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
+        }
+
+        if (stmt.getUses().contains(local)) {
+          Local newUseLocal = getNewLocal.apply(false);
+          newLocals.add(newUseLocal);
+          stmt = stmt.withNewUse(local, newUseLocal);
+        }
+
+        graph.replaceNode(oldStmt, stmt);
+        statements.set(i, stmt);
+      }
     }
+
     builder.setLocals(newLocals);
   }
 
-  // ******************assist_functions*************************
+  Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {
+    Map<Local, List<Integer>> groupings = new HashMap<>();
 
-  /**
-   * Replace corresponding oldStmt with newStmt in BodyBuilder and visitList
-   *
-   * @param builder
-   * @param stmtIterationList
-   * @param oldStmt
-   * @param newStmt
-   */
-  private void replaceStmtInBuilder(
-      @Nonnull BodyBuilder builder,
-      @Nonnull List<Stmt> stmtIterationList,
-      @Nonnull Stmt oldStmt,
-      @Nonnull Stmt newStmt) {
+    for (int i = 0; i < statements.size(); i++) {
+      Stmt stmt = statements.get(i);
+      if (!(stmt instanceof AbstractDefinitionStmt)) continue;
+      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
+      if (!(defStmt.getLeftOp() instanceof Local)) continue;
 
-    builder.replaceStmt(oldStmt, newStmt);
-
-    // adapt VisitList
-    final int index = stmtIterationList.indexOf(oldStmt);
-    if (index > -1) {
-      stmtIterationList.set(index, newStmt);
+      groupings.computeIfAbsent((Local) defStmt.getLeftOp(), x -> new ArrayList<>()).add(i);
     }
-  }
 
-  /**
-   * Check whether a Stmt's useList contains the given modified oriLocal.
-   *
-   * @param stmt: a stmt is to be checked
-   * @param oriLocal: a local is to be checked
-   * @return if so, return true, else return false
-   */
-  private boolean hasModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    for (Value use : stmt.getUses()) {
-      return isLocalFromSameOrigin(oriLocal, use);
-    }
-    return false;
-  }
-
-  /**
-   * Get the modified Local if a Stmt's useList contains the given modified oriLocal
-   *
-   * @param stmt: a stmt is to be checked
-   * @param oriLocal: a local is to be checked.
-   * @return if so, return this modified local, else return null
-   */
-  @Nullable
-  private Local getModifiedUse(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    if (hasModifiedUse(stmt, oriLocal)) {
-      List<Value> useList = stmt.getUses();
-      for (Value use : useList) {
-        if (isLocalFromSameOrigin(oriLocal, use)) {
-          return (Local) use;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Check whether a local is modified from the given oriLocal
-   *
-   * @param local: a local is to be checked
-   * @param oriLocal: the given oriLocal
-   * @return if so, return true, else return false.
-   */
-  private boolean isLocalFromSameOrigin(@Nonnull Local oriLocal, Value local) {
-    if (local instanceof Local) {
-      final String name = ((Local) local).getName();
-      final String origName = oriLocal.getName();
-      final int origLength = origName.length();
-      return name.length() > origLength
-          && name.startsWith(origName)
-          && name.charAt(origLength) == '#';
-    }
-    return false;
-  }
-
-  /**
-   * Check whether a Stmt's def is the modified oriLocal
-   *
-   * @param stmt: a stmt is to be checked
-   * @param oriLocal: a local is to be checked
-   * @return if so, return true, else return false
-   */
-  private boolean hasModifiedDef(@Nonnull Stmt stmt, @Nonnull Local oriLocal) {
-    final List<LValue> defs = stmt.getDefs();
-    if (!defs.isEmpty() && defs.get(0) instanceof Local) {
-      return isLocalFromSameOrigin(oriLocal, defs.get(0));
-    }
-    return false;
-  }
-
-  /**
-   * Check whether leftLocal's name has higher index than rightLocal's.
-   *
-   * @param leftLocal: a local in form oriLocal#num1
-   * @param rightLocal: a local in form oriLocal#num2
-   * @return if so return true, else return false
-   */
-  private boolean hasHigherLocalName(@Nonnull Local leftLocal, @Nonnull Local rightLocal) {
-    String leftName = leftLocal.getName();
-    String rightName = rightLocal.getName();
-    int lIdx = leftName.lastIndexOf('#');
-    int rIdx = rightName.lastIndexOf('#');
-    int leftNum = Integer.parseInt(leftName.substring(lIdx + 1));
-    int rightNum = Integer.parseInt(rightName.substring(rIdx + 1));
-    return leftNum > rightNum;
-  }
-
-  /**
-   * A given entryStmt may be in one or several trapStmtGraphs, return these trapStmtGraphs'
-   * handlerStmts
-   *
-   * @param entryStmt a given entryStmt which is in one or several trapStmtGraphs
-   * @param graph to trace handlerStmts
-   * @return a set of handlerStmts
-   */
-  @Nonnull
-  private Set<Stmt> traceHandlerStmts(@Nonnull StmtGraph<?> graph, @Nonnull Stmt entryStmt) {
-
-    Set<Stmt> handlerStmts = new HashSet<>();
-
-    Deque<Stmt> queue = new ArrayDeque<>();
-    queue.add(entryStmt);
-    while (!queue.isEmpty()) {
-      Stmt stmt = queue.removeFirst();
-      if (stmt instanceof JIdentityStmt
-          && ((JIdentityStmt) stmt).getRightOp() instanceof JCaughtExceptionRef) {
-        handlerStmts.add(stmt);
-      } else {
-        final List<Stmt> predecessors = graph.predecessors(stmt);
-        queue.addAll(predecessors);
-      }
-    }
-    return handlerStmts;
+    return groupings;
   }
 }
