@@ -1,603 +1,412 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.Assert.assertEquals;
+
 import categories.Java8Test;
 import java.util.*;
+import java.util.stream.Collectors;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.constant.IntConstant;
-import sootup.core.jimple.common.ref.IdentityRef;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.FallsThroughStmt;
-import sootup.core.jimple.common.stmt.JGotoStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.Position;
-import sootup.core.signatures.MethodSignature;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.types.VoidType;
-import sootup.core.util.ImmutableUtils;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.language.JavaJimple;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
-/** @author Zun Wang */
 @Category(Java8Test.class)
 public class LocalSplitterTest {
+  JavaView view;
+  LocalSplitter localSplitter = new LocalSplitter();
 
-  // Preparation
-  JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
+  @Before
+  public void setup() {
+    String classPath = "src/test/java/resources/interceptors";
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(classPath);
+    view = new JavaView(inputLocation);
+  }
 
-  JavaClassType intType = factory.getClassType("int");
-  JavaClassType classType = factory.getClassType("Test");
-  MethodSignature methodSignature =
-      new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
-  IdentityRef identityRef = JavaJimple.newThisRef(classType);
+  private Body getBody(String methodName) {
+    ClassType type = new JavaClassType("LocalSplitterTarget", PackageName.DEFAULT_PACKAGE);
+    SootMethod sootMethod =
+        view.getClass(type).get().getMethods().stream()
+            .filter(method -> method.getName().equals(methodName))
+            .findFirst()
+            .get();
+    return sootMethod.getBody();
+  }
 
-  // build locals
-  Local l0 = JavaJimple.newLocal("l0", intType);
-  Local l1 = JavaJimple.newLocal("l1", intType);
-  Local l2 = JavaJimple.newLocal("l2", intType);
-  Local l3 = JavaJimple.newLocal("l3", intType);
-  Local stack3 = JavaJimple.newLocal("stack3", intType);
-  Local stack4 = JavaJimple.newLocal("stack4", intType);
-  Local l1hash1 = JavaJimple.newLocal("l1#1", intType);
-  Local l1hash2 = JavaJimple.newLocal("l1#2", intType);
-  Local l1hash3 = JavaJimple.newLocal("l1#3", intType);
-  Local l2hash2 = JavaJimple.newLocal("l2#2", intType);
-  Local l2hash4 = JavaJimple.newLocal("l2#4", intType);
+  void assertLocals(Set<String> localNames, Body.BodyBuilder builder) {
+    assertEquals(
+        localNames, builder.getLocals().stream().map(Local::getName).collect(Collectors.toSet()));
+  }
 
-  ClassType exception = factory.getClassType("Exception");
-  JavaJimple javaJimple = JavaJimple.getInstance();
-  IdentityRef caughtExceptionRef = javaJimple.newCaughtExceptionRef();
-  Stmt startingStmt = JavaJimple.newIdentityStmt(l0, identityRef, noStmtPositionInfo);
-
-  /**
-   * int a = 0; if(a<0) a = a + 1; else {a = a+ 1; a = a +1;} return a
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1 = 0
-   *    if l1 >= 0 goto label1
-   *    l1 = l1 + 1
-   *    goto label2
-   * label1:
-   *    l1 = l1 - 1
-   *    l1 = l1 + 2
-   * label2:
-   *    return l1
-   * </pre>
-   *
-   * to:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1#1 = 0
-   *    if l1#1 >= 0 goto label1
-   *    l1#2 = l1#1 + 1
-   *    goto label2
-   * label1:
-   *    l1#3 = l1#1 - 1
-   *    l1#2 = l1#3 + 2
-   * label2:
-   *    return l1#2
-   * </pre>
-   */
   @Test
-  public void testLocalSplitterForBinaryBranches() {
+  @Ignore("Takes too long. Good for profiling though.")
+  public void JRT() {
+    JrtFileSystemAnalysisInputLocation inputLocation =
+        new JrtFileSystemAnalysisInputLocation(
+            SourceType.Library, Collections.singletonList(localSplitter));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
-    Body body = createBBBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder, null);
-    Body expectedBody = createExpectedBBBody();
-
-    final Body interceptedBody = builder.build();
-    // check newBody's locals
-    AssertUtils.assertLocalsEquiv(expectedBody, interceptedBody);
-
-    // check newBody's stmtGraph
-    AssertUtils.assertStmtGraphEquiv(expectedBody, interceptedBody);
+    // ~200_000 methods
+    view.getClasses()
+        .parallelStream()
+        .flatMap(clazz -> clazz.getMethods().stream())
+        .filter(method -> !method.isAbstract() && !method.isNative())
+        .forEach(SootMethod::getBody);
   }
 
-  /**
-   * int a = 0; int b = 0; a = a + 1; b = b + 1;
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1 = 0
-   *    l2 = 1
-   *    l1 = l1 + 1
-   *    l2 = l2 + 1
-   *    return
-   * </pre>
-   *
-   * to:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1#1 = 0
-   *    l2#2 = 1
-   *    l1#3 = l1#1 + 1
-   *    l2#4 = l2#2 + 1
-   *    return
-   * </pre>
-   */
   @Test
-  public void testLocalSplitterForMultilocals() {
+  public void testSimpleAssignment() {
+    Body.BodyBuilder builder = Body.builder(getBody("simpleAssignment"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    Body body = createMultilocalsBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder, null);
-    Body expectedBody = createExpectedMuiltilocalsBody();
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
-    // check newBody's locals
-    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    assertLocals(expectedLocals, builder);
 
-    // check newBody's stmtGraph
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "l2#0 = 1;\n"
+            + "l1#1 = l2#0 + 1;\n"
+            + "l2#1 = l1#1 + 1;\n"
+            + "\n"
+            + "return;";
+
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  /**
-   * for(int i = 0; i < 10; i++){ i = i + 1 } transform:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1 = 0
-   * label1:
-   *    $stack4 = l1
-   *    $stack3 = 10
-   *    if $stack4 >= $stack3 goto label2
-   *    l2 = l1 + 1
-   *    l1 = l2 + 1
-   *    l1 = l1 +1
-   *    goto label1
-   * label2:
-   *    return
-   * </pre>
-   *
-   * to:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1#1 = 0
-   * label1:
-   *    $stack4 = l1#1
-   *    $stack3 = 10
-   *    if $stack4 >= $stack3 goto label2
-   *    l2 = l1#1 + 1
-   *    l1#2 = l2 + 1
-   *    l1#1 = l1#2 +1
-   *    goto label1
-   * label2:
-   *    return
-   * </pre>
-   */
   @Test
-  public void testLocalSplitterForLoop() {
+  public void testSelfAssignment() {
+    Body.BodyBuilder builder = Body.builder(getBody("selfAssignment"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    Body body = createLoopBody();
-    Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
-    LocalSplitter localSplitter = new LocalSplitter();
-    localSplitter.interceptBody(builder, null);
-    Body expectedBody = createExpectedLoopBody();
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
-    // check newBody's locals
-    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    assertLocals(expectedLocals, builder);
 
-    // check newBody's stmtGraph
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "l2#0 = 1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l2#1 = l2#0 + 1;\n"
+            + "\n"
+            + "return;";
+
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  /**
-   * for(int i = 0; i < 10; i++){ i = i + 1 } transform:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1 = 0
-   *    l1 = 1
-   *    l2 = 2
-   *    return
-   *    $stack3 := @caughtexception
-   *    l3 = l1
-   *    goto return
-   * </pre>
-   *
-   * to:
-   *
-   * <pre>
-   *    l0 := @this Test
-   *    l1#1 = 0
-   *    l1#2 = 1
-   *    l2 = 2
-   *    return
-   *    $stack3 := @caughtexception
-   *    l3 = l1#2
-   *    goto return
-   * </pre>
-   */
   @Test
-  public void testLocalSplitterInTraps() {
+  public void testBranch() {
+    Body.BodyBuilder builder = Body.builder(getBody("branch"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    Body.BodyBuilder builder = createTrapBody();
-    new LocalSplitter().interceptBody(builder, null);
-    Body expectedBody = createExpectedTrapBody();
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
 
-    // check newBody's locals
-    AssertUtils.assertLocalsEquiv(expectedBody, builder.build());
+    assertLocals(expectedLocals, builder);
 
-    // check newBody's stmtGraph
-    AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#2 = l1#0 - 1;\n"
+            + "l1#1 = l1#2 + 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1#1;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  /** bodycreater for BinaryBranches */
-  private Body createBBBody() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+  @Test
+  public void testBranchMoreLocals() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchMoreLocals"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
+    expectedLocals.add("l1#5");
 
-    builder.setLocals(locals);
+    assertLocals(expectedLocals, builder);
 
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
-    BranchingStmt stmt2 =
-        JavaJimple.newIfStmt(
-            JavaJimple.newGeExpr(l1, IntConstant.getInstance(0)), noStmtPositionInfo);
-    Stmt stmt3 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    BranchingStmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-    Stmt stmt5 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newSubExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    FallsThroughStmt stmt6 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(2)), noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnStmt(l1, noStmtPositionInfo);
-
-    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2), Collections.emptyMap());
-    graph.setEdges(stmt2, Arrays.asList(stmt3, stmt5));
-    graph.addBlock(Arrays.asList(stmt3, stmt4), Collections.emptyMap());
-    graph.addBlock(Arrays.asList(stmt5, stmt6), Collections.emptyMap());
-    graph.putEdge(stmt4, JGotoStmt.BRANCH_IDX, ret);
-    graph.putEdge(stmt6, ret);
-
-    graph.setStartingStmt(startingStmt);
-
-    /* set graph
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, stmt2);
-    stmtGraph.putEdge(stmt2, stmt3);
-    stmtGraph.putEdge(stmt3, stmt4);
-    stmtGraph.putEdge(stmt4, ret);
-    stmtGraph.putEdge(stmt2, stmt5);
-    stmtGraph.putEdge(stmt5, stmt6);
-    stmtGraph.putEdge(stmt6, ret);
-
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
-    */
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "l1#3 = l1#2 + 3;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#4 = l1#0 - 1;\n"
+            + "l1#5 = l1#4 - 2;\n"
+            + "l1#3 = l1#5 - 3;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1#3;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  private Body createExpectedBBBody() {
+  @Test
+  public void testBranchMoreBranches() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchMoreBranches"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
+    expectedLocals.add("l1#5");
+    expectedLocals.add("l1#6");
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l1hash1, l1hash2, l1hash3);
+    assertLocals(expectedLocals, builder);
 
-    builder.setLocals(locals);
-
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    BranchingStmt stmt2 =
-        JavaJimple.newIfStmt(
-            JavaJimple.newGeExpr(l1hash1, IntConstant.getInstance(0)), noStmtPositionInfo);
-    Stmt stmt3 =
-        JavaJimple.newAssignStmt(
-            l1hash2,
-            JavaJimple.newAddExpr(l1hash1, IntConstant.getInstance(1)),
-            noStmtPositionInfo);
-    BranchingStmt stmt4 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-    Stmt stmt5 =
-        JavaJimple.newAssignStmt(
-            l1hash3,
-            JavaJimple.newSubExpr(l1hash1, IntConstant.getInstance(1)),
-            noStmtPositionInfo);
-    FallsThroughStmt stmt6 =
-        JavaJimple.newAssignStmt(
-            l1hash2,
-            JavaJimple.newAddExpr(l1hash3, IntConstant.getInstance(2)),
-            noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnStmt(l1hash2, noStmtPositionInfo);
-
-    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2), Collections.emptyMap());
-    graph.setEdges(stmt2, Arrays.asList(stmt3, stmt5));
-    graph.addBlock(Arrays.asList(stmt3, stmt4), Collections.emptyMap());
-    graph.putEdge(stmt4, JGotoStmt.BRANCH_IDX, ret);
-    graph.addBlock(Arrays.asList(stmt5, stmt6), Collections.emptyMap());
-    graph.putEdge(stmt6, ret);
-
-    graph.setStartingStmt(startingStmt);
-
-    /* set graph
-        stmtGraph.putEdge(startingStmt, stmt1);
-        stmtGraph.putEdge(stmt1, stmt2);
-        stmtGraph.putEdge(stmt2, stmt3);
-        stmtGraph.putEdge(stmt3, stmt4);
-        stmtGraph.putEdge(stmt4, ret);
-        stmtGraph.putEdge(stmt2, stmt5);
-        stmtGraph.putEdge(stmt5, stmt6);
-        stmtGraph.putEdge(stmt6, ret);
-
-        // build startingStmt
-        builder.setStartingStmt(startingStmt);
-    */
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#3 = l1#0 - 1;\n"
+            + "l1#2 = l1#3 - 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "if l1#2 <= 1 goto label3;\n"
+            + "l1#4 = l1#2 + 3;\n"
+            + "l1#5 = l1#4 + 5;\n"
+            + "\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "l1#6 = l1#2 - 3;\n"
+            + "l1#5 = l1#6 - 5;\n"
+            + "\n"
+            + "label4:\n"
+            + "return l1#5;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  /** bodycreater for multilocals */
-  private Body createMultilocalsBody() {
+  @Test
+  public void testBranchElseIf() {
+    Body.BodyBuilder builder = Body.builder(getBody("branchElseIf"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l1#2");
+    expectedLocals.add("l1#3");
+    expectedLocals.add("l1#4");
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2);
+    assertLocals(expectedLocals, builder);
 
-    builder.setLocals(locals);
-
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
-    Stmt stmt3 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt4 =
-        JavaJimple.newAssignStmt(
-            l2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    graph.addBlock(
-        Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4, ret), Collections.emptyMap());
-    graph.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 0;\n"
+            + "\n"
+            + "if l1#0 >= 0 goto label1;\n"
+            + "l1#1 = l1#0 + 1;\n"
+            + "l1#2 = l1#1 + 2;\n"
+            + "\n"
+            + "goto label3;\n"
+            + "\n"
+            + "label1:\n"
+            + "if l1#0 >= 5 goto label2;\n"
+            + "l1#3 = l1#0 - 1;\n"
+            + "l1#2 = l1#3 - 2;\n"
+            + "\n"
+            + "goto label3;\n"
+            + "\n"
+            + "label2:\n"
+            + "l1#4 = l1#0 * 1;\n"
+            + "l1#2 = l1#4 * 2;\n"
+            + "\n"
+            + "label3:\n"
+            + "return l1#2;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  private Body createExpectedMuiltilocalsBody() {
+  @Test
+  public void testForLoop() {
+    Body.BodyBuilder builder = Body.builder(getBody("forLoop"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l1hash1, l2hash2, l1hash3, l2hash4);
+    assertLocals(expectedLocals, builder);
 
-    builder.setLocals(locals);
-
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 = JavaJimple.newAssignStmt(l2hash2, IntConstant.getInstance(1), noStmtPositionInfo);
-    Stmt stmt3 =
-        JavaJimple.newAssignStmt(
-            l1hash3,
-            JavaJimple.newAddExpr(l1hash1, IntConstant.getInstance(1)),
-            noStmtPositionInfo);
-    Stmt stmt4 =
-        JavaJimple.newAssignStmt(
-            l2hash4,
-            JavaJimple.newAddExpr(l2hash2, IntConstant.getInstance(1)),
-            noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    graph.addBlock(
-        Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4, ret), Collections.emptyMap());
-    graph.setStartingStmt(startingStmt);
-
-    /* set graph
-    stmtGraph.putEdge(startingStmt, stmt1);
-    stmtGraph.putEdge(stmt1, stmt2);
-    stmtGraph.putEdge(stmt2, stmt3);
-    stmtGraph.putEdge(stmt3, stmt4);
-    stmtGraph.putEdge(stmt4, ret);
-
-    // set first stmt
-    builder.setStartingStmt(startingStmt);
-    */
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1 = 0;\n"
+            + "l2#0 = 0;\n"
+            + "\n"
+            + "label1:\n"
+            + "if l2#0 >= 10 goto label2;\n"
+            + "l2#1 = l2#0 + 1;\n"
+            + "l1 = l1 + 1;\n"
+            + "l2#0 = l2#1 + 1;\n"
+            + "\n"
+            + "goto label1;\n"
+            + "\n"
+            + "label2:\n"
+            + "return l1;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  /** bodycreater for Loop */
-  private Body createLoopBody() {
+  @Test
+  public void testReusedLocals() {
+    Body.BodyBuilder builder = Body.builder(getBody("reusedLocals"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
+    expectedLocals.add("$stack3");
+    expectedLocals.add("$stack4");
+    expectedLocals.add("$stack5");
+    expectedLocals.add("$stack6");
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4);
+    assertLocals(expectedLocals, builder);
 
-    builder.setLocals(locals);
-
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 = JavaJimple.newAssignStmt(stack4, l1, noStmtPositionInfo);
-    Stmt stmt3 = JavaJimple.newAssignStmt(stack3, IntConstant.getInstance(10), noStmtPositionInfo);
-    BranchingStmt stmt4 =
-        JavaJimple.newIfStmt(
-            JavaJimple.newGeExpr(stack4, stack3), noStmtPositionInfo); // branch to ret
-    Stmt stmt5 =
-        JavaJimple.newAssignStmt(
-            l2, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt6 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt7 =
-        JavaJimple.newAssignStmt(
-            l1, JavaJimple.newAddExpr(l1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    BranchingStmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
-    graph.setEdges(stmt4, Arrays.asList(stmt5, ret));
-    graph.addBlock(Arrays.asList(stmt5, stmt6, stmt7, stmt8), Collections.emptyMap());
-    graph.putEdge(stmt8, JGotoStmt.BRANCH_IDX, stmt2);
-
-    graph.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "$stack3 = staticinvoke <java.lang.Math: double random()>();\n"
+            + "$stack4 = $stack3 cmpl 0.0;\n"
+            + "\n"
+            + "if $stack4 != 0 goto label1;\n"
+            + "l2#0 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(1);\n"
+            + "l1#0 = l2#0;\n"
+            + "\n"
+            + "goto label2;\n"
+            + "\n"
+            + "label1:\n"
+            + "l2#1 = \"\";\n"
+            + "l1#0 = l2#1;\n"
+            + "\n"
+            + "label2:\n"
+            + "$stack5 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l1#0);\n"
+            + "l1#1 = null;\n"
+            + "$stack6 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.Object)>(l1#1);\n"
+            + "\n"
+            + "return;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 
-  private Body createExpectedLoopBody() {
+  @Test
+  public void testTraps() {
+    Body.BodyBuilder builder = Body.builder(getBody("traps"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
 
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
+    expectedLocals.add("l3");
+    expectedLocals.add("$stack4");
+    expectedLocals.add("$stack5");
+    expectedLocals.add("$stack6");
+    expectedLocals.add("$stack7");
+    expectedLocals.add("$stack8");
 
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, stack3, stack4, l1hash1, l1hash2);
+    assertLocals(expectedLocals, builder);
 
-    builder.setLocals(locals);
-
-    Stmt stmt1 = JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    Stmt stmt2 = JavaJimple.newAssignStmt(stack4, l1hash1, noStmtPositionInfo);
-    Stmt stmt3 = JavaJimple.newAssignStmt(stack3, IntConstant.getInstance(10), noStmtPositionInfo);
-    BranchingStmt stmt4 =
-        JavaJimple.newIfStmt(
-            JavaJimple.newGeExpr(stack4, stack3), noStmtPositionInfo); // branch to ret
-    Stmt stmt5 =
-        JavaJimple.newAssignStmt(
-            l2, JavaJimple.newAddExpr(l1hash1, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt6 =
-        JavaJimple.newAssignStmt(
-            l1hash2, JavaJimple.newAddExpr(l2, IntConstant.getInstance(1)), noStmtPositionInfo);
-    Stmt stmt7 =
-        JavaJimple.newAssignStmt(
-            l1hash1,
-            JavaJimple.newAddExpr(l1hash2, IntConstant.getInstance(1)),
-            noStmtPositionInfo);
-    BranchingStmt stmt8 = JavaJimple.newGotoStmt(noStmtPositionInfo); // goto stmt2
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    graph.addBlock(Arrays.asList(startingStmt, stmt1, stmt2, stmt3, stmt4), Collections.emptyMap());
-    graph.setEdges(stmt4, Arrays.asList(stmt5, ret));
-    graph.addBlock(Arrays.asList(stmt5, stmt6, stmt7, stmt8), Collections.emptyMap());
-    graph.putEdge(stmt8, JGotoStmt.BRANCH_IDX, stmt2);
-
-    graph.setStartingStmt(startingStmt);
-
-    // build startingStmt
-    builder.setStartingStmt(startingStmt);
-
-    // build position
-    Position position = NoPositionInformation.getInstance();
-    builder.setPosition(position);
-
-    return builder.build();
-  }
-
-  private Body.BodyBuilder createTrapBody() {
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
-
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack3);
-
-    builder.setLocals(locals);
-
-    FallsThroughStmt stmt1 =
-        JavaJimple.newAssignStmt(l1, IntConstant.getInstance(0), noStmtPositionInfo);
-    FallsThroughStmt stmt2 =
-        JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
-    FallsThroughStmt stmt3 =
-        JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-    FallsThroughStmt stmt4 =
-        JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
-    FallsThroughStmt stmt5 = JavaJimple.newAssignStmt(l3, l1, noStmtPositionInfo);
-    BranchingStmt stmt6 = JavaJimple.newGotoStmt(noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    // build graph
-    graph.addBlock(
-        Arrays.asList(startingStmt, stmt1, stmt2), Collections.singletonMap(exception, stmt4));
-    graph.addBlock(Arrays.asList(stmt4, stmt5, stmt6), Collections.emptyMap());
-    graph.addNode(stmt3);
-    graph.putEdge(stmt2, stmt3);
-    graph.putEdge(stmt3, ret);
-    graph.putEdge(stmt6, JGotoStmt.BRANCH_IDX, ret);
-
-    graph.setStartingStmt(startingStmt);
-
-    return builder;
-  }
-
-  private Body createExpectedTrapBody() {
-
-    MutableStmtGraph graph = new MutableBlockStmtGraph();
-    Body.BodyBuilder builder = Body.builder(graph);
-    builder.setMethodSignature(methodSignature);
-
-    // build set locals
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack3, l1hash1, l1hash2);
-
-    builder.setLocals(locals);
-
-    Stmt l1hash1assign0Stmt =
-        JavaJimple.newAssignStmt(l1hash1, IntConstant.getInstance(0), noStmtPositionInfo);
-    FallsThroughStmt l1hash2assign1Stmt =
-        JavaJimple.newAssignStmt(l1hash2, IntConstant.getInstance(1), noStmtPositionInfo);
-    FallsThroughStmt l2assign2Stmt =
-        JavaJimple.newAssignStmt(l2, IntConstant.getInstance(2), noStmtPositionInfo);
-    FallsThroughStmt exceptionCatchStmt =
-        JavaJimple.newIdentityStmt(stack3, caughtExceptionRef, noStmtPositionInfo);
-    Stmt l3assignl1hash2Stmt = JavaJimple.newAssignStmt(l3, l1hash2, noStmtPositionInfo);
-    BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
-    Stmt ret = JavaJimple.newReturnVoidStmt(noStmtPositionInfo);
-
-    graph.addBlock(
-        Arrays.asList(startingStmt, l1hash1assign0Stmt, l1hash2assign1Stmt),
-        Collections.singletonMap(exception, exceptionCatchStmt));
-    graph.addBlock(
-        Arrays.asList(exceptionCatchStmt, l3assignl1hash2Stmt, gotoStmt), Collections.emptyMap());
-    graph.addNode(l2assign2Stmt);
-    graph.putEdge(l1hash2assign1Stmt, l2assign2Stmt);
-    graph.putEdge(l2assign2Stmt, ret);
-    graph.putEdge(gotoStmt, JGotoStmt.BRANCH_IDX, ret);
-
-    graph.setStartingStmt(startingStmt);
-
-    return builder.build();
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack7 := @caughtexception;\n"
+            + "l2#0 = $stack7;\n"
+            + "$stack8 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1#1);\n"
+            + "\n"
+            + "return $stack8;\n"
+            + "\n"
+            + "label4:\n"
+            + "l2#1 = \"\";\n"
+            + "\n"
+            + "label5:\n"
+            + "$stack4 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack4.<java.io.PrintStream: void println()>();\n"
+            + "\n"
+            + "label6:\n"
+            + "goto label8;\n"
+            + "\n"
+            + "label7:\n"
+            + "$stack6 := @caughtexception;\n"
+            + "l3 = $stack6;\n"
+            + "\n"
+            + "return l2#1;\n"
+            + "\n"
+            + "label8:\n"
+            + "$stack5 = staticinvoke <java.lang.Double: java.lang.Double valueOf(double)>(0.0);\n"
+            + "\n"
+            + "return $stack5;\n"
+            + "\n"
+            + " catch java.lang.Throwable from label1 to label2 with label3;\n"
+            + " catch java.lang.Throwable from label5 to label6 with label7;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
 }
