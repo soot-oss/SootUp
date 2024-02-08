@@ -140,41 +140,54 @@ public class LocalSplitter implements BodyInterceptor {
     // so it can't be in any of the original local names since it might cause name collisions
     assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
 
+    // Cache the statements to not have to retrieve them for every local
+    List<Stmt> statements = new ArrayList<>(graph.getNodes());
+    // Maps every local to its assignment statements.
+    // Contains indices to the above list to reduce bookkeeping when modifying statements.
+    Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(statements);
+
     Set<Local> newLocals = new HashSet<>();
 
     for (Local local : builder.getLocals()) {
       // TODO explain why a disjoint set is used here
       DisjointSetForest<WrappedStmt> disjointSet = new DisjointSetForest<>();
 
-      List<AbstractDefinitionStmt> assignments = findAllAssignmentsToLocal(builder, local);
+      List<AbstractDefinitionStmt> assignments =
+          assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
+              .map(i -> (AbstractDefinitionStmt) statements.get(i))
+              .collect(Collectors.toList());
+
+      if (assignments.size() <= 1) {
+        // There is only a single assignment to the local, so no splitting is necessary
+        newLocals.add(local);
+        continue;
+      }
+
       for (AbstractDefinitionStmt assignment : assignments) {
         WrappedStmt defStmt = new WrappedStmt(assignment, true);
         disjointSet.add(defStmt);
 
-        Queue<Stmt> queue = new ArrayDeque<>(graph.successors(assignment));
-        queue.addAll(graph.exceptionalSuccessors(assignment).values());
+        List<Stmt> stack = new ArrayList<>(graph.successors(assignment));
+        stack.addAll(graph.exceptionalSuccessors(assignment).values());
         Set<Stmt> visited = new HashSet<>();
 
-        while (!queue.isEmpty()) {
-          Stmt stmt = queue.remove();
+        while (!stack.isEmpty()) {
+          Stmt stmt = stack.remove(stack.size() - 1);
           if (!visited.add(stmt)) {
             continue;
           }
 
           if (stmt.getUses().contains(local)) {
-            // TODO might be able to stop short when running into a non-trivial set
-            //  since from that point onward the previous walk that crated
-            //  that set already walked everything following the current statement
             WrappedStmt useStmt = new WrappedStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
           }
 
           // a new assignment to the local -> end walk here
-          // otherwise continue by adding all successors to the queue
+          // otherwise continue by adding all successors to the stack
           if (!stmt.getDefs().contains(local)) {
-            queue.addAll(graph.successors(stmt));
-            queue.addAll(graph.exceptionalSuccessors(stmt).values());
+            stack.addAll(graph.successors(stmt));
+            stack.addAll(graph.exceptionalSuccessors(stmt).values());
           }
         }
       }
@@ -188,7 +201,8 @@ public class LocalSplitter implements BodyInterceptor {
       Map<WrappedStmt, Local> representativeToNewLocal = new HashMap<>();
       final int[] nextId = {0};
 
-      for (Stmt stmt : builder.getStmts()) {
+      for (int i = 0; i < statements.size(); i++) {
+        Stmt stmt = statements.get(i);
         if (!stmt.getUsesAndDefs().contains(local)) {
           continue;
         }
@@ -214,18 +228,25 @@ public class LocalSplitter implements BodyInterceptor {
         }
 
         graph.replaceNode(oldStmt, stmt);
+        statements.set(i, stmt);
       }
     }
 
     builder.setLocals(newLocals);
   }
 
-  List<AbstractDefinitionStmt> findAllAssignmentsToLocal(
-      @Nonnull Body.BodyBuilder builder, Local local) {
-    return builder.getStmts().stream()
-        .filter(stmt -> stmt instanceof AbstractDefinitionStmt)
-        .map(stmt -> (AbstractDefinitionStmt) stmt)
-        .filter(stmt -> stmt.getLeftOp().equals(local))
-        .collect(Collectors.toList());
+  Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {
+    Map<Local, List<Integer>> groupings = new HashMap<>();
+
+    for (int i = 0; i < statements.size(); i++) {
+      Stmt stmt = statements.get(i);
+      if (!(stmt instanceof AbstractDefinitionStmt)) continue;
+      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
+      if (!(defStmt.getLeftOp() instanceof Local)) continue;
+
+      groupings.computeIfAbsent((Local) defStmt.getLeftOp(), x -> new ArrayList<>()).add(i);
+    }
+
+    return groupings;
   }
 }

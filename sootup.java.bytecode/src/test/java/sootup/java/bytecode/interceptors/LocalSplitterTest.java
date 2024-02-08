@@ -6,14 +6,17 @@ import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -43,6 +46,22 @@ public class LocalSplitterTest {
   void assertLocals(Set<String> localNames, Body.BodyBuilder builder) {
     assertEquals(
         localNames, builder.getLocals().stream().map(Local::getName).collect(Collectors.toSet()));
+  }
+
+  @Test
+  @Ignore("Takes too long. Good for profiling though.")
+  public void JRT() {
+    JrtFileSystemAnalysisInputLocation inputLocation =
+        new JrtFileSystemAnalysisInputLocation(
+            SourceType.Library, Collections.singletonList(localSplitter));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+
+    // ~200_000 methods
+    view.getClasses()
+        .parallelStream()
+        .flatMap(clazz -> clazz.getMethods().stream())
+        .filter(method -> !method.isAbstract() && !method.isNative())
+        .forEach(SootMethod::getBody);
   }
 
   @Test
