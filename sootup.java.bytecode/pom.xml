@@ -40,11 +40,4 @@
 		</dependency>
     </dependencies>
 
-	<repositories>
-		<repository>
-			<id>maven.google</id>
-			<url>https://maven.google.com/</url>
-		</repository>
-	</repositories>
-
 </project>
