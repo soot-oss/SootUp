@@ -31,13 +31,13 @@
   {
     "version": "v1.1.2",
     "title": "v1.1.2",
-    "aliases": [
-      "latest"
-    ]
+    "aliases": []
   },
   {
     "version": "v1_2_0",
     "title": "v1_2_0",
-    "aliases": []
+    "aliases": [
+      "latest"
+    ]
   }
 ]
