@@ -1251,7 +1251,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
-<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code>## a) BasicSetupExample ##
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code> a) BasicSetupExample 
        1) package sootup.examples; - defines the package name for the Java class.
        2) import statement - defines various classes and interfaces from different packages that the program uses.
        3) public class BasicSetup - declares a public class named &#39;BasicSetup&#39; which is the main class for this program.
@@ -1268,7 +1268,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
        14) Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode used by Soot for analysis and transformation.
        15) Then the next if condition checks if the method containts a specific statement called &#39;Hello World!&#39;.
 </code></pre></div></td></tr></table></div>
-<p>## b) BodyInterceptor ##
+<p>b) BodyInterceptor 
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class BodyInterceptor - declares a public class named "BodyInterceptor".
@@ -1281,7 +1281,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
            10) Then prints the body of the SootMethod object.
            11) Then we check if the interceptor worked.  ie here we check if the DeadAssignmentEliminator interceptor has successfully removed a specific assignment (l1 = 3) from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                     present.
            12) Then it prints the result of the interceptor check.</p>
-<p>## c) CallGraphExample ##
+<p>c) CallGraphExample 
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class CallgraphExample  - declares a public class named "CallGraphExample".
@@ -1294,7 +1294,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
            10) Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
            11) Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
            12) Prints information about calls from the entry method in the call graph.</p>
-<p>## d) ClassHierarchyExample ##
+<p>d) ClassHierarchyExample
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class ClassHierarchy - declares a public class named "ClassHierarchy".
@@ -1318,7 +1318,7 @@ To for example use an <code>LRUCache</code> instead, which stores at most 50 cla
 <span class="normal">10</span>
 <span class="normal">11</span>
 <span class="normal">12</span>
-<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>## e) MutatingSootClassExample ##
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>e) MutatingSootClassExample
 
        1) package sootup.examples; - defines the package name for the Java class.
        2) import statement - defines various classes and interfaces from different packages that the program uses.
