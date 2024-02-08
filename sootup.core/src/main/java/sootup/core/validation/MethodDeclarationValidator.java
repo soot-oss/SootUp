@@ -24,6 +24,9 @@ package sootup.core.validation;
 
 import java.util.List;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 
 /**
  * Validates classes to make sure that all method signatures are valid
@@ -34,14 +37,44 @@ public class MethodDeclarationValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
-    // TODO: check code from old soot in the comment
-
-    /*
-     * if (sc.isConcrete()) { for (SootMethod sm : sc.getMethods()) { for (Type tp : sm.getParameterTypes()) { if (tp ==
-     * null) { exceptions.add(new ValidationException(sm, "Null parameter types are invalid")); } if (tp instanceof VoidType)
-     * { exceptions.add(new ValidationException(sm, "Void parameter types are invalid")); } if (!tp.isAllowedInFinalCode()) {
-     * exceptions.add(new ValidationException(sm, "Parameter type not allowed in final code")); } } } }
-     */
+    
+     if (sc.isConcrete()) 
+     { 
+       for (SootMethod sm : sc.getMethods()) 
+       {
+         List<Type> parameterTypes = sm.getParameterTypes();
+         for (Type tp : parameterTypes) {
+           if (tp == null) 
+           { 
+             exceptions.add(new ValidationException(sm, "Null parameter types are invalid")); 
+           } 
+           if (tp instanceof VoidType) {
+             exceptions.add(new ValidationException(sm, "Void parameter types are invalid")); 
+           }
+         }
+         if(sm.isAbstract()){
+           if(sm.isFinal()){
+             exceptions.add(new ValidationException(sm, "Method cannot be Abstract and Final"));
+           }
+           if(sm.isNative()){
+             exceptions.add(new ValidationException(sm, "Method cannot be Abstract and Native"));
+           }
+           if(sm.isPrivate()){
+             exceptions.add(new ValidationException(sm, "Method cannot be Abstract and Private"));
+           }
+           if(sm.isStatic()){
+             exceptions.add(new ValidationException(sm, "Method cannot be Abstract and Static"));
+           }
+           if(sm.isSynchronized()){
+             exceptions.add(new ValidationException(sm, "Method cannot be Abstract and Synchronized"));
+           }
+         }
+         if((sm.isPrivate() || sm.isProtected()) && (sm.isPublic()) || sm.isProtected()){
+             exceptions.add(new ValidationException(sm, "Method can only be either Public, Protected or Private"));
+         }
+       } 
+     }
+    
   }
 
   @Override
