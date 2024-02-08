@@ -22,7 +22,6 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -185,7 +184,7 @@ public class AggregatorTest {
             Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             "",
             SourceType.Application,
-            BytecodeClassLoadingOptions.Default.getBodyInterceptors());
+            Collections.singletonList(new Aggregator()));
 
     JavaView view = new JavaView(inputLocation);
 
