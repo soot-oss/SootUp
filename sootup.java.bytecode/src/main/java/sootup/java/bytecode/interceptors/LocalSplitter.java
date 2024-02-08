@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors;
  */
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.*;
@@ -80,11 +81,11 @@ public class LocalSplitter implements BodyInterceptor {
      * Combines the sets of {@code first} and {@code second}. Returns the representative of the
      * combined set.
      */
-    T union(T first, T second) {
+    void union(T first, T second) {
       first = find(first);
       second = find(second);
 
-      if (first == second) return first;
+      if (first == second) return;
 
       T smaller = (sizes.get(first) > sizes.get(second)) ? second : first;
       T larger = (smaller == first) ? second : first;
@@ -93,8 +94,6 @@ public class LocalSplitter implements BodyInterceptor {
       parent.put(smaller, larger);
       sizes.put(larger, sizes.get(smaller) + sizes.get(larger));
       sizes.remove(smaller);
-
-      return larger;
     }
 
     int getSetCount() {
@@ -104,11 +103,16 @@ public class LocalSplitter implements BodyInterceptor {
     }
   }
 
-  static class WrappedStmt {
+  static class PartialStmt {
     @Nonnull final Stmt inner;
+
+    /**
+     * Whether the partial statement refers to only the definitions of the inner statement or only
+     * to the uses.
+     */
     final boolean isDef;
 
-    WrappedStmt(@Nonnull Stmt inner, boolean isDef) {
+    PartialStmt(@Nonnull Stmt inner, boolean isDef) {
       this.inner = inner;
       this.isDef = isDef;
     }
@@ -118,7 +122,7 @@ public class LocalSplitter implements BodyInterceptor {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
-      WrappedStmt that = (WrappedStmt) o;
+      PartialStmt that = (PartialStmt) o;
 
       if (isDef != that.isDef) return false;
       return inner.equals(that.inner);
@@ -149,8 +153,12 @@ public class LocalSplitter implements BodyInterceptor {
     Set<Local> newLocals = new HashSet<>();
 
     for (Local local : builder.getLocals()) {
-      // TODO explain why a disjoint set is used here
-      DisjointSetForest<WrappedStmt> disjointSet = new DisjointSetForest<>();
+      // Use a disjoint set while walking the statement graph to union all uses of the local that
+      // can be reached from each definition. This will automatically union definitions that have
+      // overlapping uses and therefore can't be split.
+      // It uses a `PartialStmt` instead of `Stmt` because a statement might contain both a
+      // definition and use of a local, and they need to be processed separately.
+      DisjointSetForest<PartialStmt> disjointSet = new DisjointSetForest<>();
 
       List<AbstractDefinitionStmt> assignments =
           assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
@@ -163,8 +171,10 @@ public class LocalSplitter implements BodyInterceptor {
         continue;
       }
 
+      // Walk the statement graph starting from every definition and union all uses until a
+      // different definition is encountered.
       for (AbstractDefinitionStmt assignment : assignments) {
-        WrappedStmt defStmt = new WrappedStmt(assignment, true);
+        PartialStmt defStmt = new PartialStmt(assignment, true);
         disjointSet.add(defStmt);
 
         List<Stmt> stack = new ArrayList<>(graph.successors(assignment));
@@ -178,7 +188,7 @@ public class LocalSplitter implements BodyInterceptor {
           }
 
           if (stmt.getUses().contains(local)) {
-            WrappedStmt useStmt = new WrappedStmt(stmt, false);
+            PartialStmt useStmt = new PartialStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
           }
@@ -198,8 +208,9 @@ public class LocalSplitter implements BodyInterceptor {
         continue;
       }
 
-      Map<WrappedStmt, Local> representativeToNewLocal = new HashMap<>();
-      final int[] nextId = {0};
+      // Split locals, according to the disjoint sets found above.
+      Map<PartialStmt, Local> representativeToNewLocal = new HashMap<>();
+      final int[] nextId = {0}; // Java quirk; just an `int` doesn't work
 
       for (int i = 0; i < statements.size(); i++) {
         Stmt stmt = statements.get(i);
@@ -209,20 +220,20 @@ public class LocalSplitter implements BodyInterceptor {
 
         Stmt oldStmt = stmt;
 
+        Function<Boolean, Local> getNewLocal =
+            isDef ->
+                representativeToNewLocal.computeIfAbsent(
+                    disjointSet.find(new PartialStmt(oldStmt, isDef)),
+                    s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+
         if (stmt.getDefs().contains(local)) {
-          Local newDefLocal =
-              representativeToNewLocal.computeIfAbsent(
-                  disjointSet.find(new WrappedStmt(oldStmt, true)),
-                  s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+          Local newDefLocal = getNewLocal.apply(true);
           newLocals.add(newDefLocal);
           stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
         }
 
         if (stmt.getUses().contains(local)) {
-          Local newUseLocal =
-              representativeToNewLocal.computeIfAbsent(
-                  disjointSet.find(new WrappedStmt(oldStmt, false)),
-                  s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+          Local newUseLocal = getNewLocal.apply(false);
           newLocals.add(newUseLocal);
           stmt = stmt.withNewUse(local, newUseLocal);
         }
