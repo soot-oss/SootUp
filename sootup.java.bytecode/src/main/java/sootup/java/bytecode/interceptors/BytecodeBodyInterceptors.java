@@ -40,8 +40,7 @@ public enum BytecodeBodyInterceptors {
       new UnusedLocalEliminator(),
       new ConditionalBranchFolder(),
       new EmptySwitchEliminator(),
-      new TypeAssigner(),
-      new LocalNameStandardizer());
+      new TypeAssigner());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
