@@ -19,10 +19,6 @@ Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more abo
   <id>jitpack.io</id>
   <url>https://jitpack.io</url>
  </repository>
- <repository>
-  <id>/maven.google.com</id>
-  <url>https://maven.google.com</url>
- </repository>
 </repositories>
 
 <dependencies>
