@@ -2,7 +2,10 @@
   {
     "version": "ReshmaSobhaNair-patch-2_preview",
     "title": "PR Preview ReshmaSobhaNair-patch-2",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "ReshmaSobhaNair-patch-1_preview",
