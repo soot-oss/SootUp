@@ -40,14 +40,14 @@ import sootup.core.views.View;
 public class ICFGDotExporter {
 
   public static String buildICFGGraph(
-      Map<MethodSignature, StmtGraph> signatureToStmtGraph, View view, CallGraph callGraph) {
+      Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph, View view, CallGraph callGraph) {
     final StringBuilder sb = new StringBuilder();
     DotExporter.buildDiGraphObject(sb);
     Map<Integer, MethodSignature> calls;
     calls = computeCalls(signatureToStmtGraph, view, callGraph);
-    for (Map.Entry<MethodSignature, StmtGraph> entry : signatureToStmtGraph.entrySet()) {
+    for (Map.Entry<MethodSignature, StmtGraph<?>> entry : signatureToStmtGraph.entrySet()) {
       String graph = DotExporter.buildGraph(entry.getValue(), true, calls, entry.getKey());
-      sb.append(graph + "\n");
+      sb.append(graph).append("\n");
     }
     sb.append("}");
     return sb.toString();
@@ -58,10 +58,10 @@ public class ICFGDotExporter {
    * methods.
    */
   public static Map<Integer, MethodSignature> computeCalls(
-      Map<MethodSignature, StmtGraph> stmtGraphSet, View view, CallGraph callgraph) {
+      Map<MethodSignature, StmtGraph<?>> stmtGraphSet, View view, CallGraph callgraph) {
     Map<Integer, MethodSignature> calls = new HashMap<>();
-    for (Map.Entry<MethodSignature, StmtGraph> entry : stmtGraphSet.entrySet()) {
-      StmtGraph stmtGraph = entry.getValue();
+    for (Map.Entry<MethodSignature, StmtGraph<?>> entry : stmtGraphSet.entrySet()) {
+      StmtGraph<?> stmtGraph = entry.getValue();
       MethodSignature source = entry.getKey();
       Collection<? extends BasicBlock<?>> blocks;
       try {
