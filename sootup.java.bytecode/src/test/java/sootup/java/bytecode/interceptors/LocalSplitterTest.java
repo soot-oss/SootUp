@@ -29,7 +29,7 @@ public class LocalSplitterTest {
   public void setup() {
     String classPath = "src/test/java/resources/interceptors";
     JavaClassPathAnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath);
+        new JavaClassPathAnalysisInputLocation(classPath, SourceType.Application, Collections.emptyList());
     view = new JavaView(inputLocation);
   }
 

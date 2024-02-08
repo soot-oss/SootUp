@@ -110,11 +110,10 @@ public class DeadAssignmentEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-    JavaJimple javaJimple = JavaJimple.getInstance();
+      JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType objectType = factory.getClassType("java.lang.Object");
+    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
 
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", objectType);

@@ -13,11 +13,13 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
+import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.types.JavaClassType;
 
 @Category(Java8Test.class)
 public class CastCounterTest extends TypeAssignerTestSuite {
@@ -25,11 +27,11 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   AugEvalFunction function;
   BytecodeHierarchy hierarchy;
 
-  ClassType super1 = identifierFactory.getClassType("Super1");
-  ClassType super2 = identifierFactory.getClassType("Super2");
-  ClassType sub1 = identifierFactory.getClassType("Sub1");
-  ClassType sub2 = identifierFactory.getClassType("Sub2");
-  ClassType object = identifierFactory.getClassType("java.lang.Object");
+  ClassType super1 = new JavaClassType("Super1", PackageName.DEFAULT_PACKAGE);
+  ClassType super2 = new JavaClassType("Super2",PackageName.DEFAULT_PACKAGE);
+  ClassType sub1 = new JavaClassType("Sub1",PackageName.DEFAULT_PACKAGE);
+  ClassType sub2 = new JavaClassType("Sub2", PackageName.DEFAULT_PACKAGE);
+  ClassType object = new JavaClassType("java.lang.Object", PackageName.DEFAULT_PACKAGE);
 
   @Before
   public void setup() {
