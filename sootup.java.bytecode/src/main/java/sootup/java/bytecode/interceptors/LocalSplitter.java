@@ -145,7 +145,7 @@ public class LocalSplitter implements BodyInterceptor {
     assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
 
     // Cache the statements to not have to retrieve them for every local
-    List<Stmt> statements = new ArrayList<>(graph.getNodes());
+    List<Stmt> statements = new ArrayList<>(graph.getStmts());
     // Maps every local to its assignment statements.
     // Contains indices to the above list to reduce bookkeeping when modifying statements.
     Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(statements);
