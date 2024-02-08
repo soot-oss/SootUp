@@ -34,6 +34,32 @@ import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
+/**
+ * A BodyInterceptor that attempts to identify and separate uses of a local variable (definition)
+ * that are independent of each other.
+ *
+ * <p>For example the code:
+ *
+ * <pre>
+ *    l0 := @this Test
+ *    l1 = 0
+ *    l2 = 1
+ *    l1 = l1 + 1
+ *    l2 = l2 + 1
+ *    return
+ * </pre>
+ *
+ * to:
+ *
+ * <pre>
+ *    l0 := @this Test
+ *    l1#0 = 0
+ *    l2#0 = 1
+ *    l1#1 = l1#0 + 1
+ *    l2#1 = l2#0 + 1
+ *    return
+ * </pre>
+ */
 public class LocalSplitter implements BodyInterceptor {
 
   /**
