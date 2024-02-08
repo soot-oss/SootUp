@@ -327,4 +327,67 @@ public class LocalSplitterTest {
             + "return;";
     assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
   }
+
+  @Test
+  public void testTraps() {
+    Body.BodyBuilder builder = Body.builder(getBody("traps"), Collections.emptySet());
+    localSplitter.interceptBody(builder, view);
+
+    Set<String> expectedLocals = new HashSet<>();
+    expectedLocals.add("l0");
+    expectedLocals.add("l1#0");
+    expectedLocals.add("l1#1");
+    expectedLocals.add("l2#0");
+    expectedLocals.add("l2#1");
+    expectedLocals.add("l3");
+    expectedLocals.add("$stack4");
+    expectedLocals.add("$stack5");
+    expectedLocals.add("$stack6");
+    expectedLocals.add("$stack7");
+    expectedLocals.add("$stack8");
+
+    assertLocals(expectedLocals, builder);
+
+    String expectedStmts =
+        "l0 := @this: LocalSplitterTarget;\n"
+            + "l1#0 = 1;\n"
+            + "\n"
+            + "label1:\n"
+            + "l1#1 = 2;\n"
+            + "\n"
+            + "label2:\n"
+            + "goto label4;\n"
+            + "\n"
+            + "label3:\n"
+            + "$stack7 := @caughtexception;\n"
+            + "l2#0 = $stack7;\n"
+            + "$stack8 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(l1#1);\n"
+            + "\n"
+            + "return $stack8;\n"
+            + "\n"
+            + "label4:\n"
+            + "l2#1 = \"\";\n"
+            + "\n"
+            + "label5:\n"
+            + "$stack4 = <java.lang.System: java.io.PrintStream out>;\n"
+            + "virtualinvoke $stack4.<java.io.PrintStream: void println()>();\n"
+            + "\n"
+            + "label6:\n"
+            + "goto label8;\n"
+            + "\n"
+            + "label7:\n"
+            + "$stack6 := @caughtexception;\n"
+            + "l3 = $stack6;\n"
+            + "\n"
+            + "return l2#1;\n"
+            + "\n"
+            + "label8:\n"
+            + "$stack5 = staticinvoke <java.lang.Double: java.lang.Double valueOf(double)>(0.0);\n"
+            + "\n"
+            + "return $stack5;\n"
+            + "\n"
+            + " catch java.lang.Throwable from label1 to label2 with label3;\n"
+            + " catch java.lang.Throwable from label5 to label6 with label7;";
+    assertEquals(expectedStmts, builder.getStmtGraph().toString().trim());
+  }
 }

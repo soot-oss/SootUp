@@ -152,6 +152,7 @@ public class LocalSplitter implements BodyInterceptor {
         disjointSet.add(defStmt);
 
         Queue<Stmt> queue = new ArrayDeque<>(graph.successors(assignment));
+        queue.addAll(graph.exceptionalSuccessors(assignment).values());
         Set<Stmt> visited = new HashSet<>();
 
         while (!queue.isEmpty()) {
@@ -173,6 +174,7 @@ public class LocalSplitter implements BodyInterceptor {
           // otherwise continue by adding all successors to the queue
           if (!stmt.getDefs().contains(local)) {
             queue.addAll(graph.successors(stmt));
+            queue.addAll(graph.exceptionalSuccessors(stmt).values());
           }
         }
       }

@@ -107,4 +107,22 @@ public class LocalSplitterTarget {
       System.out.println(a);
     }
   }
+
+  Object traps() {
+    int a = 1;
+    try {
+      a = 2;
+    } catch (Throwable t) {
+      return a;
+    }
+
+    String b = "";
+    try {
+      System.out.println();
+    } catch (Throwable t) {
+      return b;
+    }
+
+    return 0.0;
+  }
 }
