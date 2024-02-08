@@ -75,7 +75,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull SourceType srcType) {
-    this(classPath, srcType, BytecodeBodyInterceptors.Default.bodyInterceptors());
+    this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**

@@ -49,7 +49,7 @@ public enum BytecodeBodyInterceptors {
   }
 
   @Nonnull
-  public List<BodyInterceptor> bodyInterceptors() {
+  public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
 }

@@ -49,13 +49,17 @@ public abstract class MinimalBytecodeTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        String path = baseDir
+        String path =
+            baseDir
                 + File.separator
                 + getTestDirectoryName(getClassPath())
                 + File.separator
                 + "binary"
                 + File.separator;
-        javaView = new JavaView(new JavaClassPathAnalysisInputLocation(path, SourceType.Application, Collections.emptyList()));
+        javaView =
+            new JavaView(
+                new JavaClassPathAnalysisInputLocation(
+                    path, SourceType.Application, Collections.emptyList()));
       }
     }
 
