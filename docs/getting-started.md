@@ -304,7 +304,7 @@ Example code to help getting start with SootUp
 
 3) We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
 
-    ## a) BasicSetupExample ##
+     a) BasicSetupExample 
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
@@ -321,7 +321,7 @@ Example code to help getting start with SootUp
            14) Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode used by Soot for analysis and transformation.
            15) Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
 
-   ## b) BodyInterceptor ##
+   b) BodyInterceptor 
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class BodyInterceptor - declares a public class named "BodyInterceptor".
@@ -336,7 +336,7 @@ Example code to help getting start with SootUp
            12) Then it prints the result of the interceptor check.
 
    
-   ## c) CallGraphExample ##
+   c) CallGraphExample 
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class CallgraphExample  - declares a public class named "CallGraphExample".
@@ -350,7 +350,7 @@ Example code to help getting start with SootUp
            11) Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
            12) Prints information about calls from the entry method in the call graph.
 
-   ## d) ClassHierarchyExample ##
+   d) ClassHierarchyExample
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
            3) public class ClassHierarchy - declares a public class named "ClassHierarchy".
@@ -363,7 +363,7 @@ Example code to help getting start with SootUp
            10) Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
            11) Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based on the result.
 
-    ## e) MutatingSootClassExample ##
+    e) MutatingSootClassExample
            
            1) package sootup.examples; - defines the package name for the Java class.
            2) import statement - defines various classes and interfaces from different packages that the program uses.
