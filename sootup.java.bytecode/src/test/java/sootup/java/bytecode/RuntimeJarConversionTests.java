@@ -1,6 +1,8 @@
 package sootup.java.bytecode;
 
 import java.util.Collections;
+
+import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
@@ -10,30 +12,51 @@ import sootup.java.core.views.JavaView;
 
 public class RuntimeJarConversionTests {
 
-  private static void execute(String methodSignature) {
+  private static void convertInputLocation(AnalysisInputLocation inputLocation) {
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    long count = view.getClasses().stream().flatMap(c -> c.getMethods().stream()).filter(SootMethod::isConcrete).map(SootMethod::getBody).count();
+    Assert.assertTrue( count > 0);
+  }
+
+  @Test
+  public void testJar() {
+    AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library, Collections.emptyList());
+    convertInputLocation(inputLocation);
+  }
+
+  @Test
+  public void testJarWithDefaultInterceptors() {
+    AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library);
+    convertInputLocation(inputLocation);
+  }
+
+  /**
+   * helps debugging the conversion of a single method
+   * */
+  private static void convertMethod(String methodSignature) {
     AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library);
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod =
-        view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
+            view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
     sootMethod.getBody();
   }
 
   @Test
   public void testByteCodeClassTrap() {
-    execute("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
+    convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }
 
   @Test
   public void testTrapsicwUtility() {
-    execute(
+    convertMethod(
         "<com.sun.org.apache.bcel.internal.classfile.Utility: java.lang.String signatureToString(java.lang.String,boolean)>");
   }
 
   @Test
   public void testTrapsicwUnresolvedPermission() {
-    execute(
+    convertMethod(
         "<java.security.UnresolvedPermission: java.security.Permission resolve(java.security.Permission,java.security.cert.Certificate[])>");
   }
 
@@ -41,24 +64,24 @@ public class RuntimeJarConversionTests {
   public void testTrapsicwStubFactoryFactoryStaticImpl() {
     // same exception range and type but different handler.. ->  duplicateCatchAllTrapRemover
     // adapted to handle java.lang.Exception as well
-    execute(
+    convertMethod(
         "<com.sun.corba.se.impl.presentation.rmi.StubFactoryFactoryStaticImpl: javax.rmi.CORBA.Tie getTie(java.lang.Class)>");
   }
 
   @Test
   public void testTrapsicwUnixPrintJob$PrinterSpooler() {
-    execute(
+    convertMethod(
         "<sun.print.UnixPrintJob$PrinterSpooler: void handleProcessFailure(java.lang.Process,java.lang.String[],int)>");
   }
 
   @Test
   public void testBoundMethodHandle$FactoryGenerateConcreteBMHClass() {
-    execute(
+    convertMethod(
         "<java.lang.invoke.BoundMethodHandle$Factory: java.lang.Class generateConcreteBMHClass(java.lang.String)>");
   }
 
   @Test
   public void testFileDescriptorCloseAll() {
-    execute("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
+    convertMethod("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
   }
 }
