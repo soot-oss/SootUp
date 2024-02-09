@@ -1,7 +1,6 @@
 package sootup.java.bytecode;
 
 import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -14,13 +13,19 @@ public class RuntimeJarConversionTests {
 
   private static void convertInputLocation(AnalysisInputLocation inputLocation) {
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
-    long count = view.getClasses().stream().flatMap(c -> c.getMethods().stream()).filter(SootMethod::isConcrete).map(SootMethod::getBody).count();
-    Assert.assertTrue( count > 0);
+    long count =
+        view.getClasses().stream()
+            .flatMap(c -> c.getMethods().stream())
+            .filter(SootMethod::isConcrete)
+            .map(SootMethod::getBody)
+            .count();
+    Assert.assertTrue(count > 0);
   }
 
   @Test
   public void testJar() {
-    AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library, Collections.emptyList());
+    AnalysisInputLocation inputLocation =
+        new DefaultRTJarAnalysisInputLocation(SourceType.Library, Collections.emptyList());
     convertInputLocation(inputLocation);
   }
 
@@ -30,16 +35,14 @@ public class RuntimeJarConversionTests {
     convertInputLocation(inputLocation);
   }
 
-  /**
-   * helps debugging the conversion of a single method
-   * */
+  /** helps debugging the conversion of a single method */
   private static void convertMethod(String methodSignature) {
     AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library);
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod =
-            view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
+        view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
     sootMethod.getBody();
   }
 
@@ -83,5 +86,11 @@ public class RuntimeJarConversionTests {
   @Test
   public void testFileDescriptorCloseAll() {
     convertMethod("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
+  }
+
+  @Test
+  public void testPlatformLogger_formatMessage() {
+    convertMethod(
+        "<sun.util.logging.PlatformLogger$DefaultLoggerProxy: java.lang.String formatMessage(java.lang.String,java.lang.Object[])>");
   }
 }

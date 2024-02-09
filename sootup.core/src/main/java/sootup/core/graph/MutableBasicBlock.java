@@ -1,7 +1,6 @@
 package sootup.core.graph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +33,7 @@ import sootup.core.types.ClassType;
 public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final ArrayList<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   private MutableBasicBlock[] successorBlocks =
-      new MutableBasicBlock[1]; // 1 := most propable amount of successors/elements
+      new MutableBasicBlock[1]; // 1 := most probable amount of successors/elements
 
   @Nonnull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
 
@@ -111,10 +110,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
-    return predecessorBlocks.remove(b);
+    boolean removed = predecessorBlocks.remove(b);
+    return removed;
   }
 
-  private void removeAllFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
+  private void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == b) {
         successorBlocks[i] = null;
@@ -159,8 +159,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     if (stmts.isEmpty()) {
       return Collections.emptyList();
     }
-    final int expectedSuccessorCount = getTail().getExpectedSuccessorCount();
-    return Arrays.stream(successorBlocks).filter(Objects::nonNull).collect(Collectors.toList());
+
+    List<MutableBasicBlock> objects = new ArrayList<>(getTail().getExpectedSuccessorCount());
+    // TODO: does this change meaning?! i.e. with switchStmts that have partially populated successors?
+    Arrays.stream(successorBlocks).filter(Objects::nonNull).forEach(objects::add);
+    return objects;
   }
 
   @Override
@@ -310,19 +313,19 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void clearExceptionalSuccessorBlocks() {
-    exceptionalSuccessorBlocks.forEach((e, b) -> b.removePredecessorBlock(this));
+      exceptionalSuccessorBlocks.values().forEach(b -> b.removePredecessorBlock(this));
     exceptionalSuccessorBlocks.clear();
   }
 
   public void clearPredecessorBlocks() {
-    Map<MutableBasicBlock, Collection<ClassType>> toRemove = new HashMap<>();
+    Map<MutableBasicBlock, Collection<ClassType>> exceptionalFlowstoRemove = new HashMap<>();
     predecessorBlocks.forEach(
         pb -> {
-          pb.removeAllFromSuccessorBlock(this);
-          toRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
+          pb.removePredecessorFromSuccessorBlock(this);
+          exceptionalFlowstoRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
         });
 
-    toRemove.forEach(
+    exceptionalFlowstoRemove.forEach(
         (predBlock, cltypes) -> {
           for (ClassType type : cltypes) {
             predBlock.removeExceptionalSuccessorBlock(type);

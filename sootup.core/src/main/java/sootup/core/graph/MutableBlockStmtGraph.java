@@ -801,61 +801,68 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * @throws IllegalArgumentException if keepFlow is true but the stmt has multiple successors
    */
   public void removeNode(@Nonnull Stmt stmt, boolean keepFlow) {
-    if (keepFlow && successors(stmt).size() > 1) {
-      // Branching statements can have multiple targets/successors,
-      // and there is no obvious way to connect the predecessor and successors of the statement.
-      throw new IllegalArgumentException(
-          "can't remove a statement with multiple successors while keeping the flow");
-    }
-
-    if (stmt == startingStmt) {
-      startingStmt = null;
-    }
-
-    if (!keepFlow) {
-      for (Stmt predecessor : predecessors(stmt)) {
-        removeEdge(predecessor, stmt);
-      }
-      for (Stmt successor : successors(stmt)) {
-        removeEdge(stmt, successor);
-      }
-    }
-
-    MutableBasicBlock blockOfRemovedStmt = stmtToBlock.remove(stmt);
+    MutableBasicBlock blockOfRemovedStmt = stmtToBlock.get(stmt);
     if (blockOfRemovedStmt == null) {
-      throw new IllegalArgumentException("Stmt is not in the StmtGraph!");
+      throw new IllegalArgumentException("stmt '" + stmt + "' is not contained in this StmtGraph!");
     }
 
-    if (blockOfRemovedStmt.getStmtCount() > 1) {
-      // Removing the statement from the block will keep the flow automatically,
-      // because the flow inside a block is implicit (from one statement to the next)
-      // and connections between blocks are kept.
-      blockOfRemovedStmt.removeStmt(stmt);
-    } else {
-      // cleanup block (i.e. remove!) as its not needed in the graph anymore if it only contains
-      // stmt - which is
-      // now deleted
+    List<MutableBasicBlock> successors = blockOfRemovedStmt.getSuccessors();
+    if (blockOfRemovedStmt.getStmtCount() <= 1) {
+      // remove the complete block as it has only one Stmt that is now removed
+      stmtToBlock.remove(blockOfRemovedStmt);
+      blocks.remove(blockOfRemovedStmt);
 
       if (keepFlow) {
-        // this is always true because of the check at the start of the method
-        assert blockOfRemovedStmt.getSuccessors().size() <= 1;
-
-        // connect predecessors to the successor of the statement to keep the flow
-        if (blockOfRemovedStmt.getSuccessors().size() == 1) {
-          MutableBasicBlock successor = blockOfRemovedStmt.getSuccessors().get(0);
-
+        if (stmt instanceof BranchingStmt) {
+          // check for successorCount == 1 is not enough as it could be that we want to replace a
+          // Branching Stmt via a FallsThroughStmt and the linearized StmtGraph would have no
+          // necessary goto anymore.
+          throw new IllegalArgumentException("Cannot keep the flow if we remove a BranchingStmt!");
+        }
+        if (successors.size() == 1) {
+          MutableBasicBlock successorBlock = successors.get(0);
           for (MutableBasicBlock predecessor : blockOfRemovedStmt.getPredecessors()) {
-            predecessor.replaceSuccessorBlock(blockOfRemovedStmt, successor);
-            successor.replacePredecessorBlock(blockOfRemovedStmt, predecessor);
+            predecessor.replaceSuccessorBlock(blockOfRemovedStmt, successorBlock);
+            if (!successorBlock.replacePredecessorBlock(blockOfRemovedStmt, predecessor)) {
+              // happends when blockOfRemovedStmt.predecessors().size() > 1
+              successorBlock.addPredecessorBlock(predecessor);
+            }
           }
         }
       }
 
-      blocks.remove(blockOfRemovedStmt);
       blockOfRemovedStmt.clearPredecessorBlocks();
       blockOfRemovedStmt.clearSuccessorBlocks();
       blockOfRemovedStmt.clearExceptionalSuccessorBlocks();
-      blockOfRemovedStmt.removeStmt(stmt);
+    } else if (blockOfRemovedStmt.getHead() == stmt) {
+      // stmt2bRemoved is at the beginning of a Block
+      if (!keepFlow) {
+        blockOfRemovedStmt.clearPredecessorBlocks();
+      }
+    } else if (blockOfRemovedStmt.getTail() == stmt) {
+      // stmt2bRemoved is at the end of a Block
+      if (keepFlow) {
+        if (successors.size() > 1) {
+          throw new IllegalArgumentException(
+              "Cannot keep the flows if there is more than one successor/ with a BranchingStmt.");
+        }
+      } else {
+        blockOfRemovedStmt.clearSuccessorBlocks();
+      }
+    } else {
+      // stmt2bRemoved is in the middle of a Block
+      if (!keepFlow) {
+        // TODO: should we throw or split the block?
+        throw new IllegalArgumentException(
+            "The Stmt is in the middle of a Block - we can not remove the flow unless we split the Block.");
+      }
+    }
+    blockOfRemovedStmt.removeStmt(stmt);
+
+    // update starting stmt if necessary
+    if (stmt == startingStmt) {
+      assert blockOfRemovedStmt.getHead() != stmt;
+      startingStmt = keepFlow ? blockOfRemovedStmt.getHead() : null;
     }
   }
 
