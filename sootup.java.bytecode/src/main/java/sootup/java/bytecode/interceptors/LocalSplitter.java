@@ -190,10 +190,6 @@ public class LocalSplitter implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
 
-    // `#` is used as a special character for splitting the locals,
-    // so it can't be in any of the original local names since it might cause name collisions
-    assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
-
     // Cache the statements to not have to retrieve them for every local
     List<Stmt> statements = graph.getStmts();
     // Maps every local to its assignment statements.
@@ -202,7 +198,8 @@ public class LocalSplitter implements BodyInterceptor {
 
     Set<Local> newLocals = new HashSet<>();
 
-    for (Local local : builder.getLocals()) {
+    final Set<Local> locals = builder.getLocals();
+    for (Local local : locals) {
       // Use a disjoint set while walking the statement graph to union all uses of the local that
       // can be reached from each definition. This will automatically union definitions that have
       // overlapping uses and therefore can't be split.
@@ -276,7 +273,13 @@ public class LocalSplitter implements BodyInterceptor {
             isDef ->
                 representativeToNewLocal.computeIfAbsent(
                     disjointSet.find(new PartialStmt(oldStmt, isDef)),
-                    s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+                    s -> {
+                      Local newLocal;
+                      do {
+                        newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
+                      } while (locals.contains(newLocal));
+                      return newLocal;
+                    });
 
         if (localIsDef) {
           Local newDefLocal = getNewLocal.apply(true);
