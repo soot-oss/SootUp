@@ -56,7 +56,8 @@ public class AsmMethodSourceTest {
   @Test
   public void testNestedMethodCalls() {
     JavaClassPathAnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation("../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
+        new JavaClassPathAnalysisInputLocation(
+            "../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     JavaSootMethod method =

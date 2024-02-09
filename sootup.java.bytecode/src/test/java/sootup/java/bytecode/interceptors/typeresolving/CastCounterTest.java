@@ -28,8 +28,8 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   BytecodeHierarchy hierarchy;
 
   ClassType super1 = new JavaClassType("Super1", PackageName.DEFAULT_PACKAGE);
-  ClassType super2 = new JavaClassType("Super2",PackageName.DEFAULT_PACKAGE);
-  ClassType sub1 = new JavaClassType("Sub1",PackageName.DEFAULT_PACKAGE);
+  ClassType super2 = new JavaClassType("Super2", PackageName.DEFAULT_PACKAGE);
+  ClassType sub1 = new JavaClassType("Sub1", PackageName.DEFAULT_PACKAGE);
   ClassType sub2 = new JavaClassType("Sub2", PackageName.DEFAULT_PACKAGE);
   ClassType object = new JavaClassType("java.lang.Object", PackageName.DEFAULT_PACKAGE);
 

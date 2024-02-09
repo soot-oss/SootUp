@@ -14,7 +14,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
@@ -27,8 +26,11 @@ public class TypeAssignerTestSuite {
 
   public void buildView(String baseDir, String className) {
 
-    AnalysisInputLocation analysisInputLocation = new JavaClassPathAnalysisInputLocation(baseDir, SourceType.Application, Collections.emptyList());
-    AnalysisInputLocation rtJar = new DefaultRTJarAnalysisInputLocation(SourceType.Application, Collections.emptyList());
+    AnalysisInputLocation analysisInputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir, SourceType.Application, Collections.emptyList());
+    AnalysisInputLocation rtJar =
+        new DefaultRTJarAnalysisInputLocation(SourceType.Application, Collections.emptyList());
 
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(analysisInputLocation);
@@ -42,8 +44,8 @@ public class TypeAssignerTestSuite {
 
   public Body.BodyBuilder createMethodsBuilder(String methodName, String returnType) {
     MethodSignature methodSignature =
-        view.getIdentifierFactory().getMethodSignature(
-            classType, methodName, returnType, Collections.emptyList());
+        view.getIdentifierFactory()
+            .getMethodSignature(classType, methodName, returnType, Collections.emptyList());
     Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
     Body body = method.getBody();

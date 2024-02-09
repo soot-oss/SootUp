@@ -46,6 +46,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
+      // TODO: seems to be more complicated than necessary - save directory instead of needing operation on it agin
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
@@ -56,10 +57,10 @@ public abstract class MinimalBytecodeTestSuiteBase {
                 + File.separator
                 + "binary"
                 + File.separator;
-        javaView =
-            new JavaView(
-                new JavaClassPathAnalysisInputLocation(
-                    path, SourceType.Application, Collections.emptyList()));
+        JavaClassPathAnalysisInputLocation inputLocation =
+            new JavaClassPathAnalysisInputLocation(
+                path, SourceType.Application, Collections.emptyList());
+        javaView = new JavaView(inputLocation);
       }
     }
 

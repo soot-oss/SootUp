@@ -23,6 +23,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -81,7 +82,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = createBody();
-    ssa.interceptBody(builder, null);
+    ssa.interceptBody(builder, new JavaView(Collections.emptyList()) );
 
     String expectedBodyString =
         "{\n"
@@ -131,7 +132,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testTrapedSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = createTrapBody();
-    ssa.interceptBody(builder, null);
+    ssa.interceptBody(builder, new JavaView(Collections.emptyList()) );
 
     String expectedBodyString =
         "{\n"

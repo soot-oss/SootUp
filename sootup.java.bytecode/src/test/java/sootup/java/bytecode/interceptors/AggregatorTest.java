@@ -47,7 +47,7 @@ public class AggregatorTest {
     Body testBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
 
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
     Body processedBody = testBuilder.build();
     List<Stmt> processedStmts = processedBody.getStmts();
 
@@ -67,7 +67,7 @@ public class AggregatorTest {
   public void testNoAggregation() {
     Body.BodyBuilder testBuilder = createBodyBuilder(false);
     Body testBody = testBuilder.build();
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -111,7 +111,7 @@ public class AggregatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
-    new Aggregator().interceptBody(builder, null);
+    new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()) );
 
     // ensure that the assigner doesn't remove any statements
     assertEquals(4, builder.getStmts().size());

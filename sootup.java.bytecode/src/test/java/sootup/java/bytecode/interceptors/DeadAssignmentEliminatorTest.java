@@ -20,6 +20,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public class DeadAssignmentEliminatorTest {
 
@@ -77,7 +78,7 @@ public class DeadAssignmentEliminatorTest {
     stmtGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
-    new DeadAssignmentEliminator().interceptBody(builder, null);
+    new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body afterBody = builder.build();
 
     assertEquals(
@@ -89,7 +90,7 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
@@ -101,7 +102,7 @@ public class DeadAssignmentEliminatorTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
+    new DeadAssignmentEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();

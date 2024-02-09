@@ -17,6 +17,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Category(Java8Test.class)
@@ -38,7 +39,7 @@ public class NopEliminatorTest {
     Body testBody = builder.build();
 
     builder = Body.builder(testBody, builder.getModifiers());
-    new NopEliminator().interceptBody(builder, null);
+    new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()) );
     Body processedBody = builder.build();
 
     StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
@@ -58,7 +59,7 @@ public class NopEliminatorTest {
   public void testNoJNops() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new NopEliminator().interceptBody(testBuilder, null);
+    new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
     Body processedBody = testBuilder.build();
 
     assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
