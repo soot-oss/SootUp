@@ -1,11 +1,14 @@
 package sootup.core.jimple.basic;
 
+import categories.Java8Test;
 import java.util.HashSet;
 import junit.framework.TestCase;
+import org.junit.experimental.categories.Category;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 
+@Category(Java8Test.class)
 public class LocalGeneratorTest extends TestCase {
 
   public void testGenerate() {

@@ -27,6 +27,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -103,7 +104,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -136,7 +137,7 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
@@ -172,7 +173,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setStartingStmt(startingStmt);
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
@@ -205,7 +206,7 @@ public class UnreachableCodeEliminatorTest {
     graph.setStartingStmt(startingStmt);
 
     MutableStmtGraph inputGraph = new MutableBlockStmtGraph(builder.getStmtGraph());
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(inputGraph, builder.getStmtGraph());
   }

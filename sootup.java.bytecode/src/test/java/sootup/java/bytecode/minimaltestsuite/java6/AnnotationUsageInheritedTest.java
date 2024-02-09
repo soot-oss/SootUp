@@ -2,11 +2,10 @@ package sootup.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import categories.Java8Test;
+import java.util.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.signatures.PackageName;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -15,6 +14,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
+@Category(Java8Test.class)
 public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -26,7 +26,7 @@ public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
     annotationParamMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));
 
     assertEquals(
-        Arrays.asList(
+        Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("OnClass", new PackageName(""), true), annotationParamMap)),
         sootClass.getAnnotations(Optional.of(customTestWatcher.getJavaView())));

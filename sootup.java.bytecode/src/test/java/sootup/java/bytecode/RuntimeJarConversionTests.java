@@ -1,7 +1,9 @@
 package sootup.java.bytecode;
 
+import categories.Java8Test;
 import java.util.Collections;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -11,6 +13,7 @@ import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class RuntimeJarConversionTests {
 
   private static void execute(String methodSignature1) {

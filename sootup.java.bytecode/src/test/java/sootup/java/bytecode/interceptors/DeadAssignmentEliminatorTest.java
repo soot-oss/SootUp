@@ -2,8 +2,10 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -20,7 +22,9 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class DeadAssignmentEliminatorTest {
 
   /**
@@ -77,7 +81,7 @@ public class DeadAssignmentEliminatorTest {
     stmtGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
-    new DeadAssignmentEliminator().interceptBody(builder, null);
+    new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body afterBody = builder.build();
 
     assertEquals(
@@ -89,7 +93,8 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
+    new DeadAssignmentEliminator()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
@@ -101,7 +106,8 @@ public class DeadAssignmentEliminatorTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
+    new DeadAssignmentEliminator()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
@@ -110,11 +116,10 @@ public class DeadAssignmentEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType objectType = factory.getClassType("java.lang.Object");
+    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
 
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", objectType);

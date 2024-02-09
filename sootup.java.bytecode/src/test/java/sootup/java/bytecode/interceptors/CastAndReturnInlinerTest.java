@@ -18,6 +18,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Category(Java8Test.class)
@@ -76,7 +77,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = bodyBuilder.build();
 
     List<Stmt> expected = new ArrayList<>();
@@ -133,7 +134,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = bodyBuilder.build();
 
     assertStmtsEquiv(testBody.getStmts(), processedBody.getStmts());

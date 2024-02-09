@@ -25,6 +25,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -148,7 +149,7 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body.BodyBuilder builder = createBodyBuilder();
 
-    new LocalPacker().interceptBody(builder, null);
+    new LocalPacker().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
 
     Body expectedBody = createExpectedBody();
@@ -222,7 +223,7 @@ public class LocalPackerTest {
     System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder, null);
+    localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body body = builder.build();
     Body expectedBody = createExpectedTrapBody().build();

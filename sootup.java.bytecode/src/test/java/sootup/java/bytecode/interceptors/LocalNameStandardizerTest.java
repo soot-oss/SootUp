@@ -24,6 +24,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -100,7 +101,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder, null);
+    standardizer.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedBody();
 
