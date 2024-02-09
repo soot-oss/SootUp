@@ -2,10 +2,8 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -24,7 +22,6 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
 public class DeadAssignmentEliminatorTest {
 
   /**
