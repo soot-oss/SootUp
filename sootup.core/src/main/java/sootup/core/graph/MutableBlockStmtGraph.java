@@ -159,6 +159,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         });
 
     duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
+    Comparator<Trap> trapComparator =
+        (trapA, trapB) -> getTrapApplicationComparator(trapstmtToIdx, trapA, trapB);
 
     traps.forEach(
         trap -> {
@@ -217,26 +219,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         } else {
           final PriorityQueue<Trap> overridenTraps =
               overlappingTraps.computeIfAbsent(
-                  trap.getExceptionType(),
-                  k ->
-                      new PriorityQueue<>(
-                          (trapA, trapB) -> {
-                            if (trapA.getEndStmt() == trapB.getEndStmt()) {
-                              final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
-                              final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
-                              return startIdxB - startIdxA;
-                            } else {
-                              final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
-                              final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
-                              return idxA - idxB;
-                            }
-                          }));
+                  trap.getExceptionType(), k -> new PriorityQueue<>(trapComparator));
 
-          overridenTraps.add(existingTrapForException);
-          overridenTraps.add(trap);
+          Trap trapToApply;
+          if (trapComparator.compare(existingTrapForException, trap) < 0) {
+            overridenTraps.add(trap);
+            trapToApply = existingTrapForException;
+          } else {
+            overridenTraps.add(existingTrapForException);
+            trapToApply = trap;
+          }
 
-          // remove element which is the trap with the next ending traprange
-          Trap trapToApply = overridenTraps.poll();
           activeTrapMap.put(trapToApply.getExceptionType(), trapToApply);
         }
         trapsChanged = true;
@@ -289,6 +282,19 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           putEdge(bStmt, j + idxOffset, target);
         }
       }
+    }
+  }
+
+  private static int getTrapApplicationComparator(
+      HashMap<Stmt, Integer> trapstmtToIdx, Trap trapA, Trap trapB) {
+    if (trapA.getEndStmt() == trapB.getEndStmt()) {
+      final Integer startIdxA = trapstmtToIdx.get(trapA.getBeginStmt());
+      final Integer startIdxB = trapstmtToIdx.get(trapB.getBeginStmt());
+      return startIdxB - startIdxA;
+    } else {
+      final Integer idxA = trapstmtToIdx.get(trapA.getEndStmt());
+      final Integer idxB = trapstmtToIdx.get(trapB.getEndStmt());
+      return idxA - idxB;
     }
   }
 
@@ -833,9 +839,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             startingStmt = successorBlock.getHead();
           }
         }
-      }else{
+      } else {
         if (stmt == startingStmt) {
-            startingStmt = null;
+          startingStmt = null;
         }
       }
 
@@ -850,11 +856,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       if (!keepFlow) {
         blockOfRemovedStmt.clearPredecessorBlocks();
         if (stmt == startingStmt) {
-            startingStmt = null;
+          startingStmt = null;
         }
-      }else{
+      } else {
         if (stmt == startingStmt) {
-            startingStmt = blockOfRemovedStmt.getHead();
+          startingStmt = blockOfRemovedStmt.getHead();
         }
       }
 
@@ -880,7 +886,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             "The Stmt is in the middle of a Block - we can not remove the flow unless we split the Block.");
       }
       blockOfRemovedStmt.removeStmt(stmt);
-
     }
   }
 
