@@ -850,6 +850,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       blockOfRemovedStmt.clearSuccessorBlocks();
       blockOfRemovedStmt.clearExceptionalSuccessorBlocks();
       blockOfRemovedStmt.removeStmt(stmt);
+      blocks.remove(blockOfRemovedStmt);
 
     } else if (blockOfRemovedStmt.getHead() == stmt) {
       // stmt2bRemoved is at the beginning of a Block
@@ -890,8 +891,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     stmtToBlock.remove(stmt);
-    blocks.remove(blockOfRemovedStmt);
-
   }
 
   @Override

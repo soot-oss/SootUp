@@ -359,7 +359,7 @@ public class Body implements HasPosition {
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
