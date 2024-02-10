@@ -28,6 +28,7 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -84,15 +85,23 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
       // link previous stmt with always-reached successor of the if-Stmt
       for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
-        stmtGraph.removeEdge(predecessor, ifStmt);
-        stmtGraph.putEdge((FallsThroughStmt) predecessor, tautologicSuccessor);
+        List<Integer> successorIdxList = stmtGraph.removeEdge(predecessor, ifStmt);
+
+        if (predecessor instanceof FallsThroughStmt) {
+          FallsThroughStmt fallsThroughPred = (FallsThroughStmt) predecessor;
+          for (Integer successorIdx : successorIdxList) {
+            stmtGraph.putEdge(fallsThroughPred, tautologicSuccessor);
+          }
+        } else {
+          // should not be anything else than BranchingStmt.. just Stmt can have no successor
+          BranchingStmt branchingPred = (BranchingStmt) predecessor;
+          for (Integer successorIdx : successorIdxList) {
+            stmtGraph.putEdge(branchingPred, successorIdx, tautologicSuccessor);
+          }
+        }
       }
 
-      // removeFlow calls should be obsolete as of following removeStmt
-      stmtGraph.removeEdge(ifStmt, tautologicSuccessor);
-      stmtGraph.removeEdge(ifStmt, neverReachedSucessor);
-
-      stmtGraph.removeNode(ifStmt);
+      stmtGraph.removeNode(ifStmt, false);
 
       pruneExclusivelyReachableStmts(stmtGraph, neverReachedSucessor);
     }
@@ -165,7 +174,6 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       // was a branching predecessor reachable?
       if (reachedStmts.contains(predecessor)) {
         amount--;
-        continue;
       }
     }
     return amount == 0;

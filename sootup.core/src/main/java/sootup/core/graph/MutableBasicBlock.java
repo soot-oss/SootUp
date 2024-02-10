@@ -348,13 +348,14 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   /** set newBlock to null to unset.. */
-  public boolean replaceSuccessorBlock(
+  public List<Integer> replaceSuccessorBlock(
       @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
-    boolean found = false;
+    List<Integer> found =
+        new ArrayList<>(successorBlocks.length); // max.. almost definitely smaller
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == oldBlock) {
         successorBlocks[i] = newBlock;
-        found = true;
+        found.add(i);
       }
     }
     return found;

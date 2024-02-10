@@ -1010,6 +1010,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   public void putEdge(@Nonnull BranchingStmt stmtA, int succesorIdx, @Nonnull Stmt stmtB) {
+    if (0 > succesorIdx || succesorIdx >= stmtA.getExpectedSuccessorCount()) {
+      throw new IllegalArgumentException(
+          "SuccessorIdx '"
+              + succesorIdx
+              + "' is out of bounds - needs to be [0, "
+              + (stmtA.getExpectedSuccessorCount() - 1)
+              + "]");
+    }
     putEdge_internal(stmtA, succesorIdx, stmtB);
   }
 
@@ -1099,13 +1107,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   @Override
-  public boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
+  public List<Integer> removeEdge(@Nonnull Stmt from, @Nonnull Stmt to) {
     MutableBasicBlock blockOfFrom = stmtToBlock.get(from);
-    MutableBasicBlock blockOfTo = stmtToBlock.get(to);
+    if (blockOfFrom == null) {
+      // Stmt is not existing anymore in this graph - so neither a connection.
+      return Collections.emptyList();
+    }
 
-    if (blockOfFrom == null || blockOfTo == null) {
-      // one of the Stmts is not existing anymore in this graph - so neither a connection.
-      return false;
+    MutableBasicBlock blockOfTo = stmtToBlock.get(to);
+    if (blockOfTo == null) {
+      // Stmt is not existing anymore in this graph - so neither a connection.
+      return Collections.emptyList();
     }
 
     if (blockOfFrom.getTail() == from && blockOfTo.getHead() == to) {
@@ -1115,12 +1127,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       // remove the connection between the blocks
       boolean predecessorRemoved = blockOfTo.removePredecessorBlock(blockOfFrom);
-      boolean successorRemoved = blockOfFrom.replaceSuccessorBlock(blockOfTo, null);
+      List<Integer> successorIdxList = blockOfFrom.replaceSuccessorBlock(blockOfTo, null);
+      boolean successorRemoved = successorIdxList.size() > 0;
       assert predecessorRemoved == successorRemoved;
 
       if (!predecessorRemoved) {
         // the blocks weren't connected
-        return false;
+        return Collections.emptyList();
       }
 
       // the removal of the edge between `from` and `to` might have created blocks that can be
@@ -1128,7 +1141,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       tryMergeWithPredecessorBlock(blockOfTo);
       tryMergeWithSuccessorBlock(blockOfFrom);
 
-      return true;
+      return successorIdxList;
     } else if (blockOfFrom == blockOfTo) {
       // `from` and `to` are part of the same block but aren't the tail and head,
       // which means they are "inner" statements in the block and the block needs to be divided
@@ -1149,16 +1162,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         blockOfFrom.clearSuccessorBlocks();
         blocks.add(newBlock);
         newBlock.getStmts().forEach(s -> stmtToBlock.put(s, newBlock));
-        return true;
+        return Collections.singletonList(0);
       } else {
         // `from` and `to` are not successive statements in the block
-        return false;
+        return Collections.emptyList();
       }
     } else {
       // `from` and `to` are part of different blocks,
       // and aren't tail and head of their respective block,
       // which means they aren't connected
-      return false;
+      return Collections.emptyList();
     }
   }
 

@@ -32,11 +32,7 @@ public class TypeAssignerTestSuite {
     AnalysisInputLocation rtJar =
         new DefaultRTJarAnalysisInputLocation(SourceType.Application, Collections.emptyList());
 
-    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
-    inputLocations.add(analysisInputLocation);
-    inputLocations.add(rtJar);
-
-    view = new JavaView(inputLocations);
+    view = new JavaView(Arrays.asList(analysisInputLocation, rtJar));
 
     classType = view.getIdentifierFactory().getClassType(className);
     clazz = view.getClass(classType).get();

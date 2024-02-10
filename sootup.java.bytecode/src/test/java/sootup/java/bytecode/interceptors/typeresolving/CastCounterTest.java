@@ -13,13 +13,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
-import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.core.types.JavaClassType;
 
 @Category(Java8Test.class)
 public class CastCounterTest extends TypeAssignerTestSuite {
@@ -27,11 +25,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   AugEvalFunction function;
   BytecodeHierarchy hierarchy;
 
-  ClassType super1 = new JavaClassType("Super1", PackageName.DEFAULT_PACKAGE);
-  ClassType super2 = new JavaClassType("Super2", PackageName.DEFAULT_PACKAGE);
-  ClassType sub1 = new JavaClassType("Sub1", PackageName.DEFAULT_PACKAGE);
-  ClassType sub2 = new JavaClassType("Sub2", PackageName.DEFAULT_PACKAGE);
-  ClassType object = new JavaClassType("java.lang.Object", PackageName.DEFAULT_PACKAGE);
+  ClassType super1, super2, sub1, sub2, object;
 
   @Before
   public void setup() {
@@ -40,6 +34,12 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     buildView(baseDir, className);
     function = new AugEvalFunction(view);
     hierarchy = new BytecodeHierarchy(view);
+
+    super1 = view.getIdentifierFactory().getClassType("Super1");
+    super2 = view.getIdentifierFactory().getClassType("Super2");
+    sub1 = view.getIdentifierFactory().getClassType("Sub1");
+    sub2 = view.getIdentifierFactory().getClassType("Sub2");
+    object = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   @Test
