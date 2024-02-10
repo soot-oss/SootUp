@@ -108,7 +108,13 @@ public class MutableBlockStmtGraphTest {
     assertEquals(2, graph.getBlocks().size());
     assertEquals(1, graph.getBlockOf(firstGoto).getStmts().size());
 
-    graph.removeNode(firstGoto);
+    try {
+      graph.removeNode(firstGoto);
+      fail("should not be reachable due to exception");
+    } catch (Exception ignored) {
+    }
+
+    graph.removeNode(firstGoto, false);
     assertEquals(1, graph.getBlocks().size());
     assertEquals(1, graph.getBlockOf(secondNop).getStmts().size());
 
