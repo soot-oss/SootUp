@@ -809,7 +809,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     List<MutableBasicBlock> successors = blockOfRemovedStmt.getSuccessors();
     if (blockOfRemovedStmt.getStmtCount() <= 1) {
       // remove the complete block as it has only one Stmt that is now removed
-      stmtToBlock.remove(blockOfRemovedStmt);
+      stmtToBlock.remove(stmt);
       blocks.remove(blockOfRemovedStmt);
 
       if (keepFlow) {
@@ -849,7 +849,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       blockOfRemovedStmt.removeStmt(stmt);
       if (!keepFlow) {
         blockOfRemovedStmt.clearPredecessorBlocks();
-      }
         if (stmt == startingStmt) {
             startingStmt = null;
         }
