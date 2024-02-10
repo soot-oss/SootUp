@@ -828,17 +828,39 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               successorBlock.addPredecessorBlock(predecessor);
             }
           }
+
+          if (stmt == startingStmt) {
+            startingStmt = successorBlock.getHead();
+          }
+        }
+      }else{
+        if (stmt == startingStmt) {
+            startingStmt = null;
         }
       }
 
       blockOfRemovedStmt.clearPredecessorBlocks();
       blockOfRemovedStmt.clearSuccessorBlocks();
       blockOfRemovedStmt.clearExceptionalSuccessorBlocks();
+      blockOfRemovedStmt.removeStmt(stmt);
+
     } else if (blockOfRemovedStmt.getHead() == stmt) {
       // stmt2bRemoved is at the beginning of a Block
+      blockOfRemovedStmt.removeStmt(stmt);
       if (!keepFlow) {
         blockOfRemovedStmt.clearPredecessorBlocks();
       }
+        if (stmt == startingStmt) {
+            startingStmt = null;
+        }
+      }else{
+        if (stmt == startingStmt) {
+            startingStmt = blockOfRemovedStmt.getHead();
+        }
+      }
+
+      // update starting stmt if necessary
+
     } else if (blockOfRemovedStmt.getTail() == stmt) {
       // stmt2bRemoved is at the end of a Block
       if (keepFlow) {
@@ -849,20 +871,17 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       } else {
         blockOfRemovedStmt.clearSuccessorBlocks();
       }
+      blockOfRemovedStmt.removeStmt(stmt);
+
     } else {
       // stmt2bRemoved is in the middle of a Block
       if (!keepFlow) {
-        // TODO: should we throw or split the block?
+        // TODO: should we throw or explicitly split the block?
         throw new IllegalArgumentException(
             "The Stmt is in the middle of a Block - we can not remove the flow unless we split the Block.");
       }
-    }
-    blockOfRemovedStmt.removeStmt(stmt);
+      blockOfRemovedStmt.removeStmt(stmt);
 
-    // update starting stmt if necessary
-    if (stmt == startingStmt) {
-      assert blockOfRemovedStmt.getHead() != stmt;
-      startingStmt = keepFlow ? blockOfRemovedStmt.getHead() : null;
     }
   }
 
