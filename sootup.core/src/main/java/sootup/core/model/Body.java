@@ -281,6 +281,10 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<LValue> getDefs() {
+    return getDefs(graph);
+  }
+
+  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -372,7 +376,8 @@ public class Body implements HasPosition {
 
     public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
       if (!locals.contains(existingLocal)) {
-        throw new IllegalArgumentException("The given existing Local '" + existingLocal + "' is not in the body!");
+        throw new IllegalArgumentException(
+            "The given existing Local '" + existingLocal + "' is not in the body!");
       }
 
       for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {

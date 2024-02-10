@@ -28,7 +28,7 @@ import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 
 public class Typing {
-  @Nonnull private Map<Local, Type> local2Type;
+  @Nonnull private final Map<Local, Type> local2Type;
   @Nonnull private BitSet stmtsIDList;
 
   public Typing(@Nonnull Collection<Local> locals) {

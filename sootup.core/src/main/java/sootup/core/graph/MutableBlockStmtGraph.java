@@ -1249,6 +1249,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else {
       // argh indexOf.. possibly expensive..
       List<Stmt> stmts = block.getStmts();
+      // we know: i != 0 as its not the head Stmt
       final int i = stmts.indexOf(node);
       // assert (stmts.size() > 0) : "no stmts in " + block + " " + block.hashCode();
       // assert (i > 0) : " stmt not found in " + block;
