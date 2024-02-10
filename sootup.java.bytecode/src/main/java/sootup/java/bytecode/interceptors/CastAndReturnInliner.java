@@ -22,7 +22,7 @@ package sootup.java.bytecode.interceptors;
  */
 import com.google.common.collect.Lists;
 import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -64,15 +64,15 @@ public class CastAndReturnInliner implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
-    StmtGraph<?> originalGraph = builder.getStmtGraph();
+    MutableStmtGraph graph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(originalGraph.getNodes())) {
+    for (Stmt stmt : Lists.newArrayList(graph.getNodes())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
       JGotoStmt gotoStmt = (JGotoStmt) stmt;
 
-      Stmt successorOfGoto = originalGraph.successors(gotoStmt).get(0);
+      Stmt successorOfGoto = graph.successors(gotoStmt).get(0);
 
       if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
@@ -82,7 +82,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
       }
-      Stmt nextStmt = originalGraph.successors(assign).get(0);
+      Stmt nextStmt = graph.successors(assign).get(0);
 
       if (!(nextStmt instanceof JReturnStmt)) {
         continue;
@@ -98,11 +98,11 @@ public class CastAndReturnInliner implements BodyInterceptor {
       JReturnStmt newStmt = retStmt.withReturnValue(ce.getOp());
 
       // Redirect all flows coming into the GOTO to the new return
-      builder.replaceStmt(gotoStmt, newStmt);
+      graph.replaceNode(gotoStmt, newStmt);
 
       // cleanup now obsolete cast and return statements
-      builder.removeStmt(assign);
-      builder.removeStmt(retStmt);
+      graph.removeNode(assign);
+      graph.removeNode(retStmt);
     }
   }
 }

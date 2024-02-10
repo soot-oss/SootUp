@@ -519,6 +519,14 @@ public class Body implements HasPosition {
         return super.toString();
       }
     }
+
+    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+      for (LValue def : stmt.getDefs()) {
+        if (def instanceof Local) {
+          locals.remove(def);
+        }
+      }
+    }
   }
 
   /**

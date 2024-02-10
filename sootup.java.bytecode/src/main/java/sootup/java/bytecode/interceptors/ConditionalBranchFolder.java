@@ -103,12 +103,14 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
       stmtGraph.removeNode(ifStmt, false);
 
-      pruneExclusivelyReachableStmts(stmtGraph, neverReachedSucessor);
+      pruneExclusivelyReachableStmts(builder, neverReachedSucessor);
     }
   }
 
   private void pruneExclusivelyReachableStmts(
-      @Nonnull MutableStmtGraph stmtGraph, @Nonnull Stmt fallsThroughStmt) {
+      @Nonnull Body.BodyBuilder builder, @Nonnull Stmt fallsThroughStmt) {
+
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     Set<Stmt> reachedBranchingStmts = new HashSet<>();
     Deque<Stmt> q = new ArrayDeque<>();
 
@@ -138,6 +140,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
           q.addAll(stmtGraph.successors(itStmt));
           stmtGraph.removeNode(itStmt);
+          builder.removeDefLocalsOf(itStmt);
         }
       }
     }

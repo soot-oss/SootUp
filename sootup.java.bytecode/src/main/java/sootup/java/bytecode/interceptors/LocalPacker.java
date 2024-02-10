@@ -20,8 +20,10 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import com.google.common.collect.Lists;
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -82,7 +84,8 @@ public class LocalPacker implements BodyInterceptor {
     // store all new locals with reasonable name, if a local is not in newLoals, means that it
     // doesn't has reasonable name
     Set<Local> newLocals = new LinkedHashSet<>();
-    for (Stmt stmt : builder.getStmts()) {
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       Stmt newStmt = stmt;
       for (Value use : stmt.getUses()) {
         if (use instanceof Local) {
@@ -118,7 +121,7 @@ public class LocalPacker implements BodyInterceptor {
         newStmt = ((AbstractDefinitionStmt) newStmt).withNewDef(newLocal);
       }
       if (!stmt.equals(newStmt)) {
-        builder.replaceStmt(stmt, newStmt);
+        stmtGraph.replaceNode(stmt, newStmt);
       }
     }
     builder.setLocals(newLocals);
@@ -212,6 +215,7 @@ public class LocalPacker implements BodyInterceptor {
     StmtGraph<?> graph = builder.getStmtGraph();
     LocalLivenessAnalyser analyser = new LocalLivenessAnalyser(graph);
 
+    // TODO: check if sorted Stmts are necessary
     for (Stmt stmt : builder.getStmts()) {
       if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
 

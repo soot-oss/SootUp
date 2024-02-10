@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -50,6 +51,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     List<Stmt> defs = new ArrayList<>();
 
     // Perform a constant/local propagation pass
@@ -77,7 +80,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
                   || rhs instanceof StringConstant
                   || rhs instanceof NullConstant) {
                 JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
-                builder.replaceStmt(stmt, returnStmt);
+                stmtGraph.replaceNode(stmt, returnStmt);
                 stmt = returnStmt;
                 defs.add(returnStmt);
               }
@@ -93,12 +96,12 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
             value = Evaluator.getConstantValueOf(value);
             if (stmt instanceof JAssignStmt) {
               JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(value);
-              builder.replaceStmt(stmt, assignStmt);
+              stmtGraph.replaceNode(stmt, assignStmt);
               defs.remove(stmt);
               defs.add(assignStmt);
             } else if (stmt instanceof JReturnStmt && value != null) {
               JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) value);
-              builder.replaceStmt(stmt, returnStmt);
+              stmtGraph.replaceNode(stmt, returnStmt);
             }
           }
         }
