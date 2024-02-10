@@ -117,7 +117,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
-      return predecessorBlocks.remove(b);
+    return predecessorBlocks.remove(b);
   }
 
   private void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
@@ -128,7 +128,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     }
   }
 
-  public void addExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
+  public void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
     exceptionalSuccessorBlocks.put(exception, b);
     b.addPredecessorBlock(this);
   }
@@ -167,7 +167,8 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     }
 
     List<MutableBasicBlock> objects = new ArrayList<>(getTail().getExpectedSuccessorCount());
-    // TODO: does this change meaning?! i.e. with switchStmts that have partially populated successors?
+    // TODO: does this change meaning?! i.e. with switchStmts that have partially populated
+    // successors?
     Arrays.stream(successorBlocks).filter(Objects::nonNull).forEach(objects::add);
     return objects;
   }
@@ -319,7 +320,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void clearExceptionalSuccessorBlocks() {
-      exceptionalSuccessorBlocks.values().forEach(b -> b.removePredecessorBlock(this));
+    exceptionalSuccessorBlocks.values().forEach(b -> b.removePredecessorBlock(this));
     exceptionalSuccessorBlocks.clear();
   }
 

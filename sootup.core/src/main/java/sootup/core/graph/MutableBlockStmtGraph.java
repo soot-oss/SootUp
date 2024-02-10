@@ -283,6 +283,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
       }
     }
+
+    if (nextStartingTrap != null || nextEndingTrap != null) {
+      throw new IllegalStateException("The Traps are not iterated completely/correctly!");
+    }
   }
 
   private static int getTrapApplicationComparator(
@@ -411,7 +415,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     MutableBasicBlock seperatedBlock = excludeStmtFromBlock(stmt, block);
-    seperatedBlock.addExceptionalSuccessorBlock(exceptionType, getOrCreateBlock(traphandlerStmt));
+    seperatedBlock.linkExceptionalSuccessorBlock(exceptionType, getOrCreateBlock(traphandlerStmt));
     tryMergeIntoSurroundingBlocks(seperatedBlock);
   }
 
@@ -515,7 +519,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
     trapMap.forEach(
         (type, handlerStmt) ->
-            block.addExceptionalSuccessorBlock(type, getOrCreateBlock(handlerStmt)));
+            block.linkExceptionalSuccessorBlock(type, getOrCreateBlock(handlerStmt)));
     return block;
   }
 
@@ -573,8 +577,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       exceptions.forEach(
           (type, trapHandler) -> {
             MutableBasicBlock trapHandlerBlock = getOrCreateBlock(trapHandler);
-            separatedBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
-            trapHandlerBlock.addPredecessorBlock(separatedBlock);
+            separatedBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
           });
       tryMergeIntoSurroundingBlocks(separatedBlock);
     }
@@ -610,7 +613,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             .getExceptionalSuccessors()
             .forEach(
                 (type, trapHandlerBlock) -> {
-                  excludedFromOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+                  excludedFromOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
                   trapHandlerBlock.addPredecessorBlock(excludedFromOrigBlock);
                 });
         blocks.add(excludedFromOrigBlock);
@@ -641,7 +644,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             .getExceptionalSuccessors()
             .forEach(
                 (type, trapHandlerBlock) -> {
-                  restOfOrigBlock.addExceptionalSuccessorBlock(type, trapHandlerBlock);
+                  restOfOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
                   trapHandlerBlock.addPredecessorBlock(restOfOrigBlock);
                 });
 
@@ -965,7 +968,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       final MutableBasicBlock successorBlock = block.splitBlockLinked(beforeStmt, true);
       exceptionMap.forEach(
           (type, handler) ->
-              successorBlock.addExceptionalSuccessorBlock(type, getOrCreateBlock(handler)));
+              successorBlock.linkExceptionalSuccessorBlock(type, getOrCreateBlock(handler)));
       stmts.forEach(stmt -> addNodeToBlock(block, stmt));
       if (!tryMergeBlocks(block, successorBlock)) {
         // update index: for splitted stmts

@@ -370,30 +370,30 @@ public class Body implements HasPosition {
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
-      } else {
-        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          final Stmt stmt = currStmt;
-          if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
-          }
-          final List<LValue> defs = currStmt.getDefs();
-          for (LValue def : defs) {
-            if (def == oldLocal || def.getUses().contains(oldLocal)) {
-              if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
-              }
+    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+      if (!locals.contains(existingLocal)) {
+        throw new IllegalArgumentException("The given existing Local '" + existingLocal + "' is not in the body!");
+      }
+
+      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+        final Stmt stmt = currStmt;
+        if (currStmt.getUses().contains(existingLocal)) {
+          currStmt = currStmt.withNewUse(existingLocal, newLocal);
+        }
+        final List<LValue> defs = currStmt.getDefs();
+        for (LValue def : defs) {
+          if (def == existingLocal || def.getUses().contains(existingLocal)) {
+            if (currStmt instanceof AbstractDefinitionStmt) {
+              currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
-          if (stmt != currStmt) {
-            getStmtGraph().replaceNode(stmt, currStmt);
-          }
         }
-        locals.remove(oldLocal);
-        locals.add(newLocal);
+        if (stmt != currStmt) {
+          getStmtGraph().replaceNode(stmt, currStmt);
+        }
       }
+      locals.remove(existingLocal);
+      locals.add(newLocal);
     }
 
     /**
