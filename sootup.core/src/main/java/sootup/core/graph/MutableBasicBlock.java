@@ -93,7 +93,15 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     predecessorBlocks.add(block);
   }
 
-  public boolean setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block) {
+  /**
+   * makes blockA the predecessor of BlockB and BlockB the Successor of BlockA in a combined Method
+   */
+  void linkSuccessor(int successorIdx, MutableBasicBlock blockB) {
+    setSuccessorBlock(successorIdx, blockB);
+    blockB.addPredecessorBlock(this);
+  }
+
+  public void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block) {
     updateSuccessorContainer(getTail());
     if (successorIdx >= successorBlocks.length) {
       throw new IndexOutOfBoundsException(
@@ -106,12 +114,10 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
               + "')");
     }
     successorBlocks[successorIdx] = block;
-    return true;
   }
 
   public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
-    boolean removed = predecessorBlocks.remove(b);
-    return removed;
+      return predecessorBlocks.remove(b);
   }
 
   private void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
