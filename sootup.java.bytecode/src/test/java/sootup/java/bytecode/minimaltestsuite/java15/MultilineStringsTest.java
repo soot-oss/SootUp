@@ -1,16 +1,19 @@
 package sootup.java.bytecode.minimaltestsuite.java15;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Bastian Haverkamp */
+@Category(Java8Test.class)
 public class MultilineStringsTest extends MinimalBytecodeTestSuiteBase {
 
   @Override

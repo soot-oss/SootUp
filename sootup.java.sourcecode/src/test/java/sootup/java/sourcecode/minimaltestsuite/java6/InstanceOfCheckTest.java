@@ -1,18 +1,21 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -25,7 +28,7 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getSuperclass().get().getClassName().equals("InstanceOfCheckSuper"));
+    assertEquals("InstanceOfCheckSuper", sootClass.getSuperclass().get().getClassName());
   }
 
   /**

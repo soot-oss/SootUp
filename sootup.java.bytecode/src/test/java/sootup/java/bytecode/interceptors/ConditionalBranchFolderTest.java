@@ -44,7 +44,7 @@ public class ConditionalBranchFolderTest {
   @Test
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(0);
-    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()) );
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     assertEquals(
         Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
         Utils.bodyStmtsAsStrings(builder.build()));
@@ -60,7 +60,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(1);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()) );
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(
@@ -72,7 +72,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranchingWithNoConclusiveIfCondition() {
     Body.BodyBuilder builder = createBodyBuilder(2);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()) );
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));

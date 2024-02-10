@@ -2,16 +2,19 @@ package sootup.java.sourcecode.minimaltestsuite.java8;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
+@Category(Java8Test.class)
 public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {

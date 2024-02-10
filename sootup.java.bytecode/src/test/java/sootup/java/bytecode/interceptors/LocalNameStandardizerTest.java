@@ -101,7 +101,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    standardizer.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedBody();
 

@@ -125,7 +125,7 @@ public class TrapTightenerTest {
     builder.clearExceptionEdgesOf(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
@@ -165,7 +165,7 @@ public class TrapTightenerTest {
     //  stmtGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);

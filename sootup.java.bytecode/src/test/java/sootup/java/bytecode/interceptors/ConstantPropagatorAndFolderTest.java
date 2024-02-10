@@ -42,7 +42,8 @@ public class ConstantPropagatorAndFolderTest {
     Body testBody = testBuilder.build();
 
     testBuilder = Body.builder(testBody, testBuilder.getModifiers());
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
+    new ConstantPropagatorAndFolder()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -66,7 +67,8 @@ public class ConstantPropagatorAndFolderTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder, new JavaView(Collections.emptyList()) );
+    new ConstantPropagatorAndFolder()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();

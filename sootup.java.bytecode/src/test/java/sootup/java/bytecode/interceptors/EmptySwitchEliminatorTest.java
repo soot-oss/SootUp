@@ -60,7 +60,7 @@ public class EmptySwitchEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();
-    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedEmptySwitchBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());

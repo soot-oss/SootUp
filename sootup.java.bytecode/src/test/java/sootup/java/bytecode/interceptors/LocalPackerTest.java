@@ -149,7 +149,7 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body.BodyBuilder builder = createBodyBuilder();
 
-    new LocalPacker().interceptBody(builder, new JavaView(Collections.emptyList()) );
+    new LocalPacker().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
 
     Body expectedBody = createExpectedBody();
@@ -223,7 +223,7 @@ public class LocalPackerTest {
     System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body body = builder.build();
     Body expectedBody = createExpectedTrapBody().build();

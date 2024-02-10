@@ -46,7 +46,8 @@ public abstract class MinimalBytecodeTestSuiteBase {
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
-      // TODO: seems to be more complicated than necessary - save directory instead of needing operation on it agin
+      // TODO: seems to be more complicated than necessary - save directory instead of needing
+      // operation on it agin
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {

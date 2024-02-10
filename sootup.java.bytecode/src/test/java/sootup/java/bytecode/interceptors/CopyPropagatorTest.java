@@ -133,7 +133,7 @@ public class CopyPropagatorTest {
     Body body = createChainBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedChainBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -146,7 +146,7 @@ public class CopyPropagatorTest {
     Body.BodyBuilder builder = createLoopBody();
 
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedLoopBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -159,7 +159,7 @@ public class CopyPropagatorTest {
     Body body = createCastExprBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, new JavaView(Collections.emptyList()) );
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedCastExprBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
