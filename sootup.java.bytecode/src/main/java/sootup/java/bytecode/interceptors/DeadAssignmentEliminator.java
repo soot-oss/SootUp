@@ -63,6 +63,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
@@ -195,6 +196,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     for (Stmt stmt : stmts) {
       if (!essentialStmts.contains(stmt)) {
         stmtGraph.removeNode(stmt);
+        removeDefLocalsOf(builder, stmt);
       }
     }
 
@@ -236,6 +238,15 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       Stmt newInvoke =
           Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
       stmtGraph.replaceNode(assignStmt, newInvoke);
+      removeDefLocalsOf(builder, assignStmt);
+    }
+  }
+
+  private void removeDefLocalsOf(@Nonnull Body.BodyBuilder builder, @Nonnull Stmt stmt) {
+    for (LValue def : stmt.getDefs()) {
+      if (def instanceof Local) {
+        builder.getLocals().remove(def);
+      }
     }
   }
 }
