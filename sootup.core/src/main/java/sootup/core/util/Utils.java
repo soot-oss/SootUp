@@ -41,10 +41,22 @@ import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.printer.JimplePrinter;
 
 /** @author Linghui Luo */
 public class Utils {
+
+
+  /** e.g. to print before/after to understand / compare what every interceptor does. */
+  public List<BodyInterceptor> wrapEachBodyInterceptorWith(
+          @Nonnull List<BodyInterceptor> bodyInterceptors,
+          @Nonnull BodyInterceptor before,
+          @Nonnull BodyInterceptor after) {
+    return bodyInterceptors.stream()
+            .flatMap(b -> Stream.of(before, b, after))
+            .collect(Collectors.toList());
+  }
 
   @Nullable
   Path compileJavaOTF(String className, String javaSourceContent) {

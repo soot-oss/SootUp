@@ -2,7 +2,6 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
@@ -17,7 +16,6 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
-import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
@@ -94,8 +92,7 @@ public class DeadAssignmentEliminatorTest {
     Body testBody = testBuilder.build();
 
     Body.BodyBuilder builder = Body.builder(testBody, Collections.emptySet());
-    new DeadAssignmentEliminator()
-        .interceptBody(builder, new JavaView(Collections.emptyList()));
+    new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
