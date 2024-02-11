@@ -37,9 +37,9 @@ public enum BytecodeBodyInterceptors {
       new Aggregator(),
       new CopyPropagator(),
       new DeadAssignmentEliminator(),
-      new UnusedLocalEliminator(),
       new ConditionalBranchFolder(),
       new EmptySwitchEliminator(),
+      new UnusedLocalEliminator(),
       new TypeAssigner());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;

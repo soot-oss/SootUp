@@ -85,7 +85,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l2, l3));
 
     builder.setLocals(locals);
 
@@ -124,7 +124,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, l4, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, l4, stack0));
 
     builder.setLocals(locals);
 
@@ -159,7 +159,8 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, stack0));
+
 
     builder.setLocals(locals);
 

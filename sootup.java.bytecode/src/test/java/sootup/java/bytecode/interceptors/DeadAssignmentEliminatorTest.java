@@ -2,6 +2,7 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
@@ -54,7 +55,7 @@ public class DeadAssignmentEliminatorTest {
     StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
-    Set<Local> locals = ImmutableUtils.immutableSet(a);
+    Set<Local> locals = Collections.singleton(a);
 
     BranchingStmt conditional =
         JavaJimple.newIfStmt(
@@ -78,6 +79,7 @@ public class DeadAssignmentEliminatorTest {
     stmtGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
+    builder = Body.builder(beforeBody, Collections.emptySet());
     new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body afterBody = builder.build();
 
@@ -90,9 +92,12 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
+
+    Body.BodyBuilder builder = Body.builder(testBody, Collections.emptySet());
     new DeadAssignmentEliminator()
-        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
-    Body processedBody = testBuilder.build();
+        .interceptBody(builder, new JavaView(Collections.emptyList()));
+    Body processedBody = builder.build();
+
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
@@ -126,7 +131,7 @@ public class DeadAssignmentEliminatorTest {
         JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));
 
     Body.BodyBuilder builder = Body.builder();
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
