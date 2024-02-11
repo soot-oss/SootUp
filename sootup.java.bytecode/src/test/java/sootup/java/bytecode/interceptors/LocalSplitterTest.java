@@ -27,7 +27,7 @@ public class LocalSplitterTest {
 
   @Before
   public void setup() {
-    String classPath = "src/test/java/resources/interceptors";
+    String classPath = "src/test/resources/interceptors";
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
             classPath, SourceType.Application, Collections.emptyList());
