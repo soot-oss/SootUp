@@ -161,7 +161,6 @@ public class UnreachableCodeEliminatorTest {
     // add locals into builder
     Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, stack0));
 
-
     builder.setLocals(locals);
 
     // build stmtsGraph for the builder

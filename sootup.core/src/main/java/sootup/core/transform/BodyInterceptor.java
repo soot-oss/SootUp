@@ -22,9 +22,6 @@ package sootup.core.transform;
  * #L%
  */
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.views.View;

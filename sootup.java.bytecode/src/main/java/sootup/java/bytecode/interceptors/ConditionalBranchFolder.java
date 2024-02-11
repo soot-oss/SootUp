@@ -139,7 +139,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         // hint: predecessor could also be already removed
         if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
           q.addAll(stmtGraph.successors(itStmt));
-          stmtGraph.removeNode(itStmt);
+          stmtGraph.removeNode(itStmt, false);
           builder.removeDefLocalsOf(itStmt);
         }
       }
