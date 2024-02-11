@@ -106,7 +106,7 @@ public class TypeResolver {
 
   /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
+      for (Stmt stmt : builder.getStmts()) {
       if (!(stmt instanceof AbstractDefinitionStmt)) {
         continue;
       }
@@ -149,12 +149,8 @@ public class TypeResolver {
   }
 
   private void addDependency(@Nonnull Local local, int id) {
-    BitSet bitSet = depends.get(local);
-    if (bitSet == null) {
-      bitSet = new BitSet();
-      depends.put(local, bitSet);
-    }
-    bitSet.set(id);
+      BitSet bitSet = depends.computeIfAbsent(local, k -> new BitSet());
+      bitSet.set(id);
   }
 
   private Collection<Typing> applyAssignmentConstraint(
