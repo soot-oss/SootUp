@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors;
  */
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
@@ -268,21 +269,29 @@ public class LocalSplitter implements BodyInterceptor {
 
         Stmt oldStmt = stmt;
 
+        Function<Boolean, Local> getNewLocal =
+            isDef ->
+                representativeToNewLocal.computeIfAbsent(
+                    disjointSet.find(new PartialStmt(oldStmt, isDef)),
+                    s -> {
+                      Local newLocal;
+                      do {
+                        newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
+                      } while (locals.contains(newLocal));
+                      return newLocal;
+                    });
+
         if (localIsDef) {
-          Local newDefLocal =
-              representativeToNewLocal.get(disjointSet.find(new PartialStmt(oldStmt, true)));
-          if (newDefLocal == null) {
-            newDefLocal = createLocal(local, nextId, locals);
+          Local newDefLocal = getNewLocal.apply(true);
+          if (local != newDefLocal) {
             newLocals.add(newDefLocal);
             stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
           }
         }
 
         if (localIsUse) {
-          Local newUseLocal =
-              representativeToNewLocal.get(disjointSet.find(new PartialStmt(oldStmt, false)));
-          if (newUseLocal == null) {
-            newUseLocal = createLocal(local, nextId, locals);
+          Local newUseLocal = getNewLocal.apply(false);
+          if (local != newUseLocal) {
             newLocals.add(newUseLocal);
             stmt = stmt.withNewUse(local, newUseLocal);
           }
@@ -298,14 +307,6 @@ public class LocalSplitter implements BodyInterceptor {
     }
 
     builder.setLocals(newLocals);
-  }
-
-  private static Local createLocal(Local local, int[] nextId, Set<Local> locals) {
-    Local newLocal;
-    do {
-      newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
-    } while (locals.contains(newLocal));
-    return newLocal;
   }
 
   @Nonnull
