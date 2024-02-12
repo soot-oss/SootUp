@@ -96,7 +96,9 @@ public class MutableJavaView extends JavaView implements MutableView {
     MethodSubSignature mss = method.getSignature().getSubSignature();
 
     JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
-    if (clazz == null) return;
+    if (clazz == null) {
+      return;
+    }
 
     Set<JavaSootMethod> methods = clazz.getMethods();
     Set<JavaSootMethod> filteredMethods =
@@ -114,7 +116,9 @@ public class MutableJavaView extends JavaView implements MutableView {
     ClassType classType = method.getDeclaringClassType();
 
     JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
-    if (clazz == null) return;
+    if (clazz == null) {
+      return;
+    }
 
     Set<JavaSootMethod> methods = clazz.getMethods();
     Set<JavaSootMethod> newMethods = new HashSet<>(methods);

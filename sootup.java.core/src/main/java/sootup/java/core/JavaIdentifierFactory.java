@@ -409,8 +409,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String methodName = matcher.group("method").trim();
     String returnName = matcher.group("return").trim();
 
-    if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty())
+    if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty()) {
       throw MethodSignatureParserPatternHolder.createInvalidMethodSignatureException();
+    }
 
     String argsGroup = matcher.group("args");
 
@@ -422,9 +423,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(String::trim)
                 .filter(
                     it -> {
-                      if (it.isEmpty())
+                      if (it.isEmpty()) {
                         throw MethodSignatureParserPatternHolder
                             .createInvalidMethodSignatureException();
+                      }
 
                       return true;
                     })
@@ -503,8 +505,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String methodName = matcher.group("method").trim();
     String returnName = matcher.group("return").trim();
 
-    if (methodName.isEmpty() || returnName.isEmpty())
+    if (methodName.isEmpty() || returnName.isEmpty()) {
       throw createInvalidMethodSubSignatureException();
+    }
 
     String argsGroup = matcher.group("args");
 
@@ -515,7 +518,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(String::trim)
                 .filter(
                     it -> {
-                      if (it.isEmpty()) throw createInvalidMethodSubSignatureException();
+                      if (it.isEmpty()) {
+                        throw createInvalidMethodSubSignatureException();
+                      }
 
                       return true;
                     })
@@ -582,8 +587,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String fieldName = matcher.group("field").trim();
     String typeName = matcher.group("type").trim();
 
-    if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty())
+    if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty()) {
       throw createInvalidFieldSignatureException();
+    }
 
     return getFieldSignature(fieldName, getClassType(className), typeName);
   }
@@ -669,7 +675,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String fieldName = matcher.group("field").trim();
     String typeName = matcher.group("type").trim();
 
-    if (fieldName.isEmpty() || typeName.isEmpty()) throw createInvalidFieldSubSignatureException();
+    if (fieldName.isEmpty() || typeName.isEmpty()) {
+      throw createInvalidFieldSubSignatureException();
+    }
 
     return getFieldSubSignature(fieldName, getType(typeName));
   }

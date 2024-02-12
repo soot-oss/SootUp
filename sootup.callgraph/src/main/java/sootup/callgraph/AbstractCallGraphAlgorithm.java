@@ -112,10 +112,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           SootMethod clintMethod =
               view.getMethod(methodSignature.getDeclClassType().getStaticInitializer())
                   .orElse(null);
-          if (clintMethod == null) return;
+          if (clintMethod == null) {
+            return;
+          }
           MethodSignature staticInitSig = clintMethod.getSignature();
-          if (!cg.containsMethod(methodSignature)) cg.addMethod(methodSignature);
-          if (!cg.containsMethod(staticInitSig)) cg.addMethod(staticInitSig);
+          if (!cg.containsMethod(methodSignature)) {
+            cg.addMethod(methodSignature);
+          }
+          if (!cg.containsMethod(staticInitSig)) {
+            cg.addMethod(staticInitSig);
+          }
           if (!cg.containsCall(methodSignature, staticInitSig)) {
             cg.addCall(methodSignature, staticInitSig);
             workList.push(staticInitSig);
@@ -143,18 +149,24 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
       // skip if already processed
-      if (processed.contains(currentMethodSignature)) continue;
+      if (processed.contains(currentMethodSignature)) {
+        continue;
+      }
 
       // skip if library class
       SootClass currentClass =
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || currentClass.isLibraryClass()) continue;
+      if (currentClass == null || currentClass.isLibraryClass()) {
+        continue;
+      }
 
       // perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
       // process the method
-      if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+      if (!cg.containsMethod(currentMethodSignature)) {
+        cg.addMethod(currentMethodSignature);
+      }
 
       // transform the method signature to the actual SootMethod
       SootMethod currentMethod =
@@ -171,7 +183,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Stream.concat(invocationTargets, implicitTargets)
           .forEach(
               t -> {
-                if (!cg.containsMethod(t)) cg.addMethod(t);
+                if (!cg.containsMethod(t)) {
+                  cg.addMethod(t);
+                }
                 if (!cg.containsCall(currentMethodSignature, t)) {
                   cg.addCall(currentMethodSignature, t);
                   workList.push(t);
@@ -197,7 +211,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   @Nonnull
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     return sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::containsInvokeExpr)
@@ -214,7 +230,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   protected Stream<MethodSignature> resolveAllImplicitCallsFromSourceMethod(
       View view, SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     // collect all static initializer calls
     return resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
@@ -230,7 +248,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   protected Stream<MethodSignature> resolveAllStaticInitializerCallsFromSourceMethod(
       View view, SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     Stream.Builder<ClassType> targetsToStaticInitializer = Stream.builder();
 

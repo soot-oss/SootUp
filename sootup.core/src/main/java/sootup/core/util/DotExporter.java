@@ -193,8 +193,11 @@ public class DotExporter {
       sb.append("\n");
     }
 
-    if (!isICFG) return sb.append("}").toString();
-    else return sb.toString();
+    if (!isICFG) {
+      return sb.append("}").toString();
+    } else {
+      return sb.toString();
+    }
   }
 
   private static String escape(String str) {
