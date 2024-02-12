@@ -96,10 +96,14 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       if (rValue == oldUse) {
         setResult(stmt.withRValue(newUse));
       } else {
-        refVisitor.init(oldUse, newUse);
-        ((Ref) rValue).accept(refVisitor);
-        if (refVisitor.getResult() != rValue) {
-          setResult(stmt.withRValue(refVisitor.getResult()));
+        try {
+          refVisitor.init(oldUse, newUse);
+          ((Ref) rValue).accept(refVisitor);
+          if (refVisitor.getResult() != rValue) {
+            setResult(stmt.withRValue(refVisitor.getResult()));
+          }
+        } catch (ClassCastException cce) {
+          // can not replace that local by another Value
         }
       }
     } else if (rValue instanceof Expr) {
