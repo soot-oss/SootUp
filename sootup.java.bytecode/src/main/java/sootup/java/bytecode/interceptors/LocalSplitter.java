@@ -26,7 +26,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.graph.*;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,7 +37,9 @@ import sootup.core.views.View;
 
 /**
  * A BodyInterceptor that attempts to identify and separate uses of a local variable (definition)
- * that are independent of each other.
+ * that are independent of each other. This is necessary as the AsmMethodSource maps usages of the
+ * same Local index to the same Local object, which can lead to wrong Jimple e.g. when a primitive
+ * type gets merged with a reference-type and augmenting the type of the Local is less precise.
  *
  * <p>For example the code:
  *
@@ -49,7 +52,7 @@ import sootup.core.views.View;
  *    return
  * </pre>
  *
- * to:
+ * <p>to:
  *
  * <pre>
  *    l0 := @this Test
@@ -72,26 +75,30 @@ public class LocalSplitter implements BodyInterceptor {
    */
   static class DisjointSetForest<T> {
     /** Every node points to its parent in its tree. Roots of trees point to themselves. */
-    private final Map<T, T> parent = new HashMap<>();
+    @Nonnull private final Map<T, T> parent = new HashMap<>();
 
     /** Stores the size of a tree under the key. Only updated for roots of trees. */
-    private final Map<T, Integer> sizes = new HashMap<>();
+    @Nonnull private final Map<T, Integer> sizes = new HashMap<>();
 
     /**
      * Creates a new set that only contains the {@code node}. Does nothing when the forest already
      * contains the {@code node}.
      */
-    void add(T node) {
-      if (parent.containsKey(node)) return;
+    void add(@Nonnull T node) {
+      if (parent.containsKey(node)) {
+        return;
+      }
 
       parent.put(node, node);
       sizes.put(node, 1);
     }
 
     /** Finds the representative of the set that contains the {@code node}. */
+    @Nonnull
     T find(T node) {
-      if (!parent.containsKey(node))
+      if (!parent.containsKey(node)) {
         throw new IllegalArgumentException("The DisjointSetForest does not contain the node.");
+      }
 
       while (parent.get(node) != node) {
         // Path Halving to get amortized constant operations
@@ -107,18 +114,29 @@ public class LocalSplitter implements BodyInterceptor {
      * Combines the sets of {@code first} and {@code second}. Returns the representative of the
      * combined set.
      */
-    void union(T first, T second) {
+    void union(@Nonnull T first, @Nonnull T second) {
       first = find(first);
       second = find(second);
 
-      if (first == second) return;
+      if (first == second) {
+        return;
+      }
 
-      T smaller = (sizes.get(first) > sizes.get(second)) ? second : first;
-      T larger = (smaller == first) ? second : first;
+      final Integer firstSize = sizes.get(first);
+      final Integer secondSize = sizes.get(second);
+
+      T smaller, larger;
+      if (firstSize > secondSize) {
+        larger = first;
+        smaller = second;
+      } else {
+        larger = second;
+        smaller = first;
+      }
 
       // adding the smaller subtree to the larger tree keeps the tree flatter
       parent.put(smaller, larger);
-      sizes.put(larger, sizes.get(smaller) + sizes.get(larger));
+      sizes.put(larger, firstSize + secondSize);
       sizes.remove(smaller);
     }
 
@@ -130,7 +148,7 @@ public class LocalSplitter implements BodyInterceptor {
   }
 
   static class PartialStmt {
-    @Nonnull final Stmt inner;
+    @Nonnull final Stmt backingStmt;
 
     /**
      * Whether the partial statement refers to only the definitions of the inner statement or only
@@ -138,25 +156,31 @@ public class LocalSplitter implements BodyInterceptor {
      */
     final boolean isDef;
 
-    PartialStmt(@Nonnull Stmt inner, boolean isDef) {
-      this.inner = inner;
+    PartialStmt(@Nonnull Stmt backingStmt, boolean isDef) {
+      this.backingStmt = backingStmt;
       this.isDef = isDef;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
 
       PartialStmt that = (PartialStmt) o;
 
-      if (isDef != that.isDef) return false;
-      return inner.equals(that.inner);
+      if (isDef != that.isDef) {
+        return false;
+      }
+      return backingStmt.equals(that.backingStmt);
     }
 
     @Override
     public int hashCode() {
-      int result = inner.hashCode();
+      int result = backingStmt.hashCode();
       result = 31 * result + (isDef ? 1 : 0);
       return result;
     }
@@ -166,19 +190,16 @@ public class LocalSplitter implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
 
-    // `#` is used as a special character for splitting the locals,
-    // so it can't be in any of the original local names since it might cause name collisions
-    assert builder.getLocals().stream().noneMatch(local -> local.getName().contains("#"));
-
     // Cache the statements to not have to retrieve them for every local
-    List<Stmt> statements = new ArrayList<>(graph.getStmts());
+    List<Stmt> statements = graph.getStmts();
     // Maps every local to its assignment statements.
     // Contains indices to the above list to reduce bookkeeping when modifying statements.
     Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(statements);
 
     Set<Local> newLocals = new HashSet<>();
 
-    for (Local local : builder.getLocals()) {
+    final Set<Local> locals = builder.getLocals();
+    for (Local local : locals) {
       // Use a disjoint set while walking the statement graph to union all uses of the local that
       // can be reached from each definition. This will automatically union definitions that have
       // overlapping uses and therefore can't be split.
@@ -203,12 +224,12 @@ public class LocalSplitter implements BodyInterceptor {
         PartialStmt defStmt = new PartialStmt(assignment, true);
         disjointSet.add(defStmt);
 
-        List<Stmt> stack = new ArrayList<>(graph.successors(assignment));
+        Deque<Stmt> stack = new ArrayDeque<>(graph.successors(assignment));
         stack.addAll(graph.exceptionalSuccessors(assignment).values());
         Set<Stmt> visited = new HashSet<>();
 
         while (!stack.isEmpty()) {
-          Stmt stmt = stack.remove(stack.size() - 1);
+          Stmt stmt = stack.pop();
           if (!visited.add(stmt)) {
             continue;
           }
@@ -222,8 +243,7 @@ public class LocalSplitter implements BodyInterceptor {
           // a new assignment to the local -> end walk here
           // otherwise continue by adding all successors to the stack
           if (!stmt.getDefs().contains(local)) {
-            stack.addAll(graph.successors(stmt));
-            stack.addAll(graph.exceptionalSuccessors(stmt).values());
+            stack.addAll(graph.getAllSuccessors(stmt));
           }
         }
       }
@@ -240,7 +260,10 @@ public class LocalSplitter implements BodyInterceptor {
 
       for (int i = 0; i < statements.size(); i++) {
         Stmt stmt = statements.get(i);
-        if (!stmt.getUsesAndDefs().contains(local)) {
+        boolean localIsDef = stmt.getDefs().contains(local);
+        boolean localIsUse = stmt.getUses().contains(local);
+
+        if (!localIsDef && !localIsUse) {
           continue;
         }
 
@@ -250,15 +273,21 @@ public class LocalSplitter implements BodyInterceptor {
             isDef ->
                 representativeToNewLocal.computeIfAbsent(
                     disjointSet.find(new PartialStmt(oldStmt, isDef)),
-                    s -> local.withName(local.getName() + "#" + (nextId[0]++)));
+                    s -> {
+                      Local newLocal;
+                      do {
+                        newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
+                      } while (locals.contains(newLocal));
+                      return newLocal;
+                    });
 
-        if (stmt.getDefs().contains(local)) {
+        if (localIsDef) {
           Local newDefLocal = getNewLocal.apply(true);
           newLocals.add(newDefLocal);
           stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
         }
 
-        if (stmt.getUses().contains(local)) {
+        if (localIsUse) {
           Local newUseLocal = getNewLocal.apply(false);
           newLocals.add(newUseLocal);
           stmt = stmt.withNewUse(local, newUseLocal);
@@ -272,16 +301,23 @@ public class LocalSplitter implements BodyInterceptor {
     builder.setLocals(newLocals);
   }
 
+  @Nonnull
   Map<Local, List<Integer>> groupAssignmentsByLocal(List<Stmt> statements) {
     Map<Local, List<Integer>> groupings = new HashMap<>();
 
     for (int i = 0; i < statements.size(); i++) {
       Stmt stmt = statements.get(i);
-      if (!(stmt instanceof AbstractDefinitionStmt)) continue;
-      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
-      if (!(defStmt.getLeftOp() instanceof Local)) continue;
+      if (!(stmt instanceof AbstractDefinitionStmt)) {
+        continue;
+      }
 
-      groupings.computeIfAbsent((Local) defStmt.getLeftOp(), x -> new ArrayList<>()).add(i);
+      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
+      LValue leftOp = defStmt.getLeftOp();
+      if (!(leftOp instanceof Local)) {
+        continue;
+      }
+
+      groupings.computeIfAbsent((Local) leftOp, x -> new ArrayList<>()).add(i);
     }
 
     return groupings;
