@@ -195,8 +195,10 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     // Remove the dead statements from the stmtGraph
     for (Stmt stmt : stmts) {
       if (!essentialStmts.contains(stmt)) {
-        stmtGraph.removeNode(stmt);
-        builder.removeDefLocalsOf(stmt);
+        if (stmtGraph.containsNode(stmt)) {
+          stmtGraph.removeNode(stmt);
+          builder.removeDefLocalsOf(stmt);
+        }
       }
     }
 

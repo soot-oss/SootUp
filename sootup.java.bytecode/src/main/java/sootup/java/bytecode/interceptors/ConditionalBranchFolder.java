@@ -60,19 +60,27 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       Constant evaluatedCondition = Evaluator.getConstantValueOf(ifStmt.getCondition());
 
       boolean removeTrueBranch;
-      if(evaluatedCondition instanceof BooleanConstant){
+      if (evaluatedCondition instanceof BooleanConstant) {
         removeTrueBranch = evaluatedCondition == BooleanConstant.getTrue();
-      }else if(evaluatedCondition instanceof IntConstant){
-        removeTrueBranch = IntConstant.getInstance(0).equalEqual(((IntConstant) evaluatedCondition)) == BooleanConstant.getFalse();
+      } else if (evaluatedCondition instanceof IntConstant) {
+        removeTrueBranch =
+            IntConstant.getInstance(0).equalEqual(((IntConstant) evaluatedCondition))
+                == BooleanConstant.getFalse();
       }
       /* TODO: check if the following Constant types are even possible in valid Jimple */
-      else if(evaluatedCondition instanceof DoubleConstant){
-        removeTrueBranch = DoubleConstant.getInstance(0).equalEqual((DoubleConstant) evaluatedCondition) ==  BooleanConstant.getFalse();
-      }else if(evaluatedCondition instanceof FloatConstant){
-        removeTrueBranch = FloatConstant.getInstance(0).equalEqual((FloatConstant) evaluatedCondition) == BooleanConstant.getFalse();
-      }else if(evaluatedCondition instanceof LongConstant){
-        removeTrueBranch = LongConstant.getInstance(0).equalEqual((LongConstant) evaluatedCondition) == BooleanConstant.getFalse();
-      }else{
+      else if (evaluatedCondition instanceof DoubleConstant) {
+        removeTrueBranch =
+            DoubleConstant.getInstance(0).equalEqual((DoubleConstant) evaluatedCondition)
+                == BooleanConstant.getFalse();
+      } else if (evaluatedCondition instanceof FloatConstant) {
+        removeTrueBranch =
+            FloatConstant.getInstance(0).equalEqual((FloatConstant) evaluatedCondition)
+                == BooleanConstant.getFalse();
+      } else if (evaluatedCondition instanceof LongConstant) {
+        removeTrueBranch =
+            LongConstant.getInstance(0).equalEqual((LongConstant) evaluatedCondition)
+                == BooleanConstant.getFalse();
+      } else {
         // not or not "easy" evaluatable
         continue;
       }
@@ -88,7 +96,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         // to a Stmt
         tautologicSuccessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
         neverReachedSucessor = ifSuccessors.get(JIfStmt.TRUE_BRANCH_IDX);
-      } else{
+      } else {
         // the evaluatedCondition is always false remove the fallsthrough successor etc.
         tautologicSuccessor = ifSuccessors.get(JIfStmt.TRUE_BRANCH_IDX);
         neverReachedSucessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
