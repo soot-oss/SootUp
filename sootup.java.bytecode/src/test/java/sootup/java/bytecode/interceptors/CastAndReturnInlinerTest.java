@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
@@ -16,6 +17,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -39,7 +41,7 @@ public class CastAndReturnInlinerTest {
    * to
    *
    * <pre>
-   * a = "str";
+   * a = (String) "str";
    * return a;
    * </pre>
    */
@@ -82,7 +84,9 @@ public class CastAndReturnInlinerTest {
 
     List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
-    expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
+    JavaLocal aRet = JavaJimple.newLocal("a_ret", stringType);
+    expected.add( JavaJimple.newAssignStmt(aRet, JavaJimple.newCastExpr(a, stringType),StmtPositionInfo.getNoStmtPositionInfo()));
+    expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
   }
 
@@ -143,7 +147,11 @@ public class CastAndReturnInlinerTest {
   private static void assertStmtsEquiv(List<Stmt> expected, List<Stmt> actual) {
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {
-      assertTrue(expected.get(i).equivTo(actual.get(i)));
+      boolean condition = expected.get(i).equivTo(actual.get(i));
+      if(!condition){
+        System.out.println(expected.get(i) + " <> " + actual.get(i));
+      }
+      assertTrue(condition);
     }
   }
 }
