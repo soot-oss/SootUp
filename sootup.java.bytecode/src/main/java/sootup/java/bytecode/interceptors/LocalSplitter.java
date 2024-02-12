@@ -190,11 +190,11 @@ public class LocalSplitter implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
 
-    // Cache the statements to not have to retrieve them for every local
-    List<Stmt> statements = graph.getStmts();
-    // Maps every local to its assignment statements.
-    // Contains indices to the above list to reduce bookkeeping when modifying statements.
-    Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(statements);
+    // Cache the stmts to not have to retrieve them for every local
+    List<Stmt> stmts = graph.getStmts();
+    // Maps every local to its assignment stmts.
+    // Contains indices to the above list to reduce bookkeeping when modifying stmts.
+    Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(stmts);
 
     Set<Local> newLocals = new HashSet<>();
 
@@ -209,7 +209,7 @@ public class LocalSplitter implements BodyInterceptor {
 
       List<AbstractDefinitionStmt> assignments =
           assignmentsByLocal.getOrDefault(local, Collections.emptyList()).stream()
-              .map(i -> (AbstractDefinitionStmt) statements.get(i))
+              .map(i -> (AbstractDefinitionStmt) stmts.get(i))
               .collect(Collectors.toList());
 
       if (assignments.size() <= 1) {
@@ -258,8 +258,8 @@ public class LocalSplitter implements BodyInterceptor {
       Map<PartialStmt, Local> representativeToNewLocal = new HashMap<>();
       final int[] nextId = {0}; // Java quirk; just an `int` doesn't work
 
-      for (int i = 0; i < statements.size(); i++) {
-        Stmt stmt = statements.get(i);
+      for (int i = 0; i < stmts.size(); i++) {
+        Stmt stmt = stmts.get(i);
         boolean localIsDef = stmt.getDefs().contains(local);
         boolean localIsUse = stmt.getUses().contains(local);
 
@@ -293,8 +293,12 @@ public class LocalSplitter implements BodyInterceptor {
           stmt = stmt.withNewUse(local, newUseLocal);
         }
 
+        if (oldStmt == stmt) {
+          continue;
+        }
+
         graph.replaceNode(oldStmt, stmt);
-        statements.set(i, stmt);
+        stmts.set(i, stmt);
       }
     }
 
