@@ -47,14 +47,13 @@ import sootup.core.util.printer.JimplePrinter;
 /** @author Linghui Luo */
 public class Utils {
 
-  /** e.g. to print before/after to understand / compare what every interceptor does. */
-  public List<BodyInterceptor> wrapEachBodyInterceptorWith(
-      @Nonnull List<BodyInterceptor> bodyInterceptors,
-      @Nonnull BodyInterceptor before,
-      @Nonnull BodyInterceptor after) {
-    return bodyInterceptors.stream()
-        .flatMap(b -> Stream.of(before, b, after))
-        .collect(Collectors.toList());
+  /** e.g. to print b to understand / compare what every interceptor does. */
+  public static List<BodyInterceptor> wrapEachBodyInterceptorWith(
+      @Nonnull List<BodyInterceptor> bodyInterceptors, @Nonnull BodyInterceptor bi) {
+    ArrayList<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
+    interceptors.add(bi);
+    bodyInterceptors.stream().flatMap(b -> Stream.of(b, bi)).forEach(interceptors::add);
+    return interceptors;
   }
 
   List<Path> compileJavaOTF(String className, String javaSourceContent) {

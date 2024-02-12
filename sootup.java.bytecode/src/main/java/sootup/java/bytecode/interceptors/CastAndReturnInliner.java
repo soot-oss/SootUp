@@ -106,13 +106,12 @@ public class CastAndReturnInliner implements BodyInterceptor {
       graph.insertBefore(newReturnStmt, newAssignStmt);
 
       boolean removeExistingCastReturn = graph.predecessors(assign).size() == 0;
-      if(removeExistingCastReturn){
+      if (removeExistingCastReturn) {
         graph.removeNode(assign, false);
-        if(graph.predecessors(retStmt).size() == 0){
+        if (graph.predecessors(retStmt).size() == 0) {
           graph.removeNode(retStmt, false);
         }
       }
-
     }
   }
 }

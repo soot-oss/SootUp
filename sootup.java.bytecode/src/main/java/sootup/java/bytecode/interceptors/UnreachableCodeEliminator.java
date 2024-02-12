@@ -35,6 +35,8 @@ import sootup.core.views.View;
  */
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
+  // TODO: performance - quite expensive; maybe work on Block level to reduce hash calculations etc?
+
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
@@ -64,7 +66,7 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
 
     for (Stmt stmt : removeQ) {
-      graph.removeNode(stmt);
+      graph.removeNode(stmt, false);
       builder.removeDefLocalsOf(stmt);
     }
   }
