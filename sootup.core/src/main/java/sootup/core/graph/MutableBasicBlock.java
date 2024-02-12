@@ -236,10 +236,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       throw new IllegalArgumentException(
           "Can not split by that Stmt - it is not contained in this Block.");
     }
-    if (stmts.get(splitIdx + 1) != newHead) {
+    int newHeadsIdx = splitIdx + 1;
+    if (stmts.get(newHeadsIdx) != newHead) {
       throw new IllegalArgumentException("Can't split - the given Stmts are not connected.");
     }
-    return splitBlockUnlinked(splitIdx + 1);
+    return splitBlockUnlinked(newHeadsIdx);
   }
 
   /** @param splitIdx should be in [1, stmts.size()-1] */

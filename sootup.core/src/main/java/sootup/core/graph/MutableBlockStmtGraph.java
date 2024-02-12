@@ -871,30 +871,33 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
       // update starting stmt if necessary
 
-    } else if (blockOfRemovedStmt.getTail() == stmt) {
-      // stmt2bRemoved is at the end of a Block
-      if (keepFlow) {
-        if (stmt.branches()) {
-          if (stmt.getExpectedSuccessorCount() > 1) {
-            throw new IllegalArgumentException(
-                "Cannot keep the flows of a removed BranchingStmt if there is more than one successor.");
+    } else {
+        if (blockOfRemovedStmt.getTail() == stmt) {
+          // stmt2bRemoved is at the end of a Block
+          if (keepFlow) {
+            if (stmt.branches()) {
+              if (stmt.getExpectedSuccessorCount() > 1) {
+                throw new IllegalArgumentException(
+                    "Cannot keep the flows of a removed BranchingStmt if there is more than one successor.");
+              }
+              tryMergeWithSuccessorBlock(blockOfRemovedStmt);
+            }
+
+          } else {
+            blockOfRemovedStmt.clearSuccessorBlocks();
           }
-          tryMergeWithSuccessorBlock(blockOfRemovedStmt);
+
+        } else {
+          // stmt2bRemoved is in the middle of a Block
+          if (!keepFlow) {
+            int splitIdx = blockOfRemovedStmt.getStmts().indexOf(stmt);
+              MutableBasicBlock secondBlock = blockOfRemovedStmt.splitBlockUnlinked(splitIdx+1);
+              blocks.add(secondBlock);
+              secondBlock.getStmts().forEach( s -> stmtToBlock.put(s, secondBlock) );
+          }
         }
 
-      } else {
-        blockOfRemovedStmt.clearSuccessorBlocks();
-      }
-      blockOfRemovedStmt.removeStmt(stmt);
-
-    } else {
-      // stmt2bRemoved is in the middle of a Block
-      if (!keepFlow) {
-        // TODO: should we throw or explicitly split the block?
-        throw new IllegalArgumentException(
-            "The Stmt is in the middle of a Block - we can not remove the flow unless we split the Block.");
-      }
-      blockOfRemovedStmt.removeStmt(stmt);
+        blockOfRemovedStmt.removeStmt(stmt);
     }
 
     stmtToBlock.remove(stmt);
