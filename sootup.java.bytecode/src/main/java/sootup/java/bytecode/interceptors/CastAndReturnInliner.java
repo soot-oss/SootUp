@@ -22,8 +22,6 @@ package sootup.java.bytecode.interceptors;
  */
 import com.google.common.collect.Lists;
 import javax.annotation.Nonnull;
-
-import com.googlecode.dex2jar.ir.stmt.AssignStmt;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -35,9 +33,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Transformers that inlines returns that cast and return an object. We take
@@ -100,17 +95,15 @@ public class CastAndReturnInliner implements BodyInterceptor {
         continue;
       }
 
-      // We need to replace the GOTO with the return
+      // We need to replace the JGoto with the assignment/cast + return
       JCastExpr ce = (JCastExpr) assign.getRightOp();
       Local variable = Jimple.newLocal(ce.getOp() + "_ret", ce.getType());
       JAssignStmt newAssignStmt = Jimple.newAssignStmt(variable, ce, assign.getPositionInfo());
       JReturnStmt newReturnStmt = retStmt.withReturnValue(variable);
 
-      // Redirect all flows coming into the GOTO to the new return
+      // Redirect all flows coming into the JGoto to the new cast + return
       graph.replaceNode(gotoStmt, newReturnStmt);
-     // FIXME graph.insertBefore(newReturnStmt, newAssignStmt);
-
+      graph.insertBefore(newReturnStmt, newAssignStmt);
     }
-    System.out.println("");
   }
 }

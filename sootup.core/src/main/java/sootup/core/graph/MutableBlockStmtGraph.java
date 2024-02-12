@@ -414,7 +414,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return;
     }
 
-    MutableBasicBlock seperatedBlock = excludeStmtFromBlock(stmt, block);
+    MutableBasicBlock seperatedBlock = splitAndExcludeStmtFromBlock(stmt, block);
     seperatedBlock.linkExceptionalSuccessorBlock(exceptionType, getOrCreateBlock(traphandlerStmt));
     tryMergeIntoSurroundingBlocks(seperatedBlock);
   }
@@ -570,7 +570,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
     final MutableBasicBlock separatedBlock;
     if (isExceptionalFlowDifferent) {
-      separatedBlock = excludeStmtFromBlock(stmt, block);
+      separatedBlock = splitAndExcludeStmtFromBlock(stmt, block);
       separatedBlock.clearExceptionalSuccessorBlocks();
 
       // apply exceptional flow info to seperated block
@@ -585,98 +585,99 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   /**
    * splits a block depending on the situation in multiple (0-3) Blocks so that at the end splitStmt
-   * is the only Stmt in its BasicBlock. The flow between the splitted BasicBlock(s) is still
-   * maintained.
+   * is the only Stmt in its BasicBlock. The flow between the splitted BasicBlock(s) is kept!
+   *
+   * @return the splitted block with the splitStmt as head
    */
   @Nonnull
-  private MutableBasicBlock excludeStmtFromBlock(@Nonnull Stmt splitStmt, MutableBasicBlock block) {
-    final MutableBasicBlock excludedFromOrigBlock;
-    if (block.getStmtCount() > 1) {
-      final List<Stmt> blockStmts = block.getStmts();
-      int stmtIdx = blockStmts.indexOf(splitStmt);
-
-      if (stmtIdx < 0) {
-        throw new IllegalArgumentException("splitStmt does not exist in this block!");
-      }
-
-      if (stmtIdx == 0) {
-        // stmt is the head -> maybe just a single split is necessary
-        excludedFromOrigBlock = block;
-      } else {
-        // i.e. stmt != block.getHead() -> there is a "middle" or end Block containing the splitStmt
-        // which needs
-        // to be seperated
-        excludedFromOrigBlock = new MutableBasicBlock();
-        addNodeToBlock(excludedFromOrigBlock, splitStmt);
-        // add blocks exceptional flows
-        block
-            .getExceptionalSuccessors()
-            .forEach(
-                (type, trapHandlerBlock) -> {
-                  excludedFromOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
-                  trapHandlerBlock.addPredecessorBlock(excludedFromOrigBlock);
-                });
-        blocks.add(excludedFromOrigBlock);
-      }
-
-      if (stmtIdx + 1 < blockStmts.size()) { // ms: equivalent to: block.getTail() != splitStmt
-        // "third"/after/leftover block is necessary as there are stmts after the splitElement
-        final MutableBasicBlock restOfOrigBlock = new MutableBasicBlock();
-        for (int i = stmtIdx + 1; i < blockStmts.size(); i++) {
-          // stmtToBlock is already updated while inserting each Stmt into another Block
-          addNodeToBlock(restOfOrigBlock, blockStmts.get(i));
-        }
-
-        // copy successors of block which are now the successors of the "third"/leftover block
-        List<MutableBasicBlock> successors = block.getSuccessors();
-        for (int i = 0; i < successors.size(); i++) {
-          MutableBasicBlock successor = successors.get(i);
-          restOfOrigBlock.linkSuccessor(i, successor);
-        }
-        block.clearSuccessorBlocks();
-
-        // link third/leftover block with previous stmts from the separated block
-        excludedFromOrigBlock.linkSuccessor(0, restOfOrigBlock);
-        block.clearSuccessorBlocks();
-
-        // add blocks exceptional flows
-        block
-            .getExceptionalSuccessors()
-            .forEach(
-                (type, trapHandlerBlock) -> {
-                  restOfOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
-                  trapHandlerBlock.addPredecessorBlock(restOfOrigBlock);
-                });
-
-        blocks.add(restOfOrigBlock);
-
-        // cleanup original block -> "beforeBlock" -> remove now copied Stmts
-        for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
-          block.removeStmt(blockStmts.get(i));
-        }
-
-      } else {
-        // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
-        // copy origin successors to second block as its now the last part of the origin block
-        List<MutableBasicBlock> successors = block.getSuccessors();
-        for (int i = 0; i < successors.size(); i++) {
-          MutableBasicBlock successorBlock = successors.get(i);
-          excludedFromOrigBlock.linkSuccessor(i, successorBlock);
-        }
-        block.clearSuccessorBlocks();
-        // cleanup original block -> "beforeBlock" -> remove now copied Stmts
-        for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
-          block.removeStmt(blockStmts.get(i));
-        }
-        block.linkSuccessor(0, excludedFromOrigBlock);
-      }
-
-      return excludedFromOrigBlock;
-
-    } else {
-      // just a single stmt in the block -> e.g. its already the block we want to seperate
+  private MutableBasicBlock splitAndExcludeStmtFromBlock(
+      @Nonnull Stmt splitStmt, MutableBasicBlock block) {
+    if (block.getStmtCount() <= 1) {
+      // just a single stmt in the block -> e.g. it is already the block we want
       return block;
     }
+
+    final MutableBasicBlock excludedFromOrigBlock;
+    final List<Stmt> blockStmts = block.getStmts();
+    int stmtIdx = blockStmts.indexOf(splitStmt);
+
+    if (stmtIdx < 0) {
+      throw new IllegalArgumentException("splitStmt does not exist in this block!");
+    }
+
+    if (stmtIdx == 0) {
+      // stmt is the head -> just a single split is necessary
+      excludedFromOrigBlock = block;
+    } else {
+      // i.e. stmt != block.getHead() -> there is a "middle" or/and an end Block containing the
+      // splitStmt
+      // which needs to be seperated
+      excludedFromOrigBlock = new MutableBasicBlock();
+      addNodeToBlock(excludedFromOrigBlock, splitStmt);
+      // add blocks exceptional flows
+      block
+          .getExceptionalSuccessors()
+          .forEach(
+              (type, trapHandlerBlock) -> {
+                excludedFromOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
+                trapHandlerBlock.addPredecessorBlock(excludedFromOrigBlock);
+              });
+      blocks.add(excludedFromOrigBlock);
+    }
+
+    if (block.getTail() != splitStmt) {
+      // "third"/after/leftover block is necessary as there are stmts after the splitElement
+      final MutableBasicBlock restOfOrigBlock = new MutableBasicBlock();
+      for (int i = stmtIdx + 1; i < blockStmts.size(); i++) {
+        // stmtToBlock is already updated while inserting each Stmt into another Block
+        addNodeToBlock(restOfOrigBlock, blockStmts.get(i));
+      }
+
+      // copy successors of block which are now the successors of the "third"/leftover block
+      List<MutableBasicBlock> successors = block.getSuccessors();
+      for (int i = 0; i < successors.size(); i++) {
+        MutableBasicBlock successor = successors.get(i);
+        restOfOrigBlock.linkSuccessor(i, successor);
+      }
+      block.clearSuccessorBlocks();
+
+      // link third/leftover block with previous stmts from the separated block
+      excludedFromOrigBlock.linkSuccessor(0, restOfOrigBlock);
+      block.clearSuccessorBlocks();
+
+      // add blocks exceptional flows
+      block
+          .getExceptionalSuccessors()
+          .forEach(
+              (type, trapHandlerBlock) -> {
+                restOfOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
+                trapHandlerBlock.addPredecessorBlock(restOfOrigBlock);
+              });
+
+      blocks.add(restOfOrigBlock);
+
+      // cleanup original block -> "beforeBlock" -> remove now copied Stmts
+      for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
+        block.removeStmt(blockStmts.get(i));
+      }
+
+    } else {
+      // there are no more stmts after stmtIdx -> less than 3 blocks are necessary
+      // copy origin successors to second block as it is now the last part of the origin block
+      List<MutableBasicBlock> successors = block.getSuccessors();
+      for (int i = 0; i < successors.size(); i++) {
+        MutableBasicBlock successorBlock = successors.get(i);
+        excludedFromOrigBlock.linkSuccessor(i, successorBlock);
+      }
+      block.clearSuccessorBlocks();
+      // cleanup original block -> "beforeBlock" -> remove now copied Stmts
+      for (int i = blockStmts.size() - 1; i >= stmtIdx; i--) {
+        block.removeStmt(blockStmts.get(i));
+      }
+      block.linkSuccessor(0, excludedFromOrigBlock);
+    }
+
+    return excludedFromOrigBlock;
   }
 
   /** Merges block into Predecessor/Successor if possible. */
@@ -871,10 +872,14 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     } else if (blockOfRemovedStmt.getTail() == stmt) {
       // stmt2bRemoved is at the end of a Block
       if (keepFlow) {
-        if (successors.size() > 1) {
-          throw new IllegalArgumentException(
-              "Cannot keep the flows if there is more than one successor/ with a BranchingStmt.");
+        if (stmt.branches()) {
+          if (stmt.getExpectedSuccessorCount() > 1) {
+            throw new IllegalArgumentException(
+                "Cannot keep the flows of a removed BranchingStmt if there is more than one successor.");
+          }
+          tryMergeWithSuccessorBlock(blockOfRemovedStmt);
         }
+
       } else {
         blockOfRemovedStmt.clearSuccessorBlocks();
       }
@@ -906,16 +911,52 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       startingStmt = newStmt;
     }
 
-    if (oldStmt.getExpectedSuccessorCount() != newStmt.getExpectedSuccessorCount()) {
-      final MutableBasicBlock excludedBlock = excludeStmtFromBlock(oldStmt, blockOfOldStmt);
-      excludedBlock.replaceStmt(oldStmt, newStmt);
-      stmtToBlock.remove(oldStmt);
-      stmtToBlock.put(newStmt, excludedBlock);
-    } else {
-      stmtToBlock.remove(oldStmt);
+    if (!oldStmt.branches() && !newStmt.branches()) {
+      // nothing branches -> just replace actual Stmt inside oldStmts block
       blockOfOldStmt.replaceStmt(oldStmt, newStmt);
       stmtToBlock.put(newStmt, blockOfOldStmt);
+
+    } else if (!oldStmt.branches() && newStmt.branches()) {
+      // split block
+      MutableBasicBlock newBlock = splitAndExcludeStmtFromBlock(oldStmt, blockOfOldStmt);
+      blockOfOldStmt.replaceStmt(oldStmt, newStmt);
+      // update index
+      stmtToBlock.put(newStmt, blockOfOldStmt);
+      newBlock.getStmts().forEach(stmt -> stmtToBlock.put(stmt, newBlock));
+
+    } else if (oldStmt.branches() && !newStmt.branches()) {
+      blockOfOldStmt.replaceStmt(oldStmt, newStmt);
+      stmtToBlock.put(newStmt, blockOfOldStmt);
+      if (oldStmt.getExpectedSuccessorCount() > newStmt.getExpectedSuccessorCount()) {
+        // throw new IllegalArgumentException("We can't keep the flows if we replace a Stmt ("+
+        // oldStmt.getExpectedSuccessorCount() +") by another Stmt which expects a different amount
+        // ("+ newStmt.getExpectedSuccessorCount() +") of successors.");
+
+        // prune additional flows - keep successorIdx:0
+        MutableBasicBlock successor = blockOfOldStmt.getSuccessors().get(0);
+        blockOfOldStmt.clearSuccessorBlocks();
+        if (newStmt.getExpectedSuccessorCount() > 0) {
+          blockOfOldStmt.setSuccessorBlock(0, successor);
+        }
+      }
+      tryMergeWithSuccessorBlock(blockOfOldStmt);
+
+    } else /* ==> if(oldStmt.branches() && newStmt.branches()) */ {
+
+      blockOfOldStmt.replaceStmt(oldStmt, newStmt);
+      stmtToBlock.put(newStmt, blockOfOldStmt);
+      if (oldStmt.getExpectedSuccessorCount() != newStmt.getExpectedSuccessorCount()) {
+        // TODO: or should we just assume to use successorIdx:0
+        throw new IllegalArgumentException(
+            "We can't keep the flows if we replace a Stmt ("
+                + oldStmt.getExpectedSuccessorCount()
+                + ") by another Stmt which expects a different amount ("
+                + newStmt.getExpectedSuccessorCount()
+                + ") of successors.");
+      }
     }
+
+    stmtToBlock.remove(oldStmt);
   }
 
   public void validateBlocks() {
