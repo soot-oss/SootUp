@@ -552,22 +552,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // Stmt does not exist in the graph -> create
       block = createStmtsBlock(stmt);
     }
-    boolean isExceptionalFlowDifferent = false;
-    if (block.getExceptionalSuccessors().size() == exceptions.size()) {
-      for (Map.Entry<ClassType, MutableBasicBlock> entry :
-          block.getExceptionalSuccessors().entrySet()) {
-        final Stmt targetStmt = exceptions.get(entry.getKey());
-        if (targetStmt == null) {
-          isExceptionalFlowDifferent = true;
-          break;
-        } else if (targetStmt != entry.getValue().getHead()) {
-          isExceptionalFlowDifferent = true;
-          break;
-        }
-      }
-    } else {
-      isExceptionalFlowDifferent = true;
-    }
+    boolean isExceptionalFlowDifferent =
+        isExceptionalFlowDifferent(exceptions, block.getExceptionalSuccessors());
     final MutableBasicBlock separatedBlock;
     if (isExceptionalFlowDifferent) {
       separatedBlock = splitAndExcludeStmtFromBlock(stmt, block);
@@ -581,6 +567,23 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           });
       tryMergeIntoSurroundingBlocks(separatedBlock);
     }
+  }
+
+  private static boolean isExceptionalFlowDifferent(
+      Map<ClassType, Stmt> exceptionsA, Map<ClassType, MutableBasicBlock> exceptionsB) {
+    if (exceptionsA.size() != exceptionsB.size()) {
+      return true;
+    }
+    for (Map.Entry<ClassType, MutableBasicBlock> entry : exceptionsB.entrySet()) {
+      final Stmt targetStmt = exceptionsA.get(entry.getKey());
+      if (targetStmt == null) {
+        return true;
+      }
+      if (targetStmt != entry.getValue().getHead()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -620,7 +623,6 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           .forEach(
               (type, trapHandlerBlock) -> {
                 excludedFromOrigBlock.linkExceptionalSuccessorBlock(type, trapHandlerBlock);
-                trapHandlerBlock.addPredecessorBlock(excludedFromOrigBlock);
               });
       blocks.add(excludedFromOrigBlock);
     }
@@ -832,7 +834,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           for (MutableBasicBlock predecessor : blockOfRemovedStmt.getPredecessors()) {
             predecessor.replaceSuccessorBlock(blockOfRemovedStmt, successorBlock);
             if (!successorBlock.replacePredecessorBlock(blockOfRemovedStmt, predecessor)) {
-              // happends when blockOfRemovedStmt.predecessors().size() > 1
+              // happens when blockOfRemovedStmt.predecessors().size() > 1
               successorBlock.addPredecessorBlock(predecessor);
             }
           }
