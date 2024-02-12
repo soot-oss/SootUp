@@ -26,8 +26,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.common.constant.Constant;
-import sootup.core.jimple.common.constant.IntConstant;
+import sootup.core.jimple.common.constant.*;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JIfStmt;
@@ -59,7 +58,21 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       JIfStmt ifStmt = (JIfStmt) stmt;
       // check for constant-valued conditions
       Constant evaluatedCondition = Evaluator.getConstantValueOf(ifStmt.getCondition());
-      if (evaluatedCondition == null) {
+
+      boolean removeTrueBranch;
+      if(evaluatedCondition instanceof BooleanConstant){
+        removeTrueBranch = evaluatedCondition == BooleanConstant.getTrue();
+      }else if(evaluatedCondition instanceof IntConstant){
+        removeTrueBranch = IntConstant.getInstance(0).equalEqual(((IntConstant) evaluatedCondition)) == BooleanConstant.getFalse();
+      }
+      /* TODO: check if the following Constant types are even possible in valid Jimple */
+      else if(evaluatedCondition instanceof DoubleConstant){
+        removeTrueBranch = DoubleConstant.getInstance(0).equalEqual((DoubleConstant) evaluatedCondition) ==  BooleanConstant.getFalse();
+      }else if(evaluatedCondition instanceof FloatConstant){
+        removeTrueBranch = FloatConstant.getInstance(0).equalEqual((FloatConstant) evaluatedCondition) == BooleanConstant.getFalse();
+      }else if(evaluatedCondition instanceof LongConstant){
+        removeTrueBranch = LongConstant.getInstance(0).equalEqual((LongConstant) evaluatedCondition) == BooleanConstant.getFalse();
+      }else{
         // not or not "easy" evaluatable
         continue;
       }
@@ -67,20 +80,18 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
       final Stmt tautologicSuccessor;
       final Stmt neverReachedSucessor;
-      if (((IntConstant) evaluatedCondition).getValue() == 1) {
-        // the evaluated if evaluatedCondition is always true: redirect all predecessors to the
+
+      if (removeTrueBranch) {
+        // the if evaluatedCondition is always true: redirect all predecessors to the
         // successor
         // of this if-statement and prune the "true"-block stmt tree until another branch flows
         // to a Stmt
-        tautologicSuccessor = ifSuccessors.get(0);
-        neverReachedSucessor = ifSuccessors.get(1);
-      } else if (((IntConstant) evaluatedCondition).getValue() == 0) {
-        // the evaluated evaluatedCondition is always false remove the fallsthrough successor etc.
-        tautologicSuccessor = ifSuccessors.get(1);
-        neverReachedSucessor = ifSuccessors.get(0);
-      } else {
-        // should not occur?
-        continue;
+        tautologicSuccessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
+        neverReachedSucessor = ifSuccessors.get(JIfStmt.TRUE_BRANCH_IDX);
+      } else{
+        // the evaluatedCondition is always false remove the fallsthrough successor etc.
+        tautologicSuccessor = ifSuccessors.get(JIfStmt.TRUE_BRANCH_IDX);
+        neverReachedSucessor = ifSuccessors.get(JIfStmt.FALSE_BRANCH_IDX);
       }
 
       // link previous stmt with always-reached successor of the if-Stmt
