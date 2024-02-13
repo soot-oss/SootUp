@@ -1261,7 +1261,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (mutableBasicBlock == null) {
       throw new IllegalArgumentException("stmt '" + stmt + "' does not exist in this StmtGraph!");
     }
-    return new ForwardingBasicBlock<>(mutableBasicBlock);
+    return mutableBasicBlock;
   }
 
   @Nonnull
@@ -1353,7 +1353,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     return exceptionalPred;
   }
 
-  public List<MutableBasicBlock> exceptionalPredecessorBlocks(@Nonnull MutableBasicBlock block) {
+  public List<? extends BasicBlock<?>> exceptionalPredecessorBlocks(@Nonnull BasicBlock<?> block) {
 
     Stmt head = block.getHead();
     if (!(head instanceof JIdentityStmt
@@ -1362,9 +1362,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       return Collections.emptyList();
     }
 
-    List<MutableBasicBlock> exceptionalPred = new ArrayList<>();
-    for (MutableBasicBlock pBlock : block.getPredecessors()) {
-      if (pBlock.getExceptionalSuccessors().containsValue(pBlock)) {
+    List<BasicBlock<?>> exceptionalPred = new ArrayList<>();
+    for (BasicBlock<?> pBlock : block.getPredecessors()) {
+      if (pBlock.getExceptionalSuccessors().containsValue(block)) {
         exceptionalPred.add(pBlock);
       }
     }
