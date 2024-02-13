@@ -32,15 +32,20 @@ public enum BytecodeBodyInterceptors {
   Default(
       new NopEliminator(),
       new CastAndReturnInliner(),
-      new UnreachableCodeEliminator(),
+      //      new UnreachableCodeEliminator(), a bit slow - should necessary by default.
       new LocalSplitter(),
       new Aggregator(),
-      new CopyPropagator(),
-      new DeadAssignmentEliminator(),
+      new CopyPropagator()
+      // new DeadAssignmentEliminator(), // move before LocalSplitter so the localSplitter has
+      // probably less work
+
+      /*, TODO: fix them
       new ConditionalBranchFolder(),
       new EmptySwitchEliminator(),
       new UnusedLocalEliminator(),
-      new TypeAssigner());
+      new TypeAssigner()
+      */
+      );
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
