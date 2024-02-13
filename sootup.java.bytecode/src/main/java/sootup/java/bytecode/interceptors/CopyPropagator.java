@@ -87,14 +87,16 @@ public class CopyPropagator implements BodyInterceptor {
   }
 
   private void replaceUse(
-      @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, Value use, Value rhs) {
-    if (!use.equivTo(rhs)) {
+      @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, @Nonnull Value use, @Nonnull Value rhs) {
+    if (!use.equivTo(rhs)) { // TODO: ms: check if rhs!=use would be enough
       Stmt newStmt = stmt.withNewUse(use, rhs);
-      graph.replaceNode(stmt, newStmt);
+      if (newStmt != null) {
+        graph.replaceNode(stmt, newStmt);
+      }
     }
   }
 
-  private boolean isPropatabable(List<Stmt> defsOfUse) {
+  private boolean isPropatabable(@Nonnull List<Stmt> defsOfUse) {
     // If local is defined just one time, then the propagation of this local available.
     boolean isPropagateable = false;
     if (defsOfUse.size() == 1) {
