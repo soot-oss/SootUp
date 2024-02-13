@@ -106,11 +106,12 @@ class Operand {
       return;
     }
 
-    JAssignStmt assignStmt = methodSource.getStmt(insn);
-    if (assignStmt == null) {
+    Stmt stmt = methodSource.getStmt(insn);
+    if (!(stmt instanceof JAssignStmt)) {
       // emit `$newStackLocal = value`
       methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
     } else {
+      JAssignStmt assignStmt = (JAssignStmt) stmt;
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));

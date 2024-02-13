@@ -29,11 +29,10 @@ import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that invokes a static method. */
-public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
+public final class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Stores the values to the args array. */
   public JStaticInvokeExpr(@Nonnull MethodSignature method, @Nonnull List<Immediate> args) {

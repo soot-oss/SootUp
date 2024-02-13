@@ -197,7 +197,6 @@ public class TypeResolver {
         Type t_old = actualTyping.getType(local);
         Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
         if (t_right == null) {
-          // TODO: ms: is this correct to handle: null?
           workQueue.removeFirst();
           continue;
         }

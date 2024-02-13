@@ -27,14 +27,13 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.ClassType;
-import sootup.core.util.Copyable;
 
 /**
  * Represents a try-catch construct.
  *
  * <p>Prefer to use the factory methods in {@link Jimple}.
  */
-public final class Trap implements Copyable {
+public final class Trap {
 
   /** The exception being caught. */
   @Nonnull private final ClassType exception;
@@ -55,12 +54,9 @@ public final class Trap implements Copyable {
       @Nonnull Stmt endStmt, // exclusive!
       @Nonnull Stmt handlerStmt) {
 
-    /* TODO: [ms] rethink the beginStmt->endStmt interval model as we dont have a linear
-    // representation anymore.
     if (beginStmt == endStmt) {
       throw new IllegalArgumentException("The covered Trap range is empty. Trap is of no use.");
     }
-    */
 
     this.exception = exception;
     this.beginStmt = beginStmt;
@@ -125,8 +121,12 @@ public final class Trap implements Copyable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Trap trap = (Trap) o;
     return exception.equals(trap.exception)
         && beginStmt.equals(trap.beginStmt)

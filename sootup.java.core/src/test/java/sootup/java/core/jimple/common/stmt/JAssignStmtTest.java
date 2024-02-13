@@ -63,7 +63,7 @@ public class JAssignStmtTest {
   @Test
   public void test() {
 
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Immediate numConst1 = IntConstant.getInstance(42);
     Immediate numConst2 = IntConstant.getInstance(33102);
 
@@ -127,14 +127,14 @@ public class JAssignStmtTest {
                     JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"),
                     PrimitiveType.getInt()));
     final JAssignStmt jAssignStmtField =
-        Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtField.getFieldRef();
 
     // test JFieldRef cast for ArrayRef - should not throw an Exception
     final JArrayRef jArrayRef =
         JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
     final JAssignStmt jAssignStmtArr =
-        Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtArr.getArrayRef();
   }
 }

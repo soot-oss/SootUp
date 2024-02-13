@@ -36,11 +36,10 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that invokes an interface method. */
-public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
+public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** methodArgs to an array args. */
   public JInterfaceInvokeExpr(

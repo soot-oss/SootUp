@@ -31,10 +31,9 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.StmtVisitor;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public interface Stmt extends EquivTo, Acceptor<StmtVisitor>, Copyable {
+public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   @Nonnull
   List<Value> getUses();
 

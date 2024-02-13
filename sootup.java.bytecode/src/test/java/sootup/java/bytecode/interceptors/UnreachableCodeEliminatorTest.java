@@ -12,7 +12,6 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -35,7 +34,7 @@ public class UnreachableCodeEliminatorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
@@ -72,8 +71,6 @@ public class UnreachableCodeEliminatorTest {
   FallsThroughStmt beginStmt = JavaJimple.newAssignStmt(l3, stack0, noStmtPositionInfo);
   FallsThroughStmt endStmt =
       JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
-
-  Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
 
   /**
    * Test the simpleBody l0:= @this Test -> l1 = 1 -> return l2 = 2 -> l3 = 3 -> return l2 = 2 and

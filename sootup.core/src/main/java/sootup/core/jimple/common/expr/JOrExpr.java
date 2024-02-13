@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** An expression that computes a binary OR of two operands. */
-public final class JOrExpr extends AbstractIntLongBinopExpr implements Copyable {
+public final class JOrExpr extends AbstractIntLongBinopExpr {
 
   public JOrExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

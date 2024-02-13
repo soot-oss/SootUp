@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** An expression that checks whether operand 1 &gt; operand 2. */
-public final class JGtExpr extends AbstractConditionExpr implements Copyable {
+public final class JGtExpr extends AbstractConditionExpr {
 
   public JGtExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

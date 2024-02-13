@@ -39,6 +39,8 @@ public class ConstantPropagatorAndFolderTest {
   public void testModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
+
+    testBuilder = Body.builder(testBody, testBuilder.getModifiers());
     new ConstantPropagatorAndFolder().interceptBody(testBuilder, null);
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
@@ -75,7 +77,7 @@ public class ConstantPropagatorAndFolderTest {
   }
 
   private static Body.BodyBuilder createBody(boolean constantFolding) {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());

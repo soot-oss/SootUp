@@ -1,0 +1,37 @@
+public class CheckInitValidator extends java.lang.Object
+{
+    public void <init>()
+    {
+        CheckInitValidator $l0;
+
+        $l0 := @this: CheckInitValidator;
+        specialinvoke $l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void checkInitValidator_success()
+    {
+        CheckInitValidator $l0;
+        unknown $l1, $l2, $l3;
+
+        $l0 := @this: CheckInitValidator;
+        $l1 = 2;
+        $l2 = 3;
+        $l3 = $l1 + $l2;
+
+        return;
+    }
+
+    public void checkInitValidator_fail()
+    {
+        CheckInitValidator $l0;
+        unknown $l1, $l2, $l3;
+
+        $l0 := @this: CheckInitValidator;
+        $l2 = 3;
+        $l3 = $l1 + $l2;
+
+        return;
+    }
+}

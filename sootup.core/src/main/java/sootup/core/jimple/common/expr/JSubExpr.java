@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** An expression that subtracts operand 2 from operand 1. */
-public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
+public final class JSubExpr extends AbstractFloatBinopExpr {
 
   public JSubExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

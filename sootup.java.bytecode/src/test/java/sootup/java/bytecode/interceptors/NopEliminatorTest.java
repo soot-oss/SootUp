@@ -37,6 +37,7 @@ public class NopEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body testBody = builder.build();
 
+    builder = Body.builder(testBody, builder.getModifiers());
     new NopEliminator().interceptBody(builder, null);
     Body processedBody = builder.build();
 
@@ -72,7 +73,7 @@ public class NopEliminatorTest {
   private static Body.BodyBuilder createBody(boolean withNop) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
     JavaClassType stringType = factory.getClassType("java.lang.String");
