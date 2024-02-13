@@ -104,12 +104,14 @@ public class CastAndReturnInliner implements BodyInterceptor {
       // Redirect all flows coming into the JGoto to the new cast + return
       graph.replaceNode(gotoStmt, newReturnStmt);
       graph.insertBefore(newReturnStmt, newAssignStmt);
+      builder.addLocal(variable);
 
-      boolean removeExistingCastReturn = graph.predecessors(assign).size() == 0;
+      boolean removeExistingCastReturn = graph.predecessors(assign).isEmpty();
       if (removeExistingCastReturn) {
         graph.removeNode(assign, false);
-        if (graph.predecessors(retStmt).size() == 0) {
+        if (graph.predecessors(retStmt).isEmpty()) {
           graph.removeNode(retStmt, false);
+          builder.removeDefLocalsOf(assign);
         }
       }
     }
