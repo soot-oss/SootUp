@@ -769,12 +769,13 @@ public class MutableBlockStmtGraphTest {
       final List<Trap> traps = graph6.getTraps();
       assertEquals(5, traps.size());
       assertEquals(6, graph6.getBlocks().size());
-      assertEquals("[Block [goto], Block [goto], Block [goto]]" , graph6.exceptionalPredecessorBlocks( graph6.getBlockOf(catchStmt1) ).toString() );
+      assertEquals(
+          "[Block [goto], Block [goto], Block [goto]]",
+          graph6.exceptionalPredecessorBlocks(graph6.getBlockOf(catchStmt1)).toString());
     }
 
     graph6.removeBlock(graph6.getBlockOf(stmt2));
     assertEquals(5, graph6.getBlocks().size());
-
   }
 
   @Test
@@ -1025,5 +1026,4 @@ public class MutableBlockStmtGraphTest {
     assertEquals(1, graph.successors(stmt1).size());
     assertTrue(graph.successors(stmt1).contains(stmt2));
   }
-
 }

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,10 +50,23 @@ public class Utils {
 
   /** e.g. to print b to understand / compare what every interceptor does. */
   public static List<BodyInterceptor> wrapEachBodyInterceptorWith(
-      @Nonnull List<BodyInterceptor> bodyInterceptors, @Nonnull BodyInterceptor bi) {
-    ArrayList<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
-    interceptors.add(bi);
-    bodyInterceptors.stream().flatMap(b -> Stream.of(b, bi)).forEach(interceptors::add);
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
+    List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
+    bodyInterceptors.stream()
+        .map(
+            b -> {
+              return (BodyInterceptor)
+                  (builder, view) -> {
+                    try {
+                      bi.apply(b, builder);
+                    } catch (Exception e) {
+                      throw new RuntimeException(e);
+                    }
+                    b.interceptBody(builder, view);
+                  };
+            })
+        .forEach(interceptors::add);
     return interceptors;
   }
 

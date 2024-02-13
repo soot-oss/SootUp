@@ -31,20 +31,21 @@ import sootup.core.transform.BodyInterceptor;
 public enum BytecodeBodyInterceptors {
   Default(
       new NopEliminator(),
+      //      new ConditionalBranchFolder(), // bug: leaves dead ends - see
+      // RuntimeJarConversionTests
+      new EmptySwitchEliminator(),
       new CastAndReturnInliner(),
-      //      new UnreachableCodeEliminator(), a bit slow - should necessary by default.
       new LocalSplitter(),
       new Aggregator(),
-      new CopyPropagator()
-      // new DeadAssignmentEliminator(), // move before LocalSplitter so the localSplitter has
-      // probably less work
+      new CopyPropagator(),
+      // , new DeadAssignmentEliminator() // bug: fix StmtGraph.Iterator - see
+      // RuntimeJarConversionTests
 
-      /*, TODO: fix them
-      new ConditionalBranchFolder(),
-      new EmptySwitchEliminator(),
-      new UnusedLocalEliminator(),
+      /*, TODO: fix
       new TypeAssigner()
       */
+      new UnusedLocalEliminator() // not necessary anymore - every interceptorshould leave a clean
+      // state
       );
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;

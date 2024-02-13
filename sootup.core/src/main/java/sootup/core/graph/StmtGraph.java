@@ -424,7 +424,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
-    Map<ClassType, Stmt> trapStarts = new HashMap<>();
+    Map<ClassType, Stmt> activeTraps = new HashMap<>();
     BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
 
     /*
@@ -449,7 +449,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
             if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
-              final Stmt trapBeginStmt = trapStarts.remove(type);
+              final Stmt trapBeginStmt = activeTraps.remove(type);
               if (trapBeginStmt == null) {
                 throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
               }
@@ -465,7 +465,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           .forEach(
               (type, trapHandlerBlock) -> {
                 if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
-                  trapStarts.put(type, block.getHead());
+                  activeTraps.put(type, block.getHead());
                 }
               });
 
@@ -486,7 +486,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
 
       // check for dangling traps that are not collected as the endStmt was not visited.
-      if (!trapStarts.isEmpty()) {
+      if (!activeTraps.isEmpty()) {
         throw new IllegalArgumentException(
             "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
       }
@@ -505,7 +505,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     public BlockGraphIterator() {
       final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();
