@@ -1,11 +1,7 @@
 package sootup.tests;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
-import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableBasicBlock;
 import sootup.core.jimple.Jimple;
@@ -27,8 +23,12 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ReplaceUseExprVisitorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
