@@ -1,12 +1,11 @@
 package sootup.callgraph;
 
-import static junit.framework.TestCase.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -73,14 +72,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
-    assertNotNull(mainMethodSignature + " not found in classloader", m);
+    assertNotNull(m, mainMethodSignature + " not found in classloader");
 
     algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
     assertTrue(
-        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+         cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
   }
 
@@ -107,11 +106,11 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
     CallGraph newCallGraph = algorithm.addClass(cg, newClass);
 
-    TestCase.assertEquals(0, cg.callsTo(mainMethodSignature).size());
-    TestCase.assertEquals(1, newCallGraph.callsTo(mainMethodSignature).size());
+    assertEquals(0, cg.callsTo(mainMethodSignature).size());
+    assertEquals(1, newCallGraph.callsTo(mainMethodSignature).size());
 
-    TestCase.assertEquals(1, cg.callsTo(methodSignature).size());
-    TestCase.assertEquals(3, newCallGraph.callsTo(methodSignature).size());
+    assertEquals(1, cg.callsTo(methodSignature).size());
+    assertEquals(3, newCallGraph.callsTo(methodSignature).size());
   }
 
   @Test
@@ -130,12 +129,12 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(cg.containsMethod(method));
     assertFalse(cg.containsMethod(uncalledMethod));
     // 2 methods + Object::clinit
-    TestCase.assertEquals(3, cg.getMethodSignatures().size());
+    assertEquals(3, cg.getMethodSignatures().size());
 
     assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
     assertTrue(cg.containsCall(mainMethodSignature, method));
     // 2 calls +1 clinit calls
-    TestCase.assertEquals(3, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(3, cg.callsFrom(mainMethodSignature).size());
   }
 
   @Test
@@ -670,8 +669,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
     CallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize();
-    assertTrue(
-        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+    assertTrue( cg.containsMethod(mainMethodSignature),
+        mainMethodSignature + " is not found in CallGraph");
     assertNotNull(cg);
   }
 
