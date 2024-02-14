@@ -304,10 +304,19 @@ Example code to help getting start with SootUp
 
 - We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
 
-     a) BasicSetupExample 
-           1) package sootup.examples; - defines the package name for the Java class.
-           2) import statement - defines various classes and interfaces from different packages that the program uses.
-           3) public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
+     a) 'BasicSetupExample'
+            
+          !!! example "First segment of BasicSetUp Program"
+           - package sootup.examples; - defines the package name for the Java class.
+           - import statement - defines various classes and interfaces from different packages that the program uses.
+           - public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
+           - Then we have created a main method which is the entry point of the program.
+          ```java
+           Path pathToBinary = Paths.get("src/test/resources/Basicsetup/binary");
+           AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
+           View view = new JavaView(inputLocation);
+           ```
+  
            4) Then we have created a main method which is the entry point of the progrram
            5) Path pathToBinary object pointing to a directory that contains the binary files ie class files to be analyzed and Paths.get is a static method that converts string path to a 'Path' object.
            6) AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
@@ -320,6 +329,7 @@ Example code to help getting start with SootUp
            13) The if statment after this, checks if the main method is present in the HelloWorld class. If not, it prints "Method not found!" and exits.
            14) Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode used by Soot for analysis and transformation.
            15) Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
+          
 
    b) BodyInterceptor 
            1) package sootup.examples; - defines the package name for the Java class.
