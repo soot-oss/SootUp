@@ -1,15 +1,16 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class AnnotationLibraryTest extends MinimalSourceTestSuiteBase {
 
-  @Ignore
+  @Disabled
   public void testAnnotation() {
     // TODO: [ms] annotations are not implemented yet
     System.out.println(getDeclaredClassSignature());
