@@ -1,4 +1,4 @@
-package main; // import Util.DexNumTransformer;
+package main;
 
 import Util.DexUtil;
 import com.google.common.collect.ArrayListMultimap;
@@ -471,11 +471,11 @@ public class DexBody {
     }
     addBranchingMap(instructions);
     // By this point, all the "jimplification" process should be done, so clean everything.
-    instructions = null;
-    instructionAtAddress.clear();
-    dangling = null;
-    tries = null;
-    parameterNames.clear();
+//    instructions = null;
+//    instructionAtAddress.clear();
+//    dangling = null;
+//    tries = null;
+//    parameterNames.clear();
 
     for (ReTypeableInstruction reTypeableInstruction : instructionsToRetype) {
       //                reTypeableInstruction.retype(this);
@@ -486,9 +486,7 @@ public class DexBody {
     instructions.stream()
         .filter(SwitchInstruction.class::isInstance)
         .forEach(
-            switchInstruction -> {
-              ((SwitchInstruction) switchInstruction).addBranchingStmts(this);
-            });
+            switchInstruction -> ((SwitchInstruction) switchInstruction).addBranchingStmts(this));
 
     instructions.stream()
         .filter(JumpInstruction.class::isInstance)
@@ -506,6 +504,7 @@ public class DexBody {
   }
 
   private void addTraps() {
+    Set<String> exceptionTypeList = new HashSet<>();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
       int startAddress = tryItem.getStartCodeAddress();
       int length = tryItem.getCodeUnitCount(); // .getTryLength();
@@ -529,12 +528,15 @@ public class DexBody {
 //        insertAfter(endStmt, endStmt);
 //        endStmt = nop;
 //      }
-
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
+        exceptionTypeList.add(exceptionType);
         if (exceptionType == null) {
-          exceptionType = "Ljava/lang/Throwable;";
+          exceptionType = "Ljava/lang/Throwable$CatchAll;";
+        }
+        if(exceptionTypeList.contains(exceptionType)){
+          exceptionType = exceptionType + "$" + exceptionTypeList.size();
         }
         Type t = DexUtil.toSootType(exceptionType, 0);
         // exceptions can only be of ReferenceType

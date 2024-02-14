@@ -8,9 +8,13 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
+
+import java.util.List;
+import java.util.Set;
 
 public class MoveExceptionInstruction extends DexLibAbstractInstruction
     implements ReTypeableInstruction {
@@ -39,16 +43,16 @@ public class MoveExceptionInstruction extends DexLibAbstractInstruction
   }
 
   @Override
-  public void retype(Body body) {
+  public void retype(List<Stmt> stmtList, Set<Local> locals) {
     if (realType == null) {
       throw new RuntimeException(
           "Real type of this instruction has not been set or was already retyped: " + this);
     }
-    if (body.getStmts().contains(stmtToRetype)) {
-      Local l = (Local) (stmtToRetype.getLeftOp());
+    if (stmtList.contains(stmtToRetype)) {
+      Local l = stmtToRetype.getLeftOp();
       l = l.withType(realType);
-      body.getLocals().remove(l);
-      body.getLocals().add(l);
+      locals.remove(l);
+      locals.add(l);
       realType = null;
     }
   }

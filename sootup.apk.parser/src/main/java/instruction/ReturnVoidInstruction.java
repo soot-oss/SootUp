@@ -3,6 +3,7 @@ package instruction;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 
 public class ReturnVoidInstruction extends DexLibAbstractInstruction {
@@ -12,7 +13,7 @@ public class ReturnVoidInstruction extends DexLibAbstractInstruction {
   }
 
   public void jimplify(DexBody body) {
-    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(null);
+    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
     setStmt(returnStmt);
     body.add(returnStmt);
   }

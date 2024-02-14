@@ -1,8 +1,12 @@
 package instruction;
 
 import main.DexBody;
-import sootup.core.model.Body;
+import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.Type;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Interface for instructions that can/must be retyped, i.e. instructions that assign to a local and
@@ -25,7 +29,6 @@ public interface ReTypeableInstruction {
    * <p>Retyping is separated from setting the type, to make it possible to retype after local
    * splitting.
    *
-   * @param body The body containing the processed statement
    */
-  public void retype(Body body);
+  public void retype(List<Stmt> stmt, Set<Local> locals);
 }

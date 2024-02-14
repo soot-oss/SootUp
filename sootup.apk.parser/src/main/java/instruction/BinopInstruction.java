@@ -7,6 +7,7 @@ import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import tag.DoubleOpTag;
@@ -28,7 +29,7 @@ public class BinopInstruction extends TaggedInstruction {
     Local source2 = body.getRegisterLocal(binOpInstr.getRegisterC());
 
     Value expr = getExpression(source1, source2);
-    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), expr, null);
+    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), expr, StmtPositionInfo.createNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

@@ -1,13 +1,18 @@
 package sootup.java.core.interceptors.Dex;
 
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+
+import com.google.common.collect.LinkedListMultimap;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
+import sootup.core.jimple.common.stmt.BranchingStmt;
+import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -16,9 +21,10 @@ import sootup.core.views.View;
 import sootup.java.core.language.JavaJimple;
 
 public class DexTrapStackTransformer implements BodyInterceptor {
+
+  public static LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    builder.getStmts().add(Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
     List<Trap> traps = builder.getStmtGraph().getTraps();
     for (Trap trap : traps) {
       if (isCaughtExceptionRef(trap.getHandlerStmt())) {
@@ -32,7 +38,9 @@ public class DexTrapStackTransformer implements BodyInterceptor {
               JavaJimple.getInstance().newCaughtExceptionRef(),
               StmtPositionInfo.createNoStmtPositionInfo());
       builder.getStmts().add(caughtStmt);
-      builder.getStmts().add(Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+      JGotoStmt jGotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      builder.getStmts().add(jGotoStmt);
+      branchingMap.put(jGotoStmt, Collections.singletonList(trap.getHandlerStmt()));
       replaceTrap(traps, trap, trap.withHandlerStmt(caughtStmt));
     }
   }

@@ -7,6 +7,7 @@ import org.jf.dexlib2.iface.instruction.NarrowLiteralInstruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.WideLiteralInstruction;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
@@ -22,7 +23,7 @@ public class ConstInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     Constant cst = getConstant();
-    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, null);
+    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, StmtPositionInfo.createNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

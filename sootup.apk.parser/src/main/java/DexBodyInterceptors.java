@@ -10,9 +10,9 @@ import sootup.java.core.interceptors.Dex.DexTrapStackTransformer;
 
 public enum DexBodyInterceptors {
   Default(
-      new NopEliminator(),
-      new CastAndReturnInliner(),
-      new UnreachableCodeEliminator(),
+//      new NopEliminator(),
+//      new CastAndReturnInliner(),
+//      new UnreachableCodeEliminator(),
       /*new LocalSplitter(),*/
       /*new Aggregator()*/
       /*new CopyPropagator(),*/
@@ -22,8 +22,9 @@ public enum DexBodyInterceptors {
 //      new EmptySwitchEliminator(),
 //      new LocalNameStandardizer()
 //      new DexTrapStackTransformer(),
-      new DexNumberTranformer(),
-      new DexNullTransformer());
+//      new DexNumberTranformer(),
+//      new DexNullTransformer());
+  );
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 

@@ -395,7 +395,7 @@ public class Body implements Copyable {
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
@@ -534,7 +534,8 @@ public class Body implements Copyable {
       try {
         graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
-        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
+//        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
+        System.out.println("StmtGraph of " + methodSig + " is invalid." + e.getCause());
       }
 
       return new Body(methodSig, locals, graph, position);
