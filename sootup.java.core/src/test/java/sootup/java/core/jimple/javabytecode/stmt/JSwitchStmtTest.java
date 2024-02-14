@@ -1,11 +1,10 @@
 package sootup.java.core.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -14,7 +13,7 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JSwitchStmtTest {
 
   @Test

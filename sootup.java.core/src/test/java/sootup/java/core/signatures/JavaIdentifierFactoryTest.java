@@ -22,14 +22,13 @@ package sootup.java.core.signatures;
  * #L%
  */
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -39,7 +38,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JavaIdentifierFactoryTest {
 
   @Test
@@ -331,10 +330,10 @@ public class JavaIdentifierFactoryTest {
     assertEquals("void", voidSig.toString());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void getTypeSignatureArray() {
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    Type classSignature2 = typeFactory.getType("java.lang.System[[]");
+    assertThrows(IllegalArgumentException.class, () -> typeFactory.getType("java.lang.System[[]"));
   }
 
   @Test
@@ -370,12 +369,10 @@ public class JavaIdentifierFactoryTest {
     assertEquals(((ArrayType) classSignature2).getBaseType(), base);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testParse() {
     // not ok!
     String fieldsSigStr = "<java.base/java.lang.String: [] value>";
-    FieldSignature fieldSignature =
-        JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr);
-    assertEquals(fieldsSigStr, fieldSignature.toString());
+    assertThrows(IllegalArgumentException.class,() -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
   }
 }

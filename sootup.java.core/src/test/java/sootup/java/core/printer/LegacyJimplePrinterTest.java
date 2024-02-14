@@ -1,11 +1,12 @@
 package sootup.java.core.printer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
@@ -25,6 +26,7 @@ import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
+@Tag("Java8")
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
@@ -151,10 +153,10 @@ public class LegacyJimplePrinterTest {
     }
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testValidOptions() {
     JimplePrinter p =
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.LegacyMode);
-    p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter()));
+    assertThrows(RuntimeException.class,() -> p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter())));
   }
 }
