@@ -1,15 +1,13 @@
 package sootup.java.core.jimple.common.ref;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -30,17 +28,17 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /** @author Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JFieldRefTest {
 
   JavaView view;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
   }
 
-  @Ignore
+  @Disabled
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
@@ -77,7 +75,7 @@ public class JFieldRefTest {
     assertEquals(EnumSet.of(FieldModifier.FINAL), field1.get().getModifiers());
   }
 
-  @Ignore
+  @Disabled
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =

@@ -1,17 +1,8 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import categories.Java8Test;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
@@ -21,14 +12,23 @@ import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
-@Category(Java8Test.class)
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+@Tag("Java8")
 public class NewValidatorTest {
 
   NewValidator validator;
   JimpleView view;
   Collection<SootClass> classes;
 
-  @Before
+  @BeforeEach
   public void Setup() {
 
     validator = new NewValidator();

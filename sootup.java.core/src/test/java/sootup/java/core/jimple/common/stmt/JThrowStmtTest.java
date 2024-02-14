@@ -22,10 +22,10 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -34,7 +34,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JThrowStmtTest {
 
   @Test
@@ -50,14 +50,14 @@ public class JThrowStmtTest {
     Stmt tStmt = new JThrowStmt(local, nop);
 
     // equivTo
-    Assert.assertTrue(tStmt.equivTo(tStmt));
-    Assert.assertTrue(tStmt.equivTo(new JThrowStmt(localEqual, nop)));
+    assertTrue(tStmt.equivTo(tStmt));
+    assertTrue(tStmt.equivTo(new JThrowStmt(localEqual, nop)));
 
-    Assert.assertFalse(tStmt.equivTo(new JNopStmt(nop)));
-    Assert.assertFalse(tStmt.equivTo(new JThrowStmt(localDifferent, nop)));
-    Assert.assertFalse(tStmt.equivTo(new JThrowStmt(localDifferent2, nop)));
+    assertFalse(tStmt.equivTo(new JNopStmt(nop)));
+    assertFalse(tStmt.equivTo(new JThrowStmt(localDifferent, nop)));
+    assertFalse(tStmt.equivTo(new JThrowStmt(localDifferent2, nop)));
 
     // toString
-    Assert.assertEquals("throw r0", tStmt.toString());
+    assertEquals("throw r0", tStmt.toString());
   }
 }

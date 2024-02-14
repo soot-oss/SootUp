@@ -22,10 +22,10 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -37,7 +37,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JIdentityStmtTest {
 
   @Test
@@ -59,51 +59,51 @@ public class JIdentityStmtTest {
         new JIdentityStmt(exception, JavaJimple.getInstance().newCaughtExceptionRef(), nop);
 
     // toString
-    Assert.assertEquals("r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());
-    Assert.assertEquals("i0 := @parameter123: int", paramIdStmt.toString());
-    Assert.assertEquals("r1 := @caughtexception", exceptionIdStmt.toString());
+    assertEquals("r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());
+    assertEquals("i0 := @parameter123: int", paramIdStmt.toString());
+    assertEquals("r1 := @caughtexception", exceptionIdStmt.toString());
 
     // equivTo
-    Assert.assertFalse(
+    assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("r5", typeFactory.getType("somepackage.NotMyClass")),
                 new JThisRef(typeFactory.getClassType("somepackage.NotMyClass")),
                 nop)));
-    Assert.assertFalse(
+    assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("r42", typeFactory.getType("somepackage.dummy.MyClass")),
                 new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")),
                 nop)));
-    Assert.assertTrue(thisIdStmt.equivTo(thisIdStmt));
-    Assert.assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
-    Assert.assertFalse(thisIdStmt.equivTo(paramIdStmt));
+    assertTrue(thisIdStmt.equivTo(thisIdStmt));
+    assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
+    assertFalse(thisIdStmt.equivTo(paramIdStmt));
 
-    Assert.assertFalse(
+    assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("i1", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 123),
                 nop)));
-    Assert.assertFalse(
+    assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("i0", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 42),
                 nop)));
-    Assert.assertFalse(exceptionIdStmt.equivTo(thisIdStmt));
-    Assert.assertTrue(exceptionIdStmt.equivTo(exceptionIdStmt));
-    Assert.assertFalse(exceptionIdStmt.equivTo(paramIdStmt));
+    assertFalse(exceptionIdStmt.equivTo(thisIdStmt));
+    assertTrue(exceptionIdStmt.equivTo(exceptionIdStmt));
+    assertFalse(exceptionIdStmt.equivTo(paramIdStmt));
 
-    Assert.assertFalse(
+    assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("r1", typeFactory.getType("somepckg.NotMyException")),
                 JavaJimple.getInstance().newCaughtExceptionRef(),
                 nop)));
-    Assert.assertFalse(paramIdStmt.equivTo(thisIdStmt));
-    Assert.assertFalse(paramIdStmt.equivTo(exceptionIdStmt));
-    Assert.assertTrue(paramIdStmt.equivTo(paramIdStmt));
+    assertFalse(paramIdStmt.equivTo(thisIdStmt));
+    assertFalse(paramIdStmt.equivTo(exceptionIdStmt));
+    assertTrue(paramIdStmt.equivTo(paramIdStmt));
   }
 }

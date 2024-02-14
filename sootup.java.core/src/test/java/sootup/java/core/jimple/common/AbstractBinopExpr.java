@@ -1,9 +1,9 @@
 package sootup.java.core.jimple.common;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -15,7 +15,7 @@ import sootup.core.jimple.common.expr.JLtExpr;
 import sootup.core.types.PrimitiveType;
 
 /** @author Bastian Haverkamp */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class AbstractBinopExpr {
 
   final JimpleComparator comparator = JimpleComparator.getInstance();
@@ -48,52 +48,52 @@ public class AbstractBinopExpr {
     String wrongObject = "";
 
     // a==b <=> a==b
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(cond0_1, cond0_2));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(cond0_2, cond0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(cond0_1, cond0_2));
+    assertTrue(comparator.caseAbstractBinopExpr(cond0_2, cond0_1));
     // a==b <=> b==a
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(cond0_1, cond1));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(cond1, cond0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(cond0_1, cond1));
+    assertTrue(comparator.caseAbstractBinopExpr(cond1, cond0_1));
 
     // (b0<b1 <=> b1<b0)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(lt0_1, lt1));
+    assertFalse(comparator.caseAbstractBinopExpr(lt0_1, lt1));
     // (b1<b0 <=> b0<b1)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(lt1, lt0_1));
+    assertFalse(comparator.caseAbstractBinopExpr(lt1, lt0_1));
     // b1<b0 <=> b1<b0
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(lt0_1, lt0_2));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(lt0_2, lt0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(lt0_1, lt0_2));
+    assertTrue(comparator.caseAbstractBinopExpr(lt0_2, lt0_1));
 
     // (b0>b1 <=> b1>b0)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(gt0_1, gt1));
+    assertFalse(comparator.caseAbstractBinopExpr(gt0_1, gt1));
     // (b1>b0 <=> b0>b1)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(gt1, gt0_1));
+    assertFalse(comparator.caseAbstractBinopExpr(gt1, gt0_1));
     // b1>b0 <=> b1>b0
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(gt0_1, gt0_2));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(gt0_2, gt0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(gt0_1, gt0_2));
+    assertTrue(comparator.caseAbstractBinopExpr(gt0_2, gt0_1));
 
     // b1<b0 <=> b0>b1
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(lt0_1, gt0_1));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(gt0_1, lt0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(lt0_1, gt0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(gt0_1, lt0_1));
 
     // (b0<b1 <=> b1<b0)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(le0_1, le1));
+    assertFalse(comparator.caseAbstractBinopExpr(le0_1, le1));
     // (b1<b0 <=> b0<b1)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(le1, le0_1));
+    assertFalse(comparator.caseAbstractBinopExpr(le1, le0_1));
     // b1<b0 <=> b1<b0
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(le0_1, let0_2));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(let0_2, le0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(le0_1, let0_2));
+    assertTrue(comparator.caseAbstractBinopExpr(let0_2, le0_1));
 
     // (b0>b1 <=> b1>b0)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(ge0_1, ge1));
+    assertFalse(comparator.caseAbstractBinopExpr(ge0_1, ge1));
     // (b1>b0 <=> b0>b1)
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(ge1, ge0_1));
+    assertFalse(comparator.caseAbstractBinopExpr(ge1, ge0_1));
     // b1>b0 <=> b1>b0
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(ge0_1, ge0_2));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(ge0_2, ge0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(ge0_1, ge0_2));
+    assertTrue(comparator.caseAbstractBinopExpr(ge0_2, ge0_1));
 
     // b1<b0 <=> b0>b1
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(le0_1, ge0_1));
-    Assert.assertTrue(comparator.caseAbstractBinopExpr(ge0_1, le0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(le0_1, ge0_1));
+    assertTrue(comparator.caseAbstractBinopExpr(ge0_1, le0_1));
 
-    Assert.assertFalse(comparator.caseAbstractBinopExpr(cond0_1, wrongObject));
+    assertFalse(comparator.caseAbstractBinopExpr(cond0_1, wrongObject));
   }
 }

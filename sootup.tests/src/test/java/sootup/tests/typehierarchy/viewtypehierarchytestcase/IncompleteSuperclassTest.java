@@ -1,20 +1,20 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static sootup.core.util.ImmutableUtils.immutableList;
-
-import categories.Java8Test;
 import com.google.common.collect.ImmutableList;
-import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static sootup.core.util.ImmutableUtils.immutableList;
+
 /** @author Jonas Klauke * */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class IncompleteSuperclassTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {

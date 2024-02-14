@@ -1,14 +1,7 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -17,8 +10,15 @@ import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 /** @author Hasitha Rajapakse * */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class InheritPublicDataTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
