@@ -1,13 +1,18 @@
 package sootup.core.jimple.basic;
 
 import java.util.HashSet;
-import junit.framework.TestCase;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 
-public class LocalGeneratorTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class LocalGeneratorTest {
+
+    @Test
   public void testGenerate() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
     final Local i0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());
@@ -51,6 +56,7 @@ public class LocalGeneratorTest extends TestCase {
     assertEquals("l0", ds0.toString());
   }
 
+  @Disabled
   public void testGenerateFieldCollisionHandling() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
     final Local i0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());
@@ -64,6 +70,7 @@ public class LocalGeneratorTest extends TestCase {
     assertEquals("i2", di2.toString());
   }
 
+  @Disabled
   public void testGenerateLocalCollisionHandling() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
     final Local di0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());

@@ -1,12 +1,7 @@
 package sootup.core.graph;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
-import java.util.*;
-import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -15,7 +10,13 @@ import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.types.PrimitiveType;
 
-@Category(Java8Test.class)
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+@Tag("Java8")
 public class DominanceFinderTest {
 
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();

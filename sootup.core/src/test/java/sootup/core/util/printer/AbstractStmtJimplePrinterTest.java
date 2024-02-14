@@ -1,12 +1,8 @@
 package sootup.core.util.printer;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
 import com.google.common.base.Objects;
-import java.util.Collections;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -14,7 +10,11 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 
-@Category(Java8Test.class)
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Tag("Java8")
 public class AbstractStmtJimplePrinterTest {
 
   @Test
