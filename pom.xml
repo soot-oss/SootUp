@@ -103,7 +103,7 @@
         <profile>
             <id>Java8</id>
             <properties>
-                <testcase.groups>categories.Java8Test</testcase.groups>
+                <includeTags>Java8</includeTags>
                 <testCoverageType>jdk8</testCoverageType>
             </properties>
             <!-- Activates if jdk is <1.9 which means it has a rt.jar -->
@@ -114,7 +114,7 @@
         <profile>
             <id>Java9</id>
             <properties>
-                <testcase.groups>categories.Java9Test</testcase.groups>
+                <includeTags>Java9</includeTags>
                 <testCoverageType>jdk9</testCoverageType>
             </properties>
             <!-- Activates if jdk is >=1.9 which means it has a jrt Provider -->
@@ -125,7 +125,7 @@
         <profile>
             <id>IntegrationTest</id>
             <properties>
-                <testcase.groups>categories.Java8Test</testcase.groups>
+                <includeTags>Java8</includeTags>
                 <testCoverageType>integrationtest</testCoverageType>
             </properties>
         </profile>
