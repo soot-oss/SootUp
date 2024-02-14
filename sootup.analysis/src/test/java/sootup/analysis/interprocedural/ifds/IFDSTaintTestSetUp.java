@@ -22,8 +22,6 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
-import static org.junit.Assert.assertNotNull;
-
 import heros.InterproceduralCFG;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,8 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class IFDSTaintTestSetUp {
 
