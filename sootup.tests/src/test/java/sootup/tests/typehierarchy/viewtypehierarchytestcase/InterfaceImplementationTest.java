@@ -17,7 +17,7 @@ public class InterfaceImplementationTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
+        (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     Set<ClassType> interfaceSet = new HashSet<>();
     interfaceSet.add(getClassType("InterfaceA"));
     assertEquals(

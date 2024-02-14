@@ -1,14 +1,13 @@
 package sootup.tests.typehierarchy;
 
-import java.util.Collections;
-import org.junit.ClassRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+
+import java.util.Collections;
 
 /** @author: Hasitha Rajapakse * */
 public abstract class JavaTypeHierarchyTestBase {
@@ -17,20 +16,16 @@ public abstract class JavaTypeHierarchyTestBase {
 
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-  @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
-
-  public static class CustomTestWatcher extends TestWatcher {
-
     private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
     private AnalysisInputLocation srcCode;
     private JavaView view;
 
-    @Override
-    protected void starting(Description description) {
+    @BeforeEach
+    protected void starting() {
 
       String prevClassName = getClassName();
 
-      setClassName(extractClassName(description.getClassName()));
+      setClassName(extractClassName(this.getClassName()));
 
       if (!prevClassName.equals(getClassName())) {
         srcCode =
@@ -56,7 +51,6 @@ public abstract class JavaTypeHierarchyTestBase {
     public JavaView getView() {
       return view;
     }
-  }
 
   public JavaClassType getClassType(String className) {
     return identifierFactory.getClassType(className);

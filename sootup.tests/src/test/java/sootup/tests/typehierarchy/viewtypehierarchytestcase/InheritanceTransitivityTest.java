@@ -18,7 +18,7 @@ public class InheritanceTransitivityTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
+        (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     Set<ClassType> subClassSet = new HashSet<>();
     subClassSet.add(getClassType("SubClassA"));
     subClassSet.add(getClassType("SubClassB"));

@@ -18,7 +18,7 @@ public class ClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
+        (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     assertEquals(
         typeHierarchy.superClassOf(getClassType("ClassInheritance")), getClassType("SuperClass"));
 

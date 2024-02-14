@@ -19,20 +19,20 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
-    ClassType sootClassType = getClassType(customTestWatcher.getClassName());
+        (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+    ClassType sootClassType = getClassType(this.getClassName());
 
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
-        customTestWatcher
+        this
             .getView()
             .getClass(
-                customTestWatcher
+                this
                     .getView()
                     .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
+                    .getClassType(this.getClassName()))
             .get();
     SootMethod sootMethod =
         sootClass
@@ -45,7 +45,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     assertNotNull(body);
 
     SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+        this.getView().getClass(sootClass.getSuperclass().get()).get();
     SootMethod superMethod =
         superClass
             .getMethod(

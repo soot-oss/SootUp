@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
   ViewTypeHierarchy typeHierarchy =
-      (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
+      (ViewTypeHierarchy) this.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"
@@ -64,16 +64,16 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void ClassInheritanceClassHasAdditionalMethod() {
     SootClass sootClass =
-        customTestWatcher
+        this
             .getView()
             .getClass(
-                customTestWatcher
+                this
                     .getView()
                     .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
+                    .getClassType(this.getClassName()))
             .get();
     SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+        this.getView().getClass(sootClass.getSuperclass().get()).get();
 
     Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
     Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();
