@@ -1,13 +1,7 @@
 package sootup.core.jimple.common.constant;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-
-import categories.Java8Test;
-import java.util.Collections;
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.MethodHandle.Kind;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
@@ -16,8 +10,12 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType.IntType;
 import sootup.core.types.VoidType;
 
-@Category(Java8Test.class)
-public class MethodHandleTest extends TestCase {
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Tag("Java8")
+public class MethodHandleTest {
 
   @Test
   public void testMethodHandle() {

@@ -1,15 +1,16 @@
 package sootup.jimple.parser.javatestsuite.java6;
 
-import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.jimple.parser.categories.Java8Test;
 import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
-@Category(Java8Test.class)
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Tag("Java8")
 public class AlphaBetaGammaTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -20,6 +21,6 @@ public class AlphaBetaGammaTest extends JimpleTestSuiteBase {
   @Test
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
-    Assert.assertEquals("αβγ", method.getName());
+    assertEquals("αβγ", method.getName());
   }
 }

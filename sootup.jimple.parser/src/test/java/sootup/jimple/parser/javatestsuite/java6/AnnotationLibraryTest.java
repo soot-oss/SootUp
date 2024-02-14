@@ -1,19 +1,18 @@
 package sootup.jimple.parser.javatestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
-import sootup.jimple.parser.categories.Java8Test;
 import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class AnnotationLibraryTest extends JimpleTestSuiteBase {
 
-  @Ignore
+  @Disabled
   public void testAnnotation() {
     // TODO: annotations are not supported yet
     System.out.println(getDeclaredClassSignature());
