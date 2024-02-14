@@ -1,19 +1,15 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.util.Utils;
@@ -21,15 +17,17 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /** @author Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class InstanceofInstructionConversionTest {
   private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
-  @Before
+  @BeforeEach
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaJavaClassProvider(srcDir);

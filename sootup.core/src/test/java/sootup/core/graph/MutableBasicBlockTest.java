@@ -1,11 +1,12 @@
 package sootup.core.graph;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MutableBasicBlockTest {
 
@@ -14,7 +15,7 @@ public class MutableBasicBlockTest {
   Stmt thirdNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
   Stmt fourthNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testUnlinkedSplitBeginningNewHead() {
     MutableBasicBlock block = new MutableBasicBlock();
     block.addStmt(firstNop);
@@ -22,9 +23,9 @@ public class MutableBasicBlockTest {
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
 
-    MutableBasicBlock newBlock = block.splitBlockUnlinked(0);
-    assertEquals(0, block.getStmtCount());
-    assertEquals(4, newBlock.getStmtCount());
+    assertThrows(IndexOutOfBoundsException.class, () -> {
+      MutableBasicBlock mutableBasicBlock = block.splitBlockUnlinked(0);
+    });
   }
 
   @Test
@@ -130,16 +131,16 @@ public class MutableBasicBlockTest {
     assertEquals(1, newBlock.getStmtCount());
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testLinkedSplitEndException() {
     MutableBasicBlock block = new MutableBasicBlock();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
-
-    MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
-    assertEquals(4, block.getStmtCount());
-    assertEquals(0, newBlock.getStmtCount());
+    
+    assertThrows(IndexOutOfBoundsException.class, () -> {
+      MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
+    });
   }
 }

@@ -1,19 +1,17 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Position;
@@ -22,13 +20,16 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test for source position mapping.
  *
  * @author Linghui Luo
  */
-@Category(Java8Test.class)
-@Ignore // stmtposition need to be adapted
+@Tag("Java8")
+@Disabled // stmtposition need to be adapted
 public class StmtPositionInfoTest {
   private WalaJavaClassProvider loader;
 
@@ -36,7 +37,7 @@ public class StmtPositionInfoTest {
   private JavaClassType declareClassSig;
   private SootMethod method;
 
-  @Before
+  @BeforeEach
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaJavaClassProvider(srcDir);
@@ -347,10 +348,10 @@ public class StmtPositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(12, stmtPos.getLastCol());
 
-      Assert.assertEquals(16, info.getOperandPosition(1).getFirstLine());
-      Assert.assertEquals(10, info.getOperandPosition(1).getFirstCol());
-      Assert.assertEquals(16, info.getOperandPosition(1).getLastLine());
-      Assert.assertEquals(11, info.getOperandPosition(1).getLastCol());
+      assertEquals(16, info.getOperandPosition(1).getFirstLine());
+      assertEquals(10, info.getOperandPosition(1).getFirstCol());
+      assertEquals(16, info.getOperandPosition(1).getLastLine());
+      assertEquals(11, info.getOperandPosition(1).getLastCol());
     }
 
     {
@@ -362,15 +363,15 @@ public class StmtPositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(15, stmtPos.getLastCol());
 
-      Assert.assertEquals(17, info.getOperandPosition(1).getFirstLine());
-      Assert.assertEquals(10, info.getOperandPosition(1).getFirstCol());
-      Assert.assertEquals(17, info.getOperandPosition(1).getLastLine());
-      Assert.assertEquals(11, info.getOperandPosition(1).getLastCol());
+      assertEquals(17, info.getOperandPosition(1).getFirstLine());
+      assertEquals(10, info.getOperandPosition(1).getFirstCol());
+      assertEquals(17, info.getOperandPosition(1).getLastLine());
+      assertEquals(11, info.getOperandPosition(1).getLastCol());
 
-      Assert.assertEquals(17, info.getOperandPosition(2).getFirstLine());
-      Assert.assertEquals(13, info.getOperandPosition(2).getFirstCol());
-      Assert.assertEquals(17, info.getOperandPosition(2).getLastLine());
-      Assert.assertEquals(14, info.getOperandPosition(2).getLastCol());
+      assertEquals(17, info.getOperandPosition(2).getFirstLine());
+      assertEquals(13, info.getOperandPosition(2).getFirstCol());
+      assertEquals(17, info.getOperandPosition(2).getLastLine());
+      assertEquals(14, info.getOperandPosition(2).getLastCol());
     }
   }
 

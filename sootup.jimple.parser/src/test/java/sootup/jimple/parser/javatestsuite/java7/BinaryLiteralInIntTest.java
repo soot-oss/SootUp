@@ -1,18 +1,18 @@
 package sootup.jimple.parser.javatestsuite.java7;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.jimple.parser.categories.Java8Test;
-import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class BinaryLiteralInIntTest extends JimpleTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
