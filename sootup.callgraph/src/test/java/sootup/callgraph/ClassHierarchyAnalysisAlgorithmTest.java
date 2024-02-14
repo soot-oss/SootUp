@@ -1,11 +1,10 @@
 package sootup.callgraph;
 
-import static junit.framework.TestCase.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.views.JavaView;
 
@@ -14,7 +13,7 @@ import sootup.java.core.views.JavaView;
  *
  * @author Markus Schmidt
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ClassHierarchyAnalysisAlgorithmTest
     extends CallGraphTestBase<ClassHierarchyAnalysisAlgorithm> {
 
