@@ -21,8 +21,7 @@ public abstract class JavaTypeHierarchyTestBase {
     private JavaView view;
 
     @BeforeEach
-    protected void starting() {
-
+    protected void setupTest() {
       String prevClassName = getClassName();
 
       setClassName(extractClassName(this.getClassName()));
@@ -57,7 +56,6 @@ public abstract class JavaTypeHierarchyTestBase {
   }
 
   public static String extractClassName(String classPath) {
-
     String classPathArray = classPath.substring(classPath.lastIndexOf(".") + 1);
     String testDirectoryName = "";
     if (!classPathArray.isEmpty()) {
