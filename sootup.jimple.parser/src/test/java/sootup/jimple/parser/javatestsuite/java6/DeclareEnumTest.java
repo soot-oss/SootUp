@@ -1,16 +1,15 @@
 package sootup.jimple.parser.javatestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.jimple.parser.categories.Java8Test;
 import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class DeclareEnumTest extends JimpleTestSuiteBase {
 
   @Test
