@@ -1,22 +1,16 @@
 package sootup.analysis.interprocedural.ifds;
 
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import junit.framework.TestCase;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.analysis.interprocedural.icfg.CGEdgeUtil;
 import sootup.analysis.interprocedural.icfg.CGEdgeUtil.CallGraphEdgeType;
 import sootup.analysis.interprocedural.icfg.CalleeMethodSignature;
@@ -49,7 +43,9 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(Java8Test.class)
+import static org.junit.jupiter.api.Assertions.*;
+
+@Tag("Java8")
 public class CGEdgeUtilTest {
 
   @Test
@@ -97,35 +93,37 @@ public class CGEdgeUtilTest {
     assertEquals(CGEdgeUtil.findCallGraphEdgeType(jDynamicInvokeExpr), CallGraphEdgeType.DYNAMIC);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testFindCallGraphEdgeTypeError() {
-    MethodSignature testMethod =
-        new MethodSignature(
-            new JavaClassType("Object", new PackageName("java.lang")),
-            "test",
-            Collections.singletonList(PrimitiveType.getInt()),
-            PrimitiveType.getInt());
-    Immediate[] testParameterList = {IntConstant.getInstance(2)};
+  @Test
+  public void testFindCallGraphEdgeTypeError() throws RuntimeException {
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      MethodSignature testMethod =
+              new MethodSignature(
+                      new JavaClassType("Object", new PackageName("java.lang")),
+                      "test",
+                      Collections.singletonList(PrimitiveType.getInt()),
+                      PrimitiveType.getInt());
+      Immediate[] testParameterList = {IntConstant.getInstance(2)};
 
-    AbstractInvokeExpr jNewInvoke =
-        new AbstractInvokeExpr(testMethod, testParameterList) {
-          @Override
-          public void toString(@Nonnull StmtPrinter up) {}
+      AbstractInvokeExpr jNewInvoke =
+              new AbstractInvokeExpr(testMethod, testParameterList) {
+                @Override
+                public void toString(@Nonnull StmtPrinter up) {}
 
-          @Override
-          public int equivHashCode() {
-            return 0;
-          }
+                @Override
+                public int equivHashCode() {
+                  return 0;
+                }
 
-          @Override
-          public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
-            return false;
-          }
+                @Override
+                public boolean equivTo(Object o, @Nonnull JimpleComparator comparator) {
+                  return false;
+                }
 
-          @Override
-          public void accept(@Nonnull ExprVisitor exprVisitor) {}
-        };
-    CGEdgeUtil.findCallGraphEdgeType(jNewInvoke);
+                @Override
+                public void accept(@Nonnull ExprVisitor exprVisitor) {}
+              };
+      CGEdgeUtil.findCallGraphEdgeType(jNewInvoke);
+    });
   }
 
   @Test
@@ -150,14 +148,14 @@ public class CGEdgeUtilTest {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
-    assertNotNull(mainMethodSignature + " not found in classloader", m);
+    assertNotNull(m, mainMethodSignature + " not found in classloader");
 
     AbstractCallGraphAlgorithm algorithm = new RapidTypeAnalysisAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
-    assertTrue(
-        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+    assertTrue(cg.containsMethod(mainMethodSignature),
+        mainMethodSignature + " is not found in CallGraph");
 
     Set<Pair<MethodSignature, CalleeMethodSignature>> results = CGEdgeUtil.getCallEdges(view, cg);
     assertEquals(results.size(), 6);
@@ -227,8 +225,8 @@ public class CGEdgeUtilTest {
             .findAny()
             .orElse(null);
     assertNotNull(virtualStmt);
-    TestCase.assertEquals(virtualCall.getValue().getMethodSignature(), valueMethod);
-    TestCase.assertEquals(virtualCall.getValue().getSourceStmt(), virtualStmt);
+    assertEquals(virtualCall.getValue().getMethodSignature(), valueMethod);
+    assertEquals(virtualCall.getValue().getSourceStmt(), virtualStmt);
   }
 
   @Test
