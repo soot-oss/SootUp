@@ -1,10 +1,9 @@
 package sootup.java.core.signatures;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java9Test;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -32,7 +31,7 @@ import sootup.java.core.types.JavaClassType;
  * #L%
  */
 
-@Category(Java9Test.class)
+@Tag("Java9")
 public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
 
   @Test
@@ -84,10 +83,10 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
     assertNotEquals(packageSignature1, packageSignature2);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testModuleInfoSignature() {
     JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
-    JavaClassType classSignature1 = typeFactory.getClassType("module-info");
+    assertThrows(IllegalArgumentException.class,() -> typeFactory.getClassType("module-info"));
   }
 
   @Test

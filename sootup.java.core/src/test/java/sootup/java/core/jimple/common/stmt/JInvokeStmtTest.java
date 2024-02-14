@@ -22,7 +22,8 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,9 +33,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -59,7 +59,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JInvokeStmtTest {
 
   @Test
@@ -102,13 +102,13 @@ public class JInvokeStmtTest {
             nop);
 
     // toString
-    Assert.assertEquals(
+    assertEquals(
         "staticinvoke <java.system.Out: void print(String)>(\"Towel\")",
         staticInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(staticInvokeStmt.equivTo(new JNopStmt(nop)));
-    Assert.assertTrue(staticInvokeStmt.equivTo(staticInvokeStmt));
+    assertFalse(staticInvokeStmt.equivTo(new JNopStmt(nop)));
+    assertTrue(staticInvokeStmt.equivTo(staticInvokeStmt));
 
     // JSpecialInvoke
     MethodSignature smethodSig =
@@ -120,12 +120,12 @@ public class JInvokeStmtTest {
             nop);
 
     // toString
-    Assert.assertEquals(
+    assertEquals(
         "specialinvoke r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));
-    Assert.assertTrue(specialInvokeStmt.equivTo(specialInvokeStmt));
+    assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));
+    assertTrue(specialInvokeStmt.equivTo(specialInvokeStmt));
 
     // JInterfaceInvoke
     MethodSignature imethodSig =
@@ -137,12 +137,12 @@ public class JInvokeStmtTest {
             nop);
 
     // toString
-    Assert.assertEquals(
+    assertEquals(
         "interfaceinvoke r2.<java.util.Iterator: void remove()>()", interfaceInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(interfaceInvokeStmt.equivTo(new JNopStmt(nop)));
-    Assert.assertTrue(interfaceInvokeStmt.equivTo(interfaceInvokeStmt));
+    assertFalse(interfaceInvokeStmt.equivTo(new JNopStmt(nop)));
+    assertTrue(interfaceInvokeStmt.equivTo(interfaceInvokeStmt));
 
     // JDynamicInvoke
     MethodSignature dmethodSig =
@@ -161,29 +161,29 @@ public class JInvokeStmtTest {
             new JDynamicInvokeExpr(bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs), nop);
 
     // toString
-    Assert.assertEquals(
+    assertEquals(
         "dynamicinvoke \"mylambda\" <void ()>() <Runnable: void run()>()",
         dynamicInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(dynamicInvokeStmt.equivTo(new JNopStmt(nop)));
-    Assert.assertTrue(dynamicInvokeStmt.equivTo(dynamicInvokeStmt));
+    assertFalse(dynamicInvokeStmt.equivTo(new JNopStmt(nop)));
+    assertTrue(dynamicInvokeStmt.equivTo(dynamicInvokeStmt));
 
     // general
-    Assert.assertFalse(staticInvokeStmt.equivTo(specialInvokeStmt));
-    Assert.assertFalse(staticInvokeStmt.equivTo(interfaceInvokeStmt));
-    Assert.assertFalse(staticInvokeStmt.equivTo(dynamicInvokeStmt));
+    assertFalse(staticInvokeStmt.equivTo(specialInvokeStmt));
+    assertFalse(staticInvokeStmt.equivTo(interfaceInvokeStmt));
+    assertFalse(staticInvokeStmt.equivTo(dynamicInvokeStmt));
 
-    Assert.assertFalse(specialInvokeStmt.equivTo(staticInvokeStmt));
-    Assert.assertFalse(specialInvokeStmt.equivTo(interfaceInvokeStmt));
-    Assert.assertFalse(specialInvokeStmt.equivTo(dynamicInvokeStmt));
+    assertFalse(specialInvokeStmt.equivTo(staticInvokeStmt));
+    assertFalse(specialInvokeStmt.equivTo(interfaceInvokeStmt));
+    assertFalse(specialInvokeStmt.equivTo(dynamicInvokeStmt));
 
-    Assert.assertFalse(interfaceInvokeStmt.equivTo(staticInvokeStmt));
-    Assert.assertFalse(interfaceInvokeStmt.equivTo(specialInvokeStmt));
-    Assert.assertFalse(interfaceInvokeStmt.equivTo(dynamicInvokeStmt));
+    assertFalse(interfaceInvokeStmt.equivTo(staticInvokeStmt));
+    assertFalse(interfaceInvokeStmt.equivTo(specialInvokeStmt));
+    assertFalse(interfaceInvokeStmt.equivTo(dynamicInvokeStmt));
 
-    Assert.assertFalse(dynamicInvokeStmt.equivTo(staticInvokeStmt));
-    Assert.assertFalse(dynamicInvokeStmt.equivTo(specialInvokeStmt));
-    Assert.assertFalse(dynamicInvokeStmt.equivTo(interfaceInvokeStmt));
+    assertFalse(dynamicInvokeStmt.equivTo(staticInvokeStmt));
+    assertFalse(dynamicInvokeStmt.equivTo(specialInvokeStmt));
+    assertFalse(dynamicInvokeStmt.equivTo(interfaceInvokeStmt));
   }
 }
