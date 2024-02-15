@@ -1,12 +1,12 @@
 package sootup.java.sourcecode.minimaltestsuite.java8;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -64,7 +64,7 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   }
 
   // TODO: enable test when TypeMethodReference is Supported by Wala/SourceCodeFrontend
-  @Ignore
+  @Disabled
   public void test() {
     assertJimpleStmts(loadMethod(getStaticMethodSignature()), expectedBodyStmts1());
 

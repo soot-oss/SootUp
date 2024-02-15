@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Tag("Java9")
 public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -18,7 +20,7 @@ public class AnonymousDiamondOperatorTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(), "innerClassDiamond", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void test() {
     /** TODO Check for anonymous declarations once Java 9 is supported in WALA */
   }

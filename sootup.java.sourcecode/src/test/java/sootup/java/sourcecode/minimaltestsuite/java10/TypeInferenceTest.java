@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
@@ -18,7 +18,7 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void ignoreTest() {
     /** TODO Java 10 is not supported in WALA, feature can not be tested */
   }

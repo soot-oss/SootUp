@@ -1,9 +1,9 @@
 package sootup.java.sourcecode.frontend;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
@@ -12,8 +12,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class WalaJavaClassProviderTest {

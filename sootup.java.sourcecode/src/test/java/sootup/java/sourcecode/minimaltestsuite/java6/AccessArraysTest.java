@@ -2,7 +2,6 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
 import java.util.*;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import sootup.core.model.SootMethod;

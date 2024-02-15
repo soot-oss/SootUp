@@ -1,12 +1,11 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Disabled;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AnnotationLibraryTest extends MinimalSourceTestSuiteBase {
 

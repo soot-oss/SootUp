@@ -1,5 +1,6 @@
 package sootup.java.sourcecode.frontend;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,6 @@ import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /** @author Linghui Luo */
 @Tag("Java8")

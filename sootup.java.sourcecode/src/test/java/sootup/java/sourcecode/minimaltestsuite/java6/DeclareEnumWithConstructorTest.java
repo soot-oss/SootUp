@@ -1,5 +1,6 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +12,6 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Kaustubh Kelkar */
 @Tag("Java8")

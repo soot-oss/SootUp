@@ -1,6 +1,7 @@
 /** @author: Hasitha Rajapakse */
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("Java8")
 public class FinalMethodTest extends MinimalSourceTestSuiteBase {

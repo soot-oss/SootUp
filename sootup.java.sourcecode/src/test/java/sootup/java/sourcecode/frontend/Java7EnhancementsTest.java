@@ -1,7 +1,8 @@
 package sootup.java.sourcecode.frontend;
 
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -10,8 +11,6 @@ import sootup.core.model.SootClass;
 import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Linghui Luo */
 @Tag("Java8")

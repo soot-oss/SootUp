@@ -1,15 +1,14 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
@@ -24,12 +23,10 @@ import sootup.core.types.Type;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
 
-  JavaClassType nestedClass =
-      identifierFactory.getClassType(
-          getClassName(customTestWatcher.getClassPath()) + "$NestedClass");
+  JavaClassType nestedClass = identifierFactory.getClassType(testedClassName + "$NestedClass");
   SootClass sootNestedClass = loadClass(nestedClass);
 
   /** Test: OuterClass of NestedClass is NestedClassShadow */

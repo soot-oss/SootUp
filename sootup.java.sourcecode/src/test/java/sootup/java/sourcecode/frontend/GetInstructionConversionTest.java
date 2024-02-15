@@ -1,15 +1,12 @@
 package sootup.java.sourcecode.frontend;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static sootup.core.util.Utils.assertEquiv;
 import static sootup.core.util.Utils.assertInstanceOfSatisfying;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

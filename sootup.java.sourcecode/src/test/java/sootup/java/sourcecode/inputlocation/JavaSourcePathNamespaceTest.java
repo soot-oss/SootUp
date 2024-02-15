@@ -1,12 +1,12 @@
 package sootup.java.sourcecode.inputlocation;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class JavaSourcePathNamespaceTest {

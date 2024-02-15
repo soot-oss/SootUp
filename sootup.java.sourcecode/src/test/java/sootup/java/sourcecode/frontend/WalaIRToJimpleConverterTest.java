@@ -1,12 +1,10 @@
 package sootup.java.sourcecode.frontend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** @author Linghui Luo */
 @Tag("Java8")
