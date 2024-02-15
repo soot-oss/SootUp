@@ -2,22 +2,24 @@ package sootup.java.bytecode.minimaltestsuite.java8;
 
 import categories.Java8Test;
 import java.util.Collections;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Bastian Haverkamp */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CossiInputTest extends MinimalBytecodeTestSuiteBase {
 
   // FIXME: [bh] convert() in AsmMethodSource does not terminate
   // hint: only CossiInput$CossiInputBuilder.build(...) is broken
   @Test
-  @Ignore("FIXME")
+  @Disabled("FIXME")
   public void test() {
     // only care if it terminates here..
 

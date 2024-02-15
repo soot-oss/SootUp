@@ -1,16 +1,15 @@
 package sootup.java.bytecode.inputlocation;
 
-import static org.junit.Assert.*;
-
-import categories.Java9Test;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -22,7 +21,10 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-@Category(Java9Test.class)
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModulePathAnalysisInputLocationTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
@@ -67,7 +69,7 @@ public class JavaModulePathAnalysisInputLocationTest {
   }
 
   @Test
-  @Ignore("// FIXME does not find moduleInfo's ")
+  @Disabled("// FIXME does not find moduleInfo's ")
   public void testGetModuleInfo() {
     List<AnalysisInputLocation> inputLocations =
         Collections.singletonList(

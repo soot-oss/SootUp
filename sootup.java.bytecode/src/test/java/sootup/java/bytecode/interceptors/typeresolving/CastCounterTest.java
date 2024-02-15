@@ -1,16 +1,16 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.types.ClassType;
@@ -19,7 +19,9 @@ import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 
-@Category(Java8Test.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastCounterTest extends TypeAssignerTestSuite {
 
   AugEvalFunction function;
@@ -31,7 +33,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   ClassType sub2 = identifierFactory.getClassType("Sub2");
   ClassType object = identifierFactory.getClassType("java.lang.Object");
 
-  @Before
+  @BeforeEach
   public void setup() {
     String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
@@ -53,22 +55,22 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     int count = counter.getCastCount(typing);
-    Assert.assertEquals(0, count);
+    assertEquals(0, count);
 
     map.replace("l3", super2);
     typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertEquals(1, count);
+    assertEquals(1, count);
 
     map.replace("l2", PrimitiveType.getLong());
     typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertEquals(3, count);
+    assertEquals(3, count);
 
     map.replace("l2", AugmentIntegerTypes.getInteger127());
     typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertEquals(1, count);
+    assertEquals(1, count);
   }
 
   @Test
@@ -82,12 +84,12 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     int count = counter.getCastCount(typing);
-    Assert.assertEquals(0, count);
+    assertEquals(0, count);
 
     map.replace("l1", object);
     typing = createTyping(builder.getLocals(), map);
     count = counter.getCastCount(typing);
-    Assert.assertEquals(5, count);
+    assertEquals(5, count);
   }
 
   @Test
@@ -105,10 +107,10 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
     Typing typing = createTyping(locals, map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
-    Assert.assertEquals(3, counter.getCastCount(typing));
+    assertEquals(3, counter.getCastCount(typing));
     counter.insertCastStmts(typing);
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos l0",
                 "Sub2 #l3",
@@ -146,12 +148,12 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     Typing typing = createTyping(builder.getLocals(), map);
     CastCounter counter = new CastCounter(builder, function, hierarchy);
     counter.insertCastStmts(typing);
-    Assert.assertEquals(2, counter.getCastCount());
+    assertEquals(2, counter.getCastCount());
 
     final Body body = builder.build();
     List<String> actualStmts = Utils.filterJimple(body.toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos l0",
                 "Super1[] #l0, #l1",

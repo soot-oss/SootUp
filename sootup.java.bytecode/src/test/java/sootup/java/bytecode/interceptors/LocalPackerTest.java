@@ -1,13 +1,14 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -27,7 +28,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -215,7 +216,7 @@ public class LocalPackerTest {
    * </pre>
    */
   @Test
-  @Ignore("FIXME: does currently not work - Isssue #487")
+  @Disabled("FIXME: does currently not work - Isssue #487")
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 

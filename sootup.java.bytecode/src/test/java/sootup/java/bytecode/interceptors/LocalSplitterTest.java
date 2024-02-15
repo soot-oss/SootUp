@@ -1,14 +1,15 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -20,12 +21,14 @@ import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalSplitterTest {
   JavaView view;
   LocalSplitter localSplitter = new LocalSplitter();
 
-  @Before
+  @BeforeEach
   public void setup() {
     String classPath = "src/test/java/resources/interceptors";
     JavaClassPathAnalysisInputLocation inputLocation =
@@ -49,7 +52,7 @@ public class LocalSplitterTest {
   }
 
   @Test
-  @Ignore("Takes too long. Good for profiling though.")
+  @Disabled("Takes too long. Good for profiling though.")
   public void JRT() {
     JrtFileSystemAnalysisInputLocation inputLocation =
         new JrtFileSystemAnalysisInputLocation(

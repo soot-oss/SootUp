@@ -22,15 +22,15 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
 
-import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -46,11 +46,15 @@ import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * @author Manuel Benz created on 06.06.18
  * @author Kaustubh Kelkar updated on 16.04.2020
  */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
@@ -72,11 +76,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test()
   public void testSingleClassDoesNotExist() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get("NonExisting.class"), SourceType.Application);
+    Assertions.assertThrows(IllegalAccessError.class, () -> PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), SourceType.Application));
   }
 
   @Test
@@ -114,7 +116,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     String warFile = "../shared-test-resources/java-warApp/dummyWarApp.war";
 
-    assertTrue("File " + warFile + " not found.", new File(warFile).exists());
+    assertTrue(new File(warFile).exists(), "File " + warFile + " not found.");
 
     // Get the view
     JavaView view = new JavaView(new JavaClassPathAnalysisInputLocation(warFile));
@@ -182,7 +184,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   void runtimeContains(View view, String classname, String packageName) {
     final ClassType sig = getIdentifierFactory().getClassType(classname, packageName);
-    assertTrue(sig + " is not found in rt.jar", view.getClass(sig).isPresent());
+    assertTrue(view.getClass(sig).isPresent(), sig + " is not found in rt.jar");
   }
 
   @Test
@@ -217,6 +219,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
       }
     }
 
-    assertEquals("User Defined class found, expected none", 0, classes.size());
+    assertEquals( 0, classes.size(), "User Defined class found, expected none");
   }
 }

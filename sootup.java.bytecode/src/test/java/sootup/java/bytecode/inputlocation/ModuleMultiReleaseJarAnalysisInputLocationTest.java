@@ -21,17 +21,15 @@ package sootup.java.bytecode.inputlocation;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import categories.Java9Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
@@ -42,12 +40,17 @@ import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
-@Category(Java9Test.class)
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+
+@Tag(TestCategories.JAVA_9_CATEGORY)
 public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {
   final Path mmrj = Paths.get("../shared-test-resources/multi-release-jar-modular/mrjar.jar");
 
   @Test
-  @Ignore("// FIXME")
+  @Disabled("// FIXME")
   public void modularMultiReleaseJar() {
 
     // TODO: test & create multiple types of input
@@ -87,13 +90,13 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
     ModuleSignature moduleSignature =
         JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
 
-    Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
+    assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
 
-    Assert.assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
+    assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
 
-    Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
+    assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
 
-    Assert.assertEquals(
+    assertEquals(
         "de.upb.swt.multirelease.Utility",
         view_9.getModuleClasses(moduleSignature).stream()
             .findAny()
@@ -102,18 +105,18 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
             .getFullyQualifiedName());
 
     // for java 9
-    Assert.assertEquals(
+    assertEquals(
         "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
         view_9.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
     // different class will be returned if no module is specified
-    Assert.assertEquals(
+    assertEquals(
         "/de/upb/swt/multirelease/Utility.class",
         view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
+    assertEquals(
         "/de/upb/swt/multirelease/Main.class",
         view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
-    Assert.assertTrue(
+    assertTrue(
         view_9
             .getClass(utilityModule)
             .get()
@@ -129,15 +132,15 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
             .contains("java 9"));
 
     // for java 8
-    Assert.assertEquals(
+    assertEquals(
         "/de/upb/swt/multirelease/Utility.class",
         view_8.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
     assertFalse(view_8.getClass(utilityModule).isPresent());
-    Assert.assertEquals(
+    assertEquals(
         "/de/upb/swt/multirelease/Main.class",
         view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
     // assert that method is correctly resolved to base
-    Assert.assertTrue(
+    assertTrue(
         view_8
             .getClass(utilityNoModule)
             .get()
@@ -152,7 +155,7 @@ public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInpu
             .toString()
             .contains("java 8"));
 
-    Assert.assertTrue(
+    assertTrue(
         view_8
             .getClass(utilityNoModule)
             .get()

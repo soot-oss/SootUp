@@ -1,12 +1,12 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -28,8 +28,10 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class UnreachableCodeEliminatorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -177,7 +179,7 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
   }
 

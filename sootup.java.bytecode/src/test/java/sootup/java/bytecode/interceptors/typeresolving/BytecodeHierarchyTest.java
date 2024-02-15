@@ -1,15 +1,15 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
@@ -18,8 +18,12 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class BytecodeHierarchyTest {
 
   private JavaView view;
@@ -115,31 +119,31 @@ public class BytecodeHierarchyTest {
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
 
     // tests
-    Assert.assertTrue(hierarchy.isAncestor(double_class1, double_class2));
-    Assert.assertFalse(hierarchy.isAncestor(double_class1, double_prim));
-    Assert.assertTrue(hierarchy.isAncestor(int_prim, bt));
-    Assert.assertFalse(hierarchy.isAncestor(double_prim, int_prim));
-    Assert.assertFalse(hierarchy.isAncestor(bt, double_prim));
-    Assert.assertFalse(hierarchy.isAncestor(bt, double_class1));
-    Assert.assertTrue(hierarchy.isAncestor(nullType, bt));
-    Assert.assertFalse(hierarchy.isAncestor(bt, nullType));
-    Assert.assertTrue(hierarchy.isAncestor(int_class, nullType));
-    Assert.assertFalse(hierarchy.isAncestor(object, double_prim));
-    Assert.assertTrue(hierarchy.isAncestor(rootInterface1, class1));
-    Assert.assertTrue(hierarchy.isAncestor(rootInterface1, class2));
-    Assert.assertTrue(hierarchy.isAncestor(rootInterface2, class4));
-    Assert.assertFalse(hierarchy.isAncestor(rootInterface2, class1));
-    Assert.assertTrue(hierarchy.isAncestor(object, rootInterface1));
-    Assert.assertTrue(hierarchy.isAncestor(object, class1AArr));
-    Assert.assertTrue(hierarchy.isAncestor(serializable, class1AArr));
-    Assert.assertTrue(hierarchy.isAncestor(cloneable, class1AArr));
-    Assert.assertFalse(hierarchy.isAncestor(class1AArr, object));
-    Assert.assertTrue(hierarchy.isAncestor(seriArr, doubleArr));
-    Assert.assertTrue(hierarchy.isAncestor(class1AArr, class2AArr));
-    Assert.assertFalse(hierarchy.isAncestor(class2AArr, class1AArr));
-    Assert.assertTrue(hierarchy.isAncestor(seriArr, class1AArr));
-    Assert.assertTrue(hierarchy.isAncestor(objArr, class2AArr));
-    Assert.assertFalse(hierarchy.isAncestor(seriArr, class3Arr));
+    assertTrue(hierarchy.isAncestor(double_class1, double_class2));
+    assertFalse(hierarchy.isAncestor(double_class1, double_prim));
+    assertTrue(hierarchy.isAncestor(int_prim, bt));
+    assertFalse(hierarchy.isAncestor(double_prim, int_prim));
+    assertFalse(hierarchy.isAncestor(bt, double_prim));
+    assertFalse(hierarchy.isAncestor(bt, double_class1));
+    assertTrue(hierarchy.isAncestor(nullType, bt));
+    assertFalse(hierarchy.isAncestor(bt, nullType));
+    assertTrue(hierarchy.isAncestor(int_class, nullType));
+    assertFalse(hierarchy.isAncestor(object, double_prim));
+    assertTrue(hierarchy.isAncestor(rootInterface1, class1));
+    assertTrue(hierarchy.isAncestor(rootInterface1, class2));
+    assertTrue(hierarchy.isAncestor(rootInterface2, class4));
+    assertFalse(hierarchy.isAncestor(rootInterface2, class1));
+    assertTrue(hierarchy.isAncestor(object, rootInterface1));
+    assertTrue(hierarchy.isAncestor(object, class1AArr));
+    assertTrue(hierarchy.isAncestor(serializable, class1AArr));
+    assertTrue(hierarchy.isAncestor(cloneable, class1AArr));
+    assertFalse(hierarchy.isAncestor(class1AArr, object));
+    assertTrue(hierarchy.isAncestor(seriArr, doubleArr));
+    assertTrue(hierarchy.isAncestor(class1AArr, class2AArr));
+    assertFalse(hierarchy.isAncestor(class2AArr, class1AArr));
+    assertTrue(hierarchy.isAncestor(seriArr, class1AArr));
+    assertTrue(hierarchy.isAncestor(objArr, class2AArr));
+    assertFalse(hierarchy.isAncestor(seriArr, class3Arr));
   }
 
   @Test
@@ -151,54 +155,54 @@ public class BytecodeHierarchyTest {
     // tests
     Collection<Type> actualSet = hierarchy.getLeastCommonAncestor(double_prim, int_prim);
     Collection<Type> expectedSet = Collections.emptySet();
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, class1);
     expectedSet = Collections.singleton(rootInterface1);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(double_class1, int_class);
     expectedSet = ImmutableUtils.immutableSet(number, comparable);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, rootInterface2);
     expectedSet = Collections.singleton(object);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(intArr_prim, doubleArr_prim);
     expectedSet = ImmutableUtils.immutableSet(object, serializable, cloneable);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class1AArr, class3Arr);
     expectedSet = ImmutableUtils.immutableSet(objArr);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class1AArr, class2AArr);
     expectedSet = ImmutableUtils.immutableSet(class1AArr);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class3Arr, class4Arr);
     expectedSet = Collections.singleton(class2Arr);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class4, class4Arr);
     expectedSet = ImmutableUtils.immutableSet(serializable, cloneable);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class2, class4Arr);
     expectedSet = Collections.singleton(object);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(class2, class4Arr);
     expectedSet = Collections.singleton(object);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(short_prim, byte_prim);
     expectedSet = Collections.singleton(int_prim);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(shortArr, byteArr);
     expectedSet = ImmutableUtils.immutableSet(object, serializable, cloneable);
-    Assert.assertEquals(expectedSet, actualSet);
+    assertEquals(expectedSet, actualSet);
   }
 }

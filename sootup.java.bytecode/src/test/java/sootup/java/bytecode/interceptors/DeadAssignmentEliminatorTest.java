@@ -1,9 +1,9 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
 
 import java.util.*;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -20,6 +20,8 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DeadAssignmentEliminatorTest {
 

@@ -1,6 +1,11 @@
 package sootup.core.util.printer;
 
+
 import com.google.common.base.Objects;
+import java.util.Collections;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;

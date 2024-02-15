@@ -1,11 +1,9 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.Jimple;
@@ -30,6 +28,9 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AggregatorTest {
 
@@ -190,7 +191,7 @@ public class AggregatorTest {
     JavaView view = new JavaView(inputLocation);
 
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
-    Assert.assertTrue(view.getClass(classType).isPresent());
+    assertTrue(view.getClass(classType).isPresent());
 
     for (JavaSootMethod javaSootMethod :
         view.getClasses().stream().findFirst().get().getMethods()) {

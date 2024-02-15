@@ -1,21 +1,24 @@
 package sootup.java.bytecode.inputlocation;
 
-import static org.junit.Assert.*;
 
-import categories.Java9Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import categories.TestCategories;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /** @author Andreas Dann, Markus Schmidt */
-@Category(Java9Test.class)
+@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JrtFileSystemAnalysisInputLocationTest {
 
   @Test
