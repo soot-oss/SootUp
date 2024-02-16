@@ -45,16 +45,12 @@ public class EvalCdg {
 
       for (Path binFile : binFiles) {
         String baseName = extractBaseName(binFile);
-        Path jarFile = Paths.get(SOOTUP_DIR, baseName + ".jar");
+        Path targetDir = Paths.get(SOOTUP_DIR, baseName);
 
-        if (Files.exists(jarFile)) {
+        // if (!baseName.startsWith("lombok")) continue;
 
-          // long fileSizeInBytes = Files.size(jarFile);
-          // if (fileSizeInBytes > 500 * 1024) continue; // Todo: remove this limit
-
-          if (!baseName.startsWith("lombok")) continue;
-
-          processFilePair(binFile, jarFile);
+        if (Files.exists(targetDir) && Files.isDirectory(targetDir)) {
+          processFilePair(binFile, targetDir);
         }
       }
     } catch (IOException e) {
@@ -62,16 +58,15 @@ public class EvalCdg {
     }
   }
 
-  private static void processFilePair(Path binFile, Path jarFile) {
-    System.out.println("Processing: " + jarFile);
+  private static void processFilePair(Path binFile, Path targetDir) {
+    System.out.println("Processing: " + targetDir);
     Map<String, Object> result = new HashMap<>();
     long startTime = System.currentTimeMillis();
 
     try {
       String cpgPath = binFile.toString();
-      String sourceCodeDirPath = jarFile.toString();
 
-      SootUpCdgGenerator sootUpCdgGenerator = new SootUpCdgGenerator(sourceCodeDirPath);
+      SootUpCdgGenerator sootUpCdgGenerator = new SootUpCdgGenerator(targetDir);
       JoernCdgGenerator joernCdgGenerator = new JoernCdgGenerator(cpgPath);
       CdgPropertyGraphComparer comparer =
           new CdgPropertyGraphComparer(joernCdgGenerator, sootUpCdgGenerator);

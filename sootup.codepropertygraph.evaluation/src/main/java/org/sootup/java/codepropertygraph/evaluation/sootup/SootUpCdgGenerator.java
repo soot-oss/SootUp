@@ -1,5 +1,6 @@
 package org.sootup.java.codepropertygraph.evaluation.sootup;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.sootup.java.codepropertygraph.evaluation.DynamicInvokeNormalizer;
@@ -9,22 +10,21 @@ import org.sootup.java.codepropertygraph.evaluation.SpecialInvokeNormalizer;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.codepropertygraph.MethodInfo;
 import sootup.java.codepropertygraph.cfg.CfgCreator;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraphEdge;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraphNode;
-import sootup.java.core.views.JavaView;
+import sootup.jimple.parser.JimpleAnalysisInputLocation;
+import sootup.jimple.parser.JimpleView;
 
 public class SootUpCdgGenerator {
   private final Map<String, SootMethod> methods = new HashMap<>();
 
-  public SootUpCdgGenerator(String sourceCodeDirPath) {
+  public SootUpCdgGenerator(Path sourceCodeDirPath) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
-        new JavaClassPathAnalysisInputLocation(
+        new JimpleAnalysisInputLocation(
             sourceCodeDirPath,
             null,
             Arrays.asList(
@@ -34,7 +34,7 @@ public class SootUpCdgGenerator {
                 new DynamicInvokeNormalizer(),
                 new SpecialInvokeNormalizer(),
                 new InterfaceInvokeNormalizer())));
-    View view = new JavaView(inputLocations);
+    JimpleView view = new JimpleView(inputLocations);
 
     view.getClasses()
         .forEach(cl -> cl.getMethods().forEach(m -> methods.put(getMethodSignatureAsJoern(m), m)));

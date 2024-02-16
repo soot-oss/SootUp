@@ -36,8 +36,16 @@
             <artifactId>jimple2cpg_2.13</artifactId>
             <version>1.2.35</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.jimple.parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>soot</artifactId>
+            <version>4.4.1</version>
+        </dependency>
     </dependencies>
 
 

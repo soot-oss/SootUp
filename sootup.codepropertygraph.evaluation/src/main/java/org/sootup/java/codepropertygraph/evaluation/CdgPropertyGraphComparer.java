@@ -45,6 +45,9 @@ public class CdgPropertyGraphComparer {
 
       String a = e.getSource().getName();
       String b = e.getDestination().getName();
+      if (a.startsWith("goto ")) a = "goto";
+      if (b.startsWith("goto ")) b = "goto";
+
       String s1 = String.format("%s -> %s", a, b);
       s1 = s1.replace("\\\"", "").replace("'", "");
       s1 = s1.replaceAll("\\$stack\\d+", "\\$stack");
@@ -56,6 +59,8 @@ public class CdgPropertyGraphComparer {
 
         String c = otherE.getSource().getName();
         String d = otherE.getDestination().getName();
+        if (c.startsWith("goto ")) c = "goto";
+        if (d.startsWith("goto ")) d = "goto";
 
         String s2 = String.format("%s -> %s", c, d);
 
@@ -65,6 +70,16 @@ public class CdgPropertyGraphComparer {
         s2 =
             s2.replaceAll(
                 "\\$stack\\d+", "\\$stack"); // Todo: Rename stack variables in a more accurate way
+
+        s1 = s1.replace("specialinvoke", "virtualinvoke");
+        s1 = s1.replace("interfaceinvoke", "virtualinvoke");
+        s1 = s1.replace("dynamicinvoke", "virtualinvoke");
+        s1 = s1.replaceAll("#\\d+", "");
+
+        s2 = s2.replace("specialinvoke", "virtualinvoke");
+        s2 = s2.replace("interfaceinvoke", "virtualinvoke");
+        s2 = s2.replace("dynamicinvoke", "virtualinvoke");
+        s2 = s2.replaceAll("#\\d+", "");
 
         if (s1.equals(s2)) {
           // throw new RuntimeException("Should be equal !!!!!!!!!!!!!");

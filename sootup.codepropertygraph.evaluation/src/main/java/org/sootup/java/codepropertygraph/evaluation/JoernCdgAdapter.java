@@ -276,7 +276,8 @@ public class JoernCdgAdapter {
 
     if (call.methodFullName().equals("<operator>.throw")) {
       return new JThrowStmt(
-          new Local("e", getNodeType(call.typeFullName())), getNodePositionInfo(call));
+          new Local(call.astOut().next().code(), getNodeType(call.typeFullName())),
+          getNodePositionInfo(call));
     }
 
     Value exprCall = evaluateCallExpr(call);
@@ -347,7 +348,7 @@ public class JoernCdgAdapter {
         return BooleanConstant.getInstance(Boolean.parseBoolean(constStr));
       case "java.lang.String":
         return new StringConstant(
-            constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
+                constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
       case "null":
         return NullConstant.getInstance();
       default:
