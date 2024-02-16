@@ -2,7 +2,10 @@
   {
     "version": "migrateJunit_preview",
     "title": "PR Preview migrateJunit",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
