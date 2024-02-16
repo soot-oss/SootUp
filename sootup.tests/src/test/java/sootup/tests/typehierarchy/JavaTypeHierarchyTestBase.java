@@ -15,7 +15,7 @@ public abstract class JavaTypeHierarchyTestBase {
 
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-  private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
+  private String className = "";
   private AnalysisInputLocation srcCode;
   private JavaView view;
 
@@ -23,7 +23,7 @@ public abstract class JavaTypeHierarchyTestBase {
   protected void setupTest() {
     String prevClassName = getClassName();
 
-    setClassName(extractClassName(this.getClassName()));
+    setClassName(extractClassName(this.getClass().getSimpleName()));
 
     if (!prevClassName.equals(getClassName())) {
       srcCode =

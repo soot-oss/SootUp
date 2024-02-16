@@ -19,7 +19,6 @@ import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 @Tag("Java8")
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
-  ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"
@@ -27,7 +26,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassExtendsObject() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
+        getView().getTypeHierarchy().superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
   }
 
   /**
@@ -37,7 +36,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testObjectIsSuperclassOfSuperClass() {
     Set<ClassType> subClassSet = new HashSet<ClassType>();
-    subClassSet = typeHierarchy.subclassesOf(getClassType("java.lang.Object"));
+    subClassSet = getView().getTypeHierarchy().subclassesOf(getClassType("java.lang.Object"));
     assertTrue(subClassSet.contains(getClassType("SuperClass")));
     assertTrue(subClassSet.contains(getClassType("ClassInheritanceWithAdditionalMethod")));
   }
@@ -46,7 +45,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testClassInheritanceClassExtendsSuperClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView().getTypeHierarchy().superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
@@ -54,7 +53,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassIsSuperclassOfClassInheritanceClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView().getTypeHierarchy().superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
