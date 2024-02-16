@@ -2,6 +2,7 @@ package sootup.java.codepropertygraph.cdg;
 
 import java.util.*;
 import sootup.core.graph.BasicBlock;
+import sootup.core.graph.DominanceFinder;
 import sootup.core.graph.PostDominanceFinder;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -17,6 +18,7 @@ public class CdgCreator {
     PropertyGraph cdgGraph = new PropertyGraph();
     StmtGraph<?> stmtGraph = methodInfo.getStmtGraph();
 
+    DominanceFinder dominanceFinder = new DominanceFinder(stmtGraph);
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
 
     Iterator<BasicBlock<?>> iterator = stmtGraph.getBlockIterator();
