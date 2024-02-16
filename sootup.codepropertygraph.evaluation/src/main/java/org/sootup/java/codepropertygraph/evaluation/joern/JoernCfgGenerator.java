@@ -25,7 +25,7 @@ public class JoernCfgGenerator {
         .forEachRemaining(
             node -> {
               Method method = (Method) node;
-              String methodName = method.fullName();
+              String methodName = method.fullName().replace("'", "");
               methods.put(methodName, method);
             });
   }

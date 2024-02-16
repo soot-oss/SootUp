@@ -29,7 +29,7 @@ public class SootUpCfgGenerator {
             sourceCodeDirPath,
             null,
             Arrays.asList(
-                new UnreachableCodeEliminator(),
+                // new UnreachableCodeEliminator(),
                 // new LocalSplitter(),
                 new HashSuffixEliminator(),
                 new DynamicInvokeNormalizer(),
@@ -69,6 +69,10 @@ public class SootUpCfgGenerator {
                 .map(Object::toString)
                 .collect(Collectors.joining(",")));
 
-    return String.format("%s.%s:%s%s", className, methodName, methodReturnType, methodParams);
+    String methodSignatureAsJoern =
+        String.format("%s.%s:%s%s", className, methodName, methodReturnType, methodParams);
+    methodSignatureAsJoern = methodSignatureAsJoern.replace("'", "");
+
+    return methodSignatureAsJoern;
   }
 }

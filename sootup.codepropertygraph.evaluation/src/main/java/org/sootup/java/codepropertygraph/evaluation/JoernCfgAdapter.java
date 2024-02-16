@@ -3,14 +3,12 @@ package org.sootup.java.codepropertygraph.evaluation;
 import io.shiftleft.codepropertygraph.generated.nodes.*;
 import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Edge;
 import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Graph;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.sootup.java.codepropertygraph.evaluation.joern.JoernCfgGenerator;
 import scala.Option;
 import scala.collection.Iterator;
+import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.*;
@@ -19,6 +17,9 @@ import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import sootup.core.model.Body;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -33,18 +34,25 @@ import sootup.java.core.types.JavaClassType;
 
 public class JoernCfgAdapter {
   private final JoernCfgGenerator joernCfgGenerator;
+  private Map<Stmt, StmtPositionInfo> gotoStmtTargets = new HashMap<>();
 
   public JoernCfgAdapter(JoernCfgGenerator joernCfgGenerator) {
     this.joernCfgGenerator = joernCfgGenerator;
   }
 
-  public PropertyGraph getCfg(Graph joernCfg, Graph joernAst) {
+  public PropertyGraph getCfg(Graph joernCfg) {
+    gotoStmtTargets = new HashMap<>();
+
     // thisClassType = new ClassConstant(joernCfg.vertices().)
-    Method thisMethod =
-        (Method) joernCfg.vertices().filter(v -> v.label().equals("METHOD")).toIterator().next();
-    TypeDecl thisClass = thisMethod._typeDeclViaAstIn().get();
+    // Method thisMethod =
+    // (Method) joernCfg.vertices().filter(v -> v.label().equals("METHOD")).toIterator().next();
+    // TypeDecl thisClass = thisMethod._typeDeclViaAstIn().get();
 
     PropertyGraph cfgGraph = new PropertyGraph();
+
+    List<Stmt> stmts = new ArrayList<>();
+    List<Stmt[]> edges = new ArrayList<>();
+    MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     for (Edge edge : joernCfgGenerator.getGraphEdges(joernCfg)) {
       StoredNode joernEdgeSrc = edge.src();
@@ -66,8 +74,12 @@ public class JoernCfgAdapter {
         }
       }
 
-      PropertyGraphNode src = getSootUpNode(joernEdgeSrc, joernAst, thisClass);
-      PropertyGraphNode dst = getSootUpNode(joernEdgeDst, joernAst, thisClass);
+      Stmt src = getSootUpNode(joernEdgeSrc);
+      Stmt dst = getSootUpNode(joernEdgeDst);
+
+      if (!stmts.contains(src)) stmts.add(src);
+      if (!stmts.contains(dst)) stmts.add(dst);
+      edges.add(new Stmt[] {src, dst});
 
       /*if (joernEdgeSrc instanceof Unknown
       && src.getName().startsWith("goto")
@@ -93,18 +105,92 @@ public class JoernCfgAdapter {
               + joernEdgeDst.toMap().get("CODE").get());
       System.out.println(
           "\t"
-              + String.format("%-60s", (src != null ? src.getName() : null))
+              + String.format("%-60s", (src != null ? src.toString() : null))
               + "   ====>   "
-              + (dst != null ? dst.getName() : null));
+              + (dst != null ? dst.toString() : null));
       System.out.println("\t" + String.join("", Collections.nCopies(100, "-")));
 
-      cfgGraph.addEdge(new PropertyGraphEdge(src, dst, "CFG"));
+      // cfgGraph.addEdge(new PropertyGraphEdge(src, dst, "CFG"));
+    }
+
+    Map<Stmt, Integer> counts = new HashMap<>();
+    for (Stmt stmt : stmts) {
+      counts.put(stmt, 0);
+    }
+
+    for (Stmt[] edge : edges) {
+      Stmt source = edge[0];
+      if (source instanceof JGotoStmt) {
+        BranchingStmt branchingStmt = (BranchingStmt) source;
+        graph.putEdge(branchingStmt, 0, edge[1]);
+      } else if (source instanceof JIfStmt) {
+        int count = counts.get(source);
+        graph.putEdge((BranchingStmt) source, count, edge[1]);
+        counts.put(source, count + 1);
+      } else if (source instanceof JThrowStmt) {
+
+      } else {
+        graph.putEdge((FallsThroughStmt) source, edge[1]);
+      }
+    }
+
+    Body.BodyBuilder builder = Body.builder(new MutableBlockStmtGraph(graph));
+
+    Set<Local> locals = new HashSet<>();
+    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
+      for (Value value : stmt.getUsesAndDefs()) {
+        if (value instanceof Local) {
+          Local local = (Local) value;
+          locals.add(local);
+        }
+      }
+    }
+    builder.setLocals(locals);
+
+    // new LocalRenamer().interceptBody(builder, null);
+    new CustomCastAndReturnInliner().interceptBody(builder, null);
+    new HashSuffixEliminator().interceptBody(builder, null);
+    new DynamicInvokeNormalizer().interceptBody(builder, null);
+    new SpecialInvokeNormalizer().interceptBody(builder, null);
+    new InterfaceInvokeNormalizer().interceptBody(builder, null);
+
+    for (Stmt stmt : builder.getStmts()) {
+      for (Stmt successor : builder.getStmtGraph().getAllSuccessors(stmt)) {
+        String srcName, dstName;
+        if (stmt instanceof JGotoStmt) {
+          srcName = "goto " + gotoStmtTargets.get(stmt).getStmtPosition().getFirstLine();
+        } else {
+          srcName = stmt.toString();
+        }
+
+        if (successor instanceof JGotoStmt) {
+          dstName = "goto " + gotoStmtTargets.get(successor).getStmtPosition().getFirstLine();
+        } else {
+          dstName = successor.toString();
+        }
+
+        srcName = srcName.replace("\\\"", "");
+        srcName = srcName.replace("\\'", "");
+        srcName = srcName.replace("\\\\", "\\");
+
+        dstName = dstName.replace("\\\"", "");
+        dstName = dstName.replace("\\'", "");
+        dstName = dstName.replace("\\\\", "\\");
+
+        PropertyGraphEdge edge =
+            new PropertyGraphEdge(
+                new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo()),
+                new StmtPropertyGraphNode(dstName, NodeType.STMT, successor.getPositionInfo()),
+                "CFG");
+        cfgGraph.addEdge(edge);
+        System.out.println("### " + srcName + " -> " + dstName);
+      }
     }
 
     return cfgGraph;
   }
 
-  private PropertyGraphNode getSootUpNode(StoredNode node, Graph astGraph, TypeDecl thisClass) {
+  private Stmt getSootUpNode(StoredNode node) {
 
     Stmt stmt;
     if (node instanceof Call) {
@@ -112,35 +198,51 @@ public class JoernCfgAdapter {
     } else if (node instanceof Return) {
       stmt = evaluateReturn((Return) node);
     } else if (isGotoStatement(node)) {
-      stmt = new JGotoStmt(getGotoStmtTarget((Unknown) node));
+      stmt = new JGotoStmt(getNodePositionInfo((CfgNode) node));
+      gotoStmtTargets.put(stmt, getGotoStmtTarget((Unknown) node));
+    } else if (isEnterMonitorStatement(node)) {
+      stmt =
+          new JEnterMonitorStmt(
+              (Immediate) evaluateExpr((Expression) node._astOut().next()),
+              getNodePositionInfo((CfgNode) node));
+    } else if (isExitMonitorStatement(node)) {
+      stmt =
+          new JExitMonitorStmt(
+              (Immediate) evaluateExpr((Expression) node._astOut().next()),
+              getNodePositionInfo((CfgNode) node));
     } else {
       stmt =
           new JAssignStmt(
               new Local("notImplemented", PrimitiveType.getInt()),
               IntConstant.getInstance(1),
-              StmtPositionInfo.createNoStmtPositionInfo());
+              StmtPositionInfo.getNoStmtPositionInfo());
     }
 
-    if (stmt instanceof JGotoStmt) {
-      JGotoStmt gotoStmt = (JGotoStmt) stmt;
-      return new StmtPropertyGraphNode(
-          gotoStmt + " " + gotoStmt.getPositionInfo().getStmtPosition().getFirstLine(),
-          NodeType.STMT,
-          stmt.getPositionInfo());
-    }
-    return new StmtPropertyGraphNode(stmt.toString(), NodeType.STMT, stmt.getPositionInfo());
+    /*if (stmt instanceof JGotoStmt) {
+      gotoStmtTargets.put(stmt, stmt.getPositionInfo());
+      return new JGotoStmt(stmt.getPositionInfo());
+    }*/
+    return stmt;
   }
 
   private StmtPositionInfo getGotoStmtTarget(Unknown node) {
     try {
       return new SimpleStmtPositionInfo(Integer.parseInt(node.code().split(" ")[1]));
     } catch (NumberFormatException e) {
-      return StmtPositionInfo.createNoStmtPositionInfo();
+      return StmtPositionInfo.getNoStmtPositionInfo();
     }
   }
 
   private boolean isGotoStatement(StoredNode node) {
     return node instanceof Unknown && ((Unknown) node).code().startsWith("goto");
+  }
+
+  private boolean isEnterMonitorStatement(StoredNode node) {
+    return node instanceof Unknown && ((Unknown) node).code().startsWith("entermonitor");
+  }
+
+  private boolean isExitMonitorStatement(StoredNode node) {
+    return node instanceof Unknown && ((Unknown) node).code().startsWith("exitmonitor");
   }
 
   private Stmt evaluateReturn(Return node) {
@@ -158,7 +260,7 @@ public class JoernCfgAdapter {
     if (lineNumberOpt.nonEmpty()) {
       stmtPosition = new SimpleStmtPositionInfo(node.lineNumber().get());
     } else {
-      stmtPosition = StmtPositionInfo.createNoStmtPositionInfo();
+      stmtPosition = StmtPositionInfo.getNoStmtPositionInfo();
     }
     return stmtPosition;
   }
@@ -225,28 +327,30 @@ public class JoernCfgAdapter {
         }
         return LongConstant.getInstance(Long.parseLong(constStr));
       case "double":
-        if ("#NaN".equals(constStr)) {
-          constStr = "NaN";
+        if (constStr.startsWith("#")) {
+          constStr = constStr.substring(1);
         }
         return DoubleConstant.getInstance(Double.parseDouble(constStr));
       case "float":
-        if ("#NaNF".equals(constStr)) {
-          constStr = "NaN";
+        if (constStr.endsWith("F")) {
+          constStr = constStr.substring(0, constStr.length() - 1);
+        }
+        if (constStr.startsWith("#")) {
+          constStr = constStr.substring(1);
         }
         return FloatConstant.getInstance(Float.parseFloat(constStr));
       case "boolean":
         return BooleanConstant.getInstance(Boolean.parseBoolean(constStr));
       case "java.lang.String":
         return new StringConstant(
-            constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
+                constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
       case "null":
         return NullConstant.getInstance();
       default:
         if (typeFullName.equals("java.lang.Class")) {
           constStr = constStr.substring(0, constStr.length() - ".class".length());
-          return new ClassConstant(constStr.replace(".", "/"), getNodeType(typeFullName));
         }
-        throw new RuntimeException("Unknown constant type: " + typeFullName);
+        return new ClassConstant(constStr.replace(".", "/"), getNodeType(typeFullName));
     }
   }
 
@@ -319,7 +423,6 @@ public class JoernCfgAdapter {
             (Local) evaluateExpr(referencedObject), methodSignature, args);
       }*/
       return new JVirtualInvokeExpr((Local) evaluateExpr(referencedObject), methodSignature, args);
-
     }
 
     MethodDetails methodDetails = MethodSignatureParser.parseMethodSignature(call.methodFullName());
@@ -406,9 +509,11 @@ public class JoernCfgAdapter {
         Type callType = getNodeType(call.typeFullName());
         if (callType instanceof ArrayType) {
           Value size = evaluateExpr(call.astOut().next());
-          return new JNewArrayExpr(callType, (Immediate) size, JavaIdentifierFactory.getInstance());
+          Type arrElemType = getNodeType(call.typeFullName().replace("[]", ""));
+          return new JNewArrayExpr(
+              arrElemType, (Immediate) size, JavaIdentifierFactory.getInstance());
         }
-        return new JNewExpr((ClassType) getNodeType(call.typeFullName()));
+        return new JNewExpr((ClassType) callType);
       case "<operator>.cast":
         TypeRef castType = (TypeRef) astOut.next();
         Immediate castedValue = (Immediate) evaluateExpr(astOut.next());
@@ -497,8 +602,8 @@ public class JoernCfgAdapter {
     throw new RuntimeException("Unknown operation: " + call.code());
   }
 
-  private sootup.core.types.Type getNodeType(String typeStr) {
-      switch (typeStr) {
+  private Type getNodeType(String typeStr) {
+    switch (typeStr) {
       case "byte":
         return PrimitiveType.getByte();
       case "int":

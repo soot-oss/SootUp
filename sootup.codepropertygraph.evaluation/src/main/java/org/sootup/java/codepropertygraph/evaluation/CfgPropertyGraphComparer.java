@@ -1,6 +1,5 @@
 package org.sootup.java.codepropertygraph.evaluation;
 
-import io.shiftleft.codepropertygraph.generated.nodes.*;
 import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Graph;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import org.sootup.java.codepropertygraph.evaluation.sootup.SootUpCfgGenerator;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraphEdge;
 
-public class PropertyGraphComparer {
+public class CfgPropertyGraphComparer {
   private final JoernCfgGenerator joernCfgGenerator;
   private final SootUpCfgGenerator sootUpCfgGenerator;
   private final JoernCfgAdapter joernCfgAdapter;
@@ -19,7 +18,7 @@ public class PropertyGraphComparer {
   private int totalDiffEdges;
   private int totalMethods;
 
-  public PropertyGraphComparer(
+  public CfgPropertyGraphComparer(
       JoernCfgGenerator joernCfgGenerator, SootUpCfgGenerator sootUpCfgGenerator) {
     this.joernCfgGenerator = joernCfgGenerator;
     this.sootUpCfgGenerator = sootUpCfgGenerator;
@@ -27,9 +26,9 @@ public class PropertyGraphComparer {
     this.sootUpCfgAdapter = new SootUpCfgAdapter(sootUpCfgGenerator);
   }
 
-  public boolean compareCfg(Graph joernCfg, Graph joernAst, PropertyGraph sootUpCfg) {
+  public boolean compareCfg(Graph joernCfg, PropertyGraph sootUpCfg, String methodFullName) {
 
-    PropertyGraph joernPropertyGraph = joernCfgAdapter.getCfg(joernCfg, joernAst);
+    PropertyGraph joernPropertyGraph = joernCfgAdapter.getCfg(joernCfg);
     PropertyGraph sootUpPropertyGraph = sootUpCfgAdapter.getCfg(sootUpCfg);
 
     totalMethods++;
@@ -102,6 +101,7 @@ public class PropertyGraphComparer {
     sootUpPropertyGraph.getNodes().forEach(n -> System.out.println(n.getName()));
     System.out.println("********************************************************");
 
+    System.out.println("Method name               : " + methodFullName);
     System.out.println("Number of edges (SootUp)  : " + sootUpPropertyGraph.getEdges().size());
     System.out.println("Number of edges (Joern)   : " + joernPropertyGraph.getEdges().size());
     System.out.println("Different edges           : " + diffEdgesCount);
