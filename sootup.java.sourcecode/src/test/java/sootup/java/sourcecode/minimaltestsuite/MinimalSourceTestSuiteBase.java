@@ -96,7 +96,6 @@ public abstract class MinimalSourceTestSuiteBase {
   }
 
   public JavaSootClass loadClass(ClassType clazz) {
-    System.out.println(clazz);
     Optional<JavaSootClass> cs = javaView.getClass(clazz);
     assertTrue(cs.isPresent(), "no matching class signature found");
     return cs.get();

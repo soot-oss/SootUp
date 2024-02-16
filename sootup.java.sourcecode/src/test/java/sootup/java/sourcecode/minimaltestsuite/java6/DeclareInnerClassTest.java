@@ -16,10 +16,6 @@ import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 @Tag("Java8")
 public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
 
-  final JavaClassType innerClassType =
-      JavaIdentifierFactory.getInstance()
-          .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
-
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -28,7 +24,7 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-        innerClassType, "methodDisplayInner", "void", Collections.emptyList());
+        identifierFactory.getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass"), "methodDisplayInner", "void", Collections.emptyList());
   }
 
   @Test

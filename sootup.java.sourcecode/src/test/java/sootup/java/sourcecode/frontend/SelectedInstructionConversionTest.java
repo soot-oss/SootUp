@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -94,7 +93,7 @@ public class SelectedInstructionConversionTest {
   // TODO This test should not be ignored
   //  https://github.com/secure-software-engineering/soot-reloaded/issues/108
   @Test
-  @Ignore
+  @Disabled
   public void test3() {
     declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m =
@@ -187,7 +186,7 @@ public class SelectedInstructionConversionTest {
     assertEquals(expectedStmts, actualStmts);
   }
 
-  @Ignore
+  @Disabled
   public void test6() {
     // TODO The Jimple here is probably incorrect, but complicated to test for.
     //   Likely issues:
@@ -424,7 +423,7 @@ public class SelectedInstructionConversionTest {
     Utils.print(method, false);
   }
 
-  @Ignore
+  @Disabled
   public void testGetCaughtExceptionInstruction() {
     declareClassSig = identifierFactory.getClassType("Exception1");
     Optional<SootMethod> m =
