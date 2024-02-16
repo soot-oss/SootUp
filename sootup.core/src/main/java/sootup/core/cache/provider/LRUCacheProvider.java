@@ -36,7 +36,9 @@ public class LRUCacheProvider implements ClassCacheProvider {
 
   /** Create a new LRUCacheProvider that returns a {@link LRUCache} with the specified size. */
   public LRUCacheProvider(int cacheSize) {
-    if (cacheSize < 1) throw new IllegalArgumentException("Cache size has to be at least 1");
+    if (cacheSize < 1) {
+      throw new IllegalArgumentException("Cache size has to be at least 1");
+    }
     this.cacheSize = cacheSize;
   }
 

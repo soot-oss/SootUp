@@ -45,9 +45,13 @@ public class HierarchyComparator implements Comparator<ClassType> {
   @Override
   public int compare(ClassType classType1, ClassType classType2) {
     // classType1 is a subclass type of classType2
-    if (typeHierarchy.isSubtype(classType2, classType1)) return -1;
+    if (typeHierarchy.isSubtype(classType2, classType1)) {
+      return -1;
+    }
     // classType1 is a subclass type of classType2
-    if (typeHierarchy.isSubtype(classType1, classType2)) return 1;
+    if (typeHierarchy.isSubtype(classType1, classType2)) {
+      return 1;
+    }
     // classType1 and classType2 are on the same hierarchy level
     return 0;
   }

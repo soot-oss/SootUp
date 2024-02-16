@@ -121,8 +121,12 @@ public final class Trap {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Trap trap = (Trap) o;
     return exception.equals(trap.exception)
         && beginStmt.equals(trap.beginStmt)

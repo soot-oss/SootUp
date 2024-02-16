@@ -169,7 +169,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
     visitedMethods.add(methodSignature);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     // return if the methodSignature is already added to the hashMap to avoid stackoverflow error.
-    if (signatureToStmtGraph.containsKey(methodSignature)) return;
+    if (signatureToStmtGraph.containsKey(methodSignature)) {
+      return;
+    }
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();
       if (sootMethod.hasBody()) {

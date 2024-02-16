@@ -91,7 +91,9 @@ public abstract class SootClassMemberSubSignature {
   protected int compareTo(@Nonnull SootClassMemberSubSignature o) {
     int r = this.getName().compareTo(o.getName());
 
-    if (r != 0) return r;
+    if (r != 0) {
+      return r;
+    }
 
     return this.getType().toString().compareTo(o.getType().toString());
   }
