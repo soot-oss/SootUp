@@ -77,7 +77,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test()
   public void testSingleClassDoesNotExist() {
     Assertions.assertThrows(
-        IllegalAccessError.class,
+        IllegalArgumentException.class,
         () ->
             PathBasedAnalysisInputLocation.create(
                 Paths.get("NonExisting.class"), SourceType.Application));

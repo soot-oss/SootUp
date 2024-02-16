@@ -1,11 +1,11 @@
 package categories;
 
 public enum TestCategories {
-  JAVA_8("java8"),
-  JAVA_9("java9");
+  JAVA_8("Java8"),
+  JAVA_9("Java9");
 
-  public static final String JAVA_8_CATEGORY = "java8";
-  public static final String JAVA_9_CATEGORY = "java9";
+  public static final String JAVA_8_CATEGORY = "Java8";
+  public static final String JAVA_9_CATEGORY = "Java9";
 
   private final String category;
 

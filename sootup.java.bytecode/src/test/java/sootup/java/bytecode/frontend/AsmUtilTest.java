@@ -120,27 +120,27 @@ public class AsmUtilTest {
 
   @Test
   public void testToJimpleTypeUnknownDescriptor() {
-    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("P"));
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("P"));
   }
 
   @Test()
   public void testToJimpleTypeInvalidRefDescriptor() {
-    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("L"));
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("L"));
   }
 
   @Test()
   public void testToJimpleTypeInvalidPrimitiveDescriptor() {
-    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("II"));
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("II"));
   }
 
   @Test()
   public void testToJimpleTypeInvalidVoidDescriptor() {
-    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("VI"));
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("VI"));
   }
 
   @Test()
   public void testToJimpleTypeIncorrectArray() {
-    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("[I[I"));
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("[I[I"));
   }
 
   @Test

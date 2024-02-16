@@ -3,14 +3,15 @@ package sootup.java.bytecode.minimaltestsuite.java6;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.model.Body;
@@ -26,7 +27,7 @@ import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
-@ExtendWith(MinimalBytecodeTestSuiteBase.CustomTestWatcher.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
   // we can only read: RetentionPolicy.RUNTIME annotations
@@ -47,8 +48,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 Collections.emptyMap()),
             new AnnotationUsage(
                 new AnnotationType("OnClass", new PackageName(""), true), annotationParamMap)),
-        sootClass.getAnnotations(
-            Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView())));
+        sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
   }
 
   @Test
@@ -65,9 +65,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("OnField", new PackageName(""), false), annotationParamMap)),
-        agent
-            .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView())));
+        agent.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
   }
 
   @Test
@@ -105,7 +103,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         agent
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -148,7 +146,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         arrayDefault
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -201,7 +199,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         enumDefault
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -245,7 +243,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         enumDefault
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -269,9 +267,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at0, Collections.emptyMap())),
-          someMethod
-              .get()
-              .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
 
     // repeatable by repeating
@@ -297,9 +293,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
-          someMethod
-              .get()
-              .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
 
     // repeatable by using container
@@ -324,9 +318,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
-          someMethod
-              .get()
-              .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
   }
 
@@ -370,7 +362,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         method
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -424,7 +416,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         method
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 
@@ -468,7 +460,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
             .toString(),
         method
             .get()
-            .getAnnotations(Optional.of(CustomTestWatcher.getCustomTestWatcher().getJavaView()))
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
             .toString());
   }
 

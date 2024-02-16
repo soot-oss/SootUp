@@ -10,16 +10,10 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 
 /** @author Kaustubh Kelkar */
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
-
-  final JavaClassType innerClassType =
-      JavaIdentifierFactory.getInstance()
-          .getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass");
 
   @Override
   public MethodSignature getMethodSignature() {
@@ -29,7 +23,11 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-        innerClassType, "methodDisplayInner", "void", Collections.emptyList());
+        identifierFactory.getClassType(
+            getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass"),
+        "methodDisplayInner",
+        "void",
+        Collections.emptyList());
   }
 
   @Test
