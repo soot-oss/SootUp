@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,7 +16,6 @@ import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.UnknownType;
-import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
@@ -66,7 +63,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = new HashSet<>( Arrays.asList( a, b) );
+    Set<Local> locals = new HashSet<>(Arrays.asList(a, b));
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
@@ -93,8 +90,10 @@ public class CastAndReturnInlinerTest {
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
     Assert.assertEquals(2, processedBody.getLocals().size());
-    Assert.assertTrue( processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    Assert.assertTrue( processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
+    Assert.assertTrue(
+        processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
+    Assert.assertTrue(
+        processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
   }
 
   /**
@@ -130,7 +129,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = new HashSet<>( Arrays.asList(a, b));
+    Set<Local> locals = new HashSet<>(Arrays.asList(a, b));
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
