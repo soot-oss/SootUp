@@ -80,7 +80,7 @@ public class JsonAggregator {
     elapsedTimeSummary.addProperty("hours", totalHours);
     summary.add("elapsedTime", elapsedTimeSummary);
 
-    try (FileWriter file = new FileWriter(directoryPath + "/results.json")) {
+    try (FileWriter file = new FileWriter(directoryPath + "/_results.json")) {
       gson.toJson(summary, file);
     }
   }
