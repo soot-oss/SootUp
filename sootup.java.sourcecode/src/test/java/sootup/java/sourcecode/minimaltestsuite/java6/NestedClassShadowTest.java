@@ -27,7 +27,8 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
   /** Test: OuterClass of NestedClass is NestedClassShadow */
   @Test
   public void testOuterClass() {
-    assertEquals(getDeclaredClassSignature(), loadClass(genNestedClassType()).getOuterClass().get());
+    assertEquals(
+        getDeclaredClassSignature(), loadClass(genNestedClassType()).getOuterClass().get());
   }
 
   /** Test: How many Locals with ClassType {@link java.lang.String} */
@@ -69,7 +70,7 @@ public class NestedClassShadowTest extends MinimalSourceTestSuiteBase {
         genNestedClassType(), "printInfo", "void", Collections.singletonList("java.lang.String"));
   }
 
-  private ClassType genNestedClassType(){
+  private ClassType genNestedClassType() {
     return identifierFactory.getClassType(testedClassName + "$NestedClass");
   }
 }

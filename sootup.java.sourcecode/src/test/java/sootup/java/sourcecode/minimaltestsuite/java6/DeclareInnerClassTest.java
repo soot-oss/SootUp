@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
@@ -24,7 +22,11 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getInnerMethodSignature() {
     return identifierFactory.getMethodSignature(
-        identifierFactory.getClassType(getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass"), "methodDisplayInner", "void", Collections.emptyList());
+        identifierFactory.getClassType(
+            getDeclaredClassSignature().getFullyQualifiedName() + "$InnerClass"),
+        "methodDisplayInner",
+        "void",
+        Collections.emptyList());
   }
 
   @Test
