@@ -41,7 +41,6 @@ public class PostDominanceFinder {
   private final ArrayList<Integer>[] pdomFrontiers;
 
   public PostDominanceFinder(StmtGraph<?> blockGraph) {
-
     // we're locked into providing a List<BasicBlock<?>>, not a List<? extends BasicBlock<?>>, so
     // we'll use the block iterator directly (which provides this type) rather than
     // #getBlocksSorted.
@@ -53,7 +52,9 @@ public class PostDominanceFinder {
             .collect(Collectors.toList());
     Collections.reverse(blocks);
 
-    final BasicBlock<?> tailStmtBlock = blockGraph.getBlockOf(blockGraph.getTails().get(0));
+    final MutableBasicBlock syntheticTailStmtBlock = new MutableBasicBlock();
+    blocks.add(0, syntheticTailStmtBlock);
+
     // assign each block a integer id. The tail block must have id 0; rely on
     // getBlocksSorted to have put the tail block first.
     for (int i = 0; i < blocks.size(); i++) {
@@ -73,7 +74,7 @@ public class PostDominanceFinder {
     while (isChanged) {
       isChanged = false;
       for (BasicBlock<?> block : blocks) {
-        if (block.equals(tailStmtBlock)) {
+        if (block.equals(syntheticTailStmtBlock)) {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
@@ -97,7 +98,7 @@ public class PostDominanceFinder {
     }
 
     // initialize domFrontiers
-    pdomFrontiers = new ArrayList[blockGraph.getBlocks().size()];
+    pdomFrontiers = new ArrayList[blockGraph.getBlocks().size() + 1];
     for (int i = 0; i < pdomFrontiers.length; i++) {
       pdomFrontiers[i] = new ArrayList<>();
     }
@@ -145,12 +146,12 @@ public class PostDominanceFinder {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
     }
     int idx = blockToIdx.get(block);
-    Set<BasicBlock<?>> dFs = new HashSet<>();
-    ArrayList<Integer> dFs_idx = this.pdomFrontiers[idx];
-    for (Integer i : dFs_idx) {
-      dFs.add(blocks.get(i));
+    Set<BasicBlock<?>> pdfs = new HashSet<>();
+    ArrayList<Integer> pdfs_idx = this.pdomFrontiers[idx];
+    for (Integer i : pdfs_idx) {
+      pdfs.add(blocks.get(i));
     }
-    return dFs;
+    return pdfs;
   }
 
   @Nonnull
