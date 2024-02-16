@@ -1,10 +1,15 @@
 package sootup.java.bytecode.frontend;
 
-
-import java.nio.file.Paths;
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import categories.TestCategories;
+import java.nio.file.Paths;
+import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,13 +24,6 @@ import sootup.java.core.ModuleInfoAnalysisInputLocation;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModuleViewTest {
@@ -63,8 +61,9 @@ public class JavaModuleViewTest {
     assertTrue(moduleDescriptor.isPresent());
 
     int size = view.getModuleClasses(targetClass.getPackageName().getModuleSignature()).size();
-    assertTrue((size > 5500
-            && size < 6500), "actual: " + size); // ~amount of java.base classes -> depends on java implementation..
+    assertTrue(
+        (size > 5500 && size < 6500),
+        "actual: " + size); // ~amount of java.base classes -> depends on java implementation..
   }
 
   @Test
@@ -780,8 +779,12 @@ public class JavaModuleViewTest {
             .getClassType("BFromModuleButInternal", "pkgbinternal", "modb");
     assertTrue(view.getClass(BFromModuleButInternal).isPresent());
     assertTrue(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
-    assertFalse(view.getClass(cpmain, BFromModuleButInternal).isPresent(), "unnamed module can only access exported packages!");
-    assertFalse(view.getClass(cpb, BFromModuleButInternal).isPresent(),"unnamed module can only access exported packages!");
+    assertFalse(
+        view.getClass(cpmain, BFromModuleButInternal).isPresent(),
+        "unnamed module can only access exported packages!");
+    assertFalse(
+        view.getClass(cpb, BFromModuleButInternal).isPresent(),
+        "unnamed module can only access exported packages!");
   }
 
   @Test

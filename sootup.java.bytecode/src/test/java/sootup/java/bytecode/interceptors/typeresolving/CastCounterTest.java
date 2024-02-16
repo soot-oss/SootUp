@@ -1,13 +1,14 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import categories.TestCategories;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastCounterTest extends TypeAssignerTestSuite {

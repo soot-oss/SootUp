@@ -1,5 +1,10 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
@@ -15,12 +20,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class CallGraphTest {
@@ -71,8 +70,8 @@ public class CallGraphTest {
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
-    assertTrue(cg.containsMethod(mainMethodSignature),
-        mainMethodSignature + " is not found in CallGraph");
+    assertTrue(
+        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
   }
 

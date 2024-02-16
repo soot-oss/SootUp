@@ -1,5 +1,11 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -10,13 +16,6 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Comprises tests that test the behavior of different types of caches. It uses the MiniApp.jar for

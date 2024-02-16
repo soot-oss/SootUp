@@ -1,5 +1,9 @@
 package sootup.core.graph;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -9,12 +13,6 @@ import sootup.core.jimple.common.expr.JAddExpr;
 import sootup.core.jimple.common.expr.JLeExpr;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.types.PrimitiveType;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 @Tag("Java8")
 public class DominanceFinderTest {

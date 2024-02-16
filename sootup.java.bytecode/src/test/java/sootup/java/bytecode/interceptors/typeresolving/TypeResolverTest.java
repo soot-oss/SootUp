@@ -1,13 +1,15 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -22,9 +24,6 @@ import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeResolverTest extends TypeAssignerTestSuite {

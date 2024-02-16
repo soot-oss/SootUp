@@ -1,5 +1,7 @@
 package sootup.java.bytecode;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import categories.TestCategories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -8,8 +10,6 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class Soot1577Test {

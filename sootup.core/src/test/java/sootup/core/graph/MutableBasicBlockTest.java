@@ -1,12 +1,12 @@
 package sootup.core.graph;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MutableBasicBlockTest {
 
@@ -23,9 +23,11 @@ public class MutableBasicBlockTest {
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
 
-    assertThrows(IndexOutOfBoundsException.class, () -> {
-      MutableBasicBlock mutableBasicBlock = block.splitBlockUnlinked(0);
-    });
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          MutableBasicBlock mutableBasicBlock = block.splitBlockUnlinked(0);
+        });
   }
 
   @Test
@@ -138,9 +140,11 @@ public class MutableBasicBlockTest {
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
-    
-    assertThrows(IndexOutOfBoundsException.class, () -> {
-      MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
-    });
+
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
+        });
   }
 }

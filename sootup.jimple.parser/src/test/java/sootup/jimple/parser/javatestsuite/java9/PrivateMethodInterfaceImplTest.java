@@ -1,19 +1,18 @@
 package sootup.jimple.parser.javatestsuite.java9;
 
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
+import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
 @Tag("Java8")

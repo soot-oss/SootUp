@@ -1,18 +1,17 @@
 package sootup.core.jimple.basic;
 
-import java.util.HashSet;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashSet;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class LocalGeneratorTest {
 
-    @Test
+  @Test
   public void testGenerate() {
     final LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
     final Local i0 = localGenerator.generateLocal(PrimitiveType.IntType.getInstance());

@@ -1,5 +1,9 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -12,11 +16,6 @@ import sootup.core.signatures.FieldSignature;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** @author Zun Wang */
 @Tag("Java8")

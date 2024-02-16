@@ -1,19 +1,16 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-
-import categories.Java8Test;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Kaustubh Kelkar */
 @Tag(TestCategories.JAVA_8_CATEGORY)

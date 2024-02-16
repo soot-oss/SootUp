@@ -1,13 +1,13 @@
 package sootup.java.bytecode.minimaltestsuite;
 
+import static org.junit.jupiter.api.Assertions.*;
 
+import categories.TestCategories;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.*;
 import sootup.core.model.Body;
@@ -22,8 +22,6 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @author Markus Schmidt,
  * @author Hasitha Rajapakse
@@ -36,7 +34,8 @@ public abstract class MinimalBytecodeTestSuiteBase {
   static final String baseDir = "../shared-test-resources/miniTestSuite";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-  public static class CustomTestWatcher implements AfterAllCallback, BeforeAllCallback, BeforeEachCallback {
+  public static class CustomTestWatcher
+      implements AfterAllCallback, BeforeAllCallback, BeforeEachCallback {
     private String classPath = MinimalBytecodeTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
 
@@ -47,7 +46,6 @@ public abstract class MinimalBytecodeTestSuiteBase {
     }
 
     /** Load View once for each test directory */
-
     public String getClassPath() {
       return classPath;
     }
@@ -57,14 +55,11 @@ public abstract class MinimalBytecodeTestSuiteBase {
     }
 
     @Override
-    public void afterAll(ExtensionContext extensionContext) throws Exception {
-
-    }
+    public void afterAll(ExtensionContext extensionContext) throws Exception {}
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
       CustomTestWatcher customTestWatcher = new CustomTestWatcher();
-
     }
 
     @Override
@@ -73,14 +68,14 @@ public abstract class MinimalBytecodeTestSuiteBase {
       classPath = extensionContext.getTestClass().get().getName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
         javaView =
-                new JavaView(
-                        new JavaClassPathAnalysisInputLocation(
-                                baseDir
-                                        + File.separator
-                                        + getTestDirectoryName(getClassPath())
-                                        + File.separator
-                                        + "binary"
-                                        + File.separator));
+            new JavaView(
+                new JavaClassPathAnalysisInputLocation(
+                    baseDir
+                        + File.separator
+                        + getTestDirectoryName(getClassPath())
+                        + File.separator
+                        + "binary"
+                        + File.separator));
       }
     }
   }
@@ -119,11 +114,13 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   protected JavaClassType getDeclaredClassSignature() {
-    return identifierFactory.getClassType(getClassName(CustomTestWatcher.getCustomTestWatcher().classPath));
+    return identifierFactory.getClassType(
+        getClassName(CustomTestWatcher.getCustomTestWatcher().classPath));
   }
 
   public JavaSootClass loadClass(ClassType clazz) {
-    Optional<JavaSootClass> cs = CustomTestWatcher.getCustomTestWatcher().getJavaView().getClass(clazz);
+    Optional<JavaSootClass> cs =
+        CustomTestWatcher.getCustomTestWatcher().getJavaView().getClass(clazz);
     assertTrue(cs.isPresent(), "No matching class signature found");
     return cs.get();
   }

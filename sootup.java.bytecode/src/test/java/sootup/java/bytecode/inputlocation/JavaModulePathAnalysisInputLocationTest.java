@@ -1,12 +1,15 @@
 package sootup.java.bytecode.inputlocation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,9 +24,6 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModulePathAnalysisInputLocationTest {
 

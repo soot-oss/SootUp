@@ -1,5 +1,12 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -16,14 +23,6 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Comprises test that test the addition and removal of classes and methods to the mutable view. It
@@ -60,7 +59,7 @@ public class MutableSootClientTest {
     mv.removeClass(classType);
     int classesAfterSize = mv.getClasses().size();
 
-      assertEquals(classesBeforeSize, classesAfterSize + 1);
+    assertEquals(classesBeforeSize, classesAfterSize + 1);
   }
 
   /**
@@ -90,7 +89,7 @@ public class MutableSootClientTest {
     mv.addClass(newClass.buildClass(SourceType.Application));
     int classesAfterSize = mv.getClasses().size();
 
-      assertEquals(classesBeforeSize, classesAfterSize - 1);
+    assertEquals(classesBeforeSize, classesAfterSize - 1);
   }
 
   /**

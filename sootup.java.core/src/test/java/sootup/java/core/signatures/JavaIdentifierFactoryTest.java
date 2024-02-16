@@ -373,6 +373,8 @@ public class JavaIdentifierFactoryTest {
   public void testParse() {
     // not ok!
     String fieldsSigStr = "<java.base/java.lang.String: [] value>";
-    assertThrows(IllegalArgumentException.class,() -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> JavaModuleIdentifierFactory.getInstance().parseFieldSignature(fieldsSigStr));
   }
 }

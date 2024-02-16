@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 
 /*-
  * #%L
@@ -86,7 +85,7 @@ public class JavaModuleIdentifierFactoryTest extends JavaIdentifierFactoryTest {
   @Test
   public void testModuleInfoSignature() {
     JavaModuleIdentifierFactory typeFactory = JavaModuleIdentifierFactory.getInstance();
-    assertThrows(IllegalArgumentException.class,() -> typeFactory.getClassType("module-info"));
+    assertThrows(IllegalArgumentException.class, () -> typeFactory.getClassType("module-info"));
   }
 
   @Test

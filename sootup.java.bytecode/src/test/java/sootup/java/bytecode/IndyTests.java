@@ -1,6 +1,5 @@
 package sootup.java.bytecode;
 
-import categories.Java9Test;
 import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

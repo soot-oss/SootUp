@@ -22,6 +22,9 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import heros.InterproceduralCFG;
 import java.util.HashSet;
 import java.util.List;
@@ -33,9 +36,6 @@ import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("Java8")
 public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {

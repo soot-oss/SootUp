@@ -1,8 +1,8 @@
 package sootup.analysis.interprocedural.icfg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
 import org.junit.jupiter.api.Tag;
@@ -30,7 +30,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
         new ClassHierarchyAnalysisAlgorithm(view)
             .initialize(Collections.singletonList(entryMethodSignature));
     assertNotNull(cg);
-    assertTrue(cg.containsMethod(entryMethodSignature),
+    assertTrue(
+        cg.containsMethod(entryMethodSignature),
         entryMethodSignature + " is not found in CallGraph");
     return cg;
   }

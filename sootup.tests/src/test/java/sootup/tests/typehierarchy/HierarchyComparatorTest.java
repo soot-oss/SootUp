@@ -1,5 +1,11 @@
 package sootup.tests.typehierarchy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -10,13 +16,6 @@ import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("Java8")
 public class HierarchyComparatorTest {

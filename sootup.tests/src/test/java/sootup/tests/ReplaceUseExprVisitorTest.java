@@ -1,5 +1,8 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.*;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
@@ -22,10 +25,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /** @author Zun Wang */
 @Tag("Java8")

@@ -1,10 +1,8 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;

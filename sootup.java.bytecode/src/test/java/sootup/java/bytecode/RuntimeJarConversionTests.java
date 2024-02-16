@@ -1,7 +1,6 @@
 package sootup.java.bytecode;
 
 import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;

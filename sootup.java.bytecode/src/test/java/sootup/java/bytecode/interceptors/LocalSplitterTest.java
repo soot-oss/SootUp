@@ -1,11 +1,10 @@
 package sootup.java.bytecode.interceptors;
 
-
-import categories.Java8Test;
-import java.util.*;
-import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -20,8 +19,6 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalSplitterTest {

@@ -1,17 +1,14 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-
-import categories.Java8Test;
-import java.util.Collections;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
+import java.util.Collections;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaSootClass;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Kaustubh Kelkar */
 @Tag(TestCategories.JAVA_8_CATEGORY)

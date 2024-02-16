@@ -1,5 +1,11 @@
 package sootup.jimple.parser;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -16,13 +22,6 @@ import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class JimpleConverterTest {

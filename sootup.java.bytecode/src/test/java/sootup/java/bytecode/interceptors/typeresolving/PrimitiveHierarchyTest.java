@@ -1,20 +1,18 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import java.util.Collection;
-import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
+import java.util.Collection;
+import java.util.Set;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
-
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)

@@ -1,8 +1,10 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import categories.TestCategories;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -267,8 +266,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             stmt = s;
           }
         }
-        assertEquals(
-            PrimitiveType.getInt(), evalFunction.evaluate(specTyping, value, stmt, graph));
+        assertEquals(PrimitiveType.getInt(), evalFunction.evaluate(specTyping, value, stmt, graph));
       }
     }
 
@@ -285,8 +283,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         }
       }
     }
-    assertEquals(
-        PrimitiveType.getInt(), evalFunction.evaluate(specTyping, value, stmt, graph));
+    assertEquals(PrimitiveType.getInt(), evalFunction.evaluate(specTyping, value, stmt, graph));
 
     final Body.BodyBuilder builder6 = createMethodsBuilder("instanceOf", "boolean");
     StmtGraph<?> graph6 = builder6.getStmtGraph();
@@ -301,8 +298,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         }
       }
     }
-    assertEquals(
-        PrimitiveType.getBoolean(), evalFunction.evaluate(specTyping, value, stmt, graph));
+    assertEquals(PrimitiveType.getBoolean(), evalFunction.evaluate(specTyping, value, stmt, graph));
 
     final Body.BodyBuilder builder7 = createMethodsBuilder("newArrayExpr", "void");
     StmtGraph<?> graph7 = builder7.getStmtGraph();

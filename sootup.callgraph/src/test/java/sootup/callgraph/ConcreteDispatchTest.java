@@ -80,8 +80,7 @@ public class ConcreteDispatchTest {
     MethodSignature concreteMethodSig =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, strToStringSig).orElse(null);
     assertNotNull(concreteMethodSig);
-    assertEquals(
-        strToStringSig, concreteMethodSig, "String.toString() should resolve to itself");
+    assertEquals(strToStringSig, concreteMethodSig, "String.toString() should resolve to itself");
 
     MethodSignature concreteMethodSig2 =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(
@@ -89,7 +88,6 @@ public class ConcreteDispatchTest {
             .orElse(null);
     assertNotNull(concreteMethodSig2);
     assertEquals(
-
         factory.parseMethodSignature("java.lang.Object#hashCode(): int"),
         concreteMethodSig2,
         "A.hashCode() should resolve to java.lang.Object.hashCode()");

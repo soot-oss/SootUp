@@ -1,14 +1,14 @@
 package sootup.java.bytecode.minimaltestsuite.java14;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java9Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Immediate;
@@ -23,9 +23,6 @@ import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Jonas Klauke */
 @Tag(TestCategories.JAVA_8_CATEGORY)

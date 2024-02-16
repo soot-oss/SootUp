@@ -1,5 +1,11 @@
 package sootup.tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -14,13 +20,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Zun Wang */
 @Tag("Java8")
@@ -96,7 +95,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.clear();
     expectedUses.add(newOp);
 
-      assertEquals(stmt.getUses(), expectedUses);
+    assertEquals(stmt.getUses(), expectedUses);
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -137,6 +136,6 @@ public class ReplaceUseStmtVisitorTest {
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-      assertEquals(newStmt.getUses(), expectedUses);
+    assertEquals(newStmt.getUses(), expectedUses);
   }
 }

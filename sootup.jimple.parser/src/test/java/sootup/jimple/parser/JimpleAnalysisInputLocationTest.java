@@ -1,16 +1,15 @@
 package sootup.jimple.parser;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.nio.file.Paths;
+import java.util.Optional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-
-import java.nio.file.Paths;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("Java8")
 public class JimpleAnalysisInputLocationTest {

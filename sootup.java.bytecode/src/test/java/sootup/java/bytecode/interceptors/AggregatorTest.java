@@ -1,5 +1,7 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,9 +30,6 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AggregatorTest {
 

@@ -22,12 +22,14 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,10 +47,6 @@ import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Manuel Benz created on 06.06.18
@@ -78,7 +76,11 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test()
   public void testSingleClassDoesNotExist() {
-    Assertions.assertThrows(IllegalAccessError.class, () -> PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), SourceType.Application));
+    Assertions.assertThrows(
+        IllegalAccessError.class,
+        () ->
+            PathBasedAnalysisInputLocation.create(
+                Paths.get("NonExisting.class"), SourceType.Application));
   }
 
   @Test
@@ -219,6 +221,6 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
       }
     }
 
-    assertEquals( 0, classes.size(), "User Defined class found, expected none");
+    assertEquals(0, classes.size(), "User Defined class found, expected none");
   }
 }

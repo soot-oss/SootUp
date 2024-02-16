@@ -1,5 +1,6 @@
 package sootup.analysis.interprocedural.ifds;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,8 +43,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class CGEdgeUtilTest {
@@ -95,16 +94,18 @@ public class CGEdgeUtilTest {
 
   @Test
   public void testFindCallGraphEdgeTypeError() throws RuntimeException {
-    Assertions.assertThrows(RuntimeException.class, () -> {
-      MethodSignature testMethod =
+    Assertions.assertThrows(
+        RuntimeException.class,
+        () -> {
+          MethodSignature testMethod =
               new MethodSignature(
-                      new JavaClassType("Object", new PackageName("java.lang")),
-                      "test",
-                      Collections.singletonList(PrimitiveType.getInt()),
-                      PrimitiveType.getInt());
-      Immediate[] testParameterList = {IntConstant.getInstance(2)};
+                  new JavaClassType("Object", new PackageName("java.lang")),
+                  "test",
+                  Collections.singletonList(PrimitiveType.getInt()),
+                  PrimitiveType.getInt());
+          Immediate[] testParameterList = {IntConstant.getInstance(2)};
 
-      AbstractInvokeExpr jNewInvoke =
+          AbstractInvokeExpr jNewInvoke =
               new AbstractInvokeExpr(testMethod, testParameterList) {
                 @Override
                 public void toString(@Nonnull StmtPrinter up) {}
@@ -122,8 +123,8 @@ public class CGEdgeUtilTest {
                 @Override
                 public void accept(@Nonnull ExprVisitor exprVisitor) {}
               };
-      CGEdgeUtil.findCallGraphEdgeType(jNewInvoke);
-    });
+          CGEdgeUtil.findCallGraphEdgeType(jNewInvoke);
+        });
   }
 
   @Test
@@ -154,8 +155,8 @@ public class CGEdgeUtilTest {
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
-    assertTrue(cg.containsMethod(mainMethodSignature),
-        mainMethodSignature + " is not found in CallGraph");
+    assertTrue(
+        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
 
     Set<Pair<MethodSignature, CalleeMethodSignature>> results = CGEdgeUtil.getCallEdges(view, cg);
     assertEquals(results.size(), 6);

@@ -1,11 +1,11 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
@@ -26,8 +26,6 @@ import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** @author Marcus Nachtigall */
 @Tag(TestCategories.JAVA_8_CATEGORY)

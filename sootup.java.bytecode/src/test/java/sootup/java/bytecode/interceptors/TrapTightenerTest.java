@@ -1,9 +1,7 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
-import java.util.*;
-
 import categories.TestCategories;
+import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

@@ -1,5 +1,11 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
@@ -9,19 +15,11 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /** @author Zun Wang */
 @Tag("Java8")
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
-  ViewTypeHierarchy typeHierarchy =
-      (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+  ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"
@@ -64,16 +62,10 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void ClassInheritanceClassHasAdditionalMethod() {
     SootClass sootClass =
-        this
-            .getView()
-            .getClass(
-                this
-                    .getView()
-                    .getIdentifierFactory()
-                    .getClassType(this.getClassName()))
+        this.getView()
+            .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
             .get();
-    SootClass superClass =
-        this.getView().getClass(sootClass.getSuperclass().get()).get();
+    SootClass superClass = this.getView().getClass(sootClass.getSuperclass().get()).get();
 
     Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
     Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();

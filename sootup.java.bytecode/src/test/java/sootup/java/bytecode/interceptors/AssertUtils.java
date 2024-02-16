@@ -1,5 +1,6 @@
 package sootup.java.bytecode.interceptors;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.Lists;
 import java.util.Collection;
@@ -11,8 +12,6 @@ import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.DotExporter;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /** @author Zun Wang */
 public class AssertUtils {

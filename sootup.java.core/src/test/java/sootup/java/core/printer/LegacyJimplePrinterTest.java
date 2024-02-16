@@ -157,6 +157,8 @@ public class LegacyJimplePrinterTest {
   public void testValidOptions() {
     JimplePrinter p =
         new JimplePrinter(JimplePrinter.Option.UseImports, JimplePrinter.Option.LegacyMode);
-    assertThrows(RuntimeException.class,() -> p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter())));
+    assertThrows(
+        RuntimeException.class,
+        () -> p.printTo(buildClass(Body.builder()), new PrintWriter(new StringWriter())));
   }
 }

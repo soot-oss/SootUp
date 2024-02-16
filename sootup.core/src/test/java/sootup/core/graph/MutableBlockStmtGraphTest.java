@@ -1,5 +1,6 @@
 package sootup.core.graph;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Disabled;
@@ -18,10 +19,6 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Java8")
 public class MutableBlockStmtGraphTest {
@@ -330,10 +327,12 @@ public class MutableBlockStmtGraphTest {
   public void addBadSuccessorCount() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    assertThrows(IndexOutOfBoundsException.class, () -> {
-      graph.putEdge(firstNop, secondNop);
-      graph.putEdge(firstGoto, 1, thirdNop);
-    });
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.putEdge(firstGoto, 1, thirdNop);
+        });
   }
 
   public void setBadSuccessorIdx() {
@@ -345,10 +344,12 @@ public class MutableBlockStmtGraphTest {
   public void addDuplicateBadSuccessorCount() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    assertThrows(IllegalArgumentException.class, () -> {
-      graph.putEdge(firstNop, secondNop);
-      graph.putEdge(firstNop, secondNop);
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.putEdge(firstNop, secondNop);
+        });
   }
 
   @Test
@@ -507,10 +508,12 @@ public class MutableBlockStmtGraphTest {
     // firstnop already has a successor and its impossible to add another edge
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
-    assertThrows(IllegalArgumentException.class, () -> {
-      graph.putEdge(firstNop, secondNop);
-      graph.addBlock(Arrays.asList(firstNop, thirdNop), Collections.emptyMap());
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.addBlock(Arrays.asList(firstNop, thirdNop), Collections.emptyMap());
+        });
   }
 
   @Disabled
@@ -535,10 +538,12 @@ public class MutableBlockStmtGraphTest {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
     MutableBasicBlock block = new MutableBasicBlock();
 
-    assertThrows(IllegalArgumentException.class, () -> {
-      block.addStmt(conditionalStmt);
-      block.addStmt(firstNop);
-    });
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          block.addStmt(conditionalStmt);
+          block.addStmt(firstNop);
+        });
   }
 
   @Test

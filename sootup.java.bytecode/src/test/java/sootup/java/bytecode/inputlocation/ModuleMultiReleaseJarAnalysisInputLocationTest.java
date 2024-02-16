@@ -22,11 +22,14 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,11 +42,6 @@ import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 
 @Tag(TestCategories.JAVA_9_CATEGORY)
 public class ModuleMultiReleaseJarAnalysisInputLocationTest extends AnalysisInputLocationTest {

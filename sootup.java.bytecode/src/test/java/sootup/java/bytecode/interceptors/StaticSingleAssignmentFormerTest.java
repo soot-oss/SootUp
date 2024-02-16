@@ -1,9 +1,9 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
+import java.util.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,8 +24,6 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)

@@ -1,11 +1,12 @@
 package sootup.java.bytecode.inputlocation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
@@ -13,9 +14,6 @@ import sootup.core.types.ClassType;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 import sootup.java.core.views.JavaModuleView;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** @author Andreas Dann, Markus Schmidt */
 @Tag(TestCategories.JAVA_9_CATEGORY)

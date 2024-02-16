@@ -1,5 +1,10 @@
 package sootup.jimple.parser.javatestsuite;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import sootup.core.model.Body;
@@ -12,12 +17,6 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
-
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /** @author Markus Schmidt */
 @Tag("Java8")

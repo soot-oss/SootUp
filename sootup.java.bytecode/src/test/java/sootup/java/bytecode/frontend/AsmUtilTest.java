@@ -1,5 +1,8 @@
 package sootup.java.bytecode.frontend;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
 import org.junit.jupiter.api.Assertions;
@@ -10,10 +13,6 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class AsmUtilTest {
@@ -141,7 +140,7 @@ public class AsmUtilTest {
 
   @Test()
   public void testToJimpleTypeIncorrectArray() {
-    Assertions.assertThrows(Exception.class, () ->AsmUtil.toJimpleType("[I[I"));
+    Assertions.assertThrows(Exception.class, () -> AsmUtil.toJimpleType("[I[I"));
   }
 
   @Test
