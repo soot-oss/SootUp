@@ -53,7 +53,10 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
           .removalListener(
               (RemovalNotification<Path, FileSystem> removalNotification) -> {
                 try {
-                  removalNotification.getValue().close();
+                  FileSystem value = removalNotification.getValue();
+                  if (value != null) {
+                    value.close();
+                  }
                 } catch (IOException e) {
                   throw new RuntimeException(
                       "Could not close file system of " + removalNotification.getKey(), e);
