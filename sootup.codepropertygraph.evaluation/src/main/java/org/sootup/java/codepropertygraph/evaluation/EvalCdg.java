@@ -170,7 +170,7 @@ public class EvalCdg {
   private static void setFileSysOut() {
     try {
       System.setOut(
-          new PrintStream("sootup.codepropertygraph.evaluation/src/test/resources/main_out.txt"));
+          new PrintStream("sootup.codepropertygraph.evaluation/src/test/resources/main_out_cdg.txt"));
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
