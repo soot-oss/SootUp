@@ -57,7 +57,7 @@ public class MethodCdgPrinter {
   }
 
   private static void printSootupCdg(String sourceCodeDirPath, String methodSignatureAsJoern) {
-    SootUpCdgGenerator sootUpCdgGenerator = new SootUpCdgGenerator(sourceCodeDirPath);
+    SootUpCdgGenerator sootUpCdgGenerator = new SootUpCdgGenerator(Paths.get(sourceCodeDirPath));
 
     SootMethod sootMethod =
         sootUpCdgGenerator.getMethods().stream()
