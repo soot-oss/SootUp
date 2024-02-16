@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.graph.MutableStmtGraph;
@@ -14,6 +17,7 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.types.UnknownType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.jimple.basic.JavaLocal;
@@ -40,8 +44,8 @@ public class CastAndReturnInlinerTest {
    * to
    *
    * <pre>
-   * a = (String) "str";
-   * return a;
+   * a_ret = (String) "str";
+   * return a_ret;
    * </pre>
    */
   @Test
@@ -62,7 +66,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    Set<Local> locals = new HashSet<>( Arrays.asList( a, b) );
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
@@ -76,7 +80,6 @@ public class CastAndReturnInlinerTest {
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
-    Body testBody = bodyBuilder.build();
 
     new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = bodyBuilder.build();
@@ -89,6 +92,9 @@ public class CastAndReturnInlinerTest {
             aRet, JavaJimple.newCastExpr(a, stringType), StmtPositionInfo.getNoStmtPositionInfo()));
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
+    Assert.assertEquals(2, processedBody.getLocals().size());
+    Assert.assertTrue( processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
+    Assert.assertTrue( processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
   }
 
   /**
@@ -124,7 +130,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    Set<Local> locals = new HashSet<>( Arrays.asList(a, b));
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
