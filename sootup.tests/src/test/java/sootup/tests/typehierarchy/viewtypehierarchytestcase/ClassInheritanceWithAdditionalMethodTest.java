@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
@@ -26,7 +25,8 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassExtendsObject() {
     assertEquals(
-        getView().getTypeHierarchy().superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
+        getView().getTypeHierarchy().superClassOf(getClassType("SuperClass")),
+        getClassType("java.lang.Object"));
   }
 
   /**
@@ -45,7 +45,9 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testClassInheritanceClassExtendsSuperClass() {
     assertEquals(
-        getView().getTypeHierarchy().superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
@@ -53,7 +55,9 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassIsSuperclassOfClassInheritanceClass() {
     assertEquals(
-        getView().getTypeHierarchy().superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
