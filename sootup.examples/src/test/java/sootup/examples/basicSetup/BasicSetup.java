@@ -1,13 +1,12 @@
 package sootup.examples.basicSetup;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
@@ -21,7 +20,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
 /** This example illustrates how to create and use a new Soot Project. */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class BasicSetup {
 
   @Test
