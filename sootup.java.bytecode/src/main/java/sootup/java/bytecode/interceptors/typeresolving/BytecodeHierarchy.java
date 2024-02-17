@@ -29,6 +29,7 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {
@@ -59,6 +60,12 @@ public class BytecodeHierarchy {
     if (!PrimitiveHierarchy.arePrimitives(ancestor, child)) {
       if (ancestor == child) {
         return true;
+      }
+      if (ancestor.getClass() == TopType.class) {
+        return true;
+      }
+      if (child.getClass() == TopType.class) {
+        return false;
       }
       if (child.getClass() == BottomType.class) {
         return true;
@@ -108,6 +115,9 @@ public class BytecodeHierarchy {
 
   public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
     Set<Type> ret = new HashSet<>();
+    if (a instanceof TopType || b instanceof TopType) {
+      return Collections.singleton(TopType.getInstance());
+    }
     if (a instanceof BottomType) {
       return Collections.singleton(b);
     }
@@ -130,7 +140,7 @@ public class BytecodeHierarchy {
       return PrimitiveHierarchy.getLeastCommonAncestor(a, b);
     }
     if (a instanceof PrimitiveType || b instanceof PrimitiveType) {
-      return Collections.emptySet();
+      return Collections.singleton(TopType.getInstance());
     }
 
     if (a instanceof ArrayType && b instanceof ArrayType) {

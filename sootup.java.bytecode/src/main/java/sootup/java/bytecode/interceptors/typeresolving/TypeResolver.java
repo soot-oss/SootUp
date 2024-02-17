@@ -213,6 +213,7 @@ public class TypeResolver {
       boolean isFirstType = true;
       Collection<Type> leastCommonAncestors =
           hierarchy.getLeastCommonAncestor(oldType, rightOpDerivedType);
+      assert !leastCommonAncestors.isEmpty();
       for (Type type : leastCommonAncestors) {
         if (!type.equals(oldType)) {
           BitSet dependStmtList = this.depends.get(local);
