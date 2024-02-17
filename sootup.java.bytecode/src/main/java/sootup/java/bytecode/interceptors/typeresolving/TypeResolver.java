@@ -1,4 +1,5 @@
 package sootup.java.bytecode.interceptors.typeresolving;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -287,19 +288,10 @@ public class TypeResolver {
       @Nonnull AugEvalFunction evalFunction,
       @Nonnull BytecodeHierarchy hierarchy) {
     CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
-    Iterator<Typing> typingIterator = typings.iterator();
-    Typing ret = null;
-    int min = Integer.MAX_VALUE;
-    while (typingIterator.hasNext()) {
-      Typing typing = typingIterator.next();
-      int castCount = castCounter.getCastCount(typing);
-      if (castCount < min) {
-        min = castCount;
-        ret = typing;
-      }
-    }
-    this.castCount = min;
-    return ret;
+    Typing minTyping =
+        typings.stream().min(Comparator.comparingInt(castCounter::getCastCount)).get();
+    this.castCount = castCounter.getCastCount(minTyping);
+    return minTyping;
   }
 
   private Type convertType(@Nonnull Type type) {
