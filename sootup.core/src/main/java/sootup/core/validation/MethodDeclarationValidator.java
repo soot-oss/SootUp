@@ -25,6 +25,7 @@ package sootup.core.validation;
 import java.util.List;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.types.NullType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 
@@ -43,7 +44,7 @@ public class MethodDeclarationValidator implements ClassValidator {
       if (sc.isConcrete()) {
         List<Type> parameterTypes = sm.getParameterTypes();
         for (Type tp : parameterTypes) {
-          if (tp == null) {
+          if (tp instanceof NullType) {
             exceptions.add(new ValidationException(sm, "Null parameter types are invalid"));
           }
           if (tp instanceof VoidType) {
