@@ -1662,7 +1662,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.clear();
       }
 
-      emitStmt(stmt, stmtList);
+      stmtList.add(stmt);
 
     } while ((insn = insn.getNext()) != null);
 
@@ -1687,38 +1687,28 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       branchingMap.put(fromStmt, targets);
     }
 
-    final List<Trap> traps = buildTraps();
-    // TODO: performance: [ms] we already know Blocks borders from the label information -> use
-    // addBlocks+collect trap data and connect blocks afterwards via branching information +
-    // collected fallsthroughBlock information
-    graph.initializeWith(stmtList, branchingMap, traps);
-
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
-    // FIXME:[ms] the following code seems odd.. we need a testcase to test inlineexceptionhandling!
     for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
 
       JIdentityStmt handlerStmt = entry.getValue();
-      emitStmt(handlerStmt, stmtList);
-      trapHandler.put(entry.getKey(), handlerStmt);
-      // TODO: update handlerStmts positioninfo!
+      stmtList.add(handlerStmt);
+      LabelNode labelNode = entry.getKey();
+      trapHandler.put(labelNode, handlerStmt);
 
       // jump back to the original implementation
       JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
       stmtList.add(gotoStmt);
 
-      // add stmtList to graph
-      graph.addBlock(stmtList, currentTraps);
-      stmtList.clear();
-
-      // connect tail of stmtList with its target
-      Stmt targetStmt = insnToStmt.get(entry.getKey());
-      graph.putEdge(gotoStmt, 0, targetStmt);
+      Stmt targetStmt = insnToStmt.get(labelNode);
+      branchingMap.put(gotoStmt, Collections.singletonList(targetStmt));
     }
-  }
 
-  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
-    block.add(handlerStmt);
+    final List<Trap> traps = buildTraps();
+    // TODO: performance: [ms] we already know Blocks borders from the label information -> use
+    // addBlocks+collect trap data and connect blocks afterwards via branching information +
+    // collected fallsthroughBlock information
+    graph.initializeWith(stmtList, branchingMap, traps);
   }
 
   /**
