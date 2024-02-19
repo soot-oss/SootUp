@@ -23,9 +23,7 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-
 import sootup.core.graph.MutableStmtGraph;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;

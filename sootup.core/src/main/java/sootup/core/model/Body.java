@@ -393,7 +393,6 @@ public class Body implements HasPosition {
       }
     }
 
-
     @Nonnull
     @Deprecated
     public List<Trap> getTraps() {
