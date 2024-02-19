@@ -24,12 +24,11 @@ package sootup.analysis.interprocedural.ifds;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import categories.Java8Test;
 import heros.InterproceduralCFG;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -43,7 +42,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class IFDSTaintTestSetUp {
 
   protected JavaView view;

@@ -1,5 +1,7 @@
 package sootup.java.bytecode;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -58,8 +60,8 @@ public class RuntimeJarConversionTests {
                   }
                 })
             .count();
-    Assert.assertTrue(count > 0);
-    Assert.assertEquals(0, failedConversions[0]);
+    assertTrue(count > 0);
+    assertEquals(0, failedConversions[0]);
   }
 
   // @Test

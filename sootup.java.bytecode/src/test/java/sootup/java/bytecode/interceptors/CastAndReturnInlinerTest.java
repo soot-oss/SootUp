@@ -90,10 +90,8 @@ public class CastAndReturnInlinerTest {
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
     assertEquals(2, processedBody.getLocals().size());
-    assertTrue(
-        processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    assertTrue(
-        processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
   }
 
   /**

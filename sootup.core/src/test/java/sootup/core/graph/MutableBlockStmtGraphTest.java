@@ -334,7 +334,7 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     assertThrows(
-        IndexOutOfBoundsException.class,
+        IllegalArgumentException.class,
         () -> {
           graph.putEdge(firstNop, secondNop);
           graph.putEdge(firstGoto, 1, thirdNop);
