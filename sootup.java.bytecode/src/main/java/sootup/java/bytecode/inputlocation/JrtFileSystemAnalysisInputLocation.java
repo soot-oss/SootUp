@@ -40,6 +40,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
@@ -66,7 +67,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
-    this(sourceType, Collections.emptyList());
+    this(sourceType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public JrtFileSystemAnalysisInputLocation(

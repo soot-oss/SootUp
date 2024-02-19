@@ -25,11 +25,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   AugEvalFunction function;
   BytecodeHierarchy hierarchy;
 
-  ClassType super1 = identifierFactory.getClassType("Super1");
-  ClassType super2 = identifierFactory.getClassType("Super2");
-  ClassType sub1 = identifierFactory.getClassType("Sub1");
-  ClassType sub2 = identifierFactory.getClassType("Sub2");
-  ClassType object = identifierFactory.getClassType("java.lang.Object");
+  ClassType super1, super2, sub1, sub2, object;
 
   @Before
   public void setup() {
@@ -38,6 +34,12 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     buildView(baseDir, className);
     function = new AugEvalFunction(view);
     hierarchy = new BytecodeHierarchy(view);
+
+    super1 = view.getIdentifierFactory().getClassType("Super1");
+    super2 = view.getIdentifierFactory().getClassType("Super2");
+    sub1 = view.getIdentifierFactory().getClassType("Sub1");
+    sub2 = view.getIdentifierFactory().getClassType("Sub2");
+    object = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   @Test

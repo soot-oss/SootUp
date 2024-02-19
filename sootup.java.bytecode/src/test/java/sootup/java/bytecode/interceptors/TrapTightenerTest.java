@@ -26,6 +26,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -125,7 +126,7 @@ public class TrapTightenerTest {
     stmtGraph.clearExceptionalEdges(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, null);
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
@@ -166,7 +167,7 @@ public class TrapTightenerTest {
     //  stmtGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, null);
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);

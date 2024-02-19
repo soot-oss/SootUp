@@ -2,10 +2,12 @@ package sootup.java.core.printer;
 
 import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
@@ -25,6 +27,7 @@ import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {

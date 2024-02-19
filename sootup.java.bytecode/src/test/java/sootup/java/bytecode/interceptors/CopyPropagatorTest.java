@@ -26,6 +26,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -132,7 +133,7 @@ public class CopyPropagatorTest {
     Body body = createChainBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedChainBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -145,7 +146,7 @@ public class CopyPropagatorTest {
     Body.BodyBuilder builder = createLoopBody();
 
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedLoopBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -158,7 +159,7 @@ public class CopyPropagatorTest {
     Body body = createCastExprBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedCastExprBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());

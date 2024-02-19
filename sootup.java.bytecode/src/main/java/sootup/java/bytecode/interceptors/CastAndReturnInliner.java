@@ -23,6 +23,8 @@ package sootup.java.bytecode.interceptors;
 import com.google.common.collect.Lists;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
@@ -93,16 +95,25 @@ public class CastAndReturnInliner implements BodyInterceptor {
         continue;
       }
 
-      // We need to replace the GOTO with the return
+      // We need to replace the JGoto with the assignment/cast + return
       JCastExpr ce = (JCastExpr) assign.getRightOp();
-      JReturnStmt newStmt = retStmt.withReturnValue(ce.getOp());
+      Local variable = Jimple.newLocal(ce.getOp() + "_ret", ce.getType());
+      JAssignStmt newAssignStmt = Jimple.newAssignStmt(variable, ce, assign.getPositionInfo());
+      JReturnStmt newReturnStmt = retStmt.withReturnValue(variable);
 
-      // Redirect all flows coming into the GOTO to the new return
-      graph.replaceNode(gotoStmt, newStmt);
+      // Redirect all flows coming into the JGoto to the new cast + return
+      graph.replaceNode(gotoStmt, newReturnStmt);
+      graph.insertBefore(newReturnStmt, newAssignStmt);
+      builder.addLocal(variable);
 
-      // cleanup now obsolete cast and return statements
-      graph.removeNode(assign);
-      graph.removeNode(retStmt);
+      boolean removeExistingCastReturn = graph.predecessors(assign).isEmpty();
+      if (removeExistingCastReturn) {
+        graph.removeNode(assign, false);
+        if (graph.predecessors(retStmt).isEmpty()) {
+          graph.removeNode(retStmt, false);
+          builder.removeDefLocalsOf(assign);
+        }
+      }
     }
   }
 }

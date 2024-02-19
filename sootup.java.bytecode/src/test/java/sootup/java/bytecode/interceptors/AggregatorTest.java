@@ -22,7 +22,6 @@ import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -48,7 +47,7 @@ public class AggregatorTest {
     Body testBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
 
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> processedStmts = processedBody.getStmts();
 
@@ -68,7 +67,7 @@ public class AggregatorTest {
   public void testNoAggregation() {
     Body.BodyBuilder testBuilder = createBodyBuilder(false);
     Body testBody = testBuilder.build();
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -112,7 +111,7 @@ public class AggregatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
-    new Aggregator().interceptBody(builder, null);
+    new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     // ensure that the assigner doesn't remove any statements
     assertEquals(4, builder.getStmts().size());
@@ -185,7 +184,7 @@ public class AggregatorTest {
             Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
             "",
             SourceType.Application,
-            BytecodeClassLoadingOptions.Default.getBodyInterceptors());
+            Collections.singletonList(new Aggregator()));
 
     JavaView view = new JavaView(inputLocation);
 

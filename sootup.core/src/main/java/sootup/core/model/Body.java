@@ -281,6 +281,10 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<LValue> getDefs() {
+    return getDefs(graph);
+  }
+
+  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -344,7 +348,7 @@ public class Body implements HasPosition {
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
@@ -359,30 +363,31 @@ public class Body implements HasPosition {
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
-      } else {
-        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          final Stmt stmt = currStmt;
-          if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
-          }
-          final List<LValue> defs = currStmt.getDefs();
-          for (LValue def : defs) {
-            if (def == oldLocal || def.getUses().contains(oldLocal)) {
-              if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
-              }
+    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+      if (!locals.contains(existingLocal)) {
+        throw new IllegalArgumentException(
+            "The given existing Local '" + existingLocal + "' is not in the body!");
+      }
+
+      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+        final Stmt stmt = currStmt;
+        if (currStmt.getUses().contains(existingLocal)) {
+          currStmt = currStmt.withNewUse(existingLocal, newLocal);
+        }
+        final List<LValue> defs = currStmt.getDefs();
+        for (LValue def : defs) {
+          if (def == existingLocal || def.getUses().contains(existingLocal)) {
+            if (currStmt instanceof AbstractDefinitionStmt) {
+              currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
-          if (stmt != currStmt) {
-            getStmtGraph().replaceNode(stmt, currStmt);
-          }
         }
-        locals.remove(oldLocal);
-        locals.add(newLocal);
+        if (stmt != currStmt) {
+          getStmtGraph().replaceNode(stmt, currStmt);
+        }
       }
+      locals.remove(existingLocal);
+      locals.add(newLocal);
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
@@ -453,6 +458,14 @@ public class Body implements HasPosition {
         return "BodyBuilder for " + methodSig;
       } else {
         return super.toString();
+      }
+    }
+
+    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+      for (LValue def : stmt.getDefs()) {
+        if (def instanceof Local) {
+          locals.remove(def);
+        }
       }
     }
   }

@@ -29,6 +29,7 @@ import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 
@@ -230,7 +231,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
         @Nonnull Path classFilePath,
         @Nonnull String omittedPackageName,
         @Nonnull SourceType srcType) {
-      this(classFilePath, omittedPackageName, srcType, Collections.emptyList());
+      this(
+          classFilePath,
+          omittedPackageName,
+          srcType,
+          BytecodeBodyInterceptors.Default.getBodyInterceptors());
     }
 
     public ClassFileBasedAnalysisInputLocation(
@@ -285,18 +290,14 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
-      this(path, srcType, Collections.emptyList());
-    }
-
-    private DirectoryBasedAnalysisInputLocation(
+    protected DirectoryBasedAnalysisInputLocation(
         @Nonnull Path path,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors) {
       this(path, srcType, bodyInterceptors, Collections.emptyList());
     }
 
-    public DirectoryBasedAnalysisInputLocation(
+    protected DirectoryBasedAnalysisInputLocation(
         @Nonnull Path path,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors,
@@ -328,7 +329,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
         throws IOException {
-      this(warPath, srcType, Collections.emptyList(), Collections.emptyList());
+      this(
+          warPath,
+          srcType,
+          BytecodeBodyInterceptors.Default.getBodyInterceptors(),
+          Collections.emptyList());
     }
 
     private WarArchiveAnalysisInputLocation(

@@ -2,11 +2,14 @@ package sootup.core.graph;
 
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
+@Category(Java8Test.class)
 public class MutableBasicBlockTest {
 
   Stmt firstNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());

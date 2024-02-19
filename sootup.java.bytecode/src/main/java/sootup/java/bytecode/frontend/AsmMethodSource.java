@@ -47,10 +47,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
@@ -235,6 +232,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
+        bodyBuilder.getStmtGraph().validateStmtConnectionsInGraph();
       } catch (Exception e) {
         throw new IllegalStateException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
@@ -277,23 +275,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   private String determineLocalName(int idx) {
-    String name;
     if (localVariables != null) {
-      name = null;
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index == idx) {
-          name = lvn.name;
-          break;
+          // TODO: take into consideration in which range this name is valid ->lvn.start/end
+          return lvn.name;
         }
       }
-      /* normally for try-catch blocks */
-      if (name == null) {
-        name = "l" + idx;
-      }
-    } else {
-      name = "l" + idx;
+      /* usually reached for try-catch blocks */
     }
-    return name;
+    return "l" + idx;
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
