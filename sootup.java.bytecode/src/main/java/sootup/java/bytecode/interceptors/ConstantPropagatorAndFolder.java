@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
-
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -92,20 +91,20 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
       // folding pass
       for (Value value : stmt.getUses()) {
 
-          Value evaluatedValue = Evaluator.getConstantValueOf(value);
-          if(evaluatedValue == null){
-            continue;
-          }
+        Constant evaluatedValue = Evaluator.getConstantValueOf(value);
+        if (evaluatedValue == null) {
+          continue;
+        }
 
-          if (stmt instanceof JAssignStmt) {
-            JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
-            stmtGraph.replaceNode(stmt, assignStmt);
-            defs.remove(stmt);
-            defs.add(assignStmt);
-          } else if (stmt instanceof JReturnStmt) {
-            JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) evaluatedValue);
-            stmtGraph.replaceNode(stmt, returnStmt);
-          }
+        if (stmt instanceof JAssignStmt) {
+          JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
+          stmtGraph.replaceNode(stmt, assignStmt);
+          defs.remove(stmt);
+          defs.add(assignStmt);
+        } else if (stmt instanceof JReturnStmt) {
+          JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue(evaluatedValue);
+          stmtGraph.replaceNode(stmt, returnStmt);
+        }
       }
     }
   }
