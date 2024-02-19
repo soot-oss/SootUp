@@ -94,9 +94,6 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
           if (value instanceof Constant) {
             continue;
           }
-          if (!Evaluator.isConstantValue(value)) {
-            continue;
-          }
 
           Value evaluatedValue = Evaluator.getConstantValueOf(value);
           if(evaluatedValue == null){
