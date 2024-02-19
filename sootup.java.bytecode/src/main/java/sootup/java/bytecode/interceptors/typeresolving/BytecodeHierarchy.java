@@ -96,7 +96,7 @@ public class BytecodeHierarchy {
         Type ancestorBase = ancestorArr.getBaseType();
         Type childBase = childArr.getBaseType();
         if (ancestorArr.getDimension() == childArr.getDimension()) {
-          if (ancestorBase == childBase) {
+          if (ancestorBase == childBase || ancestorBase == TopType.getInstance()) {
             return true;
           }
           if (ancestorBase instanceof ClassType && childBase instanceof ClassType) {
@@ -106,7 +106,8 @@ public class BytecodeHierarchy {
           // TODO: [ms] check: the dimension condition check as it seems weird?
           return ancestorBase == objectClassType
               || ancestorBase == serializableClassType
-              || ancestorBase == cloneableClassType;
+              || ancestorBase == cloneableClassType
+              || ancestorBase == TopType.getInstance();
         }
       }
     }
