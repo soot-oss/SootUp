@@ -60,9 +60,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       // propagation pass
-      boolean isAssignStmt = stmt instanceof JAssignStmt;
-      boolean isReturnStmt = stmt instanceof JReturnStmt;
-      if (isAssignStmt) {
+      if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
         if (rhs instanceof AbstractBinopExpr) {
           Value op1 = ((AbstractBinopExpr) rhs).getOp1();
@@ -84,7 +82,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
         fold(stmt, constantStmtBiConsumer);
 
-      } else if (isReturnStmt) {
+      } else if (stmt instanceof JReturnStmt) {
         for (Value value : stmt.getUses()) {
           if (!(value instanceof Local)) {
             continue;
