@@ -2,7 +2,10 @@
   {
     "version": "qilin_preview",
     "title": "PR Preview qilin",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "migrateJunit_preview",
