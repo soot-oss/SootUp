@@ -20,10 +20,8 @@ package sootup.java.bytecode.interceptors;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -41,6 +39,10 @@ import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Does constant propagation and folding. Constant folding is the compile-time evaluation of
  * constant expressions (i.e. 2 * 3).
@@ -49,63 +51,77 @@ import sootup.core.views.View;
  */
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
-  @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
-    List<Stmt> defs = new ArrayList<>();
+    @Override
+    public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+        List<Stmt> defs = new ArrayList<>();
 
-    // Perform a constant/local propagation pass
-    // go through each use in each statement
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
-      // propagation pass
-      if (stmt instanceof JAssignStmt) {
-        Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
-        if (rhs instanceof AbstractBinopExpr) {
-          Value op1 = ((AbstractBinopExpr) rhs).getOp1();
-          Value op2 = ((AbstractBinopExpr) rhs).getOp2();
+        // Perform a constant/local propagation pass
+        // go through each use in each statement
+        MutableStmtGraph stmtGraph = builder.getStmtGraph();
+        for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+            // propagation pass
+            boolean isAssignStmt = stmt instanceof JAssignStmt;
+            boolean isReturnStmt = stmt instanceof JReturnStmt;
+            if (isAssignStmt) {
+                Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
+                if (rhs instanceof AbstractBinopExpr) {
+                    Value op1 = ((AbstractBinopExpr) rhs).getOp1();
+                    Value op2 = ((AbstractBinopExpr) rhs).getOp2();
 
-          if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
-            defs.add(stmt);
-          }
-        }
-      } else if (stmt instanceof JReturnStmt) {
-        for (Value value : stmt.getUses()) {
-          if (value instanceof Local) {
-            List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
-            if (defsOfUse.size() == 1) {
-              AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
-              Value rhs = definitionStmt.getRightOp();
-              if (rhs instanceof NumericConstant
-                  || rhs instanceof StringConstant
-                  || rhs instanceof NullConstant) {
-                JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
-                stmtGraph.replaceNode(stmt, returnStmt);
-                stmt = returnStmt;
-                defs.add(returnStmt);
-              }
+                    if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
+                        defs.add(stmt);
+                    }
+                }
+
+                // folding
+                for (Value value : stmt.getUses()) {
+
+                    Constant evaluatedValue = Evaluator.getConstantValueOf(value);
+                    if (evaluatedValue == null) {
+                        continue;
+                    }
+
+                    JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
+                    stmtGraph.replaceNode(stmt, assignStmt);
+                    defs.remove(stmt);
+                    defs.add(assignStmt);
+                    // FIXME: handle Locals!
+                }
+
+            } else if (isReturnStmt) {
+                for (Value value : stmt.getUses()) {
+                    if (!(value instanceof Local)) {
+                        continue;
+                    }
+                    List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
+                    if (defsOfUse.size() != 1) {
+                        continue;
+                    }
+                    AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
+                    Value rhs = definitionStmt.getRightOp();
+                    if (rhs instanceof NumericConstant
+                            || rhs instanceof StringConstant
+                            || rhs instanceof NullConstant) {
+                        JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
+                        stmtGraph.replaceNode(stmt, returnStmt);
+                        stmt = returnStmt;
+                        defs.add(returnStmt);
+                    }
+                }
+
+                // folding
+                for (Value value : stmt.getUses()) {
+
+                    Constant evaluatedValue = Evaluator.getConstantValueOf(value);
+                    if (evaluatedValue == null) {
+                        continue;
+                    }
+
+                    JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue(evaluatedValue);
+                    stmtGraph.replaceNode(stmt, returnStmt);
+                }
             }
-          }
-        }
-      }
 
-      // folding pass
-      for (Value value : stmt.getUses()) {
-
-        Constant evaluatedValue = Evaluator.getConstantValueOf(value);
-        if (evaluatedValue == null) {
-          continue;
         }
-
-        if (stmt instanceof JAssignStmt) {
-          JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
-          stmtGraph.replaceNode(stmt, assignStmt);
-          defs.remove(stmt);
-          defs.add(assignStmt);
-        } else if (stmt instanceof JReturnStmt) {
-          JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue(evaluatedValue);
-          stmtGraph.replaceNode(stmt, returnStmt);
-        }
-      }
     }
-  }
 }
