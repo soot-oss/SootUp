@@ -91,9 +91,6 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
       // folding pass
       for (Value value : stmt.getUses()) {
-          if (value instanceof Constant) {
-            continue;
-          }
 
           Value evaluatedValue = Evaluator.getConstantValueOf(value);
           if(evaluatedValue == null){
