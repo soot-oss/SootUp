@@ -85,7 +85,6 @@ public class LocalPacker implements BodyInterceptor {
     // store all new locals with reasonable name, if a local is not in newLoals, means that it
     // doesn't has reasonable name
     Set<Local> newLocals = new LinkedHashSet<>();
-    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       Stmt newStmt = stmt;
       for (Value use : stmt.getUses()) {
