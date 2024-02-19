@@ -52,35 +52,42 @@ import sootup.core.views.View;
  */
 public class CopyPropagator implements BodyInterceptor {
 
+  static final IntConstant zeroIntConstInstance = IntConstant.getInstance(0);
+  static final LongConstant zeroLongConstInstance = LongConstant.getInstance(0);
+
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       for (Value use : stmt.getUses()) {
-        if (use instanceof Local) {
-          List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
+        if (!(use instanceof Local)) {
+          continue;
+        }
 
-          if (isPropatabable(defsOfUse)) {
-            AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
-            Value rhs = defStmt.getRightOp();
-            // if rhs is a constant, then replace use, if it is possible
-            if (rhs instanceof Constant && !stmt.containsInvokeExpr()) {
-              replaceUse(stmtGraph, stmt, use, rhs);
-            }
-            // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
-            // then replace use, if it is possible
-            else if (rhs instanceof JCastExpr && rhs.getType() instanceof ReferenceType) {
-              Value op = ((JCastExpr) rhs).getOp();
-              if ((op instanceof IntConstant && op.equals(IntConstant.getInstance(0)))
-                  || (op instanceof LongConstant && op.equals(LongConstant.getInstance(0)))) {
-                replaceUse(stmtGraph, stmt, use, NullConstant.getInstance());
-              }
-            }
-            // if rhs is a local, then replace use, if it is possible
-            else if (rhs instanceof Local && !rhs.equivTo(use)) {
-              replaceUse(stmtGraph, stmt, use, rhs);
-            }
+        List<Stmt> defsOfUse = ((Local) use).getDefsForLocalUse(stmtGraph, stmt);
+        if (!isPropatabable(defsOfUse)) {
+          continue;
+        }
+
+        AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
+        Value rhs = defStmt.getRightOp();
+        // if rhs is a constant, then replace use, if it is possible
+        if (rhs instanceof Constant && !stmt.containsInvokeExpr()) {
+          replaceUse(stmtGraph, stmt, use, rhs);
+        }
+
+        // if rhs is a cast expr with a ref type and its op is 0 (IntConstant or LongConstant)
+        // then replace use, if it is possible
+        else if (rhs instanceof JCastExpr && rhs.getType() instanceof ReferenceType) {
+          Value op = ((JCastExpr) rhs).getOp();
+
+          if (zeroIntConstInstance.equals(op) || zeroLongConstInstance.equals(op)) {
+            replaceUse(stmtGraph, stmt, use, NullConstant.getInstance());
           }
+        }
+        // if rhs is a local, then replace use, if it is possible
+        else if (rhs instanceof Local && !rhs.equivTo(use)) {
+          replaceUse(stmtGraph, stmt, use, rhs);
         }
       }
     }

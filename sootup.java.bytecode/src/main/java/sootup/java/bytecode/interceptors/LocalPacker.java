@@ -40,6 +40,7 @@ public class LocalPacker implements BodyInterceptor {
 
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
     Map<Local, Integer> localToColor = assignLocalsColor(builder);
     // map each original local to a new local

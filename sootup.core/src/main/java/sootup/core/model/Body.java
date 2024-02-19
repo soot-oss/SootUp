@@ -319,8 +319,6 @@ public class Body implements HasPosition {
     @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private List<Stmt> cachedLinearizedStmts = null;
-
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
     }
@@ -345,16 +343,7 @@ public class Body implements HasPosition {
     /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = graph.getStmts();
-      return cachedLinearizedStmts;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      graph.setStartingStmt(startingStmt);
-      return this;
+      return graph.getStmts();
     }
 
     @Nonnull
@@ -399,54 +388,6 @@ public class Body implements HasPosition {
       }
       locals.remove(existingLocal);
       locals.add(newLocal);
-    }
-
-    /**
-     * replace the oldStmt with newStmt in stmtGraph and branches
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      graph.replaceNode(oldStmt, newStmt);
-      return this;
-    }
-
-    /**
-     * remove the a stmt from the graph and stmt
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      graph.removeNode(stmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
-      graph.clearExceptionalEdges(stmt);
-      return this;
-    }
-
-    @Nonnull
-    @Deprecated
-    public List<Trap> getTraps() {
-      return graph.getTraps();
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {

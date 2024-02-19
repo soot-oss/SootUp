@@ -120,16 +120,17 @@ public class TrapTightenerTest {
     Body body = createSimpleBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // modify exceptionalStmtGraph
-    builder.clearExceptionEdgesOf(stmt1);
-    builder.clearExceptionEdgesOf(stmt10);
+    stmtGraph.clearExceptionalEdges(stmt1);
+    stmtGraph.clearExceptionalEdges(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
     trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    List<Trap> actual = builder.getStmtGraph().getTraps();
+    List<Trap> actual = stmtGraph.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
   /**
@@ -159,9 +160,10 @@ public class TrapTightenerTest {
 
     Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
 
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // modify exceptionalStmtGraph
-    builder.clearExceptionEdgesOf(stmt2);
-    builder.clearExceptionEdgesOf(stmt4);
+    stmtGraph.clearExceptionalEdges(stmt2);
+    stmtGraph.clearExceptionalEdges(stmt4);
     //  stmtGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
@@ -169,7 +171,7 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    List<Trap> actual = builder.getStmtGraph().getTraps();
+    List<Trap> actual = stmtGraph.getTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 
@@ -191,7 +193,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder.build();
   }
@@ -214,7 +216,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
     Position position = NoPositionInformation.getInstance();

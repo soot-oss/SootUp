@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -69,9 +70,11 @@ public class JimplePrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(jNop);
+    stmtGraph.putEdge(jNop, returnVoidStmt);
+
     bodyBuilder
-        .setStartingStmt(jNop)
-        .addFlow(jNop, returnVoidStmt)
         .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();
