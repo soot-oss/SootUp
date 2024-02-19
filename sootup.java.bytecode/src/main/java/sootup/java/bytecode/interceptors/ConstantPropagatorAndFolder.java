@@ -24,6 +24,8 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -54,7 +56,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
     // Perform a constant/local propagation pass
     // go through each use in each statement
-    for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       // propagation pass
       if (stmt instanceof JAssignStmt) {
         Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
@@ -77,7 +80,7 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
                   || rhs instanceof StringConstant
                   || rhs instanceof NullConstant) {
                 JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
-                builder.replaceStmt(stmt, returnStmt);
+                stmtGraph.replaceNode(stmt, returnStmt);
                 stmt = returnStmt;
                 defs.add(returnStmt);
               }
@@ -88,20 +91,27 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
       // folding pass
       for (Value value : stmt.getUses()) {
-        if (!(value instanceof Constant)) {
-          if (Evaluator.isConstantValue(value)) {
-            value = Evaluator.getConstantValueOf(value);
-            if (stmt instanceof JAssignStmt) {
-              JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(value);
-              builder.replaceStmt(stmt, assignStmt);
-              defs.remove(stmt);
-              defs.add(assignStmt);
-            } else if (stmt instanceof JReturnStmt && value != null) {
-              JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) value);
-              builder.replaceStmt(stmt, returnStmt);
-            }
+          if (value instanceof Constant) {
+            continue;
           }
-        }
+          if (!Evaluator.isConstantValue(value)) {
+            continue;
+          }
+
+          Value evaluatedValue = Evaluator.getConstantValueOf(value);
+          if(evaluatedValue == null){
+            continue;
+          }
+
+          if (stmt instanceof JAssignStmt) {
+            JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
+            stmtGraph.replaceNode(stmt, assignStmt);
+            defs.remove(stmt);
+            defs.add(assignStmt);
+          } else if (stmt instanceof JReturnStmt) {
+            JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) evaluatedValue);
+            stmtGraph.replaceNode(stmt, returnStmt);
+          }
       }
     }
   }
