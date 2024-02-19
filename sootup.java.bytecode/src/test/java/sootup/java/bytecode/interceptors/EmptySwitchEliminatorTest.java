@@ -115,7 +115,7 @@ public class EmptySwitchEliminatorTest {
     stmtGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

@@ -192,7 +192,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder.build();
   }
@@ -215,7 +215,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
     Position position = NoPositionInformation.getInstance();

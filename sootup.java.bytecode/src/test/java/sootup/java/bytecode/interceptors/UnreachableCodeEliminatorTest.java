@@ -169,7 +169,7 @@ public class UnreachableCodeEliminatorTest {
     graph.putEdge(handlerStmt, beginStmt);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder, null);

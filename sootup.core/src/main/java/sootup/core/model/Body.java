@@ -342,14 +342,6 @@ public class Body implements HasPosition {
       return graph.getStmts();
     }
 
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      graph.setStartingStmt(startingStmt);
-      return this;
-    }
-
     @Nonnull
     public Set<Local> getLocals() {
       return Collections.unmodifiableSet(locals);
@@ -391,20 +383,6 @@ public class Body implements HasPosition {
         locals.remove(oldLocal);
         locals.add(newLocal);
       }
-    }
-
-    @Nonnull
-    @Deprecated
-    public List<Trap> getTraps() {
-      return graph.getTraps();
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
-      return this;
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {

@@ -132,7 +132,7 @@ public class LocalNameStandardizerTest {
     stmtGraph.putEdge(stmt7, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
