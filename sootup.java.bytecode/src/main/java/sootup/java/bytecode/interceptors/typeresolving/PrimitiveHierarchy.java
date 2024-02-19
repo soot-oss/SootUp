@@ -29,6 +29,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class PrimitiveHierarchy {
@@ -58,23 +59,20 @@ public class PrimitiveHierarchy {
             || b.getClass() == AugmentIntegerTypes.Integer32767Type.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
       if (a.getClass() == PrimitiveType.ShortType.class) {
         if (b.getClass() == PrimitiveType.ByteType.class
             || b.getClass() == PrimitiveType.CharType.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
       if (a.getClass() == PrimitiveType.CharType.class) {
         if (b.getClass() == PrimitiveType.ByteType.class
             || b.getClass() == PrimitiveType.ShortType.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
-      return Collections.emptySet();
+      return Collections.singleton(TopType.getInstance());
     }
     return Collections.emptySet();
   }
