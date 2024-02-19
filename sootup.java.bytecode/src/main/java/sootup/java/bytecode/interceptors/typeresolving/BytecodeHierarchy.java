@@ -189,13 +189,15 @@ public class BytecodeHierarchy {
             continue;
           }
           boolean isLcn = true;
-          for (Type l : ret) {
+          Iterator<Type> it = ret.iterator();
+          while (it.hasNext()) {
+            Type l = it.next();
             if (isAncestor(lcn, l)) {
               isLcn = false;
               break;
             }
             if (isAncestor(l, lcn)) {
-              ret.remove(l);
+              it.remove();
             }
           }
           if (isLcn) {
