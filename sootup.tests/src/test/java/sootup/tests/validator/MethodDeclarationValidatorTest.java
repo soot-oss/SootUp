@@ -62,12 +62,7 @@ public class MethodDeclarationValidatorTest {
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
     Body body =
-        bodyBuilder
-            .setStartingStmt(firstStmt)
-            .addFlow(firstStmt, returnVoidStmt)
-            .setMethodSignature(methodSignature)
-            .setLocals(generator.getLocals())
-            .build();
+        bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
     JavaSootMethod dummyMainMethod =
