@@ -129,10 +129,12 @@ class AsmClassSource extends JavaSootClassSource {
                       classSignature, methodName, retType, sigTypes);
 
               List<AnnotationNode> annotations = new ArrayList<>();
-              if (methodSource.visibleAnnotations != null)
+              if (methodSource.visibleAnnotations != null) {
                 annotations.addAll(methodSource.visibleAnnotations);
-              if (methodSource.invisibleAnnotations != null)
+              }
+              if (methodSource.invisibleAnnotations != null) {
                 annotations.addAll(methodSource.invisibleAnnotations);
+              }
 
               // TODO: position/line numbers if possible
               return new JavaSootMethod(
@@ -168,7 +170,7 @@ class AsmClassSource extends JavaSootClassSource {
     if (classNode.superName == null) {
       return Optional.empty();
     }
-    return Optional.ofNullable(AsmUtil.toJimpleClassType(classNode.superName));
+    return Optional.of(AsmUtil.toJimpleClassType(classNode.superName));
   }
 
   @Nonnull

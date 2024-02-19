@@ -30,11 +30,10 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that invokes a virtual method. */
-public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
+public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Stores the values to the args array. */
   public JVirtualInvokeExpr(

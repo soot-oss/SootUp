@@ -42,7 +42,7 @@ public class JIdentityStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     Local thiz = new Local("r0", typeFactory.getType("somepackage.dummy.MyClass"));

@@ -30,11 +30,10 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that invokes a special method (e.g. private methods). */
-public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
+public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   public JSpecialInvokeExpr(
       @Nonnull Local base, @Nonnull MethodSignature method, @Nonnull List<Immediate> args) {

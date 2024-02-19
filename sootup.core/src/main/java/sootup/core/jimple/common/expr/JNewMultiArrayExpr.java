@@ -32,11 +32,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Like {@link JNewArrayExpr}, but for multi-dimensional arrays. */
-public final class JNewMultiArrayExpr implements Expr, Copyable {
+public final class JNewMultiArrayExpr implements Expr {
 
   private final ArrayType baseType;
   private final List<Immediate> sizes;

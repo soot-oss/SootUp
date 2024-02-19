@@ -33,11 +33,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /** An expression that creates a new array of a certain type and a certain size. */
-public final class JNewArrayExpr implements Expr, Copyable {
+public final class JNewArrayExpr implements Expr {
 
   @Nonnull private final Type baseType;
   @Nonnull private final Immediate size;

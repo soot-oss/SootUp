@@ -198,7 +198,7 @@ public class CallGraphBuilder {
     if (!stmtMap.containsKey(heapOrType)) {
       AbstractInvokeExpr ie =
           new JStaticInvokeExpr(callee.method().getSignature(), Collections.emptyList());
-      JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.createNoStmtPositionInfo());
+      JInvokeStmt stmt = new JInvokeStmt(ie, StmtPositionInfo.getNoStmtPositionInfo());
       stmtMap.put(heapOrType, stmt);
       handleCallEdge(
           new Edge(

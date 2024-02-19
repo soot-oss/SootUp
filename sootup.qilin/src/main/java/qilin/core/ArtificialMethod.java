@@ -88,7 +88,7 @@ public abstract class ArtificialMethod {
 
   private void addIdentity(Local lValue, IdentityRef rValue) {
     Stmt identityStmt =
-        Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newIdentityStmt(lValue, rValue, StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(identityStmt);
   }
 
@@ -117,7 +117,7 @@ public abstract class ArtificialMethod {
   }
 
   protected void addReturn(Immediate ret) {
-    Stmt stmt = Jimple.newReturnStmt(ret, StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt = Jimple.newReturnStmt(ret, StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 
@@ -142,7 +142,7 @@ public abstract class ArtificialMethod {
         clazz.isInterface()
             ? Jimple.newInterfaceInvokeExpr(receiver, methodSig, argsL)
             : Jimple.newVirtualInvokeExpr(receiver, methodSig, argsL);
-    Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt = Jimple.newInvokeStmt(invoke, StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 
@@ -171,8 +171,7 @@ public abstract class ArtificialMethod {
     List<Immediate> argsL = Arrays.asList(args);
     Stmt stmt =
         Jimple.newInvokeStmt(
-            Jimple.newStaticInvokeExpr(methodSig, argsL),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            Jimple.newStaticInvokeExpr(methodSig, argsL), StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 
@@ -190,7 +189,7 @@ public abstract class ArtificialMethod {
   }
 
   protected void addAssign(LValue lValue, Value rValue) {
-    Stmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt = Jimple.newAssignStmt(lValue, rValue, StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(stmt);
   }
 }

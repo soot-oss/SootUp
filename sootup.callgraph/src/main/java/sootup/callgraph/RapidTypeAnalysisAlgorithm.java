@@ -226,7 +226,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod.getSubSignature()))
             .orElse(null);
-    if (method == null) return;
+    if (method == null) {
+      return;
+    }
 
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
     newInstantiatedClasses.forEach(

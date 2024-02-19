@@ -40,7 +40,7 @@ public class JavaLangSystemSetErr0Native extends NativeMethod {
     JStaticFieldRef systemErr = getStaticFieldRef("java.lang.System", "err");
     addAssign(systemErr, r1);
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

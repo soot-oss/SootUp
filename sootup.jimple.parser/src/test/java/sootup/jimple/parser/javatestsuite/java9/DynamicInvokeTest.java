@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.jimple.parser.categories.Java8Test;
 import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
+@Category(Java8Test.class)
 public class DynamicInvokeTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {

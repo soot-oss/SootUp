@@ -24,7 +24,6 @@ package sootup.java.bytecode.inputlocation;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
@@ -32,9 +31,13 @@ import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
-import sootup.core.model.*;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSubSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
@@ -51,9 +54,19 @@ import sootup.java.core.views.JavaView;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
+  public void testApk() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        new ApkAnalysisInputLocation(apk, SourceType.Application);
+    final ClassType mainClass =
+        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
+  }
+
+  @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(cls, null);
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            cls, "", SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
@@ -62,13 +75,26 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test(expected = IllegalArgumentException.class)
   public void testSingleClassDoesNotExist() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), null);
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("NonExisting.class"), SourceType.Application);
+  }
+
+  @Test
+  public void testSingleClassWPackageName() {
+    AnalysisInputLocation pathBasedNamespace =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            "ClassesPackageName",
+            SourceType.Application);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("ClassesPackageName.ClassWithPackageName"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(jar, null);
+        PathBasedAnalysisInputLocation.create(jar, SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
@@ -78,7 +104,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(war, null);
+        PathBasedAnalysisInputLocation.create(war, SourceType.Application);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
   }

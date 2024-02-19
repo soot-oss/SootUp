@@ -43,7 +43,7 @@ public class JavaLangThreadStart0Native extends NativeMethod {
     LValue lv = PTAScene.v().getFieldCurrentThread();
     addAssign(lv, mThis); // store.
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

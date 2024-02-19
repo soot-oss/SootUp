@@ -17,7 +17,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverJarModuleByName() {
-    ModuleFinder moduleFinder = new ModuleFinder(jar.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(jar);
     AnalysisInputLocation inputLocation =
         moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("MiniApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
@@ -25,14 +25,14 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverJarModuleInAllModules() {
-    ModuleFinder moduleFinder = new ModuleFinder(jar.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(jar);
     Collection<ModuleSignature> modules = moduleFinder.getAllModules();
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("MiniApp")));
   }
 
   @Test
   public void discoverWarModuleByName() {
-    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(war);
     AnalysisInputLocation inputLocation =
         moduleFinder.getModule(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp"));
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
@@ -40,7 +40,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test
   public void discoverWarModuleInAllModules() {
-    ModuleFinder moduleFinder = new ModuleFinder(war.toString());
+    ModuleFinder moduleFinder = new ModuleFinder(war);
     Collection<ModuleSignature> modules = moduleFinder.getAllModules();
     assertTrue(modules.contains(JavaModuleIdentifierFactory.getModuleSignature("dummyWarApp")));
   }
@@ -48,7 +48,8 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void testModuleJar() {
     ModuleFinder moduleFinder =
-        new ModuleFinder("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
+        new ModuleFinder(
+            Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/"));
     Collection<ModuleSignature> discoveredModules = moduleFinder.getAllModules();
     assertTrue(
         discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("de.upb.mod")));
@@ -57,7 +58,8 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   @Test
   public void testModuleExploded() {
     ModuleFinder moduleFinder =
-        new ModuleFinder("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
+        new ModuleFinder(
+            Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/"));
     Collection<ModuleSignature> discoveredModules = moduleFinder.getAllModules();
     assertTrue(
         discoveredModules.contains(JavaModuleIdentifierFactory.getModuleSignature("fancyMod")));
@@ -77,7 +79,8 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
     ModuleFinder moduleFinder =
         new ModuleFinder(
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/automaticModuleWithManifest");
+            Paths.get(
+                "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/automaticModuleWithManifest"));
 
     assertNotNull(
         moduleFinder.getModule(

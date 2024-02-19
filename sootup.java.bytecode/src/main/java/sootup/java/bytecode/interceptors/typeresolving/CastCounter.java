@@ -57,6 +57,7 @@ public class CastCounter extends TypeChecker {
     castCount = 0;
     countOnly = true;
     setTyping(typing);
+    // TODO: is a sorted list of stmts necessary?
     for (Stmt stmt : builder.getStmts()) {
       stmt.accept(this);
     }
@@ -71,6 +72,7 @@ public class CastCounter extends TypeChecker {
     castCount = 0;
     countOnly = false;
     setTyping(typing);
+    // TODO: is a sorted list of stmts necessary?
     for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
       stmt.accept(this);
     }

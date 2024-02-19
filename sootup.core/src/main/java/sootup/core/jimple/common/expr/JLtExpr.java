@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** An expression that checks whether operand 1 &lt; operand 2. */
-public final class JLtExpr extends AbstractConditionExpr implements Copyable {
+public final class JLtExpr extends AbstractConditionExpr {
 
   public JLtExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

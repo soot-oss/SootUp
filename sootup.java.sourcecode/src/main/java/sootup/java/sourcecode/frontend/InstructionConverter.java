@@ -1009,7 +1009,9 @@ public class InstructionConverter {
     } else {
       op2 = getLocal(type, val2);
     }
-    if (type.equals(UnknownType.getInstance())) type = op2.getType();
+    if (type.equals(UnknownType.getInstance())) {
+      type = op2.getType();
+    }
     AbstractBinopExpr binExpr;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
@@ -1214,8 +1216,12 @@ public class InstructionConverter {
    * detection of implicit return statements in void methods.
    */
   public boolean hasJumpTarget(Integer i) {
-    if (branchingTargetsOfIfStmts.containsValue(i)) return true;
-    if (branchingTargetsOfGotoStmts.containsValue(i)) return true;
+    if (branchingTargetsOfIfStmts.containsValue(i)) {
+      return true;
+    }
+    if (branchingTargetsOfGotoStmts.containsValue(i)) {
+      return true;
+    }
     for (List<Integer> list : branchingTargetsOfLookUpSwitchStmts.values()) {
       if (list.contains(i)) {
         return true;

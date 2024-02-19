@@ -33,7 +33,7 @@ public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod
     Local r0 = getPara(0);
     addInvoke(r0, "<java.lang.Object: void finalize()>");
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

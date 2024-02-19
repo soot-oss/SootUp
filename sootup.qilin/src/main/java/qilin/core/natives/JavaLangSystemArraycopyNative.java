@@ -52,7 +52,7 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
     addAssign(temp, src);
     addAssign(dst, temp);
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

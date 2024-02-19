@@ -16,10 +16,10 @@ import sootup.core.jimple.common.stmt.JIfStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
-import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public class DeadAssignmentEliminatorTest {
 
@@ -50,10 +50,10 @@ public class DeadAssignmentEliminatorTest {
    */
   @Test
   public void conditionalToRemovedBlock() {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
-    Set<Local> locals = ImmutableUtils.immutableSet(a);
+    Set<Local> locals = Collections.singleton(a);
 
     BranchingStmt conditional =
         JavaJimple.newIfStmt(
@@ -77,7 +77,8 @@ public class DeadAssignmentEliminatorTest {
     stmtGraph.putEdge(intToA, ret);
 
     Body beforeBody = builder.build();
-    new DeadAssignmentEliminator().interceptBody(builder, null);
+    builder = Body.builder(beforeBody, Collections.emptySet());
+    new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body afterBody = builder.build();
 
     assertEquals(
@@ -89,8 +90,11 @@ public class DeadAssignmentEliminatorTest {
   public void testRemoveDeadAssignment() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
-    Body processedBody = testBuilder.build();
+
+    Body.BodyBuilder builder = Body.builder(testBody, Collections.emptySet());
+    new DeadAssignmentEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
+    Body processedBody = builder.build();
+
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
@@ -101,7 +105,8 @@ public class DeadAssignmentEliminatorTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new DeadAssignmentEliminator().interceptBody(testBuilder, null);
+    new DeadAssignmentEliminator()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     StmtGraph<?> expectedGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
@@ -110,11 +115,10 @@ public class DeadAssignmentEliminatorTest {
   }
 
   private static Body.BodyBuilder createBody(boolean essentialOption) {
-    JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
-    JavaClassType objectType = factory.getClassType("java.lang.Object");
+    JavaClassType objectType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
 
     Local a = JavaJimple.newLocal("a", objectType);
     Local b = JavaJimple.newLocal("b", objectType);
@@ -124,7 +128,7 @@ public class DeadAssignmentEliminatorTest {
         JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
     Stmt ret = JavaJimple.newReturnStmt(a, noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b, c);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(a, b, c));
 
     Body.BodyBuilder builder = Body.builder();
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();

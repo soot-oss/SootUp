@@ -24,7 +24,6 @@ package sootup.core.jimple.common.expr;
 
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.Value;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
@@ -38,8 +37,8 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
   @Nonnull
   @Override
   public Type getType() {
-    Value op1 = getOp1();
-    Value op2 = getOp2();
+    Immediate op1 = getOp1();
+    Immediate op2 = getOp2();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
 

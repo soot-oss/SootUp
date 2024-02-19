@@ -45,7 +45,7 @@ public class JavaLangReflectArraySet extends NativeMethod {
     JArrayRef arrayRef = getArrayRef(arrayBase);
     addAssign(arrayRef, rightValue); // a[] = b;
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

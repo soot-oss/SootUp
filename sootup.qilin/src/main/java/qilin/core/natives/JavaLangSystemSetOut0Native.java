@@ -40,7 +40,7 @@ public class JavaLangSystemSetOut0Native extends NativeMethod {
     JStaticFieldRef systemOut = getStaticFieldRef("java.lang.System", "out");
     addAssign(systemOut, r1);
     final JReturnVoidStmt returnStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);
   }
 }

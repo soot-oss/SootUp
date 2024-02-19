@@ -39,7 +39,7 @@ public class JReturnVoidStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt rStmt = new JReturnVoidStmt(nop);
 
     // equivTo

@@ -40,13 +40,11 @@ import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
@@ -118,11 +116,7 @@ public class PTAScene {
   private static JavaView createViewForClassPath(List<String> classPaths) {
     List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     for (String clazzPath : classPaths) {
-      analysisInputLocations.add(
-          new JavaClassPathAnalysisInputLocation(
-              clazzPath,
-              SourceType.Application,
-              BytecodeClassLoadingOptions.Default.getBodyInterceptors()));
+      analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
     }
     return new JavaView(analysisInputLocations);
   }

@@ -22,297 +22,253 @@ package sootup.java.bytecode.inputlocation;
  * #L%
  */
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.Language;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.*;
-import sootup.java.core.signatures.ModuleSignature;
-import sootup.java.core.types.ModuleJavaClassType;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.JavaSootClassSource;
 
 /**
  * If the user wants to analyze a Multi-Release Jar, they have to specify the language level to
- * analyze explicitly
+ * analyze explicitly. if there is no match for the given language level, the default location
+ * inside the jar will be used.
+ *
+ * <p>see <a href="https://openjdk.org/jeps/238">JEP 238</a>
  */
-public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation
-    implements ModuleInfoAnalysisInputLocation {
+public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
-  @Nonnull private final Language language;
-  @Nonnull private final int[] availableVersions;
+  // ModularInputLocations exist since Java 9 -> in previous language levels its structured like a
+  // "usual" Jar
+  protected static final Integer DEFAULT_VERSION = 0;
+
+  @Nonnull protected final Language language;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull
-  private final Map<Integer, Map<ModuleSignature, JavaModuleInfo>> moduleInfoMap = new HashMap<>();
+  protected final Map<Integer, AnalysisInputLocation> inputLocations = new LinkedHashMap<>();
 
-  @Nonnull private final Map<Integer, List<AnalysisInputLocation>> inputLocations = new HashMap<>();
+  public static AnalysisInputLocation create(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      List<BodyInterceptor> bodyInterceptors) {
 
-  @Nonnull private final List<AnalysisInputLocation> baseInputLocations = new ArrayList<>();
-
-  boolean isResolved = false;
-
-  public MultiReleaseJarAnalysisInputLocation(
-      @Nonnull Path path, @Nullable SourceType srcType, @Nonnull Language language) {
-    super(path, srcType);
-    this.language = language;
-
-    int[] tmp;
-    try {
-      FileSystem fs = fileSystemCache.get(path);
-      final Path archiveRoot = fs.getPath("/");
-      tmp =
-          Files.list(archiveRoot.getFileSystem().getPath("/META-INF/versions/"))
-              .map(dir -> dir.getFileName().toString().replace("/", ""))
-              .mapToInt(Integer::new)
-              .sorted()
-              .toArray();
-    } catch (IOException | ExecutionException e) {
-      e.printStackTrace();
-      tmp = new int[] {};
+    if (isMultiReleaseJar(path)) {
+      return new MultiReleaseJarAnalysisInputLocation(
+          path, srcType, language, bodyInterceptors, true);
     }
-    availableVersions = tmp;
 
-    discoverInputLocations(srcType);
+    return PathBasedAnalysisInputLocation.create(
+        path, srcType, bodyInterceptors, Collections.singletonList(Paths.get("/META-INF")));
   }
 
-  /** Discovers all input locations for different java versions in this multi release jar */
-  private void discoverInputLocations(@Nullable SourceType srcType) {
-    FileSystem fs = null;
+  public MultiReleaseJarAnalysisInputLocation(@Nonnull Path path, @Nonnull Language language) {
+    this(path, SourceType.Application, language);
+  }
+
+  public MultiReleaseJarAnalysisInputLocation(
+      @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
+    this(path, srcType, language, BytecodeBodyInterceptors.Default.getBodyInterceptors());
+  }
+
+  public MultiReleaseJarAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this(path, srcType, language, bodyInterceptors, isMultiReleaseJar(path));
+  }
+
+  protected MultiReleaseJarAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull Language language,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      boolean isMultiRelease) {
+    super(path, srcType);
+    this.language = language;
+    this.bodyInterceptors = bodyInterceptors;
+
+    if (!isMultiRelease) {
+      throw new IllegalArgumentException("The given path does not point to a multi release jar.");
+    }
+
+    FileSystem fs;
     try {
       fs = fileSystemCache.get(path);
     } catch (ExecutionException e) {
-      e.printStackTrace();
+      throw new IllegalArgumentException("Could not open filesystemcache.", e);
     }
+
     final Path archiveRoot = fs.getPath("/");
-    final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
+    Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
 
-    baseInputLocations.add(PathBasedAnalysisInputLocation.create(archiveRoot, srcType));
+    try (Stream<Path> list = Files.list(versionedRoot)) {
+      list.map(
+              dir -> {
+                String versionDirName = dir.getFileName().toString();
+                return versionDirName.substring(0, versionDirName.length() - 1);
+              })
+          .map(Integer::new)
+          .filter(version -> version <= language.getVersion())
+          .sorted(Comparator.reverseOrder())
+          .forEach(
+              version -> {
+                final Path versionRoot =
+                    archiveRoot
+                        .getFileSystem()
+                        .getPath("/META-INF", "versions", version.toString());
+                inputLocations.put(
+                    version,
+                    PathBasedAnalysisInputLocation.create(
+                        versionRoot, sourceType, bodyInterceptors, Collections.emptyList()));
+              });
 
-    String sep = archiveRoot.getFileSystem().getSeparator();
-
-    if (!isResolved) {
-
-      for (int i = availableVersions.length - 1; i >= 0; i--) {
-        inputLocations.put(availableVersions[i], new ArrayList<>());
-
-        final Path versionRoot =
-            archiveRoot.getFileSystem().getPath("/META-INF/versions/" + availableVersions[i] + sep);
-
-        // only versions >= 9 support java modules
-        if (availableVersions[i] > 8) {
-          moduleInfoMap.put(availableVersions[i], new HashMap<>());
-          try (DirectoryStream<Path> stream = Files.newDirectoryStream(versionRoot)) {
-            for (Path entry : stream) {
-
-              Path mi = path.resolve(moduleInfoFilename);
-
-              if (Files.exists(mi)) {
-                JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
-                ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
-                JavaModulePathAnalysisInputLocation inputLocation =
-                    new JavaModulePathAnalysisInputLocation(
-                        versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
-
-                inputLocations.get(availableVersions[i]).add(inputLocation);
-                moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
-              }
-
-              if (Files.isDirectory(entry)) {
-                mi = versionRoot.resolve(moduleInfoFilename);
-
-                if (Files.exists(mi)) {
-                  JavaModuleInfo moduleInfo = new AsmModuleSource(mi);
-                  ModuleSignature moduleSignature = moduleInfo.getModuleSignature();
-                  JavaModulePathAnalysisInputLocation inputLocation =
-                      new JavaModulePathAnalysisInputLocation(
-                          versionRoot.toString(), versionRoot.getFileSystem(), getSourceType());
-
-                  inputLocations.get(availableVersions[i]).add(inputLocation);
-                  moduleInfoMap.get(availableVersions[i]).put(moduleSignature, moduleInfo);
-                }
-                // else TODO [bh] can we have automatic modules here?
-              }
-            }
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-
-        // if there was no module or the version is not > 8, we just add a directory based input
-        // location
-        if (inputLocations.get(availableVersions[i]).size() == 0) {
-          inputLocations
-              .get(availableVersions[i])
-              .add(PathBasedAnalysisInputLocation.create(versionRoot, srcType));
-        }
-      }
+      inputLocations.put(
+          DEFAULT_VERSION,
+          createAnalysisInputLocation(archiveRoot, srcType, getBodyInterceptors()));
+    } catch (IOException e) {
+      throw new IllegalStateException("Can not index the given file.", e);
     }
+  }
 
-    isResolved = true;
+  protected AnalysisInputLocation createAnalysisInputLocation(
+      Path archiveRoot, SourceType sourceType, List<BodyInterceptor> bodyInterceptors) {
+    return PathBasedAnalysisInputLocation.create(
+        archiveRoot,
+        sourceType,
+        bodyInterceptors,
+        Collections.singletonList(Paths.get("/META-INF")));
   }
 
   @Override
   @Nonnull
   public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
-
-    Collection<AnalysisInputLocation> il = getBestMatchingInputLocationsRaw(language.getVersion());
-
-    Collection<AnalysisInputLocation> baseIl = getBaseInputLocations();
-
-    if (type instanceof ModuleJavaClassType) {
-      il =
-          il.stream()
-              .filter(location -> location instanceof ModuleInfoAnalysisInputLocation)
-              .collect(Collectors.toList());
-      baseIl =
-          baseIl.stream()
-              .filter(location -> location instanceof ModuleInfoAnalysisInputLocation)
-              .collect(Collectors.toList());
-    } else {
-      il =
-          il.stream()
-              .filter(location -> !(location instanceof ModuleInfoAnalysisInputLocation))
-              .collect(Collectors.toList());
-      baseIl =
-          baseIl.stream()
-              .filter(location -> !(location instanceof ModuleInfoAnalysisInputLocation))
-              .collect(Collectors.toList());
+    for (AnalysisInputLocation analysisInputLocation : inputLocations.values()) {
+      Optional<? extends SootClassSource> classSource =
+          analysisInputLocation.getClassSource(type, view);
+      if (classSource.isPresent()) {
+        SootClassSource src = classSource.get();
+        JavaSootClassSource javaSootClassSource = (JavaSootClassSource) src;
+        return Optional.of(javaSootClassSource);
+      }
     }
-
-    Optional<JavaSootClassSource> foundClass =
-        il.stream()
-            .map(location -> location.getClassSource(type, view))
-            .filter(Optional::isPresent)
-            .limit(1)
-            .map(Optional::get)
-            .map(src -> (JavaSootClassSource) src)
-            .findAny();
-
-    if (foundClass.isPresent()) {
-      return foundClass;
-    } else {
-      return baseIl.stream()
-          .map(location -> location.getClassSource(type, view))
-          .filter(Optional::isPresent)
-          .limit(1)
-          .map(Optional::get)
-          .map(src -> (JavaSootClassSource) src)
-          .findAny();
-    }
-  }
-
-  @Nonnull
-  @Override
-  public Collection<JavaSootClassSource> getModulesClassSources(
-      @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
-    return inputLocations.get(language.getVersion()).stream()
-        .filter(location -> location instanceof ModuleInfoAnalysisInputLocation)
-        .map(
-            location ->
-                ((ModuleInfoAnalysisInputLocation) location)
-                    .getModulesClassSources(moduleSignature, view))
-        .flatMap(Collection::stream)
-        .map(src -> (JavaSootClassSource) src)
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Returns the best matching input locations or the base input location.
-   *
-   * @param javaVersion version to find best match to
-   * @return best match or base input locations
-   */
-  private Collection<AnalysisInputLocation> getBestMatchingInputLocationsRaw(int javaVersion) {
-    for (int i = availableVersions.length - 1; i >= 0; i--) {
-
-      if (availableVersions[i] > javaVersion) continue;
-
-      return new ArrayList<>(inputLocations.get(availableVersions[i]));
-    }
-
-    return getBaseInputLocations();
-  }
-
-  private Collection<AnalysisInputLocation> getBaseInputLocations() {
-    return baseInputLocations;
+    return Optional.empty();
   }
 
   @Override
   @Nonnull
   public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    Collection<AnalysisInputLocation> il = getBestMatchingInputLocationsRaw(language.getVersion());
 
-    Collection<JavaSootClassSource> result =
-        il.stream()
-            .map(location -> location.getClassSources(view))
-            .flatMap(Collection::stream)
-            .map(src -> (JavaSootClassSource) src)
-            .collect(Collectors.toList());
+    Collection<JavaSootClassSource> classSources = new ArrayList<>();
+    inputLocations.values().stream()
+        .flatMap(location -> location.getClassSources(view).stream())
+        .map(src -> (JavaSootClassSource) src)
+        .forEach(
+            cs -> {
+              // do not add duplicate class sources
+              if (classSources.stream()
+                  .noneMatch(
+                      bestMatchCS ->
+                          bestMatchCS
+                              .getClassType()
+                              .getFullyQualifiedName()
+                              .equals(cs.getClassType().getFullyQualifiedName()))) {
+                classSources.add(cs);
+              }
+            });
 
-    if (il != getBaseInputLocations()) {
-
-      Collection<JavaSootClassSource> baseSources =
-          getBaseInputLocations().stream()
-              .map(location -> location.getClassSources(view))
-              .flatMap(Collection::stream)
-              .map(src -> (JavaSootClassSource) src)
-              .collect(Collectors.toList());
-
-      baseSources.forEach(
-          cs -> {
-            // do not add duplicate class sources
-            if (result.stream()
-                .noneMatch(
-                    bestMatchCS ->
-                        bestMatchCS
-                            .getClassType()
-                            .getFullyQualifiedName()
-                            .equals(cs.getClassType().getFullyQualifiedName()))) {
-              result.add(cs);
-            }
-          });
-    }
-
-    return result;
-  }
-
-  @Nonnull
-  @Override
-  public Optional<JavaModuleInfo> getModuleInfo(ModuleSignature sig, View view) {
-    return Optional.ofNullable(moduleInfoMap.get(language.getVersion()).get(sig));
-  }
-
-  @Nonnull
-  @Override
-  public Set<ModuleSignature> getModules(View view) {
-    return inputLocations.get(language.getVersion()).stream()
-        .filter(e -> e instanceof ModuleInfoAnalysisInputLocation)
-        .map(e -> ((ModuleInfoAnalysisInputLocation) e).getModules(view))
-        .flatMap(Set::stream)
-        .collect(Collectors.toSet());
+    return classSources;
   }
 
   @Nonnull
   public Language getLanguage() {
-    return this.language;
+    return language;
+  }
+
+  public static boolean isMultiReleaseJar(Path path) {
+    try {
+      FileInputStream inputStream = new FileInputStream(path.toFile());
+      JarInputStream jarStream = new JarInputStream(inputStream);
+      Manifest mf = jarStream.getManifest();
+
+      if (mf == null) {
+        return false;
+      }
+
+      Attributes attributes = mf.getMainAttributes();
+
+      String value = attributes.getValue("Multi-Release");
+
+      if (value == null) {
+        return false;
+      }
+
+      return Boolean.parseBoolean(value);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Manifest file not found.", e);
+    }
+  }
+
+  @Override
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
+  }
+
+  /**
+   * lists all versions from the version directories inside the META-INF/ directory - excluding the
+   * default implemention version
+   */
+  protected static List<Integer> getLanguageVersions(@Nonnull Path path) {
+    FileSystem fs;
+    try {
+      fs = fileSystemCache.get(path);
+    } catch (ExecutionException e) {
+      throw new IllegalArgumentException("Could not open filesystemcache.", e);
+    }
+
+    final Path archiveRoot = fs.getPath("/");
+    Path versionedRoot = archiveRoot.getFileSystem().getPath("/META-INF/versions/");
+
+    try (Stream<Path> list = Files.list(versionedRoot)) {
+      return list.map(
+              dir -> {
+                String versionDirName = dir.getFileName().toString();
+                return versionDirName.substring(0, versionDirName.length() - 1);
+              })
+          .map(Integer::new)
+          .sorted()
+          .collect(Collectors.toCollection(ArrayList::new));
+    } catch (IOException e) {
+      throw new IllegalStateException("Can not index the given file.", e);
+    }
   }
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof PathBasedAnalysisInputLocation)) {
+    if (!(o instanceof MultiReleaseJarAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((PathBasedAnalysisInputLocation) o).path);
+    return path.equals(((MultiReleaseJarAnalysisInputLocation) o).path);
   }
 
   @Override

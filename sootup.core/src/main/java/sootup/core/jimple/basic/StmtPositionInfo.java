@@ -58,7 +58,7 @@ public abstract class StmtPositionInfo {
    * @return an instance with no position information.
    */
   @Nonnull
-  public static StmtPositionInfo createNoStmtPositionInfo() {
+  public static StmtPositionInfo getNoStmtPositionInfo() {
     return NOPOSITION;
   }
 

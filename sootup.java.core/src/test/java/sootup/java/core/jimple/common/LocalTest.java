@@ -60,6 +60,6 @@ public class LocalTest {
     assertFalse(l2.equivTo(l3, comparator));
 
     assertFalse(
-        l1.equivTo(new JBreakpointStmt(StmtPositionInfo.createNoStmtPositionInfo()), comparator));
+        l1.equivTo(new JBreakpointStmt(StmtPositionInfo.getNoStmtPositionInfo()), comparator));
   }
 }

@@ -29,7 +29,7 @@ public class LocalLivenessAnalyserTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
@@ -110,7 +110,7 @@ public class LocalLivenessAnalyserTest {
     stmtGraph.putEdge(ifalt9, JIfStmt.TRUE_BRANCH_IDX, beqaplus1);
 
     // set first stmt
-    builder.setStartingStmt(aeq0);
+    stmtGraph.setStartingStmt(aeq0);
 
     // build position
     Position position = NoPositionInformation.getInstance();

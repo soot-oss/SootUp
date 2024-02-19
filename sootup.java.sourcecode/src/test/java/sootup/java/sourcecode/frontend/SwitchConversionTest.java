@@ -3,6 +3,7 @@ package sootup.java.sourcecode.frontend;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.util.Utils;
@@ -18,6 +20,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
 
+@Category(Java8Test.class)
 public class SwitchConversionTest {
   private WalaJavaClassProvider loader;
 

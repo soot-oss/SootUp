@@ -33,7 +33,6 @@ import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
@@ -43,7 +42,7 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
@@ -110,7 +109,7 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
     return Collections.emptyList();
   }
 
-  /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
+  /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
   public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
     List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {

@@ -32,14 +32,13 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 
@@ -50,16 +49,20 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   // cache can be safely shared in a static variable.
   protected static final LoadingCache<Path, FileSystem> fileSystemCache =
       CacheBuilder.newBuilder()
+          .weakValues()
           .removalListener(
               (RemovalNotification<Path, FileSystem> removalNotification) -> {
                 try {
-                  removalNotification.getValue().close();
+                  FileSystem value = removalNotification.getValue();
+                  if (value != null) {
+                    value.close();
+                  }
                 } catch (IOException e) {
                   throw new RuntimeException(
                       "Could not close file system of " + removalNotification.getKey(), e);
                 }
               })
-          .expireAfterAccess(1, TimeUnit.SECONDS)
+          // .expireAfterAccess(1, TimeUnit.SECONDS)
           .build(
               CacheLoader.from(
                   path -> {
@@ -71,15 +74,23 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                     }
                   }));
 
-  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
-    this(path, srcType, Collections.emptyList());
+  public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
+    this(path, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public ArchiveBasedAnalysisInputLocation(
       @Nonnull Path path,
-      @Nullable SourceType srcType,
+      @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    super(path, srcType, bodyInterceptors);
+    this(path, srcType, bodyInterceptors, Collections.emptyList());
+  }
+
+  public ArchiveBasedAnalysisInputLocation(
+      Path path,
+      SourceType srcType,
+      List<BodyInterceptor> bodyInterceptors,
+      Collection<Path> ignoredPaths) {
+    super(path, srcType, bodyInterceptors, ignoredPaths);
   }
 
   @Override
@@ -98,14 +109,13 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
   @Override
   @Nonnull
   public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
-    // we don't use the filesystem cache here as it could close the filesystem after the timeout
-    // while we are still iterating
-    try (FileSystem fs = FileSystems.newFileSystem(path, (ClassLoader) null)) {
+    try {
+      FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       return walkDirectory(
           archiveRoot, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (ExecutionException e) {
+      throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
     }
   }
 }

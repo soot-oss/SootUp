@@ -91,7 +91,7 @@ public class FakeMainFactory extends ArtificialMethod {
         view.getIdentifierFactory()
             .getMethodSignature(className, "main", "void", Collections.emptyList());
 
-    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     this.bodyBuilder = Body.builder();

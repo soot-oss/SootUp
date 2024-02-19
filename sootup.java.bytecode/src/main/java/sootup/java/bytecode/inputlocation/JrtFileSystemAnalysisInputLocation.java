@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
@@ -39,6 +40,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;
@@ -51,8 +53,9 @@ import sootup.java.core.types.JavaClassType;
  */
 public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInputLocation {
 
+  // FIXME: handle closing the filesystem resource
   private static final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
-  Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
+  private final Map<ModuleSignature, JavaModuleInfo> moduleInfoMap = new HashMap<>();
   boolean isResolved = false;
 
   @Nonnull private final SourceType sourceType;
@@ -64,7 +67,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   }
 
   public JrtFileSystemAnalysisInputLocation(@Nonnull SourceType sourceType) {
-    this(sourceType, Collections.emptyList());
+    this(sourceType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public JrtFileSystemAnalysisInputLocation(
@@ -130,7 +133,6 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
   public Collection<JavaSootClassSource> getModulesClassSources(
       @Nonnull ModuleSignature moduleSignature, @Nonnull View view) {
     return getClassSourcesInternal(moduleSignature, view.getIdentifierFactory(), view)
-        .map(src -> (JavaSootClassSource) src)
         .collect(Collectors.toList());
   }
 
@@ -160,11 +162,7 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
           .flatMap(
               p ->
                   StreamUtils.optionalToStream(
-                      classProvider.createClassSource(
-                          this,
-                          p,
-                          this.fromPath(
-                              p.subpath(2, p.getNameCount()), p.subpath(1, 2), identifierFactory))))
+                      classProvider.createClassSource(this, p, fromPath(p, identifierFactory))))
           .map(src -> (JavaSootClassSource) src);
     } catch (IOException e) {
       throw new ResolveException("Error loading module " + moduleSignature, archiveRoot, e);
@@ -216,12 +214,18 @@ public class JrtFileSystemAnalysisInputLocation implements ModuleInfoAnalysisInp
 
   @Nonnull
   private JavaClassType fromPath(
-      final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
+      @Nonnull Path p, @Nonnull final IdentifierFactory identifierFactory) {
 
-    // else use the module system and create fully class signature
-    // we do not have a base directory here, the moduleDir is actually not a directory
-    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(Paths.get(""), filename);
+    final Path moduleDir = p.subpath(1, 2);
+    final Path filename = p.subpath(2, p.getNameCount());
 
+    final String fullyQualifiedName =
+        FilenameUtils.removeExtension(
+            filename.toString().replace(filename.getFileSystem().getSeparator(), "."));
+
+    JavaClassType sig = (JavaClassType) identifierFactory.getClassType(fullyQualifiedName);
+
+    // TODO: move to Module version
     if (identifierFactory instanceof JavaModuleIdentifierFactory) {
       return ((JavaModuleIdentifierFactory) identifierFactory)
           .getClassType(sig.getClassName(), sig.getPackageName().getName(), moduleDir.toString());

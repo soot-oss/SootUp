@@ -566,9 +566,7 @@ public class PAG {
               builder.addLocal(localSrc);
               newUnits
                   .computeIfAbsent(s, k -> new HashSet<>())
-                  .add(
-                      new JAssignStmt(
-                          localSrc, srcArr, StmtPositionInfo.createNoStmtPositionInfo()));
+                  .add(new JAssignStmt(localSrc, srcArr, StmtPositionInfo.getNoStmtPositionInfo()));
               srcArr = localSrc;
             }
             Value dstArr = sie.getArg(2);
@@ -581,9 +579,7 @@ public class PAG {
               builder.addLocal(localDst);
               newUnits
                   .computeIfAbsent(s, k -> new HashSet<>())
-                  .add(
-                      new JAssignStmt(
-                          localDst, dstArr, StmtPositionInfo.createNoStmtPositionInfo()));
+                  .add(new JAssignStmt(localDst, dstArr, StmtPositionInfo.getNoStmtPositionInfo()));
               dstArr = localDst;
             }
             Value src =
@@ -596,10 +592,10 @@ public class PAG {
             builder.addLocal(local);
             newUnits
                 .computeIfAbsent(s, k -> DataFactory.createSet())
-                .add(new JAssignStmt(local, src, StmtPositionInfo.createNoStmtPositionInfo()));
+                .add(new JAssignStmt(local, src, StmtPositionInfo.getNoStmtPositionInfo()));
             newUnits
                 .computeIfAbsent(s, k -> DataFactory.createSet())
-                .add(new JAssignStmt(dst, local, StmtPositionInfo.createNoStmtPositionInfo()));
+                .add(new JAssignStmt(dst, local, StmtPositionInfo.getNoStmtPositionInfo()));
           }
         }
       }

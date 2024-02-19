@@ -24,6 +24,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
 
 // FIXME: [AD] is it reasonable to get rid of it?
 class BranchedInsnInfo {
@@ -34,13 +35,18 @@ class BranchedInsnInfo {
   /* current stack at edge */
   @Nullable private final List<List<Operand>> operandStacks = new ArrayList<>();
   private final int lineNumber;
+  private final Set<TryCatchBlockNode> activeTrapHandlers;
 
   BranchedInsnInfo(
-      @Nonnull AbstractInsnNode insn, @Nonnull List<Operand> operands, int lineNumber) {
+      @Nonnull AbstractInsnNode insn,
+      @Nonnull List<Operand> operands,
+      int lineNumber,
+      Set<TryCatchBlockNode> activeTrapHandlers) {
     this.insn = insn;
     this.prevStacks = new LinkedList<>();
     this.operandStacks.add(operands);
     this.lineNumber = lineNumber;
+    this.activeTrapHandlers = new HashSet<>(activeTrapHandlers);
   }
 
   @Nonnull
@@ -68,5 +74,9 @@ class BranchedInsnInfo {
 
   public int getLineNumber() {
     return this.lineNumber;
+  }
+
+  public Set<TryCatchBlockNode> getActiveTrapHandlers() {
+    return this.activeTrapHandlers;
   }
 }
