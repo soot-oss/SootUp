@@ -34,7 +34,9 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
@@ -109,7 +111,13 @@ class Operand {
     Stmt stmt = methodSource.getStmt(insn);
     if (!(stmt instanceof JAssignStmt)) {
       // emit `$newStackLocal = value`
-      methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
+      if (value instanceof JCaughtExceptionRef) {
+        JIdentityStmt identityStmt =
+            Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo);
+        methodSource.setStmt(insn, identityStmt);
+      } else {
+        methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
+      }
     } else {
       JAssignStmt assignStmt = (JAssignStmt) stmt;
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
