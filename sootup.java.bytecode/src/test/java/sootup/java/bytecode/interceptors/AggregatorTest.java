@@ -2,9 +2,9 @@ package sootup.java.bytecode.interceptors;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Paths;
+import java.util.*;
+import org.junit.Assert;
 import org.junit.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -18,14 +18,15 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
+import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -46,7 +47,7 @@ public class AggregatorTest {
     Body testBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
 
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> processedStmts = processedBody.getStmts();
 
@@ -66,7 +67,7 @@ public class AggregatorTest {
   public void testNoAggregation() {
     Body.BodyBuilder testBuilder = createBodyBuilder(false);
     Body testBody = testBuilder.build();
-    new Aggregator().interceptBody(testBuilder, null);
+    new Aggregator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -81,7 +82,7 @@ public class AggregatorTest {
   public void noAggregationWithUse() {
     Body.BodyBuilder builder = Body.builder();
 
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType fileType = JavaIdentifierFactory.getInstance().getClassType("File");
 
@@ -110,14 +111,14 @@ public class AggregatorTest {
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("test", "ab.c", "void", Collections.emptyList()));
 
-    new Aggregator().interceptBody(builder, null);
+    new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     // ensure that the assigner doesn't remove any statements
     assertEquals(4, builder.getStmts().size());
   }
 
   private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());
@@ -156,12 +157,9 @@ public class AggregatorTest {
     //     String classPath =
     // "../sootup.tests/src/test/resources/bugs/664_struce-compiled/org/apache";
     String classPath = "../sootup.tests/src/test/resources/interceptor/";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath);
-    JavaLanguage language = new JavaLanguage(8);
+    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(classPath);
 
-    JavaProject project = JavaProject.builder(language).addInputLocation(inputLocation).build();
-    JavaView view = project.createView();
+    JavaView view = new JavaView(inputLocation);
     {
       final SootMethod sootMethod =
           view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test()>"))
@@ -175,6 +173,27 @@ public class AggregatorTest {
               .get();
 
       System.out.println(sootMethod.getBody());
+    }
+  }
+
+  @Test
+  public void testIssue739() {
+
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/Issue739_Aggregator.class"),
+            "",
+            SourceType.Application,
+            Collections.singletonList(new Aggregator()));
+
+    JavaView view = new JavaView(inputLocation);
+
+    final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
+    Assert.assertTrue(view.getClass(classType).isPresent());
+
+    for (JavaSootMethod javaSootMethod :
+        view.getClasses().stream().findFirst().get().getMethods()) {
+      final Body body = javaSootMethod.getBody();
     }
   }
 }

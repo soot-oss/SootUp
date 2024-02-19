@@ -16,22 +16,22 @@ public class de.upb.sootup.instructions.ref.StaticFieldRefTest extends java.lang
     void sth()
     {
         de.upb.sootup.instructions.ref.StaticFieldRefTest r0;
-        int $i0, $i1, $i2;
-        java.io.PrintStream $r1;
+        int i0, i1, i2;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.instructions.ref.StaticFieldRefTest;
 
-        $i0 = <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter>;
+        i0 = <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter>;
 
-        $i1 = $i0 + 1;
+        i1 = i0 + 1;
 
-        <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter> = $i1;
+        <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter> = i1;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        $i2 = <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter>;
+        i2 = <de.upb.sootup.instructions.ref.StaticFieldRefTest: int globalCounter>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i2);
+        virtualinvoke r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }

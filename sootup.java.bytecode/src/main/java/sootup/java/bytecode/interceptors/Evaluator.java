@@ -125,7 +125,9 @@ public class Evaluator {
           } else if (op instanceof JEqExpr) {
             return ((NumericConstant) c1).equalEqual((NumericConstant) c2);
           } else // op instanceof JNeExpr
-          return ((NumericConstant) c1).notEqual((NumericConstant) c2);
+          {
+            return ((NumericConstant) c1).notEqual((NumericConstant) c2);
+          }
         } else if (c1 instanceof StringConstant
             || c1 instanceof NullConstant
             || c1 instanceof ClassConstant) {
@@ -167,7 +169,9 @@ public class Evaluator {
           if (op instanceof JCmpgExpr) {
             return ((RealConstant) c1).cmpg((RealConstant) c2);
           } else // op instanceof JCmplExpr
-          return ((RealConstant) c1).cmpl((RealConstant) c2);
+          {
+            return ((RealConstant) c1).cmpl((RealConstant) c2);
+          }
         } else {
           throw new IllegalArgumentException("CmpExpr: RealConstant(s) expected");
         }

@@ -32,11 +32,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
+public final class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "sootup.dummy.InvokeDynamic";
   @Nonnull private final MethodSignature bootstrapMethodSignature;

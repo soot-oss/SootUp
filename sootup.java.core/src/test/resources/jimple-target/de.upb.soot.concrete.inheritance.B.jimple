@@ -21,13 +21,13 @@ class de.upb.sootup.concrete.inheritance.B extends de.upb.sootup.concrete.inheri
     public void print()
     {
         de.upb.sootup.concrete.inheritance.B r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.B;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("printB");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("printB");
 
         return;
     }
@@ -35,13 +35,13 @@ class de.upb.sootup.concrete.inheritance.B extends de.upb.sootup.concrete.inheri
     public void methodB()
     {
         de.upb.sootup.concrete.inheritance.B r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.B;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("methodB");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("methodB");
 
         return;
     }

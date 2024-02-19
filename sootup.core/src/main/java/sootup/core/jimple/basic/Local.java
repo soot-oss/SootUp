@@ -31,9 +31,8 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.Acceptor;
 import sootup.core.jimple.visitor.ImmediateVisitor;
 import sootup.core.model.Body;
-import sootup.core.model.Position;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
+import sootup.core.types.VoidType;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
@@ -43,27 +42,19 @@ import sootup.core.util.printer.StmtPrinter;
  *
  * @author Linghui Luo
  */
-public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVisitor> {
+public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
-  @Nonnull private final Position position; // position of the declaration
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this(name, type, NoPositionInformation.getInstance());
-  }
-
-  /** Constructs a JimpleLocal of the given name and type. */
-  public Local(@Nonnull String name, @Nonnull Type type, @Nonnull Position position) {
     this.name = name;
-    this.type = type;
-    this.position = position;
-  }
-
-  /** Hint: the naming is just an indicator! */
-  public boolean isFieldLocal() {
-    return getName().charAt(0) != '$';
+    if (type instanceof VoidType) {
+      throw new RuntimeException("Type should not be VoidType");
+    } else {
+      this.type = type;
+    }
   }
 
   @Override
@@ -118,12 +109,7 @@ public class Local implements Immediate, LValue, Copyable, Acceptor<ImmediateVis
     return Collections.emptyList();
   }
 
-  @Nonnull
-  public Position getPosition() {
-    return position;
-  }
-
-  /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
+  /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
   public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
     List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {

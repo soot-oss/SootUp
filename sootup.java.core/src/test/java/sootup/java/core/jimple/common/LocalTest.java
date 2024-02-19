@@ -43,9 +43,9 @@ public class LocalTest {
 
     JimpleComparator comparator = new IgnoreLocalNameComparator();
 
-    Local l1 = new Local("$i1", PrimitiveType.getInt());
-    Local l2 = new Local("$i2", PrimitiveType.getInt());
-    Local l3 = new Local("$i1", PrimitiveType.getBoolean());
+    Local l1 = new Local("i1", PrimitiveType.getInt());
+    Local l2 = new Local("i2", PrimitiveType.getInt());
+    Local l3 = new Local("i1", PrimitiveType.getBoolean());
 
     assertTrue(l1.equivTo(l1));
     assertTrue(l1.equivTo(l1, comparator));
@@ -60,6 +60,6 @@ public class LocalTest {
     assertFalse(l2.equivTo(l3, comparator));
 
     assertFalse(
-        l1.equivTo(new JBreakpointStmt(StmtPositionInfo.createNoStmtPositionInfo()), comparator));
+        l1.equivTo(new JBreakpointStmt(StmtPositionInfo.getNoStmtPositionInfo()), comparator));
   }
 }

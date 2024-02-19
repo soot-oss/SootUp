@@ -2,11 +2,12 @@ package sootup.java.core.printer;
 
 import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
-import sootup.core.Project;
+import org.junit.experimental.categories.Category;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
@@ -24,16 +25,14 @@ import sootup.core.util.EscapedWriter;
 import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class LegacyJimplePrinterTest {
 
   SootClass buildClass(Body.BodyBuilder builder) {
 
-    Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createView();
+    View view = new JavaView(new EagerInputLocation());
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -72,7 +71,7 @@ public class LegacyJimplePrinterTest {
   @Test
   public void printSwitchStmt() {
 
-    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));

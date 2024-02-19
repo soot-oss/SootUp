@@ -21,12 +21,12 @@ final class InnerClassLexicalReads$1 extends java.lang.Object implements IntCons
     public int getConstant()
     {
         InnerClassLexicalReads$1 r0;
-        int $i0;
+        int i0;
 
         r0 := @this: InnerClassLexicalReads$1;
 
-        $i0 = r0.<InnerClassLexicalReads$1: int val$y>;
+        i0 = r0.<InnerClassLexicalReads$1: int val$y>;
 
-        return $i0;
+        return i0;
     }
 }

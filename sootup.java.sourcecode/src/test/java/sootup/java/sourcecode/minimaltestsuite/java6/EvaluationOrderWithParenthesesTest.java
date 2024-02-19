@@ -36,7 +36,7 @@ public class EvaluationOrderWithParenthesesTest extends MinimalSourceTestSuiteBa
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: EvaluationOrderWithParentheses", "$i0 = 1 + 2", "$i1 = $i0 * 3", "return")
+            "r0 := @this: EvaluationOrderWithParentheses", "i0 = 1 + 2", "i1 = i0 * 3", "return")
         .collect(Collectors.toList());
   }
 

@@ -28,18 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.Immediate;
-import sootup.core.jimple.basic.LValue;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
@@ -70,10 +68,10 @@ public class Aggregator implements BodyInterceptor {
    * given a def d and a use u, d has no other uses, u has no other defs, collapse d and u.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
-    StmtGraph<?> graph = builder.getStmtGraph();
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
-    Map<LValue, Collection<Stmt>> usesMap = Body.collectUses(stmts);
+    Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);
 
     for (Stmt stmt : stmts) {
       if (!(stmt instanceof JAssignStmt)) {
@@ -92,7 +90,8 @@ public class Aggregator implements BodyInterceptor {
         if (!(val instanceof Local)) {
           continue;
         }
-        if (usesMap.get(val).size() > 1) {
+        final Collection<Stmt> usesOfVal = usesMap.get(val);
+        if (usesOfVal.size() > 1) {
           // there are other uses, so it can't be aggregated
           continue;
         }
@@ -183,35 +182,33 @@ public class Aggregator implements BodyInterceptor {
           continue;
         }
 
-        // cannot aggregate e.g. a JIdentityStmt
+        // can only aggregate JAssignStmts
         if (!(relevantDef instanceof JAssignStmt)) {
           continue;
         }
 
         Value aggregatee = ((AbstractDefinitionStmt) relevantDef).getRightOp();
-        JAssignStmt newStmt = null;
-        if (assignStmt.getRightOp() instanceof AbstractBinopExpr) {
-          AbstractBinopExpr rightOp = (AbstractBinopExpr) assignStmt.getRightOp();
-          if (rightOp.getOp1() == val) {
-            AbstractBinopExpr newBinopExpr = rightOp.withOp1((Immediate) aggregatee);
-            newStmt =
-                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
-          } else if (rightOp.getOp2() == val) {
-            AbstractBinopExpr newBinopExpr = rightOp.withOp2((Immediate) aggregatee);
-            newStmt =
-                new JAssignStmt(assignStmt.getLeftOp(), newBinopExpr, assignStmt.getPositionInfo());
-          }
-        } else {
-          newStmt = assignStmt.withRValue(aggregatee);
+        Stmt newStmt;
+
+        final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
+        // TODO: this try-catch is an awful hack for "ValueBox.canContainValue" -> try to determine
+        // a replaceability earlier!
+        try {
+          replaceVisitor.caseAssignStmt(assignStmt);
+          newStmt = replaceVisitor.getResult();
+        } catch (ClassCastException iae) {
+          continue;
         }
 
-        if (newStmt != null) {
-          builder.replaceStmt(stmt, newStmt);
+        // have we been able to inline the value into the newStmt?
+        if (stmt != newStmt) {
+          graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
             Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
-            builder.setStartingStmt(newStartingStmt);
+            graph.setStartingStmt(newStartingStmt);
           }
-          builder.removeStmt(relevantDef);
+          graph.removeNode(relevantDef);
+          builder.removeDefLocalsOf(relevantDef);
         }
       }
     }

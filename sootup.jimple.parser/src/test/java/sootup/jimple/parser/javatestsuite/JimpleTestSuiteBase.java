@@ -15,7 +15,6 @@ import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
-import sootup.jimple.parser.JimpleProject;
 import sootup.jimple.parser.JimpleView;
 import sootup.jimple.parser.categories.Java8Test;
 
@@ -29,7 +28,7 @@ public abstract class JimpleTestSuiteBase {
 
   @Before
   public void setup() {
-    view = new JimpleProject(new JimpleAnalysisInputLocation<>(Paths.get(baseDir))).createView();
+    view = new JimpleView(new JimpleAnalysisInputLocation(Paths.get(baseDir)));
   }
 
   /**
@@ -61,15 +60,15 @@ public abstract class JimpleTestSuiteBase {
     return identifierFactory.getClassType(deriveClassName(this.getClass().getSimpleName()));
   }
 
-  public SootClass<?> loadClass(ClassType clazz) {
+  public SootClass loadClass(ClassType clazz) {
 
-    Optional<SootClass<?>> cs = view.getClass(clazz);
+    Optional<SootClass> cs = view.getClass(clazz);
     assertTrue("no matching class for " + clazz + " found", cs.isPresent());
     return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
-    SootClass<?> clazz = loadClass(methodSignature.getDeclClassType());
+    SootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<? extends SootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
     if (!m.isPresent()) {
       System.out.println("existing methods:");

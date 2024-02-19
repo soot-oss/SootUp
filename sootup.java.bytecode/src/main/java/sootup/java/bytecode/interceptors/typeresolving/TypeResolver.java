@@ -33,15 +33,14 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
-import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -66,26 +65,28 @@ public class TypeResolver {
     if (typings.isEmpty()) {
       return false;
     }
+
     Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
     if (this.castCount > 0) {
       CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
       castCounter.insertCastStmts(minCastsTyping);
     }
+
     TypePromotionVisitor promotionVisitor =
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
     Typing promotedTyping = promotionVisitor.getPromotedTyping(minCastsTyping);
     if (promotedTyping == null) {
       return false;
-    } else {
-      for (Local local : locals) {
-        final Type type = promotedTyping.getType(local);
-        if (type == null) {
-          continue;
-        }
-        Type convertedType = convertType(type);
-        if (convertedType != null) {
-          promotedTyping.set(local, convertedType);
-        }
+    }
+
+    for (Local local : locals) {
+      final Type type = promotedTyping.getType(local);
+      if (type == null) {
+        continue;
+      }
+      Type convertedType = convertType(type);
+      if (convertedType != null) {
+        promotedTyping.set(local, convertedType);
       }
     }
 
@@ -95,23 +96,26 @@ public class TypeResolver {
       if (newType == null || oldType.equals(newType)) {
         continue;
       }
-      Local newLocal = local.withType(newType);
-      builder.replaceLocal(local, newLocal);
+      if (!(newType instanceof BottomType)) {
+        Local newLocal = local.withType(newType);
+        builder.replaceLocal(local, newLocal);
+      }
     }
     return true;
   }
 
   /** find all definition assignments, add all locals at right-hand-side into the map depends */
   private void init(Body.BodyBuilder builder) {
-    for (Stmt stmt : builder.getStmts()) {
-      if (stmt instanceof AbstractDefinitionStmt) {
-        AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
-        Value lhs = defStmt.getLeftOp();
-        if (lhs instanceof Local || lhs instanceof JArrayRef || lhs instanceof JInstanceFieldRef) {
-          final int id = assignments.size();
-          this.assignments.add(defStmt);
-          addDependsForRHS(defStmt.getRightOp(), id);
-        }
+    for (Stmt stmt : builder.getStmtGraph()) {
+      if (!(stmt instanceof AbstractDefinitionStmt)) {
+        continue;
+      }
+      AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) stmt;
+      Value lhs = defStmt.getLeftOp();
+      if (lhs instanceof Local || lhs instanceof JArrayRef) {
+        final int defStmtId = assignments.size();
+        assignments.add(defStmt);
+        addDependsForRHS(defStmt.getRightOp(), defStmtId);
       }
     }
   }
@@ -145,11 +149,7 @@ public class TypeResolver {
   }
 
   private void addDependency(@Nonnull Local local, int id) {
-    BitSet bitSet = depends.get(local);
-    if (bitSet == null) {
-      bitSet = new BitSet();
-      depends.put(local, bitSet);
-    }
+    BitSet bitSet = depends.computeIfAbsent(local, k -> new BitSet());
     bitSet.set(id);
   }
 
@@ -158,15 +158,17 @@ public class TypeResolver {
       @Nonnull Typing typing,
       @Nonnull AugEvalFunction evalFunction,
       @Nonnull BytecodeHierarchy hierarchy) {
-    int numOfAssigns = this.assignments.size();
-    if (numOfAssigns == 0) {
+
+    final int numOfAssignments = assignments.size();
+    if (numOfAssignments == 0) {
       return Collections.emptyList();
     }
+
     Deque<Typing> workQueue = new ArrayDeque<>();
     List<Typing> ret = new ArrayList<>();
 
-    BitSet stmtsList = new BitSet(numOfAssigns);
-    stmtsList.set(0, numOfAssigns);
+    BitSet stmtsList = new BitSet(numOfAssignments);
+    stmtsList.set(0, numOfAssignments);
     typing.setStmtsIDList(stmtsList);
     workQueue.add(typing);
 
@@ -178,54 +180,58 @@ public class TypeResolver {
       if (stmtId == -1) {
         ret.add(actualTyping);
         workQueue.removeFirst();
+        continue;
+      }
+
+      actualSL.clear(stmtId);
+      AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
+      Value lhs = defStmt.getLeftOp();
+      Local local;
+      if (lhs instanceof Local) {
+        local = (Local) lhs;
+      } else if (lhs instanceof JArrayRef) {
+        local = ((JArrayRef) lhs).getBase();
       } else {
-        actualSL.clear(stmtId);
-        AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
-        Value lhs = defStmt.getLeftOp();
-        Local local;
-        if (lhs instanceof Local) {
-          local = (Local) lhs;
-        } else if (lhs instanceof JArrayRef) {
-          local = ((JArrayRef) lhs).getBase();
-        } else if (lhs instanceof JInstanceFieldRef) {
-          local = ((JInstanceFieldRef) lhs).getBase();
-        } else {
-          throw new IllegalStateException("can not handle " + lhs.getClass());
-        }
-        Type t_old = actualTyping.getType(local);
-        Type t_right = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
-        if (t_right == null) {
-          // TODO: ms: is this correct to handle: null?
-          workQueue.removeFirst();
-          continue;
-        }
-        if (lhs instanceof JArrayRef) {
-          t_right = Type.createArrayType(t_right, 1);
-        }
+        // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
+        // The statements get filtered to only contain those assignments in the `init` method,
+        // so this branch shouldn't happen.
+        throw new IllegalStateException("can not handle " + lhs.getClass());
+      }
 
-        boolean isFirstType = true;
-        Collection<Type> leastCommonAncestors = hierarchy.getLeastCommonAncestor(t_old, t_right);
-        for (Type type : leastCommonAncestors) {
-          if (!type.equals(t_old)) {
-            BitSet dependStmtList = this.depends.get(local);
-            // Up to now there's no ambiguity of types
-            if (isFirstType) {
-              actualTyping.set(local, type);
-              // Type is changed, the associated definition stmts are necessary handled again
-              if (dependStmtList != null) {
-                actualSL.or(dependStmtList);
-              }
-              isFirstType = false;
-            } else {
-              // Ambiguity handling: create new Typing and add it into workQueue
-              Typing newTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
-              workQueue.add(newTyping);
+      Type oldType = actualTyping.getType(local);
+      Type rightOpDerivedType =
+          evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+      if (rightOpDerivedType == null) {
+        workQueue.removeFirst();
+        continue;
+      }
+      if (lhs instanceof JArrayRef) {
+        rightOpDerivedType = Type.createArrayType(rightOpDerivedType, 1);
+      }
 
-              BitSet newSL = newTyping.getStmtsIDList();
-              newTyping.set(local, type);
-              if (dependStmtList != null) {
-                newSL.or(dependStmtList);
-              }
+      boolean isFirstType = true;
+      Collection<Type> leastCommonAncestors =
+          hierarchy.getLeastCommonAncestor(oldType, rightOpDerivedType);
+      for (Type type : leastCommonAncestors) {
+        if (!type.equals(oldType)) {
+          BitSet dependStmtList = this.depends.get(local);
+          // Up to now there's no ambiguity of types
+          if (isFirstType) {
+            actualTyping.set(local, type);
+            // Type is changed, the associated definition stmts are necessary handled again
+            if (dependStmtList != null) {
+              actualSL.or(dependStmtList);
+            }
+            isFirstType = false;
+          } else {
+            // Ambiguity handling: create new Typing and add it into workQueue
+            Typing newTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
+            workQueue.add(newTyping);
+
+            BitSet newSL = newTyping.getStmtsIDList();
+            newTyping.set(local, type);
+            if (dependStmtList != null) {
+              newSL.or(dependStmtList);
             }
           }
         }
@@ -238,20 +244,18 @@ public class TypeResolver {
   /** This method is used to remove the more general typings. */
   private void minimize(@Nonnull List<Typing> typings, @Nonnull BytecodeHierarchy hierarchy) {
     Set<Type> objectLikeTypes = new HashSet<>();
-    IdentifierFactory factory = view.getIdentifierFactory();
-    ClassType obj = factory.getClassType("java.lang.Object");
-    ClassType ser = factory.getClassType("java.io.Serializable");
-    ClassType clo = factory.getClassType("java.lang.Cloneable");
-    objectLikeTypes.add(obj);
-    objectLikeTypes.add(ser);
-    objectLikeTypes.add(clo);
+    // FIXME: [ms] handle java modules as well!
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Object"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.io.Serializable"));
+    objectLikeTypes.add(identifierFactory.getClassType("java.lang.Cloneable"));
 
     // collect all locals whose types are object, serializable, cloneable
     Set<Local> objectLikeLocals = new HashSet<>();
     Map<Local, Set<Type>> local2Types = getLocal2Types(typings);
-    for (Local local : local2Types.keySet()) {
-      if (local2Types.get(local).equals(objectLikeTypes)) {
-        objectLikeLocals.add(local);
+    for (Map.Entry<Local, Set<Type>> local : local2Types.entrySet()) {
+      if (local.getValue().equals(objectLikeTypes)) {
+        objectLikeLocals.add(local.getKey());
       }
     }
     // if one typing is more general als another typing, it should be removed.

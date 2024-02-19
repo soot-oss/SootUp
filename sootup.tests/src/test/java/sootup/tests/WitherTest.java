@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.SootClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -18,7 +18,6 @@ import sootup.core.jimple.common.constant.DoubleConstant;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.model.Body;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
@@ -49,7 +48,7 @@ public class WitherTest {
   public void testWithers() {
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
-    Optional<SootClassSource<JavaSootClass>> classSource = loader.getClassSource(declareClassSig);
+    Optional<JavaSootClassSource> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
     JavaSootClass sootClass =
         new JavaSootClass((JavaSootClassSource) classSource.get(), SourceType.Application);
@@ -60,26 +59,24 @@ public class WitherTest {
             declareClassSig, "addDouble", "double", Arrays.asList("double", "float"));
     Optional<JavaSootMethod> m = sootClass.getMethod(methodSignature.getSubSignature());
     assertTrue(m.isPresent());
-    SootMethod method = m.get();
+    JavaSootMethod method = m.get();
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     final JIdentityStmt firstStmt =
         Jimple.newIdentityStmt(
             generator.generateLocal(declareClassSig),
             Jimple.newParameterRef(declareClassSig, 0),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     final JReturnStmt jReturnStmt =
         Jimple.newReturnStmt(
-            DoubleConstant.getInstance(12.34), StmtPositionInfo.createNoStmtPositionInfo());
+            DoubleConstant.getInstance(12.34), StmtPositionInfo.getNoStmtPositionInfo());
     // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(firstStmt);
+    stmtGraph.putEdge(firstStmt, jReturnStmt);
     Body body =
-        bodyBuilder
-            .setMethodSignature(methodSignature)
-            .addFlow(firstStmt, jReturnStmt)
-            .setStartingStmt(firstStmt)
-            .setLocals(generator.getLocals())
-            .build();
+        bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertNotNull(body);
 
     Local local = (Local) firstStmt.getLeftOp();

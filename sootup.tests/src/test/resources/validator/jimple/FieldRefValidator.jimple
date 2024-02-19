@@ -1,0 +1,50 @@
+public super class FieldRefValidator extends java.lang.Object
+{
+    private int x;
+
+    private static int y;
+
+    public void <init>()
+    {
+        FieldRefValidator l0;
+
+
+        l0 := @this: FieldRefValidator;
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+
+        <FieldRefValidator: int y> = 5;
+
+        return;
+    }
+
+    public void testFieldRefValidator_pass()
+    {
+        FieldRefValidator l0;
+        unknown $stack1, $stack2;
+
+        l0 := @this: FieldRefValidator;
+        $stack1 = l0.<FieldRefValidator: int x>;
+        $stack2 = <FieldRefValidator: int y>;
+
+        return;
+    }
+
+    public void testFieldRefValidator_fail()
+    {
+        FieldRefValidator l0;
+        unknown $stack1, $stack2;
+
+        l0 := @this: FieldRefValidator;
+        $stack1 = <FieldRefValidator: int x>;
+        $stack2 = l0.<FieldRefValidator: int y>;
+
+        return;
+    }
+
+}

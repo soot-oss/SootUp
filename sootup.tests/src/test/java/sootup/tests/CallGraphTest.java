@@ -3,20 +3,21 @@ package sootup.tests;
 import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -38,14 +39,11 @@ public class CallGraphTest {
   }
 
   private JavaView createViewForClassPath(String classPath) {
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(new JavaSourcePathAnalysisInputLocation(classPath))
-            .build();
-    return javaProject.createView();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
+
+    return new JavaView(inputLocations);
   }
 
   CallGraph loadCallGraph() {
@@ -64,7 +62,7 @@ public class CallGraphTest {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);
@@ -247,8 +245,7 @@ public class CallGraphTest {
             + "\t\"<MethodImplementedInstantiatedInSubClass: void <init>()>\" -> \"<AbstractClass: void <init>()>\";\n"
             + "\t\"<SubClassMethodImplemented: void <init>()>\" -> \"<MethodImplemented: void <init>()>\";\n"
             + "\t\"<SubClassMethodNotImplemented: void <init>()>\" -> \"<MethodImplementedInstantiatedInSubClass: void <init>()>\";\n"
-            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void <clinit>()>\";\n"
-            + "\t\"<java.lang.Object: void <clinit>()>\" -> \"<java.lang.Object: void registerNatives()>\";\n}";
-    assertEquals(actualContent, expectedContent);
+            + "}";
+    assertEquals(expectedContent, actualContent);
   }
 }

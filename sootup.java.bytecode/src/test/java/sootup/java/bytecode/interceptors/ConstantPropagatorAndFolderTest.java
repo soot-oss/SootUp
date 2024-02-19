@@ -21,6 +21,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Category(Java8Test.class)
@@ -39,7 +40,10 @@ public class ConstantPropagatorAndFolderTest {
   public void testModification() {
     Body.BodyBuilder testBuilder = createBody(true);
     Body testBody = testBuilder.build();
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder, null);
+
+    testBuilder = Body.builder(testBody, testBuilder.getModifiers());
+    new ConstantPropagatorAndFolder()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -63,7 +67,8 @@ public class ConstantPropagatorAndFolderTest {
   public void testNoModification() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new ConstantPropagatorAndFolder().interceptBody(testBuilder, null);
+    new ConstantPropagatorAndFolder()
+        .interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
     List<Stmt> originalStmts = testBody.getStmts();
     List<Stmt> processedStmts = processedBody.getStmts();
@@ -75,7 +80,7 @@ public class ConstantPropagatorAndFolderTest {
   }
 
   private static Body.BodyBuilder createBody(boolean constantFolding) {
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     Local a = JavaJimple.newLocal("a", PrimitiveType.getInt());
     Local b = JavaJimple.newLocal("b", PrimitiveType.getInt());

@@ -54,8 +54,8 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareInnerClass",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayOuter\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayOuter\")",
             "return")
         .collect(Collectors.toList());
   }
@@ -72,8 +72,8 @@ public class DeclareInnerClassTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedInnerClassBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareInnerClass$InnerClass",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayInner\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayInner\")",
             "return")
         .collect(Collectors.toList());
   }

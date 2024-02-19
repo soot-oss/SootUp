@@ -14,17 +14,17 @@ public abstract class de.upb.sootup.basic.abstractClasses.AbstractClasses extend
 
     public static void abstractClasses()
     {
-        de.upb.sootup.basic.abstractClasses.B $r1;
+        de.upb.sootup.basic.abstractClasses.B r1;
 
-        $r1 = new de.upb.sootup.basic.abstractClasses.B;
+        r1 = new de.upb.sootup.basic.abstractClasses.B;
 
-        specialinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void <init>()>();
+        specialinvoke r1.<de.upb.sootup.basic.abstractClasses.B: void <init>()>();
 
-        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void methodB()>();
+        virtualinvoke r1.<de.upb.sootup.basic.abstractClasses.B: void methodB()>();
 
-        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void methodA()>();
+        virtualinvoke r1.<de.upb.sootup.basic.abstractClasses.B: void methodA()>();
 
-        virtualinvoke $r1.<de.upb.sootup.basic.abstractClasses.B: void print()>();
+        virtualinvoke r1.<de.upb.sootup.basic.abstractClasses.B: void print()>();
 
         return;
     }

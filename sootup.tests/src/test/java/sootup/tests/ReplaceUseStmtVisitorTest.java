@@ -40,7 +40,7 @@ public class ReplaceUseStmtVisitorTest {
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
 
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   /** Test use replacing in case JAssignStmt. */
   @Test

@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -56,7 +56,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
   private Typing typing;
   protected final Body.BodyBuilder builder;
 
-  protected final StmtGraph<?> graph;
+  protected final MutableStmtGraph graph;
 
   private static final Logger logger = LoggerFactory.getLogger(TypeChecker.class);
 
@@ -79,7 +79,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
-    Value lhs = stmt.getLeftOp();
+    LValue lhs = stmt.getLeftOp();
     Value rhs = stmt.getRightOp();
     Type type_lhs = null;
     if (lhs instanceof Local) {
@@ -96,10 +96,10 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
           Type type_rhs = typing.getType((Local) rhs);
           // if base type of lhs is an object-like-type, retrieve its base type from array
           // allocation site.
-          if (Type.isObjectLikeType(type_base)
-              || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
-            Map<LValue, Collection<Stmt>> defs =
-                Body.collectDefs(builder.getStmtGraph().getNodes());
+          if (type_base != null
+              && (Type.isObjectLikeType(type_base)
+                  || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType))) {
+            Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
             Collection<Stmt> defStmts = defs.get(base);
             boolean findDef = false;
             if (defStmts != null) {
@@ -118,18 +118,23 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
                 }
               }
             }
-            if (!findDef) {
+            if (!findDef && type_rhs != null) {
               arrayType = Type.createArrayType(type_rhs, 1);
             }
           }
         }
-        if (arrayType == null) {
+        if (arrayType == null && type_base != null) {
           arrayType = Type.createArrayType(type_base, 1);
         }
+      }
+
+      if (arrayType == null) {
+        return;
       }
       type_lhs = arrayType.getElementType();
       visit(base, arrayType, stmt);
       visit(lhs, type_lhs, stmt);
+
     } else if (lhs instanceof JFieldRef) {
       if (lhs instanceof JInstanceFieldRef) {
         visit(
@@ -151,7 +156,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
         arrayType = (ArrayType) type_base;
       } else {
         if (type_base instanceof NullType || Type.isObjectLikeType(type_base)) {
-          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(builder.getStmtGraph().getNodes());
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
           Deque<StmtLocalPair> worklist = new ArrayDeque<>();
           Set<StmtLocalPair> visited = new HashSet<>();
           worklist.add(new StmtLocalPair(stmt, base));

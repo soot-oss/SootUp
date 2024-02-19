@@ -10,48 +10,47 @@
 	<parent>
 		<groupId>org.soot-oss</groupId>
 		<artifactId>sootup</artifactId>
-		<version>1.1.2-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.core</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.core</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.bytecode</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.java.sourcecode</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.soot-oss</groupId>
+			<artifactId>sootup.jimple.parser</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.callgraph</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
-	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.soot-oss</groupId>
-				<artifactId>sootup.java.sourcecode</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.jimple.parser</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

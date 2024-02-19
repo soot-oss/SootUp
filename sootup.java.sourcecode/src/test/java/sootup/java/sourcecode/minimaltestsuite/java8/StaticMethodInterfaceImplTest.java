@@ -2,16 +2,19 @@ package sootup.java.sourcecode.minimaltestsuite.java8;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
+@Category(Java8Test.class)
 public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -40,8 +43,8 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: StaticMethodInterfaceImpl",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Inside display - StaticmethodInterfaceImpl\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"Inside display - StaticmethodInterfaceImpl\")",
             "return")
         .collect(Collectors.toList());
   }
@@ -57,8 +60,8 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>(\"Inside initStatic - StaticmethodInterfaceImpl\")",
+            "r0 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>(\"Inside initStatic - StaticmethodInterfaceImpl\")",
             "return")
         .collect(Collectors.toList());
   }
@@ -72,7 +75,7 @@ public class StaticMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(staticMethod, expectedBodyStmts1());
     assertTrue(staticMethod.isStatic() && staticMethod.getName().equals("initStatic"));
 
-    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
             .anyMatch(

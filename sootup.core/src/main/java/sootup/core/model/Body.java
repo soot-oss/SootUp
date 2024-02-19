@@ -28,23 +28,23 @@ import java.io.StringWriter;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.graph.*;
+import sootup.core.graph.MutableBlockStmtGraph;
+import sootup.core.graph.MutableStmtGraph;
+import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.*;
-import sootup.core.jimple.common.ref.*;
+import sootup.core.jimple.common.ref.JParameterRef;
+import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.EscapedWriter;
-import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.JimplePrinter;
-import sootup.core.validation.*;
 
 /**
  * Class that models the Jimple body (code attribute) of a method.
  *
  * @author Linghui Luo
  */
-public class Body implements Copyable {
+public class Body implements HasPosition {
 
   /** The locals for this Body. */
   private final Set<Local> locals;
@@ -56,20 +56,6 @@ public class Body implements Copyable {
 
   /** The MethodSignature associated with this Body. */
   @Nonnull private final MethodSignature methodSignature;
-
-  /** An array containing some validators in order to validate the JimpleBody */
-  @Nonnull
-  private static final List<BodyValidator> validators =
-      ImmutableUtils.immutableList(
-          new LocalsValidator(),
-          new TrapsValidator(),
-          new StmtsValidator(),
-          new UsesValidator(),
-          new ValuesValidator(),
-          new CheckInitValidator(),
-          new CheckTypesValidator(),
-          new CheckVoidLocalesValidator(),
-          new CheckEscapingValidator());
 
   /**
    * Creates an body which is not associated to any method.
@@ -83,10 +69,8 @@ public class Body implements Copyable {
       @Nonnull Position position) {
     this.methodSignature = methodSignature;
     this.locals = Collections.unmodifiableSet(locals);
-    this.graph = /* FIXME: [ms] make immutable when availabe */
-        new MutableBlockStmtGraph(stmtGraph).unmodifiableStmtGraph();
+    this.graph = MutableBlockStmtGraph.createUnmodifiableStmtGraph(stmtGraph);
     this.position = position;
-    checkInit();
   }
 
   /**
@@ -98,7 +82,7 @@ public class Body implements Copyable {
     for (Stmt stmt : stmtGraph.getNodes()) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
-        return (Local) ((JIdentityStmt) stmt).getLeftOp();
+        return ((JIdentityStmt) stmt).getLeftOp();
       }
     }
     throw new RuntimeException("couldn't find *this* assignment");
@@ -119,36 +103,18 @@ public class Body implements Copyable {
     return locals.size();
   }
 
-  private void runValidation(BodyValidator validator) {
-    final List<ValidationException> exceptionList = new ArrayList<>();
-    validator.validate(this, exceptionList);
-    if (!exceptionList.isEmpty()) {
-      throw exceptionList.get(0);
-    }
-  }
-
-  /** Verifies that a Value is not used in more than one place. */
-  // TODO: #535 implement validator public void validateValues() {   runValidation(new
-  // ValuesValidator());}
-
-  /** Verifies that each Local of getUsesAndDefs() is in this body's locals Chain. */
-  // TODO: #535 implement validator  public void validateLocals() {runValidation(new
-  // LocalsValidator());}
-
-  /** Verifies that each use in this Body has a def. */
-  // TODO: #535 implement validator public void validateUses() {  runValidation(new
-  // UsesValidator()); }
-  private void checkInit() {
-    runValidation(new CheckInitValidator());
-  }
-
   /** Returns a backed chain of the locals declared in this Body. */
   public Set<Local> getLocals() {
     return locals;
   }
 
-  /** Returns an unmodifiable view of the traps found in this Body. */
+  /**
+   * Returns an unmodifiable view of the traps found in this Body. @Deprecated the exceptional flow
+   * information is already integrated into the StmtGraphs BasicBlocks.getExceptionalFlows() -
+   * exists to make porting tools from Soot easier
+   */
   @Nonnull
+  @Deprecated()
   public List<Trap> getTraps() {
     return graph.getTraps();
   }
@@ -156,18 +122,18 @@ public class Body implements Copyable {
   /** Return unit containing the \@this-assignment * */
   @Nullable
   public Stmt getThisStmt() {
-    for (Stmt u : getStmts()) {
-      if (u instanceof JIdentityStmt) {
-        if (((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
-          return u;
+    for (Stmt stmt : graph) {
+      if (stmt instanceof JIdentityStmt) {
+        if (((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
+          return stmt;
         }
       } else {
-        // TODO: possible optimization see getParameterLocals()
+        // TODO: possible optimisation see getParameterLocals()
         //  break;
       }
     }
     return null;
-    //    throw new RuntimeException("couldn't find this-assignment!" + " in " +
+    //    throw new IllegalArgumentException("couldn't find this-assignment!" + " in " +
     // getMethodSignature());
   }
 
@@ -178,24 +144,22 @@ public class Body implements Copyable {
     if (thisStmt == null) {
       return null;
     }
-    return (Local) thisStmt.getLeftOp();
+    return thisStmt.getLeftOp();
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. */
   @Nonnull
   public Local getParameterLocal(int i) {
-    for (Stmt s : getStmts()) {
-      if (s instanceof JIdentityStmt) {
-        if (((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
-          JIdentityStmt idStmt = (JIdentityStmt) s;
+    for (Stmt stmt : graph) {
+      // TODO: possible optimisation see getParameterLocals()
+      if (stmt instanceof JIdentityStmt) {
+        if (((JIdentityStmt) stmt).getRightOp() instanceof JParameterRef) {
+          JIdentityStmt idStmt = (JIdentityStmt) stmt;
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
           if (pr.getIndex() == i) {
-            return (Local) idStmt.getLeftOp();
+            return idStmt.getLeftOp();
           }
         }
-      } else {
-        // TODO: possible optimization see getParameterLocals()
-        //  break;
       }
     }
     throw new IllegalArgumentException("There exists no Parameter Local with index " + i + "!");
@@ -213,7 +177,7 @@ public class Body implements Copyable {
     final List<Local> retVal = new ArrayList<>();
     // TODO: [ms] performance: don't iterate over all stmt -> lazy vs freedom/error tolerance -> use
     // fixed index positions at the beginning?
-    for (Stmt u : graph.getNodes()) {
+    for (Stmt u : graph) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
@@ -232,7 +196,9 @@ public class Body implements Copyable {
   }
 
   /**
-   * returns the control flow graph that represents this body into a linear List of statements.
+   * returns the control flow graph that represents this body into a linear List of statements. for
+   * more detailed information of the underlying CFG - or just parts of it - have a look at
+   * getStmtGraph()
    *
    * @return the statements in this Body
    */
@@ -262,6 +228,7 @@ public class Body implements Copyable {
   }
 
   @Nonnull
+  @Override
   public Position getPosition() {
     return position;
   }
@@ -274,10 +241,6 @@ public class Body implements Copyable {
 
   public boolean isStmtBranchTarget(@Nonnull Stmt targetStmt) {
     return getStmtGraph().isStmtBranchTarget(targetStmt);
-  }
-
-  public void validateIdentityStatements() {
-    runValidation(new IdentityStatementsValidator());
   }
 
   /** Returns the first non-identity stmt in this body. */
@@ -318,6 +281,10 @@ public class Body implements Copyable {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<LValue> getDefs() {
+    return getDefs(graph);
+  }
+
+  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -343,33 +310,14 @@ public class Body implements Copyable {
     return new BodyBuilder(body, modifiers);
   }
 
-  /**
-   * The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern)
-   *
-   * <pre>
-   * <code>
-   * Stmt stmt1, stmt2, stmt3;
-   * ...
-   * Body.BodyBuilder builder = Body.builder();
-   * builder.setMethodSignature( ... );
-   * builder.setStartingStmt(stmt1);
-   * stmtGraph.putEdge(stmt1,stmt2);
-   * stmtGraph.putEdge(stmt2,stmt3);
-   * ...
-   * Body body = builder.build();
-   *
-   * </code>
-   * </pre>
-   */
-  public static class BodyBuilder {
+  /** The BodyBuilder helps to create a new Body in a fluent way (see Builder Pattern) */
+  public static class BodyBuilder implements HasPosition {
     @Nonnull private Set<Local> locals = new LinkedHashSet<>();
     @Nonnull private Set<MethodModifier> modifiers = Collections.emptySet();
 
     @Nullable private Position position = null;
     @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
-
-    @Nullable private List<Stmt> cachedLinearizedStmts = null;
 
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
@@ -395,21 +343,12 @@ public class Body implements Copyable {
     /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = graph.getStmts();
-      return cachedLinearizedStmts;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      graph.setStartingStmt(startingStmt);
-      return this;
+      return graph.getStmts();
     }
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
@@ -424,78 +363,31 @@ public class Body implements Copyable {
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
-      } else {
-        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          final Stmt stmt = currStmt;
-          if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
-          }
-          final List<LValue> defs = currStmt.getDefs();
-          for (LValue def : defs) {
-            if (def == oldLocal || def.getUses().contains(oldLocal)) {
-              if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
-              }
+    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+      if (!locals.contains(existingLocal)) {
+        throw new IllegalArgumentException(
+            "The given existing Local '" + existingLocal + "' is not in the body!");
+      }
+
+      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+        final Stmt stmt = currStmt;
+        if (currStmt.getUses().contains(existingLocal)) {
+          currStmt = currStmt.withNewUse(existingLocal, newLocal);
+        }
+        final List<LValue> defs = currStmt.getDefs();
+        for (LValue def : defs) {
+          if (def == existingLocal || def.getUses().contains(existingLocal)) {
+            if (currStmt instanceof AbstractDefinitionStmt) {
+              currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
-          if (stmt != currStmt) {
-            getStmtGraph().replaceNode(stmt, currStmt);
-          }
         }
-        locals.remove(oldLocal);
-        locals.add(newLocal);
+        if (stmt != currStmt) {
+          getStmtGraph().replaceNode(stmt, currStmt);
+        }
       }
-    }
-
-    /**
-     * replace the oldStmt with newStmt in stmtGraph and branches
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      graph.replaceNode(oldStmt, newStmt);
-      return this;
-    }
-
-    /**
-     * remove the a stmt from the graph and stmt
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      graph.removeNode(stmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
-      graph.clearExceptionalEdges(stmt);
-      return this;
-    }
-
-    @Nonnull
-    @Deprecated
-    public List<Trap> getTraps() {
-      return graph.getTraps();
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
+      locals.remove(existingLocal);
+      locals.add(newLocal);
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
@@ -504,6 +396,7 @@ public class Body implements Copyable {
     }
 
     @Nullable
+    @Override
     public Position getPosition() {
       return position;
     }
@@ -567,6 +460,14 @@ public class Body implements Copyable {
         return super.toString();
       }
     }
+
+    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+      for (LValue def : stmt.getDefs()) {
+        if (def instanceof Local) {
+          locals.remove(def);
+        }
+      }
+    }
   }
 
   /**
@@ -597,19 +498,17 @@ public class Body implements Copyable {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<LValue, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
-    Map<LValue, Collection<Stmt>> allUses = new HashMap<>();
+  public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
+    Map<Value, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
       Collection<Value> uses = stmt.getUses();
       for (Value value : uses) {
-        if (value instanceof LValue) {
-          Collection<Stmt> localUses = allUses.get(value);
-          if (localUses == null) {
-            localUses = new ArrayList<>();
-          }
-          localUses.add(stmt);
-          allUses.put((LValue) value, localUses);
+        Collection<Stmt> localUses = allUses.get(value);
+        if (localUses == null) {
+          localUses = new ArrayList<>();
         }
+        localUses.add(stmt);
+        allUses.put(value, localUses);
       }
     }
     return allUses;

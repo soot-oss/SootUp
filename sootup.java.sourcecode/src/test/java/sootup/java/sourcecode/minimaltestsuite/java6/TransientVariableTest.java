@@ -2,18 +2,21 @@ package sootup.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -22,7 +25,7 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
 
   @Ignore
   public void testTransientVar() {
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
@@ -44,9 +47,9 @@ public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TransientVariable",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = r0.<TransientVariable: int transientVar>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = r0.<TransientVariable: int transientVar>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

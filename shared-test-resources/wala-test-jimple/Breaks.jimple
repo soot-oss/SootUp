@@ -15,7 +15,7 @@ public class Breaks extends java.lang.Object
     private void testBreakFromIf(java.lang.String, Breaks$Ref)
     {
         Breaks r0;
-        java.lang.String r1, $r4;
+        java.lang.String r1, r4;
         Breaks$Ref r2;
         java.lang.String[] r3;
         int i0, i1;
@@ -37,9 +37,9 @@ public class Breaks extends java.lang.Object
      label1:
         if i1 >= i0 goto label3;
 
-        $r4 = r3[i1];
+        r4 = r3[i1];
 
-        if $r4 != r1 goto label2;
+        if r4 != r1 goto label2;
 
         goto label4;
 
@@ -63,20 +63,20 @@ public class Breaks extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        Breaks $r1;
-        Breaks$Ref $r2;
+        Breaks r1;
+        Breaks$Ref r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new Breaks;
+        r1 = new Breaks;
 
-        specialinvoke $r1.<Breaks: void <init>()>();
+        specialinvoke r1.<Breaks: void <init>()>();
 
-        $r2 = new Breaks$Ref;
+        r2 = new Breaks$Ref;
 
-        specialinvoke $r2.<Breaks$Ref: void <init>(java.lang.String[],Breaks$1)>(r0, null);
+        specialinvoke r2.<Breaks$Ref: void <init>(java.lang.String[],Breaks$1)>(r0, null);
 
-        specialinvoke $r1.<Breaks: void testBreakFromIf(java.lang.String,Breaks$Ref)>("whatever", $r2);
+        specialinvoke r1.<Breaks: void testBreakFromIf(java.lang.String,Breaks$Ref)>("whatever", r2);
 
         return;
     }

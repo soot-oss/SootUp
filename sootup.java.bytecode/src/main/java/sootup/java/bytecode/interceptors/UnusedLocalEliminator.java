@@ -41,18 +41,21 @@ import sootup.core.views.View;
 public class UnusedLocalEliminator implements BodyInterceptor {
 
   /**
-   * Removes unused local variables from the List of Stmts of the given {@link Body}. Complexity is
-   * linear with respect to the statements.
+   * Collects all used Locals.
+   *
+   * <p>Removes unused local variables from the List of Stmts of the given {@link Body}. Complexity
+   * is linear with respect to the statements.
    *
    * @param builder the BodyBuilder.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
+    // recreate Set of Locals from Stmts
     Set<Local> locals = new LinkedHashSet<>();
 
-    // Traverse statements copying all used uses and defs
-    for (Stmt stmt : builder.getStmtGraph()) {
+    // traverse statements copying all used uses and defs
+    for (Stmt stmt : builder.getStmtGraph().getNodes()) {
       for (Value value : stmt.getUsesAndDefs()) {
         if (value instanceof Local) {
           Local local = (Local) value;

@@ -30,17 +30,18 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.JavaSootClassSource;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java class path. Handles
@@ -50,15 +51,17 @@ import sootup.java.core.JavaSootClass;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 20.07.2020
  */
-public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation<JavaSootClass> {
+public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  @Nonnull private final Collection<AnalysisInputLocation<JavaSootClass>> cpEntries;
+  @Nonnull private final Collection<AnalysisInputLocation> cpEntries;
 
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
-  private SourceType srcType = null;
+  private final SourceType srcType;
+
+  private final List<BodyInterceptor> bodyInterceptors;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
@@ -67,15 +70,12 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param classPath The class path to search in
    */
   public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
-    if (classPath.length() <= 0) {
-      throw new IllegalStateException("Empty class path given");
-    }
+    this(classPath, SourceType.Application);
+  }
 
-    cpEntries = explodeClassPath(classPath);
-
-    if (cpEntries.isEmpty()) {
-      throw new IllegalStateException("Empty class path is given.");
-    }
+  public JavaClassPathAnalysisInputLocation(
+      @Nonnull String classPath, @Nonnull SourceType srcType) {
+    this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**
@@ -86,30 +86,32 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param srcType the source type for the path can be Library, Application, Phantom.
    */
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nullable SourceType srcType) {
+      @Nonnull String classPath,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this.srcType = srcType;
+    this.bodyInterceptors = bodyInterceptors;
+
     if (classPath.length() <= 0) {
-      throw new IllegalStateException("Empty class path given");
+      throw new IllegalArgumentException("Empty class path given");
     }
-    setSpecifiedAsBuiltInByUser(srcType);
     cpEntries = explodeClassPath(classPath);
 
     if (cpEntries.isEmpty()) {
-      throw new IllegalStateException("Empty class path is given.");
+      throw new IllegalArgumentException("Empty class path is given.");
     }
   }
 
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
-    this.srcType = srcType;
+  @Override
+  @Nonnull
+  public SourceType getSourceType() {
+    return srcType;
   }
 
   @Override
-  public SourceType getSourceType() {
-    return srcType;
+  @Nonnull
+  public List<BodyInterceptor> getBodyInterceptors() {
+    return bodyInterceptors;
   }
 
   /**
@@ -150,9 +152,8 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
       @Nonnull String entry, FileSystem fileSystem) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = fileSystem.getPath(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
-      try {
-        return StreamUtils.iteratorToStream(
-            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+      try (final DirectoryStream<Path> paths = Files.newDirectoryStream(baseDir, "*.{jar,JAR}"); ) {
+        return StreamUtils.iteratorToStream(paths.iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new IllegalStateException("Malformed wildcard entry", e);
       } catch (IOException e) {
@@ -176,35 +177,33 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   @Nonnull
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
-    Set<AbstractClassSource<JavaSootClass>> found = new HashSet<>();
-    for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
+    Set<SootClassSource> found = new HashSet<>();
+    for (AnalysisInputLocation inputLocation : cpEntries) {
       found.addAll(inputLocation.getClassSources(view));
     }
-    return found;
+    return found.stream().map(src -> (JavaSootClassSource) src).collect(Collectors.toList());
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    for (AnalysisInputLocation<JavaSootClass> inputLocation : cpEntries) {
-      final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+  public Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      final Optional<? extends SootClassSource> classSource =
           inputLocation.getClassSource(type, view);
       if (classSource.isPresent()) {
-        return classSource;
+        return classSource.map(src -> (JavaSootClassSource) src);
       }
     }
     return Optional.empty();
   }
 
   @Nonnull
-  private Optional<AnalysisInputLocation<JavaSootClass>> inputLocationForPath(@Nonnull Path path) {
+  private Optional<AnalysisInputLocation> inputLocationForPath(@Nonnull Path path) {
     if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType));
+      return Optional.of(PathBasedAnalysisInputLocation.create(path, srcType, bodyInterceptors));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
@@ -217,7 +216,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param jarPath The jar path for which the classes need to be listed
    * @return list of classpath entries
    */
-  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(@Nonnull String jarPath) {
+  private List<AnalysisInputLocation> explodeClassPath(@Nonnull String jarPath) {
     return explodeClassPath(jarPath, FileSystems.getDefault());
   }
 
@@ -228,16 +227,11 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
    * @param fileSystem the filesystem the path should be resolved for
    * @return list of classpath entries
    */
-  private List<AnalysisInputLocation<JavaSootClass>> explodeClassPath(
+  private List<AnalysisInputLocation> explodeClassPath(
       @Nonnull String jarPath, @Nonnull FileSystem fileSystem) {
-    try {
-      return explode(jarPath, fileSystem)
-          .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
-          .collect(Collectors.toList());
-
-    } catch (IllegalArgumentException e) {
-      throw new IllegalStateException("Malformed class path given: " + jarPath, e);
-    }
+    return explode(jarPath, fileSystem)
+        .flatMap(cp -> StreamUtils.optionalToStream(inputLocationForPath(cp)))
+        .collect(Collectors.toList());
   }
 
   @Override

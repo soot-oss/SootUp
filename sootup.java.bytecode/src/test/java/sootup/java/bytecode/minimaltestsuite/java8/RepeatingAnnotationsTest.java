@@ -37,7 +37,7 @@ public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: RepeatingAnnotations", "$r1 = \"\"", "$r2 = \"\"", "return")
+    return Stream.of("r0 := @this: RepeatingAnnotations", "r1 = \"\"", "r2 = \"\"", "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

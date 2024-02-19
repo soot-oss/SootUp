@@ -2,18 +2,21 @@ package sootup.java.sourcecode.minimaltestsuite.java9;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -28,7 +31,7 @@ public class PrivateMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
 
-    SootClass<?> sootClass = loadClass(getDeclaredClassSignature());
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
         sootClass.getInterfaces().stream()
             .anyMatch(

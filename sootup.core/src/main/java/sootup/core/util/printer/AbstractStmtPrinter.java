@@ -66,7 +66,9 @@ public abstract class AbstractStmtPrinter extends StmtPrinter {
       if (packageName == null) {
         imports.put(referencedClassName, referencedPackageName);
         return true;
-      } else return packageName.equals(referencedPackageName);
+      } else {
+        return packageName.equals(referencedPackageName);
+      }
     }
     return false;
   }

@@ -25,7 +25,6 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
-import sootup.core.model.SootClass;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.views.View;
@@ -39,7 +38,7 @@ public class BytecodeHierarchy {
   private final ClassType serializableClassType;
   private final ClassType cloneableClassType;
 
-  public BytecodeHierarchy(View<? extends SootClass<?>> view) {
+  public BytecodeHierarchy(View view) {
     this.typeHierarchy = view.getTypeHierarchy();
     IdentifierFactory factory = view.getIdentifierFactory();
     objectClassType = factory.getClassType("java.lang.Object");
@@ -228,12 +227,22 @@ public class BytecodeHierarchy {
             }
           }
         } else {
-          Set<ClassType> superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type);
+
+          Set<ClassType> superInterfaces;
+          ClassType superClass;
+          try {
+            superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type);
+            superClass = typeHierarchy.superClassOf(node.type);
+          } catch (IllegalArgumentException iae) {
+            // node.type does not exist in
+            continue;
+          }
+
           for (ClassType superInterface : superInterfaces) {
             AncestryPath superNode = new AncestryPath(superInterface, node);
             pathNodes.add(superNode);
           }
-          ClassType superClass = typeHierarchy.superClassOf(node.type);
+
           // only java.lang.Object can have no SuperClass i.e. is null
           if (superClass != null) {
             AncestryPath superNode = new AncestryPath(superClass, node);

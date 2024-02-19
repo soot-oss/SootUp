@@ -30,12 +30,12 @@ public class de.upb.sootup.concrete.generics.A extends java.lang.Object
     java.lang.Object getT()
     {
         de.upb.sootup.concrete.generics.A r0;
-        java.lang.Object $r1;
+        java.lang.Object r1;
 
         r0 := @this: de.upb.sootup.concrete.generics.A;
 
-        $r1 = r0.<de.upb.sootup.concrete.generics.A: java.lang.Object t>;
+        r1 = r0.<de.upb.sootup.concrete.generics.A: java.lang.Object t>;
 
-        return $r1;
+        return r1;
     }
 }

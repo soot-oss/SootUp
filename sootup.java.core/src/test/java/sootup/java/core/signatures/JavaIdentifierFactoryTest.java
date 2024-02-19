@@ -25,8 +25,6 @@ package sootup.java.core.signatures;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,24 +109,6 @@ public class JavaIdentifierFactoryTest {
     ClassType classSignature2 = null;
     // Class Signatures are unique but not their package
     assertNotEquals(classSignature1, classSignature2);
-  }
-
-  @Test
-  public void sigFromPath() {
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    Path rootDirectory = Paths.get("");
-    Path p = Paths.get("java/lang/System.class");
-    ClassType classSignature = typeFactory.fromPath(rootDirectory, p);
-    assertEquals(classSignature.toString(), "java.lang.System");
-  }
-
-  @Test
-  public void sigFromPathStartsWithSlash() {
-    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
-    Path rootDirectory = Paths.get("/");
-    Path p = Paths.get("/java/lang/System.class");
-    ClassType classSignature = typeFactory.fromPath(rootDirectory, p);
-    assertEquals(classSignature.toString(), "java.lang.System");
   }
 
   @Test

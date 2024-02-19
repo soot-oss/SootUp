@@ -1,7 +1,6 @@
 package sootup.core.graph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +33,7 @@ import sootup.core.types.ClassType;
 public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final ArrayList<MutableBasicBlock> predecessorBlocks = new ArrayList<>();
   private MutableBasicBlock[] successorBlocks =
-      new MutableBasicBlock[1]; // 1 := most propable amount of successors/elements
+      new MutableBasicBlock[1]; // 1 := most probable amount of successors/elements
 
   @Nonnull private final Map<ClassType, MutableBasicBlock> exceptionalSuccessorBlocks;
 
@@ -94,7 +93,15 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     predecessorBlocks.add(block);
   }
 
-  public boolean setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block) {
+  /**
+   * makes blockA the predecessor of BlockB and BlockB the Successor of BlockA in a combined Method
+   */
+  void linkSuccessor(int successorIdx, MutableBasicBlock blockB) {
+    setSuccessorBlock(successorIdx, blockB);
+    blockB.addPredecessorBlock(this);
+  }
+
+  public void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block) {
     updateSuccessorContainer(getTail());
     if (successorIdx >= successorBlocks.length) {
       throw new IndexOutOfBoundsException(
@@ -107,14 +114,13 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
               + "')");
     }
     successorBlocks[successorIdx] = block;
-    return true;
   }
 
   public boolean removePredecessorBlock(@Nonnull MutableBasicBlock b) {
     return predecessorBlocks.remove(b);
   }
 
-  private void removeAllFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
+  private void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == b) {
         successorBlocks[i] = null;
@@ -122,7 +128,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     }
   }
 
-  public void addExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
+  public void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b) {
     exceptionalSuccessorBlocks.put(exception, b);
     b.addPredecessorBlock(this);
   }
@@ -159,8 +165,12 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
     if (stmts.isEmpty()) {
       return Collections.emptyList();
     }
-    final int expectedSuccessorCount = getTail().getExpectedSuccessorCount();
-    return Arrays.stream(successorBlocks).filter(Objects::nonNull).collect(Collectors.toList());
+
+    List<MutableBasicBlock> objects = new ArrayList<>(getTail().getExpectedSuccessorCount());
+    // TODO: does this change meaning?! i.e. with switchStmts that have partially populated
+    // successors?
+    Arrays.stream(successorBlocks).filter(Objects::nonNull).forEach(objects::add);
+    return objects;
   }
 
   @Override
@@ -226,10 +236,11 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
       throw new IllegalArgumentException(
           "Can not split by that Stmt - it is not contained in this Block.");
     }
-    if (stmts.get(splitIdx + 1) != newHead) {
+    int newHeadsIdx = splitIdx + 1;
+    if (stmts.get(newHeadsIdx) != newHead) {
       throw new IllegalArgumentException("Can't split - the given Stmts are not connected.");
     }
-    return splitBlockUnlinked(splitIdx + 1);
+    return splitBlockUnlinked(newHeadsIdx);
   }
 
   /** @param splitIdx should be in [1, stmts.size()-1] */
@@ -310,19 +321,19 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   public void clearExceptionalSuccessorBlocks() {
-    exceptionalSuccessorBlocks.forEach((e, b) -> b.removePredecessorBlock(this));
+    exceptionalSuccessorBlocks.values().forEach(b -> b.removePredecessorBlock(this));
     exceptionalSuccessorBlocks.clear();
   }
 
   public void clearPredecessorBlocks() {
-    Map<MutableBasicBlock, Collection<ClassType>> toRemove = new HashMap<>();
+    Map<MutableBasicBlock, Collection<ClassType>> exceptionalFlowstoRemove = new HashMap<>();
     predecessorBlocks.forEach(
         pb -> {
-          pb.removeAllFromSuccessorBlock(this);
-          toRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
+          pb.removePredecessorFromSuccessorBlock(this);
+          exceptionalFlowstoRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
         });
 
-    toRemove.forEach(
+    exceptionalFlowstoRemove.forEach(
         (predBlock, cltypes) -> {
           for (ClassType type : cltypes) {
             predBlock.removeExceptionalSuccessorBlock(type);
@@ -338,13 +349,14 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   }
 
   /** set newBlock to null to unset.. */
-  public boolean replaceSuccessorBlock(
+  public List<Integer> replaceSuccessorBlock(
       @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
-    boolean found = false;
+    List<Integer> found =
+        new ArrayList<>(successorBlocks.length); // max.. almost definitely smaller
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == oldBlock) {
         successorBlocks[i] = newBlock;
-        found = true;
+        found.add(i);
       }
     }
     return found;

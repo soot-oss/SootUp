@@ -3,6 +3,7 @@ package sootup.java.sourcecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,12 +11,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -61,10 +64,10 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 := @parameter1: int",
-            "$i2 = $i0 + $i1",
-            "return $i2")
+            "i0 := @parameter0: int",
+            "i1 := @parameter1: int",
+            "i2 = i0 + i1",
+            "return i2")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -80,10 +83,7 @@ public class MethodOverloadingTest extends MinimalSourceTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 = $i0 + $i0",
-            "return $i1")
+            "r0 := @this: MethodOverloading", "i0 := @parameter0: int", "i1 = i0 + i0", "return i1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

@@ -25,13 +25,11 @@ package sootup.java.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 import sootup.core.IdentifierFactory;
 import sootup.core.signatures.FieldSignature;
@@ -55,6 +53,37 @@ import sootup.java.core.types.JavaClassType;
 public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
+
+  @Nonnull
+  public static final MethodSubSignature STATIC_INITIALIZER =
+      new MethodSubSignature("<clinit>", Collections.emptyList(), VoidType.getInstance());
+
+  @Override
+  public boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.equals(STATIC_INITIALIZER);
+  }
+
+  @Override
+  public boolean isConstructorSignature(@Nonnull MethodSignature methodSignature) {
+    return isConstructorSubSignature(methodSignature.getSubSignature());
+  }
+
+  @Override
+  public boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    return methodSubSignature.getName().equals("<init>")
+        && methodSubSignature.getType() == VoidType.getInstance();
+  }
+
+  @Override
+  public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
+    if (methodSubSignature.getName().equals("main")) {
+      final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
+      if (parameterTypes.size() == 1) {
+        return parameterTypes.get(0).toString().equals("java.lang.String[]");
+      }
+    }
+    return false;
+  }
 
   /** Caches the created PackageNames for packages. */
   @Nonnull
@@ -229,22 +258,6 @@ public class JavaIdentifierFactory implements IdentifierFactory {
             (k) -> new AnnotationType(className, getPackageName(packageName)));
   }
 
-  @Override
-  @Nonnull
-  public JavaClassType fromPath(@Nonnull final Path rootDirectory, @Nonnull final Path file) {
-
-    final int nameCountBaseDir =
-        rootDirectory.toString().isEmpty() ? 0 : rootDirectory.getNameCount();
-
-    String fullyQualifiedName =
-        FilenameUtils.removeExtension(
-            file.subpath(nameCountBaseDir, file.getNameCount())
-                .toString()
-                .replace(file.getFileSystem().getSeparator(), "."));
-
-    return getClassType(fullyQualifiedName);
-  }
-
   /**
    * Returns a unique PackageName. The method looks up a cache if it already contains a signature
    * with the given package name. If the cache lookup fails a new signature is created.
@@ -396,8 +409,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String methodName = matcher.group("method").trim();
     String returnName = matcher.group("return").trim();
 
-    if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty())
+    if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty()) {
       throw MethodSignatureParserPatternHolder.createInvalidMethodSignatureException();
+    }
 
     String argsGroup = matcher.group("args");
 
@@ -409,9 +423,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(String::trim)
                 .filter(
                     it -> {
-                      if (it.isEmpty())
+                      if (it.isEmpty()) {
                         throw MethodSignatureParserPatternHolder
                             .createInvalidMethodSignatureException();
+                      }
 
                       return true;
                     })
@@ -490,8 +505,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String methodName = matcher.group("method").trim();
     String returnName = matcher.group("return").trim();
 
-    if (methodName.isEmpty() || returnName.isEmpty())
+    if (methodName.isEmpty() || returnName.isEmpty()) {
       throw createInvalidMethodSubSignatureException();
+    }
 
     String argsGroup = matcher.group("args");
 
@@ -502,7 +518,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
                 .map(String::trim)
                 .filter(
                     it -> {
-                      if (it.isEmpty()) throw createInvalidMethodSubSignatureException();
+                      if (it.isEmpty()) {
+                        throw createInvalidMethodSubSignatureException();
+                      }
 
                       return true;
                     })
@@ -569,8 +587,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String fieldName = matcher.group("field").trim();
     String typeName = matcher.group("type").trim();
 
-    if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty())
+    if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty()) {
       throw createInvalidFieldSignatureException();
+    }
 
     return getFieldSignature(fieldName, getClassType(className), typeName);
   }
@@ -656,7 +675,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
     String fieldName = matcher.group("field").trim();
     String typeName = matcher.group("type").trim();
 
-    if (fieldName.isEmpty() || typeName.isEmpty()) throw createInvalidFieldSubSignatureException();
+    if (fieldName.isEmpty() || typeName.isEmpty()) {
+      throw createInvalidFieldSubSignatureException();
+    }
 
     return getFieldSubSignature(fieldName, getType(typeName));
   }

@@ -12,14 +12,14 @@ import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.core.graph.StmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -39,21 +39,16 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGDotExportTest() {
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
-            .build();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
-    view = javaProject.createView();
+    view = new JavaView(inputLocations);
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
@@ -79,21 +74,16 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGDotExportTest2() {
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
-            .build();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
-    view = javaProject.createView();
+    view = new JavaView(inputLocations);
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGExample2");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("entryPoint")).findFirst().get();
 
@@ -119,21 +109,16 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGArrayListDotExport() {
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
-            .build();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
-    view = javaProject.createView();
+    view = new JavaView(inputLocations);
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGArrayListExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
 
@@ -151,21 +136,16 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   @Test
   public void ICFGInterfaceDotExport() {
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"))
-            .build();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+    inputLocations.add(new DefaultRTJarAnalysisInputLocation());
+    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/icfg/binary"));
 
-    view = javaProject.createView();
+    view = new JavaView(inputLocations);
 
     JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     JavaClassType mainClassSignature = identifierFactory.getClassType("ICFGInterfaceExample");
 
-    SootClass<?> sc = view.getClass(mainClassSignature).get();
+    SootClass sc = view.getClass(mainClassSignature).get();
     entryMethod =
         sc.getMethods().stream().filter(e -> e.getName().equals("main")).findFirst().get();
 
@@ -184,10 +164,10 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
   /** Compute the Edges of the given methodSignature from the provided callGraph */
   public String edgesFromCallGraph(
       MethodSignature methodSignature, JimpleBasedInterproceduralCFG icfg, CallGraph callGraph) {
-    Map<MethodSignature, StmtGraph> signatureToStmtGraph = new LinkedHashMap<>();
+    Map<MethodSignature, StmtGraph<?>> signatureToStmtGraph = new LinkedHashMap<>();
     icfg.computeAllCalls(methodSignature, signatureToStmtGraph, callGraph);
     Map<Integer, MethodSignature> calls;
-    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view);
+    calls = ICFGDotExporter.computeCalls(signatureToStmtGraph, view, callGraph);
     final Optional<? extends SootMethod> methodOpt = view.getMethod(methodSignature);
     if (methodOpt.isPresent()) {
       SootMethod sootMethod = methodOpt.get();

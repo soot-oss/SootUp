@@ -30,10 +30,9 @@ import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.visitor.RefVisitor;
 import sootup.core.signatures.FieldSignature;
-import sootup.core.util.Copyable;
 import sootup.core.util.printer.StmtPrinter;
 
-public final class JStaticFieldRef extends JFieldRef implements LValue, Copyable {
+public final class JStaticFieldRef extends JFieldRef implements LValue {
 
   public JStaticFieldRef(@Nonnull FieldSignature fieldSig) {
     super(fieldSig);

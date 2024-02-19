@@ -42,7 +42,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: AssertStatement",
+            "l0 := @this: AssertStatement",
             "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -66,16 +66,15 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend() {
     return Stream.of(
-            "$l0 := @this: AssertStatement",
+            "l0 := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"\" != null goto label1",
-            "$stack4 = new java.lang.AssertionError",
-            "specialinvoke $stack4.<java.lang.AssertionError: void <init>()>()",
-            "throw $stack4",
+            "$stack3 = new java.lang.AssertionError",
+            "specialinvoke $stack3.<java.lang.AssertionError: void <init>()>()",
+            "throw $stack3",
             "label1:",
-            "$stack3 = 4",
-            "$l1 = $stack3",
+            "l1 = 4",
             "return")
         .collect(Collectors.toList());
   }
@@ -94,25 +93,23 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend2() {
     return Stream.of(
-            "$l0 := @this: AssertStatement",
+            "l0 := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"first\" != null goto label1",
-            "$stack7 = new java.lang.AssertionError",
-            "specialinvoke $stack7.<java.lang.AssertionError: void <init>()>()",
-            "throw $stack7",
-            "label1:",
-            "$stack6 = 1",
-            "$l1 = $stack6",
-            "$stack3 = <AssertStatement: boolean $assertionsDisabled>",
-            "if $stack3 != 0 goto label2",
-            "if \"second\" != null goto label2",
             "$stack5 = new java.lang.AssertionError",
             "specialinvoke $stack5.<java.lang.AssertionError: void <init>()>()",
             "throw $stack5",
+            "label1:",
+            "l1 = 1",
+            "$stack3 = <AssertStatement: boolean $assertionsDisabled>",
+            "if $stack3 != 0 goto label2",
+            "if \"second\" != null goto label2",
+            "$stack4 = new java.lang.AssertionError",
+            "specialinvoke $stack4.<java.lang.AssertionError: void <init>()>()",
+            "throw $stack4",
             "label2:",
-            "$stack4 = 2",
-            "$l1 = $stack4",
+            "l1 = 2",
             "return")
         .collect(Collectors.toList());
   }

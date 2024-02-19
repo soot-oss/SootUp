@@ -64,24 +64,15 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaProject;
-import sootup.java.core.JavaSootClass;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.language.JavaJimple;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
 public class InstantiateClassValueVisitorTest {
   @Test
   public void testVisitor() {
-
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar"))
-            .build();
-    View<JavaSootClass> view = javaProject.createView();
+    View view = new JavaView(new DefaultRTJarAnalysisInputLocation());
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
 
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
@@ -107,7 +98,7 @@ public class InstantiateClassValueVisitorTest {
     assertFalse(foundClassTypes.contains(identifierFactory.getClassType("java.lang.String")));
   }
 
-  private void fillList(List<Value> listWithAllValues, View<JavaSootClass> view) {
+  private void fillList(List<Value> listWithAllValues, View view) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
     // interesting cases
     PrimitiveType charType = identifierFactory.getPrimitiveType("char").orElse(null);

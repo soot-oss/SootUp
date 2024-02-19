@@ -39,13 +39,13 @@ public class JThrowStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
-    Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
-    Local localEqual = new Local("$r0", typeFactory.getType("java.lang.Exception"));
-    Local localDifferent = new Local("$r1", typeFactory.getType("java.lang.Exception"));
-    Local localDifferent2 = new Local("$r0", typeFactory.getType("sompepackage.MyException"));
+    Local local = new Local("r0", typeFactory.getType("java.lang.Exception"));
+    Local localEqual = new Local("r0", typeFactory.getType("java.lang.Exception"));
+    Local localDifferent = new Local("r1", typeFactory.getType("java.lang.Exception"));
+    Local localDifferent2 = new Local("r0", typeFactory.getType("sompepackage.MyException"));
 
     Stmt tStmt = new JThrowStmt(local, nop);
 
@@ -58,6 +58,6 @@ public class JThrowStmtTest {
     Assert.assertFalse(tStmt.equivTo(new JThrowStmt(localDifferent2, nop)));
 
     // toString
-    Assert.assertEquals("throw $r0", tStmt.toString());
+    Assert.assertEquals("throw r0", tStmt.toString());
   }
 }

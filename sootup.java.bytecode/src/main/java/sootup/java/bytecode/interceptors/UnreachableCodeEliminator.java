@@ -22,7 +22,7 @@ package sootup.java.bytecode.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
@@ -35,10 +35,12 @@ import sootup.core.views.View;
  */
 public class UnreachableCodeEliminator implements BodyInterceptor {
 
-  @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  // TODO: performance - quite expensive; maybe work on Block level to reduce hash calculations etc?
 
-    StmtGraph<?> graph = builder.getStmtGraph();
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+
+    MutableStmtGraph graph = builder.getStmtGraph();
 
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
@@ -64,7 +66,8 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     }
 
     for (Stmt stmt : removeQ) {
-      builder.removeStmt(stmt);
+      graph.removeNode(stmt, false);
+      builder.removeDefLocalsOf(stmt);
     }
   }
 }

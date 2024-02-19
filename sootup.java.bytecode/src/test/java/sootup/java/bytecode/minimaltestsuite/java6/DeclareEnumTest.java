@@ -45,18 +45,16 @@ public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return super.expectedBodyStmts(
-        "$l0 := @this: DeclareEnum",
-        "$l1 = staticinvoke <DeclareEnum$Type: DeclareEnum$Type[] values()>()",
-        "$l2 = lengthof $l1",
-        "$l3 = 0",
+        "l0 := @this: DeclareEnum",
+        "l1 = staticinvoke <DeclareEnum$Type: DeclareEnum$Type[] values()>()",
+        "l2 = lengthof l1",
+        "l3 = 0",
         "label1:",
-        "$stack7 = $l3",
-        "$stack6 = $l2",
-        "if $stack7 >= $stack6 goto label2",
-        "$l4 = $l1[$l3]",
+        "if l3 >= l2 goto label2",
+        "l4 = l1[l3]",
         "$stack5 = <java.lang.System: java.io.PrintStream out>",
-        "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>($l4)",
-        "$l3 = $l3 + 1",
+        "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l4)",
+        "l3 = l3 + 1",
         "goto label1",
         "label2:",
         "return");

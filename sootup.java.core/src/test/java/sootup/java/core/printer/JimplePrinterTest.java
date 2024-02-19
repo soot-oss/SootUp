@@ -2,13 +2,15 @@ package sootup.java.core.printer;
 
 import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import org.junit.Test;
-import sootup.core.Project;
+import org.junit.experimental.categories.Category;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -21,13 +23,13 @@ import sootup.core.util.Utils;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 /**
  * @author Markus Schmidt
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
+@Category(Java8Test.class)
 public class JimplePrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
@@ -56,23 +58,23 @@ public class JimplePrinterTest {
 
   private SootClass buildClass() {
 
-    Project project =
-        JavaProject.builder(new JavaLanguage(8)).addInputLocation(new EagerInputLocation()).build();
-    View view = project.createView();
+    View view = new JavaView(new EagerInputLocation());
 
     String className = "some.package.SomeClass";
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
             .getMethodSignature(className, "main", "void", Collections.emptyList());
 
-    StmtPositionInfo noPosInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
     final JReturnVoidStmt returnVoidStmt = new JReturnVoidStmt(noPosInfo);
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(jNop);
+    stmtGraph.putEdge(jNop, returnVoidStmt);
+
     bodyBuilder
-        .setStartingStmt(jNop)
-        .addFlow(jNop, returnVoidStmt)
         .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();

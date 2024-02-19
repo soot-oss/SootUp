@@ -24,34 +24,26 @@ package sootup.java.bytecode.inputlocation;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import javax.annotation.Nonnull;
-import org.junit.Assert;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.BodySource;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.model.*;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSubSignature;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
-import sootup.java.core.language.JavaLanguage;
-import sootup.java.core.signatures.ModuleSignature;
-import sootup.java.core.types.ModuleJavaClassType;
-import sootup.java.core.views.JavaModuleView;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -62,226 +54,47 @@ import sootup.java.core.views.JavaView;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
-  public void multiReleaseJar() {
-    final ClassType classType =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-    final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
-
-    final JavaProject project_min =
-        JavaProject.builder(new JavaLanguage(Integer.MIN_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
-            .build();
-    final JavaView view_min = project_min.createView();
-
-    final JavaProject project_8 =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
-            .build();
-    final JavaView view_8 = project_8.createView();
-
-    final JavaProject project_9 =
-        JavaProject.builder(new JavaLanguage(9))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
-            .build();
-    final JavaView view_9 = project_9.createView();
-
-    final JavaProject project_10 =
-        JavaProject.builder(new JavaLanguage(10))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
-            .build();
-    final JavaView view_10 = project_10.createView();
-
-    final JavaProject project_max =
-        JavaProject.builder(new JavaLanguage(Integer.MAX_VALUE))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mrj, null))
-            .build();
-    final JavaView view_max = project_max.createView();
-
-    // for java10
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_10.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_10.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
-    // assert that method is correctly resolved
-    Assert.assertTrue(
-        view_10
-            .getClass(classType)
-            .get()
-            .getMethod(
-                getIdentifierFactory()
-                    .getMethodSubSignature(
-                        "printVersion",
-                        getIdentifierFactory().getType("void"),
-                        Collections.emptyList()))
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 9"));
-
-    // for java 9
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_9.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
-    // for java 8
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
-        view_8.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
-    // assert that method is correctly resolved to base
-    Assert.assertTrue(
-        view_8
-            .getClass(classType)
-            .get()
-            .getMethod(
-                getIdentifierFactory()
-                    .getMethodSubSignature(
-                        "printVersion",
-                        getIdentifierFactory().getType("void"),
-                        Collections.emptyList()))
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 8"));
-
-    // for max int
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_max.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_max.getClass(classType2).get().getClassSource().getSourcePath().toString());
-
-    // for min int
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
-        view_min.getClass(classType).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_min.getClass(classType2).get().getClassSource().getSourcePath().toString());
-  }
-
-  @Test
-  public void modularMultiReleaseJar() {
-    final ClassType utilityNoModule =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Utility");
-
-    final ModuleJavaClassType utilityModule =
-        JavaModuleIdentifierFactory.getInstance()
-            .getClassType("de.upb.swt.multirelease/de.upb.swt.multirelease.Utility");
-
-    final ClassType classType2 =
-        getIdentifierFactory().getClassType("de.upb.swt.multirelease.Main");
-
-    final JavaProject project_8 =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(PathBasedAnalysisInputLocation.create(mmrj, null))
-            .build();
-    final JavaView view_8 = project_8.createView();
-
-    final JavaModuleProject project_9 =
-        (JavaModuleProject)
-            JavaModuleProject.builder(new JavaLanguage(9))
-                .enableModules()
-                .addInputLocation(
-                    (ModuleInfoAnalysisInputLocation)
-                        PathBasedAnalysisInputLocation.create(mmrj, null))
-                .build();
-
-    final JavaModuleView view_9 = project_9.createView();
-
-    ModuleSignature moduleSignature =
-        JavaModuleIdentifierFactory.getModuleSignature("de.upb.swt.multirelease");
-
-    Assert.assertEquals(Collections.singleton(moduleSignature), view_9.getNamedModules());
-
-    Assert.assertTrue(view_9.getModuleInfo(moduleSignature).isPresent());
-
-    Assert.assertEquals(1, view_9.getModuleClasses(moduleSignature).size());
-
-    Assert.assertEquals(
-        "de.upb.swt.multirelease.Utility",
-        view_9.getModuleClasses(moduleSignature).stream()
-            .findAny()
-            .get()
-            .getType()
-            .getFullyQualifiedName());
-
-    // for java 9
-    Assert.assertEquals(
-        "/META-INF/versions/9/de/upb/swt/multirelease/Utility.class",
-        view_9.getClass(utilityModule).get().getClassSource().getSourcePath().toString());
-    // different class will be returned if no module is specified
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
-        view_9.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_9.getClass(classType2).get().getClassSource().getSourcePath().toString());
-    // assert that method is correctly resolved to base
-    Assert.assertTrue(
-        view_9
-            .getClass(utilityModule)
-            .get()
-            .getMethod(
-                getIdentifierFactory()
-                    .getMethodSubSignature(
-                        "printVersion",
-                        getIdentifierFactory().getType("void"),
-                        Collections.emptyList()))
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 9"));
-
-    // for java 8
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Utility.class",
-        view_8.getClass(utilityNoModule).get().getClassSource().getSourcePath().toString());
-    assertFalse(view_8.getClass(utilityModule).isPresent());
-    Assert.assertEquals(
-        "/de/upb/swt/multirelease/Main.class",
-        view_8.getClass(classType2).get().getClassSource().getSourcePath().toString());
-    // assert that method is correctly resolved to base
-    Assert.assertTrue(
-        view_8
-            .getClass(utilityNoModule)
-            .get()
-            .getMethod(
-                getIdentifierFactory()
-                    .getMethodSubSignature(
-                        "printVersion",
-                        getIdentifierFactory().getType("void"),
-                        Collections.emptyList()))
-            .get()
-            .getBody()
-            .toString()
-            .contains("java 8"));
-  }
-
-  @Test
   public void testApk() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(apk, null);
+        new ApkAnalysisInputLocation(apk, SourceType.Application);
     final ClassType mainClass =
         getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
     testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
   }
 
   @Test
+  public void testSingleClass() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            cls, "", SourceType.Application);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("Employee"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testSingleClassDoesNotExist() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("NonExisting.class"), SourceType.Application);
+  }
+
+  @Test
+  public void testSingleClassWPackageName() {
+    AnalysisInputLocation pathBasedNamespace =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            "ClassesPackageName",
+            SourceType.Application);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("ClassesPackageName.ClassWithPackageName"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
+  }
+
+  @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(jar, null);
-
+        PathBasedAnalysisInputLocation.create(jar, SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
@@ -291,7 +104,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(war, null);
+        PathBasedAnalysisInputLocation.create(war, SourceType.Application);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
   }
@@ -303,29 +116,23 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
     assertTrue("File " + warFile + " not found.", new File(warFile).exists());
 
-    // Create a project
-    JavaProject p =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new JavaClassPathAnalysisInputLocation(warFile))
-            .build();
-
     // Get the view
-    JavaView view = p.createView();
+    JavaView view = new JavaView(new JavaClassPathAnalysisInputLocation(warFile));
 
     assertEquals(19, view.getClasses().size());
 
     // Create java class signature
-    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("Employee", "ds");
+    ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
-    SootClass<JavaSootClassSource> utilsClass = view.getClass(utilsClassSignature).get();
+    JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
-    SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
+    JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
     assertNotNull(foundMethod.getBody());
 
     // Print method
@@ -340,11 +147,19 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+
+    JavaSootField field =
+        new JavaSootField(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(classSignature, nameFieldSubSignature),
+            Collections.singleton(FieldModifier.PUBLIC),
+            null,
+            NoPositionInformation.getInstance());
 
     // Build a soot class
-    SootClass<?> c =
-        new SootClass(
+    JavaSootClass c =
+        new JavaSootClass(
             new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
@@ -352,43 +167,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 null,
                 null,
                 null,
-                Collections.singleton(
-                    SootField.builder()
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getFieldSignature(classSignature, nameFieldSubSignature))
-                        .withModifiers(FieldModifier.PUBLIC)
-                        .build()),
-                ImmutableUtils.immutableSet(
-                    SootMethod.builder()
-                        .withSource(
-                            new BodySource() {
-                              @Nonnull
-                              @Override
-                              public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) {
-                                /* [ms] violating @Nonnull */
-                                return null;
-                              }
-
-                              @Override
-                              public Object resolveAnnotationsDefaultValue() {
-                                return null;
-                              }
-
-                              @Override
-                              @Nonnull
-                              public MethodSignature getSignature() {
-                                return JavaIdentifierFactory.getInstance()
-                                    .getMethodSignature(
-                                        utilsClass.getType(), optionalToStreamMethodSubSignature);
-                              }
-                            })
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getMethodSignature(
-                                    classSignature, optionalToStreamMethodSubSignature))
-                        .withModifiers(MethodModifier.PUBLIC)
-                        .build()),
+                Collections.singleton(field),
+                Collections.emptySet(),
                 null,
                 EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
@@ -407,15 +187,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
 
   @Test
   public void testRuntimeJar() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(
-            Paths.get(System.getProperty("java.home") + "/lib/rt.jar"), null);
+    PathBasedAnalysisInputLocation pathBasedNamespace = new DefaultRTJarAnalysisInputLocation();
 
-    JavaView v =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(pathBasedNamespace)
-            .build()
-            .createView();
+    JavaView v = new JavaView(pathBasedNamespace);
 
     // test some standard jre classes
     runtimeContains(v, "Object", "java.lang");
@@ -433,19 +207,11 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
    */
   @Test
   public void testInputLocationLibraryMode() {
+    JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
-    JavaProject javaProject =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(
-                new JavaClassPathAnalysisInputLocation(
-                    System.getProperty("java.home") + "/lib/rt.jar", SourceType.Library))
-            .build();
-    JavaView view = javaProject.createView();
+    Collection<SootClass> classes = new HashSet<>(); // Set to track the classes to check
 
-    Collection<SootClass<JavaSootClassSource>> classes =
-        new HashSet<>(); // Set to track the classes to check
-
-    for (SootClass<JavaSootClassSource> aClass : view.getClasses()) {
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }

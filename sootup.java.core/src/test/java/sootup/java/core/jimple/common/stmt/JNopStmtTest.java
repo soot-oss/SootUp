@@ -40,7 +40,7 @@ public class JNopStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nopos = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nopos = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt nop = new JNopStmt(nopos);
 
     Assert.assertTrue(nop.equivTo(nop));
@@ -49,7 +49,7 @@ public class JNopStmtTest {
     Assert.assertFalse(
         nop.equivTo(
             new JIdentityStmt(
-                new Local("$i0", PrimitiveType.getInt()),
+                new Local("i0", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 123),
                 nopos)));
 

@@ -1,21 +1,22 @@
 # What's SootUp?
 SootUp is a complete overhaul of the good, old static analysis framework [Soot](https://github.com/soot-oss/soot).
 
-- Transforms JVM bytecode (and other inputs!) to the intermediate representation Jimple.
+- Transforms JVM bytecode to the intermediate representation Jimple.
 - Provides ClassHierarchy generation
 - CallGraph generation with different algorithms/precisions
-- Inter-procedural Data-flow Analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
-- Applies/Enables simple transformations on retrieving a methods Body (see BodyInterceptor)
+- Inter-procedural data-flow analysis with the IDE/IFDS framework enabled by [Heros](https://github.com/Sable/heros)
+- Applies simple transformations on retrieving a methods Body (see BodyInterceptor)
 - Provides serialization of the Jimple IR.
 
 !!! important
 
-    SootUp is *not a version update* to Soot, it is instead a *completely new implementation* written from scratch that aims to be a leaner, more extensible equivalent of soot.
+    SootUp is *not a version update* to Soot, it is a *completely new implementation* written from scratch that aims to be a leaner, modernized and developer friendly successor of Soot.
+    It is not a Drop-In Replacement! The new architecture and API, renders it not trivial to update existing projects that were built on soot.
+    Therefore we recommend using SootUp for greenfield projects. We hope improved type safety and streamlined mechanisms will aide you implementing and debugging your analysis tool.
+    Unfortunately not every feature has been ported - If you miss something feel free to [contribute](https://github.com/soot-oss/SootUp/pulls) a feature you miss from good old Soot.
 
 
-## Why SootUp? 
-#### [Click here to read our announcement on the first release of SootUp](announce.md)
-
+## Why SootUp?
 Over the 20+ years, SootUps predecessor Soot has evolved into a powerful framework, which is one of the most widely used tools in the static analysis community. 
 This evolution was guided by the needs of the community and carried out with ad-hoc improvements.
 As a result, Soot has become a tool that can do a multitude of things, but it is heavy and hard to maintain and comprehend.
@@ -25,9 +26,6 @@ enforce validation to have a sane state,
 removing the necessity of arcane knowledge, document it more and more - to make Soot future prove.
 So we introduced [Design changes in SootUp](whatsnew.md), which aim to address Soot's shortcomings.
 The goal is a lighter library that can easily be understood and maintained to be included in other projects.
-
-### Is this a drop-in replacement for Soot?
-Not really. SootUp has a completely new architecture and API, so it is not trivial to update existing projects that build on soot. We recommend using it for greenfield projects.
 
 
 ## Supporters

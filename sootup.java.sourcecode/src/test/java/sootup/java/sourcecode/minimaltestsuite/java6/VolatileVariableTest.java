@@ -2,12 +2,14 @@ package sootup.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -15,6 +17,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -25,7 +28,7 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
@@ -48,10 +51,10 @@ public class VolatileVariableTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: VolatileVariable",
-            "$i0 = r0.<VolatileVariable: int counter>",
-            "$i1 = $i0 + 1",
-            "r0.<VolatileVariable: int counter> = $i1",
-            "return $i0")
+            "i0 = r0.<VolatileVariable: int counter>",
+            "i1 = i0 + 1",
+            "r0.<VolatileVariable: int counter> = i1",
+            "return i0")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

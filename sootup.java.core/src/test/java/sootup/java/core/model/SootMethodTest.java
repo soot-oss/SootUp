@@ -9,8 +9,8 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.Project;
 import sootup.core.frontend.OverridingBodySource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -24,12 +24,10 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaView;
 
 /**
  * @author Linghui Luo
@@ -40,11 +38,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project<?, ?> project =
-        JavaProject.builder(new JavaLanguage(8))
-            .addInputLocation(new EagerInputLocation<>())
-            .build();
-    View<?> view = project.createView();
+    JavaView view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
@@ -57,17 +51,16 @@ public class SootMethodTest {
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
             Jimple.newParameterRef(type, 0),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     final JReturnVoidStmt returnVoidStmt =
-        new JReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
+
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(firstStmt);
+    stmtGraph.putEdge(firstStmt, returnVoidStmt);
 
     Body body =
-        bodyBuilder
-            .setStartingStmt(firstStmt)
-            .addFlow(firstStmt, returnVoidStmt)
-            .setMethodSignature(methodSignature)
-            .setLocals(generator.getLocals())
-            .build();
+        bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
     JavaSootMethod dummyMainMethod =

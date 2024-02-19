@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,16 +15,14 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.*;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.language.JavaLanguage;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
@@ -47,21 +46,22 @@ public abstract class MinimalBytecodeTestSuiteBase {
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
+      // TODO: seems to be more complicated than necessary - save directory instead of needing
+      // operation on it agin
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        JavaProject project =
-            JavaProject.builder(new JavaLanguage(8))
-                .addInputLocation(
-                    new JavaClassPathAnalysisInputLocation(
-                        baseDir
-                            + File.separator
-                            + getTestDirectoryName(getClassPath())
-                            + File.separator
-                            + "binary"
-                            + File.separator))
-                .build();
-        javaView = project.createView();
+        String path =
+            baseDir
+                + File.separator
+                + getTestDirectoryName(getClassPath())
+                + File.separator
+                + "binary"
+                + File.separator;
+        JavaClassPathAnalysisInputLocation inputLocation =
+            new JavaClassPathAnalysisInputLocation(
+                path, SourceType.Application, Collections.emptyList());
+        javaView = new JavaView(inputLocation);
       }
     }
 

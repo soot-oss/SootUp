@@ -1,15 +1,36 @@
 package sootup.java.core.views;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.Project;
 import sootup.core.ViewChangeListener;
 import sootup.core.cache.MutableClassCache;
 import sootup.core.cache.provider.MutableFullCacheProvider;
-import sootup.core.model.SootMethod;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.MutableView;
@@ -24,8 +45,12 @@ public class MutableJavaView extends JavaView implements MutableView {
   private final List<ViewChangeListener> changeListeners = new LinkedList<>();
   private static final @Nonnull Logger logger = LoggerFactory.getLogger(MutableJavaView.class);
 
-  public MutableJavaView(@Nonnull Project<JavaSootClass, ? extends JavaView> project) {
-    super(project, new MutableFullCacheProvider<>());
+  public MutableJavaView(@Nonnull AnalysisInputLocation inputLocation) {
+    this(Collections.singletonList(inputLocation));
+  }
+
+  public MutableJavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+    super(inputLocations, new MutableFullCacheProvider());
   }
 
   /**
@@ -47,7 +72,7 @@ public class MutableJavaView extends JavaView implements MutableView {
    */
   public void removeClass(ClassType classType) {
     JavaSootClass removedClass =
-        ((MutableClassCache<JavaSootClass>) this.cache).removeClass(classType);
+        (JavaSootClass) ((MutableClassCache) this.cache).removeClass(classType);
     this.fireRemoval(removedClass);
   }
 
@@ -70,11 +95,13 @@ public class MutableJavaView extends JavaView implements MutableView {
     ClassType classType = method.getDeclaringClassType();
     MethodSubSignature mss = method.getSignature().getSubSignature();
 
-    JavaSootClass clazz = this.cache.getClass(classType);
-    if (clazz == null) return;
+    JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
+    if (clazz == null) {
+      return;
+    }
 
-    Set<? extends JavaSootMethod> methods = clazz.getMethods();
-    Set<SootMethod> filteredMethods =
+    Set<JavaSootMethod> methods = clazz.getMethods();
+    Set<JavaSootMethod> filteredMethods =
         methods.stream()
             .filter(met -> !met.getSignature().getSubSignature().equals(mss))
             .collect(Collectors.toSet());
@@ -88,11 +115,13 @@ public class MutableJavaView extends JavaView implements MutableView {
   public void addMethod(JavaSootMethod method) {
     ClassType classType = method.getDeclaringClassType();
 
-    JavaSootClass clazz = this.cache.getClass(classType);
-    if (clazz == null) return;
+    JavaSootClass clazz = (JavaSootClass) this.cache.getClass(classType);
+    if (clazz == null) {
+      return;
+    }
 
-    Set<? extends JavaSootMethod> methods = clazz.getMethods();
-    Set<SootMethod> newMethods = new HashSet<>(methods);
+    Set<JavaSootMethod> methods = clazz.getMethods();
+    Set<JavaSootMethod> newMethods = new HashSet<>(methods);
     newMethods.add(method);
     JavaSootClass newClazz = clazz.withMethods(newMethods);
 

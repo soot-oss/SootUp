@@ -60,7 +60,7 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
   @Nonnull protected final ClassNode classNode;
 
   public AsmAnnotationClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
@@ -116,10 +116,12 @@ public class AsmAnnotationClassSource extends JavaAnnotationSootClassSource {
                   signatureFactory.getMethodSignature(cs, methodName, retType, sigTypes);
 
               List<AnnotationNode> annotations = new ArrayList<>();
-              if (methodSource.visibleAnnotations != null)
+              if (methodSource.visibleAnnotations != null) {
                 annotations.addAll(methodSource.visibleAnnotations);
-              if (methodSource.invisibleAnnotations != null)
+              }
+              if (methodSource.invisibleAnnotations != null) {
                 annotations.addAll(methodSource.invisibleAnnotations);
+              }
 
               // TODO: position/line numbers if possible
 

@@ -29,13 +29,13 @@ class foo.bar.hello.world.SuperEnclosing2 extends java.lang.Object
     static int access$000(foo.bar.hello.world.SuperEnclosing2)
     {
         foo.bar.hello.world.SuperEnclosing2 r0;
-        int $i0;
+        int i0;
 
         r0 := @parameter0: foo.bar.hello.world.SuperEnclosing2;
 
-        $i0 = r0.<foo.bar.hello.world.SuperEnclosing2: int seVar>;
+        i0 = r0.<foo.bar.hello.world.SuperEnclosing2: int seVar>;
 
-        return $i0;
+        return i0;
     }
 
     static int access$002(foo.bar.hello.world.SuperEnclosing2, int)

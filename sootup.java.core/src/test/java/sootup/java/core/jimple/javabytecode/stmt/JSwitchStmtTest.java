@@ -19,7 +19,7 @@ public class JSwitchStmtTest {
 
   @Test
   public void testLookupSwitchStmt() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
     ArrayList<Stmt> targets = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class JSwitchStmtTest {
 
   @Test
   public void testTableSwitchStmt() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     ArrayList<Stmt> targets = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
@@ -88,7 +88,7 @@ public class JSwitchStmtTest {
 
   @Test
   public void testTableSwitch() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     JSwitchStmt stmt = new JSwitchStmt(IntConstant.getInstance(123), 1, 4, nop);
     JSwitchStmt diffSwitch = new JSwitchStmt(IntConstant.getInstance(123), 0, 4, nop);
     JSwitchStmt diffKeySwitch = new JSwitchStmt(IntConstant.getInstance(42), 1, 4, nop);
@@ -216,7 +216,7 @@ public class JSwitchStmtTest {
 
   @Test
   public void testLookupSwitch() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
 
     Stmt switchStmt = new JSwitchStmt(IntConstant.getInstance(42), lookupValues, nop);

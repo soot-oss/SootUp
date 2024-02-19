@@ -63,11 +63,11 @@ public class JAssignStmtTest {
   @Test
   public void test() {
 
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
     Immediate numConst1 = IntConstant.getInstance(42);
     Immediate numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("$i0", PrimitiveType.getInt());
+    Local local = new Local("i0", PrimitiveType.getInt());
     Local field = new Local("i2", PrimitiveType.getInt());
 
     Stmt lStmt = new JAssignStmt(local, numConst1, nop);
@@ -79,14 +79,12 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
+                new Local("i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveType.getInt()),
-                new JAddExpr(numConst1, numConst2),
-                nop)));
+                new Local("i0", PrimitiveType.getInt()), new JAddExpr(numConst1, numConst2), nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -98,22 +96,22 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i100differentname", PrimitiveType.getInt()),
+                new Local("i100differentname", PrimitiveType.getInt()),
                 IntConstant.getInstance(42),
                 nop)));
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveType.getLong()), LongConstant.getInstance(42), nop)));
+                new Local("i0", PrimitiveType.getLong()), LongConstant.getInstance(42), nop)));
 
     // equivTo: different depth
     Assert.assertFalse(
         lStmt.equivTo(new JAssignStmt(field, new JAddExpr(numConst1, numConst2), nop)));
 
     // toString
-    Assert.assertEquals("$i0 = 42", lStmt.toString());
+    Assert.assertEquals("i0 = 42", lStmt.toString());
     Assert.assertEquals("i2 = 42", fStmt.toString());
-    Assert.assertEquals("$i0 = 42 + 33102", deepStmt.toString());
+    Assert.assertEquals("i0 = 42 + 33102", deepStmt.toString());
 
     // equivTo with comparator
     Assert.assertFalse(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
@@ -129,14 +127,14 @@ public class JAssignStmtTest {
                     JavaIdentifierFactory.getInstance().getClassType("Abc.def.Alphabet"),
                     PrimitiveType.getInt()));
     final JAssignStmt jAssignStmtField =
-        Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(someLocal, somefield, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtField.getFieldRef();
 
     // test JFieldRef cast for ArrayRef - should not throw an Exception
     final JArrayRef jArrayRef =
         JavaJimple.getInstance().newArrayRef(someLocal, IntConstant.getInstance(2));
     final JAssignStmt jAssignStmtArr =
-        Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(someLocal, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     jAssignStmtArr.getArrayRef();
   }
 }

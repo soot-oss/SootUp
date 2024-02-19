@@ -20,8 +20,7 @@ public class IncompleteSuperclassTest extends JavaTypeHierarchyTestBase {
   public void method() {
     ViewTypeHierarchy typeHierarchy =
         (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
-    List<ClassType> superclasses =
-        typeHierarchy.incompleteSuperClassesOf(getClassType("SubClassB"));
+    List<ClassType> superclasses = typeHierarchy.superClassesOf(getClassType("SubClassB"));
     ClassType object = getClassType("java.lang.Object");
     ImmutableList<ClassType> expectedSuperClasses =
         immutableList(getClassType("SubClassA"), object);

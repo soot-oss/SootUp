@@ -15,24 +15,24 @@ public class de.upb.sootup.instructions.ref.CaughtExceptionRefTest extends java.
     void throwExceptionAndCatch()
     {
         de.upb.sootup.instructions.ref.CaughtExceptionRefTest r0;
-        java.lang.Exception $r2, $r3;
-        java.io.PrintStream $r4;
+        java.lang.Exception r2, r3;
+        java.io.PrintStream r4;
 
         r0 := @this: de.upb.sootup.instructions.ref.CaughtExceptionRefTest;
 
      label1:
-        $r2 = new java.lang.Exception;
+        r2 = new java.lang.Exception;
 
-        specialinvoke $r2.<java.lang.Exception: void <init>()>();
+        specialinvoke r2.<java.lang.Exception: void <init>()>();
 
-        throw $r2;
+        throw r2;
 
      label2:
-        $r3 := @caughtexception;
+        r3 := @caughtexception;
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        r4 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("exception");
+        virtualinvoke r4.<java.io.PrintStream: void println(java.lang.String)>("exception");
 
         return;
 
@@ -42,14 +42,14 @@ public class de.upb.sootup.instructions.ref.CaughtExceptionRefTest extends java.
     void throwException() throws java.lang.Exception
     {
         de.upb.sootup.instructions.ref.CaughtExceptionRefTest r0;
-        java.lang.Exception $r1;
+        java.lang.Exception r1;
 
         r0 := @this: de.upb.sootup.instructions.ref.CaughtExceptionRefTest;
 
-        $r1 = new java.lang.Exception;
+        r1 = new java.lang.Exception;
 
-        specialinvoke $r1.<java.lang.Exception: void <init>()>();
+        specialinvoke r1.<java.lang.Exception: void <init>()>();
 
-        throw $r1;
+        throw r1;
     }
 }
