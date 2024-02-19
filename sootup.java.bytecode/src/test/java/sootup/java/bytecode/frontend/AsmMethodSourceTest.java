@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -55,7 +56,8 @@ public class AsmMethodSourceTest {
   @Test
   public void testNestedMethodCalls() {
     JavaClassPathAnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation("../shared-test-resources/bugfixes/");
+        new JavaClassPathAnalysisInputLocation(
+            "../shared-test-resources/bugfixes/", SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     JavaSootMethod method =

@@ -43,6 +43,7 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaSootClassSource;
 
 /**
@@ -85,7 +86,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   public MultiReleaseJarAnalysisInputLocation(
       @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    this(path, srcType, language, Collections.emptyList());
+    this(path, srcType, language, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public MultiReleaseJarAnalysisInputLocation(

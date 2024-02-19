@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
@@ -44,18 +46,22 @@ public abstract class MinimalBytecodeTestSuiteBase {
     /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
+      // TODO: seems to be more complicated than necessary - save directory instead of needing
+      // operation on it agin
       String prevClassDirName = getTestDirectoryName(getClassPath());
       classPath = description.getClassName();
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        javaView =
-            new JavaView(
-                new JavaClassPathAnalysisInputLocation(
-                    baseDir
-                        + File.separator
-                        + getTestDirectoryName(getClassPath())
-                        + File.separator
-                        + "binary"
-                        + File.separator));
+        String path =
+            baseDir
+                + File.separator
+                + getTestDirectoryName(getClassPath())
+                + File.separator
+                + "binary"
+                + File.separator;
+        JavaClassPathAnalysisInputLocation inputLocation =
+            new JavaClassPathAnalysisInputLocation(
+                path, SourceType.Application, Collections.emptyList());
+        javaView = new JavaView(inputLocation);
       }
     }
 
