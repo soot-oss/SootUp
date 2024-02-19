@@ -3,7 +3,7 @@ package sootup.java.bytecode.minimaltestsuite.java6;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
-import java.util.Arrays;
+import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class AnnotationUsageInheritedTest extends MinimalBytecodeTestSuiteBase {
     annotationParamMap.put("author", JavaJimple.getInstance().newStringConstant("GeorgeLucas"));
 
     assertEquals(
-        Arrays.asList(
+        Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("OnClass", new PackageName(""), true), annotationParamMap)),
         sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));

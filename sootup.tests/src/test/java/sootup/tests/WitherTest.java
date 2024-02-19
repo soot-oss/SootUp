@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -70,13 +71,11 @@ public class WitherTest {
             DoubleConstant.getInstance(12.34), StmtPositionInfo.getNoStmtPositionInfo());
     // bodyBuilder.addFlow(firstStmt, jReturnStmt);
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(firstStmt);
+    stmtGraph.putEdge(firstStmt, jReturnStmt);
     Body body =
-        bodyBuilder
-            .setMethodSignature(methodSignature)
-            .addFlow(firstStmt, jReturnStmt)
-            .setStartingStmt(firstStmt)
-            .setLocals(generator.getLocals())
-            .build();
+        bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertNotNull(body);
 
     Local local = (Local) firstStmt.getLeftOp();

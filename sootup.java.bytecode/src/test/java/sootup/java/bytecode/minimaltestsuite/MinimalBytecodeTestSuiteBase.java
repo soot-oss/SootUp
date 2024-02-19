@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import categories.TestCategories;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.*;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.util.Utils;
@@ -53,7 +55,9 @@ public abstract class MinimalBytecodeTestSuiteBase {
                   + currentTestDir
                   + File.separator
                   + "binary"
-                  + File.separator);
+                  + File.separator,
+              SourceType.Application,
+              Collections.emptyList());
       javaView = new JavaView(inputLocation);
     }
   }

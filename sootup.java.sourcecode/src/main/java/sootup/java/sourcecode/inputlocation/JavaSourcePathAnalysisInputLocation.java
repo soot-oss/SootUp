@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -40,8 +39,6 @@ import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java source code path.
- *
- * <p>Provides default {@link ClassLoadingOptions} from {@link SourcecodeClassLoadingOptions}.
  *
  * @author Linghui Luo
  */

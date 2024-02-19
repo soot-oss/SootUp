@@ -21,6 +21,7 @@ import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -31,7 +32,7 @@ public class UnusedLocalEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body originalBody = builder.build();
 
-    new UnusedLocalEliminator().interceptBody(builder, null);
+    new UnusedLocalEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     Set<Local> originalLocals = originalBody.getLocals();
@@ -50,7 +51,7 @@ public class UnusedLocalEliminatorTest {
   public void testRemoveNothing() {
     Body.BodyBuilder builder = createBody(false);
     Body originalBody = builder.build();
-    new UnusedLocalEliminator().interceptBody(builder, null);
+    new UnusedLocalEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertArrayEquals(originalBody.getStmts().toArray(), processedBody.getStmts().toArray());

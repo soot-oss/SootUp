@@ -26,28 +26,51 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.printer.JimplePrinter;
 
 /** @author Linghui Luo */
 public class Utils {
 
-  @Nullable
-  Path compileJavaOTF(String className, String javaSourceContent) {
+  /** e.g. to print b to understand / compare what every interceptor does. */
+  public static List<BodyInterceptor> wrapEachBodyInterceptorWith(
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> bi) {
+    List<BodyInterceptor> interceptors = new ArrayList<>(bodyInterceptors.size() * 2 + 1);
+    bodyInterceptors.stream()
+        .map(
+            b -> {
+              return (BodyInterceptor)
+                  (builder, view) -> {
+                    try {
+                      bi.apply(b, builder);
+                    } catch (Exception e) {
+                      throw new RuntimeException(e);
+                    }
+                    b.interceptBody(builder, view);
+                  };
+            })
+        .forEach(interceptors::add);
+    return interceptors;
+  }
+
+  List<Path> compileJavaOTF(String className, String javaSourceContent) {
     File sourceFile;
     try {
       Path root = Files.createTempDirectory("JavaOTFCompileTempDir");
@@ -68,17 +91,43 @@ public class Utils {
     }
   }
 
-  @Nullable
-  Path compileJavaOTF(Path sourceFile) {
-    // Compile source file.
-    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-    final boolean b = 0 == compiler.run(null, null, null, sourceFile.toString());
-    if (b) {
-      final File file = new File(sourceFile.toString().replace(".java", ".class"));
-      file.deleteOnExit();
-      return file.toPath();
+  List<Path> compileJavaOTF(Path path) {
+
+    try {
+
+      String fileName = path.getFileName().toString();
+      int lastDot = fileName.lastIndexOf('.');
+      String javaName = fileName.substring(0, lastDot) + ".java";
+
+      List<Path> compiledResults = new ArrayList<>();
+      // compile the `.java` file to a `.class` file
+      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(path.toFile()));
+      JavaCompiler.CompilationTask task =
+          compiler.getTask(
+              null, fileManager, null, null, null, fileManager.getJavaFileObjects(javaName));
+      if (!task.call()) {
+        throw new IllegalArgumentException("could not compile source file.");
+      }
+
+      //  collect files
+      for (JavaFileObject jfo :
+          fileManager.list(
+              StandardLocation.CLASS_OUTPUT,
+              "",
+              Collections.singleton(JavaFileObject.Kind.CLASS),
+              true)) {
+        Path pathOfCreatedClass = Paths.get(jfo.getName());
+        // pathOfCreatedClass.toFile().deleteOnExit();
+        compiledResults.add(pathOfCreatedClass);
+      }
+
+      return compiledResults;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return null;
   }
 
   public static void outputJimple(SootClass cl, boolean print) {

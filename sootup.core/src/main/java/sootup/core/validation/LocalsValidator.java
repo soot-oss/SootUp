@@ -51,7 +51,10 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
 
     body.getDefs()
         .parallelStream()
@@ -61,7 +64,10 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
 
     return exception;
   }

@@ -281,6 +281,10 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<LValue> getDefs() {
+    return getDefs(graph);
+  }
+
+  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
@@ -315,8 +319,6 @@ public class Body implements HasPosition {
     @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private List<Stmt> cachedLinearizedStmts = null;
-
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
     }
@@ -341,21 +343,12 @@ public class Body implements HasPosition {
     /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = graph.getStmts();
-      return cachedLinearizedStmts;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      graph.setStartingStmt(startingStmt);
-      return this;
+      return graph.getStmts();
     }
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
@@ -370,78 +363,31 @@ public class Body implements HasPosition {
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
-      } else {
-        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          final Stmt stmt = currStmt;
-          if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
-          }
-          final List<LValue> defs = currStmt.getDefs();
-          for (LValue def : defs) {
-            if (def == oldLocal || def.getUses().contains(oldLocal)) {
-              if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
-              }
+    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+      if (!locals.contains(existingLocal)) {
+        throw new IllegalArgumentException(
+            "The given existing Local '" + existingLocal + "' is not in the body!");
+      }
+
+      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+        final Stmt stmt = currStmt;
+        if (currStmt.getUses().contains(existingLocal)) {
+          currStmt = currStmt.withNewUse(existingLocal, newLocal);
+        }
+        final List<LValue> defs = currStmt.getDefs();
+        for (LValue def : defs) {
+          if (def == existingLocal || def.getUses().contains(existingLocal)) {
+            if (currStmt instanceof AbstractDefinitionStmt) {
+              currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
-          if (stmt != currStmt) {
-            getStmtGraph().replaceNode(stmt, currStmt);
-          }
         }
-        locals.remove(oldLocal);
-        locals.add(newLocal);
+        if (stmt != currStmt) {
+          getStmtGraph().replaceNode(stmt, currStmt);
+        }
       }
-    }
-
-    /**
-     * replace the oldStmt with newStmt in stmtGraph and branches
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      graph.replaceNode(oldStmt, newStmt);
-      return this;
-    }
-
-    /**
-     * remove the a stmt from the graph and stmt
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      graph.removeNode(stmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
-      graph.clearExceptionalEdges(stmt);
-      return this;
-    }
-
-    @Nonnull
-    @Deprecated
-    public List<Trap> getTraps() {
-      return graph.getTraps();
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
+      locals.remove(existingLocal);
+      locals.add(newLocal);
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
@@ -512,6 +458,14 @@ public class Body implements HasPosition {
         return "BodyBuilder for " + methodSig;
       } else {
         return super.toString();
+      }
+    }
+
+    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+      for (LValue def : stmt.getDefs()) {
+        if (def instanceof Local) {
+          locals.remove(def);
+        }
       }
     }
   }

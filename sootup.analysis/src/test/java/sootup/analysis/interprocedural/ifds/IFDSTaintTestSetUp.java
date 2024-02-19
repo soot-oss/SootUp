@@ -24,14 +24,18 @@ package sootup.analysis.interprocedural.ifds;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import categories.Java8Test;
 import heros.InterproceduralCFG;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import org.junit.experimental.categories.Category;
 import sootup.analysis.interprocedural.icfg.JimpleBasedInterproceduralCFG;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -39,6 +43,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
+@Category(Java8Test.class)
 public class IFDSTaintTestSetUp {
 
   protected JavaView view;
@@ -75,7 +80,9 @@ public class IFDSTaintTestSetUp {
   private void setupSoot(String targetTestClassName) {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
-    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/taint/binary"));
+    inputLocations.add(
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/taint/binary", SourceType.Application, Collections.emptyList()));
 
     view = new JavaView(inputLocations);
 

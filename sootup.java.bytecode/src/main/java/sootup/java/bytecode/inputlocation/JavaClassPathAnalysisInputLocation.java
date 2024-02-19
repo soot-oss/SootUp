@@ -40,6 +40,7 @@ import sootup.core.types.ClassType;
 import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaSootClassSource;
 
 /**
@@ -74,7 +75,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull SourceType srcType) {
-    this(classPath, srcType, Collections.emptyList());
+    this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**

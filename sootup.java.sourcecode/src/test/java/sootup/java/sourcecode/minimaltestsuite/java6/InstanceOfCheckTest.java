@@ -1,6 +1,6 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class InstanceOfCheckTest extends MinimalSourceTestSuiteBase {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getSuperclass().get().getClassName().equals("InstanceOfCheckSuper"));
+    assertEquals("InstanceOfCheckSuper", sootClass.getSuperclass().get().getClassName());
   }
 
   /**

@@ -23,15 +23,12 @@ package sootup.java.core.views;
  */
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.ClassLoadingOptions;
-import sootup.core.inputlocation.EmptyClassLoadingOptions;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.core.*;
@@ -55,29 +52,11 @@ public class JavaModuleView extends JavaView {
     this(inputLocations, moduleInputLocations, new FullCacheProvider());
   }
 
+  /** Creates a new instance of the {@link JavaModuleView} class. */
   public JavaModuleView(
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
       @Nonnull ClassCacheProvider cacheProvider) {
-    this(
-        inputLocations,
-        moduleInputLocations,
-        cacheProvider,
-        analysisInputLocation -> EmptyClassLoadingOptions.Default);
-  }
-
-  /**
-   * Creates a new instance of the {@link JavaModuleView} class.
-   *
-   * @param classLoadingOptionsSpecifier To use the default {@link ClassLoadingOptions} for an
-   *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
-   *     options.
-   */
-  public JavaModuleView(
-      @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull List<ModuleInfoAnalysisInputLocation> moduleInputLocations,
-      @Nonnull ClassCacheProvider cacheProvider,
-      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     super(inputLocations, cacheProvider, JavaModuleIdentifierFactory.getInstance());
     this.moduleInfoAnalysisInputLocations = moduleInputLocations;
     JavaModuleInfo unnamedModuleInfo = JavaModuleInfo.getUnnamedModuleInfo();
@@ -180,7 +159,6 @@ public class JavaModuleView extends JavaView {
               .filter(Optional::isPresent)
               .limit(1)
               .map(Optional::get)
-              .map(src -> (JavaSootClassSource) src)
               .collect(Collectors.toList());
 
       if (!foundClassSources.isEmpty()) {
@@ -208,7 +186,6 @@ public class JavaModuleView extends JavaView {
                 .filter(Optional::isPresent)
                 .limit(1)
                 .map(Optional::get)
-                .map(src -> (JavaSootClassSource) src)
                 .collect(Collectors.toList());
 
         if (!foundClassSources.isEmpty()) {
@@ -229,7 +206,6 @@ public class JavaModuleView extends JavaView {
             getAbstractClassSourcesForModules(entryPackage.getModuleSignature(), type)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(src -> (JavaSootClassSource) src)
                 .filter(
                     sc -> {
                       if (targetIsFromSameModule) {

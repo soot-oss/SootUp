@@ -3,11 +3,13 @@ package sootup.core.graph;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
+@Tag("Java8")
 public class MutableBasicBlockTest {
 
   Stmt firstNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());

@@ -145,7 +145,12 @@ public abstract class AbstractStmt implements Stmt {
   @Nullable
   public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
-    accept(visitor);
+    try {
+      accept(visitor);
+    } catch (ClassCastException cce) {
+      // new Stmt is not created as the newUse could not be replaced
+      return null;
+    }
     return visitor.getResult();
   }
 }

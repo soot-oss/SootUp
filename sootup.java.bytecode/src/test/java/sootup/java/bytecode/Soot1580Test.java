@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
@@ -25,7 +24,8 @@ public class Soot1580Test {
   public void test() {
     AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
-            jar, null, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
+            jar); // TODO: maybe you need to add add interceptors (should be there when they are
+    // enabled by default)
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 

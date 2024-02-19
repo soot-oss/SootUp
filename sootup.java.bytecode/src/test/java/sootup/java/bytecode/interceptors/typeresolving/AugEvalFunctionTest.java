@@ -20,6 +20,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -79,7 +80,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         case "l4 = \"example\"":
           value = s.getUses().get(0);
           stmt = s;
-          expected = identifierFactory.getClassType("java.lang.String");
+          expected = view.getIdentifierFactory().getClassType("java.lang.String");
           actual = evalFunction.evaluate(specTyping, value, stmt, graph);
           assertEquals(expected, actual);
           break;
@@ -96,7 +97,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         break;
       }
     }
-    expected = identifierFactory.getClassType("java.lang.Class");
+    expected = view.getIdentifierFactory().getClassType("java.lang.Class");
     actual = evalFunction.evaluate(specTyping, value, stmt, graph);
     assertEquals(expected, actual);
   }
@@ -313,6 +314,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         }
       }
     }
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
     Type expected = identifierFactory.getArrayType(identifierFactory.getClassType("A"), 2);
     assertEquals(expected, evalFunction.evaluate(specTyping, value, stmt, graph));
 
@@ -346,6 +348,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
   public void testRef() {
 
     Type actual;
+    JavaIdentifierFactory identifierFactory = view.getIdentifierFactory();
     Type expected = identifierFactory.getClassType("java.lang.ArithmeticException");
     Stmt stmt = null;
     Value value = null;

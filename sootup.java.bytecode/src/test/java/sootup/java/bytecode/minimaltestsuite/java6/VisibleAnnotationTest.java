@@ -20,7 +20,7 @@ public class VisibleAnnotationTest extends MinimalBytecodeTestSuiteBase {
     JavaSootClass sootClass = loadClass(getDeclaredClassSignature());
 
     assertEquals(
-        Arrays.asList(
+        Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("InterfaceVisibleAnnotation", new PackageName(""), false),
                 Collections.emptyMap())),
