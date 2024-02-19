@@ -22,6 +22,10 @@ package sootup.java.bytecode.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -39,10 +43,6 @@ import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.views.View;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Does constant propagation and folding. Constant folding is the compile-time evaluation of
  * constant expressions (i.e. 2 * 3).
@@ -51,77 +51,89 @@ import java.util.List;
  */
 public class ConstantPropagatorAndFolder implements BodyInterceptor {
 
-    @Override
-    public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
-        List<Stmt> defs = new ArrayList<>();
+  @Override
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
+    List<Stmt> defs = new ArrayList<>();
 
-        // Perform a constant/local propagation pass
-        // go through each use in each statement
-        MutableStmtGraph stmtGraph = builder.getStmtGraph();
-        for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
-            // propagation pass
-            boolean isAssignStmt = stmt instanceof JAssignStmt;
-            boolean isReturnStmt = stmt instanceof JReturnStmt;
-            if (isAssignStmt) {
-                Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
-                if (rhs instanceof AbstractBinopExpr) {
-                    Value op1 = ((AbstractBinopExpr) rhs).getOp1();
-                    Value op2 = ((AbstractBinopExpr) rhs).getOp2();
+    // Perform a constant/local propagation pass
+    // go through each use in each statement
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
+      // propagation pass
+      boolean isAssignStmt = stmt instanceof JAssignStmt;
+      boolean isReturnStmt = stmt instanceof JReturnStmt;
+      if (isAssignStmt) {
+        Value rhs = ((AbstractDefinitionStmt) stmt).getRightOp();
+        if (rhs instanceof AbstractBinopExpr) {
+          Value op1 = ((AbstractBinopExpr) rhs).getOp1();
+          Value op2 = ((AbstractBinopExpr) rhs).getOp2();
 
-                    if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
-                        defs.add(stmt);
-                    }
-                }
-
-                // folding
-                for (Value value : stmt.getUses()) {
-
-                    Constant evaluatedValue = Evaluator.getConstantValueOf(value);
-                    if (evaluatedValue == null) {
-                        continue;
-                    }
-
-                    JAssignStmt assignStmt = ((JAssignStmt) stmt).withRValue(evaluatedValue);
-                    stmtGraph.replaceNode(stmt, assignStmt);
-                    defs.remove(stmt);
-                    defs.add(assignStmt);
-                    // FIXME: handle Locals!
-                }
-
-            } else if (isReturnStmt) {
-                for (Value value : stmt.getUses()) {
-                    if (!(value instanceof Local)) {
-                        continue;
-                    }
-                    List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
-                    if (defsOfUse.size() != 1) {
-                        continue;
-                    }
-                    AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
-                    Value rhs = definitionStmt.getRightOp();
-                    if (rhs instanceof NumericConstant
-                            || rhs instanceof StringConstant
-                            || rhs instanceof NullConstant) {
-                        JReturnStmt returnStmt = new JReturnStmt((Immediate) rhs, stmt.getPositionInfo());
-                        stmtGraph.replaceNode(stmt, returnStmt);
-                        stmt = returnStmt;
-                        defs.add(returnStmt);
-                    }
-                }
-
-                // folding
-                for (Value value : stmt.getUses()) {
-
-                    Constant evaluatedValue = Evaluator.getConstantValueOf(value);
-                    if (evaluatedValue == null) {
-                        continue;
-                    }
-
-                    JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue(evaluatedValue);
-                    stmtGraph.replaceNode(stmt, returnStmt);
-                }
-            }
-
+          if (op1 instanceof NumericConstant && op2 instanceof NumericConstant) {
+            defs.add(stmt);
+          }
         }
+
+        // folding
+        BiConsumer<Constant, Stmt> constantStmtBiConsumer =
+            (Constant evaluatedValue, Stmt foldingStmt) -> {
+              JAssignStmt assignStmt = ((JAssignStmt) foldingStmt).withRValue(evaluatedValue);
+              stmtGraph.replaceNode(foldingStmt, assignStmt);
+              defs.remove(foldingStmt);
+              defs.add(assignStmt);
+            };
+
+        fold(stmt, constantStmtBiConsumer);
+
+      } else if (isReturnStmt) {
+        for (Value value : stmt.getUses()) {
+          if (!(value instanceof Local)) {
+            continue;
+          }
+          // TODO: [ms] there is room for more performance - don't filter a list as we could sort
+          // Stmts by associated Value etc.
+          List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
+          if (defsOfUse.size() != 1) {
+            continue;
+          }
+
+          AbstractDefinitionStmt definitionStmt = defsOfUse.get(0);
+          Value rhs = definitionStmt.getRightOp();
+          if (rhs instanceof NumericConstant
+              || rhs instanceof StringConstant
+              || rhs instanceof NullConstant) {
+            JReturnStmt returnStmt = ((JReturnStmt) stmt).withReturnValue((Immediate) rhs);
+            stmtGraph.replaceNode(stmt, returnStmt);
+            stmt = returnStmt;
+            defs.add(returnStmt); // [ms]: JReturnStmt seems weird as a def? but Soot had it, too.
+          }
+        }
+
+        // folding
+        BiConsumer<Constant, Stmt> constantStmtBiConsumer =
+            (Constant evaluatedValue, Stmt foldingStmt) -> {
+              JReturnStmt returnStmt = ((JReturnStmt) foldingStmt).withReturnValue(evaluatedValue);
+              stmtGraph.replaceNode(foldingStmt, returnStmt);
+            };
+
+        fold(stmt, constantStmtBiConsumer);
+      }
     }
+  }
+
+  private static void fold(Stmt stmt, BiConsumer<Constant, Stmt> constantStmtBiConsumer) {
+    for (Value value : stmt.getUses()) {
+
+      Constant evaluatedValue = Evaluator.getConstantValueOf(value);
+      if (evaluatedValue == null) {
+        continue;
+      }
+
+      if (evaluatedValue == value) {
+        // nothing was simplified
+        continue;
+      }
+
+      constantStmtBiConsumer.accept(evaluatedValue, stmt);
+    }
+  }
 }

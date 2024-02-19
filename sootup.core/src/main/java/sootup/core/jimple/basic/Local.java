@@ -109,7 +109,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
     return Collections.emptyList();
   }
 
-  /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
+  /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
   public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
     List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
