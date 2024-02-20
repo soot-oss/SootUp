@@ -24,6 +24,8 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
+import sootup.java.core.JavaPackageName;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
@@ -184,5 +186,53 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // Tests that the augmented integer types (which are based on the value of integer constants)
     // don't change the type of `a`.
     Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
+  }
+
+  @Test
+  public void testArrayAssignBeforeInit() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "arrayAssignBeforeInit", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+
+    // Tests that assignments to an array index before the array is initialized (in the order of
+    // source code/bytecode), results in the correct type.
+    Assert.assertEquals(
+        ArrayType.createArrayType(new JavaClassType("Object", new JavaPackageName("java.lang")), 1),
+        arrayLocal.getType());
+  }
+
+  @Test
+  public void testNullArray() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "nullArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+
+    // Tests that assignments to an array index before the array is initialized (in the order of
+    // source code/bytecode), results in the correct type.
+    Assert.assertEquals(
+        ArrayType.createArrayType(new JavaClassType("Object", new JavaPackageName("java.lang")), 1),
+        arrayLocal.getType());
   }
 }

@@ -39,6 +39,7 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
@@ -195,7 +196,12 @@ public class TypeResolver {
         oldType = typing.getType(local);
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
-        oldType = ((ArrayType) typing.getType(local)).getBaseType();
+        oldType = typing.getType(local);
+        if (oldType instanceof ArrayType) {
+          oldType = ((ArrayType) oldType).getElementType();
+        } else {
+          assert oldType == NullType.getInstance();
+        }
       } else {
         // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
         // The statements get filtered to only contain those assignments in the `init` method,
@@ -216,10 +222,19 @@ public class TypeResolver {
 
       if (lhs instanceof JArrayRef) {
         // To find the correct type of `local` in an assignment like `local[index] = rhs`,
-        // the type of the right-hand side and the base type of `local` are used above,
+        // the type of the right-hand side and the element type of `local` are used above,
         // and changed back into the actual array type here.
         leastCommonAncestors =
             leastCommonAncestors.stream()
+                .map(
+                    type -> {
+                      if (type == NullType.getInstance()) {
+                        // prevent a `null[]` and use an `Object[]` instead
+                        return hierarchy.objectClassType;
+                      } else {
+                        return type;
+                      }
+                    })
                 .map(type -> Type.createArrayType(type, 1))
                 .collect(Collectors.toSet());
       }
