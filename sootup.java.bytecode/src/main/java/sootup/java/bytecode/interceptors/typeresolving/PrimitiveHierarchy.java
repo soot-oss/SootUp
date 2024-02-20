@@ -103,8 +103,14 @@ public class PrimitiveHierarchy {
             || child.getClass() == AugmentIntegerTypes.Integer1Type.class
             || child.getClass() == BottomType.class;
       }
-      if (ancestor.getClass() == PrimitiveType.CharType.class
-          || ancestor.getClass() == PrimitiveType.ShortType.class) {
+      if (ancestor.getClass() == PrimitiveType.ShortType.class) {
+        return child.getClass() == PrimitiveType.ByteType.class
+            || child.getClass() == AugmentIntegerTypes.Integer32767Type.class
+            || child.getClass() == AugmentIntegerTypes.Integer127Type.class
+            || child.getClass() == AugmentIntegerTypes.Integer1Type.class
+            || child.getClass() == BottomType.class;
+      }
+      if (ancestor.getClass() == PrimitiveType.CharType.class) {
         return child.getClass() == AugmentIntegerTypes.Integer32767Type.class
             || child.getClass() == AugmentIntegerTypes.Integer127Type.class
             || child.getClass() == AugmentIntegerTypes.Integer1Type.class
