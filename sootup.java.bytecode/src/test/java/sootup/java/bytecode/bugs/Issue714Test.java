@@ -10,12 +10,10 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.util.DotExporter;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
-import sootup.java.core.JavaProject;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.views.JavaModuleView;
 import sootup.java.core.views.JavaView;
 
 @Category(Java9Test.class)
@@ -25,14 +23,11 @@ public class Issue714Test {
   public void slow_localSplitter() {
     // "jdk.internal.jimage.ImageStringsReader :: mutf8FromString will cause LocalSplitter not halt
     // / comsume unreasonable time"
-    JavaProject applicationProject =
-        JavaProject.builder(new JavaLanguage(9))
-            .enableModules()
-            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
-            .build();
 
-    JavaView view = applicationProject.createMutableView();
-    view.configBodyInterceptors(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view =
+        new JavaModuleView(
+            Collections.emptyList(),
+            Collections.singletonList(new JrtFileSystemAnalysisInputLocation()));
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
@@ -52,17 +47,15 @@ public class Issue714Test {
 
   @Test
   public void slow_TypeAssigner() {
+    // 6s not fast but sounds reasonable..
+
     //     java.lang.Character$UnicodeScript :: <clinit> will cause TypeAssigner not halt / comsume
     // unreasonable time. It seems that the real problem occurs in the LocalNameStandardizer.
 
-    JavaProject applicationProject =
-        JavaProject.builder(new JavaLanguage(11))
-            .enableModules()
-            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
-            .build();
-
-    JavaView view = applicationProject.createMutableView();
-    view.configBodyInterceptors(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view =
+        new JavaModuleView(
+            Collections.emptyList(),
+            Collections.singletonList(new JrtFileSystemAnalysisInputLocation()));
 
     // https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Character.UnicodeScript.html
     final MethodSignature methodSignature =
@@ -92,14 +85,10 @@ public class Issue714Test {
     // of elements, even through the length of instructions list is just 172. Please refer to the
     // attached screenshot for more details.
 
-    JavaProject applicationProject =
-        JavaProject.builder(new JavaLanguage(11))
-            .enableModules()
-            .addInputLocation(new JrtFileSystemAnalysisInputLocation())
-            .build();
-
-    JavaView view = applicationProject.createView();
-    view.configBodyInterceptors(analysisInputLocation -> BytecodeClassLoadingOptions.Default);
+    JavaView view =
+        new JavaModuleView(
+            Collections.emptyList(),
+            Collections.singletonList(new JrtFileSystemAnalysisInputLocation()));
 
     // https://code.yawk.at/java/11/jdk.hotspot.agent/sun/jvm/hotspot/ui/classbrowser/HTMLGenerator.java#sun.jvm.hotspot.ui.classbrowser.HTMLGenerator%23genHTMLListForFields(sun.jvm.hotspot.oops.InstanceKlass)
     final MethodSignature methodSignature =
