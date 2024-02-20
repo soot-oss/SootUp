@@ -184,10 +184,10 @@ public class TypeResolver {
       Type oldType;
       if (lhs instanceof Local) {
         local = (Local) lhs;
-        oldType = typing.getType(local);
+        oldType = actualTyping.getType(local);
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
-        oldType = typing.getType(local);
+        oldType = actualTyping.getType(local);
         if (oldType instanceof ArrayType) {
           oldType = ((ArrayType) oldType).getElementType();
         } else {
