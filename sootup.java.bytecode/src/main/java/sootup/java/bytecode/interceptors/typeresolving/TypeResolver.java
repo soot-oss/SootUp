@@ -22,7 +22,6 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
-import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -43,7 +42,6 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -61,8 +59,7 @@ public class TypeResolver {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
-    final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
-    Typing iniTyping = new Typing(locals);
+    Typing iniTyping = new Typing(builder.getLocals());
     Collection<Typing> typings =
         applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
@@ -82,7 +79,7 @@ public class TypeResolver {
       return false;
     }
 
-    for (Local local : locals) {
+    for (Local local : builder.getLocals()) {
       final Type type = promotedTyping.getType(local);
       if (type == null) {
         continue;
@@ -93,17 +90,14 @@ public class TypeResolver {
       }
     }
 
-    for (Local local : locals) {
-      Type oldType = local.getType();
-      Type newType = promotedTyping.getType(local);
-      if (newType == null || oldType.equals(newType)) {
-        continue;
-      }
-      if (!(newType instanceof BottomType)) {
-        Local newLocal = local.withType(newType);
-        builder.replaceLocal(local, newLocal);
-      }
-    }
+    builder.setLocals(
+        builder.getLocals().stream()
+            .map(
+                local -> {
+                  Type type = promotedTyping.getMap().getOrDefault(local, local.getType());
+                  return local.withType(type);
+                })
+            .collect(Collectors.toSet()));
     return true;
   }
 
