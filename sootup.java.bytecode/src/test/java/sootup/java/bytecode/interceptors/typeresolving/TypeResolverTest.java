@@ -20,6 +20,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
+import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
@@ -161,5 +162,27 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
                 "return")
             .collect(Collectors.toList()),
         Utils.filterJimple(body.toString()));
+  }
+
+  @Test
+  public void testArrayMixedAssignment() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "arraysMixedAssignment", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+
+    // Tests that the augmented integer types (which are based on the value of integer constants)
+    // don't change the type of `a`.
+    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
   }
 }

@@ -24,6 +24,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 
 import com.google.common.collect.Lists;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
@@ -188,10 +189,13 @@ public class TypeResolver {
       AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
       Value lhs = defStmt.getLeftOp();
       Local local;
+      Type oldType;
       if (lhs instanceof Local) {
         local = (Local) lhs;
+        oldType = typing.getType(local);
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
+        oldType = ((ArrayType) typing.getType(local)).getBaseType();
       } else {
         // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
         // The statements get filtered to only contain those assignments in the `init` method,
@@ -199,20 +203,27 @@ public class TypeResolver {
         throw new IllegalStateException("can not handle " + lhs.getClass());
       }
 
-      Type oldType = actualTyping.getType(local);
       Type rightOpDerivedType =
           evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
       if (rightOpDerivedType == null) {
         workQueue.removeFirst();
         continue;
       }
-      if (lhs instanceof JArrayRef) {
-        rightOpDerivedType = Type.createArrayType(rightOpDerivedType, 1);
-      }
 
       boolean isFirstType = true;
       Collection<Type> leastCommonAncestors =
           hierarchy.getLeastCommonAncestor(oldType, rightOpDerivedType);
+
+      if (lhs instanceof JArrayRef) {
+        // To find the correct type of `local` in an assignment like `local[index] = rhs`,
+        // the type of the right-hand side and the base type of `local` are used above,
+        // and changed back into the actual array type here.
+        leastCommonAncestors =
+            leastCommonAncestors.stream()
+                .map(type -> Type.createArrayType(type, 1))
+                .collect(Collectors.toSet());
+      }
+
       assert !leastCommonAncestors.isEmpty();
       for (Type type : leastCommonAncestors) {
         if (!type.equals(oldType)) {
