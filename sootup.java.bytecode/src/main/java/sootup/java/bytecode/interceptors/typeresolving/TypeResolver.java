@@ -49,7 +49,6 @@ public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
-  private int castCount;
 
   public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
@@ -66,11 +65,9 @@ public class TypeResolver {
       return false;
     }
 
-    Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
-    if (this.castCount > 0) {
-      CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
-      castCounter.insertCastStmts(minCastsTyping);
-    }
+    CastCounter minCastsCounter = getMinCastsCounter(builder, typings, evalFunction, hierarchy);
+    minCastsCounter.insertCastStmts();
+    Typing minCastsTyping = minCastsCounter.getTyping();
 
     TypePromotionVisitor promotionVisitor =
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
@@ -303,16 +300,15 @@ public class TypeResolver {
     return map;
   }
 
-  private Typing getMinCastsTyping(
+  private CastCounter getMinCastsCounter(
       @Nonnull Body.BodyBuilder builder,
       @Nonnull Collection<Typing> typings,
       @Nonnull AugEvalFunction evalFunction,
       @Nonnull BytecodeHierarchy hierarchy) {
-    CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
-    Typing minTyping =
-        typings.stream().min(Comparator.comparingInt(castCounter::getCastCount)).get();
-    this.castCount = castCounter.getCastCount(minTyping);
-    return minTyping;
+    return typings.stream()
+        .map(typing -> new CastCounter(builder, evalFunction, hierarchy, typing))
+        .min(Comparator.comparingInt(CastCounter::getCastCount))
+        .get();
   }
 
   private Type convertType(@Nonnull Type type) {

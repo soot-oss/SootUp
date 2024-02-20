@@ -54,23 +54,23 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("$stack4", sub1);
     map.put("$stack5", sub2);
     Typing typing = createTyping(builder.getLocals(), map);
-    CastCounter counter = new CastCounter(builder, function, hierarchy);
-    int count = counter.getCastCount(typing);
+    CastCounter counter = new CastCounter(builder, function, hierarchy, typing);
+    int count = counter.getCastCount();
     assertEquals(0, count);
 
     map.replace("l3", super2);
     typing = createTyping(builder.getLocals(), map);
-    count = counter.getCastCount(typing);
+    count = new CastCounter(builder, function, hierarchy, typing).getCastCount();
     assertEquals(1, count);
 
     map.replace("l2", PrimitiveType.getLong());
     typing = createTyping(builder.getLocals(), map);
-    count = counter.getCastCount(typing);
+    count = new CastCounter(builder, function, hierarchy, typing).getCastCount();
     assertEquals(3, count);
 
     map.replace("l2", AugmentIntegerTypes.getInteger127());
     typing = createTyping(builder.getLocals(), map);
-    count = counter.getCastCount(typing);
+    count = new CastCounter(builder, function, hierarchy, typing).getCastCount();
     assertEquals(1, count);
   }
 
@@ -83,14 +83,15 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("l2", super1);
     map.put("$stack3", sub1);
     Typing typing = createTyping(builder.getLocals(), map);
-    CastCounter counter = new CastCounter(builder, function, hierarchy);
-    int count = counter.getCastCount(typing);
+    CastCounter counter = new CastCounter(builder, function, hierarchy, typing);
+    int count = counter.getCastCount();
     assertEquals(0, count);
 
     map.replace("l1", object);
     typing = createTyping(builder.getLocals(), map);
-    count = counter.getCastCount(typing);
-    assertEquals(5, count);
+    count = new CastCounter(builder, function, hierarchy, typing).getCastCount();
+    new CastCounter(builder, function, hierarchy, typing).insertCastStmts();
+    assertEquals(2, count);
   }
 
   @Test
@@ -107,31 +108,27 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     final Set<Local> locals = builder.getLocals();
 
     Typing typing = createTyping(locals, map);
-    CastCounter counter = new CastCounter(builder, function, hierarchy);
-    assertEquals(3, counter.getCastCount(typing));
-    counter.insertCastStmts(typing);
+    CastCounter counter = new CastCounter(builder, function, hierarchy, typing);
+    assertEquals(3, counter.getCastCount());
+    counter.insertCastStmts();
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
     assertEquals(
         Stream.of(
                 "CastCounterDemos l0",
-                "Sub2 #l3",
-                "int #l2",
-                "integer1 #l0",
-                "long #l1",
+                "Sub2 #l1",
+                "int #l0",
                 "unknown $stack4, $stack5, l1, l2, l3",
                 "l0 := @this: CastCounterDemos",
                 "$stack4 = new Sub1",
                 "specialinvoke $stack4.<Sub1: void <init>()>()",
                 "l1 = $stack4",
-                "#l0 = 1",
-                "#l1 = (long) #l0",
-                "l2 = #l1",
+                "l2 = (long) 1",
                 "$stack5 = new Sub2",
                 "specialinvoke $stack5.<Sub2: void <init>()>()",
                 "l3 = $stack5",
-                "#l2 = (int) l2",
-                "#l3 = (Sub2) l3",
-                "virtualinvoke l1.<Super1: void m(int,Sub2)>(#l2, #l3)",
+                "#l1 = (Sub2) l3",
+                "#l0 = (int) l2",
+                "virtualinvoke l1.<Super1: void m(int,Sub2)>(#l0, #l1)",
                 "return")
             .collect(Collectors.toList()),
         actualStmts);
@@ -147,8 +144,8 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     map.put("$stack3", sub1);
 
     Typing typing = createTyping(builder.getLocals(), map);
-    CastCounter counter = new CastCounter(builder, function, hierarchy);
-    counter.insertCastStmts(typing);
+    CastCounter counter = new CastCounter(builder, function, hierarchy, typing);
+    counter.insertCastStmts();
     assertEquals(2, counter.getCastCount());
 
     final Body body = builder.build();

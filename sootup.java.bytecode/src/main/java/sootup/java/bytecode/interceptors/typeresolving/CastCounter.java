@@ -22,166 +22,118 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
-import com.google.common.collect.Lists;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
-import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.ref.JArrayRef;
-import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
+import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.Type;
 
-/** FIXME: outline what this class does */
+/**
+ * For a given body, type hierarchy and typing, this class calculates all statements that are
+ * necessary for the body to become use-valid. <br>
+ * That means it inserts casts when a variable is used in a place where a sub-type of the type of
+ * the variable is required. <br>
+ * It may also introduce additional local variables when a cast is necessary, but the use of the
+ * original variable doesn't allow inserting a cast into the statement directly. <br>
+ * Calling the constructor {@link #CastCounter} will calculate all necessary modifications to the
+ * body, but not apply them yet. Then you can use {@link #getCastCount} to get the amount of casts
+ * that are necessary for this typing. If you have multiple possible {@link Typing}s, this can be
+ * used to select the one requiring the least number of casts. <br>
+ * {@link #insertCastStmts()} will actually apply the modifications to the body and insert the new
+ * locals into the typing as well.
+ */
 public class CastCounter extends TypeChecker {
+  private final Map<Stmt, Set<JAssignStmt>> tempAssignments = new HashMap<>();
+  private final Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
+  private final Map<Local, Type> tempLocalTypes = new HashMap<>();
 
   private int castCount = 0;
-  private boolean countOnly;
-  private final Map<Stmt, Map<Value, Value>> changedValues = new HashMap<>();
   private int newLocalsCount = 0;
-  public Map<Stmt, Stmt> stmt2NewStmt = new HashMap<>();
 
   public CastCounter(
       @Nonnull Body.BodyBuilder builder,
       @Nonnull AugEvalFunction evalFunction,
-      @Nonnull BytecodeHierarchy hierarchy) {
+      @Nonnull BytecodeHierarchy hierarchy,
+      @Nonnull Typing typing) {
     super(builder, evalFunction, hierarchy);
-  }
-
-  public int getCastCount(@Nonnull Typing typing) {
-    castCount = 0;
-    countOnly = true;
     setTyping(typing);
-    // TODO: is a sorted list of stmts necessary?
-    for (Stmt stmt : builder.getStmts()) {
+
+    for (Stmt stmt : graph.getNodes()) {
       stmt.accept(this);
     }
-    return castCount;
   }
 
   public int getCastCount() {
     return castCount;
   }
 
-  public void insertCastStmts(@Nonnull Typing typing) {
-    castCount = 0;
-    countOnly = false;
-    setTyping(typing);
-    // TODO: is a sorted list of stmts necessary?
-    for (Stmt stmt : Lists.newArrayList(builder.getStmts())) {
-      stmt.accept(this);
+  public void insertCastStmts() {
+    for (Map.Entry<Local, Type> tempLocal : tempLocalTypes.entrySet()) {
+      builder.addLocal(tempLocal.getKey());
+      getTyping().set(tempLocal.getKey(), tempLocal.getValue());
+    }
+
+    for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
+      for (JAssignStmt cast : casts.getValue()) {
+        // TODO this also places before labels, which is not correct
+        graph.insertBefore(casts.getKey(), cast);
+      }
+    }
+
+    for (Map.Entry<Stmt, Stmt> stmt : stmt2NewStmt.entrySet()) {
+      graph.replaceNode(stmt.getKey(), stmt.getValue());
     }
   }
 
   /** This method is used to check whether a value in a stmt needs a cast. */
   public void visit(@Nonnull Value value, @Nonnull Type stdType, @Nonnull Stmt stmt) {
-    AugEvalFunction evalFunction = getFuntion();
-    BytecodeHierarchy hierarchy = getHierarchy();
-    Typing typing = getTyping();
-
-    // TODO: ms: move into a Subclass instead of the countOnly option/field?
-    if (countOnly) {
-      Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-      if (evaType == null) {
-        return;
-      }
-      if (hierarchy.isAncestor(stdType, evaType)) {
-        return;
-      }
-      castCount++;
+    if (!(value instanceof Immediate)) {
       return;
     }
 
-    Stmt oriStmt = stmt;
-    Value oriValue = value;
-    Stmt updatedStmt = stmt2NewStmt.get(stmt);
-    if (updatedStmt != null) {
-      stmt = stmt2NewStmt.get(stmt);
+    if (!stmt.getUses().anyMatch(v -> v == value)) {
+      return;
     }
-    Map<Value, Value> m = changedValues.get(oriStmt);
-    if (m != null) {
-      Value updatedValue = m.get(value);
-      if (updatedValue != null) {
-        value = updatedValue;
-      }
+
+    Stmt currentStmt = stmt2NewStmt.getOrDefault(stmt, stmt);
+
+    Type evaType = getFuntion().evaluate(getTyping(), value, currentStmt, graph);
+    if (evaType == null || getHierarchy().isAncestor(stdType, evaType)) {
+      return;
     }
-    Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
-    if (evaType == null || hierarchy.isAncestor(stdType, evaType)) {
+
+    JCastExpr cast = Jimple.newCastExpr((Immediate) value, stdType);
+
+    Stmt newStmt = currentStmt.withNewUse(value, cast);
+
+    // This happens when the use of `value` in currentStatement can't be replaced with a cast.
+    if (newStmt == null || newStmt == currentStmt) {
+      Local tempLocal = generateTempLocal(stdType);
+      tempLocalTypes.put(tempLocal, stdType);
+
+      JAssignStmt assignStmt = Jimple.newAssignStmt(tempLocal, cast, stmt.getPositionInfo());
+      tempAssignments.computeIfAbsent(stmt, _x -> new HashSet<>()).add(assignStmt);
+
+      newStmt = currentStmt.withNewUse(value, tempLocal);
+    }
+
+    if (currentStmt == newStmt) {
+      // This can happen when the same local is used multiple times in the same statement, and the
+      // invocation of this method for the first occurrence has already replaced all uses.
       return;
     }
     castCount++;
 
-    final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    Local old_local;
-    if (value instanceof Local) {
-      old_local = (Local) value;
-    } else {
-      old_local = generateTempLocal(evaType);
-      builder.addLocal(old_local);
-      typing.set(old_local, evaType);
-      JAssignStmt newAssign = Jimple.newAssignStmt(old_local, value, stmt.getPositionInfo());
-      stmtGraph.insertBefore(stmt, newAssign);
-    }
-
-    Local new_local = generateTempLocal(stdType);
-    builder.addLocal(new_local);
-    typing.set(new_local, stdType);
-    addUpdatedValue(oriValue, new_local, oriStmt);
-    JAssignStmt newCast =
-        Jimple.newAssignStmt(
-            new_local, Jimple.newCastExpr(old_local, stdType), stmt.getPositionInfo());
-    stmtGraph.insertBefore(stmt, newCast);
-
-    Stmt newStmt;
-    final Value finalValue = value;
-    if (stmt.getUses().anyMatch(v -> v == finalValue)) {
-      newStmt = stmt.withNewUse(value, new_local);
-    } else {
-      newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
-    }
-    if (graph.containsNode(stmt)) {
-      graph.replaceNode(stmt, newStmt);
-      stmt2NewStmt.put(oriStmt, newStmt);
-    }
-  }
-
-  private void addUpdatedValue(Value oldValue, Value newValue, Stmt stmt) {
-    Map<Value, Value> map;
-    if (!changedValues.containsKey(stmt)) {
-      map = new HashMap<>();
-      changedValues.put(stmt, map);
-    } else {
-      map = changedValues.get(stmt);
-    }
-    map.put(oldValue, newValue);
-    if (stmt instanceof JAssignStmt && stmt.containsArrayRef()) {
-      Value leftOp = ((JAssignStmt) stmt).getLeftOp();
-      Value rightOp = ((JAssignStmt) stmt).getRightOp();
-      if (leftOp instanceof JArrayRef) {
-        if (oldValue == leftOp) {
-          Local base = ((JArrayRef) oldValue).getBase();
-          Local nBase = ((JArrayRef) newValue).getBase();
-          map.put(base, nBase);
-        } else if (leftOp.getUses().anyMatch(v -> v == oldValue)) {
-          JArrayRef nArrRef = ((JArrayRef) leftOp).withBase((Local) newValue);
-          map.put(leftOp, nArrRef);
-        }
-      } else if (rightOp instanceof JArrayRef) {
-        if (oldValue == rightOp) {
-          Local base = ((JArrayRef) oldValue).getBase();
-          Local nBase = ((JArrayRef) newValue).getBase();
-          map.put(base, nBase);
-        } else if (rightOp.getUses().anyMatch(v -> v == oldValue)) {
-          JArrayRef nArrRef = ((JArrayRef) rightOp).withBase((Local) newValue);
-          map.put(rightOp, nArrRef);
-        }
-      }
-    }
+    stmt2NewStmt.put(stmt, newStmt);
   }
 
   private Local generateTempLocal(@Nonnull Type type) {
