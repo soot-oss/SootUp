@@ -22,8 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -52,15 +51,9 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    final List<Value> uses1 = op1.getUses();
-    final List<Value> uses2 = op2.getUses();
-    List<Value> list = new ArrayList<>(uses1.size() + uses2.size() + 2);
-    list.addAll(uses1);
-    list.add(op1);
-    list.addAll(uses2);
-    list.add(op2);
-    return list;
+  public final Stream<Value> getUses() {
+    return Stream.concat(
+        Stream.concat(Stream.concat(op1.getUses(), Stream.of(op1)), op2.getUses()), Stream.of(op2));
   }
 
   @Override

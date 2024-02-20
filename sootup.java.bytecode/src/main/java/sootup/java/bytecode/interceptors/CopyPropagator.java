@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors;
  */
 
 import com.google.common.collect.Lists;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
@@ -59,7 +60,8 @@ public class CopyPropagator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
-      for (Value use : stmt.getUses()) {
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value use = iterator.next();
         if (!(use instanceof Local)) {
           continue;
         }

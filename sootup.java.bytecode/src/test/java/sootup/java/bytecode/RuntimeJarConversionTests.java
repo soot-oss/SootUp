@@ -86,8 +86,9 @@ public class RuntimeJarConversionTests {
               && interceptor.getClass() != DeadAssignmentEliminator.class) {
             return false;
           }
-          System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
-
+          if (debug) {
+            System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+          }
           return true;
         };
 
