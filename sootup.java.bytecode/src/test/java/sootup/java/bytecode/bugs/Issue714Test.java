@@ -24,7 +24,7 @@ public class Issue714Test {
     // "jdk.internal.jimage.ImageStringsReader :: mutf8FromString will cause LocalSplitter not halt
     // / comsume unreasonable time"
 
-    JavaView view =
+    JavaModuleView view =
         new JavaModuleView(
             Collections.emptyList(),
             Collections.singletonList(new JrtFileSystemAnalysisInputLocation()));
@@ -32,7 +32,7 @@ public class Issue714Test {
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
             .parseMethodSignature(
-                "<java.base/jdk.internal.jimage.ImageStringsReader: int mutf8FromString(java.lang.String)>");
+                "<java.base/jdk.internal.jimage.ImageStringsReader: byte[] mutf8FromString(java.lang.String)>");
     final Optional<JavaSootClass> classOpt = view.getClass(methodSignature.getDeclClassType());
     Assert.assertTrue(methodSignature.getDeclClassType() + " not found", classOpt.isPresent());
 
