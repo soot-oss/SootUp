@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.frontend.OverridingBodySource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -53,13 +54,12 @@ public class ClassModifiersValidatorTest {
     final JReturnVoidStmt returnVoidStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(firstStmt);
+    stmtGraph.putEdge(firstStmt, returnVoidStmt);
+
     Body body =
-        bodyBuilder
-            .setStartingStmt(firstStmt)
-            .addFlow(firstStmt, returnVoidStmt)
-            .setMethodSignature(methodSignature)
-            .setLocals(generator.getLocals())
-            .build();
+        bodyBuilder.setMethodSignature(methodSignature).setLocals(generator.getLocals()).build();
     assertEquals(1, body.getLocalCount());
 
     JavaSootMethod dummyMainMethod =
