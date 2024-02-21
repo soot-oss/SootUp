@@ -32,6 +32,7 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 public class TypePromotionVisitor extends TypeChecker {
 
@@ -98,6 +99,11 @@ public class TypePromotionVisitor extends TypeChecker {
   private Type promote(Type low, Type high) {
     Class<?> lowClass = low.getClass();
     Class<?> highClass = high.getClass();
+
+    if (highClass == TopType.class) {
+      return low;
+    }
+
     if (lowClass == AugmentIntegerTypes.Integer1Type.class) {
       if (highClass == PrimitiveType.IntType.class) {
         return AugmentIntegerTypes.getInteger127();
