@@ -105,4 +105,9 @@ public class ArrayType extends ReferenceType {
   public void accept(@Nonnull TypeVisitor v) {
     v.caseArrayType();
   }
+
+  @Override
+  public boolean isAllowedInFinalCode() {
+    return true;
+  }
 }

@@ -47,4 +47,9 @@ public class VoidType extends Type {
   public void accept(@Nonnull TypeVisitor v) {
     v.caseVoidType();
   }
+
+  @Override
+  public boolean isAllowedInFinalCode() {
+    return true;
+  }
 }

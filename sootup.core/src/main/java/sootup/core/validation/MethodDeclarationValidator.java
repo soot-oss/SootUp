@@ -23,7 +23,11 @@ package sootup.core.validation;
  */
 
 import java.util.List;
+
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
+import sootup.core.types.Type;
+import sootup.core.types.VoidType;
 
 /**
  * Validates classes to make sure that all method signatures are valid
@@ -34,14 +38,22 @@ public class MethodDeclarationValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
-    // TODO: check code from old soot in the comment
-
-    /*
-     * if (sc.isConcrete()) { for (SootMethod sm : sc.getMethods()) { for (Type tp : sm.getParameterTypes()) { if (tp ==
-     * null) { exceptions.add(new ValidationException(sm, "Null parameter types are invalid")); } if (tp instanceof VoidType)
-     * { exceptions.add(new ValidationException(sm, "Void parameter types are invalid")); } if (!tp.isAllowedInFinalCode()) {
-     * exceptions.add(new ValidationException(sm, "Parameter type not allowed in final code")); } } } }
-     */
+    if (sc.isConcrete()) {
+      for (SootMethod sm : sc.getMethods()) {
+        for (Type tp : sm.getParameterTypes()) {
+          if (tp == null) {
+            exceptions.add(new ValidationException(sm, "Null parameter types are invalid"));
+          } else {
+            if (tp instanceof VoidType) {
+              exceptions.add(new ValidationException(sm, "Void parameter types are invalid"));
+            }
+            if (!tp.isAllowedInFinalCode()) {
+              exceptions.add(new ValidationException(sm, "Parameter type not allowed in final code"));
+            }
+          }
+        }
+      }
+    }
   }
 
   @Override

@@ -62,6 +62,11 @@ public abstract class AugmentIntegerTypes {
     public void accept(@Nonnull TypeVisitor v) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isAllowedInFinalCode() {
+      return false;
+    }
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
@@ -81,6 +86,11 @@ public abstract class AugmentIntegerTypes {
     public void accept(@Nonnull TypeVisitor v) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isAllowedInFinalCode() {
+      return false;
+    }
   }
 
   /** This type is intermediate type and used for determining the ancestor of an integer type */
@@ -99,6 +109,11 @@ public abstract class AugmentIntegerTypes {
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAllowedInFinalCode() {
+      return false;
     }
   }
 }

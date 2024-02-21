@@ -111,6 +111,11 @@ public abstract class PrimitiveType extends Type {
     public void accept(@Nonnull TypeVisitor v) {
       v.caseByteType();
     }
+
+    @Override
+    public boolean isAllowedInFinalCode() {
+      return true;
+    }
   }
 
   public static class ShortType extends PrimitiveType.IntType {

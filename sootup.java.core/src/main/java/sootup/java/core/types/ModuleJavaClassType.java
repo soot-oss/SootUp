@@ -37,4 +37,9 @@ public class ModuleJavaClassType extends JavaClassType {
   public ModulePackageName getPackageName() {
     return (ModulePackageName) super.getPackageName();
   }
+
+  @Override
+  public boolean isAllowedInFinalCode() {
+    return true;
+  }
 }

@@ -51,4 +51,9 @@ public class WeakObjectType extends JavaClassType {
   public void accept(@Nonnull TypeVisitor v) {
     // todo: weak objects type case
   }
+
+  @Override
+  public boolean isAllowedInFinalCode() {
+    return true;
+  }
 }

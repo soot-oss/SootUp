@@ -81,4 +81,13 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     }
     return 0;
   }
+
+  /**
+   * Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code.
+   *
+   * @return
+   */
+  public boolean isAllowedInFinalCode() {
+    return false;
+  }
 }
