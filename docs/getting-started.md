@@ -314,15 +314,25 @@ Example code to help getting start with SootUp
           ```java
            Path pathToBinary = Paths.get("src/test/resources/Basicsetup/binary");
            AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
-           View view = new JavaView(inputLocation);
            ```
-  
-           4) Then we have created a main method which is the entry point of the progrram
-           5) Path pathToBinary object pointing to a directory that contains the binary files ie class files to be analyzed and Paths.get is a static method that converts string path to a 'Path' object.
-           6) AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
-           7) View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific implementation of View tailed for Java projects.
-           8) The ClassType object is created for the class name 'HelloWorld'. This object represents the type of class to be analyzed.
-           9) A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter types (a single parameter of type String[]).
+
+           - This part of code is inside the main method. Here the Path pathToBinary object pointing to a directory that contains the binary files ie class files                to be analysed and Paths.get is a static method that conversts string path to a 'Path' object.
+           - The second line of code ie the AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
+
+           ```java
+           View view = new JavaView(inputLocation);
+           ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+           MethodSignature methodSignature =
+           view.getIdentifierFactory()
+            .getMethodSignature(
+                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+           ```
+          - In this part of code, first View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific implementation of View tailed for Java projects.
+           - The ClassType object is created for the class name 'HelloWorld'. This object represents the type of class to be analyzed.
+           - A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter types (a single parameter of type String[]).
+
+
+
            10) The if statment checks for the presences of the class 'HelloWorld'. If not it prints "Class not ffound!" and exits the program.
            11) Then it retrieves the SootClass object representing the HelloWorld class, assuming it is present.
            12) view.getMethod(methodSignature); - Attempts to retrieve the specified method from the project.
