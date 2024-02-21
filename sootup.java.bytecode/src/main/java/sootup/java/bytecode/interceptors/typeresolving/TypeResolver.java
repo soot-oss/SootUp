@@ -214,10 +214,21 @@ public class TypeResolver {
       if (lhs instanceof JArrayRef) {
         // `local[index] = rhs` -> `local` should have the type `[rhs][]`
         if (oldType instanceof ArrayType) {
+          Type elementType = ((ArrayType) oldType).getElementType();
+
+          if (elementType instanceof PrimitiveType) {
+            // Can't always change the type of the array when it is a primitive array.
+            // Take the following example: `l1 = newarray (byte)[1]; l1[0] = l0;`, with `l0` being
+            // an `int` (see `testMixedPrimitiveArray`).
+            // At the `l1[0] = l0` statement, `l1` has to stay as a `byte[]` and can't be upgraded
+            // to an `int[]` because otherwise the first statement becomes invalid.
+            continue;
+          }
+
           // when `local` has an array type, the type of `rhs` needs to be assignable as an element
           // of that array
           Collection<Type> leastCommonAncestorsElement =
-              hierarchy.getLeastCommonAncestor(((ArrayType) oldType).getElementType(), rhsType);
+              hierarchy.getLeastCommonAncestor(elementType, rhsType);
           leastCommonAncestors =
               leastCommonAncestorsElement.stream()
                   .map(type -> Type.createArrayType(type, 1))

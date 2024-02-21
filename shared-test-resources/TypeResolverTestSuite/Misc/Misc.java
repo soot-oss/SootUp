@@ -48,4 +48,15 @@ public class Misc {
     int b = a[0];
     a = new int[1];
   }
+
+  public static void mixedPrimitiveArray() {
+    {
+      int a = 65537;
+    }
+    {
+      byte a = 1;
+      byte[] b = new byte[1];
+      b[0] = a;
+    }
+  }
 }

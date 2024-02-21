@@ -311,4 +311,27 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
     Assert.assertEquals(PrimitiveType.getInt(), objectLocal.getType());
   }
+
+  @Test
+  public void testMixedPrimitiveArray() {
+    final JavaView view =
+            new JavaView(
+                    new JavaClassPathAnalysisInputLocation(
+                            baseDir + "Misc/",
+                            SourceType.Library,
+                            Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+            view.getIdentifierFactory()
+                    .getMethodSignature("Misc", "mixedPrimitiveArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local numericLocal =
+            body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local arrayLocal =
+            body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+
+    Assert.assertEquals(PrimitiveType.getInt(), numericLocal.getType());
+    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getByte(), 1), arrayLocal.getType());
+  }
 }
