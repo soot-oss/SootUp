@@ -22,7 +22,10 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import sootup.core.model.SootClass;
 
 /**
@@ -34,14 +37,15 @@ public class OuterClassValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
-
-    // TODO: check code from old soot in the comment
-
-    /*
-     * Set<SootClass> outerClasses = new HashSet<SootClass>(); SootClass curClass = sc; while (curClass != null) { if
-     * (!outerClasses.add(curClass)) { exceptions.add(new ValidationException(curClass, "Circular outer class chain"));
-     * break; } curClass = curClass.hasOuterClass() ? curClass.getOuterClass() : null; }
-     */
+    // TODO: How to obtain SootClass from ClassType? The return type of curClass.getOuterClass() has changed
+//    Set<SootClass> outerClasses = new HashSet<>();
+//    for (SootClass curClass = sc; curClass != null;) {
+//      if (!outerClasses.add(curClass)) {
+//        exceptions.add(new ValidationException(curClass, "Circular outer class chain"));
+//        break;
+//      }
+//      curClass = curClass.hasOuterClass() ? curClass.getOuterClass() : null;
+//    }
   }
 
   @Override
