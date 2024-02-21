@@ -22,9 +22,14 @@ package sootup.core.validation;
  * #L%
  */
 
-import java.util.List;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A basic validator that checks whether the length of the invoke statement's argument list matches
@@ -33,20 +38,26 @@ import sootup.core.views.View;
  * @author Steven Arzt
  */
 public class InvokeArgumentValidator implements BodyValidator {
+    @Override
+    public List<ValidationException> validate(Body body, View view) {
+        List<ValidationException> validationException = new ArrayList<>();
 
-  @Override
-  public List<ValidationException> validate(Body body, View view) {
-    // TODO: check copied code from old soot
-    /*
-     * for (Unit u : body.getUnits()) { Stmt s = (Stmt) u; if (s.containsInvokeExpr()) { InvokeExpr iinvExpr =
-     * s.getInvokeExpr(); SootMethod callee = iinvExpr.getMethod(); if (callee != null && iinvExpr.getArgCount() !=
-     * callee.getParameterCount()) { exceptions.add(new ValidationException(s, "Invalid number of arguments")); } } }
-     */
-    return null;
-  }
+        for (Stmt stmt : body.getStmts()) {
+            if (stmt.containsInvokeExpr()) {
+                AbstractInvokeExpr invExpr =
+                        stmt.getInvokeExpr();
+                MethodSignature callee = invExpr.getMethodSignature();
+                if (invExpr.getArgCount() !=
+                        callee.getParameterTypes().size()) {
+                    validationException.add(new ValidationException(stmt, "Invalid number of arguments"));
+                }
+            }
+        }
+        return validationException;
+    }
 
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
+    @Override
+    public boolean isBasicValidator() {
+        return true;
+    }
 }
