@@ -24,6 +24,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 import sootup.java.core.JavaPackageName;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -208,7 +209,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     // Tests that assignments to an array index before the array is initialized (in the order of
     // source code/bytecode), results in the correct type.
     Assert.assertEquals(
-        ArrayType.createArrayType(new JavaClassType("Object", new JavaPackageName("java.lang")), 1),
+        ArrayType.createArrayType(new JavaClassType("String", new JavaPackageName("java.lang")), 1),
         arrayLocal.getType());
   }
 
@@ -234,5 +235,80 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     Assert.assertEquals(
         ArrayType.createArrayType(new JavaClassType("Object", new JavaPackageName("java.lang")), 1),
         arrayLocal.getType());
+  }
+
+  @Test
+  public void testObjectPrimitiveArray() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "objectPrimitiveArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+
+    // Tests that an array that gets both objects and primitives assigned to it,
+    // gets the `TopType[]` type.
+    Assert.assertEquals(ArrayType.createArrayType(TopType.getInstance(), 1), arrayLocal.getType());
+  }
+
+  @Test
+  public void testUseNullArray() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "useNullArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local objectLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+
+    // The type of `arrayLocal` should actually be `Object[]` to be more precise,
+    // but that would require taking non-assignments into account for the typing.
+    // The original paper doesn't do that, and it would only make a difference for this edge case.
+    Assert.assertEquals(
+        new JavaClassType("Object", new JavaPackageName("java.lang")), arrayLocal.getType());
+    Assert.assertEquals(
+        new JavaClassType("Object", new JavaPackageName("java.lang")), objectLocal.getType());
+  }
+
+  @Test
+  public void testUsePrimitiveNullArray() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "usePrimitiveNullArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local objectLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+
+    // Using a `null` array of primitive type, should not accidentally promote that array to an
+    // array of references.
+    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
+    Assert.assertEquals(PrimitiveType.getInt(), objectLocal.getType());
   }
 }

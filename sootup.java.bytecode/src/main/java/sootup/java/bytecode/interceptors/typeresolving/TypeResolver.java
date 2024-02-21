@@ -42,6 +42,7 @@ import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang Algorithm: see 'Efficient Local Type Inference' at OOPSLA 08 */
@@ -50,8 +51,11 @@ public class TypeResolver {
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
 
+  private final Type objectType;
+
   public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
+    objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   public boolean resolve(@Nonnull Body.BodyBuilder builder) {
@@ -63,6 +67,13 @@ public class TypeResolver {
         applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
       return false;
+    }
+
+    // Promote `null`/`BottomType` types to `Object`.
+    for (Typing typing : typings) {
+      for (Local local : builder.getLocals()) {
+        typing.set(local, convertUnderspecifiedType(typing.getType(local)));
+      }
     }
 
     CastCounter minCastsCounter = getMinCastsCounter(builder, typings, evalFunction, hierarchy);
@@ -181,18 +192,10 @@ public class TypeResolver {
       AbstractDefinitionStmt defStmt = this.assignments.get(stmtId);
       Value lhs = defStmt.getLeftOp();
       Local local;
-      Type oldType;
       if (lhs instanceof Local) {
         local = (Local) lhs;
-        oldType = actualTyping.getType(local);
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
-        oldType = actualTyping.getType(local);
-        if (oldType instanceof ArrayType) {
-          oldType = ((ArrayType) oldType).getElementType();
-        } else {
-          assert oldType == NullType.getInstance();
-        }
       } else {
         // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
         // The statements get filtered to only contain those assignments in the `init` method,
@@ -200,37 +203,38 @@ public class TypeResolver {
         throw new IllegalStateException("can not handle " + lhs.getClass());
       }
 
-      Type rightOpDerivedType =
-          evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
-      if (rightOpDerivedType == null) {
+      Type rhsType = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+      if (rhsType == null) {
         workQueue.removeFirst();
         continue;
       }
 
-      boolean isFirstType = true;
-      Collection<Type> leastCommonAncestors =
-          hierarchy.getLeastCommonAncestor(oldType, rightOpDerivedType);
-
+      Type oldType = actualTyping.getType(local);
+      Collection<Type> leastCommonAncestors;
       if (lhs instanceof JArrayRef) {
-        // To find the correct type of `local` in an assignment like `local[index] = rhs`,
-        // the type of the right-hand side and the element type of `local` are used above,
-        // and changed back into the actual array type here.
-        leastCommonAncestors =
-            leastCommonAncestors.stream()
-                .map(
-                    type -> {
-                      if (type == NullType.getInstance()) {
-                        // prevent a `null[]` and use an `Object[]` instead
-                        return hierarchy.objectClassType;
-                      } else {
-                        return type;
-                      }
-                    })
-                .map(type -> Type.createArrayType(type, 1))
-                .collect(Collectors.toSet());
+        // `local[index] = rhs` -> `local` should have the type `[rhs][]`
+        if (oldType instanceof ArrayType) {
+          // when `local` has an array type, the type of `rhs` needs to be assignable as an element
+          // of that array
+          Collection<Type> leastCommonAncestorsElement =
+              hierarchy.getLeastCommonAncestor(((ArrayType) oldType).getElementType(), rhsType);
+          leastCommonAncestors =
+              leastCommonAncestorsElement.stream()
+                  .map(type -> Type.createArrayType(type, 1))
+                  .collect(Collectors.toSet());
+        } else {
+          // when `local` isn't an array type, but is used as an array, its type has to be
+          // compatible with `[rhs][]`
+          leastCommonAncestors =
+              hierarchy.getLeastCommonAncestor(oldType, Type.createArrayType(rhsType, 1));
+        }
+      } else {
+        leastCommonAncestors = hierarchy.getLeastCommonAncestor(oldType, rhsType);
       }
 
       assert !leastCommonAncestors.isEmpty();
+
+      boolean isFirstType = true;
       for (Type type : leastCommonAncestors) {
         if (!type.equals(oldType)) {
           BitSet dependStmtList = this.depends.get(local);
@@ -309,6 +313,24 @@ public class TypeResolver {
         .map(typing -> new CastCounter(builder, evalFunction, hierarchy, typing))
         .min(Comparator.comparingInt(CastCounter::getCastCount))
         .get();
+  }
+
+  private Type convertUnderspecifiedType(@Nonnull Type type) {
+    if (type instanceof ArrayType) {
+      Type elementType = convertUnderspecifiedType(((ArrayType) type).getElementType());
+      return Type.createArrayType(elementType, 1);
+    } else if (type instanceof NullType || type instanceof BottomType) {
+      // Convert `null`/`BottomType` types to `java.lang.Object`.
+      // `null` can show up when a variable never gets a non-null value assigned to it.
+      // `BottomType` can show up when a variable only every gets assigned from "impossible"
+      // operations, e.g., indexing into `null`, or never gets assigned at all.
+      // Choosing `java.lang.Object` is an arbitrary choice.
+      // It is probably possible to use the debug information to choose a type here, but that
+      // complexity is not worth it for such an edge case.
+      return objectType;
+    } else {
+      return type;
+    }
   }
 
   private Type convertType(@Nonnull Type type) {

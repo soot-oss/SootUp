@@ -36,10 +36,12 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
@@ -198,6 +200,13 @@ public class AugEvalFunction {
         Type type = typing.getType(((JArrayRef) value).getBase());
         if (type instanceof ArrayType) {
           return ((ArrayType) type).getElementType();
+        } else if (type instanceof NullType) {
+          // This is an expression like `null[index]`. That means the type of the array variable has
+          // not been determined yet, but because this statement is dependent on whatever will
+          // calculate the type of the array, the fixpoint iteration will call this again with the
+          // correct type. (Or it won't get called again, in which case the `null` type will get
+          // promoted to `Object`)
+          return BottomType.getInstance();
         } else {
           // When the type is not an array type, it can't be known what the type of the array ref
           // expression is. Because the result of the array access could be an object or a

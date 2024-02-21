@@ -11,19 +11,41 @@ public class Misc {
   }
 
   public static void arrayAssignBeforeInit() {
-    Object[] a = null;
+    String[] a = null;
     if (Math.random() == 0.0) {
       // This assignment is before (in source code) the initialization below,
       // so the `TypeResolver` needs to find the type of `a` before a direct assignment to `a`.
       a[0] = null;
       a[0] = "";
     } else {
-      a = new Object[1];
+      a = new String[1];
     }
   }
 
   public static void nullArray() {
     Object[] a = null;
     a[0] = null;
+  }
+
+  public static void objectPrimitiveArray() {
+    {
+      String[] a = null;
+      a[0] = "";
+    }
+    {
+      int[] a = null;
+      a[0] = 0;
+    }
+  }
+
+  public static void useNullArray() {
+    Object[] a = null;
+    Object b = a[0];
+  }
+
+  public static void usePrimitiveNullArray() {
+    int[] a = null;
+    int b = a[0];
+    a = new int[1];
   }
 }
