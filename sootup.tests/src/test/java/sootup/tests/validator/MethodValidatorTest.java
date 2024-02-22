@@ -2,6 +2,7 @@ package sootup.tests.validator;
 
 import org.junit.Before;
 import org.junit.Test;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -21,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 public class MethodValidatorTest {
     MethodValidator methodValidator;
     JimpleView jimpleView;
-    Collection<SootClass> classes;
 
     @Before
     public void Setup() {
@@ -58,14 +58,6 @@ public class MethodValidatorTest {
         jimpleView = new JimpleView(jimpleInputLocation);
         final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
         assertFalse(classSource1.isPresent());
-
-        classes = new HashSet<>(); // Set to track the classes to check
-
-        for (SootClass aClass : jimpleView.getClasses()) {
-            if (!aClass.isLibraryClass()) {
-                classes.add(aClass);
-            }
-        }
     }
 
     @Test
@@ -73,18 +65,7 @@ public class MethodValidatorTest {
         List<ValidationException> validationExceptions_success;
 
         validationExceptions_success =
-                methodValidator.validate(
-                        classes.stream()
-                                .filter(c -> c.getType().getClassName().equals("MethodValidator"))
-                                .findFirst()
-                                .get()
-                                .getMethods()
-                                .stream()
-                                .filter(m -> m.getName().equals("<init>"))
-                                .map(SootMethod::getBody)
-                                .findFirst()
-                                .get(),
-                        jimpleView);
+                methodValidator.validate(getBody("<MethodValidator: void <init>()>"),jimpleView);
 
         assertEquals(0, validationExceptions_success.size());
     }
@@ -95,19 +76,14 @@ public class MethodValidatorTest {
 
         validationExceptions_success =
                 methodValidator.validate(
-                        classes.stream()
-                                .filter(c -> c.getType().getClassName().equals("MethodValidator"))
-                                .findFirst()
-                                .get()
-                                .getMethods()
-                                .stream()
-                                .filter(m -> m.getName().equals(MethodValidator.staticInitializerName))
-                                .map(SootMethod::getBody)
-                                .findFirst()
-                                .get(),
-                        jimpleView);
+                        getBody("<MethodValidator: void <clinit>()>"), jimpleView);
 
         assertEquals(1, validationExceptions_success.size());
+    }
+
+    Body getBody(String methodSignature) {
+        return jimpleView.getMethod(jimpleView.getIdentifierFactory()
+                .parseMethodSignature(methodSignature)).get().getBody();
     }
 
 }
