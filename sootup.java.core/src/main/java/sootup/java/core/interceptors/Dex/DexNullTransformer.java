@@ -36,7 +36,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
   private Local l = null;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
     AbstractStmtVisitor checkDef =

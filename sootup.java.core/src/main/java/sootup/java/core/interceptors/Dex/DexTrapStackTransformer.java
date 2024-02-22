@@ -24,7 +24,7 @@ public class DexTrapStackTransformer implements BodyInterceptor {
 
   public static LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     List<Trap> traps = builder.getStmtGraph().getTraps();
     for (Trap trap : traps) {
       if (isCaughtExceptionRef(trap.getHandlerStmt())) {
@@ -36,9 +36,9 @@ public class DexTrapStackTransformer implements BodyInterceptor {
           Jimple.newIdentityStmt(
               local,
               JavaJimple.getInstance().newCaughtExceptionRef(),
-              StmtPositionInfo.createNoStmtPositionInfo());
+              StmtPositionInfo.getNoStmtPositionInfo());
       builder.getStmts().add(caughtStmt);
-      JGotoStmt jGotoStmt = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      JGotoStmt jGotoStmt = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
       builder.getStmts().add(jGotoStmt);
       branchingMap.put(jGotoStmt, Collections.singletonList(trap.getHandlerStmt()));
       replaceTrap(traps, trap, trap.withHandlerStmt(caughtStmt));

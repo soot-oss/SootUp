@@ -32,7 +32,7 @@ public class DexNumberTranformer extends DexTransformer {
   private boolean doBreak = false;
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     final DexDefUseAnalysis localDefs = new DexDefUseAnalysis(builder);
 
