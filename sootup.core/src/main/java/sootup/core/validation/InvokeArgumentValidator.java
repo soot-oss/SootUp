@@ -71,8 +71,7 @@ public class InvokeArgumentValidator implements BodyValidator {
                                 || !typeHierarchy.subtypesOf(paramType).contains(argType))) {
                             validationException.add(new ValidationException(stmt,
                                     String.format("Invalid argument type. Required %s but provided %s.", paramType, argType)));
-                            System.out.println(String.format("Invalid argument type. Required %s but provided %s.", paramType, argType));
-                        }
+                       }
                     }
                 }
             }

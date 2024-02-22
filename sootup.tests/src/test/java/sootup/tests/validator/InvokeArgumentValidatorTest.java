@@ -59,16 +59,17 @@ public class InvokeArgumentValidatorTest {
         DefaultRTJarAnalysisInputLocation defaultRTJarAnalysisInputLocation = new DefaultRTJarAnalysisInputLocation();
         jimpleView = new JimpleView(Arrays.asList(jimpleInputLocation, defaultRTJarAnalysisInputLocation));
 
-        final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
-        assertFalse(classSource1.isPresent());
-
         classes = new HashSet<>(); // Set to track the classes to check
-
         for (SootClass aClass : jimpleView.getClasses()) {
             if (!aClass.isLibraryClass()) {
                 classes.add(aClass);
             }
         }
+
+        // Speed up the class search process by limiting the search scope within application classes
+        final Optional<SootClass> classSource1 = classes.stream().filter(c -> c.getType()
+                .equals(classTypeFieldRefValidator)).findFirst();
+        assertFalse(classSource1.isPresent());
     }
 
     @Test
