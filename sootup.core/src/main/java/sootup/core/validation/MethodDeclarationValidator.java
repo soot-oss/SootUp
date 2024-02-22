@@ -33,7 +33,7 @@ import sootup.core.types.VoidType;
  * Validates classes to make sure that all method signatures are valid and does not contain
  * impossible method modifier combinations
  *
- * @author Steven Arzt
+ * @author Akshita Dubey
  */
 public class MethodDeclarationValidator implements ClassValidator {
 
