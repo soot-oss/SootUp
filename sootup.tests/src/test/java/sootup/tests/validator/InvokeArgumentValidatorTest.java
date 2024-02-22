@@ -8,14 +8,12 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.validation.InvokeArgumentValidator;
 import sootup.core.validation.ValidationException;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,7 +55,10 @@ public class InvokeArgumentValidatorTest {
         JimpleAnalysisInputLocation jimpleInputLocation =
                 new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-        jimpleView = new JimpleView(jimpleInputLocation);
+        // rt.jar is required since the validator uses typeHierarchy
+        DefaultRTJarAnalysisInputLocation defaultRTJarAnalysisInputLocation = new DefaultRTJarAnalysisInputLocation();
+        jimpleView = new JimpleView(Arrays.asList(jimpleInputLocation, defaultRTJarAnalysisInputLocation));
+
         final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
         assertFalse(classSource1.isPresent());
 
@@ -71,44 +72,37 @@ public class InvokeArgumentValidatorTest {
     }
 
     @Test
-    public void testInvokeArgumentValidatorSuccess() {
+    public void invokeArgumentValidator_success() {
         List<ValidationException> validationExceptions_success;
 
-        validationExceptions_success =
-                invokeArgumentValidator.validate(
-                        classes.stream()
-                                .filter(c -> c.getType().getClassName().equals("InvokeArgumentValidator"))
-                                .findFirst()
-                                .get()
-                                .getMethods()
-                                .stream()
-                                .filter(m -> m.getName().equals("invokeArgumentValidator_success"))
-                                .map(m -> m.getBody())
-                                .findFirst()
-                                .get(),
-                        jimpleView);
+        validationExceptions_success = invokeArgumentValidator.validate( jimpleView.getMethod(
+                jimpleView.getIdentifierFactory()
+                        .parseMethodSignature("<InvokeArgumentValidator: void invokeArgumentValidator_success()>") )
+                .get().getBody(), jimpleView);
 
         assertEquals(0, validationExceptions_success.size());
     }
 
     @Test
-    public void testInvokeArgumentValidatorFailure() {
+    public void testArgumentNumber_fail() {
         List<ValidationException> validationExceptions_success;
 
-        validationExceptions_success =
-                invokeArgumentValidator.validate(
-                        classes.stream()
-                                .filter(c -> c.getType().getClassName().equals("InvokeArgumentValidator"))
-                                .findFirst()
-                                .get()
-                                .getMethods()
-                                .stream()
-                                .filter(m -> m.getName().equals("invokeArgumentValidator_fail"))
-                                .map(m -> m.getBody())
-                                .findFirst()
-                                .get(),
-                        jimpleView);
+        validationExceptions_success = invokeArgumentValidator.validate( jimpleView.getMethod(
+                        jimpleView.getIdentifierFactory()
+                                .parseMethodSignature("<InvokeArgumentValidator: void testArgumentNumber_fail()>") )
+                .get().getBody(), jimpleView);
         assertEquals(1, validationExceptions_success.size());
+    }
+
+    @Test
+    public void testArgumentType_fail() {
+        List<ValidationException> validationExceptions_success;
+
+        validationExceptions_success = invokeArgumentValidator.validate( jimpleView.getMethod(
+                        jimpleView.getIdentifierFactory()
+                                .parseMethodSignature("<InvokeArgumentValidator: void testArgumentType_fail()>") )
+                .get().getBody(), jimpleView);
+        assertEquals(2, validationExceptions_success.size());
     }
 
 }

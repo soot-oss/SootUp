@@ -22,13 +22,20 @@ package sootup.core.validation;
  * #L%
  */
 
+import sootup.core.IdentifierFactory;
+import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.typehierarchy.TypeHierarchy;
+import sootup.core.types.ClassType;
+import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
 import sootup.core.views.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,13 +54,37 @@ public class InvokeArgumentValidator implements BodyValidator {
                 AbstractInvokeExpr invExpr =
                         stmt.getInvokeExpr();
                 MethodSignature callee = invExpr.getMethodSignature();
-                if (invExpr.getArgCount() !=
-                        callee.getParameterTypes().size()) {
+                List<Immediate> args = invExpr.getArgs();
+                List<Type> parameterTypes = callee.getParameterTypes();
+                if (invExpr.getArgCount() != parameterTypes.size()) {
                     validationException.add(new ValidationException(stmt, "Invalid number of arguments"));
+                } else {
+                    // check argument type
+                    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+                    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+                    Iterator<Immediate> iterArgs = args.iterator();
+                    Iterator<Type> iterParameters = parameterTypes.iterator();
+                    while (iterArgs.hasNext() && iterParameters.hasNext()) {
+                        ClassType argType = getClassType(identifierFactory, iterArgs.next().getType());
+                        ClassType paramType = getClassType(identifierFactory, iterParameters.next());
+                        if (argType != paramType && (!typeHierarchy.contains(paramType)
+                                || !typeHierarchy.subtypesOf(paramType).contains(argType))) {
+                            validationException.add(new ValidationException(stmt,
+                                    String.format("Invalid argument type. Required %s but provided %s.", paramType, argType)));
+                            System.out.println(String.format("Invalid argument type. Required %s but provided %s.", paramType, argType));
+                        }
+                    }
                 }
             }
         }
         return validationException;
+    }
+
+    private ClassType getClassType(IdentifierFactory identifierFactory, Type type) {
+        if (type instanceof PrimitiveType) {
+            type = identifierFactory.getBoxedType((PrimitiveType) type);
+        }
+        return identifierFactory.getClassType(type.toString());
     }
 
     @Override

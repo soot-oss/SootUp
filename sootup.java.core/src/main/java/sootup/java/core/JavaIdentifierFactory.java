@@ -237,6 +237,8 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Nonnull
   public JavaClassType getBoxedType(@Nonnull PrimitiveType primitiveType) {
     String name = primitiveType.getName();
+    if (primitiveType instanceof PrimitiveType.IntType)
+      name = "integer";
     StringBuilder boxedname = new StringBuilder(name);
     boxedname.setCharAt(0, Character.toUpperCase(boxedname.charAt(0)));
     return getClassType(boxedname.toString(), "java.lang");

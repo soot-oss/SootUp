@@ -10,42 +10,46 @@ public class InvokeArgumentValidator extends java.lang.Object
         return;
     }
 
-    public java.lang.String join(int,java.lang.String)
-   {
+    public void join(java.lang.Number,java.lang.String)
+    {
        InvokeArgumentValidator l0;
-       int l1;
+       java.lang.Number l1;
        java.lang.String l2;
-       unknown $stack3;
 
 
        l0 := @this: InvokeArgumentValidator;
-       l1 := @parameter0: int;
+       l1 := @parameter0: java.lang.Number;
        l2 := @parameter1: java.lang.String;
-       $stack3 = dynamicinvoke "makeConcatWithConstants" <java.lang.String (int,java.lang.String)>(l1, l2) <java.lang.invoke.StringConcatFactory: java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])>("\u0001\u0001");
 
-       return $stack3;
-   }
+       return;
+    }
 
     public void invokeArgumentValidator_success()
     {
         InvokeArgumentValidator l0;
-        unknown l1;
-
 
         l0 := @this: InvokeArgumentValidator;
-        l1 = virtualinvoke l0.<InvokeArgumentValidator: java.lang.String join(int,java.lang.String)>(1, "hello world");
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>(1, "hello");
 
         return;
     }
 
-    public void invokeArgumentValidator_fail()
+    public void testArgumentNumber_fail()
     {
         InvokeArgumentValidator l0;
-        unknown l1;
-
 
         l0 := @this: InvokeArgumentValidator;
-        l1 = virtualinvoke l0.<InvokeArgumentValidator: java.lang.String join(int,java.lang.String)>(1);
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>(1);
+
+        return;
+    }
+
+    public void testArgumentType_fail()
+    {
+        InvokeArgumentValidator l0;
+
+        l0 := @this: InvokeArgumentValidator;
+        virtualinvoke l0.<InvokeArgumentValidator: void join(java.lang.Number,java.lang.String)>("hello", 1);
 
         return;
     }
