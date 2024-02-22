@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
+import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
@@ -33,6 +36,7 @@ import sootup.java.core.views.JavaView;
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
+  Type objectType = new JavaClassType("Object", new JavaPackageName("java.lang"));
 
   @BeforeEach
   public void setup() {
@@ -169,204 +173,119 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testArrayMixedAssignment() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "arraysMixedAssignment", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    final Body body = getMiscBody("arraysMixedAssignment");
 
     // Tests that the augmented integer types (which are based on the value of integer constants)
     // don't change the type of `a`.
-    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
+    assertLocals(body, new Local("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)));
   }
 
   @Test
   public void testArrayAssignBeforeInit() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "arrayAssignBeforeInit", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    final Body body = getMiscBody("arrayAssignBeforeInit");
 
     // Tests that assignments to an array index before the array is initialized (in the order of
     // source code/bytecode), results in the correct type.
-    Assert.assertEquals(
-        ArrayType.createArrayType(new JavaClassType("String", new JavaPackageName("java.lang")), 1),
-        arrayLocal.getType());
+    assertLocals(
+        body,
+        new Local(
+            "l0",
+            ArrayType.createArrayType(
+                new JavaClassType("String", new JavaPackageName("java.lang")), 1)),
+        new Local("$stack1", PrimitiveType.getDouble()),
+        new Local("$stack2", PrimitiveType.getByte()));
   }
 
   @Test
   public void testNullArray() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "nullArray", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    final Body body = getMiscBody("nullArray");
 
     // Tests that assignments to an array index before the array is initialized (in the order of
     // source code/bytecode), results in the correct type.
-    Assert.assertEquals(
-        ArrayType.createArrayType(new JavaClassType("Object", new JavaPackageName("java.lang")), 1),
-        arrayLocal.getType());
+    assertLocals(body, new Local("l0", ArrayType.createArrayType(objectType, 1)));
   }
 
   @Test
   public void testObjectPrimitiveArray() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "objectPrimitiveArray", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    final Body body = getMiscBody("objectPrimitiveArray");
 
     // Tests that an array that gets both objects and primitives assigned to it,
     // gets the `TopType[]` type.
-    Assert.assertEquals(ArrayType.createArrayType(TopType.getInstance(), 1), arrayLocal.getType());
+    assertLocals(body, new Local("l0", ArrayType.createArrayType(TopType.getInstance(), 1)));
   }
 
   @Test
   public void testUseNullArray() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "useNullArray", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local objectLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+    final Body body = getMiscBody("useNullArray");
 
     // The type of `arrayLocal` should actually be `Object[]` to be more precise,
     // but that would require taking non-assignments into account for the typing.
     // The original paper doesn't do that, and it would only make a difference for this edge case.
-    Assert.assertEquals(
-        new JavaClassType("Object", new JavaPackageName("java.lang")), arrayLocal.getType());
-    Assert.assertEquals(
-        new JavaClassType("Object", new JavaPackageName("java.lang")), objectLocal.getType());
+    assertLocals(
+        body,
+        new Local("l0", objectType),
+        new Local("#l0", ArrayType.createArrayType(objectType, 1)),
+        new Local("l1", objectType));
   }
 
   @Test
   public void testUsePrimitiveNullArray() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "usePrimitiveNullArray", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local objectLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+    final Body body = getMiscBody("usePrimitiveNullArray");
 
     // Using a `null` array of primitive type, should not accidentally promote that array to an
     // array of references.
-    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getInt(), 1), arrayLocal.getType());
-    Assert.assertEquals(PrimitiveType.getInt(), objectLocal.getType());
+    assertLocals(
+        body,
+        new Local("l0", ArrayType.createArrayType(PrimitiveType.getInt(), 1)),
+        new Local("l1", PrimitiveType.getInt()));
   }
 
   @Test
   public void testMixedPrimitiveArray() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
+    final Body body = getMiscBody("mixedPrimitiveArray");
 
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature("Misc", "mixedPrimitiveArray", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local numericLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local arrayLocal =
-        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
-
-    Assert.assertEquals(PrimitiveType.getInt(), numericLocal.getType());
-    Assert.assertEquals(
-        ArrayType.createArrayType(PrimitiveType.getByte(), 1), arrayLocal.getType());
+    assertLocals(
+        body,
+        new Local("l0", PrimitiveType.getInt()),
+        new Local("l1", ArrayType.createArrayType(PrimitiveType.getByte(), 1)));
   }
 
   @Test
   public void testDependentAugmentedInteger1Promotion() {
-    final JavaView view =
-        new JavaView(
-            new JavaClassPathAnalysisInputLocation(
-                baseDir + "Misc/",
-                SourceType.Library,
-                Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                "Misc", "dependentAugmentedInteger1Promotion", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local a =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local b =
-        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
-    Local bTemp =
-        body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
+    final Body body = getMiscBody("dependentAugmentedInteger1Promotion");
 
     // `b` only every gets assigned `0` and `1`, which means it could be a `boolean`.
     // But because it gets assigned to `a` which has to be `int`, `b` needs to be an `int` too.
-    Assert.assertEquals(PrimitiveType.getInt(), a.getType());
-    Assert.assertEquals(TopType.getInstance(), b.getType());
-    Assert.assertEquals(PrimitiveType.getBoolean(), bTemp.getType());
+    assertLocals(
+        body,
+        new Local("l0", PrimitiveType.getInt()),
+        new Local("l1", TopType.getInstance()),
+        new Local("#l0", PrimitiveType.getBoolean()));
   }
 
   @Test
   public void testImpossibleTyping() {
+    final Body body = getMiscBody("impossibleTyping");
+
+    assertLocals(
+        body, new Local("l0", TopType.getInstance()), new Local("#l0", PrimitiveType.getBoolean()));
+  }
+
+  @Test
+  public void testArrayTest() {
+    final Body body = getMiscBody("arrayTest");
+
+    assertLocals(
+        body,
+        new Local("l0", objectType),
+        new Local("#l0", ArrayType.createArrayType(PrimitiveType.getDouble(), 1)));
+  }
+
+  private void assertLocals(Body body, Local... locals) {
+    assertEquals(new HashSet<>(Arrays.asList(locals)), body.getLocals());
+  }
+
+  private Body getMiscBody(String name) {
     final JavaView view =
         new JavaView(
             new JavaClassPathAnalysisInputLocation(
@@ -376,38 +295,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     final MethodSignature methodSignature =
         view.getIdentifierFactory()
-            .getMethodSignature("Misc", "impossibleTyping", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local a =
-        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local aTemp =
-        body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
-
-    Assert.assertEquals(TopType.getInstance(), a.getType());
-    Assert.assertEquals(PrimitiveType.getBoolean(), aTemp.getType());
-  }
-
-  @Test
-  public void testArrayTest() {
-    final JavaView view =
-            new JavaView(
-                    new JavaClassPathAnalysisInputLocation(
-                            baseDir + "Misc/",
-                            SourceType.Library,
-                            Collections.singletonList(new TypeAssigner())));
-
-    final MethodSignature methodSignature =
-            view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "arrayTest", "void", Collections.emptyList());
-    final Body body = view.getMethod(methodSignature).get().getBody();
-
-    Local a =
-            body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local aTemp =
-            body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
-
-    Assert.assertEquals(new JavaClassType("Object", new JavaPackageName("java.lang")), a.getType());
-    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getDouble(), 1), aTemp.getType());
+            .getMethodSignature("Misc", name, "void", Collections.emptyList());
+    return view.getMethod(methodSignature).get().getBody();
   }
 }
