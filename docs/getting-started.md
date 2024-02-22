@@ -304,41 +304,62 @@ Example code to help getting start with SootUp
 
 - We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
 
-     a) 'BasicSetupExample'
+  a) 'BasicSetupExample'
             
-          !!! example "First segment of BasicSetUp Program"
-           - package sootup.examples; - defines the package name for the Java class.
-           - import statement - defines various classes and interfaces from different packages that the program uses.
-           - public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
-           - Then we have created a main method which is the entry point of the program.
-          ```java
-           Path pathToBinary = Paths.get("src/test/resources/Basicsetup/binary");
-           AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
-           ```
+  !!! example "First segment of BasicSetUp Program"
+   - package sootup.examples; - defines the package name for the Java class.
+   - import statement - defines various classes and interfaces from different packages that the program uses.
+   - public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
+   - Then we have created a main method which is the entry point of the program.
+    
 
-           - This part of code is inside the main method. Here the Path pathToBinary object pointing to a directory that contains the binary files ie class files                to be analysed and Paths.get is a static method that conversts string path to a 'Path' object.
-           - The second line of code ie the AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
+   ```java
+   Path pathToBinary = Paths.get("src/test/resources/Basicsetup/binary");
+   AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
+   ```
 
-           ```java
-           View view = new JavaView(inputLocation);
-           ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
-           MethodSignature methodSignature =
+  - This part of code is inside the main method. Here the Path pathToBinary object pointing to a directory that contains the binary files ie class files                to be analysed and Paths.get is a static method that conversts string path to a 'Path' object.
+  - The second line of code ie the AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
+
+  ```java
+  View view = new JavaView(inputLocation);
+  ClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+  MethodSignature methodSignature =
            view.getIdentifierFactory()
             .getMethodSignature(
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
-           ```
-          - In this part of code, first View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific implementation of View tailed for Java projects.
-           - The ClassType object is created for the class name 'HelloWorld'. This object represents the type of class to be analyzed.
-           - A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter types (a single parameter of type String[]).
+   ```
 
+   - In this part of code, first View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific 
+     implementation of View tailed for Java projects.
+   - The ClassType object is created for the class name 'HelloWorld'. This object represents the type of class to be analyzed.
+   - A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter 
+       types (a single parameter of type String[]).
 
+```java
+if (!view.getClass(classType).isPresent()) {
+      System.out.println("Class not found!");
+      return;
+    }
 
-           10) The if statment checks for the presences of the class 'HelloWorld'. If not it prints "Class not ffound!" and exits the program.
-           11) Then it retrieves the SootClass object representing the HelloWorld class, assuming it is present.
-           12) view.getMethod(methodSignature); - Attempts to retrieve the specified method from the project.
-           13) The if statment after this, checks if the main method is present in the HelloWorld class. If not, it prints "Method not found!" and exits.
-           14) Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode used by Soot for analysis and transformation.
-           15) Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
+SootClass sootClass = view.getClass(classType).get();
+
+view.getMethod(methodSignature);
+
+if (!sootClass.getMethod(methodSignature.getSubSignature()).isPresent()) {
+      System.out.println("Method not found!");
+      return;  // Exit if the method is not found
+    }
+SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
+```
+
+   - The if statment checks for the presences of the class 'HelloWorld'. If not it prints "Class not ffound!" and exits the program.
+   - Then it retrieves the SootClass object representing the HelloWorld class, assuming it is present.
+   - view.getMethod(methodSignature); - Attempts to retrieve the specified method from the project.
+   - The if statment after this, checks if the main method is present in the HelloWorld class. If not, it prints "Method not found!" and exits.
+   - Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode 
+     used by Soot for analysis and transformation.
+   - Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
           
 
    b) BodyInterceptor 
