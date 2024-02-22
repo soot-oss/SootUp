@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
+import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -40,6 +41,7 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 public class DexBody {
@@ -503,6 +505,14 @@ public class DexBody {
             });
   }
 
+  public void insertBefore(Stmt tobeInserted, Stmt beforeThisStmt) {
+    int specificStmtIndex = stmtList.indexOf(beforeThisStmt);
+    if (specificStmtIndex > 0) {
+      // If the specific statement is found in the list
+      stmtList.add(specificStmtIndex - 1, tobeInserted);
+    }
+  }
+
   private void addTraps() {
     Set<String> exceptionTypeList = new HashSet<>();
     for (TryBlock<? extends ExceptionHandler> tryItem : tries) {
@@ -553,6 +563,14 @@ public class DexBody {
           } else {
             ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
+//          Local local = new LocalGenerator(locals).generateLocal(type);
+//          locals.add(local);
+//          Stmt caughtStmt =
+//                  Jimple.newIdentityStmt(
+//                          local,
+//                          JavaJimple.getInstance().newCaughtExceptionRef(),
+//                          StmtPositionInfo.createNoStmtPositionInfo());
+//          insertBefore(caughtStmt, instruction.getStmt());
           Trap trap = Jimple.newTrap(type, beginStmt, endStmt, instruction.getStmt());
           traps.add(trap);
         }
