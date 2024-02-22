@@ -336,22 +336,22 @@ Example code to help getting start with SootUp
    - A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter 
        types (a single parameter of type String[]).
 
-```java
-if (!view.getClass(classType).isPresent()) {
+    ```java
+    if (!view.getClass(classType).isPresent()) {
       System.out.println("Class not found!");
       return;
     }
 
-SootClass sootClass = view.getClass(classType).get();
+    SootClass sootClass = view.getClass(classType).get();
 
-view.getMethod(methodSignature);
+    view.getMethod(methodSignature);
 
-if (!sootClass.getMethod(methodSignature.getSubSignature()).isPresent()) {
+    if (!sootClass.getMethod(methodSignature.getSubSignature()).isPresent()) {
       System.out.println("Method not found!");
       return;  // Exit if the method is not found
     }
-SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
-```
+    SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
+    ```
 
    - The if statment checks for the presences of the class 'HelloWorld'. If not it prints "Class not ffound!" and exits the program.
    - Then it retrieves the SootClass object representing the HelloWorld class, assuming it is present.
@@ -362,34 +362,118 @@ SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).g
    - Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
           
 
-   b) BodyInterceptor 
-           1) package sootup.examples; - defines the package name for the Java class.
-           2) import statement - defines various classes and interfaces from different packages that the program uses.
-           3) public class BodyInterceptor - declares a public class named "BodyInterceptor".
-           4) Then we have created a main method in which is the entry point for the code.
-           5) Then we have created an AnalysisInputLocation pointing to a directory with class files to be loaded. It specifies that the DeadAssignmentEliminator interceptor should be applied to these classes.
-           6) Then created a View that initializes a JavaView with the specified inputLocation, allowing interaction with the classes for analysis.
-           7) Then have created a ClassType and MethodSignature which is used for analysis. The signature contains method name, return type and parameters.
-           8)  Then we check for the existence of the class and method in the given view.
-           9) If they exist, a SootClass and SootMethod objects are used to retrieve the same.
-           10) Then prints the body of the SootMethod object.
-           11) Then we check if the interceptor worked.  ie here we check if the DeadAssignmentEliminator interceptor has successfully removed a specific assignment (l1 = 3) from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                     present.
-           12) Then it prints the result of the interceptor check.
+   b) 'BodyInterceptor'
 
-   
-   c) CallGraphExample 
-           1) package sootup.examples; - defines the package name for the Java class.
-           2) import statement - defines various classes and interfaces from different packages that the program uses.
-           3) public class CallgraphExample  - declares a public class named "CallGraphExample".
-           4) Then we have created a main method in which is the entry point for the code.
-           5) List<AnalysisInputLocation> inputLocations creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis.
-           6) Then we have provided towo inputLocations.add() - one for the project's class file directory and another for Java's runtime library (rt.jar).
-           7) Then we have created a JavaView which is used for analysing the Java program.
-           8) Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
-           9) ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
-           10) Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
-           11) Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
-           12) Prints information about calls from the entry method in the call graph.
+   !!! example "First segment of BodyInterceptor Program"
+   - package sootup.examples; - defines the package name for the Java class.
+   - import statement - defines various classes and interfaces from different packages that the program uses.
+   - public class BodyInterceptor - declares a public class named 'BodyInterceptor' which is the main class for this program.
+   - Then we have created a main method which is the entry point of the program.
+  
+    ```java
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/BodyInterceptor/binary",
+            null,
+            Collections.singletonList(new DeadAssignmentEliminator()));
+    JavaView view = new JavaView(inputLocation);
+    ClassType classType = view.getIdentifierFactory().getClassType("File");
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(classType, "someMethod", "void", Collections.emptyList());
+    ```   
+
+   - Then we have created an AnalysisInputLocation pointing to a directory with class files to be loaded. It specifies that the DeadAssignmentEliminator                interceptor should be applied to these classes.
+   - Then created a View that initializes a JavaView with the specified inputLocation, allowing interaction with the classes for analysis.
+   - Then have created a ClassType and MethodSignature which is used for analysis. The signature contains method name, return type and parameters.
+ 
+    ```java
+    if (!view.getClass(classType).isPresent()) {
+      System.out.println("Class not found.");
+      return;
+    }
+    SootClass sootClass = view.getClass(classType).get();
+    if (!view.getMethod(methodSignature).isPresent()) {
+      System.out.println("Method not found.");
+      return;
+    }
+    SootMethod method = view.getMethod(methodSignature).get();
+    System.out.println(method.getBody());
+   ``` 
+
+    - Then we check for the existence of the class and method in the given view.
+    - If they exist, a SootClass and SootMethod objects are used to retrieve the same.
+    - Then prints the body of the SootMethod object.
+
+    ```java
+    boolean interceptorWorked =
+        method.getBody().getStmts().stream()
+            .noneMatch(
+                stmt ->
+                    stmt instanceof JAssignStmt
+                        && ((JAssignStmt) stmt).getRightOp().equivTo(IntConstant.getInstance(3)));
+
+    if (interceptorWorked) {
+      System.out.println("Interceptor worked as expected.");
+    } else {
+      System.out.println("Interceptor did not work as expected.");
+    }
+    ```
+    
+  - Then we check if the interceptor worked.  ie here we check if the DeadAssignmentEliminator interceptor has successfully removed a specific assignment (l1 = 3) 
+    from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                      present.
+  - Then it prints the result of the interceptor check.
+
+b) 'CallGraphExample'
+
+   !!! example "First segment of CallGraphExample Program"
+   - package sootup.examples; - defines the package name for the Java class.
+   - import statement - defines various classes and interfaces from different packages that the program uses.
+   - public class CallGraphExample - declares a public class named 'CallGraphExample' which is the main class for this program.
+   - Then we have created a main method which is the entry point of the program.
+  
+   ```java
+   List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+   inputLocations.add(
+            new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
+   inputLocations.add(
+            new JavaClassPathAnalysisInputLocation(
+                    System.getProperty("java.home") + "/lib/rt.jar")); // add rt.jar
+
+   JavaView view = new JavaView(inputLocations);
+   ``` 
+
+  - List<AnalysisInputLocation> inputLocations creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for 
+     analysis.
+  - Then we have provided towo inputLocations.add() - one for the project's class file directory and another for Java's runtime library (rt.jar).
+  - Then we have created a JavaView which is used for analysing the Java program.
+
+    ```java
+    ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
+    ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
+    MethodSignature entryMethodSignature =
+            JavaIdentifierFactory.getInstance()
+                    .getMethodSignature(
+                            classTypeB,
+                            JavaIdentifierFactory.getInstance()
+                                    .getMethodSubSignature(
+                                            "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));
+    ``` 
+    
+    - Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
+    - ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
+
+   ```java
+   final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+   System.out.println(typeHierarchy.subclassesOf(classTypeA));
+   CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
+   CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+   cg.callsFrom(entryMethodSignature).forEach(System.out::println);
+   ```
+    
+- Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
+- Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
+- Prints information about calls from the entry method in the call graph.
 
    d) ClassHierarchyExample
            1) package sootup.examples; - defines the package name for the Java class.
