@@ -21,13 +21,13 @@ class de.upb.sootup.concrete.inheritance.Inheritance$X extends de.upb.sootup.con
     void print()
     {
         de.upb.sootup.concrete.inheritance.Inheritance$X r0;
-        java.io.PrintStream $r1;
+        java.io.PrintStream r1;
 
         r0 := @this: de.upb.sootup.concrete.inheritance.Inheritance$X;
 
-        $r1 = <java.lang.System: java.io.PrintStream out>;
+        r1 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("X");
+        virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>("X");
 
         return;
     }

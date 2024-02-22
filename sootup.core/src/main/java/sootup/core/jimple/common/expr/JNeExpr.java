@@ -25,10 +25,9 @@ package sootup.core.jimple.common.expr;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.visitor.ExprVisitor;
-import sootup.core.util.Copyable;
 
 /** The opposite of {@link JEqExpr} */
-public final class JNeExpr extends AbstractConditionExpr implements Copyable {
+public final class JNeExpr extends AbstractConditionExpr {
 
   public JNeExpr(@Nonnull Immediate op1, @Nonnull Immediate op2) {
     super(op1, op2);

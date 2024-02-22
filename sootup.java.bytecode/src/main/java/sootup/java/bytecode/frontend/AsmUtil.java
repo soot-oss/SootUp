@@ -67,13 +67,14 @@ public final class AsmUtil {
    *
    * @param classSource The source.
    * @param classNode The node to initialize
+   * @return the actual class signature found in the compilation unit
    */
-  protected static void initAsmClassSource(
+  protected static String initAsmClassSource(
       @Nonnull Path classSource, @Nonnull ClassVisitor classNode) throws IOException {
     try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
       ClassReader clsr = new ClassReader(sourceFileInputStream);
-
       clsr.accept(classNode, ClassReader.SKIP_FRAMES);
+      return clsr.getClassName();
     }
   }
 

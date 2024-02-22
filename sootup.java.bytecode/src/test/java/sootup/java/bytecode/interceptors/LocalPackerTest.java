@@ -26,6 +26,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.LocalPacker;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -33,7 +34,7 @@ public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   JavaClassType classType = factory.getClassType("Test");
   JavaClassType intType = factory.getClassType("int");
@@ -149,7 +150,7 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body.BodyBuilder builder = createBodyBuilder();
 
-    new LocalPacker().interceptBody(builder, null);
+    new LocalPacker().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
 
     Body expectedBody = createExpectedBody();
@@ -223,7 +224,7 @@ public class LocalPackerTest {
     System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder, null);
+    localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body body = builder.build();
     Body expectedBody = createExpectedTrapBody().build();

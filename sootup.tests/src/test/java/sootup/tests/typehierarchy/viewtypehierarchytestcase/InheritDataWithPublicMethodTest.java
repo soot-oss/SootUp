@@ -29,7 +29,7 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyTestBase {
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
-    SootClass<?> sootClass =
+    SootClass sootClass =
         customTestWatcher
             .getView()
             .getClass(
@@ -52,7 +52,7 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyTestBase {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InheritDataWithPublicMethod",
-                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "i0 = specialinvoke r0.<SuperClass: int getnum()>()",
                 "return")
             .collect(Collectors.toList());
 

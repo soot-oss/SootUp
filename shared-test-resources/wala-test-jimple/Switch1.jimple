@@ -15,19 +15,19 @@ public class Switch1 extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        Switch1 $r2;
+        Switch1 r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r2 = new Switch1;
+        r2 = new Switch1;
 
-        specialinvoke $r2.<Switch1: void <init>()>();
+        specialinvoke r2.<Switch1: void <init>()>();
 
-        virtualinvoke $r2.<Switch1: void testOne(java.lang.String[])>(r0);
+        virtualinvoke r2.<Switch1: void testOne(java.lang.String[])>(r0);
 
-        virtualinvoke $r2.<Switch1: char testTwo(java.lang.String[])>(r0);
+        virtualinvoke r2.<Switch1: char testTwo(java.lang.String[])>(r0);
 
-        virtualinvoke $r2.<Switch1: void testThree(java.lang.String[])>(r0);
+        virtualinvoke r2.<Switch1: void testThree(java.lang.String[])>(r0);
 
         return;
     }
@@ -36,20 +36,20 @@ public class Switch1 extends java.lang.Object
     {
         Switch1 r0;
         java.lang.String[] r1;
-        java.lang.String $r2, $r3, $r4, $r5, $r6;
-        int $i0, $i1, $i2, $i3, $i4;
+        java.lang.String r2, r3, r4, r5, r6;
+        int i0, i1, i2, i3, i4;
         char c5;
-        java.io.PrintStream $r7;
+        java.io.PrintStream r7;
 
         r0 := @this: Switch1;
 
         r1 := @parameter0: java.lang.String[];
 
-        $r2 = r1[0];
+        r2 = r1[0];
 
-        $i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r2);
+        i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r2);
 
-        tableswitch($i0)
+        tableswitch(i0)
         {
             case 0: goto label1;
             case 1: goto label2;
@@ -59,38 +59,38 @@ public class Switch1 extends java.lang.Object
         };
 
      label1:
-        $r3 = r1[1];
+        r3 = r1[1];
 
-        $i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r3);
+        i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r3);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i1, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i1, 10);
 
         goto label6;
 
      label2:
-        $r6 = r1[2];
+        r6 = r1[2];
 
-        $i4 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r6);
+        i4 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r6);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i4, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i4, 10);
 
         goto label6;
 
      label3:
-        $r5 = r1[3];
+        r5 = r1[3];
 
-        $i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r5);
+        i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r5);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i3, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i3, 10);
 
         goto label6;
 
      label4:
-        $r4 = r1[4];
+        r4 = r1[4];
 
-        $i2 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r4);
+        i2 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r4);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i2, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i2, 10);
 
         goto label6;
 
@@ -98,9 +98,9 @@ public class Switch1 extends java.lang.Object
         c5 = 63;
 
      label6:
-        $r7 = <java.lang.System: java.io.PrintStream out>;
+        r7 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r7.<java.io.PrintStream: void println(char)>(c5);
+        virtualinvoke r7.<java.io.PrintStream: void println(char)>(c5);
 
         return;
     }
@@ -109,19 +109,19 @@ public class Switch1 extends java.lang.Object
     {
         Switch1 r0;
         java.lang.String[] r1;
-        java.lang.String $r2, $r3, $r4, $r5, $r6;
-        int $i0, $i1, $i3, $i5, $i7;
-        char $c2, $c4, $c6, $c8;
+        java.lang.String r2, r3, r4, r5, r6;
+        int i0, i1, i3, i5, i7;
+        char c2, c4, c6, c8;
 
         r0 := @this: Switch1;
 
         r1 := @parameter0: java.lang.String[];
 
-        $r2 = r1[0];
+        r2 = r1[0];
 
-        $i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r2);
+        i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r2);
 
-        tableswitch($i0)
+        tableswitch(i0)
         {
             case 0: goto label1;
             case 1: goto label2;
@@ -131,40 +131,40 @@ public class Switch1 extends java.lang.Object
         };
 
      label1:
-        $r3 = r1[1];
+        r3 = r1[1];
 
-        $i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r3);
+        i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r3);
 
-        $c2 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i1, 10);
+        c2 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i1, 10);
 
-        return $c2;
+        return c2;
 
      label2:
-        $r6 = r1[2];
+        r6 = r1[2];
 
-        $i7 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r6);
+        i7 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r6);
 
-        $c8 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i7, 10);
+        c8 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i7, 10);
 
-        return $c8;
+        return c8;
 
      label3:
-        $r5 = r1[3];
+        r5 = r1[3];
 
-        $i5 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r5);
+        i5 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r5);
 
-        $c6 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i5, 10);
+        c6 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i5, 10);
 
-        return $c6;
+        return c6;
 
      label4:
-        $r4 = r1[4];
+        r4 = r1[4];
 
-        $i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r4);
+        i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r4);
 
-        $c4 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i3, 10);
+        c4 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i3, 10);
 
-        return $c4;
+        return c4;
 
      label5:
         return 63;
@@ -174,10 +174,10 @@ public class Switch1 extends java.lang.Object
     {
         Switch1 r0;
         java.lang.String[] r1;
-        java.lang.String $r2, $r3, $r4, $r5, $r6;
-        int $i0, $i1, $i2, $i3, $i4;
+        java.lang.String r2, r3, r4, r5, r6;
+        int i0, i1, i2, i3, i4;
         char c5;
-        java.io.PrintStream $r7;
+        java.io.PrintStream r7;
 
         r0 := @this: Switch1;
 
@@ -185,11 +185,11 @@ public class Switch1 extends java.lang.Object
 
         c5 = 63;
 
-        $r2 = r1[0];
+        r2 = r1[0];
 
-        $i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r2);
+        i0 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r2);
 
-        tableswitch($i0)
+        tableswitch(i0)
         {
             case 0: goto label1;
             case 1: goto label2;
@@ -199,43 +199,43 @@ public class Switch1 extends java.lang.Object
         };
 
      label1:
-        $r3 = r1[1];
+        r3 = r1[1];
 
-        $i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r3);
+        i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r3);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i1, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i1, 10);
 
         goto label5;
 
      label2:
-        $r6 = r1[2];
+        r6 = r1[2];
 
-        $i4 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r6);
+        i4 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r6);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i4, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i4, 10);
 
         goto label5;
 
      label3:
-        $r5 = r1[3];
+        r5 = r1[3];
 
-        $i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r5);
+        i3 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r5);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i3, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i3, 10);
 
         goto label5;
 
      label4:
-        $r4 = r1[4];
+        r4 = r1[4];
 
-        $i2 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r4);
+        i2 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>(r4);
 
-        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>($i2, 10);
+        c5 = staticinvoke <java.lang.Character: char forDigit(int,int)>(i2, 10);
 
      label5:
-        $r7 = <java.lang.System: java.io.PrintStream out>;
+        r7 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r7.<java.io.PrintStream: void println(char)>(c5);
+        virtualinvoke r7.<java.io.PrintStream: void println(char)>(c5);
 
         return;
     }

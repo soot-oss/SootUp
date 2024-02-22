@@ -15,22 +15,22 @@ public class InheritedField extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        InheritedField $r3;
-        B $r4;
+        InheritedField r3;
+        B r4;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r3 = new InheritedField;
+        r3 = new InheritedField;
 
-        specialinvoke $r3.<InheritedField: void <init>()>();
+        specialinvoke r3.<InheritedField: void <init>()>();
 
-        $r4 = new B;
+        r4 = new B;
 
-        specialinvoke $r4.<B: void <init>()>();
+        specialinvoke r4.<B: void <init>()>();
 
-        virtualinvoke $r4.<B: void foo()>();
+        virtualinvoke r4.<B: void foo()>();
 
-        virtualinvoke $r4.<B: void bar()>();
+        virtualinvoke r4.<B: void bar()>();
 
         return;
     }

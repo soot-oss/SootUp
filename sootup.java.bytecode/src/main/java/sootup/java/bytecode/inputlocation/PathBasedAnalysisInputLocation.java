@@ -3,24 +3,21 @@ package sootup.java.bytecode.inputlocation;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -32,6 +29,7 @@ import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
+import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.types.JavaClassType;
 
@@ -64,21 +62,33 @@ import sootup.java.core.types.JavaClassType;
  * @author Manuel Benz created on 22.05.18
  * @author Kaustubh Kelkar updated on 30.07.2020
  */
-public abstract class PathBasedAnalysisInputLocation
-    implements AnalysisInputLocation<JavaSootClass> {
-  private final SourceType sourceType;
-  private final List<BodyInterceptor> bodyInterceptors;
-  protected Path path;
+public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
+  @Nonnull protected Path path;
+  @Nonnull protected Collection<Path> ignoredPaths;
+  @Nonnull protected final SourceType sourceType;
+  @Nonnull protected final List<BodyInterceptor> bodyInterceptors;
 
-  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
+  protected PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
     this(path, srcType, Collections.emptyList());
   }
 
   protected PathBasedAnalysisInputLocation(
       @Nonnull Path path,
-      @Nullable SourceType srcType,
+      @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this(path, srcType, bodyInterceptors, Collections.emptyList());
+  }
+
+  protected PathBasedAnalysisInputLocation(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull Collection<Path> ignoredPaths) {
     this.path = path;
+    this.ignoredPaths =
+        ignoredPaths.stream()
+            .map(Path::toAbsolutePath)
+            .collect(Collectors.toCollection(HashSet::new));
     this.sourceType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
@@ -87,8 +97,8 @@ public abstract class PathBasedAnalysisInputLocation
     }
   }
 
-  @Nullable
   @Override
+  @Nonnull
   public SourceType getSourceType() {
     return sourceType;
   }
@@ -102,7 +112,7 @@ public abstract class PathBasedAnalysisInputLocation
   @Nonnull
   public static PathBasedAnalysisInputLocation create(
       @Nonnull Path path, @Nonnull SourceType sourceType) {
-    return PathBasedAnalysisInputLocation.create(path, sourceType, Collections.emptyList());
+    return create(path, sourceType, Collections.emptyList());
   }
 
   @Nonnull
@@ -110,76 +120,65 @@ public abstract class PathBasedAnalysisInputLocation
       @Nonnull Path path,
       @Nonnull SourceType srcType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
-    final PathBasedAnalysisInputLocation inputLocation;
-    if (Files.isDirectory(path)) {
-      inputLocation = new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
-    } else if (PathUtils.isArchive(path)) {
-      if (PathUtils.hasExtension(path, FileType.JAR)) {
-        inputLocation = new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
-      } else if (PathUtils.hasExtension(path, FileType.WAR)) {
-        try {
-          inputLocation = new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      } else {
-        throw new IllegalArgumentException(
-            "Path '"
-                + path.toAbsolutePath()
-                + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
-      }
-    } else if (PathUtils.hasExtension(path, FileType.CLASS)) {
-      inputLocation = new ClassFileBasedAnalysisInputLocation(path, srcType, bodyInterceptors);
-    } else {
-      throw new IllegalArgumentException(
-          "Path '"
-              + path.toAbsolutePath()
-              + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
-    }
-    return inputLocation;
-  }
-
-  private static boolean isMultiReleaseJar(Path path) {
-    try {
-      FileInputStream inputStream = new FileInputStream(path.toFile());
-      JarInputStream jarStream = new JarInputStream(inputStream);
-      Manifest mf = jarStream.getManifest();
-
-      if (mf == null) {
-        return false;
-      }
-
-      Attributes attributes = mf.getMainAttributes();
-
-      String value = attributes.getValue("Multi-Release");
-
-      return Boolean.parseBoolean(value);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return false;
+    return create(path, srcType, bodyInterceptors, Collections.emptyList());
   }
 
   @Nonnull
-  Collection<? extends AbstractClassSource<JavaSootClass>> walkDirectory(
+  public static PathBasedAnalysisInputLocation create(
+      @Nonnull Path path,
+      @Nonnull SourceType srcType,
+      @Nonnull List<BodyInterceptor> bodyInterceptors,
+      @Nonnull Collection<Path> ignoredPaths) {
+
+    if (ignoredPaths.stream()
+        .anyMatch(ignoPath -> path.toString().startsWith(ignoPath.toString()))) {
+      throw new IllegalArgumentException(
+          "The Path for the AnalysisInputLocation is in the ignored paths.");
+    }
+
+    if (Files.isDirectory(path)) {
+      return new DirectoryBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+    } else if (PathUtils.isArchive(path)) {
+      if (PathUtils.hasExtension(path, FileType.JAR)) {
+        return new ArchiveBasedAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+      } else if (PathUtils.hasExtension(path, FileType.WAR)) {
+        try {
+          return new WarArchiveAnalysisInputLocation(path, srcType, bodyInterceptors, ignoredPaths);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+    throw new IllegalArgumentException(
+        "Path '"
+            + path.toAbsolutePath()
+            + "' has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, war etc.");
+  }
+
+  @Nonnull
+  Collection<JavaSootClassSource> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
-    try {
-      final FileType handledFileType = classProvider.getHandledFileType();
-      final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
-      return Files.walk(dirPath)
-          .filter(
+      @Nonnull ClassProvider classProvider) {
+
+    final FileType handledFileType = classProvider.getHandledFileType();
+    final String moduleInfoFilename = JavaModuleIdentifierFactory.MODULE_INFO_FILE + ".class";
+    try (final Stream<Path> walk = Files.walk(dirPath)) {
+      return walk.filter(
               filePath ->
                   PathUtils.hasExtension(filePath, handledFileType)
-                      && !filePath.toString().endsWith(moduleInfoFilename))
+                      && !filePath.toString().endsWith(moduleInfoFilename)
+                      && ignoredPaths.stream()
+                          .noneMatch(p -> filePath.toString().startsWith(p.toString())))
           .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
+              p -> {
+                final String fullyQualifiedName = fromPath(dirPath, p);
+
+                return StreamUtils.optionalToStream(
+                    classProvider.createClassSource(
+                        this, p, factory.getClassType(fullyQualifiedName)));
+              })
+          .map(src -> (JavaSootClassSource) src)
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -188,10 +187,17 @@ public abstract class PathBasedAnalysisInputLocation
   }
 
   @Nonnull
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getClassSourceInternal(
-      @Nonnull JavaClassType signature,
-      @Nonnull Path path,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+  protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+    return FilenameUtils.removeExtension(
+        packageNamePathAndClass
+            .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
+            .toString()
+            .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
+  }
+
+  @Nonnull
+  protected Optional<JavaSootClassSource> getClassSourceInternal(
+      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
 
     Path pathToClass =
         path.resolve(
@@ -199,109 +205,148 @@ public abstract class PathBasedAnalysisInputLocation
                 .getPath(
                     signature.getFullyQualifiedName().replace('.', '/')
                         + classProvider.getHandledFileType().getExtensionWithDot()));
-    if (!Files.exists(pathToClass)) {
-      return Optional.empty();
-    }
 
-    return classProvider.createClassSource(this, pathToClass, signature);
+    Optional<? extends SootClassSource> classSource =
+        classProvider.createClassSource(this, pathToClass, signature);
+
+    return classSource.map(src -> (JavaSootClassSource) src);
   }
 
-  protected Optional<? extends AbstractClassSource<JavaSootClass>> getSingleClass(
-      @Nonnull JavaClassType signature,
-      @Nonnull Path path,
-      @Nonnull ClassProvider<JavaSootClass> classProvider) {
+  protected Optional<JavaSootClassSource> getSingleClass(
+      @Nonnull JavaClassType signature, @Nonnull Path path, @Nonnull ClassProvider classProvider) {
 
     Path pathToClass = Paths.get(path.toString());
 
-    if (!Files.exists(pathToClass)) {
-      return Optional.empty();
-    }
+    Optional<? extends SootClassSource> classSource =
+        classProvider.createClassSource(this, pathToClass, signature);
 
-    return classProvider.createClassSource(this, pathToClass, signature);
+    return classSource.map(src -> (JavaSootClassSource) src);
   }
 
-  private static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+  public static class ClassFileBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
+
+    @Nonnull private final String omittedPackageName;
 
     public ClassFileBasedAnalysisInputLocation(
-        @Nonnull Path classFilePath, @Nonnull SourceType srcType) {
-      this(classFilePath, srcType, Collections.emptyList());
+        @Nonnull Path classFilePath,
+        @Nonnull String omittedPackageName,
+        @Nonnull SourceType srcType) {
+      this(
+          classFilePath,
+          omittedPackageName,
+          srcType,
+          BytecodeBodyInterceptors.Default.getBodyInterceptors());
     }
 
     public ClassFileBasedAnalysisInputLocation(
         @Nonnull Path classFilePath,
+        @Nonnull String omittedPackageName,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors) {
       super(classFilePath, srcType, bodyInterceptors);
+      this.omittedPackageName = omittedPackageName;
+
+      if (!Files.isRegularFile(classFilePath) || Files.isDirectory(classFilePath)) {
+        throw new IllegalArgumentException(
+            "Needs to point to a regular file - not to a directory.");
+      }
     }
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
       return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
 
     @Nonnull
     @Override
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
       AsmJavaClassProvider classProvider = new AsmJavaClassProvider(view);
       IdentifierFactory factory = view.getIdentifierFactory();
       Path dirPath = this.path.getParent();
-      Optional<SootClassSource<JavaSootClass>> classSource =
-          classProvider.createClassSource(this, path, factory.fromPath(dirPath, path));
+
+      final String fullyQualifiedName = fromPath(dirPath, path);
+
+      Optional<JavaSootClassSource> classSource =
+          classProvider
+              .createClassSource(this, path, factory.getClassType(fullyQualifiedName))
+              .map(src -> (JavaSootClassSource) src);
       return Collections.singletonList(classSource.get());
+    }
+
+    @Nonnull
+    protected String fromPath(@Nonnull Path baseDirPath, Path packageNamePathAndClass) {
+      String str =
+          FilenameUtils.removeExtension(
+              packageNamePathAndClass
+                  .subpath(baseDirPath.getNameCount(), packageNamePathAndClass.getNameCount())
+                  .toString()
+                  .replace(packageNamePathAndClass.getFileSystem().getSeparator(), "."));
+
+      return omittedPackageName.isEmpty() ? str : omittedPackageName + "." + str;
     }
   }
 
   private static class DirectoryBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
-      this(path, srcType, Collections.emptyList());
-    }
-
-    private DirectoryBasedAnalysisInputLocation(
+    protected DirectoryBasedAnalysisInputLocation(
         @Nonnull Path path,
         @Nonnull SourceType srcType,
         @Nonnull List<BodyInterceptor> bodyInterceptors) {
-      super(path, srcType, bodyInterceptors);
+      this(path, srcType, bodyInterceptors, Collections.emptyList());
+    }
+
+    protected DirectoryBasedAnalysisInputLocation(
+        @Nonnull Path path,
+        @Nonnull SourceType srcType,
+        @Nonnull List<BodyInterceptor> bodyInterceptors,
+        @Nonnull Collection<Path> ignoredPaths) {
+      super(path, srcType, bodyInterceptors, ignoredPaths);
     }
 
     @Override
     @Nonnull
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
+      // FIXME: 1) store the classprovider reference as a field; 2) and above too; and 3) move view
+      // which is only used in SootNode to be just there?
       return walkDirectory(path, view.getIdentifierFactory(), new AsmJavaClassProvider(view));
     }
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
       return getClassSourceInternal((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
   }
 
   private static final class WarArchiveAnalysisInputLocation
       extends DirectoryBasedAnalysisInputLocation {
-    public List<AnalysisInputLocation<JavaSootClass>> containedInputLocations = new ArrayList<>();
+    public List<AnalysisInputLocation> containedInputLocations = new ArrayList<>();
     public static int maxAllowedBytesToExtract =
         1024 * 1024 * 500; // limit of extracted file size to protect against archive bombs
 
     private WarArchiveAnalysisInputLocation(@Nonnull Path warPath, @Nonnull SourceType srcType)
         throws IOException {
-      this(warPath, srcType, Collections.emptyList());
+      this(
+          warPath,
+          srcType,
+          BytecodeBodyInterceptors.Default.getBodyInterceptors(),
+          Collections.emptyList());
     }
 
     private WarArchiveAnalysisInputLocation(
         @Nonnull Path warPath,
         @Nonnull SourceType srcType,
-        @Nonnull List<BodyInterceptor> bodyInterceptors)
+        @Nonnull List<BodyInterceptor> bodyInterceptors,
+        @Nonnull Collection<Path> ignoredPaths)
         throws IOException {
       super(
           Files.createTempDirectory("sootUp-war-" + warPath.hashCode()).toAbsolutePath(),
           srcType,
-          bodyInterceptors);
+          bodyInterceptors,
+          ignoredPaths);
 
       extractWarFile(warPath, path);
 
@@ -329,29 +374,35 @@ public abstract class PathBasedAnalysisInputLocation
       }
     }
 
-    @Override
-    @Nonnull
-    public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-        @Nonnull View<?> view) {
-
-      Set<AbstractClassSource<JavaSootClass>> foundClasses = new HashSet<>();
-
-      for (AnalysisInputLocation<JavaSootClass> inputLoc : containedInputLocations) {
-        foundClasses.addAll(inputLoc.getClassSources(view));
-      }
-      return foundClasses;
+    public WarArchiveAnalysisInputLocation(
+        Path path, SourceType srcType, List<BodyInterceptor> bodyInterceptors) throws IOException {
+      this(path, srcType, bodyInterceptors, Collections.emptyList());
     }
 
     @Override
     @Nonnull
-    public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-        @Nonnull ClassType type, @Nonnull View<?> view) {
+    public Collection<JavaSootClassSource> getClassSources(@Nonnull View view) {
 
-      for (AnalysisInputLocation<JavaSootClass> inputLocation : containedInputLocations) {
-        final Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+      Set<SootClassSource> foundClasses = new HashSet<>();
+
+      for (AnalysisInputLocation inputLoc : containedInputLocations) {
+        foundClasses.addAll(inputLoc.getClassSources(view));
+      }
+      return foundClasses.stream()
+          .map(src -> (JavaSootClassSource) src)
+          .collect(Collectors.toList());
+    }
+
+    @Override
+    @Nonnull
+    public Optional<JavaSootClassSource> getClassSource(
+        @Nonnull ClassType type, @Nonnull View view) {
+
+      for (AnalysisInputLocation inputLocation : containedInputLocations) {
+        final Optional<? extends SootClassSource> classSource =
             inputLocation.getClassSource(type, view);
         if (classSource.isPresent()) {
-          return classSource;
+          return classSource.map(src -> (JavaSootClassSource) src);
         }
       }
 
@@ -366,7 +417,7 @@ public abstract class PathBasedAnalysisInputLocation
      *
      * @param warFilePath The path to war file to be extracted
      */
-    protected void extractWarFile(Path warFilePath, final Path destDirectory) {
+    void extractWarFile(Path warFilePath, final Path destDirectory) {
       int extractedSize = 0;
       try {
         File dest = destDirectory.toFile();
@@ -378,8 +429,7 @@ public abstract class PathBasedAnalysisInputLocation
           dest.deleteOnExit();
         }
 
-        ZipInputStream zis =
-            new ZipInputStream(Files.newInputStream(Paths.get(warFilePath.toString())));
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(warFilePath));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
           Path filepath = destDirectory.resolve(zipEntry.getName());

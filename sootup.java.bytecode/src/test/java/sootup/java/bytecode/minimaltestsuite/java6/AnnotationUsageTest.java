@@ -3,6 +3,7 @@ package sootup.java.bytecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.model.Body;
@@ -25,6 +27,7 @@ import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
+@Category(Java8Test.class)
 public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
   // we can only read: RetentionPolicy.RUNTIME annotations
@@ -370,6 +373,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         super(annotation, Collections.emptyMap());
       }
 
+      @Nonnull
       @Override
       public Map<String, Object> getValuesWithDefaults() {
         Map<String, Object> map = new HashMap<>();

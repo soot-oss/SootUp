@@ -22,27 +22,20 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import sootup.core.IdentifierFactory;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.cache.ClassCache;
 import sootup.core.cache.FullCache;
 import sootup.core.cache.provider.ClassCacheProvider;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.inputlocation.DefaultSourceTypeSpecifier;
+import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.AbstractView;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaAnnotationSootClass;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.language.JavaLanguage;
+import sootup.java.core.*;
 import sootup.java.core.types.AnnotationType;
 
 /**
@@ -52,99 +45,130 @@ import sootup.java.core.types.AnnotationType;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView extends AbstractView<JavaSootClass> {
+public class JavaView extends AbstractView {
+  @Nonnull protected final JavaIdentifierFactory identifierFactory;
 
-  @Nonnull protected final List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations;
-  @Nonnull protected final ClassCache<JavaSootClass> cache;
-  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
+  @Nonnull protected final List<AnalysisInputLocation> inputLocations;
+  @Nonnull protected final ClassCache cache;
 
   protected volatile boolean isFullyResolved = false;
 
-  public JavaView(@Nonnull AnalysisInputLocation<? extends JavaSootClass> inputLocation) {
+  public JavaView(@Nonnull AnalysisInputLocation inputLocation) {
     this(Collections.singletonList(inputLocation));
   }
 
-  public JavaView(@Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations) {
-    this(inputLocations, new FullCacheProvider<>());
-  }
-
-  /**
-   * Creates a new instance of the {@link JavaView} class.
-   *
-   * <p>{@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
-   * options.
-   */
-  public JavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider) {
-    this(inputLocations, cacheProvider, DefaultSourceTypeSpecifier.getInstance());
+  public JavaView(@Nonnull List<AnalysisInputLocation> inputLocations) {
+    this(inputLocations, new FullCacheProvider());
   }
 
   public JavaView(
-      @Nonnull List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations,
-      @Nonnull ClassCacheProvider<JavaSootClass> cacheProvider,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider) {
+    this(inputLocations, cacheProvider, JavaIdentifierFactory.getInstance());
+  }
+
+  protected JavaView(
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull ClassCacheProvider cacheProvider,
+      @Nonnull JavaIdentifierFactory idf) {
     this.inputLocations = inputLocations;
     this.cache = cacheProvider.createCache();
-    this.sourceTypeSpecifier = sourceTypeSpecifier;
+    this.identifierFactory = idf;
   }
 
   /** Resolves all classes that are part of the view and stores them in the cache. */
   @Override
   @Nonnull
   public synchronized Collection<JavaSootClass> getClasses() {
-    return resolveAll();
+    if (isFullyResolved && cache instanceof FullCache) {
+      return cache.getClasses().stream()
+          .map(clazz -> (JavaSootClass) clazz)
+          .collect(Collectors.toList());
+    }
+
+    Collection<JavaSootClass> resolvedClasses =
+        inputLocations.stream()
+            .flatMap(location -> location.getClassSources(this).stream())
+            .map(this::buildClassFrom)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    isFullyResolved = true;
+
+    return resolvedClasses;
   }
 
   /** Resolves the class matching the provided {@link ClassType ClassType}. */
   @Override
   @Nonnull
   public synchronized Optional<JavaSootClass> getClass(@Nonnull ClassType type) {
-    JavaSootClass cachedClass = cache.getClass(type);
+    JavaSootClass cachedClass = (JavaSootClass) cache.getClass(type);
     if (cachedClass != null) {
       return Optional.of(cachedClass);
     }
 
-    Optional<? extends AbstractClassSource<? extends JavaSootClass>> abstractClass =
-        getAbstractClass(type);
+    Optional<JavaSootClassSource> abstractClass = getClassSource(type);
     return abstractClass.flatMap(this::buildClassFrom);
+  }
+
+  @Override
+  @Nonnull
+  public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
+    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
+    if (aClass.isPresent()) {
+      return aClass.get().getMethod(signature.getSubSignature());
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  @Nonnull
+  public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
+    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
+    if (aClass.isPresent()) {
+      return aClass.get().getField(signature.getSubSignature());
+    }
+    return Optional.empty();
   }
 
   @Nonnull
   @Override
-  public IdentifierFactory getIdentifierFactory() {
-    return new JavaLanguage(8).getIdentifierFactory();
+  public JavaIdentifierFactory getIdentifierFactory() {
+    return identifierFactory;
   }
 
   /** Returns the number of classes that are currently stored in the cache. */
-  public int getNumberOfStoredClasses() {
+  public int getCachedClassesCount() {
     return cache.size();
   }
 
   @Nonnull
-  protected Optional<? extends AbstractClassSource<? extends JavaSootClass>> getAbstractClass(
-      @Nonnull ClassType type) {
-    return inputLocations.stream()
+  protected Optional<JavaSootClassSource> getClassSource(@Nonnull ClassType type) {
+    return inputLocations
+        .parallelStream()
         .map(location -> location.getClassSource(type, this))
         .filter(Optional::isPresent)
         // like javas behaviour: if multiple matching Classes(ClassTypes) are found on the
         // classpath the first is returned (see splitpackage)
         .limit(1)
         .map(Optional::get)
+        .map(classSource -> (JavaSootClassSource) classSource)
         .findAny();
   }
 
   @Nonnull
-  protected synchronized Optional<JavaSootClass> buildClassFrom(
-      AbstractClassSource<? extends JavaSootClass> classSource) {
+  protected synchronized Optional<JavaSootClass> buildClassFrom(AbstractClassSource classSource) {
 
     ClassType classType = classSource.getClassType();
     JavaSootClass theClass;
-    if (!cache.hasClass(classType)) {
-      theClass = classSource.buildClass(sourceTypeSpecifier.sourceTypeFor(classSource));
-      cache.putClass(classType, theClass);
+    if (cache.hasClass(classType)) {
+      theClass = (JavaSootClass) cache.getClass(classType);
     } else {
-      theClass = cache.getClass(classType);
+      theClass =
+          (JavaSootClass)
+              classSource.buildClass(classSource.getAnalysisInputLocation().getSourceType());
+      cache.putClass(classType, theClass);
     }
 
     if (theClass.getType() instanceof AnnotationType) {
@@ -153,28 +177,5 @@ public class JavaView extends AbstractView<JavaSootClass> {
     }
 
     return Optional.of(theClass);
-  }
-
-  @Nonnull
-  protected synchronized Collection<JavaSootClass> resolveAll() {
-    if (isFullyResolved && cache instanceof FullCache) {
-      return cache.getClasses();
-    }
-
-    Collection<Optional<JavaSootClass>> resolvedClassesOpts =
-        inputLocations.stream()
-            .flatMap(location -> location.getClassSources(this).stream())
-            .map(this::buildClassFrom)
-            .collect(Collectors.toList());
-
-    Collection<JavaSootClass> resolvedClasses =
-        resolvedClassesOpts.stream()
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
-    isFullyResolved = true;
-
-    return resolvedClasses;
   }
 }

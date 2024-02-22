@@ -119,8 +119,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: DeclareEnumWithConstructor",
-            "specialinvoke $l0.<java.lang.Object: void <init>()>()",
+            "l0 := @this: DeclareEnumWithConstructor",
+            "specialinvoke l0.<java.lang.Object: void <init>()>()",
             "return")
         .collect(Collectors.toList());
   }
@@ -137,10 +137,10 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
    */
   public List<String> expectedMainBodyStmts() {
     return Stream.of(
-            "$l0 := @parameter0: java.lang.String[]",
-            "$l1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
+            "l0 := @parameter0: java.lang.String[]",
+            "l1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
-            "$stack3 = staticinvoke <DeclareEnumWithConstructor$Number: int access$000(DeclareEnumWithConstructor$Number)>($l1)",
+            "$stack3 = staticinvoke <DeclareEnumWithConstructor$Number: int access$000(DeclareEnumWithConstructor$Number)>(l1)",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack3)",
             "return")
         .collect(Collectors.toList());
@@ -208,8 +208,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
    */
   public List<String> expectedGetValueStmts() {
     return Stream.of(
-            "$l0 := @this: DeclareEnumWithConstructor$Number",
-            "$stack1 = $l0.<DeclareEnumWithConstructor$Number: int value>",
+            "l0 := @this: DeclareEnumWithConstructor$Number",
+            "$stack1 = l0.<DeclareEnumWithConstructor$Number: int value>",
             "return $stack1")
         .collect(Collectors.toList());
   }

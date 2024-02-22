@@ -25,13 +25,14 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.LocalNameStandardizer;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
 public class LocalNameStandardizerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
@@ -101,7 +102,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder, null);
+    standardizer.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedBody();
 
@@ -133,7 +134,7 @@ public class LocalNameStandardizerTest {
     stmtGraph.putEdge(stmt7, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

@@ -59,12 +59,12 @@ class JLex.CSpec extends java.lang.Object
     {
         JLex.CSpec r0;
         JLex.CLexGen r1;
-        char[] $r2, $r3, $r4, $r5;
-        java.util.Hashtable $r7, $r9, $r11, $r13, $r16;
-        java.lang.String $r8;
-        java.lang.Integer $r10;
-        int $i0;
-        java.util.Vector $r14, $r15, $r17;
+        char[] r2, r3, r4, r5;
+        java.util.Hashtable r7, r9, r11, r13, r16;
+        java.lang.String r8;
+        java.lang.Integer r10;
+        int i0;
+        java.util.Vector r14, r15, r17;
 
         r0 := @this: JLex.CSpec;
 
@@ -72,55 +72,55 @@ class JLex.CSpec extends java.lang.Object
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $r2 = newarray (char)[5];
+        r2 = newarray (char)[5];
 
-        $r2[0] = 89;
+        r2[0] = 89;
 
-        $r2[1] = 121;
+        r2[1] = 121;
 
-        $r2[2] = 108;
+        r2[2] = 108;
 
-        $r2[3] = 101;
+        r2[3] = 101;
 
-        $r2[4] = 120;
+        r2[4] = 120;
 
-        r0.<JLex.CSpec: char[] m_class_name> = $r2;
+        r0.<JLex.CSpec: char[] m_class_name> = r2;
 
-        $r3 = newarray (char)[0];
+        r3 = newarray (char)[0];
 
-        r0.<JLex.CSpec: char[] m_implements_name> = $r3;
+        r0.<JLex.CSpec: char[] m_implements_name> = r3;
 
-        $r4 = newarray (char)[5];
+        r4 = newarray (char)[5];
 
-        $r4[0] = 121;
+        r4[0] = 121;
 
-        $r4[1] = 121;
+        r4[1] = 121;
 
-        $r4[2] = 108;
+        r4[2] = 108;
 
-        $r4[3] = 101;
+        r4[3] = 101;
 
-        $r4[4] = 120;
+        r4[4] = 120;
 
-        r0.<JLex.CSpec: char[] m_function_name> = $r4;
+        r0.<JLex.CSpec: char[] m_function_name> = r4;
 
-        $r5 = newarray (char)[7];
+        r5 = newarray (char)[7];
 
-        $r5[0] = 89;
+        r5[0] = 89;
 
-        $r5[1] = 121;
+        r5[1] = 121;
 
-        $r5[2] = 116;
+        r5[2] = 116;
 
-        $r5[3] = 111;
+        r5[3] = 111;
 
-        $r5[4] = 107;
+        r5[4] = 107;
 
-        $r5[5] = 101;
+        r5[5] = 101;
 
-        $r5[6] = 110;
+        r5[6] = 110;
 
-        r0.<JLex.CSpec: char[] m_type_name> = $r5;
+        r0.<JLex.CSpec: char[] m_type_name> = r5;
 
         r0.<JLex.CSpec: JLex.CLexGen m_lexGen> = r1;
 
@@ -132,33 +132,33 @@ class JLex.CSpec extends java.lang.Object
 
         r0.<JLex.CSpec: boolean m_in_ccl> = 0;
 
-        $r7 = new java.util.Hashtable;
+        r7 = new java.util.Hashtable;
 
-        specialinvoke $r7.<java.util.Hashtable: void <init>()>();
+        specialinvoke r7.<java.util.Hashtable: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Hashtable m_states> = $r7;
+        r0.<JLex.CSpec: java.util.Hashtable m_states> = r7;
 
-        $r9 = r0.<JLex.CSpec: java.util.Hashtable m_states>;
+        r9 = r0.<JLex.CSpec: java.util.Hashtable m_states>;
 
-        $r8 = new java.lang.String;
+        r8 = new java.lang.String;
 
-        specialinvoke $r8.<java.lang.String: void <init>(java.lang.String)>("YYINITIAL");
+        specialinvoke r8.<java.lang.String: void <init>(java.lang.String)>("YYINITIAL");
 
-        $r10 = new java.lang.Integer;
+        r10 = new java.lang.Integer;
 
-        $r11 = r0.<JLex.CSpec: java.util.Hashtable m_states>;
+        r11 = r0.<JLex.CSpec: java.util.Hashtable m_states>;
 
-        $i0 = virtualinvoke $r11.<java.util.Hashtable: int size()>();
+        i0 = virtualinvoke r11.<java.util.Hashtable: int size()>();
 
-        specialinvoke $r10.<java.lang.Integer: void <init>(int)>($i0);
+        specialinvoke r10.<java.lang.Integer: void <init>(int)>(i0);
 
-        virtualinvoke $r9.<java.util.Hashtable: java.lang.Object put(java.lang.Object,java.lang.Object)>($r8, $r10);
+        virtualinvoke r9.<java.util.Hashtable: java.lang.Object put(java.lang.Object,java.lang.Object)>(r8, r10);
 
-        $r13 = new java.util.Hashtable;
+        r13 = new java.util.Hashtable;
 
-        specialinvoke $r13.<java.util.Hashtable: void <init>()>();
+        specialinvoke r13.<java.util.Hashtable: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Hashtable m_macros> = $r13;
+        r0.<JLex.CSpec: java.util.Hashtable m_macros> = r13;
 
         r0.<JLex.CSpec: boolean m_integer_type> = 0;
 
@@ -182,29 +182,29 @@ class JLex.CSpec extends java.lang.Object
 
         r0.<JLex.CSpec: JLex.CNfa m_nfa_start> = null;
 
-        $r14 = new java.util.Vector;
+        r14 = new java.util.Vector;
 
-        specialinvoke $r14.<java.util.Vector: void <init>()>();
+        specialinvoke r14.<java.util.Vector: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Vector m_nfa_states> = $r14;
+        r0.<JLex.CSpec: java.util.Vector m_nfa_states> = r14;
 
-        $r15 = new java.util.Vector;
+        r15 = new java.util.Vector;
 
-        specialinvoke $r15.<java.util.Vector: void <init>()>();
+        specialinvoke r15.<java.util.Vector: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Vector m_dfa_states> = $r15;
+        r0.<JLex.CSpec: java.util.Vector m_dfa_states> = r15;
 
-        $r16 = new java.util.Hashtable;
+        r16 = new java.util.Hashtable;
 
-        specialinvoke $r16.<java.util.Hashtable: void <init>()>();
+        specialinvoke r16.<java.util.Hashtable: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Hashtable m_dfa_sets> = $r16;
+        r0.<JLex.CSpec: java.util.Hashtable m_dfa_sets> = r16;
 
-        $r17 = new java.util.Vector;
+        r17 = new java.util.Vector;
 
-        specialinvoke $r17.<java.util.Vector: void <init>()>();
+        specialinvoke r17.<java.util.Vector: void <init>()>();
 
-        r0.<JLex.CSpec: java.util.Vector m_dtrans_vector> = $r17;
+        r0.<JLex.CSpec: java.util.Vector m_dtrans_vector> = r17;
 
         r0.<JLex.CSpec: int m_dtrans_ncols> = 128;
 

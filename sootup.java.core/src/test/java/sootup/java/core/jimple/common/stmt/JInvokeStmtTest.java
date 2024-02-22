@@ -49,14 +49,14 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootField;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.language.JavaJimple;
+import sootup.java.core.types.JavaClassType;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
@@ -64,14 +64,14 @@ public class JInvokeStmtTest {
 
   @Test
   public void test() {
-    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/nonexistent.java"));
-    ClassType superClassSignature = dif.getClassType("java.lang.Object");
-    Set<SootField> fields = new LinkedHashSet<>();
-    Set<SootMethod> methods = new LinkedHashSet<>();
+    JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
+    Set<JavaSootField> fields = new LinkedHashSet<>();
+    Set<JavaSootMethod> methods = new LinkedHashSet<>();
     OverridingJavaClassSource javaClassSource =
         new OverridingJavaClassSource(
             new EagerInputLocation(),
@@ -116,12 +116,12 @@ public class JInvokeStmtTest {
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("$r0", sootClass.getType()), smethodSig, Collections.emptyList()),
+                new Local("r0", sootClass.getType()), smethodSig, Collections.emptyList()),
             nop);
 
     // toString
     Assert.assertEquals(
-        "specialinvoke $r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
+        "specialinvoke r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));

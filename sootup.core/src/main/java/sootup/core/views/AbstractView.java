@@ -38,7 +38,7 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
+public abstract class AbstractView implements View {
   @Nullable private TypeHierarchy typeHierarchy;
 
   public AbstractView() {
@@ -64,7 +64,7 @@ public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
   @Override
   @Nonnull
   public Optional<? extends SootMethod> getMethod(@Nonnull MethodSignature signature) {
-    final Optional<S> aClass = getClass(signature.getDeclClassType());
+    final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }
@@ -74,7 +74,7 @@ public abstract class AbstractView<S extends SootClass<?>> implements View<S> {
   @Override
   @Nonnull
   public Optional<? extends SootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<S> aClass = getClass(signature.getDeclClassType());
+    final Optional<? extends SootClass> aClass = getClass(signature.getDeclClassType());
     if (!aClass.isPresent()) {
       return Optional.empty();
     }

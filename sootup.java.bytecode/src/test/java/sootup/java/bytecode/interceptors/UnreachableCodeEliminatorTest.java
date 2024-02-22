@@ -12,7 +12,6 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.BranchingStmt;
@@ -29,6 +28,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.UnreachableCodeEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -36,7 +36,7 @@ public class UnreachableCodeEliminatorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
       new MethodSignature(classType, "test", Collections.emptyList(), VoidType.getInstance());
@@ -74,8 +74,6 @@ public class UnreachableCodeEliminatorTest {
   FallsThroughStmt endStmt =
       JavaJimple.newAssignStmt(l4, IntConstant.getInstance(4), noStmtPositionInfo);
 
-  Trap trap2 = JavaJimple.newTrap(exception, beginStmt, beginStmt, handlerStmt);
-
   /**
    * Test the simpleBody l0:= @this Test -> l1 = 1 -> return l2 = 2 -> l3 = 3 -> return l2 = 2 and
    * l3 = 3 are unreachable
@@ -88,7 +86,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l2, l3));
 
     builder.setLocals(locals);
 
@@ -107,7 +105,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -127,7 +125,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, l4, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, l4, stack0));
 
     builder.setLocals(locals);
 
@@ -140,7 +138,7 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
@@ -162,7 +160,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, stack0));
 
     builder.setLocals(locals);
 
@@ -173,10 +171,10 @@ public class UnreachableCodeEliminatorTest {
     graph.putEdge(handlerStmt, beginStmt);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
@@ -209,7 +207,7 @@ public class UnreachableCodeEliminatorTest {
     graph.setStartingStmt(startingStmt);
 
     MutableStmtGraph inputGraph = new MutableBlockStmtGraph(builder.getStmtGraph());
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(inputGraph, builder.getStmtGraph());
   }

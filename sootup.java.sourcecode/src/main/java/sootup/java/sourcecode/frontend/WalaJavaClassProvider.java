@@ -43,16 +43,15 @@ import java.util.*;
 import java.util.jar.JarFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.SourceTypeSpecifier;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.ResolveException;
-import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 
 /**
@@ -60,12 +59,13 @@ import sootup.java.core.types.JavaClassType;
  *
  * @author Linghui Luo
  */
-public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
+public class WalaJavaClassProvider implements ClassProvider {
 
+  private final SourceType sourceType;
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
-  private List<SootClass<?>> sootClasses;
-  private List<SootClassSource<JavaSootClass>> classSources;
+  private List<JavaSootClass> sootClasses;
+  private List<JavaSootClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
   private final File walaPropertiesFile = new File("wala.properties");
@@ -86,6 +86,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
       @Nonnull Set<String> sourcePath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    this.sourceType = SourceType.Application;
     // add the source directory to scope
     for (String path : sourcePath) {
       scope.addToScope(
@@ -100,6 +101,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
       @Nonnull Set<String> libPath,
       @Nonnull String exclusionFilePath) {
     addScopesForJava();
+    this.sourceType = SourceType.Application;
     this.sourcePath = sourcePath;
     // add the source directory to scope
     for (String path : sourcePath) {
@@ -125,6 +127,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
       @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    this.sourceType = SourceType.Application;
     try {
       // add the source directory to scope
       for (String path : sourcePath) {
@@ -152,7 +155,8 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   public WalaJavaClassProvider(
       @Nonnull String sourceDirPath,
       @Nullable String exclusionFilePath,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
     // add the source directory to scope
@@ -168,8 +172,8 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    * @param moduleFiles
    */
   public WalaJavaClassProvider(
-      @Nonnull Collection<? extends Module> moduleFiles,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull Collection<? extends Module> moduleFiles, @Nonnull SourceType sourceType) {
+    this.sourceType = sourceType;
     addScopesForJava();
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
@@ -223,7 +227,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *
    * @return list of classes
    */
-  public List<SootClassSource<JavaSootClass>> getClassSources(SourceType srcType) {
+  public List<JavaSootClassSource> getClassSources(SourceType srcType) {
     Iterator<IClass> it = iterateWalaClasses();
     if (classSources == null) {
       classSources = new ArrayList<>();
@@ -231,7 +235,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, srcType);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClassSource<JavaSootClass> sootClass = walaToSoot.convertToClassSource(walaClass);
+      JavaSootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
     return classSources;
@@ -245,7 +249,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
    *     is the responsibility of the View.
    */
   @Deprecated
-  public List<SootClass<?>> getSootClasses() {
+  public List<JavaSootClass> getSootClasses() {
     Iterator<IClass> it = iterateWalaClasses();
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();
@@ -253,7 +257,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       JavaSourceLoaderImpl.JavaClass walaClass = (JavaSourceLoaderImpl.JavaClass) it.next();
-      SootClass<?> sootClass = walaToSoot.convertClass(walaClass);
+      JavaSootClass sootClass = walaToSoot.convertClass(walaClass);
       sootClasses.add(sootClass);
     }
     return sootClasses;
@@ -287,7 +291,7 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   /** Return a ClassSource with the given signature converted from a WALA class. */
-  public Optional<SootClassSource<JavaSootClass>> getClassSource(ClassType signature) {
+  public Optional<JavaSootClassSource> getClassSource(ClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
@@ -347,8 +351,8 @@ public class WalaJavaClassProvider implements ClassProvider<JavaSootClass> {
   }
 
   @Override
-  public Optional<SootClassSource<JavaSootClass>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> srcNamespace, Path sourcePath, ClassType type) {
+  public Optional<JavaSootClassSource> createClassSource(
+      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return getClassSource(type);
   }
 

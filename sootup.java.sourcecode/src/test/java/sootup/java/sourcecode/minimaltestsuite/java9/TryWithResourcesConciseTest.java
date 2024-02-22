@@ -1,15 +1,18 @@
 package sootup.java.sourcecode.minimaltestsuite.java9;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.experimental.categories.Category;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -41,22 +44,22 @@ public class TryWithResourcesConciseTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TryWithResourcesConcise",
-            "$r1 = new java.io.BufferedReader",
-            "$r2 = new java.io.FileReader",
-            "specialinvoke $r2.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
-            "specialinvoke $r1.<java.io.BufferedReader: void <init>(java.io.Reader)>($r2)",
-            "$r3 = \"\"",
+            "r1 = new java.io.BufferedReader",
+            "r2 = new java.io.FileReader",
+            "specialinvoke r2.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
+            "specialinvoke r1.<java.io.BufferedReader: void <init>(java.io.Reader)>(r2)",
+            "r3 = \"\"",
             "label1:",
-            "$r4 = virtualinvoke $r1.<java.io.BufferedReader: java.lang.String readLine()>()",
+            "r4 = virtualinvoke r1.<java.io.BufferedReader: java.lang.String readLine()>()",
             "goto label2",
-            "$r5 := @caughtexception",
-            "throw $r5",
+            "r5 := @caughtexception",
+            "throw r5",
             "label2:",
-            "$r3 = $r4",
-            "$z0 = $r4 != null",
-            "if $z0 == 0 goto label3",
-            "$r6 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r3)",
+            "r3 = r4",
+            "z0 = r4 != null",
+            "if z0 == 0 goto label3",
+            "r6 = <java.lang.System: java.io.PrintStream out>",
+            "virtualinvoke r6.<java.io.PrintStream: void println(java.lang.String)>(r3)",
             "goto label1",
             "label3:",
             "return")

@@ -18,6 +18,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.NopEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Category(Java8Test.class)
@@ -38,7 +39,8 @@ public class NopEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body testBody = builder.build();
 
-    new NopEliminator().interceptBody(builder, null);
+    builder = Body.builder(testBody, builder.getModifiers());
+    new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
@@ -58,7 +60,7 @@ public class NopEliminatorTest {
   public void testNoJNops() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new NopEliminator().interceptBody(testBuilder, null);
+    new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
     assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
@@ -73,7 +75,7 @@ public class NopEliminatorTest {
   private static Body.BodyBuilder createBody(boolean withNop) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
     JavaClassType stringType = factory.getClassType("java.lang.String");

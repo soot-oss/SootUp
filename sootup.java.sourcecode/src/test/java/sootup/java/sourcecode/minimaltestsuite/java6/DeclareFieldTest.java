@@ -2,11 +2,13 @@ package sootup.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -14,6 +16,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -35,7 +38,7 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getStaticMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
@@ -65,9 +68,9 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareField",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$r2 = r0.<DeclareField: java.lang.String s>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "r2 = r0.<DeclareField: java.lang.String s>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
@@ -84,9 +87,9 @@ public class DeclareFieldTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DeclareField",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = <DeclareField: int i>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+            "r1 = <java.lang.System: java.io.PrintStream out>",
+            "i0 = <DeclareField: int i>",
+            "virtualinvoke r1.<java.io.PrintStream: void println(int)>(i0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

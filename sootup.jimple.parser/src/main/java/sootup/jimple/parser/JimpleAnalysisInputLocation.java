@@ -1,21 +1,42 @@
 package sootup.jimple.parser;
 
+/*-
+ * #%L
+ * SootUp
+ * %%
+ * Copyright (C) 1997 - 2024 Raja Vallée-Rai and others
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.io.FilenameUtils;
 import sootup.core.IdentifierFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.AbstractClass;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -24,17 +45,15 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
 /** @author Markus Schmidt */
-public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClassSource<T>>>
-    implements AnalysisInputLocation<T> {
+public class JimpleAnalysisInputLocation implements AnalysisInputLocation {
   final Path path;
-  private final List<BodyInterceptor> bodyInterceptors;
-
   /** Variable to track if user has specified the SourceType. By default, it will be set to null. */
-  private SourceType srcType = null;
+  private final SourceType srcType;
 
-  // TODO: allow pointing to a single file
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
+
   public JimpleAnalysisInputLocation(@Nonnull Path path) {
-    this(path, null);
+    this(path, SourceType.Application, Collections.emptyList());
   }
 
   public JimpleAnalysisInputLocation(@Nonnull Path path, @Nullable SourceType srcType) {
@@ -53,44 +72,43 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
               + path.toAbsolutePath()
               + "' does not exist.");
     }
-    this.path = path;
     this.bodyInterceptors = bodyInterceptors;
-    setSpecifiedAsBuiltInByUser(srcType);
-  }
-
-  /**
-   * The method sets the value of the variable srcType.
-   *
-   * @param srcType the source type for the path can be Library, Application, Phantom.
-   */
-  public void setSpecifiedAsBuiltInByUser(@Nullable SourceType srcType) {
+    this.path = path;
     this.srcType = srcType;
   }
 
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return srcType;
   }
 
-  @Override
   @Nonnull
+  @Override
   public List<BodyInterceptor> getBodyInterceptors() {
     return bodyInterceptors;
   }
 
   @Nonnull
-  List<AbstractClassSource<? extends AbstractClass<?>>> walkDirectory(
+  List<SootClassSource> walkDirectory(
       @Nonnull Path dirPath,
       @Nonnull IdentifierFactory factory,
-      @Nonnull ClassProvider<? extends SootClass<?>> classProvider) {
-    try {
-      final FileType handledFileType = classProvider.getHandledFileType();
-      return Files.walk(dirPath)
-          .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+      @Nonnull ClassProvider classProvider) {
+
+    try (final Stream<Path> walk = Files.walk(path)) {
+      return walk.filter(filePath -> PathUtils.hasExtension(filePath, FileType.JIMPLE))
           .flatMap(
-              p ->
-                  StreamUtils.optionalToStream(
-                      classProvider.createClassSource(this, p, factory.fromPath(dirPath, p))))
+              p -> {
+                String fullyQualifiedName =
+                    FilenameUtils.removeExtension(
+                        p.subpath(path.getNameCount(), p.getNameCount())
+                            .toString()
+                            .replace(p.getFileSystem().getSeparator(), "."));
+
+                return StreamUtils.optionalToStream(
+                    classProvider.createClassSource(
+                        this, p, factory.getClassType(fullyQualifiedName)));
+              })
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -100,16 +118,15 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
 
   @Override
   @Nonnull
-  public Collection<? extends SootClassSource<T>> getClassSources(@Nonnull View<?> view) {
+  public Collection<SootClassSource> getClassSources(@Nonnull View view) {
     return walkDirectory(
         path, view.getIdentifierFactory(), new JimpleClassProvider(bodyInterceptors));
   }
 
   @Override
   @Nonnull
-  public Optional<? extends SootClassSource<T>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
-    final JimpleClassProvider<T> classProvider = new JimpleClassProvider<>(bodyInterceptors);
+  public Optional<SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view) {
+    final JimpleClassProvider classProvider = new JimpleClassProvider(bodyInterceptors);
 
     final String ext = classProvider.getHandledFileType().toString().toLowerCase();
 
@@ -137,7 +154,7 @@ public class JimpleAnalysisInputLocation<T extends SootClass<? extends SootClass
     if (!(o instanceof JimpleAnalysisInputLocation)) {
       return false;
     }
-    return path.equals(((JimpleAnalysisInputLocation<?>) o).path);
+    return path.equals(((JimpleAnalysisInputLocation) o).path);
   }
 
   @Override

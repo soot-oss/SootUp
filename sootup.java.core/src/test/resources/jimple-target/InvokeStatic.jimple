@@ -5,13 +5,13 @@ public class InvokeStatic extends java.lang.Object
 
     static void <clinit>()
     {
-        java.lang.String $r0;
+        java.lang.String r0;
 
-        $r0 = new java.lang.String;
+        r0 = new java.lang.String;
 
-        specialinvoke $r0.<java.lang.String: void <init>()>();
+        specialinvoke r0.<java.lang.String: void <init>()>();
 
-        <InvokeStatic: java.lang.String string> = $r0;
+        <InvokeStatic: java.lang.String string> = r0;
 
         <InvokeStatic: java.lang.String x> = "abc";
 

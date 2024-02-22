@@ -18,7 +18,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -40,7 +39,7 @@ public class CallGraphTest {
   }
 
   private JavaView createViewForClassPath(String classPath) {
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
+    List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
     inputLocations.add(new JavaSourcePathAnalysisInputLocation(classPath));
 
@@ -63,7 +62,7 @@ public class CallGraphTest {
         identifierFactory.getMethodSignature(
             mainClassSignature, "main", "void", Collections.singletonList("java.lang.String[]"));
 
-    SootClass<?> sc = view.getClass(mainClassSignature).orElse(null);
+    SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
     assertNotNull(mainMethodSignature + " not found in classloader", m);

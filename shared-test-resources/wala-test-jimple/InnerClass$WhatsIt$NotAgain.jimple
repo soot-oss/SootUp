@@ -7,8 +7,8 @@ class InnerClass$WhatsIt$NotAgain extends java.lang.Object
     {
         InnerClass$WhatsIt$NotAgain r0;
         InnerClass$WhatsIt r1;
-        InnerClass$WhatsThat $r2;
-        InnerClass $r3;
+        InnerClass$WhatsThat r2;
+        InnerClass r3;
 
         r0 := @this: InnerClass$WhatsIt$NotAgain;
 
@@ -18,13 +18,13 @@ class InnerClass$WhatsIt$NotAgain extends java.lang.Object
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        $r2 = new InnerClass$WhatsThat;
+        r2 = new InnerClass$WhatsThat;
 
-        $r3 = r1.<InnerClass$WhatsIt: InnerClass this$0>;
+        r3 = r1.<InnerClass$WhatsIt: InnerClass this$0>;
 
-        specialinvoke $r2.<InnerClass$WhatsThat: void <init>(InnerClass)>($r3);
+        specialinvoke r2.<InnerClass$WhatsThat: void <init>(InnerClass)>(r3);
 
-        r0.<InnerClass$WhatsIt$NotAgain: java.lang.Object x> = $r2;
+        r0.<InnerClass$WhatsIt$NotAgain: java.lang.Object x> = r2;
 
         return;
     }

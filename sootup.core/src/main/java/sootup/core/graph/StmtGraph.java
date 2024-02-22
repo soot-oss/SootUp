@@ -20,6 +20,7 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import com.google.common.collect.Iterators;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -64,6 +65,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract Stmt getStartingStmt();
 
   public abstract BasicBlock<?> getStartingStmtBlock();
+
   /**
    * returns the nodes in this graph in a non-deterministic order (-&gt;Set) to get the nodes in
    * linearized, ordered manner use iterator() or getStmts.
@@ -422,7 +424,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
-    Map<ClassType, Stmt> trapStarts = new HashMap<>();
+    Map<ClassType, Stmt> activeTraps = new HashMap<>();
     BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
 
     /*
@@ -447,7 +449,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
             if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
-              final Stmt trapBeginStmt = trapStarts.remove(type);
+              final Stmt trapBeginStmt = activeTraps.remove(type);
               if (trapBeginStmt == null) {
                 throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
               }
@@ -463,7 +465,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           .forEach(
               (type, trapHandlerBlock) -> {
                 if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
-                  trapStarts.put(type, block.getHead());
+                  activeTraps.put(type, block.getHead());
                 }
               });
 
@@ -472,27 +474,22 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     }
 
     /**
-     * for jimple serialization -&gt; this is the info for the end of the method contains only
-     * valid/useful information when all stmts are iterated i.e. hasNext() == false!
+     * for jimple serialization - this info contains only valid/useful information if all stmts are
+     * iterated i.e. hasNext() == false!
      *
      * @return List of Traps
      */
     public List<Trap> getTraps() {
-      // aggregate dangling trap data
-      trapStarts.forEach(
-          (type, trapStart) -> {
-            final BasicBlock<?> trapHandler =
-                lastIteratedBlock.getExceptionalSuccessors().get(type);
-            if (trapHandler == null) {
-              throw new IllegalStateException(
-                  "No matching Trap info found for '"
-                      + type
-                      + "' in ExceptionalSucessors() of the last iterated Block!");
-            }
-            collectedTraps.add(
-                new Trap(type, trapStart, lastIteratedBlock.getTail(), trapHandler.getTail()));
-          });
-      trapStarts.clear();
+
+      if (hasNext()) {
+        throw new IllegalStateException("Iterator needs to be iterated completely!");
+      }
+
+      // check for dangling traps that are not collected as the endStmt was not visited.
+      if (!activeTraps.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
+      }
       return collectedTraps;
     }
   }
@@ -508,7 +505,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     public BlockGraphIterator() {
       final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();

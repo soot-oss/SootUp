@@ -24,29 +24,26 @@ package sootup.java.bytecode.inputlocation;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import javax.annotation.Nonnull;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.BodySource;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.EagerInputLocation;
-import sootup.core.model.*;
+import sootup.core.jimple.basic.NoPositionInformation;
+import sootup.core.model.ClassModifier;
+import sootup.core.model.FieldModifier;
+import sootup.core.model.SootClass;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.FieldSubSignature;
-import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
-import sootup.core.util.ImmutableUtils;
 import sootup.core.views.View;
 import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /**
@@ -57,9 +54,19 @@ import sootup.java.core.views.JavaView;
 public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   @Test
+  public void testApk() {
+    PathBasedAnalysisInputLocation pathBasedNamespace =
+        new ApkAnalysisInputLocation(apk, SourceType.Application);
+    final ClassType mainClass =
+        getIdentifierFactory().getClassType("de.upb.futuresoot.fields.MainActivity");
+    testClassReceival(pathBasedNamespace, Collections.singletonList(mainClass), 1392);
+  }
+
+  @Test
   public void testSingleClass() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(cls, null);
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            cls, "", SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee"));
     testClassReceival(pathBasedNamespace, sigs, 1);
@@ -68,13 +75,26 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test(expected = IllegalArgumentException.class)
   public void testSingleClassDoesNotExist() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(Paths.get("NonExisting.class"), null);
+        PathBasedAnalysisInputLocation.create(
+            Paths.get("NonExisting.class"), SourceType.Application);
+  }
+
+  @Test
+  public void testSingleClassWPackageName() {
+    AnalysisInputLocation pathBasedNamespace =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/ClassWithPackageName.class"),
+            "ClassesPackageName",
+            SourceType.Application);
+    ArrayList<ClassType> sigs = new ArrayList<>();
+    sigs.add(getIdentifierFactory().getClassType("ClassesPackageName.ClassWithPackageName"));
+    testClassReceival(pathBasedNamespace, sigs, 1);
   }
 
   @Test
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(jar, null);
+        PathBasedAnalysisInputLocation.create(jar, SourceType.Application);
     ArrayList<ClassType> sigs = new ArrayList<>();
     sigs.add(getIdentifierFactory().getClassType("Employee", "ds"));
     sigs.add(getIdentifierFactory().getClassType("MiniApp"));
@@ -84,7 +104,7 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   @Test
   public void testWar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.create(war, null);
+        PathBasedAnalysisInputLocation.create(war, SourceType.Application);
     final ClassType warClass1 = getIdentifierFactory().getClassType("SimpleWarRead");
     testClassReceival(pathBasedNamespace, Collections.singletonList(warClass1), 19);
   }
@@ -105,14 +125,14 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
     ClassType utilsClassSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
 
     // Resolve signature to `SootClass`
-    SootClass<JavaSootClassSource> utilsClass = view.getClass(utilsClassSignature).get();
+    JavaSootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Parse sub-signature for "setEmpSalary" method
     MethodSubSignature optionalToStreamMethodSubSignature =
         JavaIdentifierFactory.getInstance().parseMethodSubSignature("void setEmpSalary(int)");
 
     // Get method for sub-signature
-    SootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
+    JavaSootMethod foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature).get();
     assertNotNull(foundMethod.getBody());
 
     // Print method
@@ -127,11 +147,19 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
         JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String empName");
 
     // Create the class signature
-    ClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+    JavaClassType classSignature = view.getIdentifierFactory().getClassType("Employee", "ds");
+
+    JavaSootField field =
+        new JavaSootField(
+            JavaIdentifierFactory.getInstance()
+                .getFieldSignature(classSignature, nameFieldSubSignature),
+            Collections.singleton(FieldModifier.PUBLIC),
+            null,
+            NoPositionInformation.getInstance());
 
     // Build a soot class
-    SootClass<?> c =
-        new SootClass(
+    JavaSootClass c =
+        new JavaSootClass(
             new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
@@ -139,43 +167,8 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
                 null,
                 null,
                 null,
-                Collections.singleton(
-                    SootField.builder()
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getFieldSignature(classSignature, nameFieldSubSignature))
-                        .withModifiers(FieldModifier.PUBLIC)
-                        .build()),
-                ImmutableUtils.immutableSet(
-                    SootMethod.builder()
-                        .withSource(
-                            new BodySource() {
-                              @Nonnull
-                              @Override
-                              public Body resolveBody(@Nonnull Iterable<MethodModifier> modifiers) {
-                                /* [ms] violating @Nonnull */
-                                return null;
-                              }
-
-                              @Override
-                              public Object resolveAnnotationsDefaultValue() {
-                                return null;
-                              }
-
-                              @Override
-                              @Nonnull
-                              public MethodSignature getSignature() {
-                                return JavaIdentifierFactory.getInstance()
-                                    .getMethodSignature(
-                                        utilsClass.getType(), optionalToStreamMethodSubSignature);
-                              }
-                            })
-                        .withSignature(
-                            JavaIdentifierFactory.getInstance()
-                                .getMethodSignature(
-                                    classSignature, optionalToStreamMethodSubSignature))
-                        .withModifiers(MethodModifier.PUBLIC)
-                        .build()),
+                Collections.singleton(field),
+                Collections.emptySet(),
                 null,
                 EnumSet.of(ClassModifier.PUBLIC),
                 Collections.emptyList(),
@@ -216,10 +209,9 @@ public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTes
   public void testInputLocationLibraryMode() {
     JavaView view = new JavaView(new DefaultRTJarAnalysisInputLocation());
 
-    Collection<SootClass<JavaSootClassSource>> classes =
-        new HashSet<>(); // Set to track the classes to check
+    Collection<SootClass> classes = new HashSet<>(); // Set to track the classes to check
 
-    for (SootClass<JavaSootClassSource> aClass : view.getClasses()) {
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }

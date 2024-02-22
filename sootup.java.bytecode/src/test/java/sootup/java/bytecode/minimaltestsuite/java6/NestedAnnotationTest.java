@@ -2,8 +2,10 @@ package sootup.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
 
+import categories.Java8Test;
 import java.util.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.signatures.PackageName;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
@@ -12,6 +14,7 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
+@Category(Java8Test.class)
 public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
   /**

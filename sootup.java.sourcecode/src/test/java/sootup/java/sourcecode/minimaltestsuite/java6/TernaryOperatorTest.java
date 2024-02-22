@@ -1,16 +1,19 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
+import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Category(Java8Test.class)
 public class TernaryOperatorTest extends MinimalSourceTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -31,15 +34,15 @@ public class TernaryOperatorTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TernaryOperator",
-            "$i0 = r0.<TernaryOperator: int num>",
-            "$z0 = $i0 < 0",
-            "if $z0 == 0 goto label1",
-            "$z1 = 0",
+            "i0 = r0.<TernaryOperator: int num>",
+            "z0 = i0 < 0",
+            "if z0 == 0 goto label1",
+            "z1 = 0",
             "goto label2",
             "label1:",
-            "$z1 = 1",
+            "z1 = 1",
             "label2:",
-            "return $z1")
+            "return z1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 

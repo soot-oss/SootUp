@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -49,17 +48,6 @@ public class JavaViewTest {
     this.view = new JavaView<>(project);
 
      */
-  }
-
-  @Ignore
-  public void testResolveIteratively() {
-    this.signatures.forEach(
-        it -> {
-          AbstractClass<? extends AbstractClassSource<?>> clazz =
-              this.view.getClass(it).orElse(null);
-          assertNotNull("Class for signature \"" + it + "\" not found.", clazz);
-          assertEquals(it, clazz.getType());
-        });
   }
 
   private void resolveUndefinedClass() {

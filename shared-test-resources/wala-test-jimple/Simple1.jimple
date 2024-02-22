@@ -57,7 +57,7 @@ public class Simple1 extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        Simple1 $r1;
+        Simple1 r1;
         int i0, i1;
 
         r0 := @parameter0: java.lang.String[];
@@ -78,11 +78,11 @@ public class Simple1 extends java.lang.Object
      label2:
         staticinvoke <Simple1: void doStuff(int)>(i0);
 
-        $r1 = new Simple1;
+        r1 = new Simple1;
 
-        specialinvoke $r1.<Simple1: void <init>()>();
+        specialinvoke r1.<Simple1: void <init>()>();
 
-        virtualinvoke $r1.<Simple1: void instanceMethod1()>();
+        virtualinvoke r1.<Simple1: void instanceMethod1()>();
 
         return;
     }
@@ -101,14 +101,14 @@ public class Simple1 extends java.lang.Object
     public float instanceMethod2()
     {
         Simple1 r0;
-        float $f0, $f1;
+        float f0, f1;
 
         r0 := @this: Simple1;
 
-        $f0 = r0.<Simple1: float fval1>;
+        f0 = r0.<Simple1: float fval1>;
 
-        $f1 = 3.14F * $f0;
+        f1 = 3.14F * f0;
 
-        return $f1;
+        return f1;
     }
 }

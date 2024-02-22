@@ -50,9 +50,6 @@ import sootup.core.views.View;
  * @author Marcus Nachtigall
  */
 public class DeadAssignmentEliminator implements BodyInterceptor {
-
-  // eliminateOnlyStackLocals: locals which are: nulltype or not referencing a field (ms: possibly
-  // more?)
   boolean eliminateOnlyStackLocals;
 
   public DeadAssignmentEliminator() {
@@ -64,8 +61,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   }
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
+    // refactor.. why already here - getNodes as well
     List<Stmt> stmts = builder.getStmts();
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
@@ -197,7 +195,10 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     // Remove the dead statements from the stmtGraph
     for (Stmt stmt : stmts) {
       if (!essentialStmts.contains(stmt)) {
-        stmtGraph.removeNode(stmt);
+        if (stmtGraph.containsNode(stmt)) {
+          stmtGraph.removeNode(stmt);
+          builder.removeDefLocalsOf(stmt);
+        }
       }
     }
 
@@ -239,6 +240,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       Stmt newInvoke =
           Jimple.newInvokeStmt(assignStmt.getInvokeExpr(), assignStmt.getPositionInfo());
       stmtGraph.replaceNode(assignStmt, newInvoke);
+      builder.removeDefLocalsOf(assignStmt);
     }
   }
 }

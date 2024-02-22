@@ -2,17 +2,20 @@ package sootup.core.graph;
 
 import static org.junit.Assert.*;
 
+import categories.Java8Test;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
+@Category(Java8Test.class)
 public class MutableBasicBlockTest {
 
-  Stmt firstNop = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-  Stmt secondNop = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-  Stmt thirdNop = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-  Stmt fourthNop = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+  Stmt firstNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  Stmt secondNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  Stmt thirdNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+  Stmt fourthNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
   @Test(expected = IndexOutOfBoundsException.class)
   public void testUnlinkedSplitBeginningNewHead() {

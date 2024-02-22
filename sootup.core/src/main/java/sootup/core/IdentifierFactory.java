@@ -22,7 +22,6 @@ package sootup.core;
  * #L%
  */
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -245,16 +244,9 @@ public interface IdentifierFactory {
    */
   ArrayType getArrayType(Type baseType, int dim);
 
-  /**
-   * Builds class type from path.
-   *
-   * @param file the file
-   * @param rootDirectory root directory in which the file is.
-   * @return the class type
-   */
-  ClassType fromPath(Path rootDirectory, Path file);
-
   boolean isStaticInitializerSubSignature(@Nonnull MethodSubSignature methodSubSignature);
+
+  boolean isConstructorSignature(@Nonnull MethodSignature methodSignature);
 
   boolean isConstructorSubSignature(@Nonnull MethodSubSignature methodSubSignature);
 

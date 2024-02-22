@@ -15,7 +15,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import sootup.core.frontend.AbstractClassSource;
-import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
@@ -35,7 +34,7 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSource() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
@@ -44,22 +43,21 @@ public class JavaSourcePathNamespaceTest {
 
     Optional<JavaSootClass> clazz = view.getClass(type);
     assertTrue(clazz.isPresent());
-    AbstractClassSource<JavaSootClass> classSource = clazz.get().getClassSource();
+    JavaSootClassSource classSource = clazz.get().getClassSource();
 
     assertEquals(type, classSource.getClassType());
 
-    AbstractClassSource<JavaSootClass> content = classSource;
+    JavaSootClassSource content = classSource;
     assertNotNull(content);
-    assertTrue(content instanceof SootClassSource);
-    assertEquals(3, ((SootClassSource<JavaSootClass>) content).resolveMethods().size());
-    assertEquals(0, ((SootClassSource<JavaSootClass>) content).resolveFields().size());
+    assertEquals(3, content.resolveMethods().size());
+    assertEquals(0, content.resolveFields().size());
   }
 
   @Ignore
   public void testGetClassSources() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
@@ -92,13 +90,12 @@ public class JavaSourcePathNamespaceTest {
   public void testInputSourcePathLibraryMode() {
 
     String classPath = "../shared-test-resources/java-miniapps/src/";
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(SourceType.Library, classPath);
     JavaView view = new JavaView(inputLocation);
 
-    Set<SootClass<JavaSootClassSource>> classes =
-        new HashSet<>(); // Set to track the classes to check
-    for (SootClass<JavaSootClassSource> aClass : view.getClasses()) {
+    Set<SootClass> classes = new HashSet<>(); // Set to track the classes to check
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }

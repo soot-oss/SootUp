@@ -22,6 +22,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.EmptySwitchEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
 @Category(Java8Test.class)
@@ -29,7 +30,7 @@ public class EmptySwitchEliminatorTest {
 
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
-  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+  StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
   JavaClassType intType = factory.getClassType("int");
   JavaClassType classType = factory.getClassType("Test");
   MethodSignature methodSignature =
@@ -60,7 +61,7 @@ public class EmptySwitchEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedEmptySwitchBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -116,7 +117,7 @@ public class EmptySwitchEliminatorTest {
     stmtGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

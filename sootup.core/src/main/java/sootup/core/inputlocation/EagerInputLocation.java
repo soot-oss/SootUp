@@ -24,9 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
-import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -37,11 +35,10 @@ import sootup.core.views.View;
  *
  * @author Markus Schmidt
  */
-public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>>>
-    implements AnalysisInputLocation<S> {
+public class EagerInputLocation implements AnalysisInputLocation {
 
   protected final SourceType sourceType;
-  @Nonnull private final Map<ClassType, ? extends SootClassSource<S>> map;
+  @Nonnull private final Map<ClassType, SootClassSource> map;
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /** not useful for retrieval of classes via view. remove inputlocation from sootclass? */
@@ -50,12 +47,12 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   }
 
   public EagerInputLocation(
-      @Nonnull Map<ClassType, ? extends SootClassSource<S>> map, @Nullable SourceType sourceType) {
+      @Nonnull Map<ClassType, SootClassSource> map, @Nullable SourceType sourceType) {
     this(map, sourceType, Collections.emptyList());
   }
 
   public EagerInputLocation(
-      @Nonnull Map<ClassType, ? extends SootClassSource<S>> map,
+      @Nonnull Map<ClassType, SootClassSource> map,
       @Nullable SourceType sourceType,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     this.sourceType = sourceType;
@@ -64,19 +61,20 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource<S>> getClassSource(
-      @Nonnull ClassType type, @Nullable View<?> view) {
+  public @Nonnull Optional<SootClassSource> getClassSource(
+      @Nonnull ClassType type, @Nullable View view) {
     // FIXME: add classloadingoptions
     return Optional.ofNullable(map.get(type));
   }
 
   @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource<S>> getClassSources(@Nullable View<?> view) {
+  public Collection<SootClassSource> getClassSources(@Nullable View view) {
     // FIXME: add classloadingoptions
     return map.values();
   }
 
+  @Nonnull
   @Override
   public SourceType getSourceType() {
     return sourceType;
@@ -98,6 +96,6 @@ public class EagerInputLocation<S extends SootClass<? extends SootClassSource<S>
     if (!(o instanceof EagerInputLocation)) {
       return false;
     }
-    return map.equals(((EagerInputLocation<?>) o).map);
+    return map.equals(((EagerInputLocation) o).map);
   }
 }

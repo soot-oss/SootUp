@@ -22,7 +22,7 @@ package sootup.java.core.interceptors;
  */
 import java.util.*;
 import javax.annotation.Nonnull;
-import sootup.core.graph.StmtGraph;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -40,9 +40,9 @@ import sootup.java.core.interceptors.typeresolving.types.BottomType;
 public class LocalNameStandardizer implements BodyInterceptor {
 
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
-    StmtGraph<?> graph = builder.getStmtGraph();
+    MutableStmtGraph graph = builder.getStmtGraph();
     // Get the order of all Locals' occurrences and store them into a map
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
@@ -74,11 +74,7 @@ public class LocalNameStandardizer implements BodyInterceptor {
         type = view.getIdentifierFactory().getClassType("java.lang.Object");
       }
 
-      if (local.isFieldLocal()) {
-        newLocal = lgen.generateFieldLocal(type);
-      } else {
-        newLocal = lgen.generateLocal(type);
-      }
+      newLocal = lgen.generateLocal(type);
       builder.replaceLocal(local, newLocal);
     }
   }

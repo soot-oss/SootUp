@@ -14,6 +14,13 @@ Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more abo
  Add the following dependency in the ```pom.xml``` file of your project to include all SootUp modules into your project.
  
 ```
+<repositories>
+ <repository>
+  <id>jitpack.io</id>
+  <url>https://jitpack.io</url>
+ </repository>
+</repositories>
+
 <dependencies>
  <dependency>
    <groupId>org.soot-oss</groupId>
@@ -57,6 +64,14 @@ Take a look at the [Modules](whatsnew.md#modular-architecture) to learn more abo
 Add the following dependency in the ```build.gradle``` file of your project to include all SootUp modules into your project.
 
 ```
+repositories {
+    mavenCentral()
+    google()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
 compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
 compile "org.soot-oss:sootup.java.core{{ git_latest_release }}"
 compile "org.soot-oss:sootup.java.sourcecode{{ git_latest_release }}"

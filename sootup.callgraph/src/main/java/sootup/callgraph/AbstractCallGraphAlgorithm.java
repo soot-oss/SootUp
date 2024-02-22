@@ -57,9 +57,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractCallGraphAlgorithm.class);
 
-  @Nonnull protected final View<? extends SootClass<?>> view;
+  @Nonnull protected final View view;
 
-  protected AbstractCallGraphAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+  protected AbstractCallGraphAlgorithm(@Nonnull View view) {
     this.view = view;
   }
 
@@ -73,8 +73,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return the complete constructed call graph starting from the entry methods.
    */
   @Nonnull
-  final CallGraph constructCompleteCallGraph(
-      View<? extends SootClass<?>> view, List<MethodSignature> entryPoints) {
+  final CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
     MutableCallGraph cg = initializeCallGraph();
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
@@ -113,10 +112,16 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           SootMethod clintMethod =
               view.getMethod(methodSignature.getDeclClassType().getStaticInitializer())
                   .orElse(null);
-          if (clintMethod == null) return;
+          if (clintMethod == null) {
+            return;
+          }
           MethodSignature staticInitSig = clintMethod.getSignature();
-          if (!cg.containsMethod(methodSignature)) cg.addMethod(methodSignature);
-          if (!cg.containsMethod(staticInitSig)) cg.addMethod(staticInitSig);
+          if (!cg.containsMethod(methodSignature)) {
+            cg.addMethod(methodSignature);
+          }
+          if (!cg.containsMethod(staticInitSig)) {
+            cg.addMethod(staticInitSig);
+          }
           if (!cg.containsCall(methodSignature, staticInitSig)) {
             cg.addCall(methodSignature, staticInitSig);
             workList.push(staticInitSig);
@@ -137,25 +142,31 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph object that is filled with the found methods and call edges.
    */
   final void processWorkList(
-      View<? extends SootClass<?>> view,
+      View view,
       Deque<MethodSignature> workList,
       Set<MethodSignature> processed,
       MutableCallGraph cg) {
     while (!workList.isEmpty()) {
       MethodSignature currentMethodSignature = workList.pop();
       // skip if already processed
-      if (processed.contains(currentMethodSignature)) continue;
+      if (processed.contains(currentMethodSignature)) {
+        continue;
+      }
 
       // skip if library class
-      SootClass<?> currentClass =
+      SootClass currentClass =
           view.getClass(currentMethodSignature.getDeclClassType()).orElse(null);
-      if (currentClass == null || currentClass.isLibraryClass()) continue;
+      if (currentClass == null || currentClass.isLibraryClass()) {
+        continue;
+      }
 
       // perform pre-processing if needed
       preProcessingMethod(view, currentMethodSignature, workList, cg);
 
       // process the method
-      if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+      if (!cg.containsMethod(currentMethodSignature)) {
+        cg.addMethod(currentMethodSignature);
+      }
 
       // transform the method signature to the actual SootMethod
       SootMethod currentMethod =
@@ -172,7 +183,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       Stream.concat(invocationTargets, implicitTargets)
           .forEach(
               t -> {
-                if (!cg.containsMethod(t)) cg.addMethod(t);
+                if (!cg.containsMethod(t)) {
+                  cg.addMethod(t);
+                }
                 if (!cg.containsCall(currentMethodSignature, t)) {
                   cg.addCall(currentMethodSignature, t);
                   workList.push(t);
@@ -198,7 +211,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   @Nonnull
   Stream<MethodSignature> resolveAllCallsFromSourceMethod(SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     return sourceMethod.getBody().getStmts().stream()
         .filter(Stmt::containsInvokeExpr)
@@ -214,13 +229,13 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   @Nonnull
   protected Stream<MethodSignature> resolveAllImplicitCallsFromSourceMethod(
-      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+      View view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     // collect all static initializer calls
-    Stream<MethodSignature> staticInitializerStream =
-        resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
-    return staticInitializerStream;
+    return resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod);
   }
 
   /**
@@ -232,8 +247,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    */
   @Nonnull
   protected Stream<MethodSignature> resolveAllStaticInitializerCallsFromSourceMethod(
-      View<? extends SootClass<?>> view, SootMethod sourceMethod) {
-    if (sourceMethod == null || !sourceMethod.hasBody()) return Stream.empty();
+      View view, SootMethod sourceMethod) {
+    if (sourceMethod == null || !sourceMethod.hasBody()) {
+      return Stream.empty();
+    }
 
     Stream.Builder<ClassType> targetsToStaticInitializer = Stream.builder();
 
@@ -291,7 +308,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the current cg that might be extended
    */
   protected abstract void preProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg);
@@ -305,7 +322,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the current cg that might be extended
    */
   protected abstract void postProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg);
@@ -313,15 +330,20 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
-    MutableCallGraph updated = oldCallGraph.copy();
-
-    SootClass<?> clazz = view.getClassOrThrow(classType);
+    SootClass clazz = view.getClassOrThrow(classType);
     Set<MethodSignature> newMethodSignatures =
-        clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
+        clazz.getMethods().stream()
+            .map(Method::getSignature)
+            .filter(methodSig -> !oldCallGraph.containsMethod(methodSig))
+            .collect(Collectors.toSet());
 
-    if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
-      throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
+    // were all the added method signatures already visited in the CallGraph? i.e. is there
+    // something to add?
+    if (newMethodSignatures.isEmpty()) {
+      return oldCallGraph;
     }
+
+    MutableCallGraph updated = oldCallGraph.copy();
 
     // Step 1: Add edges from the new methods to other methods
     Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
@@ -354,8 +376,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               MethodSignature overridingMethodSig =
                   clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
 
-              for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
-                updated.addCall(callingMethodSig, overridingMethodSig);
+              if (updated.containsMethod(overriddenMethodSig)) {
+                for (MethodSignature callingMethodSig : updated.callsTo(overriddenMethodSig)) {
+                  updated.addCall(callingMethodSig, overridingMethodSig);
+                }
               }
             });
 
@@ -373,15 +397,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @return - MethodSignature of main method.
    */
   public MethodSignature findMainMethod() {
-    Set<SootClass<?>> classes = new HashSet<>(); /* Set to track the classes to check */
-    for (SootClass<?> aClass : view.getClasses()) {
+    Set<SootClass> classes = new HashSet<>(); /* Set to track the classes to check */
+    for (SootClass aClass : view.getClasses()) {
       if (!aClass.isLibraryClass()) {
         classes.add(aClass);
       }
     }
 
     Collection<SootMethod> mainMethods = new HashSet<>(); /* Set to store the methods */
-    for (SootClass<?> aClass : classes) {
+    for (SootClass aClass : classes) {
       for (SootMethod method : aClass.getMethods()) {
         if (method.isStatic()
             && method
@@ -430,8 +454,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * concrete implementation.
    */
   @Nonnull
-  public static Optional<MethodSignature> resolveConcreteDispatch(
-      View<? extends SootClass<?>> view, MethodSignature m) {
+  public static Optional<MethodSignature> resolveConcreteDispatch(View view, MethodSignature m) {
     Optional<? extends SootMethod> methodOp = findConcreteMethod(view, m);
     if (methodOp.isPresent()) {
       SootMethod method = methodOp.get();
@@ -450,10 +473,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param sig the signature of the searched method
    * @return the found method object, or null if the method was not found.
    */
-  public static Optional<? extends SootMethod> findConcreteMethod(
-      @Nonnull View<? extends SootClass<?>> view, @Nonnull MethodSignature sig) {
+  public static Optional<SootMethod> findConcreteMethod(
+      @Nonnull View view, @Nonnull MethodSignature sig) {
     IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    SootClass<?> startclass = view.getClass(sig.getDeclClassType()).orElse(null);
+    SootClass startclass = view.getClass(sig.getDeclClassType()).orElse(null);
     if (startclass == null) {
       logger.warn(
           "Could not find \""
@@ -463,7 +486,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               + " to resolve the concrete method");
       return Optional.empty();
     }
-    Optional<? extends SootMethod> startMethod = startclass.getMethod(sig.getSubSignature());
+    Optional<SootMethod> startMethod =
+        startclass.getMethod(sig.getSubSignature()).map(method -> (SootMethod) method);
     if (startMethod.isPresent()) {
       return startMethod;
     }
@@ -471,9 +495,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
     List<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
     for (ClassType superClassType : superClasses) {
-      Optional<? extends SootMethod> method =
+      Optional<SootMethod> method =
           view.getMethod(
-              identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()));
+                  identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()))
+              .map(sm -> (SootMethod) sm);
       if (method.isPresent()) {
         return method;
       }
@@ -483,7 +508,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // interface1 is a super-interface of interface2
     // due to multiple inheritance in interfaces
     final HierarchyComparator hierarchyComparator = new HierarchyComparator(view);
-    Optional<? extends SootMethod> defaultMethod =
+    Optional<SootMethod> defaultMethod =
         interfaces.stream()
             .map(
                 classType ->
@@ -494,7 +519,9 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             .min(
                 (m1, m2) ->
                     hierarchyComparator.compare(
-                        m1.getDeclaringClassType(), m2.getDeclaringClassType()));
+                        m1.getDeclaringClassType(), m2.getDeclaringClassType()))
+            .map(method -> (SootMethod) method);
+    ;
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }

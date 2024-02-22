@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.soot-oss</groupId>
 		<artifactId>sootup</artifactId>
-		<version>1.1.2-SNAPSHOT</version>
+		<version>1.2.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
@@ -36,10 +36,21 @@
 		</dependency>
 		<dependency>
 			<groupId>org.soot-oss</groupId>
+			<artifactId>sootup.jimple.parser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.soot-oss</groupId>
 			<artifactId>sootup.callgraph</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.jimple.parser</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

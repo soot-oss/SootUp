@@ -8,12 +8,12 @@ import java.util.Set;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.interceptors.typeresolving.Typing;
@@ -21,31 +21,28 @@ import sootup.java.core.views.JavaView;
 
 public class TypeAssignerTestSuite {
 
-  JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   JavaView view;
   ClassType classType;
   JavaSootClass clazz;
 
   public void buildView(String baseDir, String className) {
 
-    AnalysisInputLocation<? extends JavaSootClass> analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir);
-    AnalysisInputLocation<? extends JavaSootClass> rtJar = new DefaultRTJarAnalysisInputLocation();
+    AnalysisInputLocation analysisInputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            baseDir, SourceType.Application, Collections.emptyList());
+    AnalysisInputLocation rtJar =
+        new DefaultRTJarAnalysisInputLocation(SourceType.Application, Collections.emptyList());
 
-    List<AnalysisInputLocation<? extends JavaSootClass>> inputLocations = new ArrayList<>();
-    inputLocations.add(analysisInputLocation);
-    inputLocations.add(rtJar);
+    view = new JavaView(Arrays.asList(analysisInputLocation, rtJar));
 
-    view = new JavaView(inputLocations);
-
-    classType = identifierFactory.getClassType(className);
+    classType = view.getIdentifierFactory().getClassType(className);
     clazz = view.getClass(classType).get();
   }
 
   public Body.BodyBuilder createMethodsBuilder(String methodName, String returnType) {
     MethodSignature methodSignature =
-        identifierFactory.getMethodSignature(
-            classType, methodName, returnType, Collections.emptyList());
+        view.getIdentifierFactory()
+            .getMethodSignature(classType, methodName, returnType, Collections.emptyList());
     Optional<JavaSootMethod> methodOptional = clazz.getMethod(methodSignature.getSubSignature());
     JavaSootMethod method = methodOptional.get();
     Body body = method.getBody();

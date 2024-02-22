@@ -73,8 +73,8 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("SimpleTaint");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result.contains("$l1"));
-    assertTrue(result.contains("$l2"));
+    assertTrue(result.contains("l1"));
+    assertTrue(result.contains("l2"));
     assertTrue(result.contains("SimpleTaint.k"));
   }
 
@@ -83,7 +83,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("SimpleTaintSanitized");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result.contains("$l1"));
+    assertTrue(result.contains("l1"));
   }
 
   @Test
@@ -91,8 +91,8 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaint");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result.contains("$l1"));
-    assertTrue(result.contains("$l2"));
+    assertTrue(result.contains("l1"));
+    assertTrue(result.contains("l2"));
   }
 
   @Test
@@ -100,8 +100,8 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintPropagated");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result + " is missing an element.", result.contains("$l1"));
-    assertTrue(result + " is missing an element.", result.contains("$l2"));
+    assertTrue(result + " is missing an element.", result.contains("l1"));
+    assertTrue(result + " is missing an element.", result.contains("l2"));
   }
 
   @Test
@@ -109,7 +109,7 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintSanitized");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result.contains("$l1"));
-    assertFalse(result.contains("$l2"));
+    assertTrue(result.contains("l1"));
+    assertFalse(result.contains("l2"));
   }
 }

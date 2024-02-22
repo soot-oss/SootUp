@@ -9,10 +9,8 @@ import org.junit.experimental.categories.Category;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.views.JavaView;
 
 @Category(Java8Test.class)
@@ -22,9 +20,10 @@ public class Soot1580Test {
   @Test
   @Ignore("Localsplitter fails; bytecode itself is somehow strange")
   public void test() {
-    AnalysisInputLocation<JavaSootClass> inputLocation =
+    AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(
-            jar, null, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
+            jar); // TODO: maybe you need to add add interceptors (should be there when they are
+    // enabled by default)
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 

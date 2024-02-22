@@ -20,7 +20,7 @@ public class AbstractClassTest extends MinimalSourceTestSuiteBase {
 
   @Test
   public void test() {
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     // The SuperClass is the abstract one
     System.out.println(clazz.getSuperclass());
     SootClass superClazz = loadClass(clazz.getSuperclass().get());
@@ -49,9 +49,9 @@ public class AbstractClassTest extends MinimalSourceTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: AbstractClass",
-            "$r1 = new AbstractClass",
-            "specialinvoke $r1.<AbstractClass: void <init>()>()",
-            "virtualinvoke $r1.<A: void a()>()",
+            "r1 = new AbstractClass",
+            "specialinvoke r1.<AbstractClass: void <init>()>()",
+            "virtualinvoke r1.<A: void a()>()",
             "return")
         .collect(Collectors.toList());
   }

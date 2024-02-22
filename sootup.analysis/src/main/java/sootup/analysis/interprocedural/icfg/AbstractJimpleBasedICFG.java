@@ -33,7 +33,6 @@ import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
@@ -41,7 +40,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   protected final boolean enableExceptions;
 
-  protected View<? extends SootClass<?>> view;
+  protected View view;
 
   @DontSynchronize("written by single thread; read afterwards")
   private final Map<Stmt, Body> stmtToOwner = createStmtToOwnerMap();

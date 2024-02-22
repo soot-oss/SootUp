@@ -22,17 +22,25 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
+import sootup.core.views.View;
 
 public class LocalsValidator implements BodyValidator {
 
-  /** Verifies that each Local of getUses() and getDefs() belongs to this body's locals. */
+  /**
+   * Verifies that each Local of getUses() and getDefs() belongs to this body's locals.
+   *
+   * @return
+   */
   @Override
-  public void validate(@Nonnull Body body, @Nonnull List<ValidationException> exception) {
+  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
+    List<ValidationException> exception = new ArrayList<>();
+
     final Set<Local> locals = body.getLocals();
 
     body.getUses()
@@ -43,7 +51,10 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
 
     body.getDefs()
         .parallelStream()
@@ -53,7 +64,12 @@ public class LocalsValidator implements BodyValidator {
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
+
+    return exception;
   }
 
   @Override

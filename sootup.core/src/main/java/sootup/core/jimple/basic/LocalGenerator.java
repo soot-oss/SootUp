@@ -29,7 +29,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.visitor.AbstractTypeVisitor;
-import sootup.core.types.*;
+import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 
 /**
  * Generates locals for Body.
@@ -41,7 +42,7 @@ public class LocalGenerator {
   private final Set<Local> locals;
   @Nullable private Local thisLocal;
   private final Map<Integer, Local> parameterLocals = new HashMap<>();
-  NamingSwitch ns = new NamingSwitch(new StringBuilder(7));
+  NamingSwitch ns = new NamingSwitch();
 
   /**
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
@@ -54,51 +55,23 @@ public class LocalGenerator {
   /** generate this local with given type */
   public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
-      this.thisLocal = generateFieldLocal(type);
+      this.thisLocal = generateLocal(type);
     }
     return this.thisLocal;
   }
 
-  /** generates a new {@link Local} given the type for field. */
-  public Local generateFieldLocal(@Nonnull Type type) {
-    // field Locals traditionally do not begin with "$"
-
+  /** generates a new {@link Local} given the type for local. */
+  public Local generateLocal(@Nonnull Type type) {
     Local localCandidate;
-    StringBuilder name = ns.getResult();
     // is there a name collision? retry!
     do {
-      name.setLength(0);
       type.accept(ns);
+      StringBuilder name = ns.getResult();
       localCandidate = Jimple.newLocal(name.toString(), type);
+      name.setLength(0);
     } while (locals.contains(localCandidate));
 
     locals.add(localCandidate);
-    return localCandidate;
-  }
-
-  /** generates a new {@link Local} given the type for local. */
-  public Local generateLocal(@Nonnull Type type) {
-    // non-field Locals traditionally begin with "$"
-
-    StringBuilder name = ns.getResult();
-    name.setLength(0); // clear buffer - remove possible leftovers from last generate call
-    name.append("$");
-
-    Local localCandidate;
-    type.accept(ns);
-    localCandidate = Jimple.newLocal(name.toString(), type);
-    // is there a name collision? retry!
-    while (locals.contains(localCandidate)) {
-      name.setLength(1);
-      type.accept(ns);
-      localCandidate = Jimple.newLocal(name.toString(), type);
-    }
-    try{
-      locals.add(localCandidate);
-    }
-    catch(Exception e){
-      e.printStackTrace();
-    }
     return localCandidate;
   }
 
@@ -122,8 +95,8 @@ public class LocalGenerator {
     private int tempChar = 0;
     private int tempUnknownType = 0;
 
-    private NamingSwitch(@Nonnull StringBuilder str) {
-      this.result = str;
+    private NamingSwitch() {
+      this.result = new StringBuilder(7);
     }
 
     @Override

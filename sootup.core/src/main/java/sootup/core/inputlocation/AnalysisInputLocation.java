@@ -25,9 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import sootup.core.frontend.AbstractClassSource;
-import sootup.core.model.AbstractClass;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
@@ -47,7 +45,7 @@ import sootup.core.views.View;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface AnalysisInputLocation<T extends AbstractClass<?>> {
+public interface AnalysisInputLocation {
   /**
    * Create or find a class source for a given type.
    *
@@ -55,8 +53,7 @@ public interface AnalysisInputLocation<T extends AbstractClass<?>> {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource<T>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view);
+  Optional<? extends SootClassSource> getClassSource(@Nonnull ClassType type, @Nonnull View view);
 
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
@@ -64,7 +61,7 @@ public interface AnalysisInputLocation<T extends AbstractClass<?>> {
    * @return The source entries.
    */
   @Nonnull
-  Collection<? extends AbstractClassSource<T>> getClassSources(@Nonnull View<?> view);
+  Collection<? extends SootClassSource> getClassSources(@Nonnull View view);
 
   /**
    * If the AnalysisInputLocation is initialized with the SourceType then this method should return
@@ -73,7 +70,7 @@ public interface AnalysisInputLocation<T extends AbstractClass<?>> {
    *
    * @return returns null as source type
    */
-  @Nullable
+  @Nonnull
   SourceType getSourceType();
 
   @Nonnull

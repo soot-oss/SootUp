@@ -27,6 +27,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.interceptors.ConditionalBranchFolder;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
 @Category(Java8Test.class)
@@ -44,7 +45,7 @@ public class ConditionalBranchFolderTest {
   @Test
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(0);
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     assertEquals(
         Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
         Utils.bodyStmtsAsStrings(builder.build()));
@@ -60,7 +61,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(1);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(
@@ -72,7 +73,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranchingWithNoConclusiveIfCondition() {
     Body.BodyBuilder builder = createBodyBuilder(2);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));
@@ -87,7 +88,7 @@ public class ConditionalBranchFolderTest {
   private static Body.BodyBuilder createBodyBuilder(int constantCondition) {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
     JavaJimple javaJimple = JavaJimple.getInstance();
-    StmtPositionInfo noPositionInfo = StmtPositionInfo.createNoStmtPositionInfo();
+    StmtPositionInfo noPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
     JavaClassType stringType = factory.getClassType("java.lang.String");
     Local a = JavaJimple.newLocal("a", stringType);

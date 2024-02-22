@@ -68,7 +68,7 @@ public class Aggregator implements BodyInterceptor {
    * given a def d and a use u, d has no other uses, u has no other defs, collapse d and u.
    */
   @Override
-  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View<?> view) {
+  public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
     List<Stmt> stmts = builder.getStmts();
     Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);
@@ -191,22 +191,24 @@ public class Aggregator implements BodyInterceptor {
         Stmt newStmt;
 
         final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
-        // FIXME: this try-catch is an awful hack for "ValueBox.canContainValue" -> try to determine
+        // TODO: this try-catch is an awful hack for "ValueBox.canContainValue" -> try to determine
         // a replaceability earlier!
         try {
           replaceVisitor.caseAssignStmt(assignStmt);
           newStmt = replaceVisitor.getResult();
         } catch (ClassCastException iae) {
-          newStmt = null;
+          continue;
         }
 
-        if (newStmt != null) {
+        // have we been able to inline the value into the newStmt?
+        if (stmt != newStmt) {
           graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
             Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
             graph.setStartingStmt(newStartingStmt);
           }
           graph.removeNode(relevantDef);
+          builder.removeDefLocalsOf(relevantDef);
         }
       }
     }

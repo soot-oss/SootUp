@@ -44,7 +44,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.util.Copyable;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -56,7 +55,7 @@ import sootup.core.util.printer.StmtPrinter;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
+public class SootMethod extends SootClassMember<MethodSignature> implements Method {
 
   @Nonnull private final ImmutableSet<MethodModifier> modifiers;
   /**
@@ -344,7 +343,12 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * @author Jan Martin Persch
    */
   public static class SootMethodBuilder
-      implements MethodSourceStep, SignatureStep, ModifierStep, ThrownExceptionsStep, BuildStep {
+      implements MethodSourceStep,
+          SignatureStep,
+          ModifierStep,
+          ThrownExceptionsStep,
+          BuildStep,
+          HasPosition {
 
     @Nullable private BodySource source;
     @Nonnull private Iterable<MethodModifier> modifiers = Collections.emptyList();
@@ -368,6 +372,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     }
 
     @Nonnull
+    @Override
     public Position getPosition() {
       return position;
     }

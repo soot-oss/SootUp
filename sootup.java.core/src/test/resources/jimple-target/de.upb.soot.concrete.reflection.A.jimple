@@ -14,11 +14,11 @@ public class de.upb.sootup.concrete.reflection.A extends java.lang.Object
 
     public static void staticFoo()
     {
-        java.io.PrintStream $r0;
+        java.io.PrintStream r0;
 
-        $r0 = <java.lang.System: java.io.PrintStream out>;
+        r0 = <java.lang.System: java.io.PrintStream out>;
 
-        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("foo");
+        virtualinvoke r0.<java.io.PrintStream: void println(java.lang.String)>("foo");
 
         return;
     }

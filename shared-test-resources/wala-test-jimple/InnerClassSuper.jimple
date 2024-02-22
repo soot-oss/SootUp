@@ -18,20 +18,20 @@ public class InnerClassSuper extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0;
-        Sub$SubInner $r1;
-        Sub $r2;
+        Sub$SubInner r1;
+        Sub r2;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r1 = new Sub$SubInner;
+        r1 = new Sub$SubInner;
 
-        $r2 = new Sub;
+        r2 = new Sub;
 
-        specialinvoke $r2.<Sub: void <init>()>();
+        specialinvoke r2.<Sub: void <init>()>();
 
-        virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+        virtualinvoke r2.<java.lang.Object: java.lang.Class getClass()>();
 
-        specialinvoke $r1.<Sub$SubInner: void <init>(Sub)>($r2);
+        specialinvoke r1.<Sub$SubInner: void <init>(Sub)>(r2);
 
         return;
     }

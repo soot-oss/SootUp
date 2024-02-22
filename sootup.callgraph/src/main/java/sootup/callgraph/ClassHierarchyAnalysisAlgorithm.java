@@ -49,7 +49,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    *
    * @param view it contains the data of the classes and methods
    */
-  public ClassHierarchyAnalysisAlgorithm(@Nonnull View<? extends SootClass<?>> view) {
+  public ClassHierarchyAnalysisAlgorithm(@Nonnull View view) {
     super(view);
   }
 
@@ -120,14 +120,20 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
         .subtypesOf(targetMethodSignature.getDeclClassType())
         .forEach(
             classType -> {
-              SootClass<?> clazz = view.getClass(classType).orElse(null);
-              if (clazz == null) return;
+              SootClass clazz = view.getClass(classType).orElse(null);
+              if (clazz == null) {
+                return;
+              }
               // check if method is implemented
               SootMethod method =
                   clazz.getMethod(targetMethodSignature.getSubSignature()).orElse(null);
-              if (method != null && !method.isAbstract()) targets.add(method.getSignature());
+              if (method != null && !method.isAbstract()) {
+                targets.add(method.getSignature());
+              }
               // save classes with no implementation of the searched method
-              if (method == null && !clazz.isInterface()) noImplementedMethod.add(classType);
+              if (method == null && !clazz.isInterface()) {
+                noImplementedMethod.add(classType);
+              }
               // collect all default methods
               clazz
                   .getInterfaces()
@@ -140,8 +146,9 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
                                             interfaceType, targetMethodSignature.getSubSignature()))
                                 .orElse(null);
                         // contains an implemented default method
-                        if (defaultMethod != null && !defaultMethod.isAbstract())
+                        if (defaultMethod != null && !defaultMethod.isAbstract()) {
                           targets.add(defaultMethod.getSignature());
+                        }
                       });
             });
     return targets;
@@ -149,7 +156,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void postProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {
@@ -158,7 +165,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
 
   @Override
   protected void preProcessingMethod(
-      View<? extends SootClass<?>> view,
+      View view,
       MethodSignature sourceMethod,
       @Nonnull Deque<MethodSignature> workList,
       @Nonnull MutableCallGraph cg) {

@@ -38,7 +38,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getStaticMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts1());
-    SootClass<?> clazz = loadClass(getDeclaredClassSignature());
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
             .anyMatch(
@@ -67,7 +67,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$l0 := @this: DeclareField",
+            "l0 := @this: DeclareField",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
             "return")
@@ -85,7 +85,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "$l0 := @this: DeclareField",
+            "l0 := @this: DeclareField",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "$stack1 = <DeclareField: int i>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1)",

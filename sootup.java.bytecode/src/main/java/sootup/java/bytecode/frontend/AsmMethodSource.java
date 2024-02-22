@@ -47,10 +47,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
@@ -91,12 +88,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   private OperandStack operandStack;
   private Map<LabelNode, Stmt> trapHandler;
 
+  /** Labels at which a trap handler range (try block) begins */
+  private final Map<LabelNode, TryCatchBlockNode> startTrapHandler = new HashMap<>();
+
+  /** Labels at which a trap handler range (try block) ends */
+  private final Map<LabelNode, TryCatchBlockNode> endTrapHandler = new HashMap<>();
+
+  /** Keeps track of all trap handlers that are active at the current instruction */
+  Set<TryCatchBlockNode> activeTrapHandlers = new HashSet<>();
+
   private int currentLineNumber = -1;
   private int maxLineNumber = 0;
 
   @Nullable private JavaClassType declaringClass;
 
-  private final View<?> view;
+  private final View view;
   private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
@@ -114,7 +120,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      View<?> view,
+      View view,
       @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
     this.bodyInterceptors = bodyInterceptors;
@@ -144,7 +150,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   StmtPositionInfo getStmtPositionInfo() {
     return currentLineNumber > 0
         ? new SimpleStmtPositionInfo(currentLineNumber)
-        : StmtPositionInfo.createNoStmtPositionInfo();
+        : StmtPositionInfo.getNoStmtPositionInfo();
   }
 
   @Override
@@ -167,6 +173,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // reserve space/ insert labels in datastructure  - necessary?! its useless if not assigned
       // later.. -> check the meaning of that containsKey() check
       trapHandler.put(tc.handler, null);
+      startTrapHandler.put(tc.start, tc);
+      endTrapHandler.put(tc.end, tc);
     }
 
     /* build body (add stmts, locals, traps, etc.) */
@@ -224,6 +232,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
+        bodyBuilder.getStmtGraph().validateStmtConnectionsInGraph();
       } catch (Exception e) {
         throw new IllegalStateException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
@@ -257,7 +266,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx, false); // FIXME: isField
+      String name = determineLocalName(idx);
       local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
       locals.set(idx, local);
     }
@@ -265,24 +274,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   @Nonnull
-  private String determineLocalName(int idx, boolean isField) {
-    String name;
+  private String determineLocalName(int idx) {
     if (localVariables != null) {
-      name = null;
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index == idx) {
-          name = lvn.name;
-          break;
+          // TODO: take into consideration in which range this name is valid ->lvn.start/end
+          return lvn.name;
         }
       }
-      /* normally for try-catch blocks */
-      if (name == null) {
-        name = "l" + idx;
-      }
-    } else {
-      name = "l" + idx;
+      /* usually reached for try-catch blocks */
     }
-    return isField ? name : "$" + name;
+    return "l" + idx;
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
@@ -1248,6 +1250,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   private void convertLabel(@Nonnull LabelNode ln) {
+    if (startTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.add(startTrapHandler.get(ln));
+    }
+
+    if (endTrapHandler.containsKey(ln)) {
+      activeTrapHandlers.remove(endTrapHandler.get(ln));
+    }
+
     // only do it for Labels which are referring to a traphandler
     if (!trapHandler.containsKey(ln)) {
       return;
@@ -1301,7 +1311,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       BranchedInsnInfo edge = edges.get(branchingInsn, tgt);
       if (edge == null) {
         // [ms] check why this edge could be already there
-        edge = new BranchedInsnInfo(tgt, operandStack.getStack(), currentLineNumber);
+        edge =
+            new BranchedInsnInfo(
+                tgt, operandStack.getStack(), currentLineNumber, activeTrapHandlers);
         edge.addToPrevStack(stackss);
         edges.put(branchingInsn, tgt, edge);
         conversionWorklist.add(edge);
@@ -1350,16 +1362,26 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         opr.stackLocal = local;
 
         worklist.add(
-            new BranchedInsnInfo(handlerNode, Collections.singletonList(opr), currentLineNumber));
+            new BranchedInsnInfo(
+                handlerNode,
+                Collections.singletonList(opr),
+                currentLineNumber,
+                activeTrapHandlers));
 
         // Save the statements
         inlineExceptionHandlers.put(handlerNode, as);
       } else {
-        worklist.add(new BranchedInsnInfo(handlerNode, new ArrayList<>(), currentLineNumber));
+        worklist.add(
+            new BranchedInsnInfo(
+                handlerNode, new ArrayList<>(), currentLineNumber, activeTrapHandlers));
       }
     }
     worklist.add(
-        new BranchedInsnInfo(instructions.getFirst(), Collections.emptyList(), currentLineNumber));
+        new BranchedInsnInfo(
+            instructions.getFirst(),
+            Collections.emptyList(),
+            currentLineNumber,
+            activeTrapHandlers));
     Table<AbstractInsnNode, AbstractInsnNode, BranchedInsnInfo> edges = HashBasedTable.create(1, 1);
 
     do {
@@ -1368,6 +1390,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       currentLineNumber = edge.getLineNumber();
       operandStack.setOperandStack(
           new ArrayList<>(edge.getOperandStacks().get(edge.getOperandStacks().size() - 1)));
+      activeTrapHandlers = edge.getActiveTrapHandlers();
       do {
         int type = insn.getType();
         if (type == FIELD_INSN) {
@@ -1511,7 +1534,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         return new SimpleStmtPositionInfo(((LineNumberNode) node).line);
       }
     }
-    return StmtPositionInfo.createNoStmtPositionInfo();
+    return StmtPositionInfo.getNoStmtPositionInfo();
   }
 
   @Nonnull
@@ -1524,8 +1547,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal =
-          JavaJimple.newLocal(determineLocalName(localIdx, false), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
@@ -1537,7 +1559,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       // [BH] parameterlocals do not exist yet -> create with annotation
       JavaLocal local =
           JavaJimple.newLocal(
-              determineLocalName(localIdx, false),
+              determineLocalName(localIdx),
               parameterType,
               AsmUtil.createAnnotationUsage(
                   invisibleParameterAnnotations == null ? null : invisibleParameterAnnotations[i]));
@@ -1619,12 +1641,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       if (!danglingLabel.isEmpty()) {
         // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
-        Stmt targetStmt =
-            stmt instanceof StmtContainer ? ((StmtContainer) stmt).getFirstStmt() : stmt;
+        Stmt targetStmt = stmt;
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt identityRef = findIdentityRefInStmtContainer(stmt);
+          JIdentityStmt identityRef = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
           if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
             danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
           }
@@ -1632,7 +1653,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.clear();
       }
 
-      emitStmt(stmt, stmtList);
+      stmtList.add(stmt);
 
     } while ((insn = insn.getNext()) != null);
 
@@ -1657,56 +1678,28 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       branchingMap.put(fromStmt, targets);
     }
 
-    final List<Trap> traps = buildTraps();
-    // TODO: performance: [ms] we already know Blocks borders from the label information -> use
-    // addBlocks+collect trap data and connect blocks afterwards via branching information +
-    // collected fallsthroughBlock information
-    graph.initializeWith(stmtList, branchingMap, traps);
-
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
-    // FIXME:[ms] the following code seems odd.. we need a testcase to test inlineexceptionhandling!
     for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
 
       JIdentityStmt handlerStmt = entry.getValue();
-      emitStmt(handlerStmt, stmtList);
-      trapHandler.put(entry.getKey(), handlerStmt);
-      // TODO: update handlerStmts positioninfo!
+      stmtList.add(handlerStmt);
+      LabelNode labelNode = entry.getKey();
+      trapHandler.put(labelNode, handlerStmt);
 
       // jump back to the original implementation
       JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
       stmtList.add(gotoStmt);
 
-      // add stmtList to graph
-      graph.addBlock(stmtList, currentTraps);
-      stmtList.clear();
-
-      // connect tail of stmtList with its target
-      Stmt targetStmt = insnToStmt.get(entry.getKey());
-      graph.putEdge(gotoStmt, 0, targetStmt);
+      Stmt targetStmt = insnToStmt.get(labelNode);
+      branchingMap.put(gotoStmt, Collections.singletonList(targetStmt));
     }
-  }
 
-  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
-    if (handlerStmt instanceof StmtContainer) {
-      block.addAll(((StmtContainer) handlerStmt).getStmts());
-    } else {
-      block.add(handlerStmt);
-    }
-  }
-
-  @Nullable
-  private JIdentityStmt findIdentityRefInStmtContainer(@Nonnull Stmt stmt) {
-    if (stmt instanceof JIdentityStmt) {
-      return (JIdentityStmt) stmt;
-    } else if (stmt instanceof StmtContainer) {
-      for (Stmt stmtEntry : ((StmtContainer) stmt).getStmts()) {
-        if (stmtEntry instanceof JIdentityStmt) {
-          return (JIdentityStmt) stmtEntry;
-        }
-      }
-    }
-    return null;
+    final List<Trap> traps = buildTraps();
+    // TODO: performance: [ms] we already know Blocks borders from the label information -> use
+    // addBlocks+collect trap data and connect blocks afterwards via branching information +
+    // collected fallsthroughBlock information
+    graph.initializeWith(stmtList, branchingMap, traps);
   }
 
   /**
@@ -1772,13 +1765,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream()
-            .flatMap(
-                stmt ->
-                    stmt instanceof StmtContainer
-                        ? ((StmtContainer) stmt).getStmts().stream()
-                        : Stream.of(stmt))
-            .filter(stmt -> stmt.getUses().contains(value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()

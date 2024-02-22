@@ -21,17 +21,22 @@ package sootup.java.bytecode.frontend;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 
@@ -52,6 +57,13 @@ class Operand {
   @Nonnull private final StmtPositionInfo positionInfo;
 
   /**
+   * All trap handlers (catch blocks) that were active at the instruction where the operand was
+   * created. This is important because when the operand is used, the active trap handlers might
+   * differ, in which case the operand can't be inlined into its usage.
+   */
+  private final Set<TryCatchBlockNode> activeTrapHandlers;
+
+  /**
    * Constructs a new stack operand.
    *
    * @param insn the instruction that produced this operand.
@@ -63,6 +75,8 @@ class Operand {
     this.value = value;
     this.methodSource = methodSource;
     this.positionInfo = methodSource == null ? null : methodSource.getStmtPositionInfo();
+    this.activeTrapHandlers =
+        methodSource == null ? new HashSet<>() : new HashSet<>(methodSource.activeTrapHandlers);
   }
 
   Local getOrAssignValueToStackLocal() {
@@ -94,11 +108,18 @@ class Operand {
       return;
     }
 
-    JAssignStmt assignStmt = methodSource.getStmt(insn);
-    if (assignStmt == null) {
+    Stmt stmt = methodSource.getStmt(insn);
+    if (!(stmt instanceof JAssignStmt)) {
       // emit `$newStackLocal = value`
-      methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
+      if (value instanceof JCaughtExceptionRef) {
+        JIdentityStmt identityStmt =
+            Jimple.newIdentityStmt(newStackLocal, (JCaughtExceptionRef) value, positionInfo);
+        methodSource.setStmt(insn, identityStmt);
+      } else {
+        methodSource.setStmt(insn, Jimple.newAssignStmt(newStackLocal, value, positionInfo));
+      }
     } else {
+      JAssignStmt assignStmt = (JAssignStmt) stmt;
       assert assignStmt.getLeftOp() == oldStackLocal || assignStmt.getLeftOp() == newStackLocal;
       // replace `$oldStackLocal = value` with `$newStackLocal = value`
       methodSource.replaceStmt(assignStmt, assignStmt.withVariable(newStackLocal));
@@ -131,7 +152,12 @@ class Operand {
   }
 
   Immediate toImmediate() {
-    if (stackLocal == null && value instanceof Immediate) {
+    // Don't inline when the trap handlers (catch blocks) change between the operand and the usage.
+    // Even though immediates are just locals or constants,
+    // the corresponding instructions could still throw a `VirtualMachineError`.
+    boolean matchingTrapHandlers = this.activeTrapHandlers.equals(methodSource.activeTrapHandlers);
+
+    if (stackLocal == null && value instanceof Immediate && matchingTrapHandlers) {
       return (Immediate) value;
     }
 
