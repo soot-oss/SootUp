@@ -62,20 +62,12 @@ public class IdentityValidatorTest {
         jimpleView = new JimpleView(jimpleInputLocation);
         final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
         assertFalse(classSource1.isPresent());
-
-        classes = new HashSet<>(); // Set to track the classes to check
-
-        for (SootClass aClass : jimpleView.getClasses()) {
-            if (!aClass.isLibraryClass()) {
-                classes.add(aClass);
-            }
-        }
     }
 
     @Test
     public void testThisRefSuccess() {
         List<ValidationException> validationExceptions_success = identityValidator.validate(
-                getBody("<init>"), jimpleView);
+                getBody("<IdentityValidator: void <init>()>"), jimpleView);
 
         assertEquals(0, validationExceptions_success.size());
     }
@@ -83,7 +75,7 @@ public class IdentityValidatorTest {
     @Test
     public void testParameterRefSuccess() {
         List<ValidationException> validationExceptions_success = identityValidator.validate(
-                getBody("testParameterRefSuccess"), jimpleView);
+                getBody("<IdentityValidator: void testParameterRefSuccess(int)>"), jimpleView);
 
         assertEquals(0, validationExceptions_success.size());
     }
@@ -91,7 +83,7 @@ public class IdentityValidatorTest {
     @Test
     public void testNoThisrRef() {
         List<ValidationException> validationExceptions_success = identityValidator.validate(
-                getBody("testNoThisrRef"), jimpleView);
+                getBody("<IdentityValidator: void testNoThisrRef(int)>"), jimpleView);
 
         assertEquals(1, validationExceptions_success.size());
     }
@@ -99,7 +91,7 @@ public class IdentityValidatorTest {
     @Test
     public void testParameterRefMultiLocals() {
         List<ValidationException> validationExceptions_success = identityValidator.validate(
-                getBody("testParameterRefMultiLocals"), jimpleView);
+                getBody("<IdentityValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
 
         assertEquals(1, validationExceptions_success.size());
     }
@@ -107,7 +99,7 @@ public class IdentityValidatorTest {
     @Test
     public void testParameterRefNoLocal() {
         List<ValidationException> validationExceptions_success = identityValidator.validate(
-                getBody("testParameterRefNoLocal"), jimpleView);
+                getBody("<IdentityValidator: void testParameterRefNoLocal(int)>"), jimpleView);
 
         assertEquals(1, validationExceptions_success.size());
     }
@@ -129,16 +121,9 @@ public class IdentityValidatorTest {
                 }
      */
 
-    Body getBody(String methodName) {
-        return classes.stream()
-                .filter(c -> c.getType().getClassName().equals("IdentityValidator"))
-                .findFirst()
-                .get()
-                .getMethods()
-                .stream()
-                .filter(m -> m.getName().equals(methodName))
-                .map(m -> m.getBody())
-                .findFirst()
-                .get();
+    Body getBody(String methodSignature) {
+        return jimpleView.getMethod(jimpleView.getIdentifierFactory()
+                .parseMethodSignature(methodSignature) )
+                .get().getBody();
     }
 }
