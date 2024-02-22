@@ -315,6 +315,82 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   @Test
   public void testMixedPrimitiveArray() {
     final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "mixedPrimitiveArray", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local numericLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local arrayLocal =
+        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+
+    Assert.assertEquals(PrimitiveType.getInt(), numericLocal.getType());
+    Assert.assertEquals(
+        ArrayType.createArrayType(PrimitiveType.getByte(), 1), arrayLocal.getType());
+  }
+
+  @Test
+  public void testDependentAugmentedInteger1Promotion() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                "Misc", "dependentAugmentedInteger1Promotion", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local a =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local b =
+        body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+    Local bTemp =
+        body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
+
+    // `b` only every gets assigned `0` and `1`, which means it could be a `boolean`.
+    // But because it gets assigned to `a` which has to be `int`, `b` needs to be an `int` too.
+    Assert.assertEquals(PrimitiveType.getInt(), a.getType());
+    Assert.assertEquals(TopType.getInstance(), b.getType());
+    Assert.assertEquals(PrimitiveType.getBoolean(), bTemp.getType());
+  }
+
+  @Test
+  public void testImpossibleTyping() {
+    final JavaView view =
+        new JavaView(
+            new JavaClassPathAnalysisInputLocation(
+                baseDir + "Misc/",
+                SourceType.Library,
+                Collections.singletonList(new TypeAssigner())));
+
+    final MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature("Misc", "impossibleTyping", "void", Collections.emptyList());
+    final Body body = view.getMethod(methodSignature).get().getBody();
+
+    Local a =
+        body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
+    Local aTemp =
+        body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
+
+    Assert.assertEquals(TopType.getInstance(), a.getType());
+    Assert.assertEquals(PrimitiveType.getBoolean(), aTemp.getType());
+  }
+
+  @Test
+  public void testArrayTest() {
+    final JavaView view =
             new JavaView(
                     new JavaClassPathAnalysisInputLocation(
                             baseDir + "Misc/",
@@ -323,15 +399,15 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     final MethodSignature methodSignature =
             view.getIdentifierFactory()
-                    .getMethodSignature("Misc", "mixedPrimitiveArray", "void", Collections.emptyList());
+                    .getMethodSignature("Misc", "arrayTest", "void", Collections.emptyList());
     final Body body = view.getMethod(methodSignature).get().getBody();
 
-    Local numericLocal =
+    Local a =
             body.getLocals().stream().filter(local -> local.getName().equals("l0")).findAny().get();
-    Local arrayLocal =
-            body.getLocals().stream().filter(local -> local.getName().equals("l1")).findAny().get();
+    Local aTemp =
+            body.getLocals().stream().filter(local -> local.getName().equals("#l0")).findAny().get();
 
-    Assert.assertEquals(PrimitiveType.getInt(), numericLocal.getType());
-    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getByte(), 1), arrayLocal.getType());
+    Assert.assertEquals(new JavaClassType("Object", new JavaPackageName("java.lang")), a.getType());
+    Assert.assertEquals(ArrayType.createArrayType(PrimitiveType.getDouble(), 1), aTemp.getType());
   }
 }

@@ -69,6 +69,10 @@ public class TypeResolver {
       return false;
     }
 
+    TypePromotionVisitor promotionVisitor =
+        new TypePromotionVisitor(builder, evalFunction, hierarchy);
+    typings = typings.stream().map(promotionVisitor::getPromotedTyping).collect(Collectors.toSet());
+
     // Promote `null`/`BottomType` types to `Object`.
     for (Typing typing : typings) {
       for (Local local : builder.getLocals()) {
@@ -80,21 +84,14 @@ public class TypeResolver {
     minCastsCounter.insertCastStmts();
     Typing minCastsTyping = minCastsCounter.getTyping();
 
-    TypePromotionVisitor promotionVisitor =
-        new TypePromotionVisitor(builder, evalFunction, hierarchy);
-    Typing promotedTyping = promotionVisitor.getPromotedTyping(minCastsTyping);
-    if (promotedTyping == null) {
-      return false;
-    }
-
     for (Local local : builder.getLocals()) {
-      final Type type = promotedTyping.getType(local);
+      final Type type = minCastsTyping.getType(local);
       if (type == null) {
         continue;
       }
       Type convertedType = convertType(type);
       if (convertedType != null) {
-        promotedTyping.set(local, convertedType);
+        minCastsTyping.set(local, convertedType);
       }
     }
 
@@ -102,7 +99,7 @@ public class TypeResolver {
         builder.getLocals().stream()
             .map(
                 local -> {
-                  Type type = promotedTyping.getMap().getOrDefault(local, local.getType());
+                  Type type = minCastsTyping.getMap().getOrDefault(local, local.getType());
                   return local.withType(type);
                 })
             .collect(Collectors.toSet()));

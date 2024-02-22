@@ -92,35 +92,33 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {
-        if (rhs instanceof Local) {
-          Type type_rhs = typing.getType((Local) rhs);
-          // if base type of lhs is an object-like-type, retrieve its base type from array
-          // allocation site.
-          if (type_base != null
-              && (Type.isObjectLikeType(type_base)
-                  || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType))) {
-            Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
-            Collection<Stmt> defStmts = defs.get(base);
-            boolean findDef = false;
-            if (defStmts != null) {
-              for (Stmt defStmt : defStmts) {
-                if (defStmt instanceof JAssignStmt) {
-                  Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
-                  if (arrExpr instanceof JNewArrayExpr) {
-                    arrayType = (ArrayType) arrExpr.getType();
-                    findDef = true;
-                    break;
-                  } else if (arrExpr instanceof JNewMultiArrayExpr) {
-                    arrayType = ((JNewMultiArrayExpr) arrExpr).getBaseType();
-                    findDef = true;
-                    break;
-                  }
+        Type type_rhs = evalFunction.evaluate(typing, rhs, stmt, graph);
+        // if base type of lhs is an object-like-type, retrieve its base type from array
+        // allocation site.
+        if (type_base != null
+            && (Type.isObjectLikeType(type_base)
+                || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType))) {
+          Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
+          Collection<Stmt> defStmts = defs.get(base);
+          boolean findDef = false;
+          if (defStmts != null) {
+            for (Stmt defStmt : defStmts) {
+              if (defStmt instanceof JAssignStmt) {
+                Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
+                if (arrExpr instanceof JNewArrayExpr) {
+                  arrayType = (ArrayType) arrExpr.getType();
+                  findDef = true;
+                  break;
+                } else if (arrExpr instanceof JNewMultiArrayExpr) {
+                  arrayType = ((JNewMultiArrayExpr) arrExpr).getBaseType();
+                  findDef = true;
+                  break;
                 }
               }
             }
-            if (!findDef && type_rhs != null) {
-              arrayType = Type.createArrayType(type_rhs, 1);
-            }
+          }
+          if (!findDef && type_rhs != null) {
+            arrayType = Type.createArrayType(type_rhs, 1);
           }
         }
         if (arrayType == null && type_base != null) {

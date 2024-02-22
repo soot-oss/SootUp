@@ -59,4 +59,41 @@ public class Misc {
       b[0] = a;
     }
   }
+
+  public static void impossibleTyping() {
+    {
+      boolean a = false;
+      useBoolean(a);
+    }
+    {
+      int a = 2;
+    }
+  }
+
+  public static void dependentAugmentedInteger1Promotion() {
+    int a = 65537;
+    {
+      boolean b = false;
+      useInt(a);
+      useBoolean(b);
+    }
+    {
+      int b = 0;
+      a = b;
+    }
+  }
+
+  private static void useInt(int i) {}
+
+  private static void useBoolean(boolean b) {}
+
+  public static void arrayTest() {
+    {
+      double[] a = new double[1];
+      a[0] = 0.0;
+    }
+    {
+      String a = "";
+    }
+  }
 }
