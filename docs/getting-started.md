@@ -416,7 +416,7 @@ Example code to help getting start with SootUp
     if (interceptorWorked) {
       System.out.println("Interceptor worked as expected.");
     } else {
-      System.out.println("Interceptor did not work as expected.");
+    System.out.println("Interceptor did not work as expected.");
     }
     ```
     
@@ -424,7 +424,7 @@ Example code to help getting start with SootUp
     from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                      present.
   - Then it prints the result of the interceptor check.
 
-b) 'CallGraphExample'
+   c) 'CallGraphExample'
 
    !!! example "First segment of CallGraphExample Program"
    - package sootup.examples; - defines the package name for the Java class.
@@ -448,10 +448,10 @@ b) 'CallGraphExample'
   - Then we have provided towo inputLocations.add() - one for the project's class file directory and another for Java's runtime library (rt.jar).
   - Then we have created a JavaView which is used for analysing the Java program.
 
-    ```java
-    ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
-    ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
-    MethodSignature entryMethodSignature =
+   ```java
+   ClassType classTypeA = view.getIdentifierFactory().getClassType("A");
+   ClassType classTypeB = view.getIdentifierFactory().getClassType("B");
+   MethodSignature entryMethodSignature =
             JavaIdentifierFactory.getInstance()
                     .getMethodSignature(
                             classTypeB,
@@ -463,6 +463,7 @@ b) 'CallGraphExample'
     - Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
     - ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
 
+
    ```java
    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
    System.out.println(typeHierarchy.subclassesOf(classTypeA));
@@ -471,33 +472,136 @@ b) 'CallGraphExample'
    cg.callsFrom(entryMethodSignature).forEach(System.out::println);
    ```
     
-- Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
-- Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
-- Prints information about calls from the entry method in the call graph.
+  - Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
+  - Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
+  - Prints information about calls from the entry method in the call graph.
 
-   d) ClassHierarchyExample
-           1) package sootup.examples; - defines the package name for the Java class.
-           2) import statement - defines various classes and interfaces from different packages that the program uses.
-           3) public class ClassHierarchy - declares a public class named "ClassHierarchy".
-           4) Then we have created a main method in which is the entry point for the code.
-           5) Then creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis. Two locations are added: one for the project's binary directory and another for the default Java runtime library (rt.jar).
-           6) Initializes a JavaView object with the previously created input locations. 
-           7) Initializes a ViewTypeHierarchy object using the view. This object will be used to analyze the class hierarchy.
-           8) Then we have created two ClassTypes. These lines get JavaClassType objects for classes "A" and "C". These types are used for further hierarchy analysis.
-           9) Checks the direct subclasses of class "C". It verifies if all direct subclasses are "D" using two different methods: comparing class names and fully qualified names.
-           10) Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
-           11) Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based on the result.
 
-    e) MutatingSootClassExample
+  d) 'ClassHierarchyExample'
+
+   !!! example "First segment of ClassHierarchyExample Program"
+   - package sootup.examples; - defines the package name for the Java class.
+   - import statement - defines various classes and interfaces from different packages that the program uses.
+   - public class CallGraphExample - declares a public class named 'CallGraphExample' which is the main class for this program.
+   - Then we have created a main method which is the entry point of the program.
+  
+   ```java
+   List<AnalysisInputLocation> inputLocations = new ArrayList<>();
+   inputLocations.add(
+        new JavaClassPathAnalysisInputLocation("src/test/resources/Classhierarchy/binary"));
+   inputLocations.add(new DefaultRTJarAnalysisInputLocation()); // add rt.jar
+
+   JavaView view = new JavaView(inputLocations);
+   ```
+
+   
+  - Then creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis. Two locations are added: one for 
+    the project's binary directory and another for the default Java runtime library (rt.jar).
+  - Initializes a JavaView object with the previously created input locations.
+ 
+
+  ```java
+  final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+  JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("A");
+  JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
+  Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
+  boolean allSubtypesAreD = subtypes.stream().allMatch(type -> type.getClassName().equals("D"));
+  boolean allSubtypesFullyQualifiedAreD =
+        subtypes.stream().allMatch(type -> type.getFullyQualifiedName().equals("D"));
+
+  if (allSubtypesAreD && allSubtypesFullyQualifiedAreD) {
+  System.out.println("All direct subtypes of Class C are correctly identified as Class D.");
+  } else {
+  System.out.println("Direct subtypes of Class C are not correctly identified.");
+  }
+  ```
+    - Initializes a ViewTypeHierarchy object using the view. This object will be used to analyze the class hierarchy.
+    - Then we have created two ClassTypes. These lines get JavaClassType objects for classes "A" and "C". These types are used for further hierarchy analysis.
+    - Checks the direct subclasses of class "C". It verifies if all direct subclasses are "D" using two different methods: comparing class names and fully               qualified names.
+    - Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
+ 
+    ```java
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);
+    if (superClasses.equals(
+        Arrays.asList(
+            clazzTypeA, JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")))) {
+      System.out.println("Superclasses of Class C are correctly identified.");
+    } else {
+      System.out.println("Superclasses of Class C are not correctly identified.");
+    }
+    ```
+
+    - Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based        on the result.
+
+
+   e) 'MutatingSootClassExample'
+
+   !!! example "First segment of MutatingSootClassExample Program"
+   - package sootup.examples; - defines the package name for the Java class.
+   - import statement - defines various classes and interfaces from different packages that the program uses.
+   - public class MutatingSootClassExample - declares a public class named 'MutatingSootClassExample' which is the main class for this program.
+   - Then we have created a main method which is the entry point of the program.
+ 
+  ```java
+  AnalysisInputLocation inputLocation =
+   PathBasedAnalysisInputLocation.create(
+            Paths.get("src/test/resources/Mutatingclasssoot/binary"), null);
+  JavaView view = new JavaView(inputLocation);
+  JavaClassType classType = view.getIdentifierFactory().getClassType("HelloWorld");
+  MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .getMethodSignature(
+                classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+  ```
+   
+  - First we have created an 'AnalysisInputLocation' which points to a directory which contains the class files to be analysed.
+  - Then we have created a JavaView which allos us to retrievet the classes.
+  - And also created a ClassType to get the class 'HelloWorld' and a method within that class ie main for analysis using MethodSignature.
+
+
+  ```java
+  if (!view.getClass(classType).isPresent()) {
+  System.out.println("Class not found.");
+  return;
+  }
+  JavaSootClass sootClass = view.getClass(classType).get();
+  if (!view.getMethod(methodSignature).isPresent()) {
+  System.out.println("Method not found.");
+  return;
+  }
+  JavaSootMethod method = view.getMethod(methodSignature).get();
+  ```
            
-           1) package sootup.examples; - defines the package name for the Java class.
-           2) import statement - defines various classes and interfaces from different packages that the program uses.
-           3) public class MutatingSootClass - declares a public class named "MutatingSootClass".
-           4) Then we have created a main method in which is the entry point for the code.
-           5) First we have created an 'AnalysisInputLocation' which points to a directory which contains the class files to be analysed.
-           6) Then we have created a JavaView which allos us to retrievet the classes.
-           7) And also created a ClassType to get the class 'HelloWorld' and a method within that class ie main for analysis using MethodSignature.
-           8) THen we are checking and retrieving the class and method.
-           9) Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
-           10) Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old method in the class with the new method having the modified body.
-           11) Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a corresponding message.
+  - Then we are checking and retrieving the class and method.
+ 
+  ```java
+  Body oldBody = method.getBody();
+  System.out.println(oldBody);
+  Local newLocal = JavaJimple.newLocal("helloWorldLocal", IntType.getInt());
+  Body newBody = oldBody.withLocals(Collections.singleton(newLocal));
+  OverridingBodySource newBodySource =
+        new OverridingBodySource(method.getBodySource()).withBody(newBody);
+  OverridingJavaClassSource overridingJavaClassSource =
+        new OverridingJavaClassSource(sootClass.getClassSource());
+  JavaSootMethod newMethod = method.withOverridingMethodSource(old -> newBodySource);
+  OverridingJavaClassSource newClassSource =
+        overridingJavaClassSource.withReplacedMethod(method, newMethod);
+  SootClass newClass = sootClass.withClassSource(newClassSource);
+  System.out.println(newClass.getMethods().stream().findFirst().get().getBody());
+  if (newClass
+        .getMethod(
+            new MethodSubSignature(
+                "main",
+                Collections.singletonList(
+                    new ArrayType(new JavaClassType("String", new PackageName("java.lang")), 1)),
+                VoidType.getInstance()))
+        .get().getBody().getLocals().stream()
+        .anyMatch(local -> local.equals(newLocal))) {
+  System.out.println("New local exists in the modified method.");
+  } else {
+  System.out.println("New local does not exist in the modified method.");
+  }
+  ```
+  - Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
+  - Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old         method in the class with the new method having the modified body.
+  - Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a                corresponding message.
