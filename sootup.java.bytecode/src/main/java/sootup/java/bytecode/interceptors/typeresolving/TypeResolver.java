@@ -248,22 +248,19 @@ public class TypeResolver {
           BitSet dependStmtList = this.depends.get(local);
           // Up to now there's no ambiguity of types
           if (isFirstType) {
-            actualTyping.set(local, type);
-            // Type is changed, the associated definition stmts are necessary handled again
-            if (dependStmtList != null) {
-              actualSL.or(dependStmtList);
-            }
             isFirstType = false;
           } else {
             // Ambiguity handling: create new Typing and add it into workQueue
-            Typing newTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
-            workQueue.add(newTyping);
+            actualTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
+            workQueue.add(actualTyping);
+            actualSL = actualTyping.getStmtsIDList();
+          }
 
-            BitSet newSL = newTyping.getStmtsIDList();
-            newTyping.set(local, type);
-            if (dependStmtList != null) {
-              newSL.or(dependStmtList);
-            }
+          actualTyping.set(local, type);
+
+          // Type is changed, the associated definition stmts are necessary handled again
+          if (dependStmtList != null) {
+            actualSL.or(dependStmtList);
           }
         }
       }
