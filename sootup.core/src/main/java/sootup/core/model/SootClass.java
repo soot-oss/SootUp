@@ -258,6 +258,10 @@ public class SootClass extends AbstractClass implements HasPosition {
     return ClassModifier.isStatic(this.getModifiers());
   }
 
+  public boolean isAnnotation() {
+    return ClassModifier.isAnnotation(this.getModifiers());
+  }
+
   private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
 
   @Nonnull

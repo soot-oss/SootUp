@@ -25,6 +25,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
@@ -87,7 +88,8 @@ public class LocalPacker implements BodyInterceptor {
     Set<Local> newLocals = new LinkedHashSet<>();
     for (Stmt stmt : Lists.newArrayList(stmtGraph)) {
       Stmt newStmt = stmt;
-      for (Value use : stmt.getUses()) {
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value use = iterator.next();
         if (use instanceof Local) {
           Local newLocal = localToNewLocal.get(use);
           // assign a reasonable name
@@ -104,8 +106,9 @@ public class LocalPacker implements BodyInterceptor {
           newStmt = newStmt.withNewUse(use, newLocal);
         }
       }
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-        Local def = (Local) stmt.getDefs().get(0);
+      Optional<LValue> defOpt = stmt.getDef();
+      if (defOpt.isPresent() && defOpt.get() instanceof Local) {
+        Local def = (Local) defOpt.get();
         Local newLocal = localToNewLocal.get(def);
         // assign a reasonable name
         if (!newLocals.contains(newLocal)) {
@@ -217,9 +220,9 @@ public class LocalPacker implements BodyInterceptor {
 
     // TODO: check if sorted Stmts are necessary
     for (Stmt stmt : builder.getStmts()) {
-      if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
+      if (stmt.getDef().isPresent() && stmt.getDef().get() instanceof Local) {
 
-        Local def = (Local) stmt.getDefs().get(0);
+        Local def = (Local) stmt.getDef().get();
 
         Set<Local> aliveLocals = new HashSet<>();
         for (Stmt succ : graph.successors(stmt)) {

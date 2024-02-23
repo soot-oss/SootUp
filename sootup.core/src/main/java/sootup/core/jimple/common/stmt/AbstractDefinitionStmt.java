@@ -22,8 +22,8 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -50,23 +50,16 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
   @Override
   @Nonnull
-  public List<LValue> getDefs() {
-    final List<LValue> defs = new ArrayList<>();
-    defs.add(getLeftOp());
-    return defs;
+  public Optional<LValue> getDef() {
+    return Optional.of(getLeftOp());
   }
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    final List<Value> defsuses = getLeftOp().getUses();
-    final Value rightOp = getRightOp();
-    final List<Value> rightOpUses = rightOp.getUses();
-    List<Value> list = new ArrayList<>(defsuses.size() + rightOpUses.size() + 1);
-    list.addAll(defsuses);
-    list.add(rightOp);
-    list.addAll(rightOpUses);
-    return list;
+  public final Stream<Value> getUses() {
+    Value rightOp = getRightOp();
+    return Stream.concat(
+        Stream.concat(getLeftOp().getUses(), Stream.of(rightOp)), rightOp.getUses());
   }
 
   @Override

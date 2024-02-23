@@ -61,8 +61,9 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.add(op2);
 
     boolean isExpected = false;
+    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
     for (int i = 0; i < 3; i++) {
-      isExpected = newStmt.getUses().get(i).equivTo(expectedUses.get(i));
+      isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
         break;
       }
@@ -79,8 +80,9 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.set(1, newOp);
 
     isExpected = false;
+    collect = newStmt.getUses().collect(Collectors.toList());
     for (int i = 0; i < 3; i++) {
-      isExpected = newStmt.getUses().get(i).equivTo(expectedUses.get(i));
+      isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
         break;
       }
@@ -95,7 +97,7 @@ public class ReplaceUseStmtVisitorTest {
     expectedUses.clear();
     expectedUses.add(newOp);
 
-    assertEquals(stmt.getUses(), expectedUses);
+    assertEquals(expectedUses, stmt.getUses().collect(Collectors.toList()));
   }
 
   /** Test use replacing in case JInvokeStmt and JIfStmt Here JInvokeStmt is as an example */
@@ -117,8 +119,9 @@ public class ReplaceUseStmtVisitorTest {
         JavaJimple.newSpecialInvokeExpr(newOp, methodeWithOutParas, Collections.emptyList()));
 
     boolean isExpected = false;
+    List<Value> collect = newStmt.getUses().collect(Collectors.toList());
     for (int i = 0; i < 2; i++) {
-      isExpected = newStmt.getUses().get(i).equivTo(expectedUses.get(i));
+      isExpected = collect.get(i).equivTo(expectedUses.get(i));
       if (!isExpected) {
         break;
       }
@@ -126,8 +129,8 @@ public class ReplaceUseStmtVisitorTest {
     assertTrue(isExpected);
   }
 
-  @Test
   /** Test use replacing in other cases Here JReturnStmt is as an example */
+  @Test
   public void testCaseReturnStmt() {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(op1, newOp);
     Stmt stmt = JavaJimple.newRetStmt(op1, noStmtPositionInfo);
@@ -136,6 +139,6 @@ public class ReplaceUseStmtVisitorTest {
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-    assertEquals(newStmt.getUses(), expectedUses);
+    assertEquals(expectedUses, newStmt.getUses().collect(Collectors.toList()));
   }
 }

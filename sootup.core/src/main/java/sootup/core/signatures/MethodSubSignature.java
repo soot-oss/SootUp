@@ -85,6 +85,10 @@ public class MethodSubSignature extends SootClassMemberSubSignature
 
     MethodSubSignature that = (MethodSubSignature) o;
 
+    if (!super.equals(that)) {
+      return false;
+    }
+
     return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 

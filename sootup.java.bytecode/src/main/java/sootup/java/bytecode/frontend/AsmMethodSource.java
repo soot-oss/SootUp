@@ -321,7 +321,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         (opValue, operand) -> {
           if (!opValue.equivTo(local)) {
             boolean noRef = true;
-            for (Value use : opValue.getUses()) {
+            for (Iterator<Value> iterator = opValue.getUses().iterator(); iterator.hasNext(); ) {
+              Value use = iterator.next();
               if (use.equivTo(local)) {
                 noRef = false;
                 break;
@@ -1765,11 +1766,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
-            .filter(stmt -> stmt.getKey().getUses().contains(value))
+            .filter(stmt -> stmt.getKey().getUses().anyMatch(v -> v == value))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);

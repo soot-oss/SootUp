@@ -42,7 +42,7 @@ public class LegacyJimplePrinterTest {
             .setPosition(NoPositionInformation.getInstance())
             .build();
 
-    System.out.println(Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream()));
+    ArrayList<String> listOfStrings = Utils.filterJimple(Utils.bodyStmtsAsStrings(body).stream());
 
     SootMethod dummyMainMethod =
         new SootMethod(
