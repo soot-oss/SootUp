@@ -1,12 +1,11 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -24,12 +23,12 @@ import sootup.core.validation.ValidationException;
 import sootup.java.core.*;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ClassModifiersValidatorTest {
   JavaView view;
   ClassModifiersValidator classModifiersValidator;
 
-  @Before
+  @BeforeAll
   public void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     classModifiersValidator = new ClassModifiersValidator();
