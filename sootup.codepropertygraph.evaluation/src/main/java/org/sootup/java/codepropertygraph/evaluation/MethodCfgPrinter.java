@@ -26,7 +26,7 @@ public class MethodCfgPrinter {
 
       for (Path binFile : binFiles) {
         String baseName = extractBaseName(binFile);
-        Path jarFile = Paths.get(SOOTUP_DIR, baseName + ".jar");
+        Path jarFile = Paths.get(SOOTUP_DIR, baseName);
 
         if (Files.exists(jarFile)) {
           if (!baseName.startsWith("lombok")) continue;
@@ -38,15 +38,17 @@ public class MethodCfgPrinter {
     }
   }
 
-  private static void processFilePair(Path binFile, Path jarFile) {
+  private static void processFilePair(Path binFile, Path dirPath) {
 
     String methodSignatureAsJoern =
         // "lombok.javac.apt.Processor.collectData:java.lang.String(javax.annotation.processing.ProcessingEnvironment)";
         // "lombok.launch.ShadowClassLoader.getOrMakeJarListing:java.util.Set(java.lang.String)";
-        "lombok.launch.PatchFixesHider$PatchFixes.findTypeDeclaration:org.eclipse.jdt.core.dom.AbstractTypeDeclaration(org.eclipse.jdt.core.IType,java.util.List)";
+        // "lombok.launch.PatchFixesHider$PatchFixes.findTypeDeclaration:org.eclipse.jdt.core.dom.AbstractTypeDeclaration(org.eclipse.jdt.core.IType,java.util.List)";
+        // "lombok.launch.Main.main:void(java.lang.String[])";
+        "lombok.launch.PatchFixesHider$Tests.getBundle:java.lang.Object(java.lang.Object,java.lang.Class)";
 
-    printSootupCfg(jarFile.toString(), methodSignatureAsJoern);
-    //printJoernCfg(binFile.toString(), methodSignatureAsJoern);
+    // printSootupCfg(dirPath.toString(), methodSignatureAsJoern);
+    printJoernCfg(binFile.toString(), methodSignatureAsJoern);
   }
 
   private static void printJoernCfg(String cpgPath, String methodSignatureAsJoern) {
@@ -57,8 +59,7 @@ public class MethodCfgPrinter {
     JoernCfgAdapter adapter = new JoernCfgAdapter(joernCfgGenerator);
 
     System.out.println(
-        (adapter.getCfg(joernCfgGenerator.getCfg(method)))
-            .toDotGraph(method.name()));
+        (adapter.getCfg(joernCfgGenerator.getCfg(method))).toDotGraph(method.name()));
   }
 
   private static void printSootupCfg(String sourceCodeDirPath, String methodSignatureAsJoern) {

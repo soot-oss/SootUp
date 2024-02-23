@@ -24,12 +24,14 @@ public class CfgCreator {
                           new StmtPropertyGraphNode(
                               StmtUtils.getStmtSource(currStmt, body),
                               NodeType.STMT,
-                              currStmt.getPositionInfo());
+                              currStmt.getPositionInfo(),
+                              currStmt);
                       StmtPropertyGraphNode destinationNode =
                           new StmtPropertyGraphNode(
                               StmtUtils.getStmtSource(successor, body),
                               NodeType.STMT,
-                              successor.getPositionInfo());
+                              successor.getPositionInfo(),
+                              successor);
                       cfgGraph.addEdge(sourceNode, destinationNode, "CFG");
                     }));
 

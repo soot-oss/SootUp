@@ -47,11 +47,6 @@ public class JoernDdgAdapter {
 
     gotoStmtTargets = new HashMap<>();
 
-    // thisClassType = new ClassConstant(joernDdg.vertices().)
-    // TypeDecl thisClass = method._typeDeclViaAstIn().get();
-    // Method thisMethod =
-    // (Method) joernDdg.vertices().filter(v -> v.label().equals("METHOD")).toIterator().next();
-
     PropertyGraph ddgGraph = new PropertyGraph();
 
     List<Stmt> stmts = new ArrayList<>();
@@ -183,8 +178,9 @@ public class JoernDdgAdapter {
 
         PropertyGraphEdge edge =
             new PropertyGraphEdge(
-                new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo()),
-                new StmtPropertyGraphNode(dstName, NodeType.STMT, successor.getPositionInfo()),
+                new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo(), stmt),
+                new StmtPropertyGraphNode(
+                    dstName, NodeType.STMT, successor.getPositionInfo(), successor),
                 "CFG");
         ddgGraph.addEdge(edge);
         System.out.println("### " + srcName + " -> " + dstName);
@@ -348,14 +344,42 @@ public class JoernDdgAdapter {
         return BooleanConstant.getInstance(Boolean.parseBoolean(constStr));
       case "java.lang.String":
         return new StringConstant(
-                constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
+            constStr, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
       case "null":
         return NullConstant.getInstance();
       default:
         if (typeFullName.equals("java.lang.Class")) {
           constStr = constStr.substring(0, constStr.length() - ".class".length());
+          constStr = constStr.replace(".", "/");
         }
-        return new ClassConstant(constStr.replace(".", "/"), getNodeType(typeFullName));
+
+        // Map of primitive types to their JVM internal representation codes
+        Map<String, String> primitiveTypes = new HashMap<>();
+        primitiveTypes.put("byte", "B");
+        primitiveTypes.put("char", "C");
+        primitiveTypes.put("double", "D");
+        primitiveTypes.put("float", "F");
+        primitiveTypes.put("int", "I");
+        primitiveTypes.put("long", "J");
+        primitiveTypes.put("short", "S");
+        primitiveTypes.put("boolean", "Z");
+
+        int arrayDepth = constStr.split("\\[]", -1).length - 1;
+        String baseType =
+            constStr.substring(
+                0, constStr.indexOf('[') == -1 ? constStr.length() : constStr.indexOf('['));
+
+        StringBuilder jvmFormat = new StringBuilder();
+        for (int i = 0; i < arrayDepth; i++) {
+          jvmFormat.append("[");
+        }
+
+        if (primitiveTypes.containsKey(baseType)) {
+          jvmFormat.append(primitiveTypes.get(baseType));
+        } else {
+          jvmFormat.append("L").append(baseType).append(";");
+        }
+        return new ClassConstant(jvmFormat.toString(), getNodeType(typeFullName));
     }
   }
 
@@ -399,7 +423,7 @@ public class JoernDdgAdapter {
                   .collect(Collectors.toList()),
               getNodeType(methodDetails.returnType));
       return new JDynamicInvokeExpr(methodSignature, args, testDynamicMethod, testParameterList);*/
-      return getDummyDynamicInvokeExpr();
+      // return getDummyDynamicInvokeExpr();
     }
 
     if (call.dispatchType().equals("DYNAMIC_DISPATCH")) {

@@ -1,5 +1,6 @@
 package sootup.java.codepropertygraph.ddg;
 
+import java.util.Objects;
 import java.util.Optional;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -19,5 +20,18 @@ public class VariableDefinition {
 
   public Optional<Stmt> getStmt() {
     return Optional.ofNullable(stmt);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    VariableDefinition that = (VariableDefinition) o;
+    return Objects.equals(value, that.value) && Objects.equals(stmt, that.stmt);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(value, stmt);
   }
 }

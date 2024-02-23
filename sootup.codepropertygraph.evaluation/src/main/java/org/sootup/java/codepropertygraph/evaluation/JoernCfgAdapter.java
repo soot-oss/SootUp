@@ -41,12 +41,11 @@ public class JoernCfgAdapter {
   }
 
   public PropertyGraph getCfg(Graph joernCfg) {
-    gotoStmtTargets = new HashMap<>();
+    if (joernCfg.vertices().size() == 0) {
+      return new PropertyGraph();
+    }
 
-    // thisClassType = new ClassConstant(joernCfg.vertices().)
-    // Method thisMethod =
-    // (Method) joernCfg.vertices().filter(v -> v.label().equals("METHOD")).toIterator().next();
-    // TypeDecl thisClass = thisMethod._typeDeclViaAstIn().get();
+    gotoStmtTargets = new HashMap<>();
 
     PropertyGraph cfgGraph = new PropertyGraph();
 
@@ -179,8 +178,9 @@ public class JoernCfgAdapter {
 
         PropertyGraphEdge edge =
             new PropertyGraphEdge(
-                new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo()),
-                new StmtPropertyGraphNode(dstName, NodeType.STMT, successor.getPositionInfo()),
+                new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo(), stmt),
+                new StmtPropertyGraphNode(
+                    dstName, NodeType.STMT, successor.getPositionInfo(), successor),
                 "CFG");
         cfgGraph.addEdge(edge);
         System.out.println("### " + srcName + " -> " + dstName);
@@ -350,8 +350,36 @@ public class JoernCfgAdapter {
       default:
         if (typeFullName.equals("java.lang.Class")) {
           constStr = constStr.substring(0, constStr.length() - ".class".length());
+          constStr = constStr.replace(".", "/");
         }
-        return new ClassConstant(constStr.replace(".", "/"), getNodeType(typeFullName));
+
+        // Map of primitive types to their JVM internal representation codes
+        Map<String, String> primitiveTypes = new HashMap<>();
+        primitiveTypes.put("byte", "B");
+        primitiveTypes.put("char", "C");
+        primitiveTypes.put("double", "D");
+        primitiveTypes.put("float", "F");
+        primitiveTypes.put("int", "I");
+        primitiveTypes.put("long", "J");
+        primitiveTypes.put("short", "S");
+        primitiveTypes.put("boolean", "Z");
+
+        int arrayDepth = constStr.split("\\[]", -1).length - 1;
+        String baseType =
+            constStr.substring(
+                0, constStr.indexOf('[') == -1 ? constStr.length() : constStr.indexOf('['));
+
+        StringBuilder jvmFormat = new StringBuilder();
+        for (int i = 0; i < arrayDepth; i++) {
+          jvmFormat.append("[");
+        }
+
+        if (primitiveTypes.containsKey(baseType)) {
+          jvmFormat.append(primitiveTypes.get(baseType));
+        } else {
+          jvmFormat.append("L").append(baseType).append(";");
+        }
+        return new ClassConstant(jvmFormat.toString(), getNodeType(typeFullName));
     }
   }
 
@@ -395,7 +423,7 @@ public class JoernCfgAdapter {
                   .collect(Collectors.toList()),
               getNodeType(methodDetails.returnType));
       return new JDynamicInvokeExpr(methodSignature, args, testDynamicMethod, testParameterList);*/
-      return getDummyDynamicInvokeExpr();
+      // return getDummyDynamicInvokeExpr();
     }
 
     if (call.dispatchType().equals("DYNAMIC_DISPATCH")) {

@@ -7,6 +7,7 @@ import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 public class ReachingDefs {
@@ -29,7 +30,7 @@ public class ReachingDefs {
         Optional<Stmt> definingStmt = def.getStmt();
 
         for (Value usedVar : usedVars)
-          if (definedVar == usedVar && definingStmt.isPresent() && definingStmt.get() != stmt)
+          if (definedVar.equivTo(usedVar) && definingStmt.isPresent() && definingStmt.get() != stmt)
             reachingDefs.get(stmt).add(definingStmt.get());
       }
     }
@@ -87,7 +88,8 @@ public class ReachingDefs {
     }
 
     private List<VariableDefinition> kill(Stmt d) {
-      if (d.getDefs().size() == 0) return new ArrayList<>();
+      if (d.getDefs().size() == 0) return Collections.emptyList();
+      if (!(d instanceof JAssignStmt)) return new ArrayList<>();
 
       LValue definedValue = d.getDefs().get(0);
       List<VariableDefinition> output = new ArrayList<>();
@@ -103,7 +105,11 @@ public class ReachingDefs {
     private List<VariableDefinition> gen(Stmt d) {
       if (d.getDefs().size() == 0) return new ArrayList<>();
 
-      return Collections.singletonList(new VariableDefinition(d.getDefs().get(0), d));
+      List<VariableDefinition> outList = new ArrayList<>();
+      for (Value def : d.getDefs()) {
+        outList.add(new VariableDefinition(def, d));
+      }
+      return outList;
     }
   }
 }

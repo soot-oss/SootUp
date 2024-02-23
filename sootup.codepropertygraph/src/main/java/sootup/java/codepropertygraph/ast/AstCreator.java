@@ -5,6 +5,9 @@ import static sootup.java.codepropertygraph.propertygraph.NodeType.*;
 import java.util.List;
 import java.util.Set;
 import sootup.core.jimple.common.stmt.*;
+import sootup.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
+import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.types.Type;
@@ -58,7 +61,7 @@ public class AstCreator {
     for (Stmt stmt : bodyStmts) {
       StmtPropertyGraphNode stmtNode =
           new StmtPropertyGraphNode(
-              StmtUtils.getStmtSource(stmt, body), NodeType.STMT, stmt.getPositionInfo());
+              StmtUtils.getStmtSource(stmt, body), NodeType.STMT, stmt.getPositionInfo(), stmt);
       graph.addEdge(parentNode, stmtNode, "AST: Stmt");
       addStmtComponents(graph, stmtNode, stmt, body);
     }
@@ -149,15 +152,59 @@ public class AstCreator {
         }
 
       case "JGotoStmt":
-        JGotoStmt currStmt = (JGotoStmt) stmt;
-        int gotoPosition =
-            currStmt.getTargetStmts(body).get(0).getPositionInfo().getStmtPosition().getFirstLine();
-        graph.addEdge(
-            parentNode, new PropertyGraphNode(Integer.toString(gotoPosition), POS), "AST: Pos");
-        break;
+        {
+          JGotoStmt currStmt = (JGotoStmt) stmt;
+          int gotoPosition =
+              currStmt
+                  .getTargetStmts(body)
+                  .get(0)
+                  .getPositionInfo()
+                  .getStmtPosition()
+                  .getFirstLine();
+          graph.addEdge(
+              parentNode, new PropertyGraphNode(Integer.toString(gotoPosition), POS), "AST: Pos");
+          break;
+        }
 
       case "JReturnVoidStmt":
         {
+          break;
+        }
+
+      case "JSwitchStmt":
+        {
+          JSwitchStmt currStmt = (JSwitchStmt) stmt;
+          for (Stmt targetStmt : currStmt.getTargetStmts(body)) {
+            graph.addEdge(parentNode, new PropertyGraphNode(targetStmt.toString(), OP), "AST: Op");
+          }
+          break;
+        }
+
+      case "JEnterMonitorStmt":
+        {
+          JEnterMonitorStmt currStmt = (JEnterMonitorStmt) stmt;
+          if (currStmt.containsInvokeExpr()) {
+            graph.addEdge(
+                parentNode,
+                new PropertyGraphNode(currStmt.getInvokeExpr().toString(), CMP),
+                "AST: CMP");
+          }
+          graph.addEdge(
+              parentNode, new PropertyGraphNode(currStmt.getOp().toString(), OP), "AST: OP");
+          break;
+        }
+
+      case "JExitMonitorStmt":
+        {
+          JExitMonitorStmt currStmt = (JExitMonitorStmt) stmt;
+          if (currStmt.containsInvokeExpr()) {
+            graph.addEdge(
+                parentNode,
+                new PropertyGraphNode(currStmt.getInvokeExpr().toString(), CMP),
+                "AST: CMP");
+          }
+          graph.addEdge(
+              parentNode, new PropertyGraphNode(currStmt.getOp().toString(), OP), "AST: OP");
           break;
         }
 

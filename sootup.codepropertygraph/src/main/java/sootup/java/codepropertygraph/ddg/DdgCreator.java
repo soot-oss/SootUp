@@ -22,13 +22,13 @@ public class DdgCreator {
     for (Stmt key : reachingDefs.keySet()) {
       StmtPropertyGraphNode destination =
           new StmtPropertyGraphNode(
-              StmtUtils.getStmtSource(key, body), NodeType.STMT, key.getPositionInfo());
+              StmtUtils.getStmtSource(key, body), NodeType.STMT, key.getPositionInfo(), key);
       List<Stmt> values = reachingDefs.get(key);
       values.forEach(
           value -> {
             StmtPropertyGraphNode source =
                 new StmtPropertyGraphNode(
-                    StmtUtils.getStmtSource(value, body), NodeType.STMT, value.getPositionInfo());
+                    StmtUtils.getStmtSource(value, body), NodeType.STMT, value.getPositionInfo(), value);
             ddgGraph.addEdge(source, destination, "DDG");
           });
     }

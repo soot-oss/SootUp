@@ -47,7 +47,7 @@ public class EvalCdg {
         String baseName = extractBaseName(binFile);
         Path targetDir = Paths.get(SOOTUP_DIR, baseName);
 
-        // if (!baseName.startsWith("lombok")) continue;
+        if (!baseName.startsWith("lombok")) continue;
 
         if (Files.exists(targetDir) && Files.isDirectory(targetDir)) {
           processFilePair(binFile, targetDir);

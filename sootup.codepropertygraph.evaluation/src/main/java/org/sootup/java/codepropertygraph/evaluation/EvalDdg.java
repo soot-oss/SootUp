@@ -82,6 +82,7 @@ public class EvalDdg {
           String methodSignatureAsJoern =
               sootUpDdgGenerator.getMethodSignatureAsJoern(sootupMethod);
           Optional<Method> joernMethodOpt = joernDdgGenerator.getMethod(methodSignatureAsJoern);
+          System.out.println("MethodSignatureAsJoern: " + methodSignatureAsJoern);
 
           if (!joernMethodOpt.isPresent()) continue;
 

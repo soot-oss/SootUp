@@ -26,7 +26,7 @@ public class MethodDdgPrinter {
 
       for (Path binFile : binFiles) {
         String baseName = extractBaseName(binFile);
-        Path jarFile = Paths.get(SOOTUP_DIR, baseName + ".jar");
+        Path jarFile = Paths.get(SOOTUP_DIR, baseName);
 
         if (Files.exists(jarFile)) {
           if (!baseName.startsWith("lombok")) continue;
@@ -40,10 +40,10 @@ public class MethodDdgPrinter {
 
   private static void processFilePair(Path binFile, Path jarFile) {
     String methodSignatureAsJoern =
-        "lombok.launch.PatchFixesHider$PatchFixes.findTypeDeclaration:org.eclipse.jdt.core.dom.AbstractTypeDeclaration(org.eclipse.jdt.core.IType,java.util.List)";
+        "lombok.launch.PatchFixesHider$Tests.getBundle:java.lang.Object(java.lang.Object,java.lang.Class)";
 
-    printSootupDdg(jarFile.toString(), methodSignatureAsJoern);
-    // printJoernDdg(binFile.toString(), methodSignatureAsJoern);
+    // printSootupDdg(jarFile.toString(), methodSignatureAsJoern);
+    printJoernDdg(binFile.toString(), methodSignatureAsJoern);
   }
 
   private static void printJoernDdg(String cpgPath, String methodSignatureAsJoern) {
