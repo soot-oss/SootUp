@@ -25,11 +25,11 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class ClassModifiersValidatorTest {
-  JavaView view;
-  ClassModifiersValidator classModifiersValidator;
+  static JavaView view;
+  static ClassModifiersValidator classModifiersValidator;
 
   @BeforeAll
-  public void setUp() {
+  public static void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     classModifiersValidator = new ClassModifiersValidator();
   }

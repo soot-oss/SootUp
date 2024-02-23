@@ -29,11 +29,11 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class MethodDeclarationValidatorTest {
-  JavaView view;
-  MethodDeclarationValidator methodDeclarationValidator;
+  static JavaView view;
+  static MethodDeclarationValidator methodDeclarationValidator;
 
   @BeforeAll
-  public void setUp() {
+  public static void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     methodDeclarationValidator = new MethodDeclarationValidator();
   }
