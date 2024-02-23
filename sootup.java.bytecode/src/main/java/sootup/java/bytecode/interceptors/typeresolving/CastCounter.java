@@ -138,7 +138,8 @@ public class CastCounter extends TypeChecker {
     stmtGraph.insertBefore(stmt, newCast);
 
     Stmt newStmt;
-    if (stmt.getUses().contains(value)) {
+    final Value finalValue = value;
+    if (stmt.getUses().anyMatch(v -> v == finalValue)) {
       newStmt = stmt.withNewUse(value, new_local);
     } else {
       newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(new_local);
@@ -166,7 +167,7 @@ public class CastCounter extends TypeChecker {
           Local base = ((JArrayRef) oldValue).getBase();
           Local nBase = ((JArrayRef) newValue).getBase();
           map.put(base, nBase);
-        } else if (leftOp.getUses().contains(oldValue)) {
+        } else if (leftOp.getUses().anyMatch(v -> v == oldValue)) {
           JArrayRef nArrRef = ((JArrayRef) leftOp).withBase((Local) newValue);
           map.put(leftOp, nArrRef);
         }
@@ -175,7 +176,7 @@ public class CastCounter extends TypeChecker {
           Local base = ((JArrayRef) oldValue).getBase();
           Local nBase = ((JArrayRef) newValue).getBase();
           map.put(base, nBase);
-        } else if (rightOp.getUses().contains(oldValue)) {
+        } else if (rightOp.getUses().anyMatch(v -> v == oldValue)) {
           JArrayRef nArrRef = ((JArrayRef) rightOp).withBase((Local) newValue);
           map.put(rightOp, nArrRef);
         }

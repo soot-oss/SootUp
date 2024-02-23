@@ -23,6 +23,7 @@ package sootup.java.bytecode.interceptors;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import javax.annotation.Nonnull;
@@ -83,7 +84,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         fold(stmt, constantStmtBiConsumer);
 
       } else if (stmt instanceof JReturnStmt) {
-        for (Value value : stmt.getUses()) {
+        for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+          Value value = iterator.next();
           if (!(value instanceof Local)) {
             continue;
           }
@@ -119,7 +121,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
   }
 
   private static void fold(Stmt stmt, BiConsumer<Constant, Stmt> constantStmtBiConsumer) {
-    for (Value value : stmt.getUses()) {
+    for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+      Value value = iterator.next();
 
       Constant evaluatedValue = Evaluator.getConstantValueOf(value);
       if (evaluatedValue == null) {

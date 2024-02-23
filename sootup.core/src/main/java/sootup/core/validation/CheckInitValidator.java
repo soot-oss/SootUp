@@ -23,6 +23,7 @@ package sootup.core.validation;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -49,8 +50,9 @@ public class CheckInitValidator implements BodyValidator {
 
     for (Stmt s : body.getStmts()) {
       // Add locals defined in the statement to list.
-      localList.addAll(s.getDefs());
-      for (Value v : s.getUses()) {
+      s.getDef().ifPresent(localList::add);
+      for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
+        Value v = iterator.next();
         if (v instanceof Local) {
           Local l = (Local) v;
           if (!localList.contains(l)) {
