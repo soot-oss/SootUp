@@ -1,21 +1,20 @@
 package sootup.jimple.parser.javatestsuite.java8;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
-import sootup.jimple.parser.categories.Java8Test;
 import sootup.jimple.parser.javatestsuite.JimpleTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class StaticMethodInterfaceImplTest extends JimpleTestSuiteBase {
 
   public MethodSignature getMethodSignature() {

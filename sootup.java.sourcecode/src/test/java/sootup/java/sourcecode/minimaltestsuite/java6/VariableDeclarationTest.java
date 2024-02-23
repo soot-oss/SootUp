@@ -1,23 +1,22 @@
 /** @author: Hasitha Rajapakse */
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static sootup.core.util.Utils.filterJimple;
 
-import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
 
   @Test
@@ -45,7 +44,7 @@ public class VariableDeclarationTest extends MinimalSourceTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmtsDoubleVariable());
   }
 
-  @Ignore
+  @Disabled
   public void classTypeDefWithoutAssignment() {
     // TODO: [ms] fix: Type of Local r1 is should be (java.lang.)String
     // TODO [kk]: Actual   :[unknown u0, VariableDeclaration r0, r0 := @this: VariableDeclaration,

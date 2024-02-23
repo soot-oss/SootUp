@@ -1,14 +1,14 @@
 package sootup.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -23,7 +23,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ReplaceUseStmtVisitorTest {
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   JavaJimple javaJimple = JavaJimple.getInstance();

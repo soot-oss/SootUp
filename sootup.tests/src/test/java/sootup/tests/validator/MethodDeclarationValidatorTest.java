@@ -1,14 +1,13 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
@@ -28,13 +27,13 @@ import sootup.core.validation.ValidationException;
 import sootup.java.core.*;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class MethodDeclarationValidatorTest {
-  JavaView view;
-  MethodDeclarationValidator methodDeclarationValidator;
+  static JavaView view;
+  static MethodDeclarationValidator methodDeclarationValidator;
 
-  @Before
-  public void setUp() {
+  @BeforeAll
+  public static void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
     methodDeclarationValidator = new MethodDeclarationValidator();
   }

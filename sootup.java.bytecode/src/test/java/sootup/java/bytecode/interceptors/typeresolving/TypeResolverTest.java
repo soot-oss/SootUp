@@ -1,16 +1,18 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
@@ -23,12 +25,12 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.TypeAssigner;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeResolverTest extends TypeAssignerTestSuite {
 
   String baseDir = "../shared-test-resources/TypeResolverTestSuite/";
 
-  @Before
+  @BeforeEach
   public void setup() {
     String className = "CastCounterDemos";
     buildView(baseDir + "CastCounterTest/", className);
@@ -43,7 +45,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos l0",
                 "Sub1 $stack4, l1",
@@ -71,7 +73,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     resolver.resolve(builder);
     Body newbody = builder.build();
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos l0",
                 "Sub1 $stack3",
@@ -104,7 +106,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     resolver.resolve(builder);
     Body newbody = builder.build();
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "int $stack3",
                 "int[] l1",
@@ -125,9 +127,9 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     final Optional<Local> any =
         builder.getLocals().stream().filter(l -> l.getName().equals("l1")).findAny();
-    Assert.assertTrue(any.isPresent());
-    Assert.assertEquals("int[]", any.get().getType().toString());
-    Assert.assertEquals(ArrayType.class, any.get().getType().getClass());
+    assertTrue(any.isPresent());
+    assertEquals("int[]", any.get().getType().toString());
+    assertEquals(ArrayType.class, any.get().getType().getClass());
   }
 
   @Test
@@ -146,7 +148,7 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             .get()
             .getBody();
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "FieldAssignment$A $stack2, l0",
                 "java.lang.String l1",

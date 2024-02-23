@@ -1,12 +1,9 @@
 package sootup.core.graph;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import categories.Java8Test;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-@Category(Java8Test.class)
+@Tag("Java8")
 public class BlockGraphTest {
 
   @Test

@@ -22,24 +22,24 @@ package sootup.jimple.parser;
  * #L%
  */
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.views.View;
-import sootup.jimple.parser.categories.Java8Test;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JimpleStringAnalysisInputLocationTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testInvalidInput() {
     String methodStr = "This is not Jimple its just a Sentence.";
-    JimpleStringAnalysisInputLocation analysisInputLocation =
-        new JimpleStringAnalysisInputLocation(methodStr);
+    assertThrows(
+        IllegalArgumentException.class, () -> new JimpleStringAnalysisInputLocation(methodStr));
   }
 
   @Test

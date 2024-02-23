@@ -1,22 +1,23 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import categories.TestCategories;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.interceptors.LocalNameStandardizer;
 import sootup.java.bytecode.interceptors.TypeAssigner;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeAssignerTest extends TypeAssignerTestSuite {
 
-  @Before
+  @BeforeEach
   public void setup() {
     String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
@@ -31,7 +32,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos r0",
                 "Sub1 r1, r2",
@@ -59,7 +60,7 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
 
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "CastCounterDemos r0",
                 "Sub1 r1",

@@ -1,12 +1,12 @@
 package sootup.java.bytecode;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -20,7 +20,7 @@ import sootup.java.bytecode.interceptors.CopyPropagator;
 import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class RuntimeJarConversionTests {
   private static boolean debug = false;
 
@@ -60,8 +60,8 @@ public class RuntimeJarConversionTests {
                   }
                 })
             .count();
-    Assert.assertTrue(count > 0);
-    Assert.assertEquals(0, failedConversions[0]);
+    assertTrue(count > 0);
+    assertEquals(0, failedConversions[0]);
   }
 
   // @Test

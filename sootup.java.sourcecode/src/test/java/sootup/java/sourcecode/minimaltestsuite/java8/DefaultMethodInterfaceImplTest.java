@@ -1,21 +1,20 @@
 package sootup.java.sourcecode.minimaltestsuite.java8;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -74,7 +73,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalSourceTestSuiteBase {
   }
 
   /** TODO Update the source code once default methods in WALA are supported */
-  @Ignore
+  @Disabled
   public void test() {
 
     assertJimpleStmts(loadMethod(getMethodSignature()), expectedBodyStmts());

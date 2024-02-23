@@ -1,14 +1,13 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.Collections;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /** @author Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class WalaIRToJimpleConverterTest {
   private final WalaIRToJimpleConverter converter =
       new WalaIRToJimpleConverter(Collections.emptySet());
