@@ -80,10 +80,10 @@ public class InvokeArgumentValidator implements BodyValidator {
     }
 
     private ClassType getClassType(IdentifierFactory identifierFactory, Type type) {
-        if (type instanceof PrimitiveType) {
-            type = identifierFactory.getBoxedType((PrimitiveType) type);
-        }
-        return identifierFactory.getClassType(type.toString());
+        if (type instanceof PrimitiveType)
+            return identifierFactory.getBoxedType((PrimitiveType) type);
+        else
+            return identifierFactory.getClassType(type.toString());
     }
 
     @Override

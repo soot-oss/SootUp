@@ -50,6 +50,9 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
+  @Nonnull
+  public abstract String getBoxedName();
+
   @Override
   @Nonnull
   public String toString() {
@@ -107,6 +110,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Byte";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseByteType();
@@ -122,6 +131,12 @@ public abstract class PrimitiveType extends Type {
 
     public static ShortType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Short";
     }
 
     @Override
@@ -145,6 +160,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Integer";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseIntType();
@@ -160,6 +181,12 @@ public abstract class PrimitiveType extends Type {
 
     public static DoubleType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Double";
     }
 
     @Override
@@ -179,6 +206,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Long";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseLongType();
@@ -194,6 +227,12 @@ public abstract class PrimitiveType extends Type {
 
     public static FloatType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Float";
     }
 
     @Override
@@ -213,6 +252,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Character";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseCharType();
@@ -228,6 +273,12 @@ public abstract class PrimitiveType extends Type {
 
     public static BooleanType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Boolean";
     }
 
     @Override
