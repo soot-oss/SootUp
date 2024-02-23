@@ -24,6 +24,7 @@ package sootup.core.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
@@ -50,7 +51,13 @@ public class IdentityValidator implements BodyValidator {
         List<ValidationException> exceptions = new ArrayList<>();
 
         boolean hasThisLocal = false;
-        SootMethod method = view.getMethod(body.getMethodSignature()).get();
+        Optional<? extends SootMethod> optionalSootMethod = view.getMethod(body.getMethodSignature());
+        if (!optionalSootMethod.isPresent()) {
+            exceptions.add(new ValidationException(body.getMethodSignature(), "There is no corresponding SootMethod in the given view for the provided method signature."));
+            return exceptions;
+        }
+
+        SootMethod method = optionalSootMethod.get();
         int paramCount = method.getParameterCount();
         boolean[] parameterRefs = new boolean[paramCount];
 
@@ -64,21 +71,15 @@ public class IdentityValidator implements BodyValidator {
                 if (id.getRightOp() instanceof JParameterRef) {
                     JParameterRef ref = (JParameterRef) id.getRightOp();
                     if (ref.getIndex() < 0 || ref.getIndex() >= paramCount) {
-                        if (paramCount == 0) {
-                            exceptions.add(new ValidationException(id,
-                                    "This methodRef has no parameters, so no parameter reference is allowed"));
-                        } else {
-                            exceptions.add(new ValidationException(id,
-                                    String.format("Parameter reference index must be between 0 and %d (inclusive)",
-                                            paramCount - 1)));
-                        }
-                        return exceptions;
+                        if (paramCount == 0)
+                            exceptions.add(new ValidationException(id, "This methodRef has no parameters, so no parameter reference is allowed"));
+                        else
+                            exceptions.add(new ValidationException(id, String.format("Parameter reference index must be between 0 and %d (inclusive)", paramCount - 1)));
+                    } else {
+                        if (parameterRefs[ref.getIndex()])
+                            exceptions.add(new ValidationException(id, String.format("Only one local for parameter %d is allowed", ref.getIndex())));
+                        parameterRefs[ref.getIndex()] = true;
                     }
-                    if (parameterRefs[ref.getIndex()]) {
-                        exceptions.add(new ValidationException(id,
-                                String.format("Only one local for parameter %d is allowed", ref.getIndex())));
-                    }
-                    parameterRefs[ref.getIndex()] = true;
                 }
             }
         }
