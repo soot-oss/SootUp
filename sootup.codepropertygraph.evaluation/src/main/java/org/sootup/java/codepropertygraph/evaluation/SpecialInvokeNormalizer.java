@@ -44,10 +44,10 @@ public class SpecialInvokeNormalizer implements BodyInterceptor {
   }
 
   private JVirtualInvokeExpr createVirtualInvokeFromSpecialInvoke(
-      JSpecialInvokeExpr specialInvokeExpr) {
+          JSpecialInvokeExpr specialInvokeExpr) {
     return new JVirtualInvokeExpr(
-        specialInvokeExpr.getBase(),
-        specialInvokeExpr.getMethodSignature(),
-        specialInvokeExpr.getArgs());
+            specialInvokeExpr.getBase(),
+            specialInvokeExpr.getMethodSignature(),
+            specialInvokeExpr.getArgs());
   }
 }
