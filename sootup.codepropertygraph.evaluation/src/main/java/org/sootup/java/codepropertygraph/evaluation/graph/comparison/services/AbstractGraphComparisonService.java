@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.sootup.java.codepropertygraph.evaluation.graph.comparison.PropertyGraphComparer;
+import org.sootup.java.codepropertygraph.evaluation.graph.comparison.GraphSimilarityEvaluator;
 import org.sootup.java.codepropertygraph.evaluation.graph.processing.JoernProcessor;
 import org.sootup.java.codepropertygraph.evaluation.graph.processing.SootUpProcessor;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.FileUtils;
@@ -26,7 +26,7 @@ public abstract class AbstractGraphComparisonService {
     try {
       SootUpProcessor sootUpProcessor = new SootUpProcessor(targetDir);
       JoernProcessor joernProcessor = new JoernProcessor(cpgPath.toString());
-      PropertyGraphComparer propertyGraphComparer = new PropertyGraphComparer();
+      GraphSimilarityEvaluator graphSimilarityEvaluator = new GraphSimilarityEvaluator();
 
       for (SootMethod sootUpMethod : sootUpProcessor.getMethods()) {
         try {
@@ -43,21 +43,21 @@ public abstract class AbstractGraphComparisonService {
           Graph joernGraph = generateJoernGraph(joernProcessor, joernMethod);
           PropertyGraph sootUpGraph = generateSootUpGraph(sootUpMethod);
 
-          propertyGraphComparer.compare(joernGraph, sootUpGraph, methodSignatureAsJoern);
+          graphSimilarityEvaluator.compare(joernGraph, sootUpGraph, methodSignatureAsJoern);
         } catch (RuntimeException e) {
           e.printStackTrace();
         }
       }
 
-      int similarEdgesCount = propertyGraphComparer.getTotalSameEdges();
+      int similarEdgesCount = graphSimilarityEvaluator.getTotalSameEdges();
       int totalEdges =
-          propertyGraphComparer.getTotalSameEdges() + propertyGraphComparer.getTotalDiffEdges();
+          graphSimilarityEvaluator.getTotalSameEdges() + graphSimilarityEvaluator.getTotalDiffEdges();
       double similarityPercentage = ((double) similarEdgesCount / totalEdges) * 100;
       similarityPercentage = Math.round(similarityPercentage * 10000) / 10000.0;
 
-      result.put("numOfMethods", propertyGraphComparer.getTotalMethods());
-      result.put("differentEdges", propertyGraphComparer.getTotalDiffEdges());
-      result.put("sameEdges", propertyGraphComparer.getTotalSameEdges());
+      result.put("numOfMethods", graphSimilarityEvaluator.getTotalMethods());
+      result.put("differentEdges", graphSimilarityEvaluator.getTotalDiffEdges());
+      result.put("sameEdges", graphSimilarityEvaluator.getTotalSameEdges());
       result.put("similarityPercentage", similarityPercentage + " %");
 
       result.put("failed", false);

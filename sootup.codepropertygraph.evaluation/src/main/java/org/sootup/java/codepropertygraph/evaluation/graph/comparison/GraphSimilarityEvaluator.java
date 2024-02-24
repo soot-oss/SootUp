@@ -11,7 +11,7 @@ import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraphEdge;
 
-public class PropertyGraphComparer {
+public class GraphSimilarityEvaluator {
   private final JoernToSootUpConverter joernToSootUpConverter;
   private final SootUpAdapter sootUpAdapter;
   private final JoernAdapter joernAdapter;
@@ -19,7 +19,7 @@ public class PropertyGraphComparer {
   private int totalDiffEdges;
   private int totalMethods;
 
-  public PropertyGraphComparer() {
+  public GraphSimilarityEvaluator() {
     this.joernToSootUpConverter = new JoernToSootUpConverter();
     this.sootUpAdapter = new SootUpAdapter();
     this.joernAdapter = new JoernAdapter();
