@@ -17,6 +17,8 @@ public class JsonAggregator {
           "sootup.codepropertygraph.evaluation/src/test/resources/result-logs-cfg");
       generateSummaryForDirectory(
           "sootup.codepropertygraph.evaluation/src/test/resources/result-logs-cdg");
+      generateSummaryForDirectory(
+              "sootup.codepropertygraph.evaluation/src/test/resources/result-logs-ddg");
     } catch (IOException e) {
       e.printStackTrace();
     }
