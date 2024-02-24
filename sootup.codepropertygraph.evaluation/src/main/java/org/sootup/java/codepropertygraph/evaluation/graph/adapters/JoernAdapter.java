@@ -50,7 +50,7 @@ public class JoernAdapter {
                         new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo(), stmt),
                         new StmtPropertyGraphNode(
                                 dstName, NodeType.STMT, successor.getPositionInfo(), successor),
-                        "CFG");
+                        "UNKOWN");
         adaptedGraph.addEdge(edge);
         System.out.println("### " + srcName + " -> " + dstName);
       }

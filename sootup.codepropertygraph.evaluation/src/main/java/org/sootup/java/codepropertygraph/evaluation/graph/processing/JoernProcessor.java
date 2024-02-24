@@ -1,7 +1,7 @@
 package org.sootup.java.codepropertygraph.evaluation.graph.processing;
 
+import io.joern.dataflowengineoss.DefaultSemantics;
 import io.joern.dataflowengineoss.dotgenerator.DdgGenerator;
-import io.joern.dataflowengineoss.semanticsloader.Semantics;
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoader;
 import io.shiftleft.codepropertygraph.cpgloading.CpgLoaderConfig;
 import io.shiftleft.codepropertygraph.generated.Cpg;
@@ -42,7 +42,7 @@ public class JoernProcessor {
   }
 
   public Graph generateDdg(Method method) {
-    return new DdgGenerator().generate(method, Semantics.empty());
+    return new DdgGenerator().generate(method, DefaultSemantics.apply());
   }
 
   public Optional<Method> getMethod(String methodSignature) {

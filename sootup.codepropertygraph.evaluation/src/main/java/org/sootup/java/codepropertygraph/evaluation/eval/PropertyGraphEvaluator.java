@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import org.sootup.java.codepropertygraph.evaluation.output.ResultAggregator;
 import org.sootup.java.codepropertygraph.evaluation.graph.comparison.services.AbstractGraphComparisonService;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.FileUtils;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.LogUtils;
+import org.sootup.java.codepropertygraph.evaluation.output.ResultAggregator;
 
 public class PropertyGraphEvaluator {
   private final AbstractGraphComparisonService graphComparisonService;
