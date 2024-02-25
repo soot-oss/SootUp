@@ -48,7 +48,7 @@ public class GraphSimilarityEvaluator {
       if (b.startsWith("goto ")) b = "goto";
 
       String s1 = String.format("%s -> %s", a, b);
-      s1 = s1.replace("\\\"", "").replace("'", "");
+      s1 = s1.replace("\\\"", "").replace("'", "").replace("\\", "");
 
       for (PropertyGraphEdge otherE : joernPropertyGraph.getEdges()) {
         if (Arrays.asList(
@@ -64,7 +64,7 @@ public class GraphSimilarityEvaluator {
 
         s2 =
             s2.replace("\\\"", "")
-                .replace("'", ""); // Todo: Remove the \" occurences in the through the adapter
+                .replace("'", "").replace("\\", ""); // Todo: Remove the \" occurences in the through the adapter
 
         s1 = s1.replace("specialinvoke", "virtualinvoke");
         s1 = s1.replace("interfaceinvoke", "virtualinvoke");
