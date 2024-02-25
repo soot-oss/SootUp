@@ -13,9 +13,8 @@ public class PropertyGraphEvaluator {
   private final AbstractGraphGenerator graphComparisonService;
   private final EvaluatorConfig config;
 
-  public PropertyGraphEvaluator(
-          AbstractGraphGenerator graphComparisonService, EvaluatorConfig config) {
-    this.graphComparisonService = graphComparisonService;
+  public PropertyGraphEvaluator(AbstractGraphGenerator graphGenerator, EvaluatorConfig config) {
+    this.graphComparisonService = graphGenerator;
     this.config = config;
   }
 
