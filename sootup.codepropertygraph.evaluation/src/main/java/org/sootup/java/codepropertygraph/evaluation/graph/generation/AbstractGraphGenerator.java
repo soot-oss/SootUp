@@ -59,10 +59,11 @@ public abstract class AbstractGraphGenerator {
       result.put("differentEdges", graphComparator.getTotalDiffEdges());
       result.put("sameEdges", graphComparator.getTotalSameEdges());
       result.put("similarityPercentage", similarityPercentage + " %");
-
       result.put("failed", false);
 
     } catch (Exception e) {
+      e.printStackTrace();
+      //result.put("error", e);
       result.put("failed", true);
     } finally {
       long endTime = System.currentTimeMillis();
@@ -83,7 +84,6 @@ public abstract class AbstractGraphGenerator {
       elapsedTimeDetails.put("milliseconds", milliseconds);
 
       result.put("elapsedTime", elapsedTimeDetails);
-      result.put("failed", false);
 
       String baseName = FileUtils.extractBaseName(cpgPath);
       Path resultFilePath = Paths.get(String.valueOf(resultDirPath), baseName + ".json");
