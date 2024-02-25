@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.sootup.java.codepropertygraph.evaluation.graph.comparison.services.AbstractGraphComparisonService;
+import org.sootup.java.codepropertygraph.evaluation.graph.generation.AbstractGraphGenerator;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.FileUtils;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.LogUtils;
 import org.sootup.java.codepropertygraph.evaluation.output.ResultAggregator;
 
 public class PropertyGraphEvaluator {
-  private final AbstractGraphComparisonService graphComparisonService;
+  private final AbstractGraphGenerator graphComparisonService;
   private final EvaluatorConfig config;
 
   public PropertyGraphEvaluator(
-      AbstractGraphComparisonService graphComparisonService, EvaluatorConfig config) {
+          AbstractGraphGenerator graphComparisonService, EvaluatorConfig config) {
     this.graphComparisonService = graphComparisonService;
     this.config = config;
   }

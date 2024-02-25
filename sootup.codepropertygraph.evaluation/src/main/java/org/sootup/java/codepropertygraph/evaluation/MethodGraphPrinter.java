@@ -47,10 +47,10 @@ public class MethodGraphPrinter {
   private static void processFilePair(Path binFile, Path dirPath) {
 
     String methodSignatureAsJoern =
-        "lombok.launch.PatchFixesHider$Delegate.<clinit>:void()";
+        "lombok.Lombok.checkNotNull:java.lang.Object(java.lang.Object,java.lang.String)";
 
-    printSootupGraph(dirPath.toString(), methodSignatureAsJoern, GraphType.DDG);
-    printJoernGraph(binFile.toString(), methodSignatureAsJoern, GraphType.DDG);
+    printSootupGraph(dirPath.toString(), methodSignatureAsJoern, GraphType.CDG);
+    printJoernGraph(binFile.toString(), methodSignatureAsJoern, GraphType.CDG);
   }
 
   private static void printJoernGraph(

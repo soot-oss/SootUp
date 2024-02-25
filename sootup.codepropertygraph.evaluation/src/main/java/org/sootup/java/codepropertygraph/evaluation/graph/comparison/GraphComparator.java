@@ -4,14 +4,14 @@ import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Graph;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.sootup.java.codepropertygraph.evaluation.graph.converter.joern2sootup.JoernToSootUpConverter;
 import org.sootup.java.codepropertygraph.evaluation.graph.adapters.JoernAdapter;
 import org.sootup.java.codepropertygraph.evaluation.graph.adapters.SootUpAdapter;
+import org.sootup.java.codepropertygraph.evaluation.graph.converter.joern2sootup.JoernToSootUpConverter;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraphEdge;
 
-public class GraphSimilarityEvaluator {
+public class GraphComparator {
   private final JoernToSootUpConverter joernToSootUpConverter;
   private final SootUpAdapter sootUpAdapter;
   private final JoernAdapter joernAdapter;
@@ -19,7 +19,7 @@ public class GraphSimilarityEvaluator {
   private int totalDiffEdges;
   private int totalMethods;
 
-  public GraphSimilarityEvaluator() {
+  public GraphComparator() {
     this.joernToSootUpConverter = new JoernToSootUpConverter();
     this.sootUpAdapter = new SootUpAdapter();
     this.joernAdapter = new JoernAdapter();
@@ -42,48 +42,28 @@ public class GraphSimilarityEvaluator {
     for (PropertyGraphEdge e : sootUpPropertyGraph.getEdges()) {
       foundEquivEdge = false;
 
-      String a = e.getSource().getName();
-      String b = e.getDestination().getName();
-      if (a.startsWith("goto ")) a = "goto";
-      if (b.startsWith("goto ")) b = "goto";
-
-      String s1 = String.format("%s -> %s", a, b);
-      s1 = s1.replace("\\\"", "").replace("'", "").replace("\\", "");
+      String sootUpEdgeSrc = applyNormalizations(e.getSource().getName());
+      String sootUpEdgeDst = applyNormalizations(e.getDestination().getName());
+      String sootUpEdgeStr = sootUpEdgeSrc + " -> " + sootUpEdgeDst;
 
       for (PropertyGraphEdge otherE : joernPropertyGraph.getEdges()) {
         if (Arrays.asList(
                 e.getSource(), e.getDestination(), otherE.getSource(), otherE.getDestination())
             .contains(null)) continue;
 
-        String c = otherE.getSource().getName();
-        String d = otherE.getDestination().getName();
-        if (c.startsWith("goto ")) c = "goto";
-        if (d.startsWith("goto ")) d = "goto";
+        String joernEdgeSrc = applyNormalizations(otherE.getSource().getName());
+        String joernEdgeDst = applyNormalizations(otherE.getDestination().getName());
 
-        String s2 = String.format("%s -> %s", c, d);
-
-        s2 =
-            s2.replace("\\\"", "")
-                .replace("'", "").replace("\\", ""); // Todo: Remove the \" occurences in the through the adapter
-
-        s1 = s1.replace("specialinvoke", "virtualinvoke");
-        s1 = s1.replace("interfaceinvoke", "virtualinvoke");
-        s1 = s1.replace("dynamicinvoke", "virtualinvoke");
-
-        s2 = s2.replace("specialinvoke", "virtualinvoke");
-        s2 = s2.replace("interfaceinvoke", "virtualinvoke");
-        s2 = s2.replace("dynamicinvoke", "virtualinvoke");
-
-        if (s1.equals(s2)) {
+        if (sootUpEdgeSrc.equals(joernEdgeSrc) && sootUpEdgeDst.equals(joernEdgeDst)) {
           sameEdgesCount++;
           foundEquivEdge = true;
-          simEdges.add(s1);
+          simEdges.add(sootUpEdgeStr);
           break;
         }
       }
       if (!foundEquivEdge) {
         diffEdgesCount++;
-        diffEdges.add(s1);
+        diffEdges.add(sootUpEdgeStr);
       }
     }
 
@@ -111,6 +91,52 @@ public class GraphSimilarityEvaluator {
     System.out.println("********************************************************");
     System.out.println("********************************************************");
     System.out.println("********************************************************");
+  }
+
+  private String applyNormalizations(String name) {
+    String normalizedStmt = name;
+
+    normalizedStmt = normalizeGotoStatements(normalizedStmt);
+    normalizedStmt = sanitizeEscapeSequences(normalizedStmt);
+    normalizedStmt = normalizeInvokeStmts(normalizedStmt);
+    normalizedStmt = normalizeBootstrapCalls(normalizedStmt);
+
+    return normalizedStmt;
+  }
+
+  /** Ignore goto stmt target */
+  private static String normalizeGotoStatements(String stmtStr) {
+    //
+    if (stmtStr.startsWith("goto ")) stmtStr = "goto";
+    return stmtStr;
+  }
+
+  private static String sanitizeEscapeSequences(String normalizedStmt) {
+    // normalizedStmt = normalizedStmt.replace("'", "").replace("\\\"", "").replace("\\", "");
+    normalizedStmt =
+        normalizedStmt
+            .replace("\\\"", "")
+            .replace("'", "")
+            .replace("\\", "")
+            .replace("\\\"", "")
+            .replace("\\'", "")
+            .replace("\\\\", "\\");
+    return normalizedStmt;
+  }
+
+  private static String normalizeInvokeStmts(String normalizedStmt) {
+    return normalizedStmt
+        .replace("specialinvoke", "virtualinvoke")
+        .replace("interfaceinvoke", "virtualinvoke")
+        .replace("dynamicinvoke", "virtualinvoke");
+  }
+
+  /** Ignore bootstrap method identifiers */
+  private static String normalizeBootstrapCalls(String normalizedStmt) {
+    if (normalizedStmt.contains("bootstrap$")) {
+      normalizedStmt = normalizedStmt.replaceAll("__\\d+", "");
+    }
+    return normalizedStmt;
   }
 
   public int getTotalSameEdges() {

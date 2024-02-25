@@ -29,10 +29,6 @@ public class JoernProcessor {
             });
   }
 
-  public List<Method> getMethods() {
-    return new ArrayList<>(methods.values());
-  }
-
   public Graph generateCfg(Method method) {
     return new CfgGenerator().generate(method);
   }

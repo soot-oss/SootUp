@@ -1,7 +1,7 @@
 package org.sootup.java.codepropertygraph.evaluation.eval;
 
 import java.io.IOException;
-import org.sootup.java.codepropertygraph.evaluation.graph.comparison.services.DdgGraphComparisonService;
+import org.sootup.java.codepropertygraph.evaluation.graph.generation.DdgGraphGenerator;
 
 public class EvalDdg {
   public static void main(String[] args) throws IOException {
@@ -14,7 +14,7 @@ public class EvalDdg {
             resourcesDir + "main_out_ddg.txt");
 
     PropertyGraphEvaluator evaluator =
-        new PropertyGraphEvaluator(new DdgGraphComparisonService(), config);
+        new PropertyGraphEvaluator(new DdgGraphGenerator(), config);
     evaluator.performEvaluation();
   }
 }

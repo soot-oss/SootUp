@@ -209,7 +209,7 @@ public class AstCreator {
         }
 
       default:
-        throw new IllegalStateException("Unexpected value: " + stmt.getClass().getSimpleName());
+        throw new RuntimeException("Unexpected value: " + stmt.getClass().getSimpleName());
     }
   }
 

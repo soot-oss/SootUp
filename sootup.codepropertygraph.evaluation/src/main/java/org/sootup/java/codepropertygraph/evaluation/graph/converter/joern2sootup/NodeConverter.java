@@ -30,9 +30,21 @@ import sootup.java.core.types.JavaClassType;
 
 public class NodeConverter {
   private final NodeTypeResolver nodeTypeResolver;
+  private final Map<String, String> primitiveTypesInJvmFormat;
 
   public NodeConverter() {
     this.nodeTypeResolver = new NodeTypeResolver();
+
+    this.primitiveTypesInJvmFormat = new HashMap<>();
+
+    this.primitiveTypesInJvmFormat.put("byte", "B");
+    this.primitiveTypesInJvmFormat.put("char", "C");
+    this.primitiveTypesInJvmFormat.put("double", "D");
+    this.primitiveTypesInJvmFormat.put("float", "F");
+    this.primitiveTypesInJvmFormat.put("int", "I");
+    this.primitiveTypesInJvmFormat.put("long", "J");
+    this.primitiveTypesInJvmFormat.put("short", "S");
+    this.primitiveTypesInJvmFormat.put("boolean", "Z");
   }
 
   public Stmt convert(StoredNode node) {
@@ -181,37 +193,32 @@ public class NodeConverter {
       default:
         if (typeFullName.equals("java.lang.Class")) {
           constStr = constStr.substring(0, constStr.length() - ".class".length());
-          constStr = constStr.replace(".", "/");
         }
-
-        // Map of primitive types to their JVM internal representation codes
-        Map<String, String> primitiveTypes = new HashMap<>();
-        primitiveTypes.put("byte", "B");
-        primitiveTypes.put("char", "C");
-        primitiveTypes.put("double", "D");
-        primitiveTypes.put("float", "F");
-        primitiveTypes.put("int", "I");
-        primitiveTypes.put("long", "J");
-        primitiveTypes.put("short", "S");
-        primitiveTypes.put("boolean", "Z");
-
-        int arrayDepth = constStr.split("\\[]", -1).length - 1;
-        String baseType =
-            constStr.substring(
-                0, constStr.indexOf('[') == -1 ? constStr.length() : constStr.indexOf('['));
-
-        StringBuilder jvmFormat = new StringBuilder();
-        for (int i = 0; i < arrayDepth; i++) {
-          jvmFormat.append("[");
-        }
-
-        if (primitiveTypes.containsKey(baseType)) {
-          jvmFormat.append(primitiveTypes.get(baseType));
-        } else {
-          jvmFormat.append("L").append(baseType).append(";");
-        }
-        return new ClassConstant(jvmFormat.toString(), nodeTypeResolver.getNodeType(typeFullName));
+        String constStrInJvmFormat = formatConstToJvmStr(constStr);
+        return new ClassConstant(constStrInJvmFormat, nodeTypeResolver.getNodeType(typeFullName));
     }
+  }
+
+  private String formatConstToJvmStr(String constStr) {
+    constStr = constStr.replace(".", "/");
+
+    int arrayDepth = constStr.split("\\[]", -1).length - 1;
+    String baseType =
+        constStr.substring(
+            0, constStr.indexOf('[') == -1 ? constStr.length() : constStr.indexOf('['));
+
+    StringBuilder jvmFormat = new StringBuilder();
+    for (int i = 0; i < arrayDepth; i++) {
+      jvmFormat.append("[");
+    }
+
+    if (primitiveTypesInJvmFormat.containsKey(baseType)) {
+      jvmFormat.append(primitiveTypesInJvmFormat.get(baseType));
+    } else {
+      jvmFormat.append("L").append(baseType).append(";");
+    }
+
+    return jvmFormat.toString();
   }
 
   private Value evaluateCallExpr(Call call) {
@@ -220,12 +227,10 @@ public class NodeConverter {
     }
 
     return evaluateInvokeExpr(call);
-    // return evaluateFieldRef(call);
   }
 
   private Value evaluateInvokeExpr(Call call) {
     List<Immediate> args = getCallArguments(call);
-    String methodFullName = call.methodFullName();
 
     if (call.dispatchType().equals("DYNAMIC_DISPATCH")) {
       JoernMethodDetails joernMethodDetails =
@@ -239,8 +244,6 @@ public class NodeConverter {
               nodeTypeResolver.getNodeType(joernMethodDetails.getReturnType()));
 
       Identifier referencedObject = (Identifier) call.astOut().next();
-      String referencedObjectType =
-          nodeTypeResolver.getNodeType(referencedObject.typeFullName()).toString();
       MethodSignature methodSignature =
           new MethodSignature(
               new JavaClassType(
@@ -253,7 +256,8 @@ public class NodeConverter {
           (sootup.core.jimple.basic.Local) evaluateExpr(referencedObject), methodSignature, args);
     }
 
-    JoernMethodDetails joernMethodDetails = JoernMethodSignatureParser.parseMethodSignature(call.methodFullName());
+    JoernMethodDetails joernMethodDetails =
+        JoernMethodSignatureParser.parseMethodSignature(call.methodFullName());
     MethodSubSignature methodSubSignature =
         new MethodSubSignature(
             joernMethodDetails.getMethodName(),
@@ -269,8 +273,6 @@ public class NodeConverter {
       return new JStaticInvokeExpr(methodSignature, args);
     } catch (RuntimeException e) {
       Identifier referencedObject = (Identifier) call.astOut().next();
-      String referencedObjectType =
-          nodeTypeResolver.getNodeType(referencedObject.typeFullName()).toString();
       MethodSignature methodSignature =
           new MethodSignature(
               new JavaClassType(
@@ -279,32 +281,9 @@ public class NodeConverter {
               methodSubSignature);
 
       args.remove(0);
-      /*if (Arrays.asList("this", "superType").contains(referencedObject.name())) {
-        return new JSpecialInvokeExpr(
-            (Local) evaluateExpr(referencedObject), methodSignature, args);
-      }*/
       return new JVirtualInvokeExpr(
           (sootup.core.jimple.basic.Local) evaluateExpr(referencedObject), methodSignature, args);
     }
-  }
-
-  private List<sootup.core.types.Type> getMethodParamTypes(String methodFullName) {
-    List<sootup.core.types.Type> types = new ArrayList<>();
-
-    int start = methodFullName.indexOf('(');
-    int end = methodFullName.indexOf(')', start);
-
-    if (start != -1 && end != -1) {
-      String parameters = methodFullName.substring(start + 1, end).trim();
-
-      if (!parameters.isEmpty()) {
-        for (String param : parameters.split(",")) {
-          types.add(nodeTypeResolver.getNodeType(param.trim()));
-        }
-      }
-    }
-
-    return types;
   }
 
   private List<Immediate> getCallArguments(Call call) {

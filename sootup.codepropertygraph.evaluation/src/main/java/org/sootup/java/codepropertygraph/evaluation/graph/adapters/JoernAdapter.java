@@ -37,14 +37,6 @@ public class JoernAdapter {
         srcName = stmt.toString();
         dstName = successor.toString();
 
-        srcName = srcName.replace("\\\"", "");
-        srcName = srcName.replace("\\'", "");
-        srcName = srcName.replace("\\\\", "\\");
-
-        dstName = dstName.replace("\\\"", "");
-        dstName = dstName.replace("\\'", "");
-        dstName = dstName.replace("\\\\", "\\");
-
         PropertyGraphEdge edge =
                 new PropertyGraphEdge(
                         new StmtPropertyGraphNode(srcName, NodeType.STMT, stmt.getPositionInfo(), stmt),
@@ -52,7 +44,6 @@ public class JoernAdapter {
                                 dstName, NodeType.STMT, successor.getPositionInfo(), successor),
                         "UNKOWN");
         adaptedGraph.addEdge(edge);
-        System.out.println("### " + srcName + " -> " + dstName);
       }
     }
 

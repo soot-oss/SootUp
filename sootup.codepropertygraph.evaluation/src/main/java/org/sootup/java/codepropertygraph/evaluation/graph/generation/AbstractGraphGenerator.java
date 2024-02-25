@@ -1,4 +1,4 @@
-package org.sootup.java.codepropertygraph.evaluation.graph.comparison.services;
+package org.sootup.java.codepropertygraph.evaluation.graph.generation;
 
 import io.shiftleft.codepropertygraph.generated.nodes.Method;
 import io.shiftleft.semanticcpg.dotgenerator.DotSerializer.Graph;
@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.sootup.java.codepropertygraph.evaluation.graph.comparison.GraphSimilarityEvaluator;
+import org.sootup.java.codepropertygraph.evaluation.graph.comparison.GraphComparator;
 import org.sootup.java.codepropertygraph.evaluation.graph.processing.JoernProcessor;
 import org.sootup.java.codepropertygraph.evaluation.graph.processing.SootUpProcessor;
 import org.sootup.java.codepropertygraph.evaluation.graph.util.FileUtils;
@@ -15,7 +15,7 @@ import org.sootup.java.codepropertygraph.evaluation.output.ResultWriter;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
 
-public abstract class AbstractGraphComparisonService {
+public abstract class AbstractGraphGenerator {
   private final ResultWriter resultWriter = new ResultWriter();
 
   public void processFilePair(Path cpgPath, Path targetDir, Path resultDirPath) {
@@ -26,7 +26,7 @@ public abstract class AbstractGraphComparisonService {
     try {
       SootUpProcessor sootUpProcessor = new SootUpProcessor(targetDir);
       JoernProcessor joernProcessor = new JoernProcessor(cpgPath.toString());
-      GraphSimilarityEvaluator graphSimilarityEvaluator = new GraphSimilarityEvaluator();
+      GraphComparator graphComparator = new GraphComparator();
 
       for (SootMethod sootUpMethod : sootUpProcessor.getMethods()) {
         try {
@@ -43,21 +43,21 @@ public abstract class AbstractGraphComparisonService {
           Graph joernGraph = generateJoernGraph(joernProcessor, joernMethod);
           PropertyGraph sootUpGraph = generateSootUpGraph(sootUpMethod);
 
-          graphSimilarityEvaluator.compare(joernGraph, sootUpGraph, methodSignatureAsJoern);
+          graphComparator.compare(joernGraph, sootUpGraph, methodSignatureAsJoern);
         } catch (RuntimeException e) {
           e.printStackTrace();
         }
       }
 
-      int similarEdgesCount = graphSimilarityEvaluator.getTotalSameEdges();
+      int similarEdgesCount = graphComparator.getTotalSameEdges();
       int totalEdges =
-          graphSimilarityEvaluator.getTotalSameEdges() + graphSimilarityEvaluator.getTotalDiffEdges();
+          graphComparator.getTotalSameEdges() + graphComparator.getTotalDiffEdges();
       double similarityPercentage = ((double) similarEdgesCount / totalEdges) * 100;
       similarityPercentage = Math.round(similarityPercentage * 10000) / 10000.0;
 
-      result.put("numOfMethods", graphSimilarityEvaluator.getTotalMethods());
-      result.put("differentEdges", graphSimilarityEvaluator.getTotalDiffEdges());
-      result.put("sameEdges", graphSimilarityEvaluator.getTotalSameEdges());
+      result.put("numOfMethods", graphComparator.getTotalMethods());
+      result.put("differentEdges", graphComparator.getTotalDiffEdges());
+      result.put("sameEdges", graphComparator.getTotalSameEdges());
       result.put("similarityPercentage", similarityPercentage + " %");
 
       result.put("failed", false);

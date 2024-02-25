@@ -1,7 +1,7 @@
 package org.sootup.java.codepropertygraph.evaluation.eval;
 
 import java.io.IOException;
-import org.sootup.java.codepropertygraph.evaluation.graph.comparison.services.CdgGraphComparisonService;
+import org.sootup.java.codepropertygraph.evaluation.graph.generation.CdgGraphGenerator;
 
 public class EvalCdg {
   public static void main(String[] args) throws IOException {
@@ -14,7 +14,7 @@ public class EvalCdg {
             resourcesDir + "main_out_cdg.txt");
 
     PropertyGraphEvaluator evaluator =
-        new PropertyGraphEvaluator(new CdgGraphComparisonService(), config);
+        new PropertyGraphEvaluator(new CdgGraphGenerator(), config);
     evaluator.performEvaluation();
   }
 }
