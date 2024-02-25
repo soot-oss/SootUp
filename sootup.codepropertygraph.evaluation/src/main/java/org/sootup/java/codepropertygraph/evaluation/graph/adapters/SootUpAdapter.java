@@ -9,7 +9,7 @@ import sootup.java.codepropertygraph.propertygraph.*;
 
 public class SootUpAdapter {
   public PropertyGraph adapt(PropertyGraph sootUpCfg) {
-    PropertyGraph cfgGraph = new PropertyGraph();
+    PropertyGraph adaptedGraph = new PropertyGraph();
 
     for (PropertyGraphEdge edge : sootUpCfg.getEdges()) {
       StmtPropertyGraphNode src = (StmtPropertyGraphNode) edge.getSource();
@@ -25,9 +25,9 @@ public class SootUpAdapter {
       if ((srcStmt instanceof JIdentityStmt) || (dstStmt instanceof JIdentityStmt)) continue;
       if ((srcStmt instanceof JSwitchStmt) || (dstStmt instanceof JSwitchStmt)) continue;
 
-      cfgGraph.addEdge(edge.getSource(), edge.getDestination(), edge.getLabel());
+      adaptedGraph.addEdge(edge.getSource(), edge.getDestination(), edge.getLabel());
     }
 
-    return cfgGraph;
+    return adaptedGraph;
   }
 }
