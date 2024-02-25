@@ -10,11 +10,11 @@ import org.sootup.java.codepropertygraph.evaluation.graph.util.LogUtils;
 import org.sootup.java.codepropertygraph.evaluation.output.ResultAggregator;
 
 public class PropertyGraphEvaluator {
-  private final AbstractGraphGenerator graphComparisonService;
+  private final AbstractGraphGenerator graphGenerator;
   private final EvaluatorConfig config;
 
   public PropertyGraphEvaluator(AbstractGraphGenerator graphGenerator, EvaluatorConfig config) {
-    this.graphComparisonService = graphGenerator;
+    this.graphGenerator = graphGenerator;
     this.config = config;
   }
 
@@ -37,7 +37,7 @@ public class PropertyGraphEvaluator {
       // if (!baseName.startsWith("lombok")) continue;
 
       if (Files.exists(sootUpPath) && Files.isDirectory(sootUpPath)) {
-        graphComparisonService.processFilePair(cpgPath, sootUpPath, resultDirPath);
+        graphGenerator.processFilePair(cpgPath, sootUpPath, resultDirPath);
       }
     }
 
