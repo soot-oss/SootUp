@@ -1,7 +1,6 @@
 package org.sootup.java.codepropertygraph.evaluation;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import soot.PackManager;
 import soot.Scene;
 import soot.options.Options;
 
-public class JimpleGenerator {
+public class SootArtifactGenerator {
 
   public static void main(String[] args) throws IOException {
     File inputDir =
@@ -66,13 +65,7 @@ public class JimpleGenerator {
   }
 
   public static List<File> listJarFiles(File dir) {
-    File[] files =
-        dir.listFiles(
-            new FilenameFilter() {
-              public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-              }
-            });
+    File[] files = dir.listFiles((dir1, name) -> name.endsWith(".jar"));
     List<File> jarFiles = new ArrayList<>();
     if (files != null) {
       Collections.addAll(jarFiles, files);
