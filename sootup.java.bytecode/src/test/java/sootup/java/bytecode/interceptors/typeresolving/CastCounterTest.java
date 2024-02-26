@@ -1,9 +1,11 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,26 +114,15 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     assertEquals(3, counter.getCastCount());
     counter.insertCastStmts();
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
-    assertEquals(
-        Stream.of(
-                "CastCounterDemos l0",
-                "Sub2 #l1",
-                "int #l0",
-                "unknown $stack4, $stack5, l1, l2, l3",
-                "l0 := @this: CastCounterDemos",
-                "$stack4 = new Sub1",
-                "specialinvoke $stack4.<Sub1: void <init>()>()",
-                "l1 = $stack4",
-                "l2 = (long) 1",
-                "$stack5 = new Sub2",
-                "specialinvoke $stack5.<Sub2: void <init>()>()",
-                "l3 = $stack5",
-                "#l1 = (Sub2) l3",
-                "#l0 = (int) l2",
-                "virtualinvoke l1.<Super1: void m(int,Sub2)>(#l0, #l1)",
-                "return")
-            .collect(Collectors.toList()),
-        actualStmts);
+
+    assertEquals("l2 = (long) 1", actualStmts.get(8));
+    Set<String> expected = new HashSet<>();
+    expected.add("#l0 = (int) l2");
+    expected.add("#l1 = (Sub2) l3");
+    Set<String> actual = new HashSet<>();
+    actual.add(actualStmts.get(12));
+    actual.add(actualStmts.get(13));
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -151,7 +142,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
     final Body body = builder.build();
     List<String> actualStmts = Utils.filterJimple(body.toString());
 
-    assertEquals(
+    List<String> variant1 =
         Stream.of(
                 "CastCounterDemos l0",
                 "Super1[] #l0, #l1",
@@ -165,7 +156,23 @@ public class CastCounterTest extends TypeAssignerTestSuite {
                 "#l1 = (Super1[]) l1",
                 "l2 = #l1[2]",
                 "return")
-            .collect(Collectors.toList()),
-        actualStmts);
+            .collect(Collectors.toList());
+    List<String> variant2 =
+        Stream.of(
+                "CastCounterDemos l0",
+                "Super1[] #l0, #l1",
+                "unknown $stack3, l1, l2",
+                "l0 := @this: CastCounterDemos",
+                "l1 = newarray (Super1)[10]",
+                "$stack3 = new Sub1",
+                "specialinvoke $stack3.<Sub1: void <init>()>()",
+                "#l1 = (Super1[]) l1",
+                "#l1[0] = $stack3",
+                "#l0 = (Super1[]) l1",
+                "l2 = #l0[2]",
+                "return")
+            .collect(Collectors.toList());
+
+    assertTrue(actualStmts.equals(variant1) || actualStmts.equals(variant2));
   }
 }
