@@ -2,6 +2,7 @@ package org.sootup.java.codepropertygraph.evaluation;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +15,9 @@ import soot.options.Options;
 public class SootArtifactGenerator {
 
   public static void main(String[] args) throws IOException {
-    File inputDir =
-        Paths.get("sootup.codepropertygraph.evaluation/src/test/resources/sootup-artifacts")
-            .toFile();
-    String outputBasePath = inputDir.getCanonicalPath();
+    String resourcesDir = "sootup.codepropertygraph.evaluation/src/test/resources/";
+    Path inputDir = Paths.get(resourcesDir + "sootup-artifacts/");
+    String outputBasePath = inputDir.toFile().getCanonicalPath();
 
     List<File> jarFiles = listJarFiles(inputDir);
     for (File jarFile : jarFiles) {
@@ -64,8 +64,8 @@ public class SootArtifactGenerator {
     PackManager.v().writeOutput();
   }
 
-  public static List<File> listJarFiles(File dir) {
-    File[] files = dir.listFiles((dir1, name) -> name.endsWith(".jar"));
+  public static List<File> listJarFiles(Path dir) {
+    File[] files = dir.toFile().listFiles((dir1, name) -> name.endsWith(".jar"));
     List<File> jarFiles = new ArrayList<>();
     if (files != null) {
       Collections.addAll(jarFiles, files);
