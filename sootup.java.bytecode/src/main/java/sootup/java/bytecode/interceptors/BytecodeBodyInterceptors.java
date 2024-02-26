@@ -40,12 +40,7 @@ public enum BytecodeBodyInterceptors {
       new CopyPropagator(),
       // , new DeadAssignmentEliminator() // bug: fix StmtGraph.Iterator - see
       // RuntimeJarConversionTests
-
-      /*, TODO: fix
       new TypeAssigner()
-      */
-      new UnusedLocalEliminator() // not necessary anymore - every interceptorshould leave a clean
-      // state
       );
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
