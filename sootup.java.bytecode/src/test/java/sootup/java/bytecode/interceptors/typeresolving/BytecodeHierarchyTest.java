@@ -19,6 +19,7 @@ import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
@@ -153,7 +154,7 @@ public class BytecodeHierarchyTest {
 
     // tests
     Collection<Type> actualSet = hierarchy.getLeastCommonAncestor(double_prim, int_prim);
-    Collection<Type> expectedSet = Collections.emptySet();
+    Collection<Type> expectedSet = Collections.singleton(TopType.getInstance());
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, class1);
@@ -197,7 +198,7 @@ public class BytecodeHierarchyTest {
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(short_prim, byte_prim);
-    expectedSet = Collections.singleton(int_prim);
+    expectedSet = Collections.singleton(short_prim);
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(shortArr, byteArr);
