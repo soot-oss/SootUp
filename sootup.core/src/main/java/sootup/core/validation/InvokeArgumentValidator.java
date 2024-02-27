@@ -65,12 +65,20 @@ public class InvokeArgumentValidator implements BodyValidator {
                     Iterator<Immediate> iterArgs = args.iterator();
                     Iterator<Type> iterParameters = parameterTypes.iterator();
                     while (iterArgs.hasNext() && iterParameters.hasNext()) {
-                        ClassType argType = getClassType(identifierFactory, iterArgs.next().getType());
-                        ClassType paramType = getClassType(identifierFactory, iterParameters.next());
-                        if (argType != paramType && (!typeHierarchy.contains(paramType)
-                                || !typeHierarchy.subtypesOf(paramType).contains(argType))) {
+                        // handle implicit conversion cases. e.g., `int` is used as an argument of a `double` parameter
+                        Type argType = iterArgs.next().getType();
+                        Type paraType = iterParameters.next();
+                        if (argType instanceof PrimitiveType && paraType instanceof PrimitiveType
+                                && PrimitiveType.isImplicitlyConvertibleTo((PrimitiveType) argType, (PrimitiveType) paraType)) {
+                            continue;
+                        }
+                        // other cases
+                        ClassType argClassType = getClassType(identifierFactory, argType);
+                        ClassType paramClassType = getClassType(identifierFactory, paraType);
+                        if (argClassType != paramClassType && (!typeHierarchy.contains(paramClassType)
+                                || !typeHierarchy.subtypesOf(paramClassType).contains(argClassType))) {
                             validationException.add(new ValidationException(stmt,
-                                    String.format("Invalid argument type. Required %s but provided %s.", paramType, argType)));
+                                    String.format("Invalid argument type. Required %s but provided %s.", paraType, argType)));
                        }
                     }
                 }

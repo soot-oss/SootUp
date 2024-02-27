@@ -100,6 +100,8 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
       FileSystem fs = fileSystemCache.get(path);
       final Path archiveRoot = fs.getPath("/");
       JavaClassType javaClassType = null;
+
+      // This is a temporary workaround to prevent a casting exception when passing an anonymous ClassType object
       if (type instanceof JavaClassType)
         javaClassType = (JavaClassType) type;
       else

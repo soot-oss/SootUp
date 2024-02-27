@@ -106,4 +106,15 @@ public class InvokeArgumentValidatorTest {
         assertEquals(2, validationExceptions_success.size());
     }
 
+    @Test
+    public void testPrimitiveTypeConversion_success() {
+        List<ValidationException> validationExceptions_success;
+
+        validationExceptions_success = invokeArgumentValidator.validate( jimpleView.getMethod(
+                        jimpleView.getIdentifierFactory()
+                                .parseMethodSignature("<InvokeArgumentValidator: void testPrimitiveTypeConversion_success()>") )
+                .get().getBody(), jimpleView);
+        assertEquals(0, validationExceptions_success.size());
+    }
+
 }
