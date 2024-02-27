@@ -22,42 +22,47 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.List;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrapsValidator implements BodyValidator {
 
-    /**
-     * Verifies that the begin, end and handler units of each trap are in this body.
-     *
-     * @return
-     */
-    @Override
-    public List<ValidationException> validate(Body body, View view) {
-        List<ValidationException> exceptions = new ArrayList<>();
+  /**
+   * Verifies that the begin, end and handler units of each trap are in this body.
+   *
+   * @return
+   */
+  @Override
+  public List<ValidationException> validate(Body body, View view) {
+    List<ValidationException> exceptions = new ArrayList<>();
 
-        List<Stmt> stmts = body.getStmts();
-        for (Trap t : body.getTraps()) {
-            if (!stmts.contains(t.getBeginStmt()))
-                exceptions.add(new ValidationException(t.getBeginStmt(), "begin not in chain" + " in " + body.getMethodSignature()));
+    List<Stmt> stmts = body.getStmts();
+    for (Trap t : body.getTraps()) {
+      if (!stmts.contains(t.getBeginStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getBeginStmt(), "begin not in chain" + " in " + body.getMethodSignature()));
 
-            if (!stmts.contains(t.getEndStmt()))
-                exceptions.add(new ValidationException(t.getEndStmt(), "end not in chain" + " in " + body.getMethodSignature()));
+      if (!stmts.contains(t.getEndStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getEndStmt(), "end not in chain" + " in " + body.getMethodSignature()));
 
-            if (!stmts.contains(t.getHandlerStmt()))
-                exceptions.add(new ValidationException(t.getHandlerStmt(), "handler not in chain" + " in " + body.getMethodSignature()));
-        }
-
-        return exceptions;
+      if (!stmts.contains(t.getHandlerStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getHandlerStmt(), "handler not in chain" + " in " + body.getMethodSignature()));
     }
 
-    @Override
-    public boolean isBasicValidator() {
-        return true;
-    }
+    return exceptions;
+  }
+
+  @Override
+  public boolean isBasicValidator() {
+    return true;
+  }
 }

@@ -1,6 +1,11 @@
 package sootup.tests.validator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,63 +19,61 @@ import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 @Tag("Java8")
 public class TrapsValidatorTest {
-    TrapsValidator trapsValidator;
-    JimpleView jimpleView;
+  TrapsValidator trapsValidator;
+  JimpleView jimpleView;
 
-    @BeforeEach
-    public void Setup() {
+  @BeforeEach
+  public void Setup() {
 
-        trapsValidator = new TrapsValidator();
+    trapsValidator = new TrapsValidator();
 
-        ClassType classTypeCheckInitValidator =
-                new ClassType() {
-                    @Override
-                    public boolean isBuiltInClass() {
-                        return false;
-                    }
+    ClassType classTypeCheckInitValidator =
+        new ClassType() {
+          @Override
+          public boolean isBuiltInClass() {
+            return false;
+          }
 
-                    @Override
-                    public String getFullyQualifiedName() {
-                        return "jimple.MethodValidator";
-                    }
+          @Override
+          public String getFullyQualifiedName() {
+            return "jimple.MethodValidator";
+          }
 
-                    @Override
-                    public String getClassName() {
-                        return "MethodValidator";
-                    }
+          @Override
+          public String getClassName() {
+            return "MethodValidator";
+          }
 
-                    @Override
-                    public PackageName getPackageName() {
-                        return new PackageName("jimple");
-                    }
-                };
+          @Override
+          public PackageName getPackageName() {
+            return new PackageName("jimple");
+          }
+        };
 
-        String classPath = "src/test/resources/validator/jimple";
-        JimpleAnalysisInputLocation jimpleInputLocation = new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
+    String classPath = "src/test/resources/validator/jimple";
+    JimpleAnalysisInputLocation jimpleInputLocation =
+        new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
-        jimpleView = new JimpleView(jimpleInputLocation);
-        final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
-        assertFalse(classSource1.isPresent());
-    }
+    jimpleView = new JimpleView(jimpleInputLocation);
+    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeCheckInitValidator);
+    assertFalse(classSource1.isPresent());
+  }
 
-    Body getBody(String methodSignature) {
-        return jimpleView.getMethod(jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature)).get().getBody();
-    }
+  Body getBody(String methodSignature) {
+    return jimpleView
+        .getMethod(jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature))
+        .get()
+        .getBody();
+  }
 
-    @Test
-    public void trapsValidator_success() {
-        List<ValidationException> validationExceptions_success =
-                trapsValidator.validate(getBody("<TrapsValidator: void trapsValidator_success()>"), jimpleView);
+  @Test
+  public void trapsValidator_success() {
+    List<ValidationException> validationExceptions_success =
+        trapsValidator.validate(
+            getBody("<TrapsValidator: void trapsValidator_success()>"), jimpleView);
 
-        assertEquals(0, validationExceptions_success.size());
-    }
+    assertEquals(0, validationExceptions_success.size());
+  }
 }
