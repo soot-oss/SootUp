@@ -96,11 +96,8 @@ public interface TypeHierarchy {
    * <p>This method relies on {@link #implementedInterfacesOf(ClassType)} and {@link
    * #superClassOf(ClassType)}.
    */
-  default boolean isSubtype(@Nonnull Type supertype, @Nonnull Type potentialSubtype) {
-    if (!(supertype instanceof ReferenceType) || !(potentialSubtype instanceof ReferenceType)) {
-      // Subtyping applies to ReferenceTypes only
-      return false;
-    }
+  default boolean isSubtype(
+      @Nonnull ReferenceType supertype, @Nonnull ReferenceType potentialSubtype) {
 
     if (supertype instanceof NullType) {
       // NullType has no subtypes
@@ -119,14 +116,20 @@ public interface TypeHierarchy {
 
       ArrayType superArrayType = (ArrayType) supertype;
       ArrayType potentialSubArrayType = (ArrayType) potentialSubtype;
-      if (superArrayType.getBaseType() instanceof PrimitiveType) {
-        // Arrays of primitives have no subtypes
+      if (!(superArrayType.getBaseType() instanceof ReferenceType)) {
+        // Arrays of primitives have no subtype
+        return false;
+      }
+      if (!(potentialSubArrayType.getBaseType() instanceof ReferenceType)) {
+        // Arrays of primitives have no supertype/subtype
         return false;
       }
 
       assert superArrayType.getBaseType() instanceof ReferenceType;
 
-      if (isSubtype(superArrayType.getBaseType(), potentialSubArrayType.getBaseType())
+      if (isSubtype(
+              (ReferenceType) superArrayType.getBaseType(),
+              (ReferenceType) potentialSubArrayType.getBaseType())
           && potentialSubArrayType.getDimension() == superArrayType.getDimension()) {
         // Arrays are covariant: Object[] x = new String[0];
         return true;

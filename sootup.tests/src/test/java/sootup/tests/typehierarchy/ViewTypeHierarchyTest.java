@@ -142,16 +142,6 @@ public class ViewTypeHierarchyTest {
   }
 
   @Test
-  public void primitiveTypeSubtyping() {
-    assertFalse(
-        typeHierarchy.isSubtype(PrimitiveType.getInt(), PrimitiveType.getInt()),
-        "Primitive types should not have subtype relations");
-    assertFalse(
-        typeHierarchy.isSubtype(PrimitiveType.getDouble(), PrimitiveType.getInt()),
-        "Primitive types should not have subtype relations");
-  }
-
-  @Test
   public void nullTypeSubtyping() {
     IdentifierFactory factory = view.getIdentifierFactory();
     assertTrue(
@@ -165,12 +155,6 @@ public class ViewTypeHierarchyTest {
             factory.getClassType("JavaClassPathNamespace", "de.upb.sootup.namespaces"),
             NullType.getInstance()),
         "null should be valid value for all reference types");
-    assertFalse(
-        typeHierarchy.isSubtype(PrimitiveType.getInt(), NullType.getInstance()),
-        "null should not be a valid value for primitive types");
-    assertFalse(
-        typeHierarchy.isSubtype(PrimitiveType.getDouble(), NullType.getInstance()),
-        "null should not be a valid value for primitive types");
   }
 
   @Test
@@ -251,7 +235,7 @@ public class ViewTypeHierarchyTest {
             doubleArrayDim1Type)
         .forEach(type -> assertFalse(typeHierarchy.isSubtype(type, type)));
 
-    Set<Pair<Type, Type>> subtypes =
+    Set<Pair<ReferenceType, ReferenceType>> subtypes =
         ImmutableUtils.immutableSet(
             Pair.of(serializableType, objectArrayDim1Type),
             Pair.of(serializableType, stringType),
