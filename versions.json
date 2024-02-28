@@ -26,7 +26,10 @@
   {
     "version": "doc_Interceptors_preview",
     "title": "PR Preview doc_Interceptors",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
