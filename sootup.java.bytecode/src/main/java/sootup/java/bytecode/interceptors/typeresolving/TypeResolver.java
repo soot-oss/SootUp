@@ -100,9 +100,12 @@ public class TypeResolver {
     locals.stream()
         .forEach(
             local -> {
-              Type type = minCastsTyping.getMap().getOrDefault(local, local.getType());
-              Local newLocal = local.withType(type);
-              builder.replaceLocal(local, newLocal);
+              Type oldType = local.getType();
+              Type type = minCastsTyping.getMap().getOrDefault(local, oldType);
+              if(type != oldType){
+                      Local newLocal = local.withType(type);
+                      builder.replaceLocal(local, newLocal);
+              }
             });
     return true;
   }
