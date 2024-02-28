@@ -48,12 +48,12 @@ public class ReferencingThisTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: ReferencingThis",
+            "this := @this: ReferencingThis",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.String)>(\" this keyword as an argument in the constructor call\")",
             "$stack5 = new ReferencingThis",
-            "$stack4 = l0.<ReferencingThis: int a>",
-            "$stack3 = l0.<ReferencingThis: int b>",
+            "$stack4 = this.<ReferencingThis: int a>",
+            "$stack3 = this.<ReferencingThis: int b>",
             "specialinvoke $stack5.<ReferencingThis: void <init>(int,int)>($stack4, $stack3)",
             "l1 = $stack5",
             "virtualinvoke l1.<ReferencingThis: void show()>()",

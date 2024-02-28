@@ -34,8 +34,8 @@ public class TernaryOperatorTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: TernaryOperator",
-            "$stack1 = l0.<TernaryOperator: int num>",
+            "this := @this: TernaryOperator",
+            "$stack1 = this.<TernaryOperator: int num>",
             "if $stack1 >= 0 goto label1",
             "$stack2 = 0",
             "goto label2",

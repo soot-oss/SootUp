@@ -33,7 +33,7 @@ public class DoWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: DoWhileLoop",
+            "this := @this: DoWhileLoop",
             "l1 = 10",
             "l2 = 0",
             "label1:",

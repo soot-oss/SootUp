@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import sootup.core.graph.StmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SourceType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -29,11 +30,11 @@ public class SameVarNamesInDifferentScopesTest {
             .getMethod("foo", Collections.emptyList())
             .get();
 
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     Assertions.assertTrue(
-        method.getBody().getStmtGraph().getNodes().stream()
+        stmtGraph.getNodes().stream()
             .anyMatch(stmt -> stmt.toString().equals("candidate_1 = \"banana\"")));
     Assertions.assertTrue(
-        method.getBody().getStmtGraph().getNodes().stream()
-            .anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
+        stmtGraph.getNodes().stream().anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
   }
 }

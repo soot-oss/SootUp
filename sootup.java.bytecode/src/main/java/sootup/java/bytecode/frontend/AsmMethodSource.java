@@ -266,8 +266,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx);
-      local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
+      String nameCandidate = determineLocalName(idx);
+      local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
       locals.set(idx, local);
     }
     return local;
@@ -279,19 +279,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index == idx) {
           // TODO: take into consideration in which range this name is valid ->lvn.start/end
-          String newName = lvn.name;
-          // check for collisions with the same local names in other scopes
-          // this can happen when different scopes use the same name for a
-          // different variable (and having a different local idx, so we can distinguish)
-          for (int i = 1; localNameExists(newName); i++) {
-            newName = newName + "_" + i;
-          }
-          return newName;
+          return lvn.name;
         }
       }
       /* usually reached for try-catch blocks */
     }
     return "l" + idx;
+  }
+
+  private JavaLocal createUniqueLocal(@Nonnull String nameCandidate, @Nonnull Type type) {
+    // check for collisions with the same local names in other scopes
+    // this can happen when different scopes use the same name for a
+    // different variable (and having a different local idx, were we are able distinguish)
+    for (int i = 1; localNameExists(nameCandidate); i++) {
+      nameCandidate = nameCandidate + "_" + i;
+    }
+    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
   }
 
   private boolean localNameExists(String nameCandidate) {
@@ -307,8 +310,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    JavaLocal l =
-        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
+    JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
     locals.set(idx, l);
     return l;
   }
@@ -1558,15 +1560,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     MethodSignature methodSignature = lazyMethodSignature.get();
     final StmtPositionInfo methodPosInfo = getFirstLineOfMethod();
 
+    // idx positions see: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.1
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
+
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);

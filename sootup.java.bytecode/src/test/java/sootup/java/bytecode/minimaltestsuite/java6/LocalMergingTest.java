@@ -66,7 +66,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsConstant() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "$stack3 = <java.lang.System: java.io.PrintStream out>",
@@ -97,7 +97,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsOtherLocal() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "l3 = \"two\"",
@@ -129,7 +129,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsDuplicateValue() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "if l1 != 1 goto label1",
@@ -156,7 +156,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsWithInlining() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "$stack5 = newarray (java.lang.String)[2]",
             "$stack5[0] = \"a\"",

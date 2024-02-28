@@ -34,7 +34,7 @@ public class ForEachLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: ForEachLoop",
+            "this := @this: ForEachLoop",
             "$stack7 = newarray (int)[9]",
             "$stack7[0] = 10",
             "$stack7[1] = 20",

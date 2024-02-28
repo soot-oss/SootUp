@@ -54,7 +54,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: DeclareInnerClass",
+            "this := @this: DeclareInnerClass",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayOuter\")",
             "return")
@@ -72,7 +72,7 @@ public class DeclareInnerClassTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedInnerClassBodyStmts() {
     return Stream.of(
-            "l0 := @this: DeclareInnerClass$InnerClass",
+            "this := @this: DeclareInnerClass$InnerClass",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayInner\")",
             "return")

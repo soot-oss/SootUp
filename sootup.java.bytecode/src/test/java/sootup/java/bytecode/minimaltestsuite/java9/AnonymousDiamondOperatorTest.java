@@ -48,9 +48,9 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AnonymousDiamondOperator",
+            "this := @this: AnonymousDiamondOperator",
             "$stack3 = new AnonymousDiamondOperator$1",
-            "specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(l0)",
+            "specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(this)",
             "l1 = $stack3",
             "$stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22)",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23)",

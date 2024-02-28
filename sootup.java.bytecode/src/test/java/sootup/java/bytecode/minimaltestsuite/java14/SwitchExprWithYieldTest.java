@@ -78,7 +78,7 @@ public class SwitchExprWithYieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SwitchExprWithYieldTest",
+            "this := @this: SwitchExprWithYieldTest",
             "l1 = 5",
             "l2 = \"\"",
             "switch(l1)",

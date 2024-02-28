@@ -30,19 +30,19 @@ public class FixMissingTraphandlerPredecessor {
 
     List<String> expectedStmts =
         Arrays.asList(
-            "l0 := @this: MissingTrapHandlerAssignment",
+            "this := @this: MissingTrapHandlerAssignment",
             "label1:",
             // It's important that this assignment doesn't get inlined into the return statement
             // below, because the trap handler (try/catch) at the bottom would be broken by that
             "$stack2 = 1L",
             "label2:",
-            "return $stack2",
+            "return 1L",
             "label3:",
             "$stack3 := @caughtexception",
             "l1 = $stack3",
             "return 2L",
             "catch java.lang.Throwable from label1 to label2 with label3");
 
-    assertEquals(Utils.bodyStmtsAsStrings(body), expectedStmts);
+    assertEquals(expectedStmts, Utils.bodyStmtsAsStrings(body));
   }
 }

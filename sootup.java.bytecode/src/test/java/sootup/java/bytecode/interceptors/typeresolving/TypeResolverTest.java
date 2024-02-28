@@ -55,11 +55,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
     assertEquals(
         Stream.of(
-                "CastCounterDemos l0",
+                "CastCounterDemos this",
                 "Sub1 $stack4, l1",
                 "Sub2 $stack5, l3",
                 "byte l2",
-                "l0 := @this: CastCounterDemos",
+                "this := @this: CastCounterDemos",
                 "$stack4 = new Sub1",
                 "specialinvoke $stack4.<Sub1: void <init>()>()",
                 "l1 = $stack4",
@@ -83,11 +83,11 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
     List<String> actualStmts = Utils.filterJimple(newbody.toString());
     assertEquals(
         Stream.of(
-                "CastCounterDemos l0",
+                "CastCounterDemos this",
                 "Sub1 $stack3",
                 "Super1 l2",
                 "Super1[] l1",
-                "l0 := @this: CastCounterDemos",
+                "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
                 "specialinvoke $stack3.<Sub1: void <init>()>()",
