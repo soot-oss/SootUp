@@ -18,7 +18,6 @@ public class Soot1577Test {
   final String directory = "../shared-test-resources/soot-1577/";
 
   @Test
-  @Disabled("conversion fails - could be a dex2jar conversion problem")
   public void test() {
     AnalysisInputLocation inputLocation =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
