@@ -22,22 +22,22 @@ package sootup.analysis.interprocedural.ifds;
  * #L%
  */
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import heros.InterproceduralCFG;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
 
   SootMethod getEntryPointMethod() {
@@ -100,8 +100,8 @@ public class IFDSTaintAnalysisTest extends IFDSTaintTestSetUp {
     JimpleIFDSSolver<?, InterproceduralCFG<Stmt, SootMethod>> analysis =
         executeStaticAnalysis("FunctionTaintPropagated");
     Set<String> result = getResultsAtLastStatement(analysis);
-    assertTrue(result + " is missing an element.", result.contains("l1"));
-    assertTrue(result + " is missing an element.", result.contains("l2"));
+    assertTrue(result.contains("l1"), result + " is missing an element.");
+    assertTrue(result.contains("l2"), result + " is missing an element.");
   }
 
   @Test

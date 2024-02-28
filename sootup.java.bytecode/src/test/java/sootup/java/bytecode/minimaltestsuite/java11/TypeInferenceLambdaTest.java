@@ -1,19 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java11;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Bastian Haverkamp */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class TypeInferenceLambdaTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
@@ -35,7 +34,7 @@ public class TypeInferenceLambdaTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: TypeInferenceLambda",
+            "this := @this: TypeInferenceLambda",
             "l1 = dynamicinvoke \"apply\" <java.util.function.BinaryOperator ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: java.lang.Object __METHODTYPE__(java.lang.Object,java.lang.Object), methodhandle: \"REF_INVOKE_STATIC\" <TypeInferenceLambda: java.lang.Integer lambda$lambda$0(java.lang.Integer,java.lang.Integer)>, methodtype: java.lang.Integer __METHODTYPE__(java.lang.Integer,java.lang.Integer))",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
             "$stack3 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3)",

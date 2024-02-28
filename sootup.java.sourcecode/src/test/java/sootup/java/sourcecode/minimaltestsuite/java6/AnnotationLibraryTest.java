@@ -1,18 +1,17 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class AnnotationLibraryTest extends MinimalSourceTestSuiteBase {
 
-  @Ignore
+  @Disabled
   public void testAnnotation() {
     // TODO: [ms] annotations are not implemented yet
     System.out.println(getDeclaredClassSignature());

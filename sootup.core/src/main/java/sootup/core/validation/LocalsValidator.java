@@ -44,7 +44,6 @@ public class LocalsValidator implements BodyValidator {
     final Set<Local> locals = body.getLocals();
 
     body.getUses()
-        .parallelStream()
         .filter(value -> value instanceof Local && !locals.contains(value))
         .forEach(
             value ->

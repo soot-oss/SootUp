@@ -1,16 +1,16 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void test() {
@@ -66,7 +66,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsConstant() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "$stack3 = <java.lang.System: java.io.PrintStream out>",
@@ -97,7 +97,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsOtherLocal() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "l3 = \"two\"",
@@ -129,7 +129,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsDuplicateValue() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "l2 = \"one\"",
             "if l1 != 1 goto label1",
@@ -156,7 +156,7 @@ public class LocalMergingTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsWithInlining() {
     return Stream.of(
-            "l0 := @this: LocalMerging",
+            "this := @this: LocalMerging",
             "l1 := @parameter0: int",
             "$stack5 = newarray (java.lang.String)[2]",
             "$stack5[0] = \"a\"",

@@ -234,7 +234,7 @@ public class LocalSplitter implements BodyInterceptor {
             continue;
           }
 
-          if (stmt.getUses().contains(local)) {
+          if (stmt.getUses().anyMatch(l -> l == local)) {
             PartialStmt useStmt = new PartialStmt(stmt, false);
             disjointSet.add(useStmt);
             disjointSet.union(defStmt, useStmt);
@@ -242,7 +242,8 @@ public class LocalSplitter implements BodyInterceptor {
 
           // a new assignment to the local -> end walk here
           // otherwise continue by adding all successors to the stack
-          if (!stmt.getDefs().contains(local)) {
+          Optional<LValue> defOpt = stmt.getDef();
+          if (!defOpt.isPresent() || defOpt.get() != local) {
             stack.addAll(graph.getAllSuccessors(stmt));
           }
         }
@@ -260,8 +261,10 @@ public class LocalSplitter implements BodyInterceptor {
 
       for (int i = 0; i < stmts.size(); i++) {
         Stmt stmt = stmts.get(i);
-        boolean localIsDef = stmt.getDefs().contains(local);
-        boolean localIsUse = stmt.getUses().contains(local);
+
+        Optional<LValue> stmtDef = stmt.getDef();
+        boolean localIsDef = stmtDef.isPresent() && stmtDef.get() == local;
+        boolean localIsUse = stmt.getUses().anyMatch(l -> l == local);
 
         if (!localIsDef && !localIsUse) {
           continue;

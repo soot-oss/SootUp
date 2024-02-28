@@ -22,8 +22,7 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
@@ -82,11 +81,8 @@ public final class JReturnStmt extends AbstractStmt {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    final List<Value> uses = op.getUses();
-    List<Value> list = new ArrayList<>(uses.size() + 1);
-    list.add(op);
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(op.getUses(), Stream.of(op));
   }
 
   @Override

@@ -1,18 +1,15 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.util.Utils;
@@ -20,14 +17,14 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class SwitchConversionTest {
   private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
-  @Before
+  @BeforeEach
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaJavaClassProvider(srcDir);
@@ -66,7 +63,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "i0 := @parameter0: int",
@@ -122,7 +119,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "i0 = 3",
@@ -177,7 +174,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "i0 := @parameter0: int",
@@ -234,7 +231,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "r1 := @parameter0: java.lang.String",
@@ -290,7 +287,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "r1 := @parameter0: java.lang.String",
@@ -345,7 +342,7 @@ public class SwitchConversionTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
                 "r0 := @this: de.upb.sootup.concrete.controlStatements.ControlStatements",
                 "r1 := @parameter0: java.lang.String",

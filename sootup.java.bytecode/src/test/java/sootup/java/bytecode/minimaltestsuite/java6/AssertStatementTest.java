@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -42,7 +42,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -66,7 +66,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -93,7 +93,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend2() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"first\" != null goto label1",

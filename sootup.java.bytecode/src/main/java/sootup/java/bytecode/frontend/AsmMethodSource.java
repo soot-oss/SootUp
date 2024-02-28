@@ -266,8 +266,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx);
-      local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
+      String nameCandidate = determineLocalName(idx);
+      local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
       locals.set(idx, local);
     }
     return local;
@@ -287,6 +287,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     return "l" + idx;
   }
 
+  private JavaLocal createUniqueLocal(@Nonnull String nameCandidate, @Nonnull Type type) {
+    // check for collisions with the same local names in other scopes
+    // this can happen when different scopes use the same name for a
+    // different variable (and having a different local idx, were we are able distinguish)
+    for (int i = 1; localNameExists(nameCandidate); i++) {
+      nameCandidate = nameCandidate + "_" + i;
+    }
+    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
+  }
+
+  private boolean localNameExists(String nameCandidate) {
+    return locals.stream()
+        .filter(Objects::nonNull)
+        .anyMatch(l -> l.getName().equals(nameCandidate));
+  }
+
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
     insnToStmt.put(insn, stmt);
   }
@@ -294,8 +310,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    JavaLocal l =
-        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
+    JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
     locals.set(idx, l);
     return l;
   }
@@ -321,7 +336,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         (opValue, operand) -> {
           if (!opValue.equivTo(local)) {
             boolean noRef = true;
-            for (Value use : opValue.getUses()) {
+            for (Iterator<Value> iterator = opValue.getUses().iterator(); iterator.hasNext(); ) {
+              Value use = iterator.next();
               if (use.equivTo(local)) {
                 noRef = false;
                 break;
@@ -1544,15 +1560,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     MethodSignature methodSignature = lazyMethodSignature.get();
     final StmtPositionInfo methodPosInfo = getFirstLineOfMethod();
 
+    // idx positions see: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.1
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
+
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
@@ -1765,11 +1783,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
-            .filter(stmt -> stmt.getKey().getUses().contains(value))
+            .filter(stmt -> stmt.getKey().getUses().anyMatch(v -> v == value))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);

@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -58,7 +58,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslashB() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash b \\u0008\"",
             "return")
         .collect(Collectors.toList());
@@ -74,7 +74,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslashT() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash t \\t\"",
             "return")
         .collect(Collectors.toList());
@@ -90,7 +90,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslashN() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash n \\n\"",
             "return")
         .collect(Collectors.toList());
@@ -107,7 +107,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslashF() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash f \\f\"",
             "return")
         .collect(Collectors.toList());
@@ -124,7 +124,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslashR() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash r \\r\"",
             "return")
         .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeDoubleQuotes() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes double quotes \\\"\"",
             "return")
         .collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeSingleQuote() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes single quote \\'\"",
             "return")
         .collect(Collectors.toList());
@@ -175,7 +175,7 @@ public class EscapeSequencesInStringTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsEscapeBackslash() {
     return Stream.of(
-            "l0 := @this: EscapeSequencesInString",
+            "this := @this: EscapeSequencesInString",
             "l1 = \"This escapes backslash \\\\\"",
             "return")
         .collect(Collectors.toList());

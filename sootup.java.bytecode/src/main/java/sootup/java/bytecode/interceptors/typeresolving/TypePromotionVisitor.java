@@ -22,9 +22,8 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import java.util.Collection;
 import javax.annotation.Nonnull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -32,14 +31,9 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 public class TypePromotionVisitor extends TypeChecker {
-
-  private boolean failed = false;
-  private boolean typingChanged = true;
-
-  private static final Logger logger = LoggerFactory.getLogger(TypePromotionVisitor.class);
-
   public TypePromotionVisitor(
       @Nonnull Body.BodyBuilder builder,
       @Nonnull AugEvalFunction evalFunction,
@@ -49,15 +43,8 @@ public class TypePromotionVisitor extends TypeChecker {
 
   public Typing getPromotedTyping(Typing typing) {
     setTyping(typing);
-    this.failed = false;
-    while (typingChanged && !failed) {
-      this.typingChanged = false;
-      for (Stmt stmt : builder.getStmts()) {
-        stmt.accept(this);
-      }
-    }
-    if (failed) {
-      return null;
+    for (Stmt stmt : builder.getStmts()) {
+      stmt.accept(this);
     }
     return getTyping();
   }
@@ -77,20 +64,22 @@ public class TypePromotionVisitor extends TypeChecker {
       return;
     }
     if (!hierarchy.isAncestor(stdType, evaType)) {
-      logger.error(
-          stdType
-              + " is not compatible with the value '"
-              + value
-              + "' in the statement: '"
-              + stmt
-              + "' !");
-      this.failed = true;
+      if (!hierarchy.isAncestor(evaType, stdType)) {
+        assert value instanceof Local;
+        // The type of the local and the type that is required in the statement are incompatible,
+        // so the type of the local needs to be upgraded to a common ancestor.
+        Collection<Type> lca = hierarchy.getLeastCommonAncestor(evaType, stdType);
+        assert !lca.isEmpty();
+        // Only use the first of the common ancestors, because this is an edge case.
+        // The proper way to do this would be to create a completely new visitor that can yield
+        // multiple possible typings, or to not only use assignments for the initial typing.
+        typing.set((Local) value, lca.iterator().next());
+      }
     } else if (value instanceof Local && isIntermediateType(evaType)) {
       Local local = (Local) value;
       Type promotedType = promote(evaType, stdType);
       if (promotedType != null && !promotedType.equals(evaType)) {
         typing.set(local, promotedType);
-        this.typingChanged = true;
       }
     }
   }
@@ -98,6 +87,11 @@ public class TypePromotionVisitor extends TypeChecker {
   private Type promote(Type low, Type high) {
     Class<?> lowClass = low.getClass();
     Class<?> highClass = high.getClass();
+
+    if (highClass == TopType.class || lowClass == highClass) {
+      return low;
+    }
+
     if (lowClass == AugmentIntegerTypes.Integer1Type.class) {
       if (highClass == PrimitiveType.IntType.class) {
         return AugmentIntegerTypes.getInteger127();
@@ -110,8 +104,8 @@ public class TypePromotionVisitor extends TypeChecker {
           || highClass == AugmentIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high + "!");
-        return null;
+        throw new IllegalArgumentException(
+            low + " cannot be promoted with the supertype " + high + "!");
       }
     } else if (lowClass == AugmentIntegerTypes.Integer127Type.class) {
       if (highClass == PrimitiveType.ShortType.class) {
@@ -123,8 +117,8 @@ public class TypePromotionVisitor extends TypeChecker {
           || highClass == AugmentIntegerTypes.Integer32767Type.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high + "!");
-        return null;
+        throw new IllegalArgumentException(
+            low + " cannot be promoted with the supertype " + high + "!");
       }
     } else if (lowClass == AugmentIntegerTypes.Integer32767Type.class) {
       if (highClass == PrimitiveType.IntType.class) {
@@ -133,12 +127,11 @@ public class TypePromotionVisitor extends TypeChecker {
           || highClass == PrimitiveType.CharType.class) {
         return high;
       } else {
-        logger.error(low + " cannot be promoted with the supertype " + high + "!");
-        return null;
+        throw new IllegalArgumentException(
+            low + " cannot be promoted with the supertype " + high + "!");
       }
     } else {
-      logger.error(low + " cannot be promoted with the supertype " + high + "!");
-      return null;
+      return low;
     }
   }
 }

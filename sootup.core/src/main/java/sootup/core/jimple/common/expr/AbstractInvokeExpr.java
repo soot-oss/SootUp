@@ -22,10 +22,10 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
@@ -53,7 +53,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  public Value getArg(int index) {
+  public Immediate getArg(int index) {
     return args[index];
   }
 
@@ -74,13 +74,8 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(getArgCount());
-    Collections.addAll(list, args);
-    for (Value arg : args) {
-      list.addAll(arg.getUses());
-    }
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(Stream.of(args), Stream.of(args).flatMap(Value::getUses));
   }
 
   protected void argsToString(@Nonnull StringBuilder builder) {

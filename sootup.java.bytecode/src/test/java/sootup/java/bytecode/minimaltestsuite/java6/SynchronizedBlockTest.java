@@ -1,19 +1,19 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -40,12 +40,12 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SynchronizedBlock",
-            "l1 = l0.<SynchronizedBlock: java.lang.String msg>",
+            "this := @this: SynchronizedBlock",
+            "l1 = this.<SynchronizedBlock: java.lang.String msg>",
             "entermonitor l1",
             "label1:",
             "$stack4 = <java.lang.System: java.io.PrintStream out>",
-            "$stack3 = l0.<SynchronizedBlock: java.lang.String msg>",
+            "$stack3 = this.<SynchronizedBlock: java.lang.String msg>",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.String)>($stack3)",
             "exitmonitor l1",
             "label2:",

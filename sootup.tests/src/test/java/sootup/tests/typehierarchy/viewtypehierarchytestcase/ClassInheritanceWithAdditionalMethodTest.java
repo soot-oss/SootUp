@@ -1,27 +1,23 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
-  ViewTypeHierarchy typeHierarchy =
-      (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"
@@ -29,7 +25,8 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassExtendsObject() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
+        getView().getTypeHierarchy().superClassOf(getClassType("SuperClass")),
+        getClassType("java.lang.Object"));
   }
 
   /**
@@ -39,7 +36,7 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testObjectIsSuperclassOfSuperClass() {
     Set<ClassType> subClassSet = new HashSet<ClassType>();
-    subClassSet = typeHierarchy.subclassesOf(getClassType("java.lang.Object"));
+    subClassSet = getView().getTypeHierarchy().subclassesOf(getClassType("java.lang.Object"));
     assertTrue(subClassSet.contains(getClassType("SuperClass")));
     assertTrue(subClassSet.contains(getClassType("ClassInheritanceWithAdditionalMethod")));
   }
@@ -48,7 +45,9 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testClassInheritanceClassExtendsSuperClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
@@ -56,7 +55,9 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassIsSuperclassOfClassInheritanceClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
         getClassType("SuperClass"));
   }
 
@@ -64,16 +65,10 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void ClassInheritanceClassHasAdditionalMethod() {
     SootClass sootClass =
-        customTestWatcher
-            .getView()
-            .getClass(
-                customTestWatcher
-                    .getView()
-                    .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
+        this.getView()
+            .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
             .get();
-    SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+    SootClass superClass = this.getView().getClass(sootClass.getSuperclass().get()).get();
 
     Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
     Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();
