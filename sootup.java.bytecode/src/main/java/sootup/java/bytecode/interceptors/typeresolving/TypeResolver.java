@@ -22,6 +22,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -62,7 +63,8 @@ public class TypeResolver {
     init(builder);
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
     AugEvalFunction evalFunction = new AugEvalFunction(view);
-    Typing iniTyping = new Typing(builder.getLocals());
+    final Collection<Local> locals = Lists.newArrayList(builder.getLocals());
+    Typing iniTyping = new Typing(locals);
     Collection<Typing> typings =
         applyAssignmentConstraint(builder.getStmtGraph(), iniTyping, evalFunction, hierarchy);
     if (typings.isEmpty()) {
@@ -75,7 +77,7 @@ public class TypeResolver {
 
     // Promote `null`/`BottomType` types to `Object`.
     for (Typing typing : typings) {
-      for (Local local : builder.getLocals()) {
+      for (Local local : locals) {
         typing.set(local, convertUnderspecifiedType(typing.getType(local)));
       }
     }
@@ -84,7 +86,7 @@ public class TypeResolver {
     minCastsCounter.insertCastStmts();
     Typing minCastsTyping = minCastsCounter.getTyping();
 
-    for (Local local : builder.getLocals()) {
+    for (Local local : locals) {
       final Type type = minCastsTyping.getType(local);
       if (type == null) {
         continue;
@@ -95,14 +97,16 @@ public class TypeResolver {
       }
     }
 
-    builder.setLocals(
-        builder.getLocals().stream()
-            .map(
-                local -> {
-                  Type type = minCastsTyping.getMap().getOrDefault(local, local.getType());
-                  return local.withType(type);
-                })
-            .collect(Collectors.toSet()));
+    locals.stream()
+        .forEach(
+            local -> {
+              Type oldType = local.getType();
+              Type type = minCastsTyping.getMap().getOrDefault(local, oldType);
+              if (type != oldType) {
+                Local newLocal = local.withType(type);
+                builder.replaceLocal(local, newLocal);
+              }
+            });
     return true;
   }
 
