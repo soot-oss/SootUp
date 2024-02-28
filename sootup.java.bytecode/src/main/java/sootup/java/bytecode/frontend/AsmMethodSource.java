@@ -1560,15 +1560,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     MethodSignature methodSignature = lazyMethodSignature.get();
     final StmtPositionInfo methodPosInfo = getFirstLineOfMethod();
 
+    // idx positions see: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.1
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
+
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
