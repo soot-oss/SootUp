@@ -897,7 +897,7 @@ The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - 
 - The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.
 - As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.
 - The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.
-- ...</p>
+- t.b.c.</p>
 <p>Method scoped optimisations:
 - ConditionalBranchFolder: removes tautologic ifs that are always true/false - if we can determine it in the scope of the method.
 - EmptySwitchEliminator: removes switches that are not really switching
