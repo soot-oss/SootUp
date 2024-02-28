@@ -55,7 +55,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsShort() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 10", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 10", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -70,7 +70,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsByte() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 0", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 0", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -85,7 +85,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsChar() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 97", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 97", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -100,7 +100,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    *     </pre>
    */
   public List<String> expectedBodyStmtsInt() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 512", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 512", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -116,7 +116,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    *     </pre>
    */
   public List<String> expectedBodyStmtsLong() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 123456789L", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 123456789L", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -131,7 +131,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsFloat() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 3.14F", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 3.14F", "return l1")
         .collect(Collectors.toList());
   }
 
@@ -146,7 +146,7 @@ public class MethodReturningVarTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsDouble() {
-    return Stream.of("l0 := @this: MethodReturningVar", "l1 = 1.96969654", "return l1")
+    return Stream.of("this := @this: MethodReturningVar", "l1 = 1.96969654", "return l1")
         .collect(Collectors.toList());
   }
 }

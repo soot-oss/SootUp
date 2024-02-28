@@ -59,7 +59,7 @@ public class MultiTryCatchTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MultiTryCatch",
+            "this := @this: MultiTryCatch",
             "$stack7 = new java.io.BufferedReader",
             "$stack6 = new java.io.FileReader",
             "specialinvoke $stack6.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",

@@ -45,9 +45,9 @@ public class AnonymousClassInsideMethodTest extends MinimalBytecodeTestSuiteBase
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AnonymousClassInsideMethod",
+            "this := @this: AnonymousClassInsideMethod",
             "$stack2 = new AnonymousClassInsideMethod$1",
-            "specialinvoke $stack2.<AnonymousClassInsideMethod$1: void <init>(AnonymousClassInsideMethod)>(l0)",
+            "specialinvoke $stack2.<AnonymousClassInsideMethod$1: void <init>(AnonymousClassInsideMethod)>(this)",
             "l1 = $stack2",
             "interfaceinvoke l1.<AnonymousClassInsideMethod$MathOperation: void addition()>()",
             "return")

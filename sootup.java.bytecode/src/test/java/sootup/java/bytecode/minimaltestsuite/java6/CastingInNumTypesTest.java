@@ -56,7 +56,7 @@ public class CastingInNumTypesTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: CastingInNumTypes",
+            "this := @this: CastingInNumTypes",
             "l1 = 1",
             "l2 = 2",
             "l3 = 3",

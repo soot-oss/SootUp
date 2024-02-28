@@ -53,7 +53,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharCharacter() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 97", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 97", "return");
   }
 
   /**
@@ -66,7 +66,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSymbol() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 37", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 37", "return");
   }
 
   /**
@@ -77,7 +77,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslashT() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 9", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 9", "return");
   }
 
   /**
@@ -90,7 +90,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslash() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 92", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 92", "return");
   }
 
   /**
@@ -103,7 +103,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSingleQuote() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 39", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 39", "return");
   }
 
   /**
@@ -116,7 +116,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharUnicode() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 937", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 937", "return");
   }
 
   /**
@@ -129,6 +129,6 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsSpecialChar() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 8482", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 8482", "return");
   }
 }

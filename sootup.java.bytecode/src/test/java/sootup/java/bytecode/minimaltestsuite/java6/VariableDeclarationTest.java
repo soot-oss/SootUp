@@ -55,7 +55,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsShortVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 10", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 10", "return")
         .collect(Collectors.toList());
   }
 
@@ -69,7 +69,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsByteVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 0", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 0", "return")
         .collect(Collectors.toList());
   }
 
@@ -83,7 +83,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 97", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 97", "return")
         .collect(Collectors.toList());
   }
 
@@ -97,7 +97,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsIntVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 512", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 512", "return")
         .collect(Collectors.toList());
   }
 
@@ -111,7 +111,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsLongVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 123456789L", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 123456789L", "return")
         .collect(Collectors.toList());
   }
 
@@ -125,7 +125,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsFloatVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 3.14F", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 3.14F", "return")
         .collect(Collectors.toList());
   }
 
@@ -139,7 +139,7 @@ public class VariableDeclarationTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsDoubleVariable() {
-    return Stream.of("l0 := @this: VariableDeclaration", "l1 = 1.96969654", "return")
+    return Stream.of("this := @this: VariableDeclaration", "l1 = 1.96969654", "return")
         .collect(Collectors.toList());
   }
 }

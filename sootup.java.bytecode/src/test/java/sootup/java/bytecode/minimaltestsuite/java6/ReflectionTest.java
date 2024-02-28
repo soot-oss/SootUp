@@ -44,7 +44,7 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: Reflection",
+            "this := @this: Reflection",
             "$stack4 = new Reflection",
             "specialinvoke $stack4.<Reflection: void <init>()>()",
             "l1 = $stack4",

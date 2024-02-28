@@ -18,7 +18,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = <SwitchCaseStatement$Color: SwitchCaseStatement$Color RED>",
             "l2 = \"\"",
             "$stack3 = <SwitchCaseStatement$1: int[] $SwitchMap$SwitchCaseStatement$Color>",
@@ -46,7 +46,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 5",
             "switch(l1)",
             "case 1: goto label1",
@@ -74,7 +74,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 6",
             "switch(l1)",
             "case 1: goto label1",
@@ -99,7 +99,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 7",
             "switch(l1)",
             "case 1: goto label1",
@@ -121,7 +121,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 8",
             "switch(l1)",
             "case 1: goto label1",
@@ -146,7 +146,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 2",
             "switch(l1)",
             "case 1: goto label1",
@@ -179,7 +179,7 @@ public class SwitchCaseStatementTest extends MinimalBytecodeTestSuiteBase {
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "l0 := @this: SwitchCaseStatement",
+            "this := @this: SwitchCaseStatement",
             "l1 = 2",
             "switch(l1)",
             "case 1: goto label01",

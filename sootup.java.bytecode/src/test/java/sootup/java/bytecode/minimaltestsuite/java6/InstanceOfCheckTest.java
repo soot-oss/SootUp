@@ -48,7 +48,7 @@ public class InstanceOfCheckTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: InstanceOfCheck",
+            "this := @this: InstanceOfCheck",
             "$stack2 = new InstanceOfCheck",
             "specialinvoke $stack2.<InstanceOfCheck: void <init>()>()",
             "l1 = $stack2",

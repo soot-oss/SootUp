@@ -40,9 +40,9 @@ public class UnaryOpIntTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: UnaryOpInt",
-            "$stack2 = l0.<UnaryOpInt: int i>",
-            "$stack3 = l0.<UnaryOpInt: int j>",
+            "this := @this: UnaryOpInt",
+            "$stack2 = this.<UnaryOpInt: int i>",
+            "$stack3 = this.<UnaryOpInt: int j>",
             "l1 = $stack2 + $stack3",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

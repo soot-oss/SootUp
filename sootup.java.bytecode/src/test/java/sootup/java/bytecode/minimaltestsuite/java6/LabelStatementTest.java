@@ -38,7 +38,7 @@ public class LabelStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: LabelStatement",
+            "this := @this: LabelStatement",
             "l1 = 20",
             "l2 = 1",
             "label1:",

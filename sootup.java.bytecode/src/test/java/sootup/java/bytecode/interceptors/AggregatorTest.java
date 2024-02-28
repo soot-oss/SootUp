@@ -21,7 +21,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
-import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -134,7 +133,7 @@ public class AggregatorTest {
     }
     Stmt ret = JavaJimple.newReturnVoidStmt(noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    Set<Local> locals = new HashSet<>(Arrays.asList(a, b));
 
     Body.BodyBuilder builder = Body.builder();
     builder.setMethodSignature(

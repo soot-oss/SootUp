@@ -36,7 +36,7 @@ public class EvaluationOrderWithParenthesesTest extends MinimalBytecodeTestSuite
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: EvaluationOrderWithParentheses", "l1 = 9", "return")
+    return Stream.of("this := @this: EvaluationOrderWithParentheses", "l1 = 9", "return")
         .collect(Collectors.toList());
   }
 

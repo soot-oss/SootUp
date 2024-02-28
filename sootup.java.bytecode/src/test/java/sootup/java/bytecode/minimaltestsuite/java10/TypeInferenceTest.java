@@ -47,7 +47,7 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: TypeInference",
+            "this := @this: TypeInference",
             "l1 = \"file.txt\"",
             "l2 = \"\"",
             "$stack5 = new java.io.FileReader",

@@ -35,6 +35,6 @@ public class SameVarNamesInDifferentScopesTest {
         stmtGraph.getNodes().stream()
             .anyMatch(stmt -> stmt.toString().equals("candidate_1 = \"banana\"")));
     Assertions.assertTrue(
-         stmtGraph.getNodes().stream().anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
+        stmtGraph.getNodes().stream().anyMatch(stmt -> stmt.toString().equals("candidate = 42")));
   }
 }
