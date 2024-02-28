@@ -279,12 +279,25 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index == idx) {
           // TODO: take into consideration in which range this name is valid ->lvn.start/end
-          return lvn.name;
+          String newName = lvn.name;
+          // check for collisions with the same local names in other scopes
+          // this can happen when different scopes use the same name for a
+          // different variable (and having a different local idx, so we can distinguish)
+          for (int i = 1; localNameExists(newName); i++) {
+            newName = newName + "_" + i;
+          }
+          return newName;
         }
       }
       /* usually reached for try-catch blocks */
     }
     return "l" + idx;
+  }
+
+  private boolean localNameExists(String nameCandidate) {
+    return locals.stream()
+        .filter(Objects::nonNull)
+        .anyMatch(l -> l.getName().equals(nameCandidate));
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
