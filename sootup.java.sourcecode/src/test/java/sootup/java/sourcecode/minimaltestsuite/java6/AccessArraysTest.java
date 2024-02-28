@@ -1,18 +1,17 @@
 /** @author: Hasitha Rajapakse */
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class AccessArraysTest extends MinimalSourceTestSuiteBase {
 
-  @Ignore
+  @Disabled
   public void test() {
 
     // FIXME [ms] see InstructionConverter.convertUnaryOpInstruction(...)

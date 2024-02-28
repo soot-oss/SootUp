@@ -1,15 +1,14 @@
 package sootup.tests.typehierarchy;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.types.ClassType;
@@ -18,12 +17,12 @@ import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class HierarchyComparatorTest {
 
   private static View view;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(

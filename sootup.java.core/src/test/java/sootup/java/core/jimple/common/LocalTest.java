@@ -22,12 +22,10 @@
 
 package sootup.java.core.jimple.common;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.IgnoreLocalNameComparator;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
@@ -35,7 +33,7 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import sootup.core.types.PrimitiveType;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class LocalTest {
 
   @Test

@@ -1,7 +1,6 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.Lists;
 import java.util.Collection;

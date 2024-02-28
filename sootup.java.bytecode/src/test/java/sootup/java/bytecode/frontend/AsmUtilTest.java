@@ -1,19 +1,20 @@
 package sootup.java.bytecode.frontend;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import categories.TestCategories;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AsmUtilTest {
 
   @Test
@@ -117,29 +118,29 @@ public class AsmUtilTest {
     assertEquals(((ArrayType) classType).getDimension(), 1);
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testToJimpleTypeUnknownDescriptor() {
-    AsmUtil.toJimpleType("P");
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("P"));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test()
   public void testToJimpleTypeInvalidRefDescriptor() {
-    AsmUtil.toJimpleType("L");
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("L"));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test()
   public void testToJimpleTypeInvalidPrimitiveDescriptor() {
-    AsmUtil.toJimpleType("II");
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("II"));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test()
   public void testToJimpleTypeInvalidVoidDescriptor() {
-    AsmUtil.toJimpleType("VI");
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("VI"));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test()
   public void testToJimpleTypeIncorrectArray() {
-    AsmUtil.toJimpleType("[I[I");
+    Assertions.assertThrows(AssertionError.class, () -> AsmUtil.toJimpleType("[I[I"));
   }
 
   @Test

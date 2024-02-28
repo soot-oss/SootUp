@@ -1,11 +1,12 @@
 package sootup.jimple.parser.javatestsuite;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
-import java.util.*;
-import org.junit.Before;
-import org.junit.experimental.categories.Category;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -16,17 +17,16 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
-import sootup.jimple.parser.categories.Java8Test;
 
 /** @author Markus Schmidt */
-@Category(Java8Test.class)
+@Tag("Java8")
 public abstract class JimpleTestSuiteBase {
 
   static final String baseDir = "src/test/java/resources/jimple/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private JimpleView view;
 
-  @Before
+  @BeforeEach
   public void setup() {
     view = new JimpleView(new JimpleAnalysisInputLocation(Paths.get(baseDir)));
   }
@@ -63,7 +63,7 @@ public abstract class JimpleTestSuiteBase {
   public SootClass loadClass(ClassType clazz) {
 
     Optional<SootClass> cs = view.getClass(clazz);
-    assertTrue("no matching class for " + clazz + " found", cs.isPresent());
+    assertTrue(cs.isPresent(), "no matching class for " + clazz + " found");
     return cs.get();
   }
 
@@ -74,7 +74,7 @@ public abstract class JimpleTestSuiteBase {
       System.out.println("existing methods:");
       clazz.getMethods().forEach(System.out::println);
     }
-    assertTrue("No matching method for " + methodSignature + " found", m.isPresent());
+    assertTrue(m.isPresent(), "No matching method for " + methodSignature + " found");
     return m.get();
   }
 

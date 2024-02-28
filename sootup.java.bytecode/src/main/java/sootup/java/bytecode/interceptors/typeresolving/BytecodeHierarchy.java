@@ -29,6 +29,7 @@ import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {
@@ -60,6 +61,12 @@ public class BytecodeHierarchy {
       if (ancestor == child) {
         return true;
       }
+      if (ancestor.getClass() == TopType.class) {
+        return true;
+      }
+      if (child.getClass() == TopType.class) {
+        return false;
+      }
       if (child.getClass() == BottomType.class) {
         return true;
       }
@@ -89,7 +96,7 @@ public class BytecodeHierarchy {
         Type ancestorBase = ancestorArr.getBaseType();
         Type childBase = childArr.getBaseType();
         if (ancestorArr.getDimension() == childArr.getDimension()) {
-          if (ancestorBase == childBase) {
+          if (ancestorBase == childBase || ancestorBase == TopType.getInstance()) {
             return true;
           }
           if (ancestorBase instanceof ClassType && childBase instanceof ClassType) {
@@ -99,7 +106,8 @@ public class BytecodeHierarchy {
           // TODO: [ms] check: the dimension condition check as it seems weird?
           return ancestorBase == objectClassType
               || ancestorBase == serializableClassType
-              || ancestorBase == cloneableClassType;
+              || ancestorBase == cloneableClassType
+              || ancestorBase == TopType.getInstance();
         }
       }
     }
@@ -108,6 +116,9 @@ public class BytecodeHierarchy {
 
   public Collection<Type> getLeastCommonAncestor(Type a, Type b) {
     Set<Type> ret = new HashSet<>();
+    if (a instanceof TopType || b instanceof TopType) {
+      return Collections.singleton(TopType.getInstance());
+    }
     if (a instanceof BottomType) {
       return Collections.singleton(b);
     }
@@ -130,7 +141,7 @@ public class BytecodeHierarchy {
       return PrimitiveHierarchy.getLeastCommonAncestor(a, b);
     }
     if (a instanceof PrimitiveType || b instanceof PrimitiveType) {
-      return Collections.emptySet();
+      return Collections.singleton(TopType.getInstance());
     }
 
     if (a instanceof ArrayType && b instanceof ArrayType) {
@@ -178,13 +189,15 @@ public class BytecodeHierarchy {
             continue;
           }
           boolean isLcn = true;
-          for (Type l : ret) {
+          Iterator<Type> it = ret.iterator();
+          while (it.hasNext()) {
+            Type l = it.next();
             if (isAncestor(lcn, l)) {
               isLcn = false;
               break;
             }
             if (isAncestor(l, lcn)) {
-              ret.remove(l);
+              it.remove();
             }
           }
           if (isLcn) {

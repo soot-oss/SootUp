@@ -22,13 +22,10 @@
 
 package sootup.java.core.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -36,7 +33,7 @@ import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.types.PrimitiveType;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JExitMonitorStmtTest {
 
   @Test

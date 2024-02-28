@@ -1,11 +1,13 @@
 package sootup.examples.classhierarchy;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
@@ -26,6 +28,7 @@ import sootup.java.core.views.JavaView;
  *
  * This code example will show you how to build and examine a class hierarchy using sootup.
  */
+@Tag("Java8")
 public class ClassHierarchy {
 
   @Test
@@ -43,19 +46,17 @@ public class ClassHierarchy {
     final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
 
     // Specify class types we want to receive information about
-    JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("ClassHierarchy.A");
-    JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("ClassHierarchy.C");
+    JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("A");
+    JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
 
     // Check direct subtypes
     Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
-    Assert.assertTrue(subtypes.stream().allMatch(type -> type.getClassName().equals("D")));
-    Assert.assertTrue(
-        subtypes.stream()
-            .allMatch(type -> type.getFullyQualifiedName().equals("ClassHierarchy.D")));
+    assertTrue(subtypes.stream().allMatch(type -> type.getClassName().equals("D")));
+    assertTrue(subtypes.stream().allMatch(type -> type.getFullyQualifiedName().equals("D")));
 
     // Examine super types
     List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);
-    Assert.assertEquals(
+    assertEquals(
         superClasses,
         Arrays.asList(
             clazzTypeA, JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")));

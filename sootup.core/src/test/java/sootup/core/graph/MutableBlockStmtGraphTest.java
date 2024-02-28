@@ -1,12 +1,11 @@
 package sootup.core.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
@@ -21,7 +20,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.UnknownType;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class MutableBlockStmtGraphTest {
 
   BranchingStmt firstGoto = new JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
@@ -330,11 +329,16 @@ public class MutableBlockStmtGraphTest {
     assertFalse(graph.hasEdgeConnecting(secondNop, firstNop));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void addBadSuccessorCount() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    graph.putEdge(firstNop, secondNop);
-    graph.putEdge(firstGoto, 1, thirdNop);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.putEdge(firstGoto, 1, thirdNop);
+        });
   }
 
   public void setBadSuccessorIdx() {
@@ -342,11 +346,16 @@ public class MutableBlockStmtGraphTest {
     graph.putEdge(firstGoto, 1, secondNop);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void addDuplicateBadSuccessorCount() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    graph.putEdge(firstNop, secondNop);
-    graph.putEdge(firstNop, secondNop);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.putEdge(firstNop, secondNop);
+        });
   }
 
   @Test
@@ -500,15 +509,20 @@ public class MutableBlockStmtGraphTest {
     assertTrue(graph.containsNode(firstNop));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraph() {
     // firstnop already has a successor and its impossible to add another edge
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    graph.putEdge(firstNop, secondNop);
-    graph.addBlock(Arrays.asList(firstNop, thirdNop), Collections.emptyMap());
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          graph.putEdge(firstNop, secondNop);
+          graph.addBlock(Arrays.asList(firstNop, thirdNop), Collections.emptyMap());
+        });
   }
 
-  @Ignore
+  @Disabled
   public void testBlockAddStmtDuplicateStmtMaybePossibleInTheFutureButNotImplementedThatWayYet() {
     // firstnop already has a successor and its impossible to add another edge
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
@@ -525,12 +539,17 @@ public class MutableBlockStmtGraphTest {
     block.addStmt(firstNop); // BAD! don't do that!
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testBlockStmtValidity() {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
     MutableBasicBlock block = new MutableBasicBlock();
-    block.addStmt(ifStmt);
-    block.addStmt(firstNop);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          block.addStmt(ifStmt);
+          block.addStmt(firstNop);
+        });
   }
 
   @Test
@@ -953,13 +972,13 @@ public class MutableBlockStmtGraphTest {
     assertFalse(graph.hasEdgeConnecting(stmt1, stmt2));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void removeEdgeNonExistingEdge() {
     Stmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     Stmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableBlockStmtGraph();
 
-    assertFalse(graph.hasEdgeConnecting(stmt1, stmt2));
+    assertThrows(IllegalArgumentException.class, () -> graph.hasEdgeConnecting(stmt1, stmt2));
   }
 
   @Test

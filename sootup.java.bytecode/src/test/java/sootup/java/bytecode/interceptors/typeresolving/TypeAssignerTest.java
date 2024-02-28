@@ -1,22 +1,22 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import categories.TestCategories;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.interceptors.LocalNameStandardizer;
 import sootup.java.bytecode.interceptors.TypeAssigner;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class TypeAssignerTest extends TypeAssignerTestSuite {
 
-  @Before
+  @BeforeEach
   public void setup() {
     String baseDir = "../shared-test-resources/TypeResolverTestSuite/CastCounterTest/";
     String className = "CastCounterDemos";
@@ -27,25 +27,24 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     new TypeAssigner().interceptBody(builder, view);
-    new LocalNameStandardizer().interceptBody(builder, view);
 
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
-                "CastCounterDemos r0",
-                "Sub1 r1, r2",
-                "Sub2 r3, r4",
-                "byte b0",
-                "r0 := @this: CastCounterDemos",
-                "r1 = new Sub1",
-                "specialinvoke r1.<Sub1: void <init>()>()",
-                "r2 = r1",
-                "b0 = 1",
-                "r3 = new Sub2",
-                "specialinvoke r3.<Sub2: void <init>()>()",
-                "r4 = r3",
-                "virtualinvoke r2.<Super1: void m(int,Sub2)>(b0, r4)",
+                "CastCounterDemos l0",
+                "Sub1 $stack4, l1",
+                "Sub2 $stack5, l3",
+                "byte l2",
+                "l0 := @this: CastCounterDemos",
+                "$stack4 = new Sub1",
+                "specialinvoke $stack4.<Sub1: void <init>()>()",
+                "l1 = $stack4",
+                "l2 = 1",
+                "$stack5 = new Sub2",
+                "specialinvoke $stack5.<Sub2: void <init>()>()",
+                "l3 = $stack5",
+                "virtualinvoke l1.<Super1: void m(int,Sub2)>(l2, l3)",
                 "return")
             .collect(Collectors.toList()),
         actualStmts);
@@ -55,22 +54,21 @@ public class TypeAssignerTest extends TypeAssignerTestSuite {
   public void testAssignStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     new TypeAssigner().interceptBody(builder, view);
-    new LocalNameStandardizer().interceptBody(builder, view);
 
     List<String> actualStmts = Utils.filterJimple(builder.build().toString());
 
-    Assert.assertEquals(
+    assertEquals(
         Stream.of(
-                "CastCounterDemos r0",
-                "Sub1 r1",
-                "Super1 r2",
-                "Super1[] r3",
-                "r0 := @this: CastCounterDemos",
-                "r3 = newarray (Super1)[10]",
-                "r1 = new Sub1",
-                "specialinvoke r1.<Sub1: void <init>()>()",
-                "r3[0] = r1",
-                "r2 = r3[2]",
+                "CastCounterDemos l0",
+                "Sub1 $stack3",
+                "Super1 l2",
+                "Super1[] l1",
+                "l0 := @this: CastCounterDemos",
+                "l1 = newarray (Super1)[10]",
+                "$stack3 = new Sub1",
+                "specialinvoke $stack3.<Sub1: void <init>()>()",
+                "l1[0] = $stack3",
+                "l2 = l1[2]",
                 "return")
             .collect(Collectors.toList()),
         actualStmts);

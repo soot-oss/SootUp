@@ -22,7 +22,7 @@ package sootup.core.jimple.basic;
  * #L%
  */
 
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.expr.Expr;
@@ -46,7 +46,7 @@ public interface Value extends EquivTo {
    * @return
    */
   @Nonnull
-  List<Value> getUses();
+  Stream<Value> getUses();
 
   /** Returns the Soot type of this Value. */
   @Nonnull
