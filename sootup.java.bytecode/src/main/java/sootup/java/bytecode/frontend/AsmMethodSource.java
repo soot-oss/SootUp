@@ -232,7 +232,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
-        bodyBuilder.getStmtGraph().validateStmtConnectionsInGraph();
+        bodyBuilder
+            .getStmtGraph()
+            .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
       } catch (Exception e) {
         throw new IllegalStateException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
