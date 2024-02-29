@@ -96,18 +96,21 @@ public class LocalSplitter implements BodyInterceptor {
     /** Finds the representative of the set that contains the {@code node}. */
     @Nonnull
     T find(T node) {
-      if (!parent.containsKey(node)) {
+      T parentNode = parent.get(node);
+      if (parentNode == null) {
         throw new IllegalArgumentException("The DisjointSetForest does not contain the node.");
       }
 
-      while (parent.get(node) != node) {
+      T itNode = node;
+      while (parentNode != itNode) {
         // Path Halving to get amortized constant operations
-        T grandparent = parent.get(parent.get(node));
-        parent.put(node, grandparent);
+        T grandparent = parent.get(parentNode);
+        parent.put(itNode, grandparent);
 
-        node = grandparent;
+        itNode = grandparent;
+        parentNode = parent.get(grandparent);
       }
-      return node;
+      return itNode;
     }
 
     /**
