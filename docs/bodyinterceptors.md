@@ -1,7 +1,8 @@
 # Body Interceptors
 BodyInterceptors are applied to each `Body` *now by default, if not overridden in the used AnalysisInputLocations*.
 The BodyInterceptors exist to to improve and normalize the raw Jimple that was generated in an earlier step.
-The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits are:
+The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits of raw Jimple are:
+
 - Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. 
 - The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.
 - As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.
@@ -18,7 +19,6 @@ Method scoped optimisations:
 
 Make Local names standardized:
 - LocalNameStandardizer: numbers Locals with the scheme: type-initial + number of type occurence 
-
 
 !!! info "Soot Equivalent"
 
