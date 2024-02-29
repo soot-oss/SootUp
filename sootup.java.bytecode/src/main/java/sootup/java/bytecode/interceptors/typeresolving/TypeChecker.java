@@ -94,7 +94,7 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
       ArrayType arrayType = null;
       Local base = ((JArrayRef) lhs).getBase();
       Type type_base = typing.getType(base);
-      if (type_lhs == null) {
+      if (type_base == null) {
         // body.getLocals() is out of sync with Locals used in the Stmts
         logger.info("Body.locals do not match the Locals occurring in the Stmts.");
         return;
