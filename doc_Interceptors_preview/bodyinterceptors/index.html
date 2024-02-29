@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../icon.svg">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.11">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
     
     
       
@@ -892,12 +892,14 @@
 <h1 id="body-interceptors">Body Interceptors</h1>
 <p>BodyInterceptors are applied to each <code>Body</code> <em>now by default, if not overridden in the used AnalysisInputLocations</em>.
 The BodyInterceptors exist to to improve and normalize the raw Jimple that was generated in an earlier step.
-The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits are:
-- Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. 
-- The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.
-- As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.
-- The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.
-- t.b.c.</p>
+The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits of raw Jimple are:</p>
+<ul>
+<li>Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. </li>
+<li>The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.</li>
+<li>As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.</li>
+<li>The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.</li>
+<li>t.b.c.</li>
+</ul>
 <p>Method scoped optimisations:
 - ConditionalBranchFolder: removes tautologic ifs that are always true/false - if we can determine it in the scope of the method.
 - EmptySwitchEliminator: removes switches that are not really switching
@@ -1086,7 +1088,7 @@ b = use(a); // a, b are local variables, const is a constant
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      <script src="../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>
