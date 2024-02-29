@@ -1,13 +1,11 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -23,7 +21,7 @@ public class MethodValidatorTest {
   MethodValidator methodValidator;
   JimpleView jimpleView;
 
-  @Before
+  @BeforeEach
   public void Setup() {
 
     methodValidator = new MethodValidator();
