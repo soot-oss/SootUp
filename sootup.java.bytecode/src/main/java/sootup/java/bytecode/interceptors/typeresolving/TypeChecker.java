@@ -84,11 +84,21 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
     Type type_lhs = null;
     if (lhs instanceof Local) {
       type_lhs = typing.getType((Local) lhs);
+      if (type_lhs == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
     } else if (lhs instanceof JArrayRef) {
       visit(((JArrayRef) lhs).getIndex(), PrimitiveType.getInt(), stmt);
       ArrayType arrayType = null;
       Local base = ((JArrayRef) lhs).getBase();
       Type type_base = typing.getType(base);
+      if (type_lhs == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {
@@ -107,6 +117,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
                 Value arrExpr = ((JAssignStmt) defStmt).getRightOp();
                 if (arrExpr instanceof JNewArrayExpr) {
                   arrayType = (ArrayType) arrExpr.getType();
+                  if (type_lhs == null) {
+                    // body.getLocals() is out of sync with Locals used in the Stmts
+                    logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+                    return;
+                  }
                   findDef = true;
                   break;
                 } else if (arrExpr instanceof JNewMultiArrayExpr) {
@@ -150,6 +165,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
       Local base = ((JArrayRef) rhs).getBase();
       ArrayType arrayType = null;
       Type type_base = typing.getType(base);
+      if (type_lhs == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {
