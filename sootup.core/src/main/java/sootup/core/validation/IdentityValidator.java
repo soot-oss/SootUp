@@ -43,7 +43,7 @@ public class IdentityValidator implements BodyValidator {
   /**
    * Checks whether each ParameterRef and ThisRef is used exactly once.
    *
-   * @return
+   * @return a list of found validation exceptions
    */
   @Override
   public List<ValidationException> validate(Body body, View view) {

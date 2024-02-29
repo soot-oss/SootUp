@@ -2,9 +2,9 @@ package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -25,7 +26,6 @@ public class IdentityValidatorTest {
 
   IdentityValidator identityValidator;
   JimpleView jimpleView;
-  Collection<SootClass> classes;
 
   @BeforeEach
   public void Setup() {
@@ -126,9 +126,10 @@ public class IdentityValidatorTest {
   */
 
   Body getBody(String methodSignature) {
-    return jimpleView
-        .getMethod(jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature))
-        .get()
-        .getBody();
+    Optional<? extends SootMethod> optionalSootMethod =
+        jimpleView.getMethod(
+            jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
+    assertTrue(optionalSootMethod.isPresent());
+    return optionalSootMethod.get().getBody();
   }
 }
