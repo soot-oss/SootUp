@@ -1,12 +1,10 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
@@ -17,12 +15,15 @@ import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 public class InvokeArgumentValidatorTest {
   InvokeArgumentValidator invokeArgumentValidator;
   JimpleView jimpleView;
   Collection<SootClass> classes;
 
-  @Before
+  @BeforeEach
   public void Setup() {
 
     invokeArgumentValidator = new InvokeArgumentValidator();
