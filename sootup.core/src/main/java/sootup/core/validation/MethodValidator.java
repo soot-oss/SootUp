@@ -42,7 +42,7 @@ public class MethodValidator implements BodyValidator {
    *   <li>static initializer should have 'static' modifier
    * </ol>
    *
-   * @return
+   * @return a list of found validation exceptions
    */
   @Override
   public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {

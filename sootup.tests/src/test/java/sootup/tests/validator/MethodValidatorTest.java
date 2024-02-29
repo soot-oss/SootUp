@@ -2,6 +2,7 @@ package sootup.tests.validator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.*;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
@@ -79,9 +81,10 @@ public class MethodValidatorTest {
   }
 
   Body getBody(String methodSignature) {
-    return jimpleView
-        .getMethod(jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature))
-        .get()
-        .getBody();
+    Optional<? extends SootMethod> optMethod =
+        jimpleView.getMethod(
+            jimpleView.getIdentifierFactory().parseMethodSignature(methodSignature));
+    assertTrue(optMethod.isPresent());
+    return optMethod.get().getBody();
   }
 }
