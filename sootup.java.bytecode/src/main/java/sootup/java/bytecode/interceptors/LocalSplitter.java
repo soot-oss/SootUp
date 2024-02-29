@@ -259,6 +259,18 @@ public class LocalSplitter implements BodyInterceptor {
       Map<PartialStmt, Local> representativeToNewLocal = new HashMap<>();
       final int[] nextId = {0}; // Java quirk; just an `int` doesn't work
 
+      Function<PartialStmt, Local> getNewLocal =
+          partialStmt ->
+              representativeToNewLocal.computeIfAbsent(
+                  disjointSet.find(partialStmt),
+                  s -> {
+                    Local newLocal;
+                    do {
+                      newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
+                    } while (locals.contains(newLocal));
+                    return newLocal;
+                  });
+
       for (int i = 0; i < stmts.size(); i++) {
         Stmt stmt = stmts.get(i);
 
@@ -266,26 +278,10 @@ public class LocalSplitter implements BodyInterceptor {
         boolean localIsDef = stmtDef.isPresent() && stmtDef.get() == local;
         boolean localIsUse = stmt.getUses().anyMatch(l -> l == local);
 
-        if (!localIsDef && !localIsUse) {
-          continue;
-        }
-
         Stmt oldStmt = stmt;
 
-        Function<Boolean, Local> getNewLocal =
-            isDef ->
-                representativeToNewLocal.computeIfAbsent(
-                    disjointSet.find(new PartialStmt(oldStmt, isDef)),
-                    s -> {
-                      Local newLocal;
-                      do {
-                        newLocal = local.withName(local.getName() + "#" + (nextId[0]++));
-                      } while (locals.contains(newLocal));
-                      return newLocal;
-                    });
-
         if (localIsDef) {
-          Local newDefLocal = getNewLocal.apply(true);
+          Local newDefLocal = getNewLocal.apply(new PartialStmt(oldStmt, true));
           if (local != newDefLocal) {
             newLocals.add(newDefLocal);
             stmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDefLocal);
@@ -293,7 +289,7 @@ public class LocalSplitter implements BodyInterceptor {
         }
 
         if (localIsUse) {
-          Local newUseLocal = getNewLocal.apply(false);
+          Local newUseLocal = getNewLocal.apply(new PartialStmt(oldStmt, false));
           if (local != newUseLocal) {
             newLocals.add(newUseLocal);
             stmt = stmt.withNewUse(local, newUseLocal);
