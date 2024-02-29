@@ -1,15 +1,11 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.nio.file.Paths;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
@@ -17,7 +13,7 @@ import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class WalaJavaClassProviderTest {
 
   @Test

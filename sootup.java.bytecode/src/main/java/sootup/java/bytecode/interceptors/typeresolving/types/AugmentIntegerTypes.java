@@ -46,7 +46,7 @@ public abstract class AugmentIntegerTypes {
    * This type is intermediate type and used for determining the ancestor of an integer type. see:
    * AugmentHierarchy;
    */
-  public static class Integer1Type extends PrimitiveType.IntType {
+  public static class Integer1Type extends PrimitiveType.BooleanType {
     // 2^0
     private static final Integer1Type INSTANCE = new Integer1Type();
 

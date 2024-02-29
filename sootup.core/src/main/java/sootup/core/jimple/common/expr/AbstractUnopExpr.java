@@ -22,8 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
@@ -43,11 +42,7 @@ public abstract class AbstractUnopExpr implements Expr {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    final List<Value> uses = op.getUses();
-    List<Value> list = new ArrayList<>(uses.size() + 1);
-    list.addAll(uses);
-    list.add(op);
-    return list;
+  public final Stream<Value> getUses() {
+    return Stream.concat(op.getUses(), Stream.of(op));
   }
 }

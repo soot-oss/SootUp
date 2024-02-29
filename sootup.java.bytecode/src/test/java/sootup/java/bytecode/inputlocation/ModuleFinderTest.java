@@ -1,18 +1,21 @@
 package sootup.java.bytecode.inputlocation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java9Test;
+import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.signatures.ModuleSignature;
 
 /** @author Kaustubh Kelkar */
-@Category(Java9Test.class)
+@Tag(TestCategories.JAVA_9_CATEGORY)
 public class ModuleFinderTest extends AnalysisInputLocationTest {
 
   @Test

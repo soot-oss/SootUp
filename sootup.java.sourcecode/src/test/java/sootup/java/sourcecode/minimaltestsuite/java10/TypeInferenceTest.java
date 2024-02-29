@@ -1,18 +1,17 @@
 package sootup.java.sourcecode.minimaltestsuite.java10;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -21,7 +20,7 @@ public class TypeInferenceTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(), "printFile", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void ignoreTest() {
     /** TODO Java 10 is not supported in WALA, feature can not be tested */
   }

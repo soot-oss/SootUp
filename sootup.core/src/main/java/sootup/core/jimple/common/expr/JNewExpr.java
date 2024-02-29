@@ -22,8 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -72,8 +71,8 @@ public final class JNewExpr implements Expr {
 
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    return Collections.emptyList();
+  public Stream<Value> getUses() {
+    return Stream.empty();
   }
 
   @Override

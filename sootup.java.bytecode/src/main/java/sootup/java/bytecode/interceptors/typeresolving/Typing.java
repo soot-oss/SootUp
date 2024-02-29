@@ -33,7 +33,7 @@ public class Typing {
 
   public Typing(@Nonnull Collection<Local> locals) {
     // initialize
-    local2Type = new IdentityHashMap<>(locals.size());
+    local2Type = new HashMap<>(locals.size());
     for (Local local : locals) {
       local2Type.put(local, BottomType.getInstance());
     }
@@ -41,7 +41,7 @@ public class Typing {
   }
 
   public Typing(@Nonnull Typing typing, @Nonnull BitSet stmtsIDList) {
-    this.local2Type = new IdentityHashMap<>(typing.local2Type);
+    this.local2Type = new HashMap<>(typing.local2Type);
     this.stmtsIDList = stmtsIDList;
   }
 

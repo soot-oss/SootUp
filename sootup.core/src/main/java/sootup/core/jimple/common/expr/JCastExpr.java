@@ -22,8 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -73,11 +72,8 @@ public final class JCastExpr implements Expr {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(op.getUses());
-    list.add(op);
-
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(op.getUses(), Stream.of(op));
   }
 
   @Nonnull
