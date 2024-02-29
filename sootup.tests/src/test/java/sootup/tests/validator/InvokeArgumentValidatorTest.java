@@ -5,12 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.PackageName;
-import sootup.core.types.ClassType;
 import sootup.core.validation.InvokeArgumentValidator;
 import sootup.core.validation.ValidationException;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
@@ -18,37 +16,11 @@ import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 public class InvokeArgumentValidatorTest {
-  InvokeArgumentValidator invokeArgumentValidator;
-  JimpleView jimpleView;
-  Collection<SootClass> classes;
+  InvokeArgumentValidator invokeArgumentValidator = new InvokeArgumentValidator();
+  static JimpleView jimpleView;
 
-  @BeforeEach
-  public void Setup() {
-
-    invokeArgumentValidator = new InvokeArgumentValidator();
-
-    ClassType classTypeFieldRefValidator =
-        new ClassType() {
-          @Override
-          public boolean isBuiltInClass() {
-            return false;
-          }
-
-          @Override
-          public String getFullyQualifiedName() {
-            return "jimple.InvokeArgumentValidator";
-          }
-
-          @Override
-          public String getClassName() {
-            return "InvokeArgumentValidator";
-          }
-
-          @Override
-          public PackageName getPackageName() {
-            return new PackageName("jimple");
-          }
-        };
+  @BeforeAll
+  public static void setup() {
 
     String classPath = "src/test/resources/validator/jimple";
     JimpleAnalysisInputLocation jimpleInputLocation =
@@ -60,16 +32,11 @@ public class InvokeArgumentValidatorTest {
     jimpleView =
         new JimpleView(Arrays.asList(jimpleInputLocation, defaultRTJarAnalysisInputLocation));
 
-    classes = new HashSet<>(); // Set to track the classes to check
-    for (SootClass aClass : jimpleView.getClasses()) {
-      if (!aClass.isLibraryClass()) {
-        classes.add(aClass);
-      }
-    }
-
     // Speed up the class search process by limiting the search scope within application classes
     final Optional<SootClass> classSource1 =
-        classes.stream().filter(c -> c.getType().equals(classTypeFieldRefValidator)).findFirst();
+        jimpleView.getClasses().stream()
+            .filter(c -> c.getType().toString().equals("jimple.InvokeArgumentValidator"))
+            .findFirst();
     assertFalse(classSource1.isPresent());
   }
 
