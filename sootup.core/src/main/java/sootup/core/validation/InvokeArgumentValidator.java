@@ -28,7 +28,6 @@ import java.util.List;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
- import sootup.core.jimple.common.ref.Ref;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
