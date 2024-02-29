@@ -22,6 +22,9 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -34,10 +37,6 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A basic validator that checks whether the length of the invoke statement's argument list matches
  * the length of the target methods's parameter type list.
@@ -45,57 +44,91 @@ import java.util.List;
  * @author Steven Arzt
  */
 public class InvokeArgumentValidator implements BodyValidator {
-    @Override
-    public List<ValidationException> validate(Body body, View view) {
-        List<ValidationException> validationException = new ArrayList<>();
+  @Override
+  public List<ValidationException> validate(Body body, View view) {
+    List<ValidationException> validationException = new ArrayList<>();
 
-        for (Stmt stmt : body.getStmts()) {
-            if (stmt.containsInvokeExpr()) {
-                AbstractInvokeExpr invExpr =
-                        stmt.getInvokeExpr();
-                MethodSignature callee = invExpr.getMethodSignature();
-                List<Immediate> args = invExpr.getArgs();
-                List<Type> parameterTypes = callee.getParameterTypes();
-                if (invExpr.getArgCount() != parameterTypes.size()) {
-                    validationException.add(new ValidationException(stmt, "Invalid number of arguments"));
-                } else {
-                    // check argument type
-                    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
-                    IdentifierFactory identifierFactory = view.getIdentifierFactory();
-                    Iterator<Immediate> iterArgs = args.iterator();
-                    Iterator<Type> iterParameters = parameterTypes.iterator();
-                    while (iterArgs.hasNext() && iterParameters.hasNext()) {
-                        // handle implicit conversion cases. e.g., `int` is used as an argument of a `double` parameter
-                        Type argType = iterArgs.next().getType();
-                        Type paraType = iterParameters.next();
-                        if (argType instanceof PrimitiveType && paraType instanceof PrimitiveType
-                                && PrimitiveType.isImplicitlyConvertibleTo((PrimitiveType) argType, (PrimitiveType) paraType)) {
-                            continue;
-                        }
-                        // other cases
-                        ClassType argClassType = getClassType(identifierFactory, argType);
-                        ClassType paramClassType = getClassType(identifierFactory, paraType);
-                        if (argClassType != paramClassType && (!typeHierarchy.contains(paramClassType)
-                                || !typeHierarchy.subtypesOf(paramClassType).contains(argClassType))) {
-                            validationException.add(new ValidationException(stmt,
-                                    String.format("Invalid argument type. Required %s but provided %s.", paraType, argType)));
-                       }
-                    }
-                }
+    TypeHierarchy typeHierarchy = view.getTypeHierarchy();
+    IdentifierFactory identifierFactory = view.getIdentifierFactory();
+
+    for (Stmt stmt : body.getStmts()) {
+      if (!stmt.containsInvokeExpr()) {
+        continue;
+      }
+
+      AbstractInvokeExpr invExpr = stmt.getInvokeExpr();
+      MethodSignature callee = invExpr.getMethodSignature();
+      List<Immediate> args = invExpr.getArgs();
+      List<Type> parameterTypes = callee.getParameterTypes();
+
+      if (invExpr.getArgCount() != parameterTypes.size()) {
+        validationException.add(
+            new ValidationException(
+                stmt,
+                "Argument count '"
+                    + invExpr.getArgCount()
+                    + "' does not match the number of expected parameters '"
+                    + parameterTypes.size()
+                    + "'."));
+        continue;
+      }
+
+      // check argument type
+      ClassType argClassType;
+      Iterator<Type> iterParameters = parameterTypes.iterator();
+      for (Immediate arg : args) {
+        Type argType = arg.getType();
+        Type parameterType = iterParameters.next();
+
+        // handle implicit conversion cases. e.g., `int` is used as an argument of a `double`
+        // parameter
+        if (argType instanceof PrimitiveType) {
+          if (parameterType instanceof PrimitiveType) {
+
+            if (argType == parameterType) {
+              continue;
             }
+
+            if (!PrimitiveType.isImplicitlyConvertibleTo(
+                (PrimitiveType) argType, (PrimitiveType) parameterType)) {
+              validationException.add(
+                  new ValidationException(
+                      stmt,
+                      String.format(
+                          "Invalid argument type - type conversion is not applicable to '%s' and the provided '%s'.",
+                          parameterType, argType)));
+            }
+            continue;
+          }
+
+          // prepare autoboxing test
+          argClassType = identifierFactory.getBoxedType(((PrimitiveType) argType));
+
+        } else {
+          argClassType = (ClassType) argType;
         }
-        return validationException;
-    }
 
-    private ClassType getClassType(IdentifierFactory identifierFactory, Type type) {
-        if (type instanceof PrimitiveType)
-            return identifierFactory.getBoxedType((PrimitiveType) type);
-        else
-            return identifierFactory.getClassType(type.toString());
+        // non-primitive type cases, primitive+autoboxing
+        ClassType parameterClassType = (ClassType) parameterType;
+        if (argClassType == parameterClassType) {
+          continue;
+        }
+        if (typeHierarchy.contains(parameterClassType)
+            && !typeHierarchy.isSubtype(parameterClassType, argClassType)) {
+          validationException.add(
+              new ValidationException(
+                  stmt,
+                  String.format(
+                      "Invalid argument type. Required '%s' but provided was '%s'.",
+                      parameterType, argType)));
+        }
+      }
     }
+    return validationException;
+  }
 
-    @Override
-    public boolean isBasicValidator() {
-        return true;
-    }
+  @Override
+  public boolean isBasicValidator() {
+    return true;
+  }
 }

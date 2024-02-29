@@ -22,14 +22,12 @@ package sootup.core.types;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import sootup.core.jimple.visitor.TypeVisitor;
-
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import sootup.core.jimple.visitor.TypeVisitor;
 
 /** Represents Java's primitive types. */
 public abstract class PrimitiveType extends Type {
@@ -65,22 +63,44 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
-    private static final Map<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>> implicitConversionMap =
-            ImmutableMap.<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>>builder()
-                    .put(ByteType.class, ImmutableSet.of(ShortType.class, IntType.class, LongType.class, FloatType.class, DoubleType.class))
-                    .put(ShortType.class, ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
-                    .put(CharType.class, ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
-                    .put(IntType.class, ImmutableSet.of(LongType.class, FloatType.class, DoubleType.class))
-                    .put(LongType.class, ImmutableSet.of(FloatType.class, DoubleType.class))
-                    .put(FloatType.class, ImmutableSet.of(DoubleType.class))
-                    .build();
+  private static final Map<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>>
+      implicitConversionMap =
+          ImmutableMap
+              .<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>>builder()
+              .put(
+                  ByteType.class,
+                  ImmutableSet.of(
+                      ShortType.class,
+                      IntType.class,
+                      LongType.class,
+                      FloatType.class,
+                      DoubleType.class))
+              .put(
+                  ShortType.class,
+                  ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
+              .put(
+                  CharType.class,
+                  ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
+              .put(
+                  IntType.class, ImmutableSet.of(LongType.class, FloatType.class, DoubleType.class))
+              .put(LongType.class, ImmutableSet.of(FloatType.class, DoubleType.class))
+              .put(FloatType.class, ImmutableSet.of(DoubleType.class))
+              .build();
 
-    public static boolean isImplicitlyConvertibleTo(PrimitiveType fromType, PrimitiveType toType) {
-        Class<? extends PrimitiveType> fromTypeClass = fromType.getClass();
-        Class<? extends PrimitiveType> toTypeClass = toType.getClass();
-        return implicitConversionMap.containsKey(fromTypeClass) && implicitConversionMap.get(fromTypeClass).contains(toTypeClass)
-                || IntType.class.isAssignableFrom(fromTypeClass) && implicitConversionMap.get(IntType.class).contains(toTypeClass);
-    }
+  /**
+   * @param fromType e.g. the method argument
+   * @param toType e.g. the method parameter
+   * @return true if type conversion is possible
+   */
+  public static boolean isImplicitlyConvertibleTo(
+      @Nonnull PrimitiveType fromType, @Nonnull PrimitiveType toType) {
+    Class<? extends PrimitiveType> fromTypeClass = fromType.getClass();
+    Class<? extends PrimitiveType> toTypeClass = toType.getClass();
+    return implicitConversionMap.containsKey(fromTypeClass)
+            && implicitConversionMap.get(fromTypeClass).contains(toTypeClass)
+        || IntType.class.isAssignableFrom(fromTypeClass)
+            && implicitConversionMap.get(IntType.class).contains(toTypeClass);
+  }
 
   @Nonnull
   public static ByteType getByte() {
