@@ -1,18 +1,14 @@
 package sootup.callgraph;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.signatures.MethodSignature;
@@ -22,7 +18,7 @@ import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
 /** @author : Hasitha Rajapakse, Jonas Klauke * */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ConcreteDispatchTest {
   public ClassType getClassType(String className) {
     return view.getIdentifierFactory().getClassType(className);
@@ -30,7 +26,7 @@ public class ConcreteDispatchTest {
 
   private static JavaView view;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
@@ -83,19 +79,18 @@ public class ConcreteDispatchTest {
 
     MethodSignature concreteMethodSig =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(view, strToStringSig).orElse(null);
-    Assert.assertNotNull(concreteMethodSig);
-    Assert.assertEquals(
-        "String.toString() should resolve to itself", strToStringSig, concreteMethodSig);
+    assertNotNull(concreteMethodSig);
+    assertEquals(strToStringSig, concreteMethodSig, "String.toString() should resolve to itself");
 
     MethodSignature concreteMethodSig2 =
         AbstractCallGraphAlgorithm.resolveConcreteDispatch(
                 view, factory.parseMethodSignature("A#hashCode(): int"))
             .orElse(null);
-    Assert.assertNotNull(concreteMethodSig2);
-    Assert.assertEquals(
-        "A.hashCode() should resolve to java.lang.Object.hashCode()",
+    assertNotNull(concreteMethodSig2);
+    assertEquals(
         factory.parseMethodSignature("java.lang.Object#hashCode(): int"),
-        concreteMethodSig2);
+        concreteMethodSig2,
+        "A.hashCode() should resolve to java.lang.Object.hashCode()");
   }
 
   @Test

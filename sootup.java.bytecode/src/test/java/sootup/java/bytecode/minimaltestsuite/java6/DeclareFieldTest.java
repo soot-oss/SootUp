@@ -1,14 +1,15 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -16,7 +17,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
@@ -30,7 +31,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
         getDeclaredClassSignature(), "staticDisplay", "void", Collections.emptyList());
   }
 
-  @org.junit.Test
+  @Test
   public void test() {
     SootMethod method1 = loadMethod(getMethodSignature());
     assertJimpleStmts(method1, expectedBodyStmts());
@@ -67,7 +68,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: DeclareField",
+            "this := @this: DeclareField",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Java\")",
             "return")
@@ -85,7 +86,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "l0 := @this: DeclareField",
+            "this := @this: DeclareField",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "$stack1 = <DeclareField: int i>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1)",

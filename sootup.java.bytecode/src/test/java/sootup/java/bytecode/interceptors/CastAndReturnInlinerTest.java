@@ -1,12 +1,12 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -23,7 +23,7 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastAndReturnInlinerTest {
 
   /**
@@ -89,11 +89,9 @@ public class CastAndReturnInlinerTest {
             aRet, JavaJimple.newCastExpr(a, stringType), StmtPositionInfo.getNoStmtPositionInfo()));
     expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
-    Assert.assertEquals(2, processedBody.getLocals().size());
-    Assert.assertTrue(
-        processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    Assert.assertTrue(
-        processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
+    assertEquals(2, processedBody.getLocals().size());
+    assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
   }
 
   /**

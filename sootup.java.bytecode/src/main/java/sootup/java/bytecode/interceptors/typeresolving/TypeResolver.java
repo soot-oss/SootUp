@@ -1,4 +1,5 @@
 package sootup.java.bytecode.interceptors.typeresolving;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,6 +24,7 @@ package sootup.java.bytecode.interceptors.typeresolving;
 
 import com.google.common.collect.Lists;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
@@ -37,6 +39,7 @@ import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.ArrayType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
@@ -48,10 +51,12 @@ public class TypeResolver {
   private final ArrayList<AbstractDefinitionStmt> assignments = new ArrayList<>();
   private final Map<Local, BitSet> depends = new HashMap<>();
   private final JavaView view;
-  private int castCount;
+
+  private final Type objectType;
 
   public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
+    objectType = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   public boolean resolve(@Nonnull Body.BodyBuilder builder) {
@@ -66,41 +71,42 @@ public class TypeResolver {
       return false;
     }
 
-    Typing minCastsTyping = getMinCastsTyping(builder, typings, evalFunction, hierarchy);
-    if (this.castCount > 0) {
-      CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
-      castCounter.insertCastStmts(minCastsTyping);
-    }
-
     TypePromotionVisitor promotionVisitor =
         new TypePromotionVisitor(builder, evalFunction, hierarchy);
-    Typing promotedTyping = promotionVisitor.getPromotedTyping(minCastsTyping);
-    if (promotedTyping == null) {
-      return false;
+    typings = typings.stream().map(promotionVisitor::getPromotedTyping).collect(Collectors.toSet());
+
+    // Promote `null`/`BottomType` types to `Object`.
+    for (Typing typing : typings) {
+      for (Local local : locals) {
+        typing.set(local, convertUnderspecifiedType(typing.getType(local)));
+      }
     }
 
+    CastCounter minCastsCounter = getMinCastsCounter(builder, typings, evalFunction, hierarchy);
+    minCastsCounter.insertCastStmts();
+    Typing minCastsTyping = minCastsCounter.getTyping();
+
     for (Local local : locals) {
-      final Type type = promotedTyping.getType(local);
+      final Type type = minCastsTyping.getType(local);
       if (type == null) {
         continue;
       }
       Type convertedType = convertType(type);
       if (convertedType != null) {
-        promotedTyping.set(local, convertedType);
+        minCastsTyping.set(local, convertedType);
       }
     }
 
-    for (Local local : locals) {
-      Type oldType = local.getType();
-      Type newType = promotedTyping.getType(local);
-      if (newType == null || oldType.equals(newType)) {
-        continue;
-      }
-      if (!(newType instanceof BottomType)) {
-        Local newLocal = local.withType(newType);
-        builder.replaceLocal(local, newLocal);
-      }
-    }
+    locals.stream()
+        .forEach(
+            local -> {
+              Type oldType = local.getType();
+              Type type = minCastsTyping.getMap().getOrDefault(local, oldType);
+              if (type != oldType) {
+                Local newLocal = local.withType(type);
+                builder.replaceLocal(local, newLocal);
+              }
+            });
     return true;
   }
 
@@ -198,41 +204,67 @@ public class TypeResolver {
         throw new IllegalStateException("can not handle " + lhs.getClass());
       }
 
-      Type oldType = actualTyping.getType(local);
-      Type rightOpDerivedType =
-          evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
-      if (rightOpDerivedType == null) {
+      Type rhsType = evalFunction.evaluate(actualTyping, defStmt.getRightOp(), defStmt, graph);
+      if (rhsType == null) {
         workQueue.removeFirst();
         continue;
       }
+
+      Type oldType = actualTyping.getType(local);
+      Collection<Type> leastCommonAncestors;
       if (lhs instanceof JArrayRef) {
-        rightOpDerivedType = Type.createArrayType(rightOpDerivedType, 1);
+        // `local[index] = rhs` -> `local` should have the type `[rhs][]`
+        if (oldType instanceof ArrayType) {
+          Type elementType = ((ArrayType) oldType).getElementType();
+
+          if (elementType instanceof PrimitiveType) {
+            // Can't always change the type of the array when it is a primitive array.
+            // Take the following example: `l1 = newarray (byte)[1]; l1[0] = l0;`, with `l0` being
+            // an `int` (see `testMixedPrimitiveArray`).
+            // At the `l1[0] = l0` statement, `l1` has to stay as a `byte[]` and can't be upgraded
+            // to an `int[]` because otherwise the first statement becomes invalid.
+            continue;
+          }
+
+          // when `local` has an array type, the type of `rhs` needs to be assignable as an element
+          // of that array
+          Collection<Type> leastCommonAncestorsElement =
+              hierarchy.getLeastCommonAncestor(elementType, rhsType);
+          leastCommonAncestors =
+              leastCommonAncestorsElement.stream()
+                  .map(type -> Type.createArrayType(type, 1))
+                  .collect(Collectors.toSet());
+        } else {
+          // when `local` isn't an array type, but is used as an array, its type has to be
+          // compatible with `[rhs][]`
+          leastCommonAncestors =
+              hierarchy.getLeastCommonAncestor(oldType, Type.createArrayType(rhsType, 1));
+        }
+      } else {
+        leastCommonAncestors = hierarchy.getLeastCommonAncestor(oldType, rhsType);
       }
 
+      assert !leastCommonAncestors.isEmpty();
+
       boolean isFirstType = true;
-      Collection<Type> leastCommonAncestors =
-          hierarchy.getLeastCommonAncestor(oldType, rightOpDerivedType);
       for (Type type : leastCommonAncestors) {
         if (!type.equals(oldType)) {
           BitSet dependStmtList = this.depends.get(local);
           // Up to now there's no ambiguity of types
           if (isFirstType) {
-            actualTyping.set(local, type);
-            // Type is changed, the associated definition stmts are necessary handled again
-            if (dependStmtList != null) {
-              actualSL.or(dependStmtList);
-            }
             isFirstType = false;
           } else {
             // Ambiguity handling: create new Typing and add it into workQueue
-            Typing newTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
-            workQueue.add(newTyping);
+            actualTyping = new Typing(actualTyping, (BitSet) actualSL.clone());
+            workQueue.add(actualTyping);
+            actualSL = actualTyping.getStmtsIDList();
+          }
 
-            BitSet newSL = newTyping.getStmtsIDList();
-            newTyping.set(local, type);
-            if (dependStmtList != null) {
-              newSL.or(dependStmtList);
-            }
+          actualTyping.set(local, type);
+
+          // Type is changed, the associated definition stmts are necessary handled again
+          if (dependStmtList != null) {
+            actualSL.or(dependStmtList);
           }
         }
       }
@@ -281,25 +313,33 @@ public class TypeResolver {
     return map;
   }
 
-  private Typing getMinCastsTyping(
+  private CastCounter getMinCastsCounter(
       @Nonnull Body.BodyBuilder builder,
       @Nonnull Collection<Typing> typings,
       @Nonnull AugEvalFunction evalFunction,
       @Nonnull BytecodeHierarchy hierarchy) {
-    CastCounter castCounter = new CastCounter(builder, evalFunction, hierarchy);
-    Iterator<Typing> typingIterator = typings.iterator();
-    Typing ret = null;
-    int min = Integer.MAX_VALUE;
-    while (typingIterator.hasNext()) {
-      Typing typing = typingIterator.next();
-      int castCount = castCounter.getCastCount(typing);
-      if (castCount < min) {
-        min = castCount;
-        ret = typing;
-      }
+    return typings.stream()
+        .map(typing -> new CastCounter(builder, evalFunction, hierarchy, typing))
+        .min(Comparator.comparingInt(CastCounter::getCastCount))
+        .get();
+  }
+
+  private Type convertUnderspecifiedType(@Nonnull Type type) {
+    if (type instanceof ArrayType) {
+      Type elementType = convertUnderspecifiedType(((ArrayType) type).getElementType());
+      return Type.createArrayType(elementType, 1);
+    } else if (type instanceof NullType || type instanceof BottomType) {
+      // Convert `null`/`BottomType` types to `java.lang.Object`.
+      // `null` can show up when a variable never gets a non-null value assigned to it.
+      // `BottomType` can show up when a variable only every gets assigned from "impossible"
+      // operations, e.g., indexing into `null`, or never gets assigned at all.
+      // Choosing `java.lang.Object` is an arbitrary choice.
+      // It is probably possible to use the debug information to choose a type here, but that
+      // complexity is not worth it for such an edge case.
+      return objectType;
+    } else {
+      return type;
     }
-    this.castCount = min;
-    return ret;
   }
 
   private Type convertType(@Nonnull Type type) {

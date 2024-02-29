@@ -42,9 +42,12 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
 
   @Nonnull private final V subSignature;
 
+  private final int hashCode;
+
   public SootClassMemberSignature(@Nonnull ClassType klass, @Nonnull V subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
+    this.hashCode = Objects.hashCode(declClassSignature, subSignature);
   }
 
   @Nonnull
@@ -84,7 +87,7 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(declClassSignature, subSignature);
+    return hashCode;
   }
 
   @Override

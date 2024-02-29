@@ -22,7 +22,10 @@ package sootup.java.core.views;
  * #L%
  */
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.cache.ClassCache;
@@ -115,21 +118,15 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public Optional<JavaSootMethod> getMethod(@Nonnull MethodSignature signature) {
-    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-    if (aClass.isPresent()) {
-      return aClass.get().getMethod(signature.getSubSignature());
-    }
-    return Optional.empty();
+    return getClass(signature.getDeclClassType())
+        .flatMap(c -> c.getMethod(signature.getSubSignature()));
   }
 
   @Override
   @Nonnull
   public Optional<JavaSootField> getField(@Nonnull FieldSignature signature) {
-    final Optional<JavaSootClass> aClass = getClass(signature.getDeclClassType());
-    if (aClass.isPresent()) {
-      return aClass.get().getField(signature.getSubSignature());
-    }
-    return Optional.empty();
+    return getClass(signature.getDeclClassType())
+        .flatMap(c -> c.getField(signature.getSubSignature()));
   }
 
   @Nonnull

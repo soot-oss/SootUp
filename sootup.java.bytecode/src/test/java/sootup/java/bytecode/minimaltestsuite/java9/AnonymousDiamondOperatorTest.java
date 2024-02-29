@@ -1,19 +1,19 @@
 package sootup.java.bytecode.minimaltestsuite.java9;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
@@ -48,9 +48,9 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AnonymousDiamondOperator",
+            "this := @this: AnonymousDiamondOperator",
             "$stack3 = new AnonymousDiamondOperator$1",
-            "specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(l0)",
+            "specialinvoke $stack3.<AnonymousDiamondOperator$1: void <init>(AnonymousDiamondOperator)>(this)",
             "l1 = $stack3",
             "$stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22)",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23)",

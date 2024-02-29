@@ -1,15 +1,15 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
@@ -18,7 +18,7 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase {
 
   public MethodSignature getInitMethodSignature() {
@@ -119,8 +119,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: DeclareEnumWithConstructor",
-            "specialinvoke l0.<java.lang.Object: void <init>()>()",
+            "this := @this: DeclareEnumWithConstructor",
+            "specialinvoke this.<java.lang.Object: void <init>()>()",
             "return")
         .collect(Collectors.toList());
   }
@@ -208,8 +208,8 @@ public class DeclareEnumWithConstructorTest extends MinimalBytecodeTestSuiteBase
    */
   public List<String> expectedGetValueStmts() {
     return Stream.of(
-            "l0 := @this: DeclareEnumWithConstructor$Number",
-            "$stack1 = l0.<DeclareEnumWithConstructor$Number: int value>",
+            "this := @this: DeclareEnumWithConstructor$Number",
+            "$stack1 = this.<DeclareEnumWithConstructor$Number: int value>",
             "return $stack1")
         .collect(Collectors.toList());
   }

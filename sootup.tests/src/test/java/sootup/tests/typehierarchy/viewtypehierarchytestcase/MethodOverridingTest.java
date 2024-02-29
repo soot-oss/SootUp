@@ -1,11 +1,10 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Collections;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -14,25 +13,19 @@ import sootup.core.types.ClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author: Hasitha Rajapakse * */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
-    ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
-    ClassType sootClassType = getClassType(customTestWatcher.getClassName());
+    ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+    ClassType sootClassType = getClassType(this.getClassName());
 
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
-        customTestWatcher
-            .getView()
-            .getClass(
-                customTestWatcher
-                    .getView()
-                    .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
+        this.getView()
+            .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
             .get();
     SootMethod sootMethod =
         sootClass
@@ -44,8 +37,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-    SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+    SootClass superClass = this.getView().getClass(sootClass.getSuperclass().get()).get();
     SootMethod superMethod =
         superClass
             .getMethod(

@@ -1,36 +1,30 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
-
-  SootMethod sootMethod = loadMethod(getMethodSignature());
-  Body methodBody = sootMethod.getBody();
 
   /** Test: How many Locals with ClassType {@link java.lang.String} */
   @Test
   public void testNumOfLocalsWithString() {
-    Set<Local> locals = methodBody.getLocals();
+    Set<Local> locals = loadMethod(getMethodSignature()).getBody().getLocals();
     Set<Local> stringLocals =
         locals.stream()
             .filter(local -> local.getType().toString().equals("java.lang.String"))
@@ -41,7 +35,7 @@ public class SubClassShadowingTest extends MinimalSourceTestSuiteBase {
   /** Test: Locals--info are from different class */
   @Test
   public void testClassesOfStringLocalAreDifferent() {
-    List<Stmt> stmts = methodBody.getStmts();
+    List<Stmt> stmts = loadMethod(getMethodSignature()).getBody().getStmts();
     Set<ClassType> classTypes = new HashSet<ClassType>();
     for (Stmt stmt : stmts) {
       if (stmt instanceof JAssignStmt) {

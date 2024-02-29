@@ -4,17 +4,16 @@
  */
 package sootup.java.sourcecode.minimaltestsuite.java7;
 
-import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class SwitchCaseStatementWithStringTest extends MinimalSourceTestSuiteBase {
 
   @Override

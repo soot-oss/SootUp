@@ -43,6 +43,7 @@ public class JavaClassType extends ClassType {
 
   @Nonnull private final String className;
   @Nonnull private final PackageName packageName;
+  private final int hashCode;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -59,6 +60,7 @@ public class JavaClassType extends ClassType {
     }
     this.className = realClassName;
     this.packageName = packageName;
+    this.hashCode = Objects.hashCode(className, packageName);
   }
 
   @Override
@@ -75,7 +77,7 @@ public class JavaClassType extends ClassType {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(className, packageName);
+    return hashCode;
   }
 
   /**

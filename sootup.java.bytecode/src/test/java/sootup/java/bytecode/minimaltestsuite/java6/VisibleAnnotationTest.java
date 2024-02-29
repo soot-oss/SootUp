@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.PackageName;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.types.AnnotationType;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class VisibleAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -24,6 +24,6 @@ public class VisibleAnnotationTest extends MinimalBytecodeTestSuiteBase {
             new AnnotationUsage(
                 new AnnotationType("InterfaceVisibleAnnotation", new PackageName(""), false),
                 Collections.emptyMap())),
-        sootClass.getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+        sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
   }
 }
