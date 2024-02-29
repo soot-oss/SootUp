@@ -28,6 +28,7 @@ import java.util.List;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+ import sootup.core.jimple.common.ref.Ref;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
@@ -72,7 +73,7 @@ public class InvokeArgumentValidator implements BodyValidator {
       }
 
       // check argument type
-      ClassType argClassType;
+      ReferenceType argClassType;
       Iterator<Type> iterParameters = parameterTypes.iterator();
       for (Immediate arg : args) {
         Type argType = arg.getType();
@@ -103,7 +104,7 @@ public class InvokeArgumentValidator implements BodyValidator {
           argClassType = identifierFactory.getBoxedType(((PrimitiveType) argType));
 
         } else {
-          argClassType = (ClassType) argType;
+          argClassType = (ReferenceType) argType;
         }
 
         // non-primitive type cases, primitive+autoboxing
