@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
@@ -18,13 +18,11 @@ import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 public class MethodValidatorTest {
-  MethodValidator methodValidator;
-  JimpleView jimpleView;
+  MethodValidator methodValidator = new MethodValidator();
+  static JimpleView jimpleView;
 
-  @BeforeEach
-  public void Setup() {
-
-    methodValidator = new MethodValidator();
+  @BeforeAll
+  public static void Setup() {
 
     ClassType classTypeCheckInitValidator =
         new ClassType() {

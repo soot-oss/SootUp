@@ -35,13 +35,4 @@ public interface BodyValidator {
    * @param view the view
    */
   List<ValidationException> validate(Body body, View view);
-
-  /**
-   * Basic validators run essential checks and are run always if validate is called.<br>
-   * If this method returns false and the caller of the validator respects this property,<br>
-   * the checks will only be run if the debug or validation option is activated.
-   *
-   * @return whether this validator is a basic validator
-   */
-  boolean isBasicValidator();
 }

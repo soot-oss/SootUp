@@ -38,7 +38,7 @@ import sootup.core.views.View;
  *
  * @author Marc Miltenberger
  */
-public class IdentityValidator implements BodyValidator {
+public class IdentityStmtsValidator implements BodyValidator {
 
   /**
    * Checks whether each ParameterRef and ThisRef is used exactly once.
@@ -50,74 +50,74 @@ public class IdentityValidator implements BodyValidator {
     List<ValidationException> exceptions = new ArrayList<>();
 
     boolean hasThisLocal = false;
-    Optional<? extends SootMethod> optionalSootMethod = view.getMethod(body.getMethodSignature());
-    if (!optionalSootMethod.isPresent()) {
-      exceptions.add(
-          new ValidationException(
-              body.getMethodSignature(),
-              "There is no corresponding SootMethod in the given view for the provided method signature."));
-      return exceptions;
+    Optional<? extends SootMethod> sootMethodOpt = view.getMethod(body.getMethodSignature());
+    if (!sootMethodOpt.isPresent()) {
+      throw new IllegalStateException(
+          "We should find the given method to the given Body in the View. wrong View or Method?");
     }
 
-    SootMethod method = optionalSootMethod.get();
+    SootMethod method = sootMethodOpt.get();
     int paramCount = method.getParameterCount();
     boolean[] parameterRefs = new boolean[paramCount];
 
-    for (Stmt stmt : body.getStmts()) {
-      if (stmt instanceof JIdentityStmt) {
-        JIdentityStmt id = (JIdentityStmt) stmt;
-        if (id.getRightOp() instanceof JThisRef) {
-          hasThisLocal = true;
-        }
+    // TODO: enforce stmts[thisIdentityStmt?, parameterRefIdentityStmt*, ..., returnStmt], too -> or
+    // better create a preamble in the graph so that its not possible to insert it differently
 
-        if (id.getRightOp() instanceof JParameterRef) {
-          JParameterRef ref = (JParameterRef) id.getRightOp();
+    for (Stmt stmt : body.getStmtGraph().getNodes()) {
+      if (stmt instanceof JIdentityStmt) {
+        JIdentityStmt identityStmt = (JIdentityStmt) stmt;
+        if (identityStmt.getRightOp() instanceof JThisRef) {
+          if (hasThisLocal) {
+            exceptions.add(new ValidationException(identityStmt, "@this occures more than once."));
+          }
+          hasThisLocal = true;
+        } else if (identityStmt.getRightOp() instanceof JParameterRef) {
+          JParameterRef ref = (JParameterRef) identityStmt.getRightOp();
           if (ref.getIndex() < 0 || ref.getIndex() >= paramCount) {
-            if (paramCount == 0)
+            if (paramCount == 0) {
               exceptions.add(
                   new ValidationException(
-                      id,
+                      identityStmt,
                       "This methodRef has no parameters, so no parameter reference is allowed"));
-            else
+            } else {
               exceptions.add(
                   new ValidationException(
-                      id,
+                      identityStmt,
                       String.format(
                           "Parameter reference index must be between 0 and %d (inclusive)",
                           paramCount - 1)));
+            }
           } else {
-            if (parameterRefs[ref.getIndex()])
+            if (parameterRefs[ref.getIndex()]) {
               exceptions.add(
                   new ValidationException(
-                      id,
+                      identityStmt,
                       String.format("Only one local for parameter %d is allowed", ref.getIndex())));
+            }
             parameterRefs[ref.getIndex()] = true;
           }
         }
       }
     }
 
-    if (!method.isStatic() && !hasThisLocal) {
+    if (method.isStatic() == hasThisLocal) {
       exceptions.add(
           new ValidationException(
               body,
               String.format(
-                  "The methodRef %s is not static, but does not have a this local",
-                  body.getMethodSignature())));
+                  "The method %s is %s static, but does %s have a this local",
+                  body.getMethodSignature(),
+                  (method.isStatic() ? "" : "not"),
+                  (hasThisLocal ? "" : "not"))));
     }
 
     for (int i = 0; i < paramCount; i++) {
       if (!parameterRefs[i]) {
         exceptions.add(
             new ValidationException(
-                body, String.format("There is no parameter local for parameter number %d", i)));
+                body, String.format("There is no Local assigned for parameter number %d", i)));
       }
     }
     return exceptions;
-  }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
   }
 }

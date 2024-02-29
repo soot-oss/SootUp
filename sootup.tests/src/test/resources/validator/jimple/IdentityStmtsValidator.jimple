@@ -1,10 +1,10 @@
-public class IdentityValidator extends java.lang.Object
+public class IdentityStmtsValidator extends java.lang.Object
  {
     public void <init>()
     {
-     IdentityValidator l0;
+     IdentityStmtsValidator l0;
 
-     l0 := @this: IdentityValidator;
+     l0 := @this: IdentityStmtsValidator;
      specialinvoke l0.<java.lang.Object: void <init>()>();
 
      return;
@@ -12,10 +12,10 @@ public class IdentityValidator extends java.lang.Object
 
     public void testParameterRefSuccess(int)
     {
-         IdentityValidator l0;
+         IdentityStmtsValidator l0;
          int l1, l2;
 
-         l0 := @this: IdentityValidator;
+         l0 := @this: IdentityStmtsValidator;
          l1 := @parameter0: int;
          l2 = l1 + 1;
 
@@ -34,10 +34,10 @@ public class IdentityValidator extends java.lang.Object
 
     public void testParameterRefMultiLocals(int)
     {
-         IdentityValidator l0;
+         IdentityStmtsValidator l0;
          int l1, l2, l3;
 
-         l0 := @this: IdentityValidator;
+         l0 := @this: IdentityStmtsValidator;
          l1 := @parameter0: int;
          l2 := @parameter0: int;
          l3 = l1 + 1;
@@ -47,10 +47,10 @@ public class IdentityValidator extends java.lang.Object
 
     public void testParameterRefNoLocal(int)
     {
-         IdentityValidator l0;
+         IdentityStmtsValidator l0;
          int l1, l2, l3;
 
-         l0 := @this: IdentityValidator;
+         l0 := @this: IdentityStmtsValidator;
          l1 = 1;
          l2 = 2;
          l3 = l1 + l2;

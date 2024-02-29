@@ -84,9 +84,4 @@ public class FieldRefValidator implements BodyValidator {
     }
     return validationException;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

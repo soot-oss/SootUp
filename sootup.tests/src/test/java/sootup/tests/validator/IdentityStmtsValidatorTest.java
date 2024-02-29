@@ -1,7 +1,6 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -16,21 +15,21 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.validation.IdentityValidator;
+import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 @Tag("Java8")
-public class IdentityValidatorTest {
+public class IdentityStmtsValidatorTest {
 
-  IdentityValidator identityValidator;
+  IdentityStmtsValidator identityStmtsValidator;
   JimpleView jimpleView;
 
   @BeforeEach
   public void Setup() {
 
-    identityValidator = new IdentityValidator();
+    identityStmtsValidator = new IdentityStmtsValidator();
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
@@ -41,17 +40,17 @@ public class IdentityValidatorTest {
 
           @Override
           public String getFullyQualifiedName() {
-            return "jimple.IdentityValidator";
+            return "IdentityStmtsValidator";
           }
 
           @Override
           public String getClassName() {
-            return "IdentityValidator";
+            return "IdentityStmtsValidator";
           }
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("jimple");
+            return new PackageName("");
           }
         };
 
@@ -60,14 +59,15 @@ public class IdentityValidatorTest {
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
     jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
-    assertFalse(classSource1.isPresent());
+    final Optional<SootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
+    assertTrue(scOpt.isPresent());
   }
 
   @Test
   public void testThisRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(getBody("<IdentityValidator: void <init>()>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void <init>()>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -75,8 +75,8 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefSuccess(int)>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testParameterRefSuccess(int)>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -84,8 +84,8 @@ public class IdentityValidatorTest {
   @Test
   public void testNoThisrRef() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
-            getBody("<IdentityValidator: void testNoThisrRef(int)>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testNoThisrRef(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -93,8 +93,8 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefMultiLocals() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -102,8 +102,8 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefNoLocal() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefNoLocal(int)>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void testParameterRefNoLocal(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -118,7 +118,7 @@ public class IdentityValidatorTest {
                  LocalsValidator l0;
                  unknown l1;
 
-                 l0 := @this: IdentityValidator;
+                 l0 := @this: IdentityStmtsValidator;
                  l1 = @parameter0: int;
 
                  return;
