@@ -1,7 +1,7 @@
 # General Usage of SootUp
 This page walks you through the core data structures, as well as shows how to get started with SootUp.
 
-## The core datastructures
+    ## The core datastructures
 Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
 - `Language`: represents the programming language of the analyzed code. 
@@ -304,14 +304,12 @@ Example code to help getting start with SootUp
 
 - We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
 
-  a) 'BasicSetupExample'
-            
-  !!! example "First segment of BasicSetUp Program"
-   - package sootup.examples; - defines the package name for the Java class.
+  a) BasicSetupExample
+
+   - 'package sootup.examples;' - this line defines the package name for the Java class.
    - import statement - defines various classes and interfaces from different packages that the program uses.
    - public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
    - Then we have created a main method which is the entry point of the program.
-    
 
    ```java
    Path pathToBinary = Paths.get("src/test/resources/Basicsetup/binary");
@@ -328,7 +326,7 @@ Example code to help getting start with SootUp
            view.getIdentifierFactory()
             .getMethodSignature(
                 classType, "main", "void", Collections.singletonList("java.lang.String[]"));
-   ```
+  ```
 
    - In this part of code, first View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific 
      implementation of View tailed for Java projects.
@@ -362,10 +360,9 @@ Example code to help getting start with SootUp
    - Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
           
 
-   b) 'BodyInterceptor'
+   b) BodyInterceptor
 
-   !!! example "First segment of BodyInterceptor Program"
-   - package sootup.examples; - defines the package name for the Java class.
+   - 'package sootup.examples;' - defines the package name for the Java class.
    - import statement - defines various classes and interfaces from different packages that the program uses.
    - public class BodyInterceptor - declares a public class named 'BodyInterceptor' which is the main class for this program.
    - Then we have created a main method which is the entry point of the program.
@@ -399,7 +396,7 @@ Example code to help getting start with SootUp
     }
     SootMethod method = view.getMethod(methodSignature).get();
     System.out.println(method.getBody());
-   ``` 
+    ``` 
 
     - Then we check for the existence of the class and method in the given view.
     - If they exist, a SootClass and SootMethod objects are used to retrieve the same.
@@ -424,10 +421,9 @@ Example code to help getting start with SootUp
     from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                      present.
   - Then it prints the result of the interceptor check.
 
-   c) 'CallGraphExample'
+   c) CallGraphExample
 
-   !!! example "First segment of CallGraphExample Program"
-   - package sootup.examples; - defines the package name for the Java class.
+   - 'package sootup.examples;' - defines the package name for the Java class.
    - import statement - defines various classes and interfaces from different packages that the program uses.
    - public class CallGraphExample - declares a public class named 'CallGraphExample' which is the main class for this program.
    - Then we have created a main method which is the entry point of the program.
@@ -458,10 +454,10 @@ Example code to help getting start with SootUp
                             JavaIdentifierFactory.getInstance()
                                     .getMethodSubSignature(
                                             "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));
-    ``` 
+   ``` 
     
-    - Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
-    - ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
+  - Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
+  - ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
 
 
    ```java
@@ -477,10 +473,9 @@ Example code to help getting start with SootUp
   - Prints information about calls from the entry method in the call graph.
 
 
-  d) 'ClassHierarchyExample'
+  d) ClassHierarchyExample
 
-   !!! example "First segment of ClassHierarchyExample Program"
-   - package sootup.examples; - defines the package name for the Java class.
+   - 'package sootup.examples;' - defines the package name for the Java class.
    - import statement - defines various classes and interfaces from different packages that the program uses.
    - public class CallGraphExample - declares a public class named 'CallGraphExample' which is the main class for this program.
    - Then we have created a main method which is the entry point of the program.
@@ -498,45 +493,44 @@ Example code to help getting start with SootUp
   - Then creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis. Two locations are added: one for 
     the project's binary directory and another for the default Java runtime library (rt.jar).
   - Initializes a JavaView object with the previously created input locations.
- 
 
-  ```java
-  final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
-  JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("A");
-  JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
-  Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
-  boolean allSubtypesAreD = subtypes.stream().allMatch(type -> type.getClassName().equals("D"));
-  boolean allSubtypesFullyQualifiedAreD =
+
+   ```java
+   final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+   JavaClassType clazzTypeA = JavaIdentifierFactory.getInstance().getClassType("A");
+   JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
+   Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
+   boolean allSubtypesAreD = subtypes.stream().allMatch(type -> type.getClassName().equals("D"));
+   boolean allSubtypesFullyQualifiedAreD =
         subtypes.stream().allMatch(type -> type.getFullyQualifiedName().equals("D"));
 
-  if (allSubtypesAreD && allSubtypesFullyQualifiedAreD) {
-  System.out.println("All direct subtypes of Class C are correctly identified as Class D.");
+   if (allSubtypesAreD && allSubtypesFullyQualifiedAreD) {
+        System.out.println("All direct subtypes of Class C are correctly identified as Class D.");
+    } else {
+          System.out.println("Direct subtypes of Class C are not correctly identified.");}
+   ```
+
+  - Initializes a ViewTypeHierarchy object using the view. This object will be used to analyze the class hierarchy.
+  - Then we have created two ClassTypes. These lines get JavaClassType objects for classes "A" and "C". These types are used for further hierarchy analysis.
+  - Checks the direct subclasses of class "C". It verifies if all direct subclasses are "D" using two different methods: comparing class names and fully               qualified names.
+  - Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
+ 
+  ```java
+  List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);
+  if (superClasses.equals(
+      Arrays.asList(
+          clazzTypeA, JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")))) {
+    System.out.println("Superclasses of Class C are correctly identified.");
   } else {
-  System.out.println("Direct subtypes of Class C are not correctly identified.");
+    System.out.println("Superclasses of Class C are not correctly identified.");
   }
   ```
-    - Initializes a ViewTypeHierarchy object using the view. This object will be used to analyze the class hierarchy.
-    - Then we have created two ClassTypes. These lines get JavaClassType objects for classes "A" and "C". These types are used for further hierarchy analysis.
-    - Checks the direct subclasses of class "C". It verifies if all direct subclasses are "D" using two different methods: comparing class names and fully               qualified names.
-    - Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
- 
-    ```java
-    List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);
-    if (superClasses.equals(
-        Arrays.asList(
-            clazzTypeA, JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")))) {
-      System.out.println("Superclasses of Class C are correctly identified.");
-    } else {
-      System.out.println("Superclasses of Class C are not correctly identified.");
-    }
-    ```
 
-    - Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based        on the result.
+  - Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based        on the result.
 
 
-   e) 'MutatingSootClassExample'
+   e) MutatingSootClassExample
 
-   !!! example "First segment of MutatingSootClassExample Program"
    - package sootup.examples; - defines the package name for the Java class.
    - import statement - defines various classes and interfaces from different packages that the program uses.
    - public class MutatingSootClassExample - declares a public class named 'MutatingSootClassExample' which is the main class for this program.
@@ -602,6 +596,6 @@ Example code to help getting start with SootUp
   System.out.println("New local does not exist in the modified method.");
   }
   ```
-  - Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
-  - Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old         method in the class with the new method having the modified body.
-  - Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a                corresponding message.
+   - Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
+   - Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old         method in the class with the new method having the modified body.
+    - Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a                corresponding message.
