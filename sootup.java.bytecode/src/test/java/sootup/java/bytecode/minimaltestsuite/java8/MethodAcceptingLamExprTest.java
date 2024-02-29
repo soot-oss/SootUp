@@ -42,7 +42,7 @@ public class MethodAcceptingLamExprTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingLamExpr",
+            "this := @this: MethodAcceptingLamExpr",
             "l1 = dynamicinvoke \"calcPercentage\" <Percentage ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(methodtype: double __METHODTYPE__(double), methodhandle: \"REF_INVOKE_STATIC\" <MethodAcceptingLamExpr: double lambda$lambdaAsParamMethod$0(double)>, methodtype: double __METHODTYPE__(double))",
             "$stack3 = <java.lang.System: java.io.PrintStream out>",
             "$stack2 = new java.lang.StringBuilder",

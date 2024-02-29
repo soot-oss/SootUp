@@ -37,7 +37,7 @@ public class BreakInWhileLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: BreakInWhileLoop",
+            "this := @this: BreakInWhileLoop",
             "l1 = 10",
             "l2 = 5",
             "label1:",

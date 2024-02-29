@@ -37,7 +37,7 @@ public class LabelledLoopBreakTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: LabelledLoopBreak",
+            "this := @this: LabelledLoopBreak",
             "l1 = 0",
             "label1:",
             "if l1 >= 5 goto label5",

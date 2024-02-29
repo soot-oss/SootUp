@@ -34,7 +34,7 @@ public class ForLoopTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: ForLoop",
+            "this := @this: ForLoop",
             "l1 = 10",
             "l2 = 0",
             "l3 = 0",

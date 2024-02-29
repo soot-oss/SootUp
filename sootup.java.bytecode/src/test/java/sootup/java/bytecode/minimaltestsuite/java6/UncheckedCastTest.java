@@ -36,7 +36,7 @@ public class UncheckedCastTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: UncheckedCast",
+            "this := @this: UncheckedCast",
             "$stack3 = newarray (java.lang.Integer)[4]",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(5)",
             "$stack3[0] = $stack4",

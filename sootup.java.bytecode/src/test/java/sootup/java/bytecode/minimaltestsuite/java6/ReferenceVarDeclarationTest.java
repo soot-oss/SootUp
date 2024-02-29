@@ -33,7 +33,7 @@ public class ReferenceVarDeclarationTest extends MinimalBytecodeTestSuiteBase {
    */
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: ReferenceVarDeclaration", "l1 = \"Hello World\"", "return")
+    return Stream.of("this := @this: ReferenceVarDeclaration", "l1 = \"Hello World\"", "return")
         .collect(Collectors.toList());
   }
 

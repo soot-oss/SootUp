@@ -84,20 +84,29 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
     Type type_lhs = null;
     if (lhs instanceof Local) {
       type_lhs = typing.getType((Local) lhs);
+      if (type_lhs == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
     } else if (lhs instanceof JArrayRef) {
       visit(((JArrayRef) lhs).getIndex(), PrimitiveType.getInt(), stmt);
       ArrayType arrayType = null;
       Local base = ((JArrayRef) lhs).getBase();
       Type type_base = typing.getType(base);
+      if (type_base == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {
         Type type_rhs = evalFunction.evaluate(typing, rhs, stmt, graph);
         // if base type of lhs is an object-like-type, retrieve its base type from array
         // allocation site.
-        if (type_base != null
-            && (Type.isObjectLikeType(type_base)
-                || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType))) {
+        if (Type.isObjectLikeType(type_base)
+            || (Type.isObject(type_base) && type_rhs instanceof PrimitiveType)) {
           Map<LValue, Collection<Stmt>> defs = Body.collectDefs(graph.getNodes());
           Collection<Stmt> defStmts = defs.get(base);
           boolean findDef = false;
@@ -121,14 +130,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
             arrayType = Type.createArrayType(type_rhs, 1);
           }
         }
-        if (arrayType == null && type_base != null) {
+        if (arrayType == null) {
           arrayType = Type.createArrayType(type_base, 1);
         }
       }
 
-      if (arrayType == null) {
-        return;
-      }
       type_lhs = arrayType.getElementType();
       visit(base, arrayType, stmt);
       visit(lhs, type_lhs, stmt);
@@ -143,6 +149,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
       type_lhs = lhs.getType();
     }
 
+    if (type_lhs == null) {
+      logger.info("Lhs was is not set!");
+      return;
+    }
+
     if (rhs instanceof Local) {
       visit(rhs, type_lhs, stmt);
     } else if (rhs instanceof JArrayRef) {
@@ -150,6 +161,11 @@ public abstract class TypeChecker extends AbstractStmtVisitor<Stmt> {
       Local base = ((JArrayRef) rhs).getBase();
       ArrayType arrayType = null;
       Type type_base = typing.getType(base);
+      if (type_base == null) {
+        // body.getLocals() is out of sync with Locals used in the Stmts
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        return;
+      }
       if (type_base instanceof ArrayType) {
         arrayType = (ArrayType) type_base;
       } else {

@@ -57,7 +57,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = \"something\"",
             "l3 = l1",
             "l4 = -1",
@@ -129,7 +129,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    */
   public List<String> expectedBodyStmts2() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = 2",
             "switch(l1)",
             "case 1: goto label1",
@@ -175,7 +175,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    */
   public List<String> expectedBodyStmts3() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = \"RED\"",
             "l2 = \"\"",
             "$stack3 = <SwitchCaseStatementWithString$1: int[] $SwitchMap$Color>",

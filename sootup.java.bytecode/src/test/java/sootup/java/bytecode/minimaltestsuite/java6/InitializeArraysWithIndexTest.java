@@ -66,7 +66,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (int)[3]",
             "l1[0] = 1",
             "l1[1] = 2",
@@ -90,7 +90,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (byte)[3]",
             "l1[0] = 4",
             "l1[1] = 5",
@@ -113,7 +113,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (short)[3]",
             "l1[0] = 10",
             "l1[1] = 20",
@@ -137,7 +137,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (long)[3]",
             "l1[0] = 547087L",
             "l1[1] = 564645L",
@@ -162,7 +162,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (float)[4]",
             "l1[0] = 3.14F",
             "l1[1] = 5.46F",
@@ -187,7 +187,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (double)[2]",
             "l1[0] = 6.765414",
             "l1[1] = 9.676565646",
@@ -209,7 +209,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (boolean)[2]",
             "l1[0] = 1",
             "l1[1] = 0",
@@ -232,7 +232,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (char)[3]",
             "l1[0] = 65",
             "l1[1] = 98",
@@ -254,7 +254,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
    */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWithIndex",
+            "this := @this: InitializeArraysWithIndex",
             "l1 = newarray (java.lang.String)[2]",
             "l1[0] = \"Hello World\"",
             "l1[1] = \"Greetings\"",

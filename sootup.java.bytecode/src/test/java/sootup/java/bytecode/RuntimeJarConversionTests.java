@@ -250,4 +250,10 @@ public class RuntimeJarConversionTests {
     convertMethod(
         "<com.sun.xml.internal.ws.wsdl.writer.WSDLGenerator: void generateBindingOperation(com.sun.xml.internal.ws.model.JavaMethodImpl,com.sun.xml.internal.ws.wsdl.writer.document.Binding)>");
   }
+
+  @Test
+  public void testClamps() {
+    //   LocalSplitter+CastAndReturnInliner -> TypeAssigner
+    convertMethod("<sun.java2d.xr.XRUtils: short clampToShort(int)>");
+  }
 }

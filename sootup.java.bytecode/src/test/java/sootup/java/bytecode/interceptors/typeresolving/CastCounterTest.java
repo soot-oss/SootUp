@@ -49,7 +49,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testInvokeStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
+    map.put("this", classType);
     map.put("l1", super1);
     map.put("l2", PrimitiveType.getInt());
     map.put("l3", sub2);
@@ -80,7 +80,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testAssignStmt() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
+    map.put("this", classType);
     map.put("l1", Type.createArrayType(super1, 1));
     map.put("l2", super1);
     map.put("$stack3", sub1);
@@ -100,7 +100,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testInvokeStmtWithNewCasts() {
     final Body.BodyBuilder builder = createMethodsBuilder("invokeStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
+    map.put("this", classType);
     map.put("l1", super1);
     map.put("l2", PrimitiveType.getLong());
     map.put("l3", super2);
@@ -129,7 +129,7 @@ public class CastCounterTest extends TypeAssignerTestSuite {
   public void testAssignStmtWithNewCasts() {
     final Body.BodyBuilder builder = createMethodsBuilder("assignStmt", "void");
     Map<String, Type> map = new HashMap<>();
-    map.put("l0", classType);
+    map.put("this", classType);
     map.put("l1", object);
     map.put("l2", super1);
     map.put("$stack3", sub1);
@@ -144,10 +144,10 @@ public class CastCounterTest extends TypeAssignerTestSuite {
 
     List<String> variant1 =
         Stream.of(
-                "CastCounterDemos l0",
+                "CastCounterDemos this",
                 "Super1[] #l0, #l1",
                 "unknown $stack3, l1, l2",
-                "l0 := @this: CastCounterDemos",
+                "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
                 "specialinvoke $stack3.<Sub1: void <init>()>()",
@@ -159,10 +159,10 @@ public class CastCounterTest extends TypeAssignerTestSuite {
             .collect(Collectors.toList());
     List<String> variant2 =
         Stream.of(
-                "CastCounterDemos l0",
+                "CastCounterDemos this",
                 "Super1[] #l0, #l1",
                 "unknown $stack3, l1, l2",
-                "l0 := @this: CastCounterDemos",
+                "this := @this: CastCounterDemos",
                 "l1 = newarray (Super1)[10]",
                 "$stack3 = new Sub1",
                 "specialinvoke $stack3.<Sub1: void <init>()>()",

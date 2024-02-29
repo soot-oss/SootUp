@@ -50,7 +50,7 @@ public class MultiInterfaceImplClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: MultiInterfaceImplClass",
+            "this := @this: MultiInterfaceImplClass",
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void print(java.lang.String)>(\"Method from InterfaceImpl is implemented\")",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",

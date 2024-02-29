@@ -38,7 +38,7 @@ public class GenTypeParamTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: GenTypeParam",
+            "this := @this: GenTypeParam",
             "$stack4 = new java.util.ArrayList",
             "specialinvoke $stack4.<java.util.ArrayList: void <init>(int)>(3)",
             "l1 = $stack4",

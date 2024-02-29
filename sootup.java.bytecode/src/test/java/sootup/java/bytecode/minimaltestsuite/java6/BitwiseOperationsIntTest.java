@@ -53,7 +53,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpAnd() {
     return Stream.of(
-            "l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 & l2", "return")
+            "this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 & l2", "return")
         .collect(Collectors.toList());
   }
 
@@ -70,7 +70,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpOr() {
     return Stream.of(
-            "l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 | l2", "return")
+            "this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 | l2", "return")
         .collect(Collectors.toList());
   }
 
@@ -87,7 +87,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBitwiseOpXor() {
     return Stream.of(
-            "l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 ^ l2", "return")
+            "this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = 20", "l3 = l1 ^ l2", "return")
         .collect(Collectors.toList());
   }
 
@@ -102,7 +102,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpComplement() {
-    return Stream.of("l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 ^ -1", "return")
+    return Stream.of("this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 ^ -1", "return")
         .collect(Collectors.toList());
   }
 
@@ -117,7 +117,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpSignedRightShift() {
-    return Stream.of("l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 >> 5", "return")
+    return Stream.of("this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 >> 5", "return")
         .collect(Collectors.toList());
   }
 
@@ -132,7 +132,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpLeftShift() {
-    return Stream.of("l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 << 5", "return")
+    return Stream.of("this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 << 5", "return")
         .collect(Collectors.toList());
   }
 
@@ -147,7 +147,7 @@ public class BitwiseOperationsIntTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsBitwiseOpUnsignedRightShift() {
-    return Stream.of("l0 := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 >>> 5", "return")
+    return Stream.of("this := @this: BitwiseOperationsInt", "l1 = 70", "l2 = l1 >>> 5", "return")
         .collect(Collectors.toList());
   }
 
