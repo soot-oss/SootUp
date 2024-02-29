@@ -32,9 +32,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.typehierarchy.TypeHierarchy;
-import sootup.core.types.ClassType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 import sootup.core.views.View;
 
 /**
@@ -109,12 +107,25 @@ public class InvokeArgumentValidator implements BodyValidator {
         }
 
         // non-primitive type cases, primitive+autoboxing
-        ClassType parameterClassType = (ClassType) parameterType;
-        if (argClassType == parameterClassType) {
+        if (argClassType == parameterType) {
           continue;
         }
-        if (typeHierarchy.contains(parameterClassType)
-            && !typeHierarchy.isSubtype(parameterClassType, argClassType)) {
+
+        // check if the (base-) type is contained in the typehierarchy - else it throws exceptions
+        // TODO: incorporate into api after #874 is done
+        if (parameterType instanceof ClassType
+            && !typeHierarchy.contains((ClassType) parameterType)) {
+          continue;
+        }
+
+        if (parameterType instanceof ArrayType) {
+          Type baseType = ((ArrayType) parameterType).getBaseType();
+          if (baseType instanceof ClassType && !typeHierarchy.contains((ClassType) baseType)) {
+            continue;
+          }
+        }
+
+        if (!typeHierarchy.isSubtype(parameterType, argClassType)) {
           validationException.add(
               new ValidationException(
                   stmt,
