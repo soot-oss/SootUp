@@ -32,7 +32,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
 public class MethodValidator implements BodyValidator {
-
   public static final String staticInitializerName = "<clinit>";
 
   /**
@@ -51,21 +50,18 @@ public class MethodValidator implements BodyValidator {
     MethodSignature methodSignature = body.getMethodSignature();
     Optional<? extends SootMethod> optionalSootMethod = view.getMethod(methodSignature);
     if (!optionalSootMethod.isPresent()) {
-      exceptions.add(
-          new ValidationException(
-              body.getMethodSignature(),
-              "There is no corresponding SootMethod in the given view for the provided method signature."));
+      throw new IllegalStateException("The Method of this Body should be found in the View.");
+    }
+
+    SootMethod method = optionalSootMethod.get();
+    if (method.isAbstract()) { // but an abstract method does not have body
       return exceptions;
     }
 
-    SootMethod methodRef = optionalSootMethod.get();
-    if (methodRef.isAbstract()) { // but an abstract method does not have body
-      return exceptions;
-    }
-    if (staticInitializerName.equals(methodRef.getName()) && !methodRef.isStatic()) {
+    if (staticInitializerName.equals(method.getName()) && !method.isStatic()) {
       exceptions.add(
           new ValidationException(
-              methodRef,
+              method,
               staticInitializerName
                   + " should be static! Static initializer without 'static'('0x8') modifier"
                   + " will cause problem when running on android platform: "
