@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -93,7 +93,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsRelationalOpEqual() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 0",
             "label1:",
             "if l1 > 10 goto label2",
@@ -123,7 +123,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsRelationalOpNotEqual() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 0",
             "l2 = \"\"",
             "label1:",
@@ -151,7 +151,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsComplementOp() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "if l1 == 0 goto label2",
             "if l1 != 0 goto label1",
@@ -195,7 +195,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsLogicalOpAnd() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "l2 = 1",
             "l3 = 0",
@@ -252,7 +252,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsLogicalOpOr() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "l2 = 1",
             "l3 = 0",
@@ -309,7 +309,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsLogicalOpXor() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "l2 = 1",
             "l3 = 0",
@@ -366,7 +366,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsConditionalOpAnd() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "l2 = 1",
             "l3 = 0",
@@ -423,7 +423,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsConditionalOpOr() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 1",
             "l2 = 1",
             "l3 = 0",
@@ -466,7 +466,7 @@ public class BooleanOperatorsTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsConditionalOp() {
     return Stream.of(
-            "l0 := @this: BooleanOperators",
+            "this := @this: BooleanOperators",
             "l1 = 5",
             "l2 = \"\"",
             "if l1 >= 10 goto label1",

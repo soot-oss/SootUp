@@ -1,15 +1,15 @@
 package sootup.java.bytecode.minimaltestsuite.java8;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -17,7 +17,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
@@ -26,7 +26,7 @@ public class RepeatingAnnotationsTest extends MinimalBytecodeTestSuiteBase {
         getDeclaredClassSignature(), "annotaionMethod", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void annotationTest() {
     // TODO: after annotations are implemented
     SootMethod method = loadMethod(getMethodSignature());

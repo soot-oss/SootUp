@@ -66,10 +66,10 @@ public class AsmJavaClassProvider implements ClassProvider {
     try {
       actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
     } catch (IOException exception) {
-      logger.warn("ioe", exception);
+      logger.warn("ioe: " + sourcePath, exception);
       return Optional.empty();
     } catch (IllegalArgumentException exception) {
-      logger.warn("iae", exception);
+      logger.warn("iae: " + sourcePath, exception);
       return Optional.empty();
     }
 

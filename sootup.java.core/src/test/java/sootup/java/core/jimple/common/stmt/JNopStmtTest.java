@@ -22,10 +22,10 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JParameterRef;
@@ -35,7 +35,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.types.PrimitiveType;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JNopStmtTest {
 
   @Test
@@ -43,16 +43,16 @@ public class JNopStmtTest {
     StmtPositionInfo nopos = StmtPositionInfo.getNoStmtPositionInfo();
     Stmt nop = new JNopStmt(nopos);
 
-    Assert.assertTrue(nop.equivTo(nop));
-    Assert.assertTrue(nop.equivTo(new JNopStmt(nopos)));
+    assertTrue(nop.equivTo(nop));
+    assertTrue(nop.equivTo(new JNopStmt(nopos)));
 
-    Assert.assertFalse(
+    assertFalse(
         nop.equivTo(
             new JIdentityStmt(
                 new Local("i0", PrimitiveType.getInt()),
                 new JParameterRef(PrimitiveType.getInt(), 123),
                 nopos)));
 
-    Assert.assertEquals("nop", nop.toString());
+    assertEquals("nop", nop.toString());
   }
 }

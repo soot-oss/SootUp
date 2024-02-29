@@ -1,19 +1,15 @@
 package sootup.java.sourcecode.inputlocation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import junit.framework.TestCase;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootClass;
@@ -27,7 +23,7 @@ import sootup.java.core.JavaSootClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JavaSourcePathNamespaceTest {
 
   @Test
@@ -53,7 +49,7 @@ public class JavaSourcePathNamespaceTest {
     assertEquals(0, content.resolveFields().size());
   }
 
-  @Ignore
+  @Disabled
   public void testGetClassSources() {
     String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
@@ -101,6 +97,6 @@ public class JavaSourcePathNamespaceTest {
       }
     }
 
-    TestCase.assertEquals("User Defined class found, expected none", 0, classes.size());
+    assertEquals(0, classes.size(), "User Defined class found, expected none");
   }
 }

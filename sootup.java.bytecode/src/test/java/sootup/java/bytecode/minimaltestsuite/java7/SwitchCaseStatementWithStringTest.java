@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java7;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
@@ -57,7 +57,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = \"something\"",
             "l3 = l1",
             "l4 = -1",
@@ -129,7 +129,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    */
   public List<String> expectedBodyStmts2() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = 2",
             "switch(l1)",
             "case 1: goto label1",
@@ -175,7 +175,7 @@ public class SwitchCaseStatementWithStringTest extends MinimalBytecodeTestSuiteB
    */
   public List<String> expectedBodyStmts3() {
     return Stream.of(
-            "l0 := @this: SwitchCaseStatementWithString",
+            "this := @this: SwitchCaseStatementWithString",
             "l1 = \"RED\"",
             "l2 = \"\"",
             "$stack3 = <SwitchCaseStatementWithString$1: int[] $SwitchMap$Color>",

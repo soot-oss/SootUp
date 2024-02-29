@@ -1,16 +1,14 @@
 package sootup.java.core.views;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.AbstractClass;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -22,13 +20,13 @@ import sootup.java.core.JavaSootClass;
  *
  * @author Jan Martin Persch
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JavaViewTest {
 
   private List<ClassType> signatures;
   private JavaView view;
 
-  @Before
+  @BeforeEach
   public void initialize() {
 
     // TODO fails due to dependency to asm - rewrite test to allow multimodule maven -> eagerLoader
@@ -55,23 +53,23 @@ public class JavaViewTest {
         JavaIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
-      Assert.fail("FATAL ERROR: Non-existing class exists in signature list!");
+      fail("FATAL ERROR: Non-existing class exists in signature list!");
     }
 
     assertFalse(this.view.getClass(signature).isPresent());
   }
 
-  @Ignore
+  @Disabled
   public void testResolveUndefinedClassBeforeAllResolved() {
     this.resolveUndefinedClass();
   }
 
-  @Ignore
+  @Disabled
   public void testResolveUndefinedClassAfterAllResolved() {
     this.resolveUndefinedClass();
   }
 
-  @Ignore
+  @Disabled
   public void testResolveAll() {
     Collection<JavaSootClass> classes = this.view.getClasses();
 

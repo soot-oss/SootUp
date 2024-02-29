@@ -1,14 +1,13 @@
 package sootup.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -29,14 +28,14 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.frontend.WalaJavaClassProvider;
 
 /** @author Kaustubh Kelkar updated on 09.07.2020 */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class WitherTest {
 
   private WalaJavaClassProvider loader;
   private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
-  @Before
+  @BeforeEach
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaJavaClassProvider(srcDir);

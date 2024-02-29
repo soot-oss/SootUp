@@ -1,38 +1,26 @@
 package sootup.tests.typehierarchy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static sootup.core.util.ImmutableUtils.immutableList;
 import static sootup.core.util.ImmutableUtils.immutableSet;
 
-import categories.Java8Test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
-import sootup.core.types.ArrayType;
-import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
+import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -40,18 +28,18 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 
 /** @author Kaustubh Kelkar update on 22.04.2020 */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ViewTypeHierarchyTest {
 
   private JavaView view;
   private ViewTypeHierarchy typeHierarchy;
   private JavaClassPathAnalysisInputLocation analysisInputLocation;
 
-  @Before
+  @BeforeEach
   public void setup() {
 
     String jarFile = "../shared-test-resources/java-miniapps/MiniApp.jar";
-    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
+    assertTrue(new File(jarFile).exists(), "File " + jarFile + " not found.");
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator
@@ -90,7 +78,7 @@ public class ViewTypeHierarchyTest {
         immutableSet(factory.getClassType("ds.Employee"), factory.getClassType("ds.Department"));
     assertEquals(expectedSubclasses, subclasses);
     assertFalse(
-        "A class should not be a subclass of itself", subclasses.contains(abstractNamespace));
+        subclasses.contains(abstractNamespace), "A class should not be a subclass of itself");
     expectedSubclasses.forEach(
         expectedSubclass ->
             assertTrue(typeHierarchy.isSubtype(abstractNamespace, expectedSubclass)));
@@ -113,13 +101,13 @@ public class ViewTypeHierarchyTest {
     Set<ClassType> implementedInterfacesOfArrayList =
         typeHierarchy.implementedInterfacesOf(arrayList);
     assertTrue(
-        "ArrayList implements Collection", implementedInterfacesOfArrayList.contains(collection));
-    assertTrue("ArrayList implements Collection", typeHierarchy.isSubtype(collection, arrayList));
-    assertTrue("ArrayList implements List", implementedInterfacesOfArrayList.contains(list));
-    assertTrue("ArrayList implements List", typeHierarchy.isSubtype(list, arrayList));
+        implementedInterfacesOfArrayList.contains(collection), "ArrayList implements Collection");
+    assertTrue(typeHierarchy.isSubtype(collection, arrayList), "ArrayList implements Collection");
+    assertTrue(implementedInterfacesOfArrayList.contains(list), "ArrayList implements List");
+    assertTrue(typeHierarchy.isSubtype(list, arrayList), "ArrayList implements List");
     assertTrue(
-        "List is an implementer of Collection",
-        typeHierarchy.implementersOf(collection).contains(list));
+        typeHierarchy.implementersOf(collection).contains(list),
+        "List is an implementer of Collection");
   }
 
   @Test
@@ -129,12 +117,12 @@ public class ViewTypeHierarchyTest {
     ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
     assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
     assertNull(
-        "java.lang.Object should not have a superclass",
-        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")));
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")),
+        "java.lang.Object should not have a superclass");
     assertEquals(
-        "In Soot, interfaces should have java.lang.Object as the superclass",
         factory.getClassType("java.lang.Object"),
-        typeHierarchy.superClassOf(factory.getClassType("java.util.Collection")));
+        typeHierarchy.superClassOf(factory.getClassType("java.util.Collection")),
+        "In Soot, interfaces should have java.lang.Object as the superclass");
   }
 
   @Test
@@ -156,33 +144,33 @@ public class ViewTypeHierarchyTest {
   @Test
   public void primitiveTypeSubtyping() {
     assertFalse(
-        "Primitive types should not have subtype relations",
-        typeHierarchy.isSubtype(PrimitiveType.getInt(), PrimitiveType.getInt()));
+        typeHierarchy.isSubtype(PrimitiveType.getInt(), PrimitiveType.getInt()),
+        "Primitive types should not have subtype relations");
     assertFalse(
-        "Primitive types should not have subtype relations",
-        typeHierarchy.isSubtype(PrimitiveType.getDouble(), PrimitiveType.getInt()));
+        typeHierarchy.isSubtype(PrimitiveType.getDouble(), PrimitiveType.getInt()),
+        "Primitive types should not have subtype relations");
   }
 
   @Test
   public void nullTypeSubtyping() {
     IdentifierFactory factory = view.getIdentifierFactory();
     assertTrue(
-        "null should be valid value for all reference types",
-        typeHierarchy.isSubtype(factory.getClassType("java.lang.Object"), NullType.getInstance()));
+        typeHierarchy.isSubtype(factory.getClassType("java.lang.Object"), NullType.getInstance()),
+        "null should be valid value for all reference types");
     assertTrue(
-        "null should be valid value for all reference types",
-        typeHierarchy.isSubtype(factory.getClassType("java.lang.String"), NullType.getInstance()));
+        typeHierarchy.isSubtype(factory.getClassType("java.lang.String"), NullType.getInstance()),
+        "null should be valid value for all reference types");
     assertTrue(
-        "null should be valid value for all reference types",
         typeHierarchy.isSubtype(
             factory.getClassType("JavaClassPathNamespace", "de.upb.sootup.namespaces"),
-            NullType.getInstance()));
+            NullType.getInstance()),
+        "null should be valid value for all reference types");
     assertFalse(
-        "null should not be a valid value for primitive types",
-        typeHierarchy.isSubtype(PrimitiveType.getInt(), NullType.getInstance()));
+        typeHierarchy.isSubtype(PrimitiveType.getInt(), NullType.getInstance()),
+        "null should not be a valid value for primitive types");
     assertFalse(
-        "null should not be a valid value for primitive types",
-        typeHierarchy.isSubtype(PrimitiveType.getDouble(), NullType.getInstance()));
+        typeHierarchy.isSubtype(PrimitiveType.getDouble(), NullType.getInstance()),
+        "null should not be a valid value for primitive types");
   }
 
   @Test
@@ -208,10 +196,10 @@ public class ViewTypeHierarchyTest {
     typeHierarchy.addType(sootClass);
 
     assertTrue(
-        "Newly added type must be detected as a subtype",
         typeHierarchy
             .subclassesOf(factory.getClassType("ds.AbstractDataStrcture"))
-            .contains(sootClass.getType()));
+            .contains(sootClass.getType()),
+        "Newly added type must be detected as a subtype");
   }
 
   @Test
@@ -293,35 +281,35 @@ public class ViewTypeHierarchyTest {
     subtypes.forEach(
         subtypePair -> {
           assertTrue(
-              subtypePair.getRight() + " should be a subtype of " + subtypePair.getLeft(),
-              typeHierarchy.isSubtype(subtypePair.getLeft(), subtypePair.getRight()));
+              typeHierarchy.isSubtype(subtypePair.getLeft(), subtypePair.getRight()),
+              subtypePair.getRight() + " should be a subtype of " + subtypePair.getLeft());
           assertFalse(
-              subtypePair.getLeft() + " should not be a subtype of " + subtypePair.getRight(),
-              typeHierarchy.isSubtype(subtypePair.getRight(), subtypePair.getLeft()));
+              typeHierarchy.isSubtype(subtypePair.getRight(), subtypePair.getLeft()),
+              subtypePair.getLeft() + " should not be a subtype of " + subtypePair.getRight());
         });
 
     assertFalse(
-        doubleArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type,
-        typeHierarchy.isSubtype(objectArrayDim1Type, doubleArrayDim1Type));
+        typeHierarchy.isSubtype(objectArrayDim1Type, doubleArrayDim1Type),
+        doubleArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type);
     assertFalse(
-        stringArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type,
-        typeHierarchy.isSubtype(objectArrayDim2Type, stringArrayDim1Type));
+        typeHierarchy.isSubtype(objectArrayDim2Type, stringArrayDim1Type),
+        stringArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type);
 
     assertFalse(
-        objectArrayDim1Type + " should not be a subtype of " + serializableDim1Type,
-        typeHierarchy.isSubtype(serializableDim1Type, objectArrayDim1Type));
+        typeHierarchy.isSubtype(serializableDim1Type, objectArrayDim1Type),
+        objectArrayDim1Type + " should not be a subtype of " + serializableDim1Type);
     assertFalse(
-        objectArrayDim1Type + " should not be a subtype of " + cloneableDim1Type,
-        typeHierarchy.isSubtype(cloneableDim1Type, objectArrayDim1Type));
+        typeHierarchy.isSubtype(cloneableDim1Type, objectArrayDim1Type),
+        objectArrayDim1Type + " should not be a subtype of " + cloneableDim1Type);
     assertFalse(
-        objectArrayDim2Type + " should not be a subtype of " + serializableDim2Type,
-        typeHierarchy.isSubtype(serializableDim2Type, objectArrayDim2Type));
+        typeHierarchy.isSubtype(serializableDim2Type, objectArrayDim2Type),
+        objectArrayDim2Type + " should not be a subtype of " + serializableDim2Type);
     assertFalse(
-        arrayListDim2Type + " should not be a subtype of " + collectionArrayDim1Type,
-        typeHierarchy.isSubtype(collectionArrayDim1Type, arrayListDim2Type));
+        typeHierarchy.isSubtype(collectionArrayDim1Type, arrayListDim2Type),
+        arrayListDim2Type + " should not be a subtype of " + collectionArrayDim1Type);
 
     assertTrue(
-        "Collection[] should be a subtype of Object[]",
-        typeHierarchy.isSubtype(objectArrayDim1Type, collectionArrayDim1Type));
+        typeHierarchy.isSubtype(objectArrayDim1Type, collectionArrayDim1Type),
+        "Collection[] should be a subtype of Object[]");
   }
 }

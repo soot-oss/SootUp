@@ -1,18 +1,20 @@
 package sootup.java.bytecode;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import categories.TestCategories;
 import java.nio.file.Paths;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class Soot1577Test {
+  final String directory = "../shared-test-resources/soot-1577/";
 
   @Test
   public void test() {
@@ -24,7 +26,7 @@ public class Soot1577Test {
 
     JavaView view = new JavaView(inputLocation);
 
-    Assert.assertEquals(1, view.getClasses().size());
+    assertEquals(1, view.getClasses().size());
 
     view.getClasses().stream().findFirst().get().getMethods().forEach(SootMethod::getBody);
   }

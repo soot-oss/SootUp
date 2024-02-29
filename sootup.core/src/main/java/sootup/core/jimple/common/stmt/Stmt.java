@@ -20,7 +20,8 @@ package sootup.core.jimple.common.stmt;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.EquivTo;
 import sootup.core.jimple.basic.LValue;
@@ -35,13 +36,13 @@ import sootup.core.util.printer.StmtPrinter;
 
 public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   @Nonnull
-  List<Value> getUses();
+  Stream<Value> getUses();
 
   @Nonnull
-  List<LValue> getDefs();
+  Optional<LValue> getDef();
 
   @Nonnull
-  List<Value> getUsesAndDefs();
+  Stream<Value> getUsesAndDefs();
 
   /**
    * Returns true if execution after this statement may continue at the following statement. (e.g.

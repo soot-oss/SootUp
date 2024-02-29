@@ -314,6 +314,10 @@ public abstract class PrimitiveType extends Type {
       super("boolean");
     }
 
+    protected BooleanType(@Nonnull String name) {
+      super(name);
+    }
+
     public static BooleanType getInstance() {
       return INSTANCE;
     }
