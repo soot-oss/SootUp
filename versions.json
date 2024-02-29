@@ -24,14 +24,6 @@
     }
   },
   {
-    "version": "doc_Interceptors_preview",
-    "title": "PR Preview doc_Interceptors",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
