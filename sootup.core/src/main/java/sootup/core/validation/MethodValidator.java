@@ -54,8 +54,8 @@ public class MethodValidator implements BodyValidator {
     }
 
     SootMethod method = optionalSootMethod.get();
-    if (method.isAbstract()) { // but an abstract method does not have body
-      return exceptions;
+    if (method.isAbstract()) {
+      throw new IllegalStateException("An abstract Method does not have Body.");
     }
 
     if (staticInitializerName.equals(method.getName()) && !method.isStatic()) {
