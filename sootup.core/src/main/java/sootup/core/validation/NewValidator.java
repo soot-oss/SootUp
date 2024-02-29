@@ -181,9 +181,4 @@ public class NewValidator implements BodyValidator {
     }
     return true;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return false;
-  }
 }

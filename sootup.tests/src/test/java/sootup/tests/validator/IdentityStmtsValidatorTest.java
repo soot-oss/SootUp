@@ -1,7 +1,6 @@
 package sootup.tests.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
@@ -67,7 +66,8 @@ public class IdentityStmtsValidatorTest {
   @Test
   public void testThisRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityStmtsValidator.validate(getBody("<IdentityStmtsValidator: void <init>()>"), jimpleView);
+        identityStmtsValidator.validate(
+            getBody("<IdentityStmtsValidator: void <init>()>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }

@@ -120,9 +120,4 @@ public class IdentityStmtsValidator implements BodyValidator {
     }
     return exceptions;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

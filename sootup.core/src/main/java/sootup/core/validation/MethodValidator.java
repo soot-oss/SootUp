@@ -70,9 +70,4 @@ public class MethodValidator implements BodyValidator {
 
     return exceptions;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }
