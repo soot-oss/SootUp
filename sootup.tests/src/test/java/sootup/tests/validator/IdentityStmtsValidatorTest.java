@@ -16,21 +16,21 @@ import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
-import sootup.core.validation.IdentityValidator;
+import sootup.core.validation.IdentityStmtsValidator;
 import sootup.core.validation.ValidationException;
 import sootup.jimple.parser.JimpleAnalysisInputLocation;
 import sootup.jimple.parser.JimpleView;
 
 @Tag("Java8")
-public class IdentityValidatorTest {
+public class IdentityStmtsValidatorTest {
 
-  IdentityValidator identityValidator;
+  IdentityStmtsValidator identityStmtsValidator;
   JimpleView jimpleView;
 
   @BeforeEach
   public void Setup() {
 
-    identityValidator = new IdentityValidator();
+    identityStmtsValidator = new IdentityStmtsValidator();
 
     ClassType classTypeFieldRefValidator =
         new ClassType() {
@@ -67,7 +67,7 @@ public class IdentityValidatorTest {
   @Test
   public void testThisRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(getBody("<IdentityValidator: void <init>()>"), jimpleView);
+        identityStmtsValidator.validate(getBody("<IdentityValidator: void <init>()>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -75,7 +75,7 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
+        identityStmtsValidator.validate(
             getBody("<IdentityValidator: void testParameterRefSuccess(int)>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
@@ -84,7 +84,7 @@ public class IdentityValidatorTest {
   @Test
   public void testNoThisrRef() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
+        identityStmtsValidator.validate(
             getBody("<IdentityValidator: void testNoThisrRef(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
@@ -93,7 +93,7 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefMultiLocals() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
+        identityStmtsValidator.validate(
             getBody("<IdentityValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
@@ -102,7 +102,7 @@ public class IdentityValidatorTest {
   @Test
   public void testParameterRefNoLocal() {
     List<ValidationException> validationExceptions_success =
-        identityValidator.validate(
+        identityStmtsValidator.validate(
             getBody("<IdentityValidator: void testParameterRefNoLocal(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
