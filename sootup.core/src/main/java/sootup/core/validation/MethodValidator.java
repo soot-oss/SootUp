@@ -22,50 +22,61 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.views.View;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
 public class MethodValidator implements BodyValidator {
 
-    /**
-     * Checks the following invariants on this Jimple body:
-     *
-     * <ol>
-     *   <li>static initializer should have 'static' modifier
-     * </ol>
-     *
-     * @return
-     */
+  public static final String staticInitializerName = "<clinit>";
 
-    public static final String staticInitializerName = "<clinit>";
-    @Override
-    public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
-        List<ValidationException> exceptions = new ArrayList<>();
+  /**
+   * Checks the following invariants on this Jimple body:
+   *
+   * <ol>
+   *   <li>static initializer should have 'static' modifier
+   * </ol>
+   *
+   * @return
+   */
+  @Override
+  public List<ValidationException> validate(@Nonnull Body body, @Nonnull View view) {
+    List<ValidationException> exceptions = new ArrayList<>();
 
-        MethodSignature methodSignature = body.getMethodSignature();
-        SootMethod methodRef = view.getMethod(methodSignature).get();
-        if (methodRef.isAbstract()) {  // but an abstract method does not have body
-            return exceptions;
-        }
-        if (staticInitializerName.equals(methodRef.getName())
-                && !methodRef.isStatic()) {
-            exceptions.add(new ValidationException(methodRef, staticInitializerName +
-                    " should be static! Static initializer without 'static'('0x8') modifier" +
-                    " will cause problem when running on android platform: " + "\"<clinit> is not flagged correctly wrt/ static\"!"));
-        }
-
-        return exceptions;
-
+    MethodSignature methodSignature = body.getMethodSignature();
+    Optional<? extends SootMethod> optionalSootMethod = view.getMethod(methodSignature);
+    if (!optionalSootMethod.isPresent()) {
+      exceptions.add(
+          new ValidationException(
+              body.getMethodSignature(),
+              "There is no corresponding SootMethod in the given view for the provided method signature."));
+      return exceptions;
     }
 
-    @Override
-    public boolean isBasicValidator() {
-        return true;
+    SootMethod methodRef = optionalSootMethod.get();
+    if (methodRef.isAbstract()) { // but an abstract method does not have body
+      return exceptions;
     }
+    if (staticInitializerName.equals(methodRef.getName()) && !methodRef.isStatic()) {
+      exceptions.add(
+          new ValidationException(
+              methodRef,
+              staticInitializerName
+                  + " should be static! Static initializer without 'static'('0x8') modifier"
+                  + " will cause problem when running on android platform: "
+                  + "\"<clinit> is not flagged correctly wrt/ static\"!"));
+    }
+
+    return exceptions;
+  }
+
+  @Override
+  public boolean isBasicValidator() {
+    return true;
+  }
 }
