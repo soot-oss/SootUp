@@ -100,7 +100,7 @@ public class IdentityStmtsValidator implements BodyValidator {
       }
     }
 
-    if (method.isStatic() != hasThisLocal) {
+    if (method.isStatic() == hasThisLocal) {
       exceptions.add(
           new ValidationException(
               body,

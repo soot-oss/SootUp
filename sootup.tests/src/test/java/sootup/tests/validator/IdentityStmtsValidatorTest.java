@@ -41,17 +41,17 @@ public class IdentityStmtsValidatorTest {
 
           @Override
           public String getFullyQualifiedName() {
-            return "jimple.IdentityValidator";
+            return "IdentityStmtsValidator";
           }
 
           @Override
           public String getClassName() {
-            return "IdentityValidator";
+            return "IdentityStmtsValidator";
           }
 
           @Override
           public PackageName getPackageName() {
-            return new PackageName("jimple");
+            return new PackageName("");
           }
         };
 
@@ -60,14 +60,14 @@ public class IdentityStmtsValidatorTest {
         new JimpleAnalysisInputLocation(Paths.get(classPath), SourceType.Application);
 
     jimpleView = new JimpleView(jimpleInputLocation);
-    final Optional<SootClass> classSource1 = jimpleView.getClass(classTypeFieldRefValidator);
-    assertFalse(classSource1.isPresent());
+    final Optional<SootClass> scOpt = jimpleView.getClass(classTypeFieldRefValidator);
+    assertTrue(scOpt.isPresent());
   }
 
   @Test
   public void testThisRefSuccess() {
     List<ValidationException> validationExceptions_success =
-        identityStmtsValidator.validate(getBody("<IdentityValidator: void <init>()>"), jimpleView);
+        identityStmtsValidator.validate(getBody("<IdentityStmtsValidator: void <init>()>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -76,7 +76,7 @@ public class IdentityStmtsValidatorTest {
   public void testParameterRefSuccess() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefSuccess(int)>"), jimpleView);
+            getBody("<IdentityStmtsValidator: void testParameterRefSuccess(int)>"), jimpleView);
 
     assertEquals(0, validationExceptions_success.size());
   }
@@ -85,7 +85,7 @@ public class IdentityStmtsValidatorTest {
   public void testNoThisrRef() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
-            getBody("<IdentityValidator: void testNoThisrRef(int)>"), jimpleView);
+            getBody("<IdentityStmtsValidator: void testNoThisrRef(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -94,7 +94,7 @@ public class IdentityStmtsValidatorTest {
   public void testParameterRefMultiLocals() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
+            getBody("<IdentityStmtsValidator: void testParameterRefMultiLocals(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -103,7 +103,7 @@ public class IdentityStmtsValidatorTest {
   public void testParameterRefNoLocal() {
     List<ValidationException> validationExceptions_success =
         identityStmtsValidator.validate(
-            getBody("<IdentityValidator: void testParameterRefNoLocal(int)>"), jimpleView);
+            getBody("<IdentityStmtsValidator: void testParameterRefNoLocal(int)>"), jimpleView);
 
     assertEquals(1, validationExceptions_success.size());
   }
@@ -118,7 +118,7 @@ public class IdentityStmtsValidatorTest {
                  LocalsValidator l0;
                  unknown l1;
 
-                 l0 := @this: IdentityValidator;
+                 l0 := @this: IdentityStmtsValidator;
                  l1 = @parameter0: int;
 
                  return;
