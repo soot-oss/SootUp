@@ -24,8 +24,11 @@ package sootup.core.validation;
 
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 
 public class ValidationException extends RuntimeException {
 
@@ -55,6 +58,21 @@ public class ValidationException extends RuntimeException {
   }
 
   public ValidationException(SootMethod method, String s, String s1) {
+    // TODO: auto generated stub
+
+  }
+
+  public ValidationException(Stmt stmt, String s) {
+    // TODO: auto generated stub
+
+  }
+
+  public ValidationException(Body body, String s) {
+    // TODO: auto generated stub
+
+  }
+
+  public ValidationException(MethodSignature methodSignature, String s) {
     // TODO: auto generated stub
 
   }
