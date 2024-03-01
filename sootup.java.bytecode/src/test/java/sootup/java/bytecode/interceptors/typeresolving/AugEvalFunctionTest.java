@@ -403,7 +403,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     StmtGraph<?> graph3 = builder3.getStmtGraph();
 
     for (Stmt s : graph3.getStmts()) {
-      if (s.toString().equals("l1 = l0.<ByteCodeTypeTest: A field>")) {
+      if (s.toString().equals("l1 = this.<ByteCodeTypeTest: A field>")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
           if (use instanceof JFieldRef) {
@@ -414,7 +414,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
             assertEquals(expected, actual);
           }
         }
-      } else if (s.toString().equals("l0 := @this: ByteCodeTypeTest")) {
+      } else if (s.toString().equals("this := @this: ByteCodeTypeTest")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
           if (use instanceof JThisRef) {

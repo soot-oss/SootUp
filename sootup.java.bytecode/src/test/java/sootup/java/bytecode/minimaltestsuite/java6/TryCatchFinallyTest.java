@@ -93,7 +93,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatch() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"try\"",
@@ -134,7 +134,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchFinally() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"try\"",
@@ -189,7 +189,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchCombined() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"try\"",
@@ -231,7 +231,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchFinallyCombined() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"try\"",
@@ -294,7 +294,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchNested() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"1try\"",
@@ -357,7 +357,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchFinallyNested() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"1try\"",
@@ -434,7 +434,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchNestedInCatch() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label1:",
             "l1 = \"1try\"",
@@ -495,7 +495,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchFinallyNestedInCatch() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label01:",
             "l1 = \"1try\"",
@@ -575,7 +575,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsTryCatchFinallyNestedInFinally() {
     return Stream.of(
-            "l0 := @this: TryCatchFinally",
+            "this := @this: TryCatchFinally",
             "l1 = \"\"",
             "label01:",
             "l1 = \"1try\"",

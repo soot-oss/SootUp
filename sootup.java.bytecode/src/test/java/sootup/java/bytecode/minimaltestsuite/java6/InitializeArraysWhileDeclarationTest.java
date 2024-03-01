@@ -61,7 +61,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (int)[3]",
             "$stack2[0] = 1",
             "$stack2[1] = 2",
@@ -83,7 +83,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (byte)[3]",
             "$stack2[0] = 4",
             "$stack2[1] = 5",
@@ -105,7 +105,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (short)[3]",
             "$stack2[0] = 10",
             "$stack2[1] = 20",
@@ -127,7 +127,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (long)[3]",
             "$stack2[0] = 547087L",
             "$stack2[1] = 564645L",
@@ -149,7 +149,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (float)[4]",
             "$stack2[0] = 3.14F",
             "$stack2[1] = 5.46F",
@@ -173,7 +173,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (double)[2]",
             "$stack2[0] = 6.765414",
             "$stack2[1] = 9.676565646",
@@ -194,7 +194,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (boolean)[2]",
             "$stack2[0] = 1",
             "$stack2[1] = 0",
@@ -210,7 +210,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (char)[3]",
             "$stack2[0] = 65",
             "$stack2[1] = 98",
@@ -231,7 +231,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
-            "l0 := @this: InitializeArraysWhileDeclaration",
+            "this := @this: InitializeArraysWhileDeclaration",
             "$stack2 = newarray (java.lang.String)[2]",
             "$stack2[0] = \"Hello World\"",
             "$stack2[1] = \"Greetings\"",

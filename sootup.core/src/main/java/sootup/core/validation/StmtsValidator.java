@@ -37,9 +37,4 @@ public class StmtsValidator implements BodyValidator {
   public List<ValidationException> validate(Body body, View view) {
     return null;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

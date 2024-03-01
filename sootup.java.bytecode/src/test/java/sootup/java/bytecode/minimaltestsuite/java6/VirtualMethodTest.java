@@ -45,7 +45,7 @@ public class VirtualMethodTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: VirtualMethod",
+            "this := @this: VirtualMethod",
             "$stack3 = new TempEmployee",
             "specialinvoke $stack3.<TempEmployee: void <init>(int,int)>(1500, 150)",
             "l1 = $stack3",

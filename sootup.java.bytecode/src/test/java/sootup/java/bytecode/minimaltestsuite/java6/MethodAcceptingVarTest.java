@@ -58,7 +58,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsShort() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar",
+            "this := @this: MethodAcceptingVar",
             "l1 := @parameter0: short",
             "$stack2 = l1 + 1",
             "l1 = (short) $stack2",
@@ -77,7 +77,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsByte() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar",
+            "this := @this: MethodAcceptingVar",
             "l1 := @parameter0: byte",
             "$stack2 = l1 + 1",
             "l1 = (byte) $stack2",
@@ -96,7 +96,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsChar() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar", "l1 := @parameter0: char", "l1 = 97", "return")
+            "this := @this: MethodAcceptingVar", "l1 := @parameter0: char", "l1 = 97", "return")
         .collect(Collectors.toList());
   }
 
@@ -111,7 +111,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsInt() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar", "l1 := @parameter0: int", "l1 = l1 + 1", "return")
+            "this := @this: MethodAcceptingVar", "l1 := @parameter0: int", "l1 = l1 + 1", "return")
         .collect(Collectors.toList());
   }
 
@@ -126,7 +126,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsLong() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar",
+            "this := @this: MethodAcceptingVar",
             "l1 := @parameter0: long",
             "l1 = 123456777L",
             "return")
@@ -144,7 +144,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsFloat() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar", "l1 := @parameter0: float", "l1 = 7.77F", "return")
+            "this := @this: MethodAcceptingVar", "l1 := @parameter0: float", "l1 = 7.77F", "return")
         .collect(Collectors.toList());
   }
 
@@ -159,7 +159,7 @@ public class MethodAcceptingVarTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsDouble() {
     return Stream.of(
-            "l0 := @this: MethodAcceptingVar",
+            "this := @this: MethodAcceptingVar",
             "l1 := @parameter0: double",
             "l1 = 1.787777777",
             "return")

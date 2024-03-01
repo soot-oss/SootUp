@@ -60,9 +60,4 @@ public class TrapsValidator implements BodyValidator {
 
     return exceptions;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

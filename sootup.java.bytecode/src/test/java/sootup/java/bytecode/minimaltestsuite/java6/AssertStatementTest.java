@@ -42,7 +42,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -66,7 +66,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"\" != null goto label1",
@@ -93,7 +93,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsExtend2() {
     return Stream.of(
-            "l0 := @this: AssertStatement",
+            "this := @this: AssertStatement",
             "$stack2 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack2 != 0 goto label1",
             "if \"first\" != null goto label1",

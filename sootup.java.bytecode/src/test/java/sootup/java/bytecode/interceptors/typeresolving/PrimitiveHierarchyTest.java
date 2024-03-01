@@ -62,7 +62,7 @@ public class PrimitiveHierarchyTest {
     assertFalse(PrimitiveHierarchy.isAncestor(c, s));
 
     assertTrue(PrimitiveHierarchy.isAncestor(s, i127));
-    assertFalse(PrimitiveHierarchy.isAncestor(s, by));
+    assertTrue(PrimitiveHierarchy.isAncestor(s, by));
     assertFalse(PrimitiveHierarchy.isAncestor(s, boo));
 
     assertTrue(PrimitiveHierarchy.isAncestor(i, c));
@@ -90,17 +90,17 @@ public class PrimitiveHierarchyTest {
     actual = PrimitiveHierarchy.getLeastCommonAncestor(c, s);
     assertEquals(expect, actual);
 
-    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, s);
-    assertEquals(expect, actual);
-
-    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, i32767);
-    assertEquals(expect, actual);
-
     actual = PrimitiveHierarchy.getLeastCommonAncestor(i1, i);
     assertEquals(expect, actual);
 
     expect = ImmutableUtils.immutableSet(s);
     actual = PrimitiveHierarchy.getLeastCommonAncestor(s, i32767);
+    assertEquals(expect, actual);
+
+    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, s);
+    assertEquals(expect, actual);
+
+    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, i32767);
     assertEquals(expect, actual);
   }
 }

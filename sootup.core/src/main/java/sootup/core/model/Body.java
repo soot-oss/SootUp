@@ -183,7 +183,7 @@ public class Body implements HasPosition {
         JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), (Local) idStmt.getLeftOp());
+          retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
       /*  if we restrict/define that IdentityStmts MUST be at the beginnging.

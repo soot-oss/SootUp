@@ -45,7 +45,7 @@ public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return super.expectedBodyStmts(
-        "l0 := @this: DeclareEnum",
+        "this := @this: DeclareEnum",
         "l1 = staticinvoke <DeclareEnum$Type: DeclareEnum$Type[] values()>()",
         "l2 = lengthof l1",
         "l3 = 0",
