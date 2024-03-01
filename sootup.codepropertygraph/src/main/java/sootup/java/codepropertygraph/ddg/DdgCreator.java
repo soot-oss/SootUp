@@ -28,7 +28,10 @@ public class DdgCreator {
           value -> {
             StmtPropertyGraphNode source =
                 new StmtPropertyGraphNode(
-                    StmtUtils.getStmtSource(value, body), NodeType.STMT, value.getPositionInfo(), value);
+                    StmtUtils.getStmtSource(value, body),
+                    NodeType.STMT,
+                    value.getPositionInfo(),
+                    value);
             ddgGraph.addEdge(source, destination, "DDG");
           });
     }

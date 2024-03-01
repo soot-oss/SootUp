@@ -22,6 +22,23 @@ public class CpgTestSuiteBase {
   private JavaView minimalTsView;
   private JimpleView testResourcesView;
 
+  private static void writeToFile(String dotGraph, String methodName, String graphType) {
+    File file = new File(String.format("temp/%s_%s.dot", graphType, methodName));
+    System.out.println(file.toPath());
+
+    // Create the output folder if it doesn't exist
+    File folder = file.getParentFile();
+    if (folder != null && !folder.exists()) {
+      folder.mkdirs();
+    }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      writer.write(dotGraph);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @org.junit.Before
   public void setUp() {
     String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
@@ -59,22 +76,5 @@ public class CpgTestSuiteBase {
     System.out.println(dotGraph);
 
     writeToFile(dotGraph, methodName, graphType);
-  }
-
-  private static void writeToFile(String dotGraph, String methodName, String graphType) {
-    File file = new File(String.format("temp/%s_%s.dot", graphType, methodName));
-    System.out.println(file.toPath());
-
-    // Create the output folder if it doesn't exist
-    File folder = file.getParentFile();
-    if (folder != null && !folder.exists()) {
-      folder.mkdirs();
-    }
-
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.write(dotGraph);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 }

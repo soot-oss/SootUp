@@ -31,13 +31,15 @@ public class CdgCreator {
             new StmtPropertyGraphNode(
                 StmtUtils.getStmtSource(frontierBlock.getTail(), methodInfo.getBody()),
                 NodeType.STMT,
-                frontierBlock.getTail().getPositionInfo(), frontierBlock.getTail());
+                frontierBlock.getTail().getPositionInfo(),
+                frontierBlock.getTail());
         for (Stmt srcStmt : currBlock.getStmts()) {
           StmtPropertyGraphNode destination =
               new StmtPropertyGraphNode(
                   StmtUtils.getStmtSource(srcStmt, methodInfo.getBody()),
                   NodeType.STMT,
-                  srcStmt.getPositionInfo(), srcStmt);
+                  srcStmt.getPositionInfo(),
+                  srcStmt);
           cdgGraph.addEdge(source, destination, "CDG");
         }
       }
