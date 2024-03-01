@@ -137,9 +137,4 @@ public class InvokeArgumentValidator implements BodyValidator {
     }
     return validationException;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

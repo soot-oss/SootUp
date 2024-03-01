@@ -25,42 +25,46 @@ package sootup.core.validation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 
 public class ValidationException extends RuntimeException {
 
   public ValidationException(SootMethod sm, String void_parameter_types_are_invalid) {
-    // TODO: auto generated stub
-
+    super(void_parameter_types_are_invalid);
   }
 
   public ValidationException(SootClass curClass, String circular_outer_class_chain) {
-    // TODO: auto generated stub
-
+    super(circular_outer_class_chain);
   }
 
   public ValidationException(Local ls, String s) {
-    // TODO: auto generated stub
-
+    super(s);
   }
 
   public ValidationException(Value value, String s) {
-    // TODO: auto generated stub
-
+    super(s);
   }
 
   public ValidationException(Local l, String s, String s1) {
-    // TODO: auto generated stub
-
+    super(l + s + s1);
   }
 
   public ValidationException(SootMethod method, String s, String s1) {
-    // TODO: auto generated stub
-
+    super(method + s + s1);
   }
 
   public ValidationException(Stmt stmt, String s) {
-    // TODO: auto generated stub
+    super(stmt + s);
+  }
+
+  public ValidationException(Body body, String s) {
+    super(body + s);
+  }
+
+  public ValidationException(MethodSignature methodSignature, String s) {
+    super(methodSignature + s);
   }
 }

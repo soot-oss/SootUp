@@ -70,9 +70,4 @@ public class LocalsValidator implements BodyValidator {
 
     return exception;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

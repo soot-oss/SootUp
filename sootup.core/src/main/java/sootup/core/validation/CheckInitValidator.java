@@ -73,9 +73,4 @@ public class CheckInitValidator implements BodyValidator {
     }
     return validationException;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return false;
-  }
 }

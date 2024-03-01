@@ -1,0 +1,31 @@
+public abstract class MethodValidator extends java.lang.Object
+{
+
+    public void <clinit>()
+    {
+        unknown $stack0;
+
+
+        <StaticInitializer: int i> = 5;
+        $stack0 = <StaticInitializer: int i>;
+
+        if $stack0 <= 4 goto label1;
+        <StaticInitializer: int i> = 4;
+
+      label1:
+        return;
+    }
+
+    public void <init>()
+    {
+        StaticInitializer l0;
+
+
+        l0 := @this: StaticInitializer;
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public abstract void abstractMethod();
+}
