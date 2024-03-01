@@ -130,7 +130,7 @@ public abstract class AbstractStmt implements Stmt {
    *
    * @param oldUse a Value in the useList of oldStmt.
    * @param newUse a Value is to replace oldUse
-    * @return a new Stmt with newUse or the current Stmt if oldUse was not found/could not be
+   * @return a new Stmt with newUse or the current Stmt if oldUse was not found/could not be
    *     replaced in the Stmt
    */
   @Override
