@@ -42,7 +42,7 @@ public class CastAndReturnInlinerTest {
    *
    * <pre>
    * a_ret = (String) "str";
-   * return a_ret;
+   * return a_ret0;
    * </pre>
    */
   @Test
@@ -83,7 +83,7 @@ public class CastAndReturnInlinerTest {
 
     List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
-    JavaLocal aRet = JavaJimple.newLocal("a_ret", stringType);
+    JavaLocal aRet = JavaJimple.newLocal("a_ret0", stringType);
     expected.add(
         JavaJimple.newAssignStmt(
             aRet, JavaJimple.newCastExpr(a, stringType), StmtPositionInfo.getNoStmtPositionInfo()));
@@ -91,7 +91,7 @@ public class CastAndReturnInlinerTest {
     assertStmtsEquiv(expected, processedBody.getStmts());
     assertEquals(2, processedBody.getLocals().size());
     assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
-    assertTrue(processedBody.getLocals().contains(new Local("a_ret", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(new Local("a_ret0", UnknownType.getInstance())));
   }
 
   /**

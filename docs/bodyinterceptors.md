@@ -1,18 +1,36 @@
 # Body Interceptors
+BodyInterceptors are applied to each `Body` *now by default, if not overridden in the used AnalysisInputLocations*.
+The BodyInterceptors exist to to improve and normalize the raw Jimple that was generated in an earlier step.
+The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits of raw Jimple are:
+
+- Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. 
+- The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.
+- As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.
+- The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.
+- t.b.c.
+
+Method scoped optimisations:
+- ConditionalBranchFolder: removes tautologic ifs that are always true/false - if we can determine it in the scope of the method.
+- EmptySwitchEliminator: removes switches that are not really switching
+- ConstantPropagatorAndFolder: calculates constant values before runtime
+- CastAndReturnInliner: Removes merging flows to a single return
+- UnreachableCodeEliminator: speaks for itself.
+- TrapTightener
+
+Make Local names standardized:
+- LocalNameStandardizer: numbers Locals with the scheme: type-initial + number of type occurence 
 
 !!! info "Soot Equivalent"
 
     [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
 
-BodyInterceptors are applied to each `Body` *by default* to improve or even normalize the raw Jimple that was produced in an earlier step e.g. 
-by eliminating unreachable code (`UnreachableCodeEliminator`), standardizing names of locals (`LocalNameStandardizer`), or removing empty switch statements (`EmptySwitchEliminator`) etc. 
-
 Below, we show how these BodyInterceptors work for the users who are interested in their internal workings.
 
 ### LocalSplitter
 
 LocalSplitter is a<code>BodyInterceptor</code>that attempts to identify and separate uses of a local variable (as definition) that are independent of each other by renaming local variables.
+
 
 Example 1: 
 

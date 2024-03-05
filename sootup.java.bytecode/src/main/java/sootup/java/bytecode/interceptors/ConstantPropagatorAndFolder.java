@@ -89,8 +89,6 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
           if (!(value instanceof Local)) {
             continue;
           }
-          // TODO: [ms] there is room for more performance - don't filter a list as we could sort
-          // Stmts by associated Value etc.
           List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
           if (defsOfUse.size() != 1) {
             continue;

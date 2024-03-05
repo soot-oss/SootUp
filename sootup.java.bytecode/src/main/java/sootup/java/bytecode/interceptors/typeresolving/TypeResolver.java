@@ -26,6 +26,8 @@ import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sootup.core.IdentifierFactory;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Immediate;
@@ -53,6 +55,8 @@ public class TypeResolver {
   private final JavaView view;
 
   private final Type objectType;
+
+  private static final Logger logger = LoggerFactory.getLogger(TypeResolver.class);
 
   public TypeResolver(@Nonnull JavaView view) {
     this.view = view;
@@ -211,6 +215,11 @@ public class TypeResolver {
       }
 
       Type oldType = actualTyping.getType(local);
+      if (oldType == null) {
+        // Body.getLocals() contains Locals that are not in Stmts (anymore?)
+        logger.info("Body.locals do not match the Locals occurring in the Stmts.");
+        continue;
+      }
       Collection<Type> leastCommonAncestors;
       if (lhs instanceof JArrayRef) {
         // `local[index] = rhs` -> `local` should have the type `[rhs][]`

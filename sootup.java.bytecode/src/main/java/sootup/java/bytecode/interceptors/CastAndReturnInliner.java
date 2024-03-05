@@ -21,6 +21,7 @@ package sootup.java.bytecode.interceptors;
  * #L%
  */
 import com.google.common.collect.Lists;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
@@ -67,6 +68,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
 
     MutableStmtGraph graph = builder.getStmtGraph();
+    Set<Local> locals = builder.getLocals();
 
     for (Stmt stmt : Lists.newArrayList(graph.getNodes())) {
       if (!(stmt instanceof JGotoStmt)) {
@@ -97,14 +99,21 @@ public class CastAndReturnInliner implements BodyInterceptor {
 
       // We need to replace the JGoto with the assignment/cast + return
       JCastExpr ce = (JCastExpr) assign.getRightOp();
-      Local variable = Jimple.newLocal(ce.getOp() + "_ret", ce.getType());
-      JAssignStmt newAssignStmt = Jimple.newAssignStmt(variable, ce, assign.getPositionInfo());
-      JReturnStmt newReturnStmt = retStmt.withReturnValue(variable);
+      Local localCandidate;
+      int i = 0;
+      do {
+        localCandidate = Jimple.newLocal(ce.getOp() + "_ret" + i++, ce.getType());
+        // handle possible Local name collisions - so the LocalSplitter does not handle this then.
+      } while (locals.contains(localCandidate));
+
+      JAssignStmt newAssignStmt =
+          Jimple.newAssignStmt(localCandidate, ce, assign.getPositionInfo());
+      JReturnStmt newReturnStmt = retStmt.withReturnValue(localCandidate);
 
       // Redirect all flows coming into the JGoto to the new cast + return
       graph.replaceNode(gotoStmt, newReturnStmt);
       graph.insertBefore(newReturnStmt, newAssignStmt);
-      builder.addLocal(variable);
+      builder.addLocal(localCandidate);
 
       boolean removeExistingCastReturn = graph.predecessors(assign).isEmpty();
       if (removeExistingCastReturn) {
