@@ -1,4 +1,4 @@
-package sootup.java.core.interceptors.typeresolving;
+package sootup.java.bytecode.interceptors.typeresolving;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -27,8 +27,9 @@ import javax.annotation.Nonnull;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class PrimitiveHierarchy {
@@ -53,28 +54,30 @@ public class PrimitiveHierarchy {
         return Collections.singleton(b);
       }
       if (a.getClass() == PrimitiveType.ByteType.class) {
-        if (b.getClass() == PrimitiveType.ShortType.class
-            || b.getClass() == PrimitiveType.CharType.class
-            || b.getClass() == AugmentIntegerTypes.Integer32767Type.class) {
+        if (b.getClass() == AugmentIntegerTypes.Integer32767Type.class) {
+          return Collections.singleton(PrimitiveType.getShort());
+        }
+        if (b.getClass() == PrimitiveType.CharType.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
       if (a.getClass() == PrimitiveType.ShortType.class) {
-        if (b.getClass() == PrimitiveType.ByteType.class
-            || b.getClass() == PrimitiveType.CharType.class) {
+        if (b.getClass() == PrimitiveType.CharType.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
       if (a.getClass() == PrimitiveType.CharType.class) {
         if (b.getClass() == PrimitiveType.ByteType.class
             || b.getClass() == PrimitiveType.ShortType.class) {
           return Collections.singleton(PrimitiveType.getInt());
         }
-        return Collections.emptySet();
       }
-      return Collections.emptySet();
+      if (a.getClass() == AugmentIntegerTypes.Integer32767Type.class) {
+        if (b.getClass() == PrimitiveType.ByteType.class) {
+          return Collections.singleton(PrimitiveType.getShort());
+        }
+      }
+      return Collections.singleton(TopType.getInstance());
     }
     return Collections.emptySet();
   }
@@ -105,8 +108,14 @@ public class PrimitiveHierarchy {
             || child.getClass() == AugmentIntegerTypes.Integer1Type.class
             || child.getClass() == BottomType.class;
       }
-      if (ancestor.getClass() == PrimitiveType.CharType.class
-          || ancestor.getClass() == PrimitiveType.ShortType.class) {
+      if (ancestor.getClass() == PrimitiveType.ShortType.class) {
+        return child.getClass() == PrimitiveType.ByteType.class
+            || child.getClass() == AugmentIntegerTypes.Integer32767Type.class
+            || child.getClass() == AugmentIntegerTypes.Integer127Type.class
+            || child.getClass() == AugmentIntegerTypes.Integer1Type.class
+            || child.getClass() == BottomType.class;
+      }
+      if (ancestor.getClass() == PrimitiveType.CharType.class) {
         return child.getClass() == AugmentIntegerTypes.Integer32767Type.class
             || child.getClass() == AugmentIntegerTypes.Integer127Type.class
             || child.getClass() == AugmentIntegerTypes.Integer1Type.class

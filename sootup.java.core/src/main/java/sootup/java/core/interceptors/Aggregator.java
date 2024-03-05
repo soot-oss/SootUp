@@ -21,14 +21,10 @@ package sootup.java.core.interceptors;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -86,7 +82,8 @@ public class Aggregator implements BodyInterceptor {
       if (dontAggregateFieldLocals && !lhsLocal.getName().startsWith("$")) {
         continue;
       }
-      for (Value val : assignStmt.getUses()) {
+      for (Iterator<Value> iterator = assignStmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value val = iterator.next();
         if (!(val instanceof Local)) {
           continue;
         }
@@ -115,7 +112,8 @@ public class Aggregator implements BodyInterceptor {
 
         Set<Value> localsUsed = new HashSet<>();
         for (Stmt pathStmt : path) {
-          for (Value use : pathStmt.getUses()) {
+          for (Iterator<Value> iter = pathStmt.getUses().iterator(); iter.hasNext(); ) {
+            Value use = iter.next();
             if (use instanceof Local) {
               localsUsed.add(use);
             } else if (use instanceof AbstractInstanceInvokeExpr) {
@@ -131,7 +129,9 @@ public class Aggregator implements BodyInterceptor {
 
         for (Stmt pathStmt : path) {
           if (pathStmt != stmt && pathStmt != relevantDef) {
-            for (Value stmtDef : pathStmt.getDefs()) {
+            Optional<LValue> stmtDefOpt = pathStmt.getDef();
+            if (stmtDefOpt.isPresent()) {
+              LValue stmtDef = stmtDefOpt.get();
               if (localsUsed.contains(stmtDef)) {
                 cantAggr = true;
                 break;
@@ -164,7 +164,8 @@ public class Aggregator implements BodyInterceptor {
           }
           // Check for intervening side effects due to method calls
           if (propagatingInvokeExpr || propagatingFieldRef || propagatingArrayRef) {
-            for (final Value value : stmt.getUses()) {
+            for (Iterator<Value> iter = stmt.getUses().iterator(); iter.hasNext(); ) {
+              Value value = iter.next();
               if (pathStmt == stmt && value == lhs) {
                 break;
               }

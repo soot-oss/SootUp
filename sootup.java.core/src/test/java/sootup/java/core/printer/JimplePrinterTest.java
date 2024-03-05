@@ -1,13 +1,12 @@
 package sootup.java.core.printer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.graph.MutableStmtGraph;
@@ -29,7 +28,7 @@ import sootup.java.core.views.JavaView;
  * @author Markus Schmidt
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JimplePrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest

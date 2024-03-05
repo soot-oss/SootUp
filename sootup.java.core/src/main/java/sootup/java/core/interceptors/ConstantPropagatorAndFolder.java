@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import javax.annotation.Nonnull;
@@ -83,12 +84,11 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
         fold(stmt, constantStmtBiConsumer);
 
       } else if (stmt instanceof JReturnStmt) {
-        for (Value value : stmt.getUses()) {
+        for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+          Value value = iterator.next();
           if (!(value instanceof Local)) {
             continue;
           }
-          // TODO: [ms] there is room for more performance - don't filter a list as we could sort
-          // Stmts by associated Value etc.
           List<AbstractDefinitionStmt> defsOfUse = ((Local) value).getDefs(defs);
           if (defsOfUse.size() != 1) {
             continue;
@@ -119,7 +119,8 @@ public class ConstantPropagatorAndFolder implements BodyInterceptor {
   }
 
   private static void fold(Stmt stmt, BiConsumer<Constant, Stmt> constantStmtBiConsumer) {
-    for (Value value : stmt.getUses()) {
+    for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+      Value value = iterator.next();
 
       Constant evaluatedValue = Evaluator.getConstantValueOf(value);
       if (evaluatedValue == null) {

@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
@@ -56,12 +55,13 @@ public class UnusedLocalEliminator implements BodyInterceptor {
 
     // traverse statements copying all used uses and defs
     for (Stmt stmt : builder.getStmtGraph().getNodes()) {
-      for (Value value : stmt.getUsesAndDefs()) {
-        if (value instanceof Local) {
-          Local local = (Local) value;
-          locals.add(local);
-        }
-      }
+      stmt.getUsesAndDefs()
+          .filter(value -> value instanceof Local)
+          .forEach(
+              value -> {
+                Local local = (Local) value;
+                locals.add(local);
+              });
     }
 
     builder.setLocals(locals);

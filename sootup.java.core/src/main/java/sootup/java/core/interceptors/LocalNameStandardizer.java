@@ -26,7 +26,6 @@ import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
-import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
@@ -47,8 +46,9 @@ public class LocalNameStandardizer implements BodyInterceptor {
     Map<Local, Integer> localToFirstOccurrence = new HashMap<>();
     int defsCount = 0;
     for (Stmt stmt : graph) {
-      final List<LValue> defs = stmt.getDefs();
-      for (Value def : defs) {
+      final Optional<LValue> defOpt = stmt.getDef();
+      if (defOpt.isPresent()) {
+        LValue def = defOpt.get();
         if (def instanceof Local) {
           final Local localDef = (Local) def;
           localToFirstOccurrence.putIfAbsent(localDef, defsCount);

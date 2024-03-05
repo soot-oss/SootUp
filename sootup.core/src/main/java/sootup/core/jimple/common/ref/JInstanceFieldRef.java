@@ -26,8 +26,7 @@ package sootup.core.jimple.common.ref;
  * @version 1.0
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.Local;
@@ -69,10 +68,8 @@ public final class JInstanceFieldRef extends JFieldRef {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>(base.getUses());
-    list.add(base);
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(base.getUses(), Stream.of(base));
   }
 
   @Override

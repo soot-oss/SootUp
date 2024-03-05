@@ -1,20 +1,19 @@
 /** @author: Hasitha Rajapakse */
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.ClassModifier;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.core.JavaSootClass;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author: Hasitha Rajapakse */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class NoModifierClassTest extends MinimalSourceTestSuiteBase {
 
   @Test

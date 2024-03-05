@@ -48,9 +48,4 @@ public class TypesValidator implements BodyValidator {
      */
     return null;
   }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
-  }
 }

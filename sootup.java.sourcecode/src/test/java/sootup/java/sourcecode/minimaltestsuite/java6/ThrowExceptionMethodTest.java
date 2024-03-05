@@ -1,22 +1,21 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
@@ -67,7 +66,7 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void testArithException() {
     SootMethod method = loadMethod(getMethodSignature());
@@ -78,7 +77,7 @@ public class ThrowExceptionMethodTest extends MinimalSourceTestSuiteBase {
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testCustomException() {
 
     SootMethod method = loadMethod(getMethodSignature1());

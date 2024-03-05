@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.DominanceFinder;
@@ -71,8 +72,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
     for (BasicBlock<?> block : stmtGraph.getBlocks()) {
       Set<Local> defs = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
-        if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-          Local local = (Local) stmt.getDefs().get(0);
+        Optional<LValue> defOpt = stmt.getDef();
+        if (defOpt.isPresent() && defOpt.get() instanceof Local) {
+          Local local = (Local) defOpt.get();
           defs.add(local);
           if (localToBlocks.containsKey(local)) {
             localToBlocks.get(local).add(block);
@@ -114,7 +116,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       Set<FallsThroughStmt> newPhiStmts = new HashSet<>();
       for (Stmt stmt : block.getStmts()) {
         // replace use
-        final List<Value> uses = stmt.getUses();
+        final List<Value> uses = stmt.getUses().collect(Collectors.toList());
         if (!uses.isEmpty() && !constainsPhiExpr(stmt)) {
           for (Value use : uses) {
             if (use instanceof Local) {
@@ -126,19 +128,20 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           }
         }
         // generate new def and replace with new def
-        final List<LValue> defs = stmt.getDefs();
-        if (!defs.isEmpty() && defs.get(0) instanceof Local) {
-          Local def = (Local) defs.get(0);
-          Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);
-          newLocals.add(newDef);
-          nextFreeIdx++;
-          localToNameStack.get(def).push(newDef);
-          FallsThroughStmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
-          stmtGraph.replaceNode(stmt, newStmt);
-          if (constainsPhiExpr(newStmt)) {
-            newPhiStmts.add(newStmt);
+        final Optional<LValue> defOpt = stmt.getDef();
+        if (defOpt.isPresent())
+          if (defOpt.get() instanceof Local) {
+            Local def = (Local) defOpt.get();
+            Local newDef = def.withName(def.getName() + "#" + nextFreeIdx);
+            newLocals.add(newDef);
+            nextFreeIdx++;
+            localToNameStack.get(def).push(newDef);
+            FallsThroughStmt newStmt = ((AbstractDefinitionStmt) stmt).withNewDef(newDef);
+            stmtGraph.replaceNode(stmt, newStmt);
+            if (constainsPhiExpr(newStmt)) {
+              newPhiStmts.add(newStmt);
+            }
           }
-        }
       }
       visited.add(block);
       blockStack.add(block);
@@ -154,7 +157,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
           Set<FallsThroughStmt> phiStmts = blockToPhiStmts.get(succ);
           newPhiStmts = new HashSet<>(phiStmts);
           for (Stmt phiStmt : phiStmts) {
-            Local def = (Local) phiStmt.getDefs().get(0);
+            Local def = (Local) phiStmt.getDef().get();
             Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
             if (!localToNameStack.get(oriDef).isEmpty()) {
               Local arg = localToNameStack.get(oriDef).peek();
@@ -175,8 +178,8 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       while (containsAllChildren(visited, children)) {
         blockStack.remove(blockStack.size() - 1);
         for (Stmt stmt : top.getStmts()) {
-          if (!stmt.getDefs().isEmpty() && stmt.getDefs().get(0) instanceof Local) {
-            Local def = (Local) stmt.getDefs().get(0);
+          if (stmt.getDef().isPresent() && stmt.getDef().get() instanceof Local) {
+            Local def = (Local) stmt.getDef().get();
             Local oriDef = getOriginalLocal(def, localToNameStack.keySet());
             if (!localToNameStack.get(oriDef).isEmpty()) {
               localToNameStack.get(oriDef).pop();
@@ -284,7 +287,7 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
       for (BasicBlock<?> succ : succs) {
         if (blockToPhiStmts.containsKey(succ)) {
           for (Stmt phi : blockToPhiStmts.get(succ)) {
-            Local local = (Local) phi.getDefs().get(0);
+            Local local = (Local) phi.getDef().get();
             if (blockToDefs.get(block).contains(local)) {
               if (phiToNum.containsKey(phi)) {
                 int num = phiToNum.get(phi);
@@ -324,8 +327,9 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
   }
 
   private boolean constainsPhiExpr(Stmt stmt) {
-    if (stmt instanceof JAssignStmt && !stmt.getUses().isEmpty()) {
-      for (Value use : stmt.getUses()) {
+    if (stmt instanceof JAssignStmt) {
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value use = iterator.next();
         if (use instanceof JPhiExpr) {
           return true;
         }
@@ -356,7 +360,8 @@ public class StaticSingleAssignmentFormer implements BodyInterceptor {
   private FallsThroughStmt addNewArgToPhi(Stmt phiStmt, Local arg, BasicBlock<?> block) {
 
     FallsThroughStmt newPhiStmt = null;
-    for (Value use : phiStmt.getUses()) {
+    for (Iterator<Value> iterator = phiStmt.getUses().iterator(); iterator.hasNext(); ) {
+      Value use = iterator.next();
       if (use instanceof JPhiExpr) {
         JPhiExpr newPhiExpr = (JPhiExpr) use;
         List<Local> args = ((JPhiExpr) use).getArgs();

@@ -1,15 +1,14 @@
 package sootup.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.cache.provider.FullCacheProvider;
 import sootup.core.cache.provider.LRUCacheProvider;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -22,13 +21,13 @@ import sootup.java.core.views.JavaView;
  * Comprises tests that test the behavior of different types of caches. It uses the MiniApp.jar for
  * testing.
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class CacheTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   static List<AnalysisInputLocation> inputLocations;
 
   /** Load the jar file for analysis as input location. */
-  @BeforeClass
+  @BeforeAll
   public static void setupProject() {
     inputLocations =
         Collections.singletonList(

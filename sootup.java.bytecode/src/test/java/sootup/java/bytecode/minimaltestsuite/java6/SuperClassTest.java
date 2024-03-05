@@ -1,19 +1,19 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class SuperClassTest extends MinimalBytecodeTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -36,11 +36,11 @@ public class SuperClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: SuperClass",
-            "l0.<SuperClass: int a> = 10",
-            "l0.<SuperClass: int b> = 20",
-            "l0.<SuperClass: int c> = 30",
-            "l0.<SuperClass: int d> = 40",
+            "this := @this: SuperClass",
+            "this.<SuperClass: int a> = 10",
+            "this.<SuperClass: int b> = 20",
+            "this.<SuperClass: int c> = 30",
+            "this.<SuperClass: int d> = 40",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

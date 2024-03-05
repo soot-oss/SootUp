@@ -73,14 +73,15 @@ public class LocalLivenessAnalyser {
         }
 
         Set<Local> in = new HashSet<>();
-        for (Value use : stmt.getUses()) {
+        for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+          Value use = iterator.next();
           if (use instanceof Local) {
             in.add((Local) use);
           }
         }
-        final List<LValue> defs = stmt.getDefs();
-        if (!defs.isEmpty()) {
-          final Value value = defs.get(0);
+        final Optional<LValue> def = stmt.getDef();
+        if (def.isPresent()) {
+          final Value value = def.get();
           if (value instanceof Local) {
             out.remove(value);
           }

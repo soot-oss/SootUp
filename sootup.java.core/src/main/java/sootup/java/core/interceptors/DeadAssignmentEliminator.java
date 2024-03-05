@@ -180,7 +180,8 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
     while (!deque.isEmpty()) {
       Stmt stmt = deque.removeFirst();
       if (essentialStmts.add(stmt)) {
-        for (Value value : stmt.getUses()) {
+        for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+          Value value = iterator.next();
           if (value instanceof Local) {
             Local local = (Local) value;
             Collection<Stmt> defs = allDefs.get(local);
@@ -216,8 +217,9 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
           // find at least one use of Value which is in an essential stmt
           boolean deadAssignment = true;
 
-          List<Value> values = assignStmt.getUsesAndDefs();
-          for (Value value : values) {
+          for (Iterator<Value> iterator = assignStmt.getUsesAndDefs().iterator();
+              iterator.hasNext(); ) {
+            Value value = iterator.next();
             if (!(value instanceof LValue)) {
               continue;
             }

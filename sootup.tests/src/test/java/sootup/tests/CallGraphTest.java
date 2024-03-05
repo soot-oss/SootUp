@@ -1,13 +1,12 @@
 package sootup.tests;
 
-import static junit.framework.TestCase.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.callgraph.AbstractCallGraphAlgorithm;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
@@ -22,7 +21,7 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class CallGraphTest {
 
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
@@ -65,14 +64,14 @@ public class CallGraphTest {
     SootClass sc = view.getClass(mainClassSignature).orElse(null);
     assertNotNull(sc);
     SootMethod m = sc.getMethod(mainMethodSignature.getSubSignature()).orElse(null);
-    assertNotNull(mainMethodSignature + " not found in classloader", m);
+    assertNotNull(m, mainMethodSignature + " not found in classloader");
 
     AbstractCallGraphAlgorithm algorithm = createAlgorithm(view);
     CallGraph cg = algorithm.initialize(Collections.singletonList(mainMethodSignature));
 
     assertNotNull(cg);
     assertTrue(
-        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
+        cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
   }
 

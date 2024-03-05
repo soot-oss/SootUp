@@ -1,11 +1,14 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import categories.TestCategories;
 import java.util.Collection;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.interceptors.typeresolving.PrimitiveHierarchy;
@@ -13,7 +16,7 @@ import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class PrimitiveHierarchyTest {
 
   private Type bt = BottomType.getInstance();
@@ -40,65 +43,65 @@ public class PrimitiveHierarchyTest {
   public void testIsAncestor() {
 
     // check all ancestor relationships in lattice
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(bt, bt2));
+    assertTrue(PrimitiveHierarchy.isAncestor(bt, bt2));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i1, bt));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(bt, i1));
+    assertTrue(PrimitiveHierarchy.isAncestor(i1, bt));
+    assertFalse(PrimitiveHierarchy.isAncestor(bt, i1));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(boo, i1));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(boo, bt));
+    assertTrue(PrimitiveHierarchy.isAncestor(boo, i1));
+    assertTrue(PrimitiveHierarchy.isAncestor(boo, bt));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i127, i1));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i127, bt));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(boo, i127));
+    assertTrue(PrimitiveHierarchy.isAncestor(i127, i1));
+    assertTrue(PrimitiveHierarchy.isAncestor(i127, bt));
+    assertFalse(PrimitiveHierarchy.isAncestor(boo, i127));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(by, i127));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(by, i32767));
+    assertTrue(PrimitiveHierarchy.isAncestor(by, i127));
+    assertFalse(PrimitiveHierarchy.isAncestor(by, i32767));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(c, i32767));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(c, by));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(c, s));
+    assertTrue(PrimitiveHierarchy.isAncestor(c, i32767));
+    assertFalse(PrimitiveHierarchy.isAncestor(c, by));
+    assertFalse(PrimitiveHierarchy.isAncestor(c, s));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(s, i127));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(s, by));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(s, boo));
+    assertTrue(PrimitiveHierarchy.isAncestor(s, i127));
+    assertTrue(PrimitiveHierarchy.isAncestor(s, by));
+    assertFalse(PrimitiveHierarchy.isAncestor(s, boo));
 
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i, c));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i, s));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(i, i1));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(i, boo));
+    assertTrue(PrimitiveHierarchy.isAncestor(i, c));
+    assertTrue(PrimitiveHierarchy.isAncestor(i, s));
+    assertTrue(PrimitiveHierarchy.isAncestor(i, i1));
+    assertFalse(PrimitiveHierarchy.isAncestor(i, boo));
 
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(d, i));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(d, f));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(l, c));
+    assertFalse(PrimitiveHierarchy.isAncestor(d, i));
+    assertFalse(PrimitiveHierarchy.isAncestor(d, f));
+    assertFalse(PrimitiveHierarchy.isAncestor(l, c));
 
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(arr_i, arr_i2));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(arr_i, arr_i127));
-    Assert.assertTrue(PrimitiveHierarchy.isAncestor(arr_c, arr_i127));
-    Assert.assertFalse(PrimitiveHierarchy.isAncestor(arr_i, arr_by));
+    assertFalse(PrimitiveHierarchy.isAncestor(arr_i, arr_i2));
+    assertTrue(PrimitiveHierarchy.isAncestor(arr_i, arr_i127));
+    assertTrue(PrimitiveHierarchy.isAncestor(arr_c, arr_i127));
+    assertFalse(PrimitiveHierarchy.isAncestor(arr_i, arr_by));
   }
 
   @Test
   public void testLCA() {
     Set<Type> expect = ImmutableUtils.immutableSet(bt);
     Collection<Type> actual = PrimitiveHierarchy.getLeastCommonAncestor(bt, bt2);
-    Assert.assertEquals(expect, actual);
+    assertEquals(expect, actual);
 
     expect = ImmutableUtils.immutableSet(i);
     actual = PrimitiveHierarchy.getLeastCommonAncestor(c, s);
-    Assert.assertEquals(expect, actual);
-
-    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, s);
-    Assert.assertEquals(expect, actual);
-
-    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, i32767);
-    Assert.assertEquals(expect, actual);
+    assertEquals(expect, actual);
 
     actual = PrimitiveHierarchy.getLeastCommonAncestor(i1, i);
-    Assert.assertEquals(expect, actual);
+    assertEquals(expect, actual);
 
     expect = ImmutableUtils.immutableSet(s);
     actual = PrimitiveHierarchy.getLeastCommonAncestor(s, i32767);
-    Assert.assertEquals(expect, actual);
+    assertEquals(expect, actual);
+
+    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, s);
+    assertEquals(expect, actual);
+
+    actual = PrimitiveHierarchy.getLeastCommonAncestor(by, i32767);
+    assertEquals(expect, actual);
   }
 }

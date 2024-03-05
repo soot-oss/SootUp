@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.ClassRule;
-import org.junit.experimental.categories.Category;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.*;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -31,47 +31,39 @@ import sootup.java.core.views.JavaView;
  * @author Hasitha Rajapakse
  * @author Kaustubh Kelkar
  */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public abstract class MinimalBytecodeTestSuiteBase {
 
   static final String baseDir = "../shared-test-resources/miniTestSuite";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
-  @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
+  private static String testDir = "";
+  private static JavaView javaView;
 
-  public static class CustomTestWatcher extends TestWatcher {
-    private String classPath = MinimalBytecodeTestSuiteBase.class.getSimpleName();
-    private JavaView javaView;
+  protected String testedClassName = "";
 
-    /** Load View once for each test directory */
-    @Override
-    protected void starting(Description description) {
-      // TODO: seems to be more complicated than necessary - save directory instead of needing
-      // operation on it agin
-      String prevClassDirName = getTestDirectoryName(getClassPath());
-      classPath = description.getClassName();
-      if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        String path =
-            baseDir
-                + File.separator
-                + getTestDirectoryName(getClassPath())
-                + File.separator
-                + "binary"
-                + File.separator;
-        JavaClassPathAnalysisInputLocation inputLocation =
-            new JavaClassPathAnalysisInputLocation(
-                path, SourceType.Application, Collections.emptyList());
-        javaView = new JavaView(inputLocation);
-      }
+  @BeforeEach
+  protected void init() {
+    testedClassName = getClassName(this.getClass().getSimpleName());
+    String currentTestDir = getTestDirectoryName(this.getClass().getCanonicalName());
+    if (!testDir.equals(currentTestDir)) {
+      testDir = currentTestDir;
+      AnalysisInputLocation inputLocation =
+          new JavaClassPathAnalysisInputLocation(
+              baseDir
+                  + File.separator
+                  + currentTestDir
+                  + File.separator
+                  + "binary"
+                  + File.separator,
+              SourceType.Application,
+              Collections.emptyList());
+      javaView = new JavaView(inputLocation);
     }
+  }
 
-    public String getClassPath() {
-      return classPath;
-    }
-
-    public JavaView getJavaView() {
-      return javaView;
-    }
+  public static JavaView getJavaView() {
+    return javaView;
   }
 
   public MethodSignature getMethodSignature() {
@@ -108,19 +100,19 @@ public abstract class MinimalBytecodeTestSuiteBase {
   }
 
   protected JavaClassType getDeclaredClassSignature() {
-    return identifierFactory.getClassType(getClassName(customTestWatcher.classPath));
+    return identifierFactory.getClassType(testedClassName);
   }
 
   public JavaSootClass loadClass(ClassType clazz) {
-    Optional<JavaSootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
-    assertTrue("No matching class signature found", cs.isPresent());
+    Optional<JavaSootClass> cs = javaView.getClass(clazz);
+    assertTrue(cs.isPresent(), "No matching class signature found");
     return cs.get();
   }
 
   public JavaSootMethod loadMethod(MethodSignature methodSignature) {
     JavaSootClass clazz = loadClass(methodSignature.getDeclClassType());
     Optional<JavaSootMethod> m = clazz.getMethod(methodSignature.getSubSignature());
-    assertTrue("No matching method signature found", m.isPresent());
+    assertTrue(m.isPresent(), "No matching method signature found");
     return m.get();
   }
 

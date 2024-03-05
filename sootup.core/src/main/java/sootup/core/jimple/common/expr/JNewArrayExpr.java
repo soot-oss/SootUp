@@ -22,8 +22,7 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.IdentifierFactory;
 import sootup.core.jimple.Jimple;
@@ -107,10 +106,8 @@ public final class JNewArrayExpr implements Expr {
    */
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    List<Value> uses = new ArrayList<>(size.getUses());
-    uses.add(size);
-    return uses;
+  public Stream<Value> getUses() {
+    return Stream.concat(size.getUses(), Stream.of(size));
   }
 
   /** Returns an instance of ArrayType(). */

@@ -22,10 +22,10 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractConditionExpr;
@@ -35,7 +35,7 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JIfStmtTest {
   // TODO: [ms] incorporate Printer i.e. Body+Targets
   @Test
@@ -48,25 +48,25 @@ public class JIfStmtTest {
     Stmt ifStmt = new JIfStmt(condition, nop);
 
     // toString
-    Assert.assertEquals("if 42 == 123", ifStmt.toString());
+    assertEquals("if 42 == 123", ifStmt.toString());
 
     // equivTo
-    Assert.assertFalse(ifStmt.equivTo(new JNopStmt(nop)));
+    assertFalse(ifStmt.equivTo(new JNopStmt(nop)));
 
-    Assert.assertTrue(ifStmt.equivTo(ifStmt));
-    Assert.assertTrue(ifStmt.equivTo(new JIfStmt(condition, nop)));
-    Assert.assertTrue(
+    assertTrue(ifStmt.equivTo(ifStmt));
+    assertTrue(ifStmt.equivTo(new JIfStmt(condition, nop)));
+    assertTrue(
         ifStmt.equivTo(
             new JIfStmt(
                 new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)), nop)));
 
     // switched Operands on Equal
-    Assert.assertTrue(
+    assertTrue(
         ifStmt.equivTo(
             new JIfStmt(
                 new JEqExpr(IntConstant.getInstance(123), IntConstant.getInstance(42)), nop)));
 
-    Assert.assertFalse(
+    assertFalse(
         ifStmt.equivTo(
             new JIfStmt(
                 new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)), nop)));

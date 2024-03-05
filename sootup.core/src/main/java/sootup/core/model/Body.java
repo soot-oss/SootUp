@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -182,7 +183,7 @@ public class Body implements HasPosition {
         JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), (Local) idStmt.getLeftOp());
+          retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
       /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
@@ -265,13 +266,8 @@ public class Body implements HasPosition {
    *
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getUses() {
-    ArrayList<Value> useList = new ArrayList<>();
-
-    for (Stmt stmt : graph.getNodes()) {
-      useList.addAll(stmt.getUses());
-    }
-    return useList;
+  public Stream<Value> getUses() {
+    return graph.getNodes().stream().flatMap(Stmt::getUses);
   }
 
   /**
@@ -288,7 +284,7 @@ public class Body implements HasPosition {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
-      defList.addAll(stmt.getDefs());
+      stmt.getDef().ifPresent(defList::add);
     }
     return defList;
   }
@@ -371,12 +367,13 @@ public class Body implements HasPosition {
 
       for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
         final Stmt stmt = currStmt;
-        if (currStmt.getUses().contains(existingLocal)) {
+        if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
         }
-        final List<LValue> defs = currStmt.getDefs();
-        for (LValue def : defs) {
-          if (def == existingLocal || def.getUses().contains(existingLocal)) {
+        Optional<LValue> defOpt = currStmt.getDef();
+        if (defOpt.isPresent()) {
+          LValue def = defOpt.get();
+          if (def == existingLocal || def.getUses().anyMatch(v -> v == existingLocal)) {
             if (currStmt instanceof AbstractDefinitionStmt) {
               currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
@@ -463,11 +460,13 @@ public class Body implements HasPosition {
     }
 
     public void removeDefLocalsOf(@Nonnull Stmt stmt) {
-      for (LValue def : stmt.getDefs()) {
-        if (def instanceof Local) {
-          locals.remove(def);
-        }
-      }
+      stmt.getDef()
+          .ifPresent(
+              def -> {
+                if (def instanceof Local) {
+                  locals.remove(def);
+                }
+              });
     }
   }
 
@@ -480,14 +479,12 @@ public class Body implements HasPosition {
   public static Map<LValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
     Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<LValue> defs = stmt.getDefs();
-      for (LValue value : defs) {
-        Collection<Stmt> localDefs = allDefs.get(value);
-        if (localDefs == null) {
-          localDefs = new ArrayList<>();
-        }
+      Optional<LValue> defOPt = stmt.getDef();
+      if (defOPt.isPresent()) {
+        LValue def = defOPt.get();
+        Collection<Stmt> localDefs = allDefs.computeIfAbsent(def, key -> new ArrayList<>());
         localDefs.add(stmt);
-        allDefs.put(value, localDefs);
+        allDefs.put(def, localDefs);
       }
     }
     return allDefs;
@@ -502,12 +499,9 @@ public class Body implements HasPosition {
   public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
     Map<Value, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
-      Collection<Value> uses = stmt.getUses();
-      for (Value value : uses) {
-        Collection<Stmt> localUses = allUses.get(value);
-        if (localUses == null) {
-          localUses = new ArrayList<>();
-        }
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value value = iterator.next();
+        Collection<Stmt> localUses = allUses.computeIfAbsent(value, key -> new ArrayList<>());
         localUses.add(stmt);
         allUses.put(value, localUses);
       }

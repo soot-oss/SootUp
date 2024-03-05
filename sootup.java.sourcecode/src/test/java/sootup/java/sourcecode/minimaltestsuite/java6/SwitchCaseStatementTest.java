@@ -1,11 +1,10 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
@@ -14,10 +13,10 @@ import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
  * @author Hasitha Rajapakse
  * @author Kaustubh Kelkar
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
 
-  @Ignore
+  @Disabled
   // FIXME: [ms] only 3 successor flows from switch but 4 needed
   public void switchCaseStatementEnumKey() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
@@ -47,7 +46,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   public void testSwitchWithInt() {
     // FIXME: [ms] Jimple is not correct
     // 1. multiple goto labels are null
@@ -83,7 +82,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   public void testSwitchCaseWithoutDefault() {
     // FIXME: [ms] Jimple is not correct: target labels are wrong and jumped code has an offset by 1
     // another stmt
@@ -111,7 +110,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   public void testSwitchCaseGroupedTargets() {
     // FIXME: [ms] Jimple is not correct; stmt in case as well as the target labels have an offset
     // by one
@@ -137,7 +136,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   public void testSwitchCaseGroupedTargetsDefault() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseGroupedTargetsDefault"));
     assertJimpleStmts(
@@ -163,7 +162,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   // FIXME:[ms] buggy jimple from sourcecodefrontend
   public void switchCaseStatementCaseIncludingIf() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementCaseIncludingIf"));
@@ -197,7 +196,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "return"));
   }
 
-  @Ignore
+  @Disabled
   // FIXME:[ms] buggy jimple from sourcecodefrontend
   public void switchCaseStatementCaseIncludingSwitch() {
     SootMethod method = loadMethod(getMethodSignature("switchWithSwitch"));

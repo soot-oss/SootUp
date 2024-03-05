@@ -71,36 +71,33 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
 
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
-    // fall back to the original statement when none of the cases set a result
-    setResult(stmt);
-
     // uses on the def side.. e.g. a base in an JArrayRef but NOT with a simple Local!
     final Value leftOp = stmt.getLeftOp();
     if (leftOp instanceof Ref) {
       refVisitor.init(oldUse, newUse);
       ((Ref) leftOp).accept(refVisitor);
       if (refVisitor.getResult() != leftOp) {
-        setResult(stmt.withVariable((LValue) refVisitor.getResult()));
+        stmt = stmt.withVariable((LValue) refVisitor.getResult());
       }
     }
 
     // rhs
     Value rValue = stmt.getRightOp();
     if (rValue == oldUse) {
-      setResult(stmt.withRValue(newUse));
+      stmt = stmt.withRValue(newUse);
     } else if (rValue instanceof Immediate) {
       if (rValue == oldUse) {
-        setResult(stmt.withRValue(newUse));
+        stmt = stmt.withRValue(newUse);
       }
     } else if (rValue instanceof Ref) {
       if (rValue == oldUse) {
-        setResult(stmt.withRValue(newUse));
+        stmt = stmt.withRValue(newUse);
       } else {
         try {
           refVisitor.init(oldUse, newUse);
           ((Ref) rValue).accept(refVisitor);
           if (refVisitor.getResult() != rValue) {
-            setResult(stmt.withRValue(refVisitor.getResult()));
+            stmt = stmt.withRValue(refVisitor.getResult());
           }
         } catch (ClassCastException cce) {
           // can not replace that local by another Value
@@ -110,9 +107,11 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       exprVisitor.init(oldUse, newUse);
       ((Expr) rValue).accept(exprVisitor);
       if (exprVisitor.getResult() != rValue) {
-        setResult(stmt.withRValue(exprVisitor.getResult()));
+        stmt = stmt.withRValue(exprVisitor.getResult());
       }
     }
+
+    setResult(stmt);
   }
 
   @Override

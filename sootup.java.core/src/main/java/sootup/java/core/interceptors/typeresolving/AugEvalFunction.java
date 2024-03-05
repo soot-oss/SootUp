@@ -1,4 +1,4 @@
-package sootup.java.core.interceptors.typeresolving;
+package sootup.java.bytecode.interceptors.typeresolving;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -21,7 +21,6 @@ package sootup.java.core.interceptors.typeresolving;
  * #L%
  */
 
-import com.google.common.collect.ImmutableSet;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,16 +36,17 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
-import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
+import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class AugEvalFunction {
 
-  private final ImmutableSet<ClassType> evalClassTypes;
   private final ClassType stringClassType;
   private final ClassType classClassType;
   private final ClassType methodHandleClassType;
@@ -60,11 +60,6 @@ public class AugEvalFunction {
 
     // one time setup
     final IdentifierFactory identifierFactory = view.getIdentifierFactory();
-    evalClassTypes =
-        ImmutableSet.of(
-            identifierFactory.getClassType("java.lang.Object"),
-            identifierFactory.getClassType("java.lang.Cloneable"),
-            identifierFactory.getClassType("java.io.Serializable"));
 
     stringClassType = identifierFactory.getClassType("java.lang.String");
     classClassType = identifierFactory.getClassType("java.lang.Class");
@@ -205,12 +200,18 @@ public class AugEvalFunction {
         Type type = typing.getType(((JArrayRef) value).getBase());
         if (type instanceof ArrayType) {
           return ((ArrayType) type).getElementType();
-          // Because Object, Serializable and Cloneable are super types of any ArrayType, thus the
-          // base type of ArrayRef could be one of this three types
-        } else if (type instanceof ClassType) {
-          return evalClassTypes.contains(type) ? type : BottomType.getInstance();
-        } else {
+        } else if (type instanceof NullType) {
+          // This is an expression like `null[index]`. That means the type of the array variable has
+          // not been determined yet, but because this statement is dependent on whatever will
+          // calculate the type of the array, the fixpoint iteration will call this again with the
+          // correct type. (Or it won't get called again, in which case the `null` type will get
+          // promoted to `Object`)
           return BottomType.getInstance();
+        } else {
+          // When the type is not an array type, it can't be known what the type of the array ref
+          // expression is. Because the result of the array access could be an object or a
+          // primitive, the top type has to be chosen here.
+          return TopType.getInstance();
         }
       } else if (value.getClass() == JThisRef.class
           || value.getClass() == JParameterRef.class

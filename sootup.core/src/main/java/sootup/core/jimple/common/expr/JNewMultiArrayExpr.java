@@ -22,8 +22,8 @@ package sootup.core.jimple.common.expr;
  * #L%
  */
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
@@ -119,13 +119,8 @@ public final class JNewMultiArrayExpr implements Expr {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    List<Value> list = new ArrayList<>();
-    list.addAll(sizes);
-    for (Value size : sizes) {
-      list.addAll(size.getUses());
-    }
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(sizes.stream(), sizes.stream().flatMap(size -> size.getUses()));
   }
 
   @Nonnull
