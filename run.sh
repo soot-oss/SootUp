@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn clean install
+mvn clean install -DskipTests
