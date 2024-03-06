@@ -99,7 +99,7 @@ public class CopyPropagator implements BodyInterceptor {
       @Nonnull MutableStmtGraph graph, @Nonnull Stmt stmt, @Nonnull Value use, @Nonnull Value rhs) {
     if (!use.equivTo(rhs)) { // TODO: ms: check if rhs!=use would be enough
       Stmt newStmt = stmt.withNewUse(use, rhs);
-      if (newStmt != null) {
+      if (newStmt != stmt) {
         graph.replaceNode(stmt, newStmt);
       }
     }

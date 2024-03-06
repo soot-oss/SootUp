@@ -905,6 +905,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Override
   public void replaceNode(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
+    if (oldStmt == newStmt) {
+      return;
+    }
 
     final MutableBasicBlock blockOfOldStmt = stmtToBlock.get(oldStmt);
     if (blockOfOldStmt == null) {
