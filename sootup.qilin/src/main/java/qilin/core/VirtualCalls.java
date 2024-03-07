@@ -72,14 +72,13 @@ public class VirtualCalls {
   public SootMethod resolveSpecial(
       JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container, boolean appOnly) {
     MethodSignature methodSig = iie.getMethodSignature();
-    SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(methodSig).get();
     /* cf. JVM spec, invokespecial instruction */
     if (PTAScene.v()
             .getView()
             .getTypeHierarchy()
-            .isSubtype(target.getDeclaringClassType(), container.getDeclaringClassType())
-        && container.getDeclaringClassType() != target.getDeclaringClassType()
-        && !target.getName().equals("<init>")
+            .isSubtype(methodSig.getDeclClassType(), container.getDeclaringClassType())
+        && container.getDeclaringClassType() != methodSig.getDeclClassType()
+        && !methodSig.getName().equals("<init>")
         && !subSig.toString().equals("void <clinit>()")) {
       SootClass cls =
           (SootClass) PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
@@ -87,6 +86,11 @@ public class VirtualCalls {
       System.out.println("resolve" + iie + ";;" + subSig + ";;" + container);
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
+      Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);
+      if (otgt.isEmpty()) {
+        System.out.println("Wrarning: signature " + methodSig + " does not have a concrete method.");
+      }
+      SootMethod target = (SootMethod) otgt.get();
       return target;
     }
   }

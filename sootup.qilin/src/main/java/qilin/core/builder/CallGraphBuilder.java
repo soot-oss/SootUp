@@ -246,12 +246,6 @@ public class CallGraphBuilder {
    * creates the nodes for the call site, without actually connecting them to any target method.
    */
   private void processCallAssign(Edge e) {
-    if (Objects.requireNonNull(e.tgt())
-        .getSignature()
-        .toString()
-        .equals("<java.lang.Long: java.lang.Long decode(java.lang.String)>")) {
-      System.out.println(e.src() + "==>" + e.tgt());
-    }
     MethodPAG srcmpag = pag.getMethodPAG(e.src());
     MethodPAG tgtmpag = pag.getMethodPAG(e.tgt());
     Stmt s = e.srcUnit();

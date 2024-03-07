@@ -97,7 +97,7 @@ public class MethodPAG {
             "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
       return;
     }
-    buildException();
+    // buildException();
     buildNormal();
     addMiscEdges();
   }
