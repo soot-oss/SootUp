@@ -37,6 +37,7 @@ import sootup.core.jimple.common.expr.AbstractBinopExpr;
 import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.expr.JNegExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
+import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.stmt.AbstractDefinitionStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
@@ -201,6 +202,9 @@ public class TypeResolver {
         local = (Local) lhs;
       } else if (lhs instanceof JArrayRef) {
         local = ((JArrayRef) lhs).getBase();
+      } else if (lhs instanceof JInstanceFieldRef) {
+        // local = ((JInstanceFieldRef) lhs).getBase();
+        continue; // assigment to a field is independent of the base type.
       } else {
         // Only `Local`s and `JArrayRef`s as the left-hand side are relevant for type inference.
         // The statements get filtered to only contain those assignments in the `init` method,

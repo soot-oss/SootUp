@@ -81,6 +81,7 @@ final class OperandMerging {
                   + ").");
         }
       }
+      outputOperand.changeStackLocal(output.stackLocal);
     }
   }
 
