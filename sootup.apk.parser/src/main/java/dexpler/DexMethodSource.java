@@ -1,7 +1,5 @@
 package dexpler;
 
-import Util.DexUtil;
-import Util.Util;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -19,11 +17,8 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
-import sootup.core.types.ClassType;
-import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
@@ -33,11 +28,10 @@ public class DexMethodSource implements BodySource {
   private final MutableStmtGraph mutableStmtGraph;
   private final Method method;
 
-
   private final List<BodyInterceptor> bodyInterceptors;
 
   @Nonnull private final View view;
-  private final  MethodSignature methodSignature;
+  private final MethodSignature methodSignature;
 
   public DexMethodSource(
       Set<Local> locals,
@@ -110,13 +104,13 @@ public class DexMethodSource implements BodySource {
   @Nonnull
   @Override
   public MethodSignature getSignature() {
-//    String className = classType.getClassName();
-//    if (Util.isByteCodeClassName(className)) {
-//      className = Util.dottedClassName(className);
-//    }
-//    return new MethodSignature(
-//        classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
-//  }
+    //    String className = classType.getClassName();
+    //    if (Util.isByteCodeClassName(className)) {
+    //      className = Util.dottedClassName(className);
+    //    }
+    //    return new MethodSignature(
+    //        classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
+    //  }
     return methodSignature;
   }
 }

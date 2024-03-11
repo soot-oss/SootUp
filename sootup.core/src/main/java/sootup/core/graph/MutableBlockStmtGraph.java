@@ -282,7 +282,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
-//      throw new IllegalStateException("The Traps are not iterated completely/correctly!");
+      //      throw new IllegalStateException("The Traps are not iterated completely/correctly!");
       System.out.println("The Traps are not iterated completely/correctly");
     }
   }

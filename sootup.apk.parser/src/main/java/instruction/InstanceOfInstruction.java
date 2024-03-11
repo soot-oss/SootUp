@@ -27,9 +27,7 @@ public class InstanceOfInstruction extends DexLibAbstractInstruction {
         Jimple.newInstanceOfExpr(body.getRegisterLocal(source), sootType);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest),
-            jInstanceOfExpr,
-            StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jInstanceOfExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

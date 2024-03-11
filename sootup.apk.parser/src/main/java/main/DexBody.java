@@ -33,7 +33,6 @@ import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -255,8 +254,7 @@ public class DexBody {
     int indexOf = stmtList.indexOf(toBeReplaced);
     if (indexOf != -1) {
       stmtList.set(indexOf, newStmt);
-    }
-    else{
+    } else {
       throw new RuntimeException("No Statement Found");
     }
   }
@@ -333,13 +331,13 @@ public class DexBody {
     if (Util.Util.isByteCodeClassName(className)) {
       className = Util.Util.dottedClassName(className);
     }
-    MethodSignature methodSignature = new MethodSignature(
+    MethodSignature methodSignature =
+        new MethodSignature(
             classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
     stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
-        new DexMethodSource(
-            locals,methodSignature, graph, method, bodyInterceptors, view);
+        new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
   }
 
@@ -399,9 +397,7 @@ public class DexBody {
 
         JIdentityStmt jIdentityStmt =
             Jimple.newIdentityStmt(
-                gen,
-                Jimple.newParameterRef(type, i++),
-                StmtPositionInfo.getNoStmtPositionInfo());
+                gen, Jimple.newParameterRef(type, i++), StmtPositionInfo.getNoStmtPositionInfo());
         add(jIdentityStmt);
         paramLocals.add(gen);
 
@@ -484,11 +480,11 @@ public class DexBody {
     }
     addBranchingMap(instructions);
     // By this point, all the "jimplification" process should be done, so clean everything.
-//    instructions = null;
-//    instructionAtAddress.clear();
-//    dangling = null;
-//    tries = null;
-//    parameterNames.clear();
+    //    instructions = null;
+    //    instructionAtAddress.clear();
+    //    dangling = null;
+    //    tries = null;
+    //    parameterNames.clear();
 
     for (ReTypeableInstruction reTypeableInstruction : instructionsToRetype) {
       //                reTypeableInstruction.retype(this);
@@ -543,12 +539,12 @@ public class DexBody {
       // if the try block ends on the last instruction of the body, add a
       // nop instruction so Soot can include
       // the last instruction in the try block.
-//      if (stmtList.get(stmtList.size() - 1) == endStmt
-//          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-//        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-//        insertAfter(endStmt, endStmt);
-//        endStmt = nop;
-//      }
+      //      if (stmtList.get(stmtList.size() - 1) == endStmt
+      //          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
+      //        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+      //        insertAfter(endStmt, endStmt);
+      //        endStmt = nop;
+      //      }
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
@@ -556,7 +552,7 @@ public class DexBody {
         if (exceptionType == null) {
           exceptionType = "Ljava/lang/Throwable$CatchAll;";
         }
-        if(exceptionTypeList.contains(exceptionType)){
+        if (exceptionTypeList.contains(exceptionType)) {
           exceptionType = exceptionType + "$" + exceptionTypeList.size();
         }
         Type t = DexUtil.toSootType(exceptionType, 0);
@@ -568,25 +564,24 @@ public class DexBody {
               instructionAtAddress(handler.getHandlerCodeAddress());
           if (!(instruction instanceof MoveExceptionInstruction)) {
             logger.debug(
-                    String.format(
-                            "First instruction of trap handler unit not MoveException but %s",
-                            instruction.getClass().getName()));
+                String.format(
+                    "First instruction of trap handler unit not MoveException but %s",
+                    instruction.getClass().getName()));
           } else {
             ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
           Stmt handlerStmt;
-          if(instruction.getStmt() instanceof JNopStmt){
+          if (instruction.getStmt() instanceof JNopStmt) {
             Local local = new LocalGenerator(locals).generateLocal(type);
             locals.add(local);
             Stmt caughtStmt =
-                  Jimple.newIdentityStmt(
-                          local,
-                          JavaJimple.getInstance().newCaughtExceptionRef(),
-                          StmtPositionInfo.getNoStmtPositionInfo());
+                Jimple.newIdentityStmt(
+                    local,
+                    JavaJimple.getInstance().newCaughtExceptionRef(),
+                    StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;
-          }
-          else{
+          } else {
             handlerStmt = instruction.getStmt();
           }
           Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);

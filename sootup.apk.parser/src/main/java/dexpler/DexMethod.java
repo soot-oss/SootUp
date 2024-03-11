@@ -1,17 +1,15 @@
 package dexpler;
 
+import Util.DexUtil;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
-
-import Util.DexUtil;
 import main.DexBody;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import sootup.core.graph.MutableBlockStmtGraph;
-import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -36,11 +34,15 @@ public class DexMethod {
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       String className = declaringclassType.getClassName();
-    if (Util.Util.isByteCodeClassName(className)) {
-      className = Util.Util.dottedClassName(className);
-    }
-      MethodSignature methodSignature = new MethodSignature(
-              declaringclassType, className, Collections.emptyList(), DexUtil.toSootType(method.getReturnType(), 0));
+      if (Util.Util.isByteCodeClassName(className)) {
+        className = Util.Util.dottedClassName(className);
+      }
+      MethodSignature methodSignature =
+          new MethodSignature(
+              declaringclassType,
+              className,
+              Collections.emptyList(),
+              DexUtil.toSootType(method.getReturnType(), 0));
       DexMethodSource dexMethodSource =
           new DexMethodSource(
               Collections.emptySet(),

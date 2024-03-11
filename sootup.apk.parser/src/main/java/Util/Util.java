@@ -52,11 +52,11 @@ public class Util {
     int lastIndex = name.lastIndexOf(".");
     lastIndex = (lastIndex == -1) ? 0 : lastIndex;
     try {
-      javaClassType = new JavaClassType(
+      javaClassType =
+          new JavaClassType(
               name.substring(name.lastIndexOf(".") + 1),
-              new PackageName(name.substring(0,lastIndex)));
-    }
-    catch (Exception exception){
+              new PackageName(name.substring(0, lastIndex)));
+    } catch (Exception exception) {
       System.out.println("Exception when substring with className " + name);
       throw new RuntimeException();
     }

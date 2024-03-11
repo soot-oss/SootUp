@@ -69,8 +69,7 @@ public class FillArrayDataInstruction extends PseudoInstruction {
         break;
       }
       JAssignStmt jAssignStmt =
-          Jimple.newAssignStmt(
-              arrayReference, element, StmtPositionInfo.getNoStmtPositionInfo());
+          Jimple.newAssignStmt(arrayReference, element, StmtPositionInfo.getNoStmtPositionInfo());
       body.add(jAssignStmt);
       if (i == 0) {
         firstAssign = jAssignStmt;

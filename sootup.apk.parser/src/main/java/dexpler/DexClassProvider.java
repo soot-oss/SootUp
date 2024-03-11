@@ -16,10 +16,8 @@ import sootup.core.frontend.ClassProvider;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.inputlocation.FileType;
-import sootup.core.model.SootClass;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
 
 public class DexClassProvider implements ClassProvider {
 
@@ -33,9 +31,7 @@ public class DexClassProvider implements ClassProvider {
 
   @Override
   public Optional<SootClassSource> createClassSource(
-      AnalysisInputLocation inputLocation,
-      Path sourcePath,
-      ClassType classSignature) {
+      AnalysisInputLocation inputLocation, Path sourcePath, ClassType classSignature) {
     // TODO : In soot, they wrote this. This code makes sense, but dont know where to add this or
     // what will happen if we dont use it.
     //    ensureDexIndex();

@@ -1,5 +1,4 @@
 import Util.*;
-import Util.SourceLocator;
 import dexpler.DexClassProvider;
 import dexpler.DexFileProvider;
 import java.io.File;
@@ -13,11 +12,9 @@ import java.util.zip.ZipFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import main.AndroidVersionInfo;
-import org.apache.commons.lang3.time.StopWatch;
 import org.jf.dexlib2.iface.DexFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sootup.core.frontend.AbstractClassSource;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
@@ -27,11 +24,8 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
 
-public class ApkAnalysisInputLocation<J extends SootClass>
-    implements AnalysisInputLocation {
+public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisInputLocation {
 
   Path apk_path;
 
@@ -57,14 +51,15 @@ public class ApkAnalysisInputLocation<J extends SootClass>
     this.bodyInterceptors = bodyInterceptors;
     this.android_jar_path = getAndroidJarPath(android_jar_path, apkPath.toString());
     this.classNamesList = extractDexFilesFromPath();
-//    SourceLocator.getInstance().setClassPath(this.apk_path.toString(), this.android_jar_path);
+    //    SourceLocator.getInstance().setClassPath(this.apk_path.toString(), this.android_jar_path);
   }
 
   private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
     List<DexFileProvider.DexContainer<? extends DexFile>> dexFromSource;
     try {
       dexFromSource =
-          DexFileProvider.getInstance().getDexFromSource(new File(apk_path.toString()), api_version);
+          DexFileProvider.getInstance()
+              .getDexFromSource(new File(apk_path.toString()), api_version);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -110,8 +105,7 @@ public class ApkAnalysisInputLocation<J extends SootClass>
 
   @Nonnull
   @Override
-  public Collection<? extends SootClassSource> getClassSources(
-      @Nonnull View view) {
+  public Collection<? extends SootClassSource> getClassSources(@Nonnull View view) {
     return classNamesList.entrySet().stream()
         .flatMap(
             className ->

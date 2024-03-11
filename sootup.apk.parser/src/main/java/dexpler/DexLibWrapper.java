@@ -9,9 +9,7 @@ import org.jf.dexlib2.dexbacked.reference.DexBackedTypeReference;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.MultiDexContainer;
-import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
-import sootup.core.types.Type;
 
 /**
  * DexlibWrapper provides an entry point to the dexlib library from the smali project. Given a dex
@@ -72,10 +70,10 @@ public class DexLibWrapper {
         for (DexBackedTypeReference typeRef : ((DexBackedDexFile) dexFile).getTypeReferences()) {
           String t = typeRef.getType();
 
-//          Type st = DexUtil.toSootType(t, 0);
-//          if (st != null && st instanceof ArrayType) {
-//            st = ((ArrayType) st).getBaseType();
-//          }
+          //          Type st = DexUtil.toSootType(t, 0);
+          //          if (st != null && st instanceof ArrayType) {
+          //            st = ((ArrayType) st).getBaseType();
+          //          }
           //                    String sootTypeName = st.toString();
           //                    if (!Scene.v().containsClass(sootTypeName)) {
           //                        if (st instanceof PrimType || st instanceof VoidType ||

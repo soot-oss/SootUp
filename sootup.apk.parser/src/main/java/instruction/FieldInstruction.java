@@ -47,7 +47,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     } else {
       // TODO : Dont know which local to use here, as of now using null which will throw an error
       // for sure.
-        return new JInstanceFieldRef(null, fieldSignature);
+      return new JInstanceFieldRef(null, fieldSignature);
     }
   }
 
@@ -78,8 +78,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   protected JAssignStmt getAssignStmt(DexBody body, Local sourceValue, ConcreteRef instanceField) {
     JAssignStmt assign;
     assign =
-        Jimple.newAssignStmt(
-            sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
+        Jimple.newAssignStmt(sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
     return assign;
   }
 

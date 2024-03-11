@@ -29,7 +29,9 @@ public class BinopInstruction extends TaggedInstruction {
     Local source2 = body.getRegisterLocal(binOpInstr.getRegisterC());
 
     Value expr = getExpression(source1, source2);
-    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
+    JAssignStmt assign =
+        Jimple.newAssignStmt(
+            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

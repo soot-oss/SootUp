@@ -1,5 +1,7 @@
 package instruction;
 
+import java.util.List;
+import java.util.Set;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
@@ -9,12 +11,8 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JCaughtExceptionRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
-
-import java.util.List;
-import java.util.Set;
 
 public class MoveExceptionInstruction extends DexLibAbstractInstruction
     implements ReTypeableInstruction {

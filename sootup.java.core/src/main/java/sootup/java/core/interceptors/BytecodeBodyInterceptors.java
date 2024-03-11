@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import sootup.core.transform.BodyInterceptor;
-import sootup.java.bytecode.interceptors.LocalSplitter;
 
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {

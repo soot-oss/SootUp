@@ -35,9 +35,7 @@ public class ConstStringInstruction extends DexLibAbstractInstruction {
         new StringConstant(s, JavaIdentifierFactory.getInstance().getType("java.lang.String"));
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest),
-            stringConstant,
-            StmtPositionInfo.getNoStmtPositionInfo());
+            body.getRegisterLocal(dest), stringConstant, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }
