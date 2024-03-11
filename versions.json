@@ -8,14 +8,6 @@
     }
   },
   {
-    "version": "Interceptors_Package_Change_preview",
-    "title": "PR Preview Interceptors_Package_Change",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "fix_ci_preview",
     "title": "PR Preview fix_ci",
     "aliases": [],
