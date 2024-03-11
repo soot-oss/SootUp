@@ -40,7 +40,7 @@ import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.signatures.ModuleSignature;

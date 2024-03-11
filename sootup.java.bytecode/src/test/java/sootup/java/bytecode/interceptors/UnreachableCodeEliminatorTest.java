@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
 import java.util.*;
+
+import sootup.java.core.interceptors.UnreachableCodeEliminator;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;

@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import categories.TestCategories;
 import java.util.*;
+
+import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
+import sootup.java.core.interceptors.typeresolving.Typing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,7 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.JavaIdentifierFactory;
 
 /** @author Zun Wang */

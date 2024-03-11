@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.*;
+
+import sootup.java.core.interceptors.Aggregator;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;

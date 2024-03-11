@@ -3,6 +3,8 @@ package sootup.java.bytecode.interceptors;
 import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
+
+import sootup.java.core.interceptors.LocalLivenessAnalyser;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
