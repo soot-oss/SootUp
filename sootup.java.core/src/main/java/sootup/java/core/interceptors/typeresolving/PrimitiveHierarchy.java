@@ -27,9 +27,9 @@ import javax.annotation.Nonnull;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 
 /** @author Zun Wang */
 public class PrimitiveHierarchy {

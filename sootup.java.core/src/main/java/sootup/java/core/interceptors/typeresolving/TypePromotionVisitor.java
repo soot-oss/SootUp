@@ -30,8 +30,8 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 
 public class TypePromotionVisitor extends TypeChecker {
   public TypePromotionVisitor(

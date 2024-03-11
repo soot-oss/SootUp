@@ -1,4 +1,4 @@
-package sootup.java.bytecode.interceptors;
+package sootup.java.core.interceptors;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework

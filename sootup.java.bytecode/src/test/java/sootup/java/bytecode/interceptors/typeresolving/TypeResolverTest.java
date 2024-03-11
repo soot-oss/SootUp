@@ -26,9 +26,10 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.TypeAssigner;
-import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.interceptors.TypeAssigner;
+import sootup.java.core.interceptors.typeresolving.TypeResolver;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
