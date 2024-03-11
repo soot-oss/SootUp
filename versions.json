@@ -10,7 +10,10 @@
   {
     "version": "Interceptors_Package_Change_preview",
     "title": "PR Preview Interceptors_Package_Change",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
