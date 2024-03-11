@@ -3,8 +3,6 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
-
-import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
@@ -19,6 +17,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;

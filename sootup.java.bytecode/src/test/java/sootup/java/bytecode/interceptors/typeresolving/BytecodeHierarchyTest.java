@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-
-import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
@@ -20,6 +18,7 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
 import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;

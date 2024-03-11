@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -28,9 +26,10 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.interceptors.TypeAssigner;
-import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.interceptors.TypeAssigner;
+import sootup.java.core.interceptors.typeresolving.TypeResolver;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 

@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
 import java.util.*;
-
-import sootup.java.core.interceptors.CastAndReturnInliner;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
@@ -19,6 +17,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.CastAndReturnInliner;
 import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;

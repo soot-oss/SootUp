@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import sootup.java.core.interceptors.typeresolving.Typing;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
@@ -18,6 +16,7 @@ import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
+import sootup.java.core.interceptors.typeresolving.Typing;
 import sootup.java.core.views.JavaView;
 
 public class TypeAssignerTestSuite {

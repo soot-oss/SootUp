@@ -40,9 +40,9 @@ import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.PathUtils;
 import sootup.java.bytecode.frontend.AsmModuleSource;
-import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.signatures.ModuleSignature;
 
 /**
