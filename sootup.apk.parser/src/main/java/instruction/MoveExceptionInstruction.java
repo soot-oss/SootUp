@@ -27,7 +27,7 @@ public class MoveExceptionInstruction extends DexLibAbstractInstruction
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     Local l = body.getRegisterLocal(dest);
     JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
-    stmtToRetype = Jimple.newIdentityStmt(l, ref, StmtPositionInfo.createNoStmtPositionInfo());
+    stmtToRetype = Jimple.newIdentityStmt(l, ref, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(stmtToRetype);
     body.add(stmtToRetype);
   }

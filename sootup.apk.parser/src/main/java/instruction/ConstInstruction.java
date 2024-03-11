@@ -23,7 +23,7 @@ public class ConstInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     int dest = ((OneRegisterInstruction) instruction).getRegisterA();
     Constant cst = getConstant();
-    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, StmtPositionInfo.createNoStmtPositionInfo());
+    JAssignStmt assign = Jimple.newAssignStmt(body.getRegisterLocal(dest), cst, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

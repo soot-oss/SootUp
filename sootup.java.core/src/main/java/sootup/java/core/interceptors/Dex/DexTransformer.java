@@ -168,10 +168,10 @@ public abstract class DexTransformer implements BodyInterceptor {
           // a[12] = 42;
           nullDefCount++;
         } else {
-//          throw new RuntimeException(
-//              String.format(
-//                  "ERROR: def statement not possible! Statement: %s, right side: %s",
-//                      stmt, r.getClass().getName()));
+          //          throw new RuntimeException(
+          //              String.format(
+          //                  "ERROR: def statement not possible! Statement: %s, right side: %s",
+          //                      stmt, r.getClass().getName()));
         }
 
       } else if (baseDef instanceof JIdentityStmt) {

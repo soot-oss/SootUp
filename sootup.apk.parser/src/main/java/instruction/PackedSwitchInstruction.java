@@ -17,7 +17,7 @@ public class PackedSwitchInstruction extends SwitchInstruction {
   @Override
   protected Stmt switchStatement(DexBody body, Instruction targetData, Local key) {
     JSwitchStmt jSwitchStmt =
-        Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.getNoStmtPositionInfo());
     //        body.addBranchingStmt(jSwitchStmt, targets);
     //        body.addBranchingStmt(jSwitchStmt, Collections.singletonList(defaultTarget));
     setStmt(jSwitchStmt);

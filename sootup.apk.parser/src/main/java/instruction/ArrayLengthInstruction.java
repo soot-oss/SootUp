@@ -25,7 +25,7 @@ public class ArrayLengthInstruction extends DexLibAbstractInstruction {
     JLengthExpr jLengthExpr = Jimple.newLengthExpr(arrayReference);
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jLengthExpr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jLengthExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assignStmt);
     body.add(assignStmt);
   }

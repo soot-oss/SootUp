@@ -33,7 +33,7 @@ public class NewInstanceInstruction extends DexLibAbstractInstruction {
     JNewExpr jNewExpr = Jimple.newNewExpr(classType);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jNewExpr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jNewExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

@@ -13,7 +13,7 @@ public class ReturnInstruction extends DexLibAbstractInstruction {
   public void jimplify(DexBody body) {
     Instruction11x returnInstruction = (Instruction11x) this.instruction;
     Local l = body.getRegisterLocal(returnInstruction.getRegisterA());
-    JReturnStmt jReturnStmt = Jimple.newReturnStmt(l, StmtPositionInfo.createNoStmtPositionInfo());
+    JReturnStmt jReturnStmt = Jimple.newReturnStmt(l, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jReturnStmt);
     body.add(jReturnStmt);
   }

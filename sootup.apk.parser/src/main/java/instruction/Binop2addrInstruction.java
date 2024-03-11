@@ -33,7 +33,7 @@ public class Binop2addrInstruction extends TaggedInstruction {
 
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), expr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

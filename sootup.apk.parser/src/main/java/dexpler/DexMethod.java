@@ -4,15 +4,19 @@ import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+
+import Util.DexUtil;
 import main.DexBody;
 import org.jf.dexlib2.iface.DexFile;
 import org.jf.dexlib2.iface.Method;
 import org.jf.dexlib2.iface.MultiDexContainer;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootMethod;
 
 public class DexMethod {
 
@@ -25,25 +29,30 @@ public class DexMethod {
     this.declaringclassType = declaringClass;
   }
 
-  public SootMethod makeSootMethod(
-      final Method method, List<BodyInterceptor> bodyInterceptors, @Nonnull View<?> view) {
+  public JavaSootMethod makeSootMethod(
+      final Method method, List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
     //        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" +
     // "**********");
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
+      String className = declaringclassType.getClassName();
+    if (Util.Util.isByteCodeClassName(className)) {
+      className = Util.Util.dottedClassName(className);
+    }
+      MethodSignature methodSignature = new MethodSignature(
+              declaringclassType, className, Collections.emptyList(), DexUtil.toSootType(method.getReturnType(), 0));
       DexMethodSource dexMethodSource =
           new DexMethodSource(
-              declaringclassType,
               Collections.emptySet(),
+              methodSignature,
               new MutableBlockStmtGraph(),
               method,
-              Collections.emptyList(),
               bodyInterceptors,
               view);
       return dexMethodSource.makeSootMethod();
     } else {
       DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
-      SootMethod sootMethod =
+      JavaSootMethod sootMethod =
           dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
       //            System.out.println(sootMethod.getBody() + "\n" + "*********");
       return sootMethod;

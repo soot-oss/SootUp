@@ -19,7 +19,7 @@ public class MoveInstruction extends DexLibAbstractInstruction {
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest),
             body.getRegisterLocal(source),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

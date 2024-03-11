@@ -37,7 +37,7 @@ public class Util {
   public static Stmt makeStmt(DexLibAbstractInstruction ins) {
     Stmt stmt = null;
     if (ins instanceof ReturnVoidInstruction) {
-      stmt = Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      stmt = Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     }
     return stmt;
   }

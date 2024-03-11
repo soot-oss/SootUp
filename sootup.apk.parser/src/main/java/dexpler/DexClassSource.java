@@ -17,7 +17,9 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.JavaSootMethod;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -27,11 +29,11 @@ public class DexClassSource extends JavaSootClassSource {
 
   List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull private final View<?> view;
+  @Nonnull private final View view;
 
   public DexClassSource(
-      @Nonnull View<?> view,
-      @Nonnull AnalysisInputLocation<? extends SootClass<?>> analysisInputLocation,
+      @Nonnull View view,
+      @Nonnull AnalysisInputLocation analysisInputLocation,
       @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     super(analysisInputLocation, classSignature, sourcePath);
@@ -46,7 +48,7 @@ public class DexClassSource extends JavaSootClassSource {
 
   @Nonnull
   @Override
-  public Collection<? extends SootMethod> resolveMethods() throws ResolveException {
+  public Collection<? extends JavaSootMethod> resolveMethods() throws ResolveException {
     Iterable<? extends Method> methodIterable = classInformation.classDefinition.getMethods();
     DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
     // Convert the Iterable to a Stream
@@ -107,7 +109,7 @@ public class DexClassSource extends JavaSootClassSource {
     return new DexMethod(dexEntry, declaringClass);
   }
 
-  private SootMethod loadMethod(Method method, DexMethod dexMethod) {
+  private JavaSootMethod loadMethod(Method method, DexMethod dexMethod) {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
   }
 }

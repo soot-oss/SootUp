@@ -1,7 +1,7 @@
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import dexpler.DexClassSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -12,10 +12,8 @@ import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.OverridingJavaClassSource;
+import sootup.java.core.*;
+import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
@@ -30,8 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static Util.Util.dottedClassName;
 import static Util.Util.isByteCodeClassName;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApkToDexTest {
 
@@ -45,11 +42,11 @@ public class ApkToDexTest {
       assert files != null;
       for (File child : files) {
         String apk_path = child.getAbsolutePath();
-        ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+        ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
                 new ApkAnalysisInputLocation<>(
                         Paths.get(apk_path),
                         "/Users/palaniappanmuthuraman/Documents/android-platforms",
-                        DexClassLoadingOptions.Default.getBodyInterceptors());
+                        Collections.emptyList());
         view = new MutableJavaView(sootClassApkAnalysisInputLocation);
         JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
         Map<String, EnumSet<ClassModifier>> classNamesList =
@@ -64,17 +61,17 @@ public class ApkToDexTest {
                     if (isByteCodeClassName(className)) {
                       className = dottedClassName(className);
                     }
-                    Optional<? extends AbstractClassSource<JavaSootClass>> classSource =
+                    Optional<? extends AbstractClassSource> classSource =
                             sootClassApkAnalysisInputLocation.getClassSource(
                                     identifierFactory.getClassType(className), finalView);
                     if (classSource.isPresent()) {
                       DexClassSource dexClassSource = (DexClassSource) classSource.get();
-                      ClassType classType = finalView.getIdentifierFactory().getClassType(className);
-                      Set<SootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
+                      JavaClassType classType = finalView.getIdentifierFactory().getClassType(className);
+                      Set<JavaSootMethod> sootMethods = new HashSet<>(dexClassSource.resolveMethods());
                       JavaSootClass sootClass =
                               new JavaSootClass(
                                       new OverridingJavaClassSource(
-                                              new EagerInputLocation<>(),
+                                              new EagerInputLocation(),
                                               null,
                                               classType,
                                               null,
@@ -142,25 +139,26 @@ public class ApkToDexTest {
     assert files != null;
 //    for (File child : files) {
 //      String name = child.getName();
-      String name = "viber.apk";
+      String name = "zoho-show.apk";
       String apk_path = path + "/" + name;
       SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-      ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+      ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
               new ApkAnalysisInputLocation<>(
-                      Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms",DexClassLoadingOptions.Default.getBodyInterceptors());
+                      Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms",Collections.emptyList());
       JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
       Collection<JavaSootClass> classes;
       try{
         System.out.println("Loading Apk: " + name);
         classes = view.getClasses();
-        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.viber.voip.ViberApplication: void ViberApplication(android.app.Activity,boolean)>"));
+//        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.viber.voip.ViberApplication: void ViberApplication(android.app.Activity,boolean)>"));
+//        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<mh0.j: java.lang.String j(int,java.lang.String,java.lang.String)>"));
         classes.forEach(JavaSootClass::getMethods);
 //        writeToCSVFile(name,view.getNumberOfStoredClasses(),(System.currentTimeMillis() - startTime) / 1000);
       }
       catch (Exception exception){
         exception.printStackTrace();
         failedApks.add(name);
-        System.out.println("Failed to convert the " + name +  " which has " + view.getNumberOfStoredClasses());
+        System.out.println("Failed to convert the " + name +  " which has " + view.getCachedClassesCount());
       }
 //    }
     System.out.println(files.length - failedApks.size() + " passed out of " + files.length);
@@ -170,7 +168,7 @@ public class ApkToDexTest {
   @Test
   public void loadOneClass() {
     String apk_path = "resources/FlowSensitivity1.apk";
-    ApkAnalysisInputLocation<SootClass<JavaSootClassSource>> sootClassApkAnalysisInputLocation =
+    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path), "/Users/palaniappanmuthuraman/Documents/android-platforms", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
@@ -179,8 +177,8 @@ public class ApkToDexTest {
     ClassType classType = view.getIdentifierFactory().getClassType(className);
     assertTrue(view.getClass(classType).isPresent());
     // Retrieve class
-    SootClass<JavaSootClassSource> sootClass =
-        (SootClass<JavaSootClassSource>) view.getClass(classType).get();
+    SootClass sootClass =
+        (SootClass) view.getClass(classType).get();
     // write MethodSignature
     MethodSignature methodSignature =
         new MethodSignature(classType, methodName, Collections.emptyList(), VoidType.getInstance());

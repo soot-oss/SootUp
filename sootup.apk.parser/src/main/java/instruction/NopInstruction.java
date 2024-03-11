@@ -9,7 +9,7 @@ import sootup.core.jimple.common.stmt.JNopStmt;
 public class NopInstruction extends DexLibAbstractInstruction {
   @Override
   public void jimplify(DexBody body) {
-    JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    JNopStmt jNopStmt = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jNopStmt);
     // TODO: In one example, there comes NoOp Instruction after the return statement, dont know how to handle
     body.add(jNopStmt);

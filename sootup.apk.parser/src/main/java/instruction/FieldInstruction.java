@@ -79,7 +79,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     JAssignStmt assign;
     assign =
         Jimple.newAssignStmt(
-            sourceValue, instanceField, StmtPositionInfo.createNoStmtPositionInfo());
+            sourceValue, instanceField, StmtPositionInfo.getNoStmtPositionInfo());
     return assign;
   }
 

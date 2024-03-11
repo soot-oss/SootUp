@@ -15,7 +15,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
       return;
     }
     body.addDeferredJimplification(this);
-    markerUnit = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    markerUnit = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(markerUnit);
     body.add(markerUnit);
   }
@@ -25,7 +25,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
   }
 
   private JGotoStmt gotoStatement() {
-    JGotoStmt go = Jimple.newGotoStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    JGotoStmt go = Jimple.newGotoStmt(StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(go);
     return go;
   }
@@ -33,7 +33,7 @@ public class GotoInstruction extends JumpInstruction implements DeferableInstruc
   @Override
   public void deferredJimplify(DexBody body) {
     JGotoStmt jGotoStmt = gotoStatement();
-    body.insertAfter(jGotoStmt, markerUnit);
+    body.replaceStmt(markerUnit, jGotoStmt);
     setStmt(jGotoStmt);
   }
 }

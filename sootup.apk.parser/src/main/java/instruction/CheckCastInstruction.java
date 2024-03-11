@@ -33,7 +33,7 @@ public class CheckCastInstruction extends DexLibAbstractInstruction {
     // generate "x = (Type) x"
     // splitter will take care of the rest
     JAssignStmt jAssignStmt =
-        Jimple.newAssignStmt(castValue, castExpr, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(castValue, castExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

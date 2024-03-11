@@ -21,7 +21,7 @@ public class MoveResultInstruction extends DexLibAbstractInstruction {
         Jimple.newAssignStmt(
             body.getRegisterLocal(dest),
             body.getStoreResultLocal(),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assignStmt);
     body.add(assignStmt);
   }

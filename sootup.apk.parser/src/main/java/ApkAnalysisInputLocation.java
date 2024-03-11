@@ -18,6 +18,7 @@ import org.jf.dexlib2.iface.DexFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.frontend.AbstractClassSource;
+import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
@@ -29,8 +30,8 @@ import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootClassSource;
 
-public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
-    implements AnalysisInputLocation<JavaSootClass> {
+public class ApkAnalysisInputLocation<J extends SootClass>
+    implements AnalysisInputLocation {
 
   Path apk_path;
 
@@ -96,12 +97,12 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource<JavaSootClass>> getClassSource(
-      @Nonnull ClassType type, @Nonnull View<?> view) {
+  public Optional<? extends SootClassSource> getClassSource(
+      @Nonnull ClassType type, @Nonnull View view) {
     return Objects.requireNonNull(getClassSourceInternal(type, new DexClassProvider(view)));
   }
 
-  private Optional<? extends AbstractClassSource<JavaSootClass>> getClassSourceInternal(
+  private Optional<? extends SootClassSource> getClassSourceInternal(
       ClassType type, DexClassProvider dexClassProvider) {
 
     return dexClassProvider.createClassSource(this, apk_path, type);
@@ -109,8 +110,8 @@ public class ApkAnalysisInputLocation<J extends SootClass<JavaSootClassSource>>
 
   @Nonnull
   @Override
-  public Collection<? extends AbstractClassSource<JavaSootClass>> getClassSources(
-      @Nonnull View<?> view) {
+  public Collection<? extends SootClassSource> getClassSources(
+      @Nonnull View view) {
     return classNamesList.entrySet().stream()
         .flatMap(
             className ->

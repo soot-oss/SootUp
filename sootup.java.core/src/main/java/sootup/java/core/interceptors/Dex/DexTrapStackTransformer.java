@@ -1,10 +1,9 @@
 package sootup.java.core.interceptors.Dex;
 
+import com.google.common.collect.LinkedListMultimap;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
-
-import com.google.common.collect.LinkedListMultimap;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.LocalGenerator;
@@ -22,7 +21,9 @@ import sootup.java.core.language.JavaJimple;
 
 public class DexTrapStackTransformer implements BodyInterceptor {
 
-  public static LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap = LinkedListMultimap.create();
+  public static LinkedListMultimap<BranchingStmt, List<Stmt>> branchingMap =
+      LinkedListMultimap.create();
+
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     List<Trap> traps = builder.getStmtGraph().getTraps();

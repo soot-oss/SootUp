@@ -25,34 +25,33 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaSootMethod;
 
 public class DexMethodSource implements BodySource {
 
-  private final ClassType classType;
   private final Set<Local> locals;
   private final MutableStmtGraph mutableStmtGraph;
   private final Method method;
-  private final List<Type> parameterTypes;
+
 
   private final List<BodyInterceptor> bodyInterceptors;
 
-  @Nonnull private final View<?> view;
+  @Nonnull private final View view;
+  private final  MethodSignature methodSignature;
 
   public DexMethodSource(
-      ClassType classType,
       Set<Local> locals,
+      MethodSignature methodSignature,
       MutableStmtGraph mutableStmtGraph,
       Method method,
-      List<Type> parameterTypes,
       List<BodyInterceptor> bodyInterceptors,
-      @Nonnull View<?> view) {
+      @Nonnull View view) {
+    this.methodSignature = methodSignature;
     this.view = view;
-    this.classType = classType;
     this.locals = locals;
     this.bodyInterceptors = bodyInterceptors;
     this.mutableStmtGraph = mutableStmtGraph;
     this.method = method;
-    this.parameterTypes = parameterTypes;
   }
 
   @Nonnull
@@ -73,16 +72,17 @@ public class DexMethodSource implements BodySource {
     return bodyBuilder.build();
   }
 
-  public SootMethod makeSootMethod() {
-    SootMethod sootMethod;
+  public JavaSootMethod makeSootMethod() {
+    JavaSootMethod sootMethod;
     EnumSet<MethodModifier> methodModifiers = getMethodModifiers(method.getAccessFlags());
     try {
       sootMethod =
-          new SootMethod(
+          new JavaSootMethod(
               new OverridingBodySource(getSignature(), resolveBody(methodModifiers)),
               getSignature(),
               methodModifiers,
               Collections.emptyList(),
+              Collections.emptySet(),
               NoPositionInformation.getInstance());
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -110,11 +110,13 @@ public class DexMethodSource implements BodySource {
   @Nonnull
   @Override
   public MethodSignature getSignature() {
-    String className = classType.getClassName();
-    if (Util.isByteCodeClassName(className)) {
-      className = Util.dottedClassName(className);
-    }
-    return new MethodSignature(
-        classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
+//    String className = classType.getClassName();
+//    if (Util.isByteCodeClassName(className)) {
+//      className = Util.dottedClassName(className);
+//    }
+//    return new MethodSignature(
+//        classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
+//  }
+    return methodSignature;
   }
 }

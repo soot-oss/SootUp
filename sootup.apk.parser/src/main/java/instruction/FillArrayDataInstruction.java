@@ -70,14 +70,14 @@ public class FillArrayDataInstruction extends PseudoInstruction {
       }
       JAssignStmt jAssignStmt =
           Jimple.newAssignStmt(
-              arrayReference, element, StmtPositionInfo.createNoStmtPositionInfo());
+              arrayReference, element, StmtPositionInfo.getNoStmtPositionInfo());
       body.add(jAssignStmt);
       if (i == 0) {
         firstAssign = jAssignStmt;
       }
     }
     if (firstAssign == null) { // if numElements == 0. Is it possible?
-      firstAssign = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+      firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
       body.add(firstAssign);
     }
     setStmt(firstAssign);

@@ -67,7 +67,7 @@ public class CmpInstruction extends TaggedInstruction {
 
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), cmpExpr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), cmpExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

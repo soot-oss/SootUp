@@ -21,19 +21,19 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClass;
 
-public class DexClassProvider implements ClassProvider<JavaSootClass> {
+public class DexClassProvider implements ClassProvider {
 
   private static final Logger logger = LoggerFactory.getLogger(DexClassProvider.class);
 
-  @Nonnull private final View<?> view;
+  @Nonnull private final View view;
 
-  public DexClassProvider(@Nonnull View<?> view) {
+  public DexClassProvider(@Nonnull View view) {
     this.view = view;
   }
 
   @Override
-  public Optional<SootClassSource<JavaSootClass>> createClassSource(
-      AnalysisInputLocation<? extends SootClass<?>> inputLocation,
+  public Optional<SootClassSource> createClassSource(
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       ClassType classSignature) {
     // TODO : In soot, they wrote this. This code makes sense, but dont know where to add this or

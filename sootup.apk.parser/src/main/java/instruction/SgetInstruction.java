@@ -18,7 +18,7 @@ public class SgetInstruction extends FieldInstruction {
     JStaticFieldRef r = Jimple.newStaticFieldRef(getStaticSootFieldRef(f).getFieldSignature());
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), r, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), r, StmtPositionInfo.getNoStmtPositionInfo());
     body.add(assign);
     setStmt(assign);
   }

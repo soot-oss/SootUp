@@ -20,6 +20,6 @@ public class IfTestInstruction extends ConditionalJumpInstruction {
     Local one = dexBody.getRegisterLocal(i.getRegisterA());
     Local other = dexBody.getRegisterLocal(i.getRegisterB());
     AbstractConditionExpr condition = getComparisonExpr(one, other);
-    return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
+    return Jimple.newIfStmt(condition, StmtPositionInfo.getNoStmtPositionInfo());
   }
 }

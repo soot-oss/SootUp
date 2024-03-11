@@ -35,7 +35,7 @@ public class BinopLitInstruction extends TaggedInstruction {
     Value expr = getExpression(source1, constant);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), expr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

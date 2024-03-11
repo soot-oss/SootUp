@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.TypeVisitor;
 import sootup.core.types.Type;
 import sootup.java.bytecode.interceptors.LocalSplitter;
-import sootup.java.bytecode.interceptors.TypeAssigner;
 
 /**
  * The top type is a superclass of all other types. This is similar to {@code java.lang.Object} but

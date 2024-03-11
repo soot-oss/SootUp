@@ -29,7 +29,7 @@ public class AgetInstruction extends DexLibAbstractInstruction {
     Local l = body.getRegisterLocal(dest);
 
     JAssignStmt assignStmt =
-        Jimple.newAssignStmt(l, jArrayRef, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(l, jArrayRef, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assignStmt);
     body.add(assignStmt);
   }

@@ -26,7 +26,7 @@ public class CastInstruction extends TaggedInstruction {
     JCastExpr jCastExpr = Jimple.newCastExpr(body.getRegisterLocal(source), targetType);
     JAssignStmt jAssignStmt =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), jCastExpr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), jCastExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }

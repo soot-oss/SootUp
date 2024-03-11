@@ -438,7 +438,7 @@ public class Body implements HasPosition {
       try {
         graph.validateStmtConnectionsInGraph();
       } catch (Exception e) {
-//        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
+        //        throw new RuntimeException("StmtGraph of " + methodSig + " is invalid.", e);
         System.out.println("StmtGraph of " + methodSig + " is invalid." + e.getCause());
       }
 

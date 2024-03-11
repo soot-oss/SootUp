@@ -38,7 +38,7 @@ public class NewArrayInstruction extends DexLibAbstractInstruction {
 
     Local l = body.getRegisterLocal(dest);
     JAssignStmt assign =
-        Jimple.newAssignStmt(l, jNewArrayExpr, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newAssignStmt(l, jNewArrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(assign);
     body.add(assign);
   }

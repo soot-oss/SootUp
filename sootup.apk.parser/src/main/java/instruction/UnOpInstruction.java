@@ -36,7 +36,7 @@ public class UnOpInstruction extends TaggedInstruction {
     Value expr = getExpression(source);
     JAssignStmt assign =
         Jimple.newAssignStmt(
-            body.getRegisterLocal(dest), expr, StmtPositionInfo.createNoStmtPositionInfo());
+            body.getRegisterLocal(dest), expr, StmtPositionInfo.getNoStmtPositionInfo());
 
     setStmt(assign);
     body.add(assign);

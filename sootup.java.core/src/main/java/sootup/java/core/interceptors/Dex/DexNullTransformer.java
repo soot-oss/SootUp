@@ -1,6 +1,7 @@
 package sootup.java.core.interceptors.Dex;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -263,7 +264,7 @@ public class DexNullTransformer extends AbstractNullTransformer {
       if (usedAsObject) {
         for (Stmt u : defs) {
           replaceWithNull(u);
-          Set<Value> defLocals = new HashSet<Value>(u.getDefs());
+          Set<Value> defLocals = u.getUsesAndDefs().collect(Collectors.toSet());
 
           Local l = (Local) ((AbstractDefinitionStmt) u).getLeftOp();
           for (Stmt uuse : localDefs.getUsesOf(l)) {

@@ -14,7 +14,7 @@ public class ThrowInstruction extends DexLibAbstractInstruction {
     JThrowStmt jThrowStmt =
         Jimple.newThrowStmt(
             body.getRegisterLocal(throwInstruction.getRegisterA()),
-            StmtPositionInfo.createNoStmtPositionInfo());
+            StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(jThrowStmt);
     body.add(jThrowStmt);
   }

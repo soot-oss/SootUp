@@ -13,7 +13,7 @@ public class ReturnVoidInstruction extends DexLibAbstractInstruction {
   }
 
   public void jimplify(DexBody body) {
-    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    JReturnVoidStmt returnStmt = Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(returnStmt);
     body.add(returnStmt);
   }

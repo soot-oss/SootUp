@@ -34,6 +34,7 @@ import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
@@ -41,6 +42,7 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
@@ -254,6 +256,9 @@ public class DexBody {
     if (indexOf != -1) {
       stmtList.set(indexOf, newStmt);
     }
+    else{
+      throw new RuntimeException("No Statement Found");
+    }
   }
 
   protected void extractDexInstructions(MethodImplementation code) {
@@ -316,19 +321,25 @@ public class DexBody {
         + parameterNames;
   }
 
-  public SootMethod makeSootMethod(
-      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View<?> view) {
+  public JavaSootMethod makeSootMethod(
+      Method method, ClassType classType, List<BodyInterceptor> bodyInterceptors, View view) {
     jimplify();
     // All the statements are converted, it is time to create a mutable statement graph
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     // If the Nop Statements are not removed, graph.initializeWith throws a runtime exception
     // It is only for the case where there is a JNop Statement after the return statement. Crazy
     // android code :(
+    String className = classType.getClassName();
+    if (Util.Util.isByteCodeClassName(className)) {
+      className = Util.Util.dottedClassName(className);
+    }
+    MethodSignature methodSignature = new MethodSignature(
+            classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
     stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(
-            classType, locals, graph, method, parameterTypes, bodyInterceptors, view);
+            locals,methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
   }
 
@@ -359,7 +370,7 @@ public class DexBody {
 
       JIdentityStmt idStmt =
           Jimple.newIdentityStmt(
-              thisLocal, Jimple.newThisRef(classType), StmtPositionInfo.createNoStmtPositionInfo());
+              thisLocal, Jimple.newThisRef(classType), StmtPositionInfo.getNoStmtPositionInfo());
       add(idStmt);
       paramLocals.add(thisLocal);
     }
@@ -390,7 +401,7 @@ public class DexBody {
             Jimple.newIdentityStmt(
                 gen,
                 Jimple.newParameterRef(type, i++),
-                StmtPositionInfo.createNoStmtPositionInfo());
+                StmtPositionInfo.getNoStmtPositionInfo());
         add(jIdentityStmt);
         paramLocals.add(gen);
 
@@ -534,7 +545,7 @@ public class DexBody {
       // the last instruction in the try block.
 //      if (stmtList.get(stmtList.size() - 1) == endStmt
 //          && instructionAtAddress(endAddress - 1).getStmt() == endStmt) {
-//        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+//        Stmt nop = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 //        insertAfter(endStmt, endStmt);
 //        endStmt = nop;
 //      }
@@ -563,15 +574,22 @@ public class DexBody {
           } else {
             ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
-//          Local local = new LocalGenerator(locals).generateLocal(type);
-//          locals.add(local);
-//          Stmt caughtStmt =
-//                  Jimple.newIdentityStmt(
-//                          local,
-//                          JavaJimple.getInstance().newCaughtExceptionRef(),
-//                          StmtPositionInfo.createNoStmtPositionInfo());
-//          insertBefore(caughtStmt, instruction.getStmt());
-          Trap trap = Jimple.newTrap(type, beginStmt, endStmt, instruction.getStmt());
+          Stmt handlerStmt;
+          if(instruction.getStmt() instanceof JNopStmt){
+            Local local = new LocalGenerator(locals).generateLocal(type);
+            locals.add(local);
+            Stmt caughtStmt =
+                  Jimple.newIdentityStmt(
+                          local,
+                          JavaJimple.getInstance().newCaughtExceptionRef(),
+                          StmtPositionInfo.getNoStmtPositionInfo());
+            insertBefore(caughtStmt, instruction.getStmt());
+            handlerStmt = caughtStmt;
+          }
+          else{
+            handlerStmt = instruction.getStmt();
+          }
+          Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
           traps.add(trap);
         }
       }

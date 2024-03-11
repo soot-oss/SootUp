@@ -18,6 +18,6 @@ public class IfTestzInstruction extends ConditionalJumpInstruction {
   protected JIfStmt ifStatement(DexBody dexBody) {
     Instruction21t i = (Instruction21t) instruction;
     AbstractConditionExpr condition = getComparisonExpr(dexBody, i.getRegisterA());
-    return Jimple.newIfStmt(condition, StmtPositionInfo.createNoStmtPositionInfo());
+    return Jimple.newIfStmt(condition, StmtPositionInfo.getNoStmtPositionInfo());
   }
 }

@@ -1,4 +1,4 @@
-package sootup.java.bytecode.interceptors.typeresolving;
+package sootup.java.core.interceptors.typeresolving;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -28,8 +28,8 @@ import sootup.core.IdentifierFactory;
 import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.views.View;
-import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
 import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
+import sootup.java.core.interceptors.typeresolving.types.BottomType;
 
 /** @author Zun Wang */
 public class BytecodeHierarchy {

@@ -14,7 +14,7 @@ public class MonitorEnterInstruction extends DexLibAbstractInstruction {
     int reg = ((OneRegisterInstruction) instruction).getRegisterA();
     Local object = body.getRegisterLocal(reg);
     JEnterMonitorStmt enterMonitorStmt =
-        Jimple.newEnterMonitorStmt(object, StmtPositionInfo.createNoStmtPositionInfo());
+        Jimple.newEnterMonitorStmt(object, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(enterMonitorStmt);
     body.add(enterMonitorStmt);
   }

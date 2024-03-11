@@ -31,14 +31,14 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
         Type arrayType = ((ArrayType) t).getElementType();
         JNewArrayExpr arrayExpr = JavaJimple.getInstance().newNewArrayExpr(arrayType, IntConstant.getInstance(usedRegister));
         Local arrayLocal = body.getStoreResultLocal();
-        JAssignStmt assignStmt = Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.createNoStmtPositionInfo());
+        JAssignStmt assignStmt = Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
         body.add(assignStmt);
 
         for (int i = 0; i < usedRegister; i++) {
             JArrayRef arrayRef = JavaJimple.getInstance().newArrayRef(arrayLocal, IntConstant.getInstance(i));
 
             JAssignStmt assign
-                    = Jimple.newAssignStmt(arrayRef, body.getRegisterLocal(i + filledNewArrayInstr.getStartRegister()), StmtPositionInfo.createNoStmtPositionInfo());
+                    = Jimple.newAssignStmt(arrayRef, body.getRegisterLocal(i + filledNewArrayInstr.getStartRegister()), StmtPositionInfo.getNoStmtPositionInfo());
             body.add(assign);
         }
         setStmt(assignStmt);
