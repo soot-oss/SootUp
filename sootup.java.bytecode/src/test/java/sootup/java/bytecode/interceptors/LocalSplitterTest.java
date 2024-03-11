@@ -17,6 +17,7 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
+import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 

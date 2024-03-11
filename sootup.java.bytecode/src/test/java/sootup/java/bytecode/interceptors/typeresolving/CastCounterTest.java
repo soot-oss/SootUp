@@ -20,7 +20,11 @@ import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.Utils;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
+import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
+import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
+import sootup.java.core.interceptors.typeresolving.CastCounter;
+import sootup.java.core.interceptors.typeresolving.Typing;
+import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastCounterTest extends TypeAssignerTestSuite {
