@@ -16,7 +16,7 @@
  * <https://www.gnu.org/licenses/lgpl-3.0.en.html>.
  */
 
-package driver;
+package qilin.driver;
 
 import java.lang.management.ManagementFactory;
 import qilin.core.PTA;

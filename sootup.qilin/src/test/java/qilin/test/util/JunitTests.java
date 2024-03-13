@@ -20,9 +20,6 @@ package qilin.test.util;
 
 import static org.junit.Assert.assertTrue;
 
-import driver.PTAFactory;
-import driver.PTAOption;
-import driver.PTAPattern;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -30,6 +27,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
+import qilin.driver.PTAFactory;
+import qilin.driver.PTAOption;
+import qilin.driver.PTAPattern;
 import qilin.pta.PTAConfig;
 
 public abstract class JunitTests {

@@ -18,8 +18,8 @@
 
 package qilin.pta;
 
-import driver.PTAPattern;
 import qilin.CoreConfig;
+import qilin.driver.PTAPattern;
 import qilin.pta.tools.DebloatedPTA;
 
 public class PTAConfig extends CoreConfig {
