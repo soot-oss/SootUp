@@ -20,6 +20,7 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.ConstantPropagatorAndFolder;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.views.JavaView;
 
