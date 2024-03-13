@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.queue.QueueReader;
@@ -55,7 +55,7 @@ public abstract class AbstractPAG {
 
   protected final PTA prePTA;
   protected final PAG prePAG;
-  protected final CallGraph callGraph;
+  protected final OnFlyCallGraph callGraph;
 
   protected AbstractPAG(PTA prePTA) {
     this.prePTA = prePTA;

@@ -30,7 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qilin.core.builder.FakeMainFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.pta.PTAConfig;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
@@ -54,7 +54,7 @@ public class PTAScene {
   private static volatile PTAScene instance = null;
 
   private final View view;
-  private CallGraph callgraph;
+  private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
   private SootClass mainClass = null;
@@ -181,7 +181,7 @@ public class PTAScene {
    *  wrapper methods of Soot Scene. Note, we do not allow you to use Soot Scene directly in qilin.qilin.pta subproject
    * to avoid confusing.
    * */
-  public void setCallGraph(CallGraph cg) {
+  public void setCallGraph(OnFlyCallGraph cg) {
     this.callgraph = cg;
   }
 
@@ -189,7 +189,7 @@ public class PTAScene {
     return view;
   }
 
-  public CallGraph getCallGraph() {
+  public OnFlyCallGraph getCallGraph() {
     return this.callgraph;
   }
 

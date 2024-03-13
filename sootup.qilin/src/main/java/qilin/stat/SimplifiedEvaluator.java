@@ -23,7 +23,7 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
@@ -62,11 +62,11 @@ public class SimplifiedEvaluator implements IEvaluator {
     exporter.collectMetric("Time (sec):", String.valueOf(((double) stopwatch.elapsed())));
     exporter.collectMetric(
         "#Reachable Method (CI):", String.valueOf(pta.getNakedReachableMethods().size() - 1));
-    CallGraph ciCallGraph = pta.getCallGraph();
+    OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     exporter.collectMetric(
         "#Call Edge(CI):", String.valueOf(ciCallGraph.size() - FakeMainFactory.implicitCallEdges));
 
-    CallGraph callGraph = pta.getCallGraph();
+    OnFlyCallGraph callGraph = pta.getCallGraph();
 
     // loop over all reachable method's statement to find casts, local
     // references, virtual call sites

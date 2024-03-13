@@ -25,7 +25,7 @@ import java.util.Set;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.sets.PointsToSet;
@@ -48,7 +48,7 @@ public class YummyStat implements AbstractStat {
 
   private void init() {
     Map<SootMethod, Set<Stmt>> target2callsites = new HashMap<>();
-    CallGraph ciCallGraph = pta.getCallGraph();
+    OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     for (Edge edge : ciCallGraph) {
       Stmt callUnit = edge.srcUnit();
       SootMethod target = edge.tgt();

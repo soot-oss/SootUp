@@ -23,7 +23,7 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextMethod;
@@ -64,7 +64,7 @@ public class TypeClientStat implements AbstractStat {
   }
 
   private void init() {
-    CallGraph callGraph = pta.getCallGraph();
+    OnFlyCallGraph callGraph = pta.getCallGraph();
 
     // loop over all reachable method's statement to find casts, local
     // references, virtual call sites

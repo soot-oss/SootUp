@@ -23,6 +23,7 @@ package qilin.core.builder.callgraph;
  */
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -30,11 +31,16 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import qilin.core.pag.ContextMethod;
+import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.MutableCallGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSignature;
 
 /**
  * Represents the edges in a call graph. This class is meant to act as only a container of edges;
@@ -43,7 +49,11 @@ import sootup.core.model.SootMethod;
  *
  * @author Ondrej Lhotak
  */
-public class CallGraph implements Iterable<Edge> {
+public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
+  protected Set<MethodSignature> methods = DataFactory.createSet();
+  protected Map<MethodSignature, Set<MethodSignature>> calls = DataFactory.createMap();
+  protected int callCnt = 0;
+
   protected Set<Edge> edges = new LinkedHashSet<Edge>();
   protected ChunkedQueue<Edge> stream = new ChunkedQueue<Edge>();
   protected QueueReader<Edge> reader = stream.reader();
@@ -59,7 +69,11 @@ public class CallGraph implements Iterable<Edge> {
     if (!edges.add(e)) {
       return false;
     }
-
+    MethodSignature srcSig = e.getSrc().method().getSignature();
+    MethodSignature tgtSig = e.getTgt().method().getSignature();
+    addMethod(srcSig);
+    addMethod(tgtSig);
+    addCall(srcSig, tgtSig);
     stream.add(e);
 
     Edge position = srcUnitToEdge.get(e.srcUnit());
@@ -154,6 +168,12 @@ public class CallGraph implements Iterable<Edge> {
     if (!edges.remove(e)) {
       return false;
     }
+    MethodSignature srcSig = e.getSrc().method().getSignature();
+    MethodSignature tgtSig = e.getTgt().method().getSignature();
+    Set<MethodSignature> tgtSigs = calls.getOrDefault(srcSig, Collections.emptySet());
+    assert(!tgtSigs.isEmpty());
+    tgtSigs.remove(tgtSig);
+    //!FIXME only edge is removed. I do not remove the added nodes.
     e.remove();
 
     if (srcUnitToEdge.get(e.srcUnit()) == e) {
@@ -398,5 +418,68 @@ public class CallGraph implements Iterable<Edge> {
   @Override
   public Iterator<Edge> iterator() {
     return edges.iterator();
+  }
+
+  /* implements APIs from MutableCallGraph*/
+  @Override
+  public void addMethod(@Nonnull MethodSignature calledMethod) {
+    this.methods.add(calledMethod);
+  }
+
+  @Override
+  public void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+    Set<MethodSignature> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
+    if (targets.add(targetMethod)) {
+      ++ callCnt;
+    }
+  }
+
+  @Nonnull
+  @Override
+  public Set<MethodSignature> getMethodSignatures() {
+    return new HashSet<>(this.methods);
+  }
+
+  @Nonnull
+  @Override
+  public MutableCallGraph copy() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean containsMethod(@Nonnull MethodSignature method) {
+    return this.methods.contains(method);
+  }
+
+  @Override
+  public boolean containsCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+    if (this.calls.containsKey(sourceMethod)) {
+      if(this.calls.get(sourceMethod).contains(targetMethod)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public int callCount() {
+    return callCnt;
+  }
+
+  @Override
+  public String exportAsDot() {
+    throw new UnsupportedOperationException();
+  }
+
+   @Nonnull
+  @Override
+  public Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod) {
+    return this.calls.getOrDefault(sourceMethod, Collections.emptySet());
+  }
+
+  @Nonnull
+  @Override
+  public Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod) {
+    throw new UnsupportedOperationException();
   }
 }

@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.*;
@@ -40,7 +40,7 @@ public abstract class PTA implements PointsToAnalysis {
 
   protected AllocNode rootNode;
   protected PAG pag;
-  protected CallGraph callGraph;
+  protected OnFlyCallGraph callGraph;
   protected CallGraphBuilder cgb;
   protected ExceptionHandler eh;
 
@@ -76,7 +76,7 @@ public abstract class PTA implements PointsToAnalysis {
     return eh;
   }
 
-  public CallGraph getCallGraph() {
+  public OnFlyCallGraph getCallGraph() {
     if (callGraph == null) {
       callGraph = cgb.getCICallGraph();
     }

@@ -22,7 +22,7 @@ import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
@@ -57,12 +57,12 @@ public class CallGraphBuilder {
   protected final Set<Edge> calledges;
   protected final PTA pta;
   protected final PAG pag;
-  protected CallGraph cicg;
+  protected OnFlyCallGraph cicg;
 
   public CallGraphBuilder(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    PTAScene.v().setCallGraph(new CallGraph());
+    PTAScene.v().setCallGraph(new OnFlyCallGraph());
     receiverToSites = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
     methodToInvokeStmt = DataFactory.createMap();
     reachMethods = DataFactory.createSet();
@@ -87,14 +87,14 @@ public class CallGraphBuilder {
     return receiverToSites.getOrDefault(receiver, Collections.emptySet());
   }
 
-  public CallGraph getCallGraph() {
+  public OnFlyCallGraph getCallGraph() {
     if (cicg == null) {
       constructCallGraph();
     }
     return PTAScene.v().getCallGraph();
   }
 
-  public CallGraph getCICallGraph() {
+  public OnFlyCallGraph getCICallGraph() {
     if (cicg == null) {
       constructCallGraph();
     }
@@ -102,7 +102,7 @@ public class CallGraphBuilder {
   }
 
   private void constructCallGraph() {
-    cicg = new CallGraph();
+    cicg = new OnFlyCallGraph();
     Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
     calledges.forEach(
         e -> {

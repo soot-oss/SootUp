@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
@@ -272,7 +272,7 @@ public class Eagle {
     // calculate points-to set for "This" pointer in each static method.
     Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(prePTA);
 
-    CallGraph callGraph = prePTA.getCallGraph();
+    OnFlyCallGraph callGraph = prePTA.getCallGraph();
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
       if (!method.isConcrete()) {
         continue;

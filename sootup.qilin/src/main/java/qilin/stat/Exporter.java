@@ -26,7 +26,7 @@ import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
@@ -205,7 +205,7 @@ public class Exporter {
     }
   }
 
-  public void dumpInsensCallGraph(CallGraph ciCallGraph) {
+  public void dumpInsensCallGraph(OnFlyCallGraph ciCallGraph) {
     String insensCallGraphEdges = "InsensCallGraphEdges.csv";
     String finalPath = getFilePath(insensCallGraphEdges);
     try {

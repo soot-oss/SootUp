@@ -22,7 +22,7 @@ import java.util.*;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
@@ -119,7 +119,7 @@ public abstract class AbstractMVFG {
   }
 
   protected void buildVFG() {
-    CallGraph callGraph = prePTA.getCallGraph();
+    OnFlyCallGraph callGraph = prePTA.getCallGraph();
     PAG pag = prePTA.getPag();
     MethodPAG srcmpag = pag.getMethodPAG(method);
     MethodNodeFactory srcnf = srcmpag.nodeFactory();

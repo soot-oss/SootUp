@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
@@ -216,7 +216,7 @@ public class XUtility {
 
   /* records objects (together with their types) and their invoked methods */
   private void buildHeapMethodsMapping() {
-    CallGraph callgraph = pta.getCallGraph();
+    OnFlyCallGraph callgraph = pta.getCallGraph();
     // collect virtual callsites.
     Set<VirtualCallSite> vcallsites = new HashSet<>();
     for (Edge edge : callgraph) {

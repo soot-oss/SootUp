@@ -26,7 +26,7 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
-import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
@@ -76,7 +76,7 @@ public class CallGraphStat implements AbstractStat {
       allMethods += clazz.getMethods().size();
     }
     //
-    CallGraph csCallGraph = pta.getCgb().getCallGraph();
+    OnFlyCallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();
     for (final ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod m = momc.method();
@@ -119,7 +119,7 @@ public class CallGraphStat implements AbstractStat {
         }
       }
     }
-    CallGraph ciCallGraph = pta.getCallGraph();
+    OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     CICallEdges = ciCallGraph.size();
     for (SootMethod sm : reachableMethods) {
       boolean toApp = PTAUtils.isApplicationMethod(sm);
