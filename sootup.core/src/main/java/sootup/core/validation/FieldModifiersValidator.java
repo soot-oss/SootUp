@@ -4,7 +4,7 @@ import java.util.List;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 
-public class FieldFlagsValidator implements ClassValidator {
+public class FieldModifiersValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {

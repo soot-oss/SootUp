@@ -1,12 +1,11 @@
 package sootup.tests.validator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -22,7 +21,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.core.types.PrimitiveType;
-import sootup.core.validation.FieldFlagsValidator;
+import sootup.core.validation.FieldModifiersValidator;
 import sootup.core.validation.ValidationException;
 import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootField;
@@ -31,15 +30,15 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
-public class FieldFlagsValidatorTest {
+@Tag("Java8")
+public class FieldModifiersValidatorTest {
   JavaView view;
-  FieldFlagsValidator fieldFlagsValidator;
+  FieldModifiersValidator fieldModifiersValidator;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     view = new JavaView(Collections.singletonList(new EagerInputLocation()));
-    fieldFlagsValidator = new FieldFlagsValidator();
+    fieldModifiersValidator = new FieldModifiersValidator();
   }
 
   public JavaSootClass testClassCreatorWithModifiers(
@@ -73,7 +72,7 @@ public class FieldFlagsValidatorTest {
     JavaSootField dummyField =
         new JavaSootField(
             new FieldSignature(
-                new JavaClassType("FieldFlagsValidator", PackageName.DEFAULT_PACKAGE),
+                new JavaClassType("FieldModifiersValidator", PackageName.DEFAULT_PACKAGE),
                 "i",
                 PrimitiveType.IntType.getInstance()),
             fieldModifierEnumSet,
@@ -112,7 +111,7 @@ public class FieldFlagsValidatorTest {
   }
 
   @Test
-  public void testClassModifiersValidator_success() {
+  public void testFieldModifiersValidator_success() {
     List<ValidationException> validationExceptions_success = new ArrayList<>();
 
     JavaSootClass javaSootClass =
@@ -120,13 +119,13 @@ public class FieldFlagsValidatorTest {
             EnumSet.of(ClassModifier.INTERFACE),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.STATIC, FieldModifier.FINAL));
 
-    fieldFlagsValidator.validate(javaSootClass, validationExceptions_success);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_success);
 
     assertEquals(0, validationExceptions_success.size());
   }
 
   @Test
-  public void testClassModifiersValidator_fail1() {
+  public void testFieldModifiersValidator_fail1() {
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
 
     JavaSootClass javaSootClass =
@@ -134,20 +133,20 @@ public class FieldFlagsValidatorTest {
             EnumSet.of(ClassModifier.PUBLIC),
             EnumSet.of(FieldModifier.PUBLIC, FieldModifier.PRIVATE));
 
-    fieldFlagsValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
 
     assertEquals(1, validationExceptions_fail1.size());
   }
 
   @Test
-  public void testClassModifiersValidator_fail2() {
+  public void testFieldModifiersValidator_fail2() {
     List<ValidationException> validationExceptions_fail1 = new ArrayList<>();
 
     JavaSootClass javaSootClass =
         testClassCreatorWithModifiers(
             EnumSet.of(ClassModifier.INTERFACE), EnumSet.of(FieldModifier.PRIVATE));
 
-    fieldFlagsValidator.validate(javaSootClass, validationExceptions_fail1);
+    fieldModifiersValidator.validate(javaSootClass, validationExceptions_fail1);
 
     assertEquals(3, validationExceptions_fail1.size());
   }
