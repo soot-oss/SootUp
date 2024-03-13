@@ -44,7 +44,7 @@ public class Main {
     Stopwatch ptaTimer = Stopwatch.newAndStart("Main PTA (including pre-analysis)");
     String jvmName = ManagementFactory.getRuntimeMXBean().getName();
     String s = jvmName.split("@")[0];
-    long pid = Long.getLong(s);
+    long pid = Long.valueOf(s);
     System.out.println("xxxPid:" + pid);
     MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
     memoryWatcher.start();

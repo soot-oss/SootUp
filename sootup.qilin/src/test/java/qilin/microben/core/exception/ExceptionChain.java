@@ -28,17 +28,17 @@ public class ExceptionChain {
     try {
       if (x <= 10) {
         try {
-          t1 = new ArithmeticException();
+          t1 = new ClassCastException();
           throw t1;
-        } catch (ArithmeticException ex) {
+        } catch (ClassCastException ex) {
           Assert.mayAlias(t1, ex);
           Assert.notAlias(ex, t2);
         }
       } else {
-        t2 = new ClassCastException();
+        t2 = new ArithmeticException();
         throw t2;
       }
-    } catch (ClassCastException e) {
+    } catch (ArithmeticException e) {
       Assert.notAlias(e, t1);
       Assert.mayAlias(e, t2);
     } catch (Exception ey) {

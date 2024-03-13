@@ -88,7 +88,8 @@ public class VirtualCalls {
     } else {
       Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);
       if (otgt.isEmpty()) {
-        System.out.println("Wrarning: signature " + methodSig + " does not have a concrete method.");
+        System.out.println(
+            "Wrarning: signature " + methodSig + " does not have a concrete method.");
       }
       SootMethod target = (SootMethod) otgt.get();
       return target;
