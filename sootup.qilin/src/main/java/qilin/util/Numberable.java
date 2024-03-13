@@ -1,10 +1,10 @@
-package soot;
+package qilin.util;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2003 Ondrej Lhotak
+ * Copyright (C) 2002 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -23,7 +23,12 @@ package soot;
  */
 
 /**
- * A context in a context-sensitive all graph. May be a unit (in a 1CFA call graph) or a Spark
- * AllocNode (in an object-sensitive call graph).
+ * A class that numbers objects, so they can be placed in bitsets.
+ *
+ * @author Ondrej Lhotak
  */
-public interface Context {}
+public interface Numberable {
+  public void setNumber(int number);
+
+  public int getNumber();
+}

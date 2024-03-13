@@ -26,13 +26,13 @@ import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
+import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
+import qilin.core.pag.MethodOrMethodContext;
 import qilin.util.PTAUtils;
-import soot.MethodOrMethodContext;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 

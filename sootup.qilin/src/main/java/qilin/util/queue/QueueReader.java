@@ -1,4 +1,4 @@
-package soot.util.queue;
+package qilin.util.queue;
 
 /*-
  * #%L
@@ -25,7 +25,8 @@ package soot.util.queue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
-import soot.util.Invalidable;
+
+import qilin.util.Invalidable;
 
 /**
  * A queue of Object's. One can add objects to the queue, and they are later read by a QueueReader.

@@ -20,8 +20,9 @@ package qilin.core.sets;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import soot.util.BitSetIterator;
-import soot.util.BitVector;
+
+import qilin.util.BitSetIterator;
+import qilin.util.BitVector;
 
 /**
  * Hybrid implementation of points-to set, which uses an explicit array for small sets, and a bit

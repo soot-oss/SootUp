@@ -18,12 +18,12 @@
 
 package qilin.parm.ctxcons;
 
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import soot.Context;
-import soot.MethodOrMethodContext;
+import qilin.core.pag.MethodOrMethodContext;
 import sootup.core.model.SootMethod;
 
 // implementation of selective hybrid context...(Yannis pldi'13)

@@ -19,8 +19,7 @@
 package qilin.core.pag;
 
 import java.util.Objects;
-import soot.Kind;
-import soot.MethodOrMethodContext;
+import qilin.core.builder.callgraph.Kind;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.signatures.MethodSubSignature;

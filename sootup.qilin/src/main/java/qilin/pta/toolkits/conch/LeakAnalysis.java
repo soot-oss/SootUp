@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
+import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 

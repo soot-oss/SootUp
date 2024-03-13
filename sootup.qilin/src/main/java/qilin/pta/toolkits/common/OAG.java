@@ -27,7 +27,7 @@ import qilin.core.pag.MethodPAG;
 import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.graph.DirectedGraph;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.QueueReader;
 import sootup.core.model.SootMethod;
 
 /** Implementation of Object Allocation Graph (OAG). */

@@ -1,10 +1,10 @@
-package soot.util;
+package qilin.util;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2005 Ondrej Lhotak
+ * Copyright (C) 2002 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,20 +22,33 @@ package soot.util;
  * #L%
  */
 
-/**
- * A class implementing this interface can be invalidated. The invalidation state can be retrieved
- * by other classes.
- *
- * @author Marc Miltenberger
- */
-public interface Invalidable {
-  /**
-   * Return true if the object is invalid.
-   *
-   * @return true if the object is invalid.
-   */
-  public boolean isInvalid();
+import heros.ThreadSafe;
 
-  /** Invalidates the object. Does nothing if the object is already invalid. */
-  public void invalidate();
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * A class that numbers strings, so they can be placed in bitsets.
+ *
+ * @author Ondrej Lhotak
+ */
+@ThreadSafe
+public class StringNumberer extends ArrayNumberer<NumberedString> {
+
+  private final Map<String, NumberedString> stringToNumbered =
+      new HashMap<String, NumberedString>(1024);
+
+  public synchronized NumberedString findOrAdd(String s) {
+    NumberedString ret = stringToNumbered.get(s);
+    if (ret == null) {
+      ret = new NumberedString(s);
+      stringToNumbered.put(s, ret);
+      add(ret);
+    }
+    return ret;
+  }
+
+  public NumberedString find(String s) {
+    return stringToNumbered.get(s);
+  }
 }

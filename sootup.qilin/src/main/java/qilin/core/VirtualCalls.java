@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.util.queue.ChunkedQueue;
+import qilin.util.queue.ChunkedQueue;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;

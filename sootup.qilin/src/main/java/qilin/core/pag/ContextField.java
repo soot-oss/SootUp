@@ -19,10 +19,10 @@
 package qilin.core.pag;
 
 import qilin.CoreConfig;
+import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.util.PTAUtils;
-import soot.Context;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
 

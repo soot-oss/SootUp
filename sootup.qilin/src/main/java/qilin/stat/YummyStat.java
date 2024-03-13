@@ -25,10 +25,10 @@ import java.util.Set;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.Edge;
+import qilin.core.pag.MethodOrMethodContext;
 import qilin.core.sets.PointsToSet;
-import soot.MethodOrMethodContext;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 

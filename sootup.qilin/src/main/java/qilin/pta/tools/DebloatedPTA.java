@@ -19,6 +19,7 @@
 package qilin.pta.tools;
 
 import java.util.*;
+import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
@@ -33,8 +34,6 @@ import qilin.pta.toolkits.debloaterx.CollectionHeuristic;
 import qilin.pta.toolkits.debloaterx.DebloaterX;
 import qilin.stat.IEvaluator;
 import qilin.util.Stopwatch;
-import soot.Context;
-import soot.MethodOrMethodContext;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;

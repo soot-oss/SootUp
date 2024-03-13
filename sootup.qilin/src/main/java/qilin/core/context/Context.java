@@ -1,10 +1,10 @@
-package soot.util;
+package qilin.core.context;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2005 Ondrej Lhotak
+ * Copyright (C) 2003 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,15 +22,8 @@ package soot.util;
  * #L%
  */
 
-import java.util.Iterator;
-
 /**
- * A numberer which also supports an iterator on newly-added objects.
- *
- * @author xiao, generalize the interface
+ * A context in a context-sensitive all graph. May be a unit (in a 1CFA call graph) or a Spark
+ * AllocNode (in an object-sensitive call graph).
  */
-public interface IterableNumberer<E> extends Numberer<E>, Iterable<E> {
-  /** Returns an iterator over all objects added to the numberer. */
-  @Override
-  Iterator<E> iterator();
-}
+public interface Context {}

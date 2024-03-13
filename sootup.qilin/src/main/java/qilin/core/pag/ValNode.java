@@ -19,7 +19,7 @@
 package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
-import soot.util.Numberable;
+import qilin.util.Numberable;
 import sootup.core.types.Type;
 
 /** Represents a simple of pointer node in the pointer assignment graph. */

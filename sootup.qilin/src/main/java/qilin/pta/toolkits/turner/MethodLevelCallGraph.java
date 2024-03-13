@@ -19,9 +19,9 @@
 package qilin.pta.toolkits.turner;
 
 import java.util.Collection;
+import qilin.core.builder.callgraph.CallGraph;
 import qilin.util.graph.DirectedGraph;
 import qilin.util.graph.DirectedGraphImpl;
-import soot.jimple.toolkits.callgraph.CallGraph;
 import sootup.core.model.SootMethod;
 
 public class MethodLevelCallGraph implements DirectedGraph<SootMethod> {

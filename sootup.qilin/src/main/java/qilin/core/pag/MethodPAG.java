@@ -24,18 +24,18 @@ import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import soot.util.queue.ChunkedQueue;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.ChunkedQueue;
+import qilin.util.queue.QueueReader;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
-import sootup.core.jimple.common.stmt.JThrowStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.util.DotExporter;
 
 /**
  * Part of a pointer assignment graph for a single method.
@@ -97,7 +97,7 @@ public class MethodPAG {
             "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
       return;
     }
-    // buildException();
+    buildException();
     buildNormal();
     addMiscEdges();
   }
@@ -127,77 +127,32 @@ public class MethodPAG {
     if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
       return;
     }
-    List<Trap> traps = body.getTraps();
-    //    List<Stmt> units = body.getStmts();
-    Set<Stmt> inTraps = DataFactory.createSet();
-    /*
-     * The traps is already visited in order. <a>, <b>; implies <a> is a previous Trap of <b>.
-     * */
-    traps.forEach(
-        trap -> {
-          StmtGraph<?> stmtGraph = body.getStmtGraph();
-          List<Stmt> succs = stmtGraph.getAllSuccessors(trap.getBeginStmt());
-          while (true) {
-            if (succs.contains(trap.getEndStmt())) {
-              break;
-            }
-            if (succs.size() == 0) {
-              break;
-            }
-            List<Stmt> tmp = new ArrayList<>();
-            for (Stmt stmt : succs) {
-              inTraps.add(stmt);
-              Node src = null;
-              if (stmt.containsInvokeExpr()) {
-                // note, method.getExceptions() does not return implicit exceptions.
-                src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-              } else if (stmt instanceof JThrowStmt) {
-                JThrowStmt ts = (JThrowStmt) stmt;
-                src = nodeFactory.getNode(ts.getOp());
-              }
-              if (src != null) {
-                addStmtTrap(src, stmt, trap);
-              }
-              tmp.addAll(stmtGraph.getAllSuccessors(stmt));
-            }
-            succs = tmp;
-          }
-          //            units.iterator(trap.getBeginStmt(), trap.getEndStmt()).forEachRemaining(unit
-          // -> {
-          //                if (unit == trap.getEndUnit()) {
-          //                    return;
-          //                }
-          //                inTraps.add(unit);
-          //                Stmt stmt = unit;
-          //                Node src = null;
-          //                if (stmt.containsInvokeExpr()) {
-          //                    // note, method.getExceptions() does not return implicit exceptions.
-          //                    src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-          //                } else if (stmt instanceof JThrowStmt ts) {
-          //                    src = nodeFactory.getNode(ts.getOp());
-          //                }
-          //                if (src != null) {
-          //                    addStmtTrap(src, stmt, trap);
-          //                }
-          //            });
-        });
-
-    for (Stmt stmt : body.getStmts()) {
-      if (inTraps.contains(stmt)) {
-        continue;
+    if (method
+            .getSignature()
+            .toString()
+            .equals(
+                "<qilin.microben.core.exception.SimpleException: void main(java.lang.String[])>")
+        || method
+            .getSignature()
+            .toString()
+            .equals("<qilin.microben.core.exception.ExceptionChain: void foo(int)>")) {
+      StmtGraph<?> stmtGraph = body.getStmtGraph();
+      for (Stmt stmt : stmtGraph.getStmts()) {
+        System.out.println("my: " + stmt);
+        stmtGraph
+            .exceptionalSuccessors(stmt)
+            .forEach(
+                (t, s) -> {
+                  System.out.println(t + "=>" + s);
+                });
       }
-      Node src = null;
-      if (stmt.containsInvokeExpr()) {
-        src = nodeFactory.makeInvokeStmtThrowVarNode(stmt, method);
-      } else if (stmt instanceof JThrowStmt) {
-        JThrowStmt ts = (JThrowStmt) stmt;
-        src = nodeFactory.getNode(ts.getOp());
-      }
-      if (src != null) {
-        node2wrapperedTraps.computeIfAbsent(src, k -> DataFactory.createMap());
-        stmt2wrapperedTraps.computeIfAbsent(stmt, k -> DataFactory.createList());
-      }
+      System.out.println("===========================================");
+      System.out.println(DotExporter.createUrlToWebeditor(stmtGraph));
+      System.out.println("++++++++++++++++++++++++++++++++++++++++++++");
     }
+    // List<Trap> traps = body.getTraps();
+    // //    List<Stmt> units = body.getStmts();
+    // Set<Stmt> inTraps = DataFactory.createSet();
   }
 
   private void addStmtTrap(Node src, Stmt stmt, Trap trap) {

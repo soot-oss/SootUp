@@ -22,7 +22,7 @@ import java.util.Optional;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
 import qilin.core.context.ContextElement;
-import soot.util.Numberable;
+import qilin.util.Numberable;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;

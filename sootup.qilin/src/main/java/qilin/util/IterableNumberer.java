@@ -1,10 +1,10 @@
-package soot;
+package qilin.util;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2003 Ondrej Lhotak
+ * Copyright (C) 2005 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,15 +22,15 @@ package soot;
  * #L%
  */
 
-import sootup.core.model.SootMethod;
+import java.util.Iterator;
 
 /**
- * A common interface for either just a method, or a method with context.
+ * A numberer which also supports an iterator on newly-added objects.
  *
- * @author Ondrej Lhotak
+ * @author xiao, generalize the interface
  */
-public interface MethodOrMethodContext {
-  public SootMethod method();
-
-  public Context context();
+public interface IterableNumberer<E> extends Numberer<E>, Iterable<E> {
+  /** Returns an iterator over all objects added to the numberer. */
+  @Override
+  Iterator<E> iterator();
 }

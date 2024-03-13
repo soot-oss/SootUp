@@ -20,6 +20,7 @@ package qilin.pta.toolkits.dd;
 
 import java.util.HashMap;
 import java.util.Map;
+import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
@@ -28,7 +29,6 @@ import qilin.parm.ctxcons.HybObjCtxConstructor;
 import qilin.parm.ctxcons.ObjCtxConstructor;
 import qilin.parm.ctxcons.TypeCtxConstructor;
 import qilin.parm.select.CtxSelector;
-import soot.Context;
 import sootup.core.model.SootMethod;
 
 public class DataDrivenSelector extends CtxSelector {

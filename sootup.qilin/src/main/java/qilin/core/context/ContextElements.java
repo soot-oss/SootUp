@@ -19,7 +19,6 @@
 package qilin.core.context;
 
 import java.util.Arrays;
-import soot.Context;
 
 public class ContextElements implements Context {
   private final ContextElement[] array;

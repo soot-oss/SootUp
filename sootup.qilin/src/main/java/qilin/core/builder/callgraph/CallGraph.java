@@ -1,4 +1,4 @@
-package soot.jimple.toolkits.callgraph;
+package qilin.core.builder.callgraph;
 
 /*-
  * #%L
@@ -29,10 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import soot.Kind;
-import soot.MethodOrMethodContext;
-import soot.util.queue.ChunkedQueue;
-import soot.util.queue.QueueReader;
+import qilin.core.pag.MethodOrMethodContext;
+import qilin.util.queue.ChunkedQueue;
+import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 

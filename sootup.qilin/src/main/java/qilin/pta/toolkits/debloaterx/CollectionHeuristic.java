@@ -16,7 +16,7 @@ import qilin.core.pag.Node;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
 import qilin.util.PTAUtils;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.QueueReader;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;

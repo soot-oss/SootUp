@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import soot.util.Numberable;
+import qilin.util.Numberable;
 
 /**
  * Represents a field reference node in the pointer assignment graph.

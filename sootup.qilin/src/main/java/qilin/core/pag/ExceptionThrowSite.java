@@ -19,7 +19,6 @@
 package qilin.core.pag;
 
 import java.util.Objects;
-import soot.MethodOrMethodContext;
 import sootup.core.jimple.common.stmt.Stmt;
 
 public class ExceptionThrowSite {

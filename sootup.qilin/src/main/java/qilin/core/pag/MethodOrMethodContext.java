@@ -1,10 +1,12 @@
-package soot.util;
+package qilin.core.pag;
+
+import qilin.core.context.Context;
 
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 2002 Ondrej Lhotak
+ * Copyright (C) 2003 Ondrej Lhotak
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,13 +24,15 @@ package soot.util;
  * #L%
  */
 
+import sootup.core.model.SootMethod;
+
 /**
- * A class that numbers objects, so they can be placed in bitsets.
+ * A common interface for either just a method, or a method with context.
  *
  * @author Ondrej Lhotak
  */
-public interface Numberable {
-  public void setNumber(int number);
+public interface MethodOrMethodContext {
+  public SootMethod method();
 
-  public int getNumber();
+  public Context context();
 }

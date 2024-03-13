@@ -1,4 +1,4 @@
-package soot.util.queue;
+package qilin.util.queue;
 
 /*-
  * #%L

@@ -18,7 +18,7 @@
 
 package qilin.core.pag;
 
-import soot.Context;
+import qilin.core.context.Context;
 
 public class ContextVarNode extends VarNode {
   private final Context context;

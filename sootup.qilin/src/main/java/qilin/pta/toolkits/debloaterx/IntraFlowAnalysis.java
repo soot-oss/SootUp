@@ -7,8 +7,8 @@ import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Pair;
+import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import soot.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.NullConstant;
@@ -170,7 +170,7 @@ public class IntraFlowAnalysis {
               new ContextMethod(method, utility.getPta().emptyContext()),
               iie,
               subSig,
-              soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
+              qilin.core.builder.callgraph.Edge.ieToKind(iie));
       QueueReader<SootMethod> targets = PTAUtils.dispatch(type, virtualCallSite);
       while (targets.hasNext()) {
         SootMethod target = targets.next();

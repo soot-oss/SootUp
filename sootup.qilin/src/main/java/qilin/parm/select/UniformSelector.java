@@ -18,10 +18,10 @@
 
 package qilin.parm.select;
 
+import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
-import soot.Context;
 import sootup.core.model.SootMethod;
 
 public class UniformSelector extends CtxSelector {

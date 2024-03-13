@@ -23,8 +23,8 @@ import java.util.Set;
 import qilin.core.pag.*;
 import qilin.util.Pair;
 import qilin.util.graph.DirectedGraphImpl;
+import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
-import soot.util.queue.QueueReader;
 
 /*
  * a simplified method PAG with the effects of static load and store being eliminated.

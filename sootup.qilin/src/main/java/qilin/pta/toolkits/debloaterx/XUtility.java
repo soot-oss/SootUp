@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
+import qilin.core.builder.callgraph.CallGraph;
+import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
-import soot.util.queue.QueueReader;
+import qilin.util.queue.QueueReader;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -239,7 +239,7 @@ public class XUtility {
                 new ContextMethod(srcM, pta.emptyContext()),
                 iie,
                 subSig,
-                soot.jimple.toolkits.callgraph.Edge.ieToKind(iie));
+                qilin.core.builder.callgraph.Edge.ieToKind(iie));
         vcallsites.add(virtualCallSite);
       } else {
         throw new RuntimeException("ie could not be of " + ie.getClass());

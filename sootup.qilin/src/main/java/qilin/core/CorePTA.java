@@ -18,12 +18,12 @@
 
 package qilin.core;
 
+import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
 import qilin.parm.select.CtxSelector;
-import soot.*;
 import sootup.core.model.SootMethod;
 
 /*

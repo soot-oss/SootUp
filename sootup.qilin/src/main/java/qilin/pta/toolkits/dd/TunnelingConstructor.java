@@ -20,11 +20,11 @@ package qilin.pta.toolkits.dd;
 
 import java.util.HashMap;
 import java.util.Map;
+import qilin.core.context.Context;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
+import qilin.core.pag.MethodOrMethodContext;
 import qilin.parm.ctxcons.*;
-import soot.Context;
-import soot.MethodOrMethodContext;
 import sootup.core.model.SootMethod;
 
 public class TunnelingConstructor implements CtxConstructor {
