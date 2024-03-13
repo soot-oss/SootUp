@@ -71,7 +71,7 @@ public class SimplifiedEvaluator implements IEvaluator {
     // loop over all reachable method's statement to find casts, local
     // references, virtual call sites
     Set<SootMethod> reachableMethods = new HashSet<>();
-    for (MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
+    for (ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod sm = momc.method();
       reachableMethods.add(sm);
     }

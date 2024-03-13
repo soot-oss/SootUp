@@ -25,7 +25,7 @@ import qilin.core.context.TypeContextElement;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 // implementation of type context...(Yannis popl'11)
@@ -33,7 +33,7 @@ public class TypeCtxConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      MethodOrMethodContext caller,
+      ContextMethod caller,
       ContextAllocNode receiverNode,
       CallSite callSite,
       SootMethod target) {

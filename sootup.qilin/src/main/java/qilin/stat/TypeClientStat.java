@@ -26,7 +26,7 @@ import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.CallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.AllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -69,7 +69,7 @@ public class TypeClientStat implements AbstractStat {
     // loop over all reachable method's statement to find casts, local
     // references, virtual call sites
     Set<SootMethod> reachableMethods = new HashSet<>();
-    for (MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
+    for (ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod sm = momc.method();
       reachableMethods.add(sm);
     }

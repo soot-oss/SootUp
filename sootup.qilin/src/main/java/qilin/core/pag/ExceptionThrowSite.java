@@ -24,15 +24,15 @@ import sootup.core.jimple.common.stmt.Stmt;
 public class ExceptionThrowSite {
   private final Stmt unit;
   private final VarNode throwNode;
-  private final MethodOrMethodContext container;
+  private final ContextMethod container;
 
-  public ExceptionThrowSite(VarNode throwNode, Stmt unit, MethodOrMethodContext container) {
+  public ExceptionThrowSite(VarNode throwNode, Stmt unit, ContextMethod container) {
     this.unit = unit;
     this.container = container;
     this.throwNode = throwNode;
   }
 
-  public MethodOrMethodContext container() {
+  public ContextMethod container() {
     return container;
   }
 

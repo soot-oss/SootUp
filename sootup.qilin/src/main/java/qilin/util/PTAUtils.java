@@ -216,7 +216,7 @@ public final class PTAUtils {
     if (site.kind() == Kind.THREAD && !PTAScene.v().canStoreType(type, clRunnable)) {
       return targets;
     }
-    MethodOrMethodContext container = site.container();
+    ContextMethod container = site.container();
     if (site.iie() instanceof JSpecialInvokeExpr && site.kind() != Kind.THREAD) {
       SootMethod target =
           VirtualCalls.v()

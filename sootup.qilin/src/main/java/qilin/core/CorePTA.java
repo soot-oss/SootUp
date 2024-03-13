@@ -57,7 +57,7 @@ public abstract class CorePTA extends PTA {
 
   @Override
   public Context createCalleeCtx(
-      MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
     return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
   }
 
@@ -114,7 +114,7 @@ public abstract class CorePTA extends PTA {
 
   /** Finds or creates the ContextMethod for method and context. */
   @Override
-  public MethodOrMethodContext parameterize(SootMethod method, Context context) {
+  public ContextMethod parameterize(SootMethod method, Context context) {
     Context ctx = ctxSel.select(method, context);
     return pag.makeContextMethod(ctx, method);
   }

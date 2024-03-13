@@ -1,7 +1,7 @@
 package qilin.core.builder.callgraph;
 
 import qilin.core.context.Context;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import qilin.util.Invalidable;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
@@ -22,10 +22,10 @@ public final class Edge implements Invalidable {
    * The method in which the call occurs; may be null for calls not occurring in a specific method
    * (eg. implicit calls by the VM)
    */
-  private MethodOrMethodContext src;
+  private ContextMethod src;
 
   /** The target method of the call edge. */
-  private MethodOrMethodContext tgt;
+  private ContextMethod tgt;
 
   /**
    * The unit at which the call occurs; may be null for calls not occurring at a specific statement
@@ -41,14 +41,14 @@ public final class Edge implements Invalidable {
 
   private boolean invalid = false;
 
-  public Edge(MethodOrMethodContext src, Stmt srcUnit, MethodOrMethodContext tgt, Kind kind) {
+  public Edge(ContextMethod src, Stmt srcUnit, ContextMethod tgt, Kind kind) {
     this.src = src;
     this.srcUnit = srcUnit;
     this.tgt = tgt;
     this.kind = kind;
   }
 
-  public Edge(MethodOrMethodContext src, Stmt srcUnit, MethodOrMethodContext tgt) {
+  public Edge(ContextMethod src, Stmt srcUnit, ContextMethod tgt) {
     this.kind = ieToKind(srcUnit.getInvokeExpr());
     this.src = src;
     this.srcUnit = srcUnit;
@@ -63,7 +63,7 @@ public final class Edge implements Invalidable {
     return (src == null) ? null : src.context();
   }
 
-  public MethodOrMethodContext getSrc() {
+  public ContextMethod getSrc() {
     return src;
   }
 
@@ -83,7 +83,7 @@ public final class Edge implements Invalidable {
     return (tgt == null) ? null : tgt.context();
   }
 
-  public MethodOrMethodContext getTgt() {
+  public ContextMethod getTgt() {
     return tgt;
   }
 

@@ -27,7 +27,6 @@ import qilin.core.builder.callgraph.CallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.*;
-import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.HeapAbstractor;
@@ -84,7 +83,7 @@ public abstract class PTA implements PointsToAnalysis {
     return callGraph;
   }
 
-  public Collection<MethodOrMethodContext> getReachableMethods() {
+  public Collection<ContextMethod> getReachableMethods() {
     return cgb.getReachableMethods();
   }
 
@@ -102,14 +101,14 @@ public abstract class PTA implements PointsToAnalysis {
 
   public abstract Node parameterize(Node n, Context context);
 
-  public abstract MethodOrMethodContext parameterize(SootMethod method, Context context);
+  public abstract ContextMethod parameterize(SootMethod method, Context context);
 
   public abstract AllocNode getRootNode();
 
   public abstract Context emptyContext();
 
   public abstract Context createCalleeCtx(
-      MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
+    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
 
   public abstract HeapAbstractor heapAbstractor();
 

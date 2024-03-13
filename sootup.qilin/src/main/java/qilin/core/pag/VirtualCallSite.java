@@ -31,7 +31,7 @@ import sootup.core.signatures.MethodSubSignature;
  */
 public class VirtualCallSite extends CallSite {
   private final VarNode recNode;
-  private final MethodOrMethodContext container;
+  private final ContextMethod container;
   private final AbstractInstanceInvokeExpr iie;
   private final MethodSubSignature subSig;
   private final Kind kind;
@@ -39,7 +39,7 @@ public class VirtualCallSite extends CallSite {
   public VirtualCallSite(
       VarNode recNode,
       Stmt stmt,
-      MethodOrMethodContext container,
+      ContextMethod container,
       AbstractInstanceInvokeExpr iie,
       MethodSubSignature subSig,
       Kind kind) {
@@ -55,7 +55,7 @@ public class VirtualCallSite extends CallSite {
     return recNode;
   }
 
-  public MethodOrMethodContext container() {
+  public ContextMethod container() {
     return container;
   }
 

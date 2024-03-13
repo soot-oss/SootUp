@@ -23,7 +23,7 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 // implementation of obj context...(Ana Tosem'05)
@@ -31,7 +31,7 @@ public class ObjCtxConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      MethodOrMethodContext caller,
+      ContextMethod caller,
       ContextAllocNode receiverNode,
       CallSite callSite,
       SootMethod target) {

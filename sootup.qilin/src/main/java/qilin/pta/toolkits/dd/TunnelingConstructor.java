@@ -23,7 +23,7 @@ import java.util.Map;
 import qilin.core.context.Context;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import qilin.parm.ctxcons.*;
 import sootup.core.model.SootMethod;
 
@@ -41,7 +41,7 @@ public class TunnelingConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      MethodOrMethodContext caller,
+      ContextMethod caller,
       ContextAllocNode receiverNode,
       CallSite callSite,
       SootMethod target) {

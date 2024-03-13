@@ -69,7 +69,7 @@ public class PAG {
   // ========================= context-sensitive nodes =================================
   protected final Map<VarNode, Map<Context, ContextVarNode>> contextVarNodeMap;
   protected final Map<AllocNode, Map<Context, ContextAllocNode>> contextAllocNodeMap;
-  protected final Map<SootMethod, Map<Context, MethodOrMethodContext>> contextMethodMap;
+  protected final Map<SootMethod, Map<Context, ContextMethod>> contextMethodMap;
   protected final Map<MethodPAG, Set<Context>> addedContexts;
   protected final Map<Context, Map<SparkField, ContextField>> contextFieldMap;
 
@@ -425,8 +425,8 @@ public class PAG {
   }
 
   /** Finds or creates the ContextMethod for method and context. */
-  public MethodOrMethodContext makeContextMethod(Context context, SootMethod method) {
-    Map<Context, MethodOrMethodContext> contextMap =
+  public ContextMethod makeContextMethod(Context context, SootMethod method) {
+    Map<Context, ContextMethod> contextMap =
         contextMethodMap.computeIfAbsent(method, k1 -> DataFactory.createMap());
     return contextMap.computeIfAbsent(context, k -> new ContextMethod(method, context));
   }
@@ -453,7 +453,7 @@ public class PAG {
     return contextAllocNodeMap;
   }
 
-  public Map<SootMethod, Map<Context, MethodOrMethodContext>> getContextMethodMap() {
+  public Map<SootMethod, Map<Context, ContextMethod>> getContextMethodMap() {
     return contextMethodMap;
   }
 

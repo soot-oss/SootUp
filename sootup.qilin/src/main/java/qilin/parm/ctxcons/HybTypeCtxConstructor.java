@@ -24,7 +24,7 @@ import qilin.core.context.ContextElements;
 import qilin.core.context.TypeContextElement;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 // implementation of selective hybrid context...(Yannis pldi'13)
@@ -32,7 +32,7 @@ public class HybTypeCtxConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      MethodOrMethodContext caller,
+      ContextMethod caller,
       ContextAllocNode receiverNode,
       CallSite callSite,
       SootMethod target) {

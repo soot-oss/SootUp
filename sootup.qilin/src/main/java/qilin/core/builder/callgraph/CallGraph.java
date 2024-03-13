@@ -29,7 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import qilin.core.pag.MethodOrMethodContext;
+
+import qilin.core.pag.ContextMethod;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -46,11 +47,11 @@ public class CallGraph implements Iterable<Edge> {
   protected Set<Edge> edges = new LinkedHashSet<Edge>();
   protected ChunkedQueue<Edge> stream = new ChunkedQueue<Edge>();
   protected QueueReader<Edge> reader = stream.reader();
-  protected Map<MethodOrMethodContext, Edge> srcMethodToEdge =
-      new LinkedHashMap<MethodOrMethodContext, Edge>();
+  protected Map<ContextMethod, Edge> srcMethodToEdge =
+      new LinkedHashMap<ContextMethod, Edge>();
   protected Map<Stmt, Edge> srcUnitToEdge = new LinkedHashMap<Stmt, Edge>();
-  protected Map<MethodOrMethodContext, Edge> tgtToEdge =
-      new LinkedHashMap<MethodOrMethodContext, Edge>();
+  protected Map<ContextMethod, Edge> tgtToEdge =
+      new LinkedHashMap<ContextMethod, Edge>();
   protected Edge dummy = new Edge(null, null, null, Kind.INVALID);
 
   /** Used to add an edge to the call graph. Returns true iff the edge was not already present. */
@@ -122,8 +123,8 @@ public class CallGraph implements Iterable<Edge> {
     boolean hasSwapped = false;
     for (Iterator<Edge> edgeRdr = edgesOutOf(out); edgeRdr.hasNext(); ) {
       Edge e = edgeRdr.next();
-      MethodOrMethodContext src = e.getSrc();
-      MethodOrMethodContext tgt = e.getTgt();
+      ContextMethod src = e.getSrc();
+      ContextMethod tgt = e.getTgt();
       removeEdge(e);
       e.remove();
       addEdge(new Edge(src, in, tgt));
@@ -236,7 +237,7 @@ public class CallGraph implements Iterable<Edge> {
   }
 
   /** Returns an iterator over all methods that are the sources of at least one edge. */
-  public Iterator<MethodOrMethodContext> sourceMethods() {
+  public Iterator<ContextMethod> sourceMethods() {
     return srcMethodToEdge.keySet().iterator();
   }
 
@@ -282,15 +283,15 @@ public class CallGraph implements Iterable<Edge> {
   }
 
   /** Returns an iterator over all edges that have m as their source method. */
-  public Iterator<Edge> edgesOutOf(MethodOrMethodContext m) {
+  public Iterator<Edge> edgesOutOf(ContextMethod m) {
     return new TargetsOfMethodIterator(m);
   }
 
   class TargetsOfMethodIterator implements Iterator<Edge> {
-    private final MethodOrMethodContext m;
+    private final ContextMethod m;
     private Edge position;
 
-    TargetsOfMethodIterator(MethodOrMethodContext m) {
+    TargetsOfMethodIterator(ContextMethod m) {
       this.m = m;
       if (m == null) {
         throw new RuntimeException();
@@ -323,15 +324,15 @@ public class CallGraph implements Iterable<Edge> {
   }
 
   /** Returns an iterator over all edges that have m as their target method. */
-  public Iterator<Edge> edgesInto(MethodOrMethodContext m) {
+  public Iterator<Edge> edgesInto(ContextMethod m) {
     return new CallersOfMethodIterator(m);
   }
 
   class CallersOfMethodIterator implements Iterator<Edge> {
-    private final MethodOrMethodContext m;
+    private final ContextMethod m;
     private Edge position;
 
-    CallersOfMethodIterator(MethodOrMethodContext m) {
+    CallersOfMethodIterator(ContextMethod m) {
       this.m = m;
       if (m == null) {
         throw new RuntimeException();

@@ -85,7 +85,7 @@ public class ZipperPTA extends StagedPTA {
   protected void extraStats() {
     int[] RM = new int[1], PCN = new int[1], NPCN = new int[1];
     int[] totalN = new int[1];
-    for (MethodOrMethodContext momc : prePTA.getReachableMethods()) {
+    for (ContextMethod momc : prePTA.getReachableMethods()) {
       SootMethod method = momc.method();
       Set<Object> nodes = new HashSet<>();
 

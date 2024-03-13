@@ -67,7 +67,7 @@ public class ExceptionHandler {
    * */
   public void dispatch(AllocNode throwObj, ExceptionThrowSite site) {
     Type type = throwObj.getType();
-    MethodOrMethodContext momc = site.container();
+    ContextMethod momc = site.container();
     SootMethod sm = momc.method();
     Context context = momc.context();
     MethodPAG mpag = pag.getMethodPAG(sm);

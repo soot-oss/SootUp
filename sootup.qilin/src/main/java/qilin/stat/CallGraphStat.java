@@ -31,7 +31,6 @@ import qilin.core.builder.callgraph.Edge;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.core.pag.MethodOrMethodContext;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -41,8 +40,8 @@ public class CallGraphStat implements AbstractStat {
 
   private final Set<SootMethod> reachableMethods = new HashSet<>();
   private int reachableStatic = 0;
-  private final Set<MethodOrMethodContext> reachableParameterizedMethods = new HashSet<>();
-  private final Set<MethodOrMethodContext> reachableAppParameterizedMethods = new HashSet<>();
+  private final Set<ContextMethod> reachableParameterizedMethods = new HashSet<>();
+  private final Set<ContextMethod> reachableAppParameterizedMethods = new HashSet<>();
   private final Set<SootMethod> reachableAppMethods = new HashSet<>();
   private int reachableAppStatic = 0;
   private int CSCallEdges = 0;
@@ -79,7 +78,7 @@ public class CallGraphStat implements AbstractStat {
     //
     CallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();
-    for (final MethodOrMethodContext momc : pta.getCgb().getReachableMethods()) {
+    for (final ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod m = momc.method();
       boolean toApp = PTAUtils.isApplicationMethod(m);
       reachableParameterizedMethods.add(momc);

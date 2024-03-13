@@ -55,7 +55,7 @@ public class Solver extends Propagator {
   private final ChunkedQueue<VirtualCallSite> virtualCallSiteQueue = new ChunkedQueue<>();
   private final ChunkedQueue<Node> edgeQueue = new ChunkedQueue<>();
 
-  private final ChunkedQueue<MethodOrMethodContext> rmQueue = new ChunkedQueue<>();
+  private final ChunkedQueue<ContextMethod> rmQueue = new ChunkedQueue<>();
 
   public Solver(PTA pta) {
     this.cgb = pta.getCgb();
@@ -68,7 +68,7 @@ public class Solver extends Propagator {
 
   @Override
   public void propagate() {
-    final QueueReader<MethodOrMethodContext> newRMs = rmQueue.reader();
+    final QueueReader<ContextMethod> newRMs = rmQueue.reader();
     final QueueReader<Node> newPAGEdges = edgeQueue.reader();
     final QueueReader<ExceptionThrowSite> newThrows = throwSiteQueue.reader();
     final QueueReader<VirtualCallSite> newCalls = virtualCallSiteQueue.reader();
@@ -105,9 +105,9 @@ public class Solver extends Propagator {
     }
   }
 
-  public void processStmts(Iterator<MethodOrMethodContext> newRMs) {
+  public void processStmts(Iterator<ContextMethod> newRMs) {
     while (newRMs.hasNext()) {
-      MethodOrMethodContext momc = newRMs.next();
+      ContextMethod momc = newRMs.next();
       SootMethod method = momc.method();
       if (!method.isConcrete() && !method.isNative()) {
         continue;
@@ -130,7 +130,7 @@ public class Solver extends Propagator {
     }
   }
 
-  private void recordCallStmts(MethodOrMethodContext m, Collection<Stmt> units) {
+  private void recordCallStmts(ContextMethod m, Collection<Stmt> units) {
     for (final Stmt s : units) {
       if (s.containsInvokeExpr()) {
         AbstractInvokeExpr ie = s.getInvokeExpr();
@@ -165,7 +165,7 @@ public class Solver extends Propagator {
     }
   }
 
-  private void recordThrowStmts(MethodOrMethodContext m, Collection<Stmt> stmts) {
+  private void recordThrowStmts(ContextMethod m, Collection<Stmt> stmts) {
     for (final Stmt stmt : stmts) {
       SootMethod sm = m.method();
       MethodPAG mpag = pag.getMethodPAG(sm);
@@ -272,7 +272,7 @@ public class Solver extends Propagator {
 
   private void activateConstraints(
       QueueReader<VirtualCallSite> newCalls,
-      QueueReader<MethodOrMethodContext> newRMs,
+      QueueReader<ContextMethod> newRMs,
       QueueReader<ExceptionThrowSite> newThrows,
       QueueReader<Node> addedEdges) {
     while (newCalls.hasNext()) {

@@ -51,8 +51,8 @@ import sootup.core.types.UnknownType;
 public class CallGraphBuilder {
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
   protected final Map<SootMethod, Map<Object, Stmt>> methodToInvokeStmt;
-  protected final Set<MethodOrMethodContext> reachMethods;
-  private ChunkedQueue<MethodOrMethodContext> rmQueue;
+  protected final Set<ContextMethod> reachMethods;
+  private ChunkedQueue<ContextMethod> rmQueue;
 
   protected final Set<Edge> calledges;
   protected final PTA pta;
@@ -69,11 +69,11 @@ public class CallGraphBuilder {
     calledges = DataFactory.createSet();
   }
 
-  public void setRMQueue(ChunkedQueue<MethodOrMethodContext> rmQueue) {
+  public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {
     this.rmQueue = rmQueue;
   }
 
-  public Collection<MethodOrMethodContext> getReachableMethods() {
+  public Collection<ContextMethod> getReachableMethods() {
     return reachMethods;
   }
 
@@ -124,7 +124,7 @@ public class CallGraphBuilder {
         });
   }
 
-  public List<MethodOrMethodContext> getEntryPoints() {
+  public List<ContextMethod> getEntryPoints() {
     Node thisRef = pag.getMethodPAG(PTAScene.v().getFakeMainMethod()).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, pta.emptyContext());
     pag.addEdge(pta.getRootNode(), thisRef);
@@ -133,14 +133,14 @@ public class CallGraphBuilder {
   }
 
   public void initReachableMethods() {
-    for (MethodOrMethodContext momc : getEntryPoints()) {
+    for (ContextMethod momc : getEntryPoints()) {
       if (reachMethods.add(momc)) {
         rmQueue.add(momc);
       }
     }
   }
 
-  public VarNode getReceiverVarNode(Local receiver, MethodOrMethodContext m) {
+  public VarNode getReceiverVarNode(Local receiver, ContextMethod m) {
     if (receiver.getType() == UnknownType.getInstance()) {
       System.out.println("why unknown??" + m.method() + ";;" + receiver);
       //      Body body = PTAUtils.getMethodBody(m.method());
@@ -178,20 +178,20 @@ public class CallGraphBuilder {
   }
 
   private void addVirtualEdge(
-      MethodOrMethodContext caller,
+    ContextMethod caller,
       Stmt callStmt,
       SootMethod callee,
       Kind kind,
       AllocNode receiverNode) {
     Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
-    MethodOrMethodContext cstarget = pta.parameterize(callee, tgtContext);
+    ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
     Node thisRef = pag.getMethodPAG(callee).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, cstarget.context());
     pag.addEdge(receiverNode, thisRef);
   }
 
-  public void injectCallEdge(Object heapOrType, MethodOrMethodContext callee, Kind kind) {
+  public void injectCallEdge(Object heapOrType, ContextMethod callee, Kind kind) {
     Map<Object, Stmt> stmtMap =
         methodToInvokeStmt.computeIfAbsent(callee.method(), k -> DataFactory.createMap());
     if (!stmtMap.containsKey(heapOrType)) {
@@ -209,15 +209,15 @@ public class CallGraphBuilder {
   }
 
   public void addStaticEdge(
-      MethodOrMethodContext caller, Stmt callStmt, SootMethod calleem, Kind kind) {
+    ContextMethod caller, Stmt callStmt, SootMethod calleem, Kind kind) {
     Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
-    MethodOrMethodContext callee = pta.parameterize(calleem, typeContext);
+    ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));
   }
 
   protected void handleCallEdge(Edge edge) {
     if (calledges.add(edge)) {
-      MethodOrMethodContext callee = edge.getTgt();
+      ContextMethod callee = edge.getTgt();
       if (reachMethods.add(callee)) {
         rmQueue.add(callee);
       }

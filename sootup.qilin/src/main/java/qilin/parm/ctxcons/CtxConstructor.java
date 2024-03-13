@@ -23,12 +23,12 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.CallSite;
 import qilin.core.pag.ContextAllocNode;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import sootup.core.model.SootMethod;
 
 public interface CtxConstructor {
   Context constructCtx(
-      MethodOrMethodContext caller,
+      ContextMethod caller,
       ContextAllocNode receiverNode,
       CallSite callSite,
       SootMethod target);

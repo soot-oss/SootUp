@@ -27,7 +27,7 @@ import qilin.core.PTA;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.CallGraph;
 import qilin.core.builder.callgraph.Edge;
-import qilin.core.pag.MethodOrMethodContext;
+import qilin.core.pag.ContextMethod;
 import qilin.core.sets.PointsToSet;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -66,7 +66,7 @@ public class YummyStat implements AbstractStat {
     singleCallCnt = singleCalls.size();
 
     Set<SootMethod> instanceReachables = new HashSet<>();
-    for (final MethodOrMethodContext momc : pta.getReachableMethods()) {
+    for (final ContextMethod momc : pta.getReachableMethods()) {
       SootMethod method = momc.method();
       if (method.isConcrete() && !method.isStatic()) {
         instanceReachables.add(method);

@@ -140,7 +140,7 @@ public class DebloatedPTA extends StagedPTA {
   }
 
   @Override
-  public MethodOrMethodContext parameterize(SootMethod method, Context context) {
+  public ContextMethod parameterize(SootMethod method, Context context) {
     return basePTA.parameterize(method, context);
   }
 
@@ -161,7 +161,7 @@ public class DebloatedPTA extends StagedPTA {
 
   @Override
   public Context createCalleeCtx(
-      MethodOrMethodContext caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
     return basePTA.createCalleeCtx(caller, receiverNode, callSite, target);
   }
 
