@@ -26,6 +26,10 @@ import java.util.List;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 
+/**
+ * Validator that checks for impossible combinations of field modifiers
+ */
+
 public class FieldModifiersValidator implements ClassValidator {
 
   @Override
