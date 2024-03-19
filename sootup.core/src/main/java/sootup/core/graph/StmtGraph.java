@@ -435,6 +435,18 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       lastIteratedBlock = dummyBlock;
     }
 
+    /**
+     * Closes an active trap.
+     */
+    private void closeTrap(final ClassType type, final Stmt trapEnd, final Stmt trapHandler) {
+      final Stmt trapBeginStmt = activeTraps.remove(type);
+      if (trapBeginStmt == null) {
+        throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
+      }
+      // trapend is exclusive!
+      collectedTraps.add(new Trap(type, trapBeginStmt, trapEnd, trapHandler));
+    }
+
     @Nonnull
     @Override
     public BasicBlock<?> next() {
@@ -448,14 +460,8 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       // former trap info is not in the current blocks info -&gt; add it to the trap collection
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
-            if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
-              final Stmt trapBeginStmt = activeTraps.remove(type);
-              if (trapBeginStmt == null) {
-                throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
-              }
-              // trapend is exclusive!
-              collectedTraps.add(
-                  new Trap(type, trapBeginStmt, block.getHead(), trapHandlerBlock.getHead()));
+            if (trapHandlerBlock != currentBlocksExceptions.get(type)) {
+              closeTrap(type, block.getHead(), trapHandlerBlock.getHead());
             }
           });
 
@@ -484,6 +490,16 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       if (hasNext()) {
         throw new IllegalStateException("Iterator needs to be iterated completely!");
       }
+
+      final Map<? extends ClassType, ? extends BasicBlock<?>> lastBlocksExceptions =
+              lastIteratedBlock.getExceptionalSuccessors();
+
+      // A trap may close on the last iterated block
+      lastBlocksExceptions.forEach(
+              (type, trapHandlerBlock) -> {
+                closeTrap(type, lastIteratedBlock.getTail(), trapHandlerBlock.getHead());
+              });
+
 
       // check for dangling traps that are not collected as the endStmt was not visited.
       if (!activeTraps.isEmpty()) {
