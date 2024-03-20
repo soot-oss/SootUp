@@ -60,7 +60,11 @@ public class JavaModuleViewTest {
         view.getModuleInfo(targetClass.getPackageName().getModuleSignature());
     assertTrue(moduleDescriptor.isPresent());
 
-    int size = view.getModuleClasses(targetClass.getPackageName().getModuleSignature()).size();
+    Collection<JavaSootClass> moduleClasses = view.getModuleClasses(targetClass.getPackageName().getModuleSignature());
+    HashSet<JavaSootClass> javaSootClasses = new HashSet<>(moduleClasses);
+    assertEquals(javaSootClasses.size(), moduleClasses.size());
+
+    int size = moduleClasses.size();
     assertTrue(
         (size > 5500 && size < 6500),
         "actual: " + size); // ~amount of java.base classes -> depends on java implementation..
