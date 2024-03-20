@@ -1,11 +1,8 @@
 package instruction;
 
 import Util.DexUtil;
-import java.util.HashSet;
-import java.util.Set;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction21c;
 import org.jf.dexlib2.iface.reference.TypeReference;
 import sootup.core.jimple.Jimple;
@@ -42,12 +39,4 @@ public class CheckCastInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  @Override
-  public Set<Type> introducedTypes() {
-    ReferenceInstruction i = (ReferenceInstruction) instruction;
-
-    Set<Type> types = new HashSet<Type>();
-    types.add(DexUtil.toSootType(((TypeReference) i.getReference()).getType(), 0));
-    return types;
-  }
 }

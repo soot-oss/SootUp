@@ -3,11 +3,8 @@ package instruction;
 import static Util.Util.dottedClassName;
 
 import Util.DexUtil;
-import java.util.HashSet;
-import java.util.Set;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.ReferenceInstruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction21c;
 import org.jf.dexlib2.iface.instruction.formats.Instruction22c;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
@@ -107,20 +104,4 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     return UnknownType.getInstance();
   }
 
-  @Override
-  public Set<Type> introducedTypes() {
-    Set<Type> types = new HashSet<Type>();
-    // Aput instructions don't have references
-    if (!(instruction instanceof ReferenceInstruction)) {
-      return types;
-    }
-
-    ReferenceInstruction i = (ReferenceInstruction) instruction;
-
-    FieldReference field = (FieldReference) i.getReference();
-
-    types.add(DexUtil.toSootType(field.getType(), 0));
-    types.add(DexUtil.toSootType(field.getDefiningClass(), 0));
-    return types;
-  }
 }

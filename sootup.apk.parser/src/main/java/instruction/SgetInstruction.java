@@ -27,10 +27,4 @@ public class SgetInstruction extends FieldInstruction {
     super(instruction, codeAddress);
   }
 
-  @Override
-  boolean overridesRegister(int register) {
-    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-    int dest = i.getRegisterA();
-    return register == dest;
-  }
 }

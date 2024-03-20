@@ -2,7 +2,6 @@ package instruction;
 
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
-import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -38,10 +37,4 @@ public class AgetInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  @Override
-  boolean overridesRegister(int register) {
-    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-    int dest = i.getRegisterA();
-    return register == dest;
-  }
 }

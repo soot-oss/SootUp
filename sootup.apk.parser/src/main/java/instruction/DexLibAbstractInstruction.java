@@ -46,39 +46,6 @@ public abstract class DexLibAbstractInstruction {
   }
 
   /**
-   * Return the target register that is a copy of the given register. For instruction such as v0 =
-   * v3 (v0 gets the content of v3), movesRegister(3) returns 0 movesRegister(0) returns -1
-   *
-   * <p>Instructions should override this if they copy register content.
-   *
-   * @param register the number of the register
-   * @return the new register number or -1 if it does not move.
-   */
-  int movesRegister(int register) {
-    return -1;
-  }
-
-  /**
-   * Return if the instruction overrides the value in the register.
-   *
-   * <p>Instructions should override this if they modify the registers.
-   *
-   * @param register the number of the register
-   */
-  boolean overridesRegister(int register) {
-    return false;
-  }
-
-  /**
-   * Return the types that are be introduced by this instruction.
-   *
-   * <p>Instructions that may introduce types should override this.
-   */
-  public Set<Type> introducedTypes() {
-    return Collections.emptySet();
-  }
-
-  /**
    * @param instruction the underlying dexlib instruction
    * @param codeAddress the bytecode address of this instruction
    */

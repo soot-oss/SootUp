@@ -29,10 +29,7 @@ import sootup.core.jimple.basic.LocalGenerator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.constant.NullConstant;
-import sootup.core.jimple.common.stmt.BranchingStmt;
-import sootup.core.jimple.common.stmt.JIdentityStmt;
-import sootup.core.jimple.common.stmt.JNopStmt;
-import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.jimple.common.stmt.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
@@ -334,6 +331,9 @@ public class DexBody {
     MethodSignature methodSignature =
         new MethodSignature(
             classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
+//    while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
+//      stmtList.remove(stmtList.size() - 1);
+//    }
     stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =

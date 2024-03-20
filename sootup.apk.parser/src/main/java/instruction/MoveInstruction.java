@@ -24,18 +24,7 @@ public class MoveInstruction extends DexLibAbstractInstruction {
     body.add(jAssignStmt);
   }
 
-  @Override
-  int movesRegister(int register) {
-    TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
-    int dest = i.getRegisterA();
-    int source = i.getRegisterB();
-    if (register == source) {
-      return dest;
-    }
-    return -1;
-  }
-
-  @Override
+    @Override
   int movesToRegister(int register) {
     TwoRegisterInstruction i = (TwoRegisterInstruction) instruction;
     int dest = i.getRegisterA();

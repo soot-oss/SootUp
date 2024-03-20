@@ -1,8 +1,5 @@
 package instruction;
 
-import Util.DexUtil;
-import java.util.HashSet;
-import java.util.Set;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.OneRegisterInstruction;
@@ -13,7 +10,6 @@ import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.ClassConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
 
 public class ConstClassInstruction extends DexLibAbstractInstruction {
@@ -42,19 +38,4 @@ public class ConstClassInstruction extends DexLibAbstractInstruction {
     super(instruction, codeAddress);
   }
 
-  @Override
-  boolean overridesRegister(int register) {
-    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-    int dest = i.getRegisterA();
-    return register == dest;
-  }
-
-  @Override
-  public Set<Type> introducedTypes() {
-    ReferenceInstruction i = (ReferenceInstruction) instruction;
-
-    Set<Type> types = new HashSet<Type>();
-    types.add(DexUtil.toSootType(((TypeReference) i.getReference()).getType(), 0));
-    return types;
-  }
 }

@@ -60,10 +60,4 @@ public class ConstInstruction extends DexLibAbstractInstruction {
     }
   }
 
-  @Override
-  boolean overridesRegister(int register) {
-    OneRegisterInstruction i = (OneRegisterInstruction) instruction;
-    int dest = i.getRegisterA();
-    return register == dest;
-  }
 }

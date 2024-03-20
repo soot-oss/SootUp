@@ -2,16 +2,15 @@ import static Util.Util.dottedClassName;
 import static Util.Util.isByteCodeClassName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.opencsv.CSVWriter;
 import dexpler.DexClassSource;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import instruction.ReturnInstruction;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.AbstractClassSource;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -118,26 +117,6 @@ public class ApkToDexTest {
     }
   }
 
-  public void writeToCSVFile(String app_name, int number_of_classes, long time_taken) {
-    String file_path = "resources/stats_file.csv";
-    boolean fileIsEmpty = new File(file_path).length() == 0;
-    try (CSVWriter csvWriter = new CSVWriter(new FileWriter(file_path, true))) {
-      // If the file is empty, write headers
-      if (fileIsEmpty) {
-        String[] headers = {"app_name", "number_of_classes", "time_taken"};
-        csvWriter.writeNext(headers);
-      }
-
-      // Add data to the CSV file
-      String[] data = {
-        app_name, number_of_classes + "", time_taken + ""
-      }; // Replace with your actual data
-      csvWriter.writeNext(data);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
   @Test
   public void loadAllClasses() {
     long startTime = System.currentTimeMillis();
@@ -161,14 +140,14 @@ public class ApkToDexTest {
         new ApkAnalysisInputLocation<>(
             Paths.get(apk_path),
             "/Users/palaniappanmuthuraman/Documents/android-platforms",
-            Collections.emptyList());
+            DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     Collection<JavaSootClass> classes;
     try {
       System.out.println("Loading Apk: " + name);
       classes = view.getClasses();
       //
-      // view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.viber.voip.ViberApplication: void ViberApplication(android.app.Activity,boolean)>"));
+       view.getMethod(view.getIdentifierFactory().parseMethodSignature("<com.flurry.sdk.w: int w(android.telephony.SignalStrength)>"));
       //        view.getMethod(view.getIdentifierFactory().parseMethodSignature("<mh0.j:
       // java.lang.String j(int,java.lang.String,java.lang.String)>"));
       classes.forEach(JavaSootClass::getMethods);

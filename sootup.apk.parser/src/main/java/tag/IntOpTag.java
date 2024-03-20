@@ -10,8 +10,4 @@ public class IntOpTag implements Tag {
     return NAME;
   }
 
-  @Override
-  public byte[] getValue() {
-    return new byte[1];
-  }
 }
