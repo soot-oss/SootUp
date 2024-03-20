@@ -1,5 +1,6 @@
 package dexpler;
 
+import Util.DexUtil;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
@@ -7,18 +8,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
-import org.jf.dexlib2.iface.DexFile;
+import org.jf.dexlib2.iface.*;
+import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Method;
-import org.jf.dexlib2.iface.MultiDexContainer;
+import sootup.core.IdentifierFactory;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.model.*;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.types.Type;
 import sootup.core.views.View;
-import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaSootClassSource;
-import sootup.java.core.JavaSootMethod;
+import sootup.java.core.*;
 
 public class DexClassSource extends JavaSootClassSource {
 
@@ -65,24 +68,39 @@ public class DexClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Collection<? extends SootField> resolveFields() throws ResolveException {
-    return null;
+    return resolveFields(
+        classInformation.classDefinition.getFields(),
+        JavaIdentifierFactory.getInstance(),
+        classSignature);
   }
 
   @Nonnull
   @Override
   public Set<ClassModifier> resolveModifiers() {
-    return null;
+    return DexUtil.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
   @Nonnull
   @Override
   public Set<? extends ClassType> resolveInterfaces() {
-    return null;
+    List<String> interfaces = classInformation.classDefinition.getInterfaces();
+    if (interfaces.isEmpty()) {
+      return new HashSet<>();
+    }
+    return interfaces.stream().map(DexUtil::stringToJimpleType).collect(Collectors.toSet());
   }
 
   @Nonnull
   @Override
   public Optional<? extends ClassType> resolveSuperclass() {
+    if (classInformation != null) {
+      String superclass = classInformation.classDefinition.getSuperclass();
+      if (superclass.isEmpty()) {
+        return Optional.empty();
+      } else {
+        return Optional.ofNullable(DexUtil.stringToJimpleType(superclass));
+      }
+    }
     return Optional.empty();
   }
 
@@ -95,12 +113,12 @@ public class DexClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Position resolvePosition() {
-    return null;
+    return NoPositionInformation.getInstance();
   }
 
   @Override
   protected Iterable<AnnotationUsage> resolveAnnotations() {
-    return null;
+    return convertAnnotation(classInformation.classDefinition.getAnnotations());
   }
 
   private DexMethod createDexMethodFactory(
@@ -110,5 +128,34 @@ public class DexClassSource extends JavaSootClassSource {
 
   private JavaSootMethod loadMethod(Method method, DexMethod dexMethod) {
     return dexMethod.makeSootMethod(method, bodyInterceptors, view);
+  }
+
+  protected static List<AnnotationUsage> convertAnnotation(Set<? extends Annotation> annotations) {
+    if (annotations.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return null;
+  }
+
+  private static Set<JavaSootField> resolveFields(
+      Iterable<? extends Field> fields,
+      IdentifierFactory signatureFactory,
+      ClassType classSignature) {
+    return StreamSupport.stream(fields.spliterator(), false)
+        .map(
+            field -> {
+              String fieldName = field.getName();
+              Type fieldType = DexUtil.toSootType(field.getType(), 0);
+              FieldSignature fieldSignature =
+                  signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
+              EnumSet<FieldModifier> modifiers = DexUtil.getFieldModifiers(field.getAccessFlags());
+
+              return new JavaSootField(
+                  fieldSignature,
+                  modifiers,
+                  Collections.emptySet(), // TODO Fix this annotations [PM]
+                  NoPositionInformation.getInstance());
+            })
+        .collect(Collectors.toSet());
   }
 }

@@ -36,5 +36,4 @@ public class AgetInstruction extends DexLibAbstractInstruction {
   public AgetInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

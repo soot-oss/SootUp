@@ -10,5 +10,4 @@ public class LongOpTag implements Tag {
   public String getName() {
     return NAME;
   }
-
 }

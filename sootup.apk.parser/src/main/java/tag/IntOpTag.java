@@ -9,5 +9,4 @@ public class IntOpTag implements Tag {
   public String getName() {
     return NAME;
   }
-
 }

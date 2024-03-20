@@ -31,5 +31,4 @@ public class InstanceOfInstruction extends DexLibAbstractInstruction {
   public InstanceOfInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

@@ -11,5 +11,4 @@ public abstract class FilledArrayInstruction extends DexLibAbstractInstruction
   public FilledArrayInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

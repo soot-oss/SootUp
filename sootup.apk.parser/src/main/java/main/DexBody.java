@@ -331,9 +331,9 @@ public class DexBody {
     MethodSignature methodSignature =
         new MethodSignature(
             classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
-//    while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
-//      stmtList.remove(stmtList.size() - 1);
-//    }
+    //    while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
+    //      stmtList.remove(stmtList.size() - 1);
+    //    }
     stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
@@ -552,9 +552,9 @@ public class DexBody {
         if (exceptionType == null) {
           exceptionType = "Ljava/lang/Throwable$CatchAll;";
         }
-        if (exceptionTypeList.contains(exceptionType)) {
-          exceptionType = exceptionType + "$" + exceptionTypeList.size();
-        }
+        //        if (exceptionTypeList.contains(exceptionType)) {
+        //          exceptionType = exceptionType + "$" + exceptionTypeList.size();
+        //        }
         Type t = DexUtil.toSootType(exceptionType, 0);
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {

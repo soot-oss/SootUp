@@ -6,7 +6,6 @@ import org.jf.dexlib2.iface.instruction.FiveRegisterInstruction;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.RegisterRangeInstruction;
 import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.types.Type;
 
 /** This class represents a wrapper around dexlib instruction. */
 public abstract class DexLibAbstractInstruction {

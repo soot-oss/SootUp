@@ -38,5 +38,4 @@ public class CheckCastInstruction extends DexLibAbstractInstruction {
   public CheckCastInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

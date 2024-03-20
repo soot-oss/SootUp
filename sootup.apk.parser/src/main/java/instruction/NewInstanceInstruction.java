@@ -31,5 +31,4 @@ public class NewInstanceInstruction extends DexLibAbstractInstruction {
     setStmt(jAssignStmt);
     body.add(jAssignStmt);
   }
-
 }

@@ -9,5 +9,4 @@ public class DoubleOpTag implements Tag {
   public String getName() {
     return NAME;
   }
-
 }

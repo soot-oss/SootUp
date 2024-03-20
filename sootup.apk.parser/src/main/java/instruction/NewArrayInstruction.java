@@ -42,5 +42,4 @@ public class NewArrayInstruction extends DexLibAbstractInstruction {
   public NewArrayInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

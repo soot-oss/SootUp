@@ -37,5 +37,4 @@ public class ConstClassInstruction extends DexLibAbstractInstruction {
   public ConstClassInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

@@ -26,5 +26,4 @@ public class SgetInstruction extends FieldInstruction {
   public SgetInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
-
 }

@@ -59,5 +59,4 @@ public class ConstInstruction extends DexLibAbstractInstruction {
             "Expected a const or a const-wide instruction, got neither.");
     }
   }
-
 }

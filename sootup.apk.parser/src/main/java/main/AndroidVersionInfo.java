@@ -1,11 +1,10 @@
 package main;
 
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import pxb.android.axml.AxmlReader;
 import pxb.android.axml.AxmlVisitor;
 import pxb.android.axml.NodeVisitor;
-
-import java.io.InputStream;
 
 public class AndroidVersionInfo {
 

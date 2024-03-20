@@ -103,5 +103,4 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   protected Type getTargetType(DexBody body) {
     return UnknownType.getInstance();
   }
-
 }

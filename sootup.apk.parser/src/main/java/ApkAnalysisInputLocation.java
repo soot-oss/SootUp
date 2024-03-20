@@ -74,20 +74,8 @@ public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisIn
                     dexClass ->
                         classList.put(
                             Util.dottedClassName(dexClass.toString()),
-                            getClassModifiers(dexClass.getAccessFlags()))));
+                            DexUtil.getClassModifiers(dexClass.getAccessFlags()))));
     return classList;
-  }
-
-  public static EnumSet<ClassModifier> getClassModifiers(int access) {
-    EnumSet<ClassModifier> modifierEnumSet = EnumSet.noneOf(ClassModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ClassModifier modifier : ClassModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
   }
 
   @Nonnull
