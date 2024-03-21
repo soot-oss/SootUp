@@ -22,6 +22,10 @@ package sootup.core.types;
  * #L%
  */
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.visitor.TypeVisitor;
 
@@ -50,10 +54,52 @@ public abstract class PrimitiveType extends Type {
     return name;
   }
 
+  @Nonnull
+  public abstract String getBoxedName();
+
   @Override
   @Nonnull
   public String toString() {
     return name;
+  }
+
+  private static final Map<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>>
+      implicitConversionMap =
+          ImmutableMap
+              .<Class<? extends PrimitiveType>, Set<Class<? extends PrimitiveType>>>builder()
+              .put(
+                  ByteType.class,
+                  ImmutableSet.of(
+                      ShortType.class,
+                      IntType.class,
+                      LongType.class,
+                      FloatType.class,
+                      DoubleType.class))
+              .put(
+                  ShortType.class,
+                  ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
+              .put(
+                  CharType.class,
+                  ImmutableSet.of(IntType.class, LongType.class, FloatType.class, DoubleType.class))
+              .put(
+                  IntType.class, ImmutableSet.of(LongType.class, FloatType.class, DoubleType.class))
+              .put(LongType.class, ImmutableSet.of(FloatType.class, DoubleType.class))
+              .put(FloatType.class, ImmutableSet.of(DoubleType.class))
+              .build();
+
+  /**
+   * @param fromType e.g. the method argument
+   * @param toType e.g. the method parameter
+   * @return true if type conversion is possible
+   */
+  public static boolean isImplicitlyConvertibleTo(
+      @Nonnull PrimitiveType fromType, @Nonnull PrimitiveType toType) {
+    Class<? extends PrimitiveType> fromTypeClass = fromType.getClass();
+    Class<? extends PrimitiveType> toTypeClass = toType.getClass();
+    return implicitConversionMap.containsKey(fromTypeClass)
+            && implicitConversionMap.get(fromTypeClass).contains(toTypeClass)
+        || IntType.class.isAssignableFrom(fromTypeClass)
+            && implicitConversionMap.get(IntType.class).contains(toTypeClass);
   }
 
   @Nonnull
@@ -107,6 +153,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Byte";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseByteType();
@@ -122,6 +174,12 @@ public abstract class PrimitiveType extends Type {
 
     public static ShortType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Short";
     }
 
     @Override
@@ -145,6 +203,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Integer";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseIntType();
@@ -160,6 +224,12 @@ public abstract class PrimitiveType extends Type {
 
     public static DoubleType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Double";
     }
 
     @Override
@@ -179,6 +249,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Long";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseLongType();
@@ -196,6 +272,12 @@ public abstract class PrimitiveType extends Type {
       return INSTANCE;
     }
 
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Float";
+    }
+
     @Override
     public void accept(@Nonnull TypeVisitor v) {
       v.caseFloatType();
@@ -211,6 +293,12 @@ public abstract class PrimitiveType extends Type {
 
     public static CharType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Character";
     }
 
     @Override
@@ -232,6 +320,12 @@ public abstract class PrimitiveType extends Type {
 
     public static BooleanType getInstance() {
       return INSTANCE;
+    }
+
+    @Nonnull
+    @Override
+    public String getBoxedName() {
+      return "Boolean";
     }
 
     @Override
