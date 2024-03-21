@@ -42,6 +42,11 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
 
     MutableStmtGraph graph = builder.getStmtGraph();
 
+    // Because there is a case in android, where the statement graph will be empty
+    if (graph.getStmts().isEmpty()) {
+      return;
+    }
+
     Deque<Stmt> queue = new ArrayDeque<>();
     queue.add(graph.getStartingStmt());
 

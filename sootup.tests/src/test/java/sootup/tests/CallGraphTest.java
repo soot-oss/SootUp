@@ -222,6 +222,12 @@ public class CallGraphTest {
   }
 
   @Test
+  public void dummyTest() {
+    algorithmName = "CHA";
+    CallGraph cg = loadCallGraph();
+  }
+
+  @Test
   public void checkCallGraphDotExporter() {
     algorithmName = "RTA";
     CallGraph cg = loadCallGraph();

@@ -800,8 +800,8 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void copyOfImmutable() {
     /*
-    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);

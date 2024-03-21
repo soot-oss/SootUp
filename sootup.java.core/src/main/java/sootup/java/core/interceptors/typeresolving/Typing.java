@@ -46,7 +46,7 @@ public class Typing {
   }
 
   @Nullable
-  protected Type getType(@Nonnull Local local) {
+  public Type getType(@Nonnull Local local) {
     return local2Type.get(local);
   }
 
