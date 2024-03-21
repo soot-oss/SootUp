@@ -22,7 +22,16 @@ package sootup.core.validation;
  * #L%
  */
 
-import java.util.List;
+import static java.util.Collections.newSetFromMap;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import sootup.core.jimple.basic.LValue;
+import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.Expr;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -35,16 +44,23 @@ public class ValuesValidator implements BodyValidator {
    */
   @Override
   public List<ValidationException> validate(Body body, View view) {
-    // TODO: check code from old soot below
-    /*
-     * Set<ValueBox> set = newSetFromMap(new IdentityHashMap<ValueBox, Boolean>());
-     *
-     * for (ValueBox vb : body.getUseAndDefBoxes()) { if (set.add(vb)) { continue; }
-     *
-     * exception.add(new ValidationException(vb, "Aliased value box : " + vb + " in " + body.getMethod()));
-     *
-     * for (Unit u : body.getUnits()) { System.err.println(u); } }
-     */
-    return null;
+
+    List<ValidationException> validationException = new ArrayList<>();
+
+    Set<Value> valueSet = newSetFromMap(new IdentityHashMap<Value, Boolean>());
+    Collection<LValue> defs = body.getDefs();
+    List<Value> values = body.getUses().collect(Collectors.toList());
+    for (Stmt s : body.getStmts()) {
+      for (Value v : s.getUsesAndDefs().collect(Collectors.toList())) {
+        if (valueSet.add(v)) {
+          continue;
+        }
+        validationException.add(
+            new ValidationException(
+                v, "Aliased value : " + v + " in " + body.getMethodSignature()));
+        System.err.println(s);
+      }
+    }
+    return validationException;
   }
 }
