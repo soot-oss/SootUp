@@ -22,8 +22,14 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
+import sootup.core.types.*;
 import sootup.core.views.View;
 
 /**
@@ -34,18 +40,47 @@ public class TypesValidator implements BodyValidator {
 
   @Override
   public List<ValidationException> validate(Body body, View view) {
-    /*
-     * SootMethod methodRef = body.getMethod();
-     *
-     * if (methodRef != null) { if (!methodRef.getReturnType().isAllowedInFinalCode()) { exceptions.add(new
-     * ValidationException(methodRef, "Return type not allowed in final code: " + methodRef.getReturnType(),
-     * "return type not allowed in final code:" + methodRef.getReturnType() + "\n methodRef: " + methodRef)); } for (Type t :
-     * methodRef.getParameterTypes()) { if (!t.isAllowedInFinalCode()) { exceptions.add(new ValidationException(methodRef,
-     * "Parameter type not allowed in final code: " + t, "parameter type not allowed in final code:" + t + "\n methodRef: " +
-     * methodRef)); } } } for (Local l : body.getLocals()) { Type t = l.getType(); if (!t.isAllowedInFinalCode()) {
-     * exceptions.add(new ValidationException(l, "Local type not allowed in final code: " + t, "(" + methodRef +
-     * ") local type not allowed in final code: " + t + " local: " + l)); } }
-     */
-    return null;
+    List<ValidationException> validationExceptions = new ArrayList<>();
+
+    Optional<? extends SootMethod> sootMethodOpt = view.getMethod(body.getMethodSignature());
+    if (!sootMethodOpt.isPresent()) {
+      throw new IllegalStateException(
+          "We should find the given method to the given Body in the View. wrong View or Method?");
+    }
+    SootMethod method = sootMethodOpt.get();
+
+    if (!(method.getReturnType() instanceof PrimitiveType ||
+            method.getReturnType() instanceof ClassType ||
+            method.getReturnType() instanceof VoidType)) {
+      validationExceptions.add(
+          new ValidationException(
+              method,
+              "Return type not allowed in final code: " + method.getReturnType(),
+              "return type not allowed in final code:"
+                  + method.getReturnType()
+                  + "\n methodRef: "
+                  + method));
+    }
+    for (Type t : method.getParameterTypes()) {
+      if (!t.isAllowedInFinalCode()) {
+        validationExceptions.add(
+            new ValidationException(
+                method,
+                "Parameter type not allowed in final code: " + t,
+                "parameter type not allowed in final code:" + t + "\n methodRef: " + method));
+      }
+    }
+    for (Local l : body.getLocals()) {
+      Type t = l.getType();
+      if (!t.isAllowedInFinalCode()) {
+        validationExceptions.add(
+            new ValidationException(
+                l,
+                "Local type not allowed in final code: " + t,
+                "(" + method + ") local type not allowed in final code: " + t + " local: " + l));
+      }
+    }
+
+    return validationExceptions;
   }
 }
