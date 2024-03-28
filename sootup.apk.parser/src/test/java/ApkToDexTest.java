@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.ClassModifier;
@@ -42,9 +43,7 @@ public class ApkToDexTest {
     SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
     ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
         new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path),
-            "",
-            DexBodyInterceptors.Default.bodyInterceptors());
+            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     Collection<JavaSootClass> classes;
     try {
@@ -79,13 +78,23 @@ public class ApkToDexTest {
             Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v7.widget.PopupMenu";
+    String classNameToTestAnnotations = "android/support/v4/app/FragmentState$1";
     ClassType classType = view.getIdentifierFactory().getClassType(className);
+    ClassType annotationClassType =
+        view.getIdentifierFactory().getClassType(classNameToTestAnnotations);
     HashSet<String> interfaceSet = new HashSet<>();
     interfaceSet.add("android.support.v7.internal.view.menu.MenuBuilder$Callback");
     interfaceSet.add("android.support.v7.internal.view.menu.MenuPresenter$Callback");
     Optional<JavaSootClass> aClass = view.getClass(classType);
+    Optional<JavaSootClass> annotationClass = view.getClass(annotationClassType);
+    assert annotationClass.isPresent();
     assert aClass.isPresent();
     JavaSootClass javaSootClass = aClass.get();
+    JavaSootClass annotationJavaSootClass = annotationClass.get();
+    // Resolve Annotations
+    StreamSupport.stream(
+            annotationJavaSootClass.getAnnotations(Optional.of(view)).spliterator(), false)
+        .count();
     // Resolve fields and check the number
     assertEquals(6, javaSootClass.getFields().size());
     Set<? extends ClassType> interfaces = javaSootClass.getInterfaces();
