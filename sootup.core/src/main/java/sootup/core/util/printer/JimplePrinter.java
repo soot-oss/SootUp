@@ -25,6 +25,8 @@ package sootup.core.util.printer;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -342,8 +344,9 @@ public class JimplePrinter {
         // a trap)
 
         final boolean currentStmtHasLabel = labels.get(currentStmt) != null;
+        List<Stmt> predecessors = stmtGraph.predecessors(currentStmt).collect(Collectors.toList());
         if (previousStmt.branches()
-            || stmtGraph.predecessors(currentStmt).size() != 1
+            || predecessors.size() != 1
             || previousStmt.getExpectedSuccessorCount() == 0
             || currentStmtHasLabel) {
           printer.newline();

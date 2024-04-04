@@ -49,11 +49,7 @@ public class NopEliminator implements BodyInterceptor {
     MutableStmtGraph graph = builder.getStmtGraph();
 
     Queue<Stmt> q = new ArrayDeque<>();
-    for (Stmt stmt : graph.getNodes()) {
-      if (stmt instanceof JNopStmt) {
-        q.add(stmt);
-      }
-    }
+    graph.getNodes().filter(stmt -> stmt instanceof JNopStmt).forEach(q::add);
 
     for (Stmt stmt : q) {
       graph.removeNode(stmt);

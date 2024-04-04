@@ -22,6 +22,7 @@ package sootup.java.core.interceptors;
  */
 import com.google.common.collect.Lists;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
@@ -70,13 +71,13 @@ public class CastAndReturnInliner implements BodyInterceptor {
     MutableStmtGraph graph = builder.getStmtGraph();
     Set<Local> locals = builder.getLocals();
 
-    for (Stmt stmt : Lists.newArrayList(graph.getNodes())) {
+    for (Stmt stmt : graph.getNodes().collect(Collectors.toList())) {
       if (!(stmt instanceof JGotoStmt)) {
         continue;
       }
       JGotoStmt gotoStmt = (JGotoStmt) stmt;
 
-      Stmt successorOfGoto = graph.successors(gotoStmt).get(0);
+      Stmt successorOfGoto = graph.successors(gotoStmt).findFirst().get();
 
       if (!(successorOfGoto instanceof JAssignStmt)) {
         continue;
@@ -86,7 +87,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (!(assign.getRightOp() instanceof JCastExpr)) {
         continue;
       }
-      Stmt nextStmt = graph.successors(assign).get(0);
+      Stmt nextStmt = graph.successors(assign).findFirst().get();
 
       if (!(nextStmt instanceof JReturnStmt)) {
         continue;
@@ -115,10 +116,10 @@ public class CastAndReturnInliner implements BodyInterceptor {
       graph.insertBefore(newReturnStmt, newAssignStmt);
       builder.addLocal(localCandidate);
 
-      boolean removeExistingCastReturn = graph.predecessors(assign).isEmpty();
+      boolean removeExistingCastReturn = !graph.predecessors(assign).findAny().isPresent();
       if (removeExistingCastReturn) {
         graph.removeNode(assign, false);
-        if (graph.predecessors(retStmt).isEmpty()) {
+        if (!graph.predecessors(retStmt).findAny().isPresent()) {
           graph.removeNode(retStmt, false);
           builder.removeDefLocalsOf(assign);
         }

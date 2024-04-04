@@ -84,7 +84,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @Nonnull
   public Optional<Stmt> getDefaultTarget(@Nonnull Body body) {
-    return Optional.ofNullable(body.getBranchTargetsOf(this).get(values.size()));
+    return body.getBranchTargetsOf(this).skip(values.size()).findFirst();
   }
 
   public Immediate getKey() {
@@ -128,7 +128,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(Body body) {
+  public Stream<Stmt> getTargetStmts(Body body) {
     return body.getBranchTargetsOf(this);
   }
 
@@ -181,7 +181,7 @@ public class JSwitchStmt extends AbstractStmt implements BranchingStmt {
     stmtPrinter.literal("{");
     stmtPrinter.newline();
 
-    final Iterable<Stmt> targets = stmtPrinter.getGraph().getBranchTargetsOf(this);
+    final Stream<Stmt> targets = stmtPrinter.getGraph().getBranchTargetsOf(this);
     Iterator<Stmt> targetIt = targets.iterator();
     for (IntConstant value : values) {
       stmtPrinter.handleIndent();

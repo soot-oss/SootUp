@@ -194,7 +194,7 @@ public class LocalSplitter implements BodyInterceptor {
     MutableStmtGraph graph = builder.getStmtGraph();
 
     // Cache the stmts to not have to retrieve them for every local
-    List<Stmt> stmts = graph.getStmts();
+    List<Stmt> stmts = graph.getStmts().collect(Collectors.toList());
     // Maps every local to its assignment stmts.
     // Contains indices to the above list to reduce bookkeeping when modifying stmts.
     Map<Local, List<Integer>> assignmentsByLocal = groupAssignmentsByLocal(stmts);
@@ -227,8 +227,9 @@ public class LocalSplitter implements BodyInterceptor {
         PartialStmt defStmt = new PartialStmt(assignment, true);
         disjointSet.add(defStmt);
 
-        Deque<Stmt> stack = new ArrayDeque<>(graph.successors(assignment));
-        stack.addAll(graph.exceptionalSuccessors(assignment).values());
+        Deque<Stmt> stack = new ArrayDeque<>();
+        graph.getAllSuccessors(assignment).forEach(stack::add);
+
         Set<Stmt> visited = new HashSet<>();
 
         while (!stack.isEmpty()) {
@@ -247,7 +248,7 @@ public class LocalSplitter implements BodyInterceptor {
           // otherwise continue by adding all successors to the stack
           Optional<LValue> defOpt = stmt.getDef();
           if (!defOpt.isPresent() || defOpt.get() != local) {
-            stack.addAll(graph.getAllSuccessors(stmt));
+            stack.addAll(graph.getAllSuccessors(stmt).collect(Collectors.toList()));
           }
         }
       }

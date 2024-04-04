@@ -22,6 +22,7 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
@@ -66,8 +67,8 @@ public class Aggregator implements BodyInterceptor {
   @Override
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph graph = builder.getStmtGraph();
-    List<Stmt> stmts = builder.getStmts();
-    Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts);
+    List<Stmt> stmts = graph.getStmts().collect(Collectors.toList());
+    Map<Value, Collection<Stmt>> usesMap = Body.collectUses(stmts.stream());
 
     for (Stmt stmt : stmts) {
       if (!(stmt instanceof JAssignStmt)) {
@@ -205,7 +206,7 @@ public class Aggregator implements BodyInterceptor {
         if (stmt != newStmt) {
           graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
-            Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
+            Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).findFirst().get();
             graph.setStartingStmt(newStartingStmt);
           }
           graph.removeNode(relevantDef);

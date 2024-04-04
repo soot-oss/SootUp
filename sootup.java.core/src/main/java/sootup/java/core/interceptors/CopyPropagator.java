@@ -116,14 +116,14 @@ public class CopyPropagator implements BodyInterceptor {
       // then the propagation of this local available.
 
     } else if (defsOfUse.size() > 1) {
-      Constant con = null;
+      Constant constant = null;
       for (Stmt defStmt : defsOfUse) {
         if (defStmt instanceof JAssignStmt
             && ((JAssignStmt) defStmt).getRightOp() instanceof Constant) {
           Constant rhs = (Constant) ((JAssignStmt) defStmt).getRightOp();
-          if (con == null) {
-            con = rhs;
-          } else if (rhs.equals(con)) {
+          if (constant == null) {
+            constant = rhs;
+          } else if (rhs.equals(constant)) { // TODO: [ms] maybe == is enough?
             isPropagateable = true;
           } else {
             isPropagateable = false;

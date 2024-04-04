@@ -24,6 +24,7 @@ package sootup.core.graph;
 
 import com.google.common.collect.Lists;
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.basic.Trap;
@@ -68,7 +69,7 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<Stmt> getNodes() {
+  public Stream<Stmt> getNodes() {
     int size = 0;
     for (ImmutableBasicBlock block : blocks) {
       size += block.getStmtCount();
@@ -77,7 +78,7 @@ public class ImmutableBlockStmtGraph
     for (ImmutableBasicBlock block : blocks) {
       stmts.addAll(block.getStmts());
     }
-    return stmts;
+    return stmts.stream();
   }
 
   @Nonnull
@@ -99,19 +100,19 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<Stmt> predecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> predecessors(@Nonnull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
     throw new UnsupportedOperationException("not implemented");
   }
 
   @Nonnull
   @Override
-  public List<Stmt> successors(@Nonnull Stmt node) {
+  public Stream<Stmt> successors(@Nonnull Stmt node) {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 

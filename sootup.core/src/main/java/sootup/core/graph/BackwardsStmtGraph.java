@@ -22,6 +22,7 @@ package sootup.core.graph;
  * #L%
  */
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -39,30 +40,19 @@ public class BackwardsStmtGraph extends ForwardingStmtGraph {
   }
 
   @Nonnull
-  public List<Stmt> getStartingStmts() {
+  public Stream<Stmt> getStartingStmts() {
     return backingGraph.getTails();
   }
 
-  @Nonnull
+    @Nonnull
   @Override
-  public Collection<Stmt> getNodes() {
-    return Collections.unmodifiableCollection(backingGraph.getNodes());
-  }
-
-  @Override
-  public boolean containsNode(@Nonnull Stmt node) {
-    return backingGraph.containsNode(node);
-  }
-
-  @Nonnull
-  @Override
-  public List<Stmt> predecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> predecessors(@Nonnull Stmt node) {
     return successors(node);
   }
 
   @Nonnull
   @Override
-  public List<Stmt> successors(@Nonnull Stmt node) {
+  public Stream<Stmt> successors(@Nonnull Stmt node) {
     return predecessors(node);
   }
 

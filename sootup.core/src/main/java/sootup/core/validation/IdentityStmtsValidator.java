@@ -25,6 +25,9 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import sootup.core.jimple.common.ref.JParameterRef;
 import sootup.core.jimple.common.ref.JThisRef;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
@@ -63,7 +66,8 @@ public class IdentityStmtsValidator implements BodyValidator {
     // TODO: enforce stmts[thisIdentityStmt?, parameterRefIdentityStmt*, ..., returnStmt], too -> or
     // better create a preamble in the graph so that its not possible to insert it differently
 
-    for (Stmt stmt : body.getStmtGraph().getNodes()) {
+    List<Stmt> nodes = body.getStmtGraph().getNodes().collect(Collectors.toList());
+    for (Stmt stmt : nodes) {
       if (stmt instanceof JIdentityStmt) {
         JIdentityStmt identityStmt = (JIdentityStmt) stmt;
         if (identityStmt.getRightOp() instanceof JThisRef) {

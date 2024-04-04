@@ -23,6 +23,7 @@ package sootup.core.util.printer;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
@@ -153,7 +154,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    final List<Stmt> linearizedStmtGraph = stmtGraph.getStmts();
+    final List<Stmt> linearizedStmtGraph = stmtGraph.getStmts().collect(Collectors.toList());
     for (Stmt s : linearizedStmtGraph) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));

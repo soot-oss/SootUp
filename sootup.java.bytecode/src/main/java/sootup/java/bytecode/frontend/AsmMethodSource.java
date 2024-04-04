@@ -209,7 +209,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // propagate position information
     final Stmt startingStmt = graph.getStartingStmt();
-    if (!graph.getNodes().isEmpty() && startingStmt != null) {
+    if (graph.getNodes().findAny().isPresent() && startingStmt != null) {
       Position firstStmtPos = startingStmt.getPositionInfo().getStmtPosition();
       bodyBuilder.setPosition(
           new FullPosition(

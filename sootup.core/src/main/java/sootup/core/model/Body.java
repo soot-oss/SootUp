@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -80,7 +81,7 @@ public class Body implements HasPosition {
    * @return The this local
    */
   public static Local getThisLocal(StmtGraph<?> stmtGraph) {
-    for (Stmt stmt : stmtGraph.getNodes()) {
+    for (Stmt stmt : stmtGraph) {
       if (stmt instanceof JIdentityStmt
           && ((JIdentityStmt) stmt).getRightOp() instanceof JThisRef) {
         return ((JIdentityStmt) stmt).getLeftOp();
@@ -205,11 +206,7 @@ public class Body implements HasPosition {
    */
   @Nonnull
   public List<Stmt> getStmts() {
-    final ArrayList<Stmt> stmts = new ArrayList<>(graph.getNodes().size());
-    for (Stmt stmt : graph) {
-      stmts.add(stmt);
-    }
-    return stmts;
+    return graph.getStmts().collect(Collectors.toList());
   }
 
   @Nonnull
@@ -236,7 +233,7 @@ public class Body implements HasPosition {
 
   /** returns a List of Branch targets of Branching Stmts */
   @Nonnull
-  public List<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
+  public Stream<Stmt> getBranchTargetsOf(@Nonnull BranchingStmt fromStmt) {
     return getStmtGraph().getBranchTargetsOf(fromStmt);
   }
 
@@ -267,7 +264,7 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Stream<Value> getUses() {
-    return graph.getNodes().stream().flatMap(Stmt::getUses);
+    return graph.getNodes().flatMap(Stmt::getUses);
   }
 
   /**
@@ -283,9 +280,7 @@ public class Body implements HasPosition {
   public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
-    for (Stmt stmt : graph.getNodes()) {
-      stmt.getDef().ifPresent(defList::add);
-    }
+    graph.getNodes().forEach(stmt -> stmt.getDef().ifPresent(defList::add));
     return defList;
   }
 
@@ -338,7 +333,7 @@ public class Body implements HasPosition {
 
     /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
-    public List<Stmt> getStmts() {
+    public Stream<Stmt> getStmts() {
       return graph.getStmts();
     }
 
@@ -365,7 +360,7 @@ public class Body implements HasPosition {
             "The given existing Local '" + existingLocal + "' is not in the body!");
       }
 
-      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+      for (Stmt currStmt : getStmtGraph().getNodes().collect(Collectors.toList())) {
         final Stmt stmt = currStmt;
         if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
           currStmt = currStmt.withNewUse(existingLocal, newLocal);
@@ -425,8 +420,8 @@ public class Body implements HasPosition {
       }
 
       final Stmt startingStmt = graph.getStartingStmt();
-      final Collection<Stmt> nodes = graph.getNodes();
-      if (nodes.size() > 0 && !nodes.contains(startingStmt)) {
+      final Collection<Stmt> nodes = graph.getNodes().collect(Collectors.toList());
+      if (!nodes.isEmpty() && !nodes.contains(startingStmt)) {
         // TODO: already handled in MutableBlockStmtGraph.. check the others as well
         throw new IllegalStateException(
             methodSig
@@ -475,9 +470,9 @@ public class Body implements HasPosition {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<LValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
+  public static Map<LValue, Collection<Stmt>> collectDefs(Stream<Stmt> stmts) {
     Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
-    for (Stmt stmt : stmts) {
+    stmts.forEach( stmt -> {
       Optional<LValue> defOPt = stmt.getDef();
       if (defOPt.isPresent()) {
         LValue def = defOPt.get();
@@ -485,7 +480,7 @@ public class Body implements HasPosition {
         localDefs.add(stmt);
         allDefs.put(def, localDefs);
       }
-    }
+    });
     return allDefs;
   }
 
@@ -495,16 +490,16 @@ public class Body implements HasPosition {
    * @param stmts The searched list of statements
    * @return A map of Locals and their using statements
    */
-  public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
+  public static Map<Value, Collection<Stmt>> collectUses(Stream<Stmt> stmts) {
     Map<Value, Collection<Stmt>> allUses = new HashMap<>();
-    for (Stmt stmt : stmts) {
+    stmts.forEach(stmt -> {
       for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
         Value value = iterator.next();
         Collection<Stmt> localUses = allUses.computeIfAbsent(value, key -> new ArrayList<>());
         localUses.add(stmt);
         allUses.put(value, localUses);
       }
-    }
+    });
     return allUses;
   }
 }

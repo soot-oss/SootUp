@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableStmtGraph;
@@ -60,7 +61,7 @@ public class TrapTightener implements BodyInterceptor {
     }
 
     MutableStmtGraph graph = builder.getStmtGraph();
-    List<Stmt> stmtsInPrintOrder = builder.getStmts();
+    List<Stmt> stmtsInPrintOrder = builder.getStmts().collect(Collectors.toList());
 
     // collect stmts
     Set<Stmt> monitoredStmts = monitoredStmts(graph);
@@ -125,17 +126,17 @@ public class TrapTightener implements BodyInterceptor {
           monitoredStmts.add(monitoredStmt);
           visitedStmts.add(monitoredStmt);
           if (monitoredStmt instanceof JExitMonitorStmt) {
-            queue.addAll(graph.getAllSuccessors(monitoredStmt));
+            graph.getAllSuccessors(monitoredStmt).forEach(queue::add);
           } else {
-            for (Stmt succ : graph.getAllSuccessors(monitoredStmt)) {
+            graph.getAllSuccessors(monitoredStmt).forEach( succ -> {
               if (!visitedStmts.contains(succ)) {
                 monitoredQueue.add(succ);
               }
-            }
+            });
           }
         }
       } else {
-        queue.addAll(graph.getAllSuccessors(stmt));
+        graph.getAllSuccessors(stmt).forEach(queue::add);
       }
     }
     return monitoredStmts;

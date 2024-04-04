@@ -23,6 +23,8 @@ package sootup.core.jimple.common.stmt;
  */
 
 import java.util.List;
+import java.util.stream.Stream;
+
 import sootup.core.model.Body;
 
 /**
@@ -32,7 +34,7 @@ import sootup.core.model.Body;
  * <p>mandatory: branches() needs to be true!
  */
 public interface BranchingStmt extends Stmt {
-  List<Stmt> getTargetStmts(Body body);
+  Stream<Stmt> getTargetStmts(Body body);
 
   @Override
   default boolean branches() {

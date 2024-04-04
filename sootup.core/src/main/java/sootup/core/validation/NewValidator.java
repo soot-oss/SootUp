@@ -23,6 +23,8 @@ package sootup.core.validation;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -167,7 +169,7 @@ public class NewValidator implements BodyValidator {
         }
       }
       // Enqueue the successors
-      List<Stmt> successors = g.successors(curStmt);
+      List<Stmt> successors = g.successors(curStmt).collect(Collectors.toList());
       if (successors.isEmpty() && MUST_CALL_CONSTRUCTOR_BEFORE_RETURN) {
         // This means that we are e.g.at the end of
         // the Method // There was no <init> call

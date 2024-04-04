@@ -22,6 +22,7 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
@@ -64,7 +65,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // refactor.. why already here - getNodes as well
-    List<Stmt> stmts = builder.getStmts();
+    List<Stmt> stmts = stmtGraph.getStmts().collect(Collectors.toList());
     Deque<Stmt> deque = new ArrayDeque<>(stmts.size());
 
     // Make a first pass through the statements, noting the statements we must absolutely keep
@@ -207,7 +208,7 @@ public class DeadAssignmentEliminator implements BodyInterceptor {
       return;
     }
 
-    Map<Value, Collection<Stmt>> essentialUses = Body.collectUses(essentialStmts);
+    Map<Value, Collection<Stmt>> essentialUses = Body.collectUses(essentialStmts.stream());
     // Eliminate dead assignments from invokes such as x = f(), where x is no longer used
     List<JAssignStmt> postProcess = new ArrayList<>();
     for (Stmt stmt : stmts) {

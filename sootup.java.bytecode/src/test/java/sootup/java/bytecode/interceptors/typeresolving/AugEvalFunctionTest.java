@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import categories.TestCategories;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
 
     Typing specTyping = new Typing(new ArrayList<>());
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       String stmtStr = s.toString();
       switch (stmtStr) {
         case "l1 = 127":
@@ -89,10 +91,11 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
         default:
       }
     }
+
     final Body.BodyBuilder builder2 = createMethodsBuilder("reflection", "void");
     StmtGraph<?> graph2 = builder2.getStmtGraph();
 
-    for (Stmt s : graph2.getStmts()) {
+    for (Stmt s : graph2.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l1 = class \"LA;\"")) {
         value = s.getUses().findFirst().get();
         stmt = s;
@@ -116,7 +119,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.put("l2", PrimitiveType.getBoolean());
     Typing specTyping1 = createTyping(builder.getLocals(), map);
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("if l1 >= l2")) {
         for (Iterator<Value> iterator =
                 s.getUses().filter(use -> use instanceof AbstractConditionExpr).iterator();
@@ -144,7 +147,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.put("l2", PrimitiveType.getLong());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l4 = l2 << l1")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -187,7 +190,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.put("l4", PrimitiveType.getLong());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l3 = l2 ^ l1")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -227,7 +230,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.put("l2", PrimitiveType.getByte());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l3 = l2 ^ l1")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -255,7 +258,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     map.put("l2", PrimitiveType.getFloat());
     Typing specTyping = createTyping(builder.getLocals(), map);
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l3 = l2 + $stack4")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -283,7 +286,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder5 = createMethodsBuilder("length", "void");
     StmtGraph<?> graph5 = builder5.getStmtGraph();
 
-    for (Stmt s : graph5.getStmts()) {
+    for (Stmt s : graph5.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l2 = lengthof l1")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -299,7 +302,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder6 = createMethodsBuilder("instanceOf", "boolean");
     StmtGraph<?> graph6 = builder6.getStmtGraph();
 
-    for (Stmt s : graph6.getStmts()) {
+    for (Stmt s : graph6.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("$stack3 = l1 instanceof A")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -315,7 +318,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder7 = createMethodsBuilder("newArrayExpr", "void");
     StmtGraph<?> graph7 = builder7.getStmtGraph();
 
-    for (Stmt s : graph7.getStmts()) {
+    for (Stmt s : graph7.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l1 = newmultiarray (A)[3][3]")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -333,7 +336,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder8 = createMethodsBuilder("invokeExpr", "void");
     StmtGraph<?> graph8 = builder8.getStmtGraph();
 
-    for (Stmt s : graph8.getStmts()) {
+    for (Stmt s : graph8.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("specialinvoke $stack2.<A: void <init>()>()")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -369,7 +372,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder = createMethodsBuilder("caughtException1", "void");
     StmtGraph<?> graph = builder.getStmtGraph();
 
-    for (Stmt s : graph.getStmts()) {
+    for (Stmt s : graph.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -386,7 +389,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder2 = createMethodsBuilder("caughtException2", "void");
     StmtGraph<?> graph2 = builder2.getStmtGraph();
 
-    for (Stmt s : graph2.getStmts()) {
+    for (Stmt s : graph2.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("$stack2 := @caughtexception")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();
@@ -404,7 +407,7 @@ public class AugEvalFunctionTest extends TypeAssignerTestSuite {
     final Body.BodyBuilder builder3 = createMethodsBuilder("fieldRef", "void");
     StmtGraph<?> graph3 = builder3.getStmtGraph();
 
-    for (Stmt s : graph3.getStmts()) {
+    for (Stmt s : graph3.getStmts().collect(Collectors.toList())) {
       if (s.toString().equals("l1 = this.<ByteCodeTypeTest: A field>")) {
         for (Iterator<Value> iterator = s.getUses().iterator(); iterator.hasNext(); ) {
           Value use = iterator.next();

@@ -50,20 +50,12 @@ public class UnreachableCodeEliminator implements BodyInterceptor {
     while (!queue.isEmpty()) {
       Stmt stmt = queue.removeFirst();
       reachableStmts.add(stmt);
-      for (Stmt succ : graph.getAllSuccessors(stmt)) {
-        if (!reachableStmts.contains(succ)) {
-          queue.add(succ);
-        }
-      }
+      graph.getAllSuccessors(stmt).filter(succ -> !reachableStmts.contains(succ)).forEach(queue::add);
     }
 
     // remove unreachable stmts from StmtGraph
     Queue<Stmt> removeQ = new ArrayDeque<>();
-    for (Stmt stmt : graph.getNodes()) {
-      if (!reachableStmts.contains(stmt)) {
-        removeQ.add(stmt);
-      }
-    }
+    graph.getNodes().filter(stmt -> !reachableStmts.contains(stmt)).forEach(removeQ::add);
 
     for (Stmt stmt : removeQ) {
       graph.removeNode(stmt, false);

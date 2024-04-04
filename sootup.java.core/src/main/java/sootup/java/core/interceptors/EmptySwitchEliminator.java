@@ -21,6 +21,7 @@ package sootup.java.core.interceptors;
  * #L%
  */
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
@@ -44,7 +45,7 @@ public class EmptySwitchEliminator implements BodyInterceptor {
   public void interceptBody(@Nonnull Body.BodyBuilder builder, @Nonnull View view) {
     // Iterate all stmts in the body
     MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt stmt : new ArrayList<>(stmtGraph.getNodes())) {
+    for (Stmt stmt : stmtGraph.getNodes().collect(Collectors.toList())) {
       // If the observed stmt an instance of JSwitchStmt
       if (stmt instanceof JSwitchStmt) {
         JSwitchStmt sw = (JSwitchStmt) stmt;

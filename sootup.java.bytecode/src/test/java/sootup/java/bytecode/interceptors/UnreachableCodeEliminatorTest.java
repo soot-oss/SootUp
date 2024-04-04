@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -107,7 +109,7 @@ public class UnreachableCodeEliminatorTest {
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes().collect(Collectors.toSet()));
   }
 
   /**
@@ -142,7 +144,7 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes().collect(Collectors.toSet()));
   }
 
   /**
@@ -178,8 +180,8 @@ public class UnreachableCodeEliminatorTest {
     assertEquals(0, builder.getStmtGraph().getTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
-    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes().collect(Collectors.toSet()));
+    AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes().collect(Collectors.toSet()));
   }
 
   @Test

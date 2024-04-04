@@ -145,7 +145,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
           defStmts.add(s);
         } else {
           if (graph.containsNode(s)) {
-            queue.addAll(graph.predecessors(s));
+            graph.predecessors(s).forEach(queue::add);
           }
         }
       }

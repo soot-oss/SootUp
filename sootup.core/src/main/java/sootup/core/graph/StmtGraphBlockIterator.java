@@ -56,7 +56,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
 
   public StmtGraphBlockIterator(@Nonnull StmtGraph graph, @Nonnull List<Trap> traps) {
     this.graph = graph;
-    returnedNodes = new HashSet<>(graph.getNodes().size(), 1);
+    returnedNodes = new HashSet<>();
     Stmt startingStmt = graph.getStartingStmt();
     if (startingStmt != null) {
       returnedNodes.add(startingStmt);
@@ -106,7 +106,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
       }
     }
 
-    final List<Stmt> successors = graph.successors(stmt);
+    final List<Stmt> successors = graph.successors(stmt).collect(Collectors.toList());
     for (int i = successors.size() - 1; i >= 0; i--) {
       Stmt succ = successors.get(i);
       {
@@ -119,9 +119,9 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
           Stmt leaderStmt = succ;
           while (true) {
             boolean flag = true;
-            final List<Stmt> itPreds = graph.predecessors(leaderStmt);
+            final List<Stmt> itPreds = graph.predecessors(leaderStmt).collect(Collectors.toList());
             for (Stmt pred : itPreds) {
-              if (pred.fallsThrough() && graph.successors(pred).get(0) == leaderStmt) {
+              if (pred.fallsThrough() && graph.successors(pred).findFirst().get() == leaderStmt) {
                 leaderStmt = pred;
                 flag = false;
                 break;
@@ -138,7 +138,7 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
             Stmt itReturnStmt = succ;
             while (true) {
               if (itReturnStmt.fallsThrough()) {
-                itReturnStmt = graph.successors(itReturnStmt).get(0);
+                itReturnStmt = graph.successors(itReturnStmt).findFirst().get();
               } else {
                 if (itReturnStmt instanceof JReturnVoidStmt
                     || itReturnStmt instanceof JReturnStmt) {
@@ -178,10 +178,10 @@ public class StmtGraphBlockIterator implements Iterator<Stmt> {
   public boolean hasNext() {
     final boolean hasIteratorMoreElements = cachedNextStmt != null;
     final int returnedSize = returnedNodes.size();
-    final int actualSize = graph.getNodes().size();
+    final int actualSize = (int) graph.getNodes().count();
     if (!hasIteratorMoreElements && returnedSize != actualSize) {
       String info =
-          graph.getNodes().stream()
+          graph.getNodes()
               .filter(n -> !returnedNodes.contains(n))
               .collect(Collectors.toList())
               .toString();

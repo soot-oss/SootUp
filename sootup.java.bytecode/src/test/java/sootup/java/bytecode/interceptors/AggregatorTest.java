@@ -114,7 +114,7 @@ public class AggregatorTest {
     new Aggregator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     // ensure that the assigner doesn't remove any statements
-    assertEquals(4, builder.getStmts().size());
+    assertEquals(4, builder.getStmts().count());
   }
 
   private static Body.BodyBuilder createBodyBuilder(boolean withAggregation) {

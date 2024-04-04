@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import categories.TestCategories;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
@@ -46,7 +48,7 @@ public class NopEliminatorTest {
     StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
     StmtGraph<?> actualGraph = processedBody.getStmtGraph();
 
-    assertEquals(inputStmtGraph.getNodes().size() - 1, actualGraph.getNodes().size());
+    assertEquals(inputStmtGraph.getNodes().count() - 1, actualGraph.getNodes().count());
   }
 
   /**
@@ -63,7 +65,7 @@ public class NopEliminatorTest {
     new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
-    assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());
+    assertEquals(testBody.getStmtGraph().getNodes().collect(Collectors.toList()), processedBody.getStmtGraph().getNodes().collect(Collectors.toList()));
   }
 
   /**

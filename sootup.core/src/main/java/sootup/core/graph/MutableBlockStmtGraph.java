@@ -26,6 +26,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1286,8 +1287,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public Set<Stmt> getNodes() {
-    return stmtToBlock.keySet();
+  public Stream<Stmt> getNodes() {
+    return stmtToBlock.keySet().stream();
   }
 
   @Override
@@ -1297,7 +1298,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> predecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> predecessors(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
       throw new IllegalArgumentException(
@@ -1308,7 +1309,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<MutableBasicBlock> predecessorBlocks = block.getPredecessors();
       List<Stmt> preds = new ArrayList<>(predecessorBlocks.size());
       predecessorBlocks.forEach(p -> preds.add(p.getTail()));
-      return preds;
+      return preds.stream();
     } else {
       // argh indexOf.. possibly expensive..
       List<Stmt> stmts = block.getStmts();
@@ -1316,13 +1317,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       final int i = stmts.indexOf(node);
       // assert (stmts.size() > 0) : "no stmts in " + block + " " + block.hashCode();
       // assert (i > 0) : " stmt not found in " + block;
-      return Collections.singletonList(stmts.get(i - 1));
+      return Stream.of(stmts.get(i - 1));
     }
   }
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
 
     final MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
@@ -1332,10 +1333,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     if (block.getHead() != node) {
       // a traphandler is a blocks head and only an exception handler stmt can have exceptional
       // predecessors
-      return Collections.emptyList();
+      return Stream.empty();
     }
 
-    return exceptionalPredecessors(block);
+    return exceptionalPredecessors(block).stream();
   }
 
   public List<Stmt> exceptionalPredecessors(@Nonnull MutableBasicBlock block) {
@@ -1376,7 +1377,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   @Override
-  public List<Stmt> successors(@Nonnull Stmt node) {
+  public Stream<Stmt> successors(@Nonnull Stmt node) {
     MutableBasicBlock block = stmtToBlock.get(node);
     if (block == null) {
       throw new IllegalArgumentException(
@@ -1387,11 +1388,11 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<MutableBasicBlock> successorBlocks = block.getSuccessors();
       List<Stmt> succs = new ArrayList<>(successorBlocks.size());
       successorBlocks.forEach(p -> succs.add(p.getHead()));
-      return succs;
+      return succs.stream();
     } else {
       // argh indexOf.. possibly expensive..
       List<Stmt> stmts = block.getStmts();
-      return Collections.singletonList(stmts.get(stmts.indexOf(node) + 1));
+      return Stream.of(stmts.get(stmts.indexOf(node) + 1));
     }
   }
 

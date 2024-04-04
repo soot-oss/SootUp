@@ -47,7 +47,7 @@ public abstract class AbstractFlowAnalysis<F> {
   /** Constructs a flow analysis on the given <code>StmtGraph</code>. */
   public AbstractFlowAnalysis(StmtGraph<? extends BasicBlock<?>> graph) {
     this.graph = graph;
-    this.stmtToBeforeFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
+    this.stmtToBeforeFlow = new IdentityHashMap<>( (int) graph.getNodes().count() * 2 + 1);
   }
 
   /** Returns the flow object corresponding to the initial values for each graph node. */

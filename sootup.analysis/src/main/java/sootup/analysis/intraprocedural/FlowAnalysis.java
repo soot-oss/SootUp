@@ -23,6 +23,7 @@ package sootup.analysis.intraprocedural;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
@@ -94,7 +95,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
         @Nonnull StmtGraph<? extends BasicBlock<?>> g,
         @Nonnull AnalysisDirection direction,
         @Nonnull F entryFlow) {
-      final int size = g.getNodes().size();
+      final int size = (int) g.getNodes().count();
       final int n = size;
 
       Deque<Entry<F>> s = new ArrayDeque<>(n);
@@ -142,13 +143,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
             if (currentStmt instanceof JGotoStmt) {
               entries.add(currentStmt);
             }
-
-            for (Stmt successor : g.successors(currentStmt)) {
-              if (visitedNodes.contains(successor)) {
-                continue;
-              }
-              workList.add(successor);
-            }
+            g.successors(currentStmt).filter(successor -> !visitedNodes.contains(successor)).forEach(workList::add);
           }
 
           //
@@ -289,13 +284,13 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       @Override
       @Nonnull
       List<Stmt> getEntries(StmtGraph<? extends BasicBlock<?>> g) {
-        return g.getTails();
+        return g.getTails().collect(Collectors.toList());
       }
 
       @Override
       @Nonnull
       List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
-        return g.predecessors(s);
+        return g.predecessors(s).collect(Collectors.toList());
       }
     },
     FORWARD {
@@ -308,7 +303,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
       @Override
       @Nonnull
       List<Stmt> getOut(StmtGraph<? extends BasicBlock<?>> g, Stmt s) {
-        return g.successors(s);
+        return g.successors(s).collect(Collectors.toList());
       }
     };
 
@@ -328,7 +323,7 @@ public abstract class FlowAnalysis<A> extends AbstractFlowAnalysis<A> {
   /** Constructs a flow analysis on the given <code>DirectedGraph</code>. */
   public FlowAnalysis(@Nonnull StmtGraph<? extends BasicBlock<?>> graph) {
     super(graph);
-    this.stmtToAfterFlow = new IdentityHashMap<>(graph.getNodes().size() * 2 + 1);
+    this.stmtToAfterFlow = new IdentityHashMap<>((int) (graph.getNodes().count() * 2 + 1));
     this.filterStmtToAfterFlow = Collections.emptyMap();
   }
 

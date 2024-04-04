@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -59,7 +60,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
 
   @Nonnull
   @Override
-  public Collection<Stmt> getNodes() {
+  public Stream<Stmt> getNodes() {
     return backingGraph.getNodes();
   }
 
@@ -81,20 +82,22 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   }
 
   @Override
+
   @Nonnull
-  public List<Stmt> predecessors(@Nonnull Stmt stmt) {
+  public Stream<Stmt> predecessors(@Nonnull Stmt stmt) {
     return backingGraph.predecessors(stmt);
   }
 
   @Nonnull
   @Override
-  public List<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
+  public Stream<Stmt> exceptionalPredecessors(@Nonnull Stmt node) {
     return backingGraph.exceptionalPredecessors(node);
   }
 
   @Override
+
   @Nonnull
-  public List<Stmt> successors(@Nonnull Stmt stmt) {
+  public Stream<Stmt> successors(@Nonnull Stmt stmt) {
     return backingGraph.successors(stmt);
   }
 

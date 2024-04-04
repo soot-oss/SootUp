@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
 
 import com.google.common.collect.Lists;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
@@ -50,7 +51,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
 
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
 
-    for (Stmt stmt : Lists.newArrayList(stmtGraph.getNodes())) {
+    for (Stmt stmt : stmtGraph.getNodes().collect(Collectors.toList())) {
       if (!(stmt instanceof JIfStmt)) {
         continue;
       }
@@ -85,7 +86,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         continue;
       }
 
-      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt);
+      final List<Stmt> ifSuccessors = stmtGraph.successors(ifStmt).collect(Collectors.toList());
       final Stmt tautologicSuccessor;
       final Stmt neverReachedSucessor;
 
@@ -103,7 +104,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       }
 
       // link previous stmt with always-reached successor of the if-Stmt
-      for (Stmt predecessor : stmtGraph.predecessors(ifStmt)) {
+      for (Stmt predecessor : stmtGraph.predecessors(ifStmt).collect(Collectors.toList())) {
         List<Integer> successorIdxList = stmtGraph.removeEdge(predecessor, ifStmt);
 
         if (predecessor instanceof FallsThroughStmt) {
@@ -144,9 +145,9 @@ public class ConditionalBranchFolder implements BodyInterceptor {
         reachedBranchingStmts.add(itStmt);
       }
       if (stmtGraph.containsNode(itStmt)) {
-        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt);
+        final List<Stmt> predecessors = stmtGraph.predecessors(itStmt).collect(Collectors.toList());
         if (predecessors.size() <= 1) {
-          q.addAll(stmtGraph.successors(itStmt));
+          stmtGraph.successors(itStmt).forEach(q::add);
         }
       }
     }
@@ -157,7 +158,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
       if (stmtGraph.containsNode(itStmt)) {
         // hint: predecessor could also be already removed
         if (isExclusivelyReachable(stmtGraph, itStmt, reachedBranchingStmts)) {
-          q.addAll(stmtGraph.successors(itStmt));
+          stmtGraph.successors(itStmt).forEach(q::add);
           stmtGraph.removeNode(itStmt, false);
           builder.removeDefLocalsOf(itStmt);
         }
@@ -168,7 +169,7 @@ public class ConditionalBranchFolder implements BodyInterceptor {
   /** reachedStmts contains all reached Stmts from entrypoint which ALSO do branch! */
   private boolean isExclusivelyReachable(
       @Nonnull StmtGraph<?> graph, @Nonnull Stmt stmt, @Nonnull Set<Stmt> reachedStmts) {
-    final List<Stmt> predecessors = graph.predecessors(stmt);
+    final List<Stmt> predecessors = graph.predecessors(stmt).collect(Collectors.toList());
     final int predecessorSize = predecessors.size();
     int amount = predecessorSize;
     if (predecessorSize <= 1) {
@@ -180,8 +181,8 @@ public class ConditionalBranchFolder implements BodyInterceptor {
     for (Stmt predecessor : predecessors) {
       if (predecessor.fallsThrough()) {
         if (predecessor instanceof JIfStmt) {
-          final List<Stmt> predsSuccessors = graph.successors(predecessor);
-          if (predsSuccessors.size() > 0 && predsSuccessors.get(0) == stmt) {
+          final List<Stmt> predsSuccessors = graph.successors(predecessor).collect(Collectors.toList());
+          if (!predsSuccessors.isEmpty() && predsSuccessors.get(0) == stmt) {
             // TODO: hint: possible problem occurs with partial removed targets as they change the
             // idx positions..
             amount--;

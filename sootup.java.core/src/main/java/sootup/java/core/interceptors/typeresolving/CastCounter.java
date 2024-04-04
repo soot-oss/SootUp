@@ -67,9 +67,10 @@ public class CastCounter extends TypeChecker {
     super(builder, evalFunction, hierarchy);
     setTyping(typing);
 
-    for (Stmt stmt : graph.getNodes()) {
-      stmt.accept(this);
-    }
+    graph.getNodes().forEach( stmt ->
+      stmt.accept(this)
+    );
+
   }
 
   public int getCastCount() {

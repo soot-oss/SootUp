@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.LValue;
@@ -43,13 +44,13 @@ public class LocalLivenessAnalyser {
   public LocalLivenessAnalyser(@Nonnull StmtGraph<?> graph) {
     // initial liveIn and liveOut
     List<Stmt> startingStmts = new ArrayList<>();
-    for (Stmt stmt : graph.getNodes()) {
+    graph.getNodes().forEach(stmt -> {
       liveIn.put(stmt, Collections.emptySet());
       liveOut.put(stmt, Collections.emptySet());
-      if (graph.successors(stmt).isEmpty() && graph.exceptionalSuccessors(stmt).isEmpty()) {
+      if (!graph.successors(stmt).findAny().isPresent() && graph.exceptionalSuccessors(stmt).isEmpty()) {
         startingStmts.add(stmt);
       }
-    }
+    });
 
     boolean fixed = false;
     while (!fixed) {
@@ -61,11 +62,8 @@ public class LocalLivenessAnalyser {
         visitedStmts.add(stmt);
 
         Set<Local> out = new HashSet<>(liveOut.get(stmt));
-        for (Stmt succ : graph.successors(stmt)) {
+        for (Stmt succ : graph.getAllSuccessors(stmt).collect(Collectors.toList()) ) {
           out = merge(out, liveIn.get(succ));
-        }
-        for (Stmt esucc : graph.exceptionalSuccessors(stmt).values()) {
-          out = merge(out, liveIn.get(esucc));
         }
         if (isNotEqual(out, liveOut.get(stmt))) {
           fixed = false;
@@ -91,16 +89,17 @@ public class LocalLivenessAnalyser {
           fixed = false;
           liveIn.put(stmt, in);
         }
-        for (Stmt pred : graph.predecessors(stmt)) {
+        graph.predecessors(stmt).forEach( pred -> {
           if (!visitedStmts.contains(pred)) {
             queue.addLast(pred);
           }
-        }
-        for (Stmt epred : graph.exceptionalPredecessors(stmt)) {
+        });
+
+        graph.exceptionalPredecessors(stmt).forEach( epred ->{
           if (!visitedStmts.contains(epred)) {
             queue.addLast(epred);
           }
-        }
+        });
       }
     }
   }

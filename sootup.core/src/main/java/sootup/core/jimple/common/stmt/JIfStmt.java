@@ -65,8 +65,8 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
     stmtPrinter.literal(" ");
     stmtPrinter.literal(Jimple.GOTO);
     stmtPrinter.literal(" ");
-    // [ms] bounds are validated in Body
-    stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).get(0), true);
+
+    stmtPrinter.stmtRef(stmtPrinter.getGraph().getBranchTargetsOf(this).findFirst().get(), true);
   }
 
   @Nonnull
@@ -76,7 +76,7 @@ public final class JIfStmt extends AbstractStmt implements BranchingStmt, FallsT
 
   @Override
   @Nonnull
-  public List<Stmt> getTargetStmts(@Nonnull Body body) {
+  public Stream<Stmt> getTargetStmts(@Nonnull Body body) {
     return body.getBranchTargetsOf(this);
   }
 

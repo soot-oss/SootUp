@@ -43,9 +43,7 @@ public class TypePromotionVisitor extends TypeChecker {
 
   public Typing getPromotedTyping(Typing typing) {
     setTyping(typing);
-    for (Stmt stmt : builder.getStmts()) {
-      stmt.accept(this);
-    }
+    builder.getStmts().forEach(stmt -> stmt.accept(this) );
     return getTyping();
   }
 

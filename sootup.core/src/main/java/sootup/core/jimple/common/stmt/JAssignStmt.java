@@ -56,7 +56,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt, AssignStmt {
 
   @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
@@ -132,6 +132,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
    */
   // TODO [ms]: what is with assignments like: arr[0] = arr[6]? is that possible? if not ->
   // validator
+  @Override
   public JArrayRef getArrayRef() {
     if (getLeftOp() instanceof JArrayRef) {
       return (JArrayRef) getLeftOp();
@@ -157,6 +158,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
    *
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#getFieldRef()
    */
+  @Override
   public JFieldRef getFieldRef() {
     // TODO: [MS] what if both Op's are a FieldRef? verify it in a verifier that this does not
     // happen or is it always handled via an intermediate Local?
@@ -223,16 +225,6 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
     return rightOp;
   }
 
-  @Override
-  public boolean fallsThrough() {
-    return true;
-  }
-
-  @Override
-  public boolean branches() {
-    return false;
-  }
-
   @Nonnull
   @Override
   public JAssignStmt withNewDef(@Nonnull Local newLocal) {
@@ -255,16 +247,19 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
     return withVariable(newVal);
   }
 
+  @Override
   @Nonnull
   public JAssignStmt withVariable(@Nonnull LValue variable) {
     return new JAssignStmt(variable, getRightOp(), getPositionInfo());
   }
 
+  @Override
   @Nonnull
   public JAssignStmt withRValue(@Nonnull Value rValue) {
     return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
   }
 
+  @Override
   @Nonnull
   public JAssignStmt withPositionInfo(@Nonnull StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);

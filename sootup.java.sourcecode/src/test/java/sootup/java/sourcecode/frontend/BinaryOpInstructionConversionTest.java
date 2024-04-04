@@ -155,7 +155,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testAddDouble() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -229,8 +228,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testMulDouble() {
-    // TODO: failed test
-
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -629,7 +626,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testIncShort() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -698,7 +694,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testDecInt() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -759,7 +754,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testOrLong() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1128,7 +1122,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNegLong() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1179,7 +1172,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testZeroFillRshiftInt() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1241,7 +1233,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLogicalAnd() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1293,7 +1284,7 @@ public class BinaryOpInstructionConversionTest {
               stmt.getCondition());
           // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
-              stmt.getTargetStmts(body).get(0),
+              stmt.getTargetStmts(body).findFirst().get(),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1314,7 +1305,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTargetStmts(body).get(0),
+                stmt.getTargetStmts(body).findFirst().get(),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1335,7 +1326,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLogicalOr() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1386,7 +1376,7 @@ public class BinaryOpInstructionConversionTest {
               stmt.getCondition());
           // [ms] bounds are validated in Body
           assertInstanceOfSatisfying(
-              stmt.getTargetStmts(body).get(0),
+              stmt.getTargetStmts(body).findFirst().get(),
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getLeftOp());
@@ -1407,7 +1397,7 @@ public class BinaryOpInstructionConversionTest {
         JGotoStmt.class,
         stmt ->
             assertInstanceOfSatisfying(
-                stmt.getTargetStmts(body).get(0),
+                stmt.getTargetStmts(body).findFirst().get(),
                 JReturnStmt.class,
                 target ->
                     assertEquiv(new Local("z2", PrimitiveType.getBoolean()), target.getOp())));
@@ -1428,7 +1418,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNot() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1480,7 +1469,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1546,7 +1534,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNotEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1612,7 +1599,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testGreater() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1678,7 +1664,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testSmaller() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1744,7 +1729,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testGreaterEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1830,7 +1814,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testSmallerEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
