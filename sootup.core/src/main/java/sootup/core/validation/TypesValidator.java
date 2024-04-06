@@ -51,7 +51,8 @@ public class TypesValidator implements BodyValidator {
 
     if (!(method.getReturnType() instanceof PrimitiveType ||
             method.getReturnType() instanceof ClassType ||
-            method.getReturnType() instanceof VoidType)) {
+            method.getReturnType() instanceof VoidType ||
+            method.getReturnType() instanceof ReferenceType)) {
       validationExceptions.add(
           new ValidationException(
               method,
@@ -62,7 +63,8 @@ public class TypesValidator implements BodyValidator {
                   + method));
     }
     for (Type t : method.getParameterTypes()) {
-      if (!t.isAllowedInFinalCode()) {
+      if (!(t instanceof PrimitiveType ||
+              t instanceof ReferenceType)) {
         validationExceptions.add(
             new ValidationException(
                 method,
@@ -72,7 +74,8 @@ public class TypesValidator implements BodyValidator {
     }
     for (Local l : body.getLocals()) {
       Type t = l.getType();
-      if (!t.isAllowedInFinalCode()) {
+      if (!(t instanceof PrimitiveType ||
+              t instanceof ReferenceType)) {
         validationExceptions.add(
             new ValidationException(
                 l,
