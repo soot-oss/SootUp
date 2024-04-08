@@ -230,7 +230,15 @@ public class JimpleConverter {
     private EnumSet<MethodModifier> getMethodModifiers(
         List<JimpleParser.Method_modifierContext> modifier) {
       return modifier.stream()
-          .map(modContext -> MethodModifier.valueOf(modContext.getText().toUpperCase()))
+          .map(
+              modContext -> {
+                // we need the following check, as old Soot wrongfully mapped VARARGS method
+                // modifiers to TRANSIENT modifiers
+                if (modContext.getText().equalsIgnoreCase("TRANSIENT")) {
+                  return MethodModifier.valueOf("VARARGS");
+                }
+                return MethodModifier.valueOf(modContext.getText().toUpperCase());
+              })
           .collect(Collectors.toCollection(() -> EnumSet.noneOf(MethodModifier.class)));
     }
 

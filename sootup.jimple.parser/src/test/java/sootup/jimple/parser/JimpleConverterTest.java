@@ -800,4 +800,18 @@ public class JimpleConverterTest {
       assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
     }
   }
+
+  @Test
+  public void testLegacyTransientMethodModifier() throws IOException {
+    SootClass clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName(
+                "src/test/java/resources/jimple/LegacyTransientMethodModifier.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    Set<MethodModifier> modifiers = method.getModifiers();
+    assertEquals(1, modifiers.size());
+    MethodModifier modifier = modifiers.iterator().next();
+    assertEquals(MethodModifier.VARARGS, modifier);
+  }
 }
