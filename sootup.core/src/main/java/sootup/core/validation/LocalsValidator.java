@@ -56,7 +56,7 @@ public class LocalsValidator implements BodyValidator {
                             + body.getMethodSignature())));
 
     body.getDefs()
-        .parallelStream()
+        .stream()
         .filter(value -> value instanceof Local && !locals.contains(value))
         .forEach(
             value ->
