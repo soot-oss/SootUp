@@ -10,7 +10,10 @@
   {
     "version": "fix_doc_preview",
     "title": "PR Preview fix_doc",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
