@@ -23,6 +23,7 @@ package sootup.java.core.interceptors;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import sootup.core.graph.BasicBlock;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
@@ -36,6 +37,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;
 import sootup.core.model.Body;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.types.ClassType;
 import sootup.core.views.View;
 
 /*
@@ -192,7 +194,8 @@ public class Aggregator implements BodyInterceptor {
         Stmt newStmt;
 
         final ReplaceUseStmtVisitor replaceVisitor = new ReplaceUseStmtVisitor(val, aggregatee);
-        // TODO: this try-catch is an awful hack for "ValueBox.canContainValue" -> try to determine
+        // TODO: this try-catch is an awful way for the former/legacy "ValueBox.canContainValue" ->
+        // try to determine
         // a replaceability earlier!
         try {
           replaceVisitor.caseAssignStmt(assignStmt);
@@ -203,6 +206,31 @@ public class Aggregator implements BodyInterceptor {
 
         // have we been able to inline the value into the newStmt?
         if (stmt != newStmt) {
+
+          // respect trapranges - check if at least the same exceptional flows exist in the block
+          // where we will assign the value now.
+          BasicBlock<?> blockOfDefinition = graph.getBlockOf(relevantDef);
+          BasicBlock<?> blockOfAssignment = graph.getBlockOf(stmt);
+          if (blockOfDefinition != blockOfAssignment) {
+            Map<? extends ClassType, ?> exceptionalSuccessors =
+                blockOfDefinition.getExceptionalSuccessors();
+            int matchingTraps = 0;
+            for (Map.Entry<? extends ClassType, ?> entry :
+                blockOfAssignment.getExceptionalSuccessors().entrySet()) {
+              ClassType type = entry.getKey();
+              BasicBlock<?> handler = (BasicBlock<?>) entry.getValue();
+              if (exceptionalSuccessors.get(type) == handler) {
+                matchingTraps++;
+              }
+            }
+
+            // has the block where we assign now at least the traps which exist in the block of the
+            // original definition?
+            if (matchingTraps < exceptionalSuccessors.size()) {
+              continue;
+            }
+          }
+
           graph.replaceNode(stmt, newStmt);
           if (graph.getStartingStmt() == relevantDef) {
             Stmt newStartingStmt = builder.getStmtGraph().successors(relevantDef).get(0);
