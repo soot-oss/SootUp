@@ -145,7 +145,12 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
-  /** returns a list of associated traps */
+  /**
+   * returns a list of associated traps
+   *
+   * <p>Note: you can use getTraps() but exceptionional flow information is now easier accessible on
+   * each Block
+   */
   @Deprecated
   public abstract List<Trap> getTraps();
 
@@ -495,7 +500,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /** Iterates over the blocks */
-  public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
+  protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
     @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
