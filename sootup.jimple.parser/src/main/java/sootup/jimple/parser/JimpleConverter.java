@@ -363,6 +363,8 @@ public class JimpleConverter {
               ClassType exceptionType = util.getClassType(it.exceptiontype.getText());
               String beginLabel = it.from.getText();
               String toLabel = it.to.getText();
+              if (beginLabel.equals(toLabel)) continue;
+
               String handlerLabel = it.with.getText();
               traps.add(
                   Jimple.newTrap(
