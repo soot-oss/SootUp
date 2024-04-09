@@ -60,4 +60,11 @@ public class LegacyJimplePrinter extends NormalStmtPrinter {
     literal(";");
     newline();
   }
+
+  @Override
+  public void modifier(String modifier) {
+    handleIndent();
+    String legacyModifier = modifier.toLowerCase().replace("varargs", "transient");
+    output.append(legacyModifier);
+  }
 }
