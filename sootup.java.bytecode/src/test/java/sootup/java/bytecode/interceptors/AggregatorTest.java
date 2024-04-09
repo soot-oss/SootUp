@@ -3,10 +3,9 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
-
-import categories.TestCategories;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
