@@ -21,7 +21,6 @@ package sootup.java.bytecode.frontend;
  * #L%
  */
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -56,14 +55,10 @@ public class AsmJavaClassProvider implements ClassProvider {
       @Nonnull Path sourcePath,
       @Nonnull ClassType classType) {
 
-    if (!Files.exists(sourcePath)) {
-      return Optional.empty();
-    }
-
-    SootClassNode classNode = new SootClassNode(analysisInputLocation);
-
+    SootClassNode classNode;
     final String actualClassSignature;
     try {
+      classNode = new SootClassNode(analysisInputLocation);
       actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
     } catch (IOException exception) {
       logger.warn("ioe: " + sourcePath, exception);
