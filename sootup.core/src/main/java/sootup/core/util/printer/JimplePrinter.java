@@ -53,7 +53,7 @@ public class JimplePrinter {
    * OmitLocalsDeclaration: don't print Local declarations at the beginning of each method
    * AddJimpleLn: unsupported yet UseImports: Enable Java like imports to improve readability by
    * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (&lt;=
-   * Version 4)
+   * Version 4) Deterministic: print interfaces, fields and methods in a deterministic order
    */
   // TODO: [ms] enhancement: add option to print a class with all inherited members
   public enum Option {
@@ -61,7 +61,8 @@ public class JimplePrinter {
     OmitLocalsDeclaration,
     AddJimpleLn,
     UseImports,
-    LegacyMode
+    LegacyMode,
+    Deterministic
   }
 
   private final Set<Option> options = EnumSet.noneOf(Option.class);
@@ -162,7 +163,14 @@ public class JimplePrinter {
 
     // Print interfaces
     {
-      Iterator<? extends ClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<? extends ClassType> interfaceIt;
+      if (options.contains(Option.Deterministic)) {
+        List<? extends ClassType> interfaceList = new ArrayList<>(cl.getInterfaces());
+        interfaceList.sort(Comparator.comparing(ClassType::getFullyQualifiedName));
+        interfaceIt = interfaceList.iterator();
+      } else {
+        interfaceIt = cl.getInterfaces().iterator();
+      }
 
       if (interfaceIt.hasNext()) {
 
@@ -183,7 +191,14 @@ public class JimplePrinter {
 
     // Print fields
     {
-      Iterator<? extends Field> fieldIt = cl.getFields().iterator();
+      Iterator<? extends Field> fieldIt;
+      if (options.contains(Option.Deterministic)) {
+        List<? extends Field> fieldList = new ArrayList<>(cl.getFields());
+        fieldList.sort(Comparator.comparing(field -> field.getSignature().toString()));
+        fieldIt = fieldList.iterator();
+      } else {
+        fieldIt = cl.getFields().iterator();
+      }
 
       if (fieldIt.hasNext()) {
         printer.incIndent();
@@ -230,7 +245,15 @@ public class JimplePrinter {
   }
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootMethod> methodIt = cl.getMethods().iterator();
+    Iterator<? extends SootMethod> methodIt;
+    if (options.contains(Option.Deterministic)) {
+      List<? extends SootMethod> methodList = new ArrayList<>(cl.getMethods());
+      methodList.sort(Comparator.comparing(method -> method.getSignature().toString()));
+      methodIt = methodList.iterator();
+    } else {
+      methodIt = cl.getMethods().iterator();
+    }
+
     if (methodIt.hasNext()) {
       printer.incIndent();
       printer.newline();
