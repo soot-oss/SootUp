@@ -1,24 +1,37 @@
 package sootup.java.bytecode;
 
 import categories.TestCategories;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.model.SourceType;
+import sootup.core.signatures.MethodSignature;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
 @Tag(TestCategories.JAVA_8_CATEGORY)
 public class TryWithResourcesFinallyTests {
-  final String directory = "../shared-test-resources/bugfixes/";
+
+  Path classFilePath = Paths.get("../shared-test-resources/bugfixes/TryWithResourcesFinally.class");
 
   @Test
   public void test() {
-    AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(directory);
-    JavaView view = new JavaView(inputLocation);
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            classFilePath, "", SourceType.Application);
+    JavaView view =
+        new JavaView(Arrays.asList(new DefaultRTJarAnalysisInputLocation(), inputLocation));
 
-    view.getClass(view.getIdentifierFactory().getClassType("TryWithResourcesFinally"))
-        .get()
-        .getMethods()
-        .forEach((method) -> method.getBody().getTraps());
-  };
+    MethodSignature methodSignature =
+        view.getIdentifierFactory()
+            .parseMethodSignature("<TryWithResourcesFinally: void test0(java.lang.AutoCloseable)>");
+    List<Trap> traps = view.getMethod(methodSignature).get().getBody().getTraps();
+  }
 }

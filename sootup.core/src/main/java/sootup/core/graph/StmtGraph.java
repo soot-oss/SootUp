@@ -585,11 +585,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           nestedBlocks.addFirst(successors.get(0));
         } else {
 
-          // create the most biggest fallsthrough sequence of basicblocks as possible -&gt; go to
-          // the
-          // top until
-          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
-          // from there.
+          // create the longest FallsThroughStmt sequence possible
           final BasicBlock<?> successorBlock = successors.get(i);
           BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
           while (true) {
@@ -618,12 +614,13 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
           // find a return Stmt inside the current Block
           Stmt succTailStmt = successorBlock.getTail();
-          boolean isReturnBlock =
-              succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+          boolean hasNoSuccessorStmts = succTailStmt.getExpectedSuccessorCount() == 0;
+          boolean isExceptionFree = successorBlock.getExceptionalSuccessors().isEmpty();
 
+          boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
           // remember branching successors
           if (tailStmt instanceof JGotoStmt) {
-            if (isReturnBlock) {
+            if (isLastStmtCandidate) {
               nestedBlocks.removeFirstOccurrence(currentBlock);
               otherBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
@@ -631,7 +628,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
             }
           } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
             // JSwitchStmt, JIfStmt
-            if (isReturnBlock) {
+            if (isLastStmtCandidate) {
               nestedBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
               nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
