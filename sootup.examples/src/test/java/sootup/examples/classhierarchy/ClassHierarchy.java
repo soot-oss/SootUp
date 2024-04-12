@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -50,12 +52,12 @@ public class ClassHierarchy {
     JavaClassType clazzTypeC = JavaIdentifierFactory.getInstance().getClassType("C");
 
     // Check direct subtypes
-    Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC);
+    Set<ClassType> subtypes = typeHierarchy.directSubtypesOf(clazzTypeC).collect(Collectors.toSet());
     assertTrue(subtypes.stream().allMatch(type -> type.getClassName().equals("D")));
     assertTrue(subtypes.stream().allMatch(type -> type.getFullyQualifiedName().equals("D")));
 
     // Examine super types
-    List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC);
+    List<ClassType> superClasses = typeHierarchy.superClassesOf(clazzTypeC).collect(Collectors.toList());
     assertEquals(
         superClasses,
         Arrays.asList(

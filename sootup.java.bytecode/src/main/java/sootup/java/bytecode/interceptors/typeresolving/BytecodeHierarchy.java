@@ -22,6 +22,8 @@ package sootup.java.bytecode.interceptors.typeresolving;
  */
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.IdentifierFactory;
@@ -214,7 +216,7 @@ public class BytecodeHierarchy {
 
   private boolean canStoreType(ClassType ancestor, ClassType child) {
     return ancestor == objectClassType
-        || (typeHierarchy.contains(ancestor) && typeHierarchy.subtypesOf(ancestor).contains(child));
+        || (typeHierarchy.contains(ancestor) && typeHierarchy.subtypesOf(ancestor).anyMatch( t -> t == child));
   }
 
   private Set<AncestryPath> buildAncestryPaths(ClassType type) {
@@ -230,21 +232,20 @@ public class BytecodeHierarchy {
         paths.add(node);
       } else {
         if (typeHierarchy.isInterface(node.type)) {
-          Set<ClassType> superInterfaces = typeHierarchy.directlyExtendedInterfacesOf(node.type);
-          if (superInterfaces.isEmpty()) {
+          Stream<ClassType> superInterfaces = typeHierarchy.directlyExtendedInterfacesOf(node.type);
+          Optional<ClassType> any = superInterfaces.peek(superInterface -> {
+            AncestryPath superNode = new AncestryPath(superInterface, node);
+            pathNodes.add(superNode);
+          }).findAny();
+          if (!any.isPresent()) {
             paths.add(node);
-          } else {
-            for (ClassType superInterface : superInterfaces) {
-              AncestryPath superNode = new AncestryPath(superInterface, node);
-              pathNodes.add(superNode);
-            }
           }
         } else {
 
           Set<ClassType> superInterfaces;
-          ClassType superClass;
+          Optional<ClassType> superClass;
           try {
-            superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type);
+            superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type).collect(Collectors.toSet());
             superClass = typeHierarchy.superClassOf(node.type);
           } catch (IllegalArgumentException iae) {
             // node.type does not exist in
@@ -257,8 +258,8 @@ public class BytecodeHierarchy {
           }
 
           // only java.lang.Object can have no SuperClass i.e. is null
-          if (superClass != null) {
-            AncestryPath superNode = new AncestryPath(superClass, node);
+          if (!superClass.isPresent()) {
+            AncestryPath superNode = new AncestryPath(superClass.get(), node);
             pathNodes.add(superNode);
           }
         }
