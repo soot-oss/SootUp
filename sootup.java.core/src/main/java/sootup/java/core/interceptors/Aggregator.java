@@ -212,21 +212,19 @@ public class Aggregator implements BodyInterceptor {
           BasicBlock<?> blockOfDefinition = graph.getBlockOf(relevantDef);
           BasicBlock<?> blockOfAssignment = graph.getBlockOf(stmt);
           if (blockOfDefinition != blockOfAssignment) {
-            Map<? extends ClassType, ?> exceptionalSuccessors =
-                blockOfDefinition.getExceptionalSuccessors();
-            int matchingTraps = 0;
+            boolean missingEnxception = false;
+            Map<? extends ClassType, ?> assignmentsExceptionalSuccessors =
+                blockOfAssignment.getExceptionalSuccessors();
             for (Map.Entry<? extends ClassType, ?> entry :
-                blockOfAssignment.getExceptionalSuccessors().entrySet()) {
+                blockOfDefinition.getExceptionalSuccessors().entrySet()) {
               ClassType type = entry.getKey();
               BasicBlock<?> handler = (BasicBlock<?>) entry.getValue();
-              if (exceptionalSuccessors.get(type) == handler) {
-                matchingTraps++;
+              if (assignmentsExceptionalSuccessors.get(type) != handler) {
+                missingEnxception = true;
+                break;
               }
             }
-
-            // has the block where we assign now at least the traps which exist in the block of the
-            // original definition?
-            if (matchingTraps < exceptionalSuccessors.size()) {
+            if (missingEnxception) {
               continue;
             }
           }
