@@ -3,7 +3,7 @@ package sootup.java.bytecode;
 import categories.TestCategories;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 
@@ -25,8 +24,7 @@ public class TryWithResourcesFinallyTests {
     AnalysisInputLocation inputLocation =
         new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
             classFilePath, "", SourceType.Application);
-    JavaView view =
-        new JavaView(Arrays.asList(new DefaultRTJarAnalysisInputLocation(), inputLocation));
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     MethodSignature methodSignature =
         view.getIdentifierFactory()

@@ -564,7 +564,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return currentBlock;
     }
 
-    //
     private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
       // collect traps
       final Stmt tailStmt = currentBlock.getTail();
@@ -691,11 +690,10 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     for (Stmt stmt : getNodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
-          // [ms] bounds are validated in Body
-          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(0));
+          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
         } else if (stmt instanceof JGotoStmt) {
           // [ms] bounds are validated in Body if its a valid StmtGraph
-          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(0));
+          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
         } else if (stmt instanceof JSwitchStmt) {
           stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
         }
