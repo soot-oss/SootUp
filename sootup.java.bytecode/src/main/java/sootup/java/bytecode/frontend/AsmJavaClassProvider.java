@@ -75,12 +75,6 @@ public class AsmJavaClassProvider implements ClassProvider {
             + classType.getClassName();
     String actualFQClassName = actualClassSignature.replace('/', '.');
     if (!actualFQClassName.equals(requestedFQClassName)) {
-      logger.warn(
-          "The given Classtype '"
-              + classType
-              + "' did not match the found ClassType in the compilation unit '"
-              + actualClassSignature
-              + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
       return Optional.empty();
     }
 
