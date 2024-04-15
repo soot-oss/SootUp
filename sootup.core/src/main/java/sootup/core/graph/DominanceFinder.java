@@ -40,7 +40,33 @@ public class DominanceFinder {
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
 
-  public DominanceFinder(StmtGraph<?> blockGraph) {
+  protected AnalysisDirection direction = AnalysisDirection.FORWARD;
+
+  public enum AnalysisDirection {
+    BACKWARD {
+      @Override
+      @Nonnull
+      List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
+        return block.getSuccessors();
+      }
+    },
+    FORWARD {
+      @Override
+      @Nonnull
+      List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
+        return block.getPredecessors();
+      }
+    };
+
+    @Nonnull
+    abstract List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block);
+  }
+
+  public DominanceFinder(@Nonnull StmtGraph<?> blockGraph) {
+    this(blockGraph, AnalysisDirection.FORWARD);
+  }
+
+  protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, AnalysisDirection direction) {
 
     // we're locked into providing a List<BasicBlock<?>>, not a List<? extends BasicBlock<?>>, so
     // we'll use the block iterator directly (which provides this type) rather than
@@ -76,7 +102,7 @@ public class DominanceFinder {
           continue;
         }
         int blockIdx = blockToIdx.get(block);
-        List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
+        List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
         // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
@@ -103,13 +129,13 @@ public class DominanceFinder {
 
     // calculate dominance frontiers for each block
     for (BasicBlock<?> block : blocks) {
-      List<BasicBlock<?>> preds = new ArrayList<>(block.getPredecessors());
+      List<BasicBlock<?>> preds = new ArrayList<>(direction.getPredecessors(block));
       // ms: should not be necessary  preds.addAll(block.getExceptionalPredecessors());
       if (preds.size() > 1) {
         int blockId = blockToIdx.get(block);
         for (BasicBlock<?> pred : preds) {
           int predId = blockToIdx.get(pred);
-          while (predId != doms[blockId]) {
+          while (predId != -1 && predId != doms[blockId]) {
             domFrontiers[predId].add(blockId);
             predId = doms[predId];
           }
@@ -135,6 +161,9 @@ public class DominanceFinder {
     }
     int idx = blockToIdx.get(block);
     int idomIdx = this.doms[idx];
+    if (idomIdx == -1) {
+      throw new RuntimeException("The given block: " + block + " has no immediate dominator!");
+    }
     return blocks.get(idomIdx);
   }
 
