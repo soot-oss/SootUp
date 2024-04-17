@@ -24,6 +24,7 @@ package sootup.core.util.printer;
 
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
@@ -163,14 +164,10 @@ public class JimplePrinter {
 
     // Print interfaces
     {
-      Iterator<? extends ClassType> interfaceIt;
-      if (options.contains(Option.Deterministic)) {
-        List<? extends ClassType> interfaceList = new ArrayList<>(cl.getInterfaces());
-        interfaceList.sort(Comparator.comparing(ClassType::getFullyQualifiedName));
-        interfaceIt = interfaceList.iterator();
-      } else {
-        interfaceIt = cl.getInterfaces().iterator();
-      }
+      Iterator<? extends ClassType> interfaceIt =
+          options.contains(Option.Deterministic)
+              ? getSortedIterator(cl.getInterfaces(), ClassType::getFullyQualifiedName)
+              : cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
 
@@ -191,19 +188,15 @@ public class JimplePrinter {
 
     // Print fields
     {
-      Iterator<? extends Field> fieldIt;
-      if (options.contains(Option.Deterministic)) {
-        List<? extends Field> fieldList = new ArrayList<>(cl.getFields());
-        fieldList.sort(Comparator.comparing(field -> field.getSignature().toString()));
-        fieldIt = fieldList.iterator();
-      } else {
-        fieldIt = cl.getFields().iterator();
-      }
+      Iterator<? extends SootField> fieldIt =
+          options.contains(Option.Deterministic)
+              ? getSortedIterator(cl.getFields(), field -> field.getSignature().toString())
+              : cl.getFields().iterator();
 
       if (fieldIt.hasNext()) {
         printer.incIndent();
         while (fieldIt.hasNext()) {
-          SootField f = (SootField) fieldIt.next();
+          SootField f = fieldIt.next();
           printer.newline();
           printer.handleIndent();
           if (!f.getModifiers().isEmpty()) {
@@ -245,14 +238,10 @@ public class JimplePrinter {
   }
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootMethod> methodIt;
-    if (options.contains(Option.Deterministic)) {
-      List<? extends SootMethod> methodList = new ArrayList<>(cl.getMethods());
-      methodList.sort(Comparator.comparing(method -> method.getSignature().toString()));
-      methodIt = methodList.iterator();
-    } else {
-      methodIt = cl.getMethods().iterator();
-    }
+    Iterator<? extends SootMethod> methodIt =
+        options.contains(Option.Deterministic)
+            ? getSortedIterator(cl.getMethods(), method -> method.getSignature().toString())
+            : cl.getMethods().iterator();
 
     if (methodIt.hasNext()) {
       printer.incIndent();
@@ -469,5 +458,11 @@ public class JimplePrinter {
     if (!typeToLocals.isEmpty()) {
       up.newline();
     }
+  }
+
+  private <T> Iterator<T> getSortedIterator(Set<T> set, Function<T, String> sortingFunction) {
+    List<T> list = new ArrayList<>(set);
+    list.sort(Comparator.comparing(sortingFunction));
+    return list.iterator();
   }
 }
