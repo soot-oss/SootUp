@@ -2,7 +2,10 @@
   {
     "version": "speedup_typehierarchy_preview",
     "title": "PR Preview speedup_typehierarchy",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "qilin_preview",
