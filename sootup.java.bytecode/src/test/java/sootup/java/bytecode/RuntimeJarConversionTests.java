@@ -15,9 +15,9 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.BytecodeBodyInterceptors;
-import sootup.java.bytecode.interceptors.CopyPropagator;
-import sootup.java.bytecode.interceptors.DeadAssignmentEliminator;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.interceptors.CopyPropagator;
+import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")

@@ -18,8 +18,9 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.bytecode.interceptors.typeresolving.types.BottomType;
-import sootup.java.bytecode.interceptors.typeresolving.types.TopType;
+import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
+import sootup.java.core.interceptors.typeresolving.types.BottomType;
+import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */

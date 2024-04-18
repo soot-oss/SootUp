@@ -19,8 +19,10 @@ import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.types.VoidType;
-import sootup.java.bytecode.interceptors.typeresolving.types.AugmentIntegerTypes;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.typeresolving.AugEvalFunction;
+import sootup.java.core.interceptors.typeresolving.Typing;
+import sootup.java.core.interceptors.typeresolving.types.AugmentIntegerTypes;
 
 /** @author Zun Wang */
 @Tag(TestCategories.JAVA_8_CATEGORY)
