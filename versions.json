@@ -1,5 +1,10 @@
 [
   {
+    "version": "speedup_typehierarchy_preview",
+    "title": "PR Preview speedup_typehierarchy",
+    "aliases": []
+  },
+  {
     "version": "qilin_preview",
     "title": "PR Preview qilin",
     "aliases": [],
