@@ -1,0 +1,23 @@
+name: Wishing Well aka Feature Request
+description: File a Feature Request.
+title: "[Feature]: "
+labels: ["improvement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for using SootUp. Please share what functionality you are missing for your use case.
+
+  - type: textarea
+    id: whats-missing
+    attributes:
+      label: Missing Feature
+      description: Please describe the wanted functionality in detail. If possible enhance it with examples and/or scientific publications.
+      value: ""
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        Btw. We are more than happy if you like to contribute to the missing feature!
