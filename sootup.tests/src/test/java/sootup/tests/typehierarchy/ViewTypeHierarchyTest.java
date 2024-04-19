@@ -59,7 +59,8 @@ public class ViewTypeHierarchyTest {
   public void implementersOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType iNamespace = factory.getClassType("IFaceOperations", "utils");
-    Set<ClassType> implementers = typeHierarchy.implementersOf(iNamespace).collect(Collectors.toSet());
+    Set<ClassType> implementers =
+        typeHierarchy.implementersOf(iNamespace).collect(Collectors.toSet());
     ImmutableSet<ClassType> expectedImplementers =
         immutableSet(factory.getClassType("utils.Operations"));
     assertEquals(expectedImplementers, implementers);
@@ -199,7 +200,8 @@ public class ViewTypeHierarchyTest {
 
     assertTrue(
         typeHierarchy
-            .subclassesOf(factory.getClassType("ds.AbstractDataStrcture")).collect(Collectors.toSet())
+            .subclassesOf(factory.getClassType("ds.AbstractDataStrcture"))
+            .collect(Collectors.toSet())
             .contains(sootClass.getType()),
         "Newly added type must be detected as a subtype");
   }

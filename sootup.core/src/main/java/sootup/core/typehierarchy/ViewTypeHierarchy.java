@@ -20,18 +20,14 @@ package sootup.core.typehierarchy;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+
 import com.google.common.base.Suppliers;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.jgrapht.Graph;
@@ -139,29 +135,38 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   protected Stream<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean includingSelf) {
-    ScanResult scanResult = lazyScanResult.get();
-    Graph<Vertex, Edge> graph = scanResult.graph;
+    Iterator<Vertex> superclassIterator =
+        new Iterator<Vertex>() {
+          @Nonnull final Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
+          @Nonnull Optional<Vertex> classVertexItBase = Optional.of(classVertex);
 
-    List<Vertex> superClasses = new ArrayList<>();
-    if (includingSelf) {
-      superClasses.add(classVertex);
+          @Override
+          public boolean hasNext() {
+            return classVertexItBase.isPresent();
+          }
+
+          @Override
+          public Vertex next() {
+            Optional<Vertex> currentSuperClass = classVertexItBase;
+            classVertexItBase =
+                graph.outgoingEdgesOf(classVertex).stream()
+                    .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+                    .map(graph::getEdgeTarget)
+                    .findAny();
+
+            return currentSuperClass.get();
+          }
+        };
+
+    if (!includingSelf) {
+      // skip first element which is the classVertex
+      superclassIterator.next();
     }
 
-    Optional<Vertex> superClass =
-        graph.outgoingEdgesOf(classVertex).stream()
-            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-            .map(graph::getEdgeTarget)
-            .findAny();
-    while (superClass.isPresent()) {
-      superClasses.add(superClass.get());
-      superClass =
-          graph.outgoingEdgesOf(superClass.get()).stream()
-              .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-              .map(graph::getEdgeTarget)
-              .findAny();
-    }
-
-    return superClasses.stream();
+    Stream<Vertex> stream =
+        StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(superclassIterator, Spliterator.DISTINCT), false);
+    return stream;
   }
 
   protected Stream<Vertex> directlyImplementedInterfacesOf(@Nonnull Vertex classVertex) {
@@ -250,8 +255,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     Vertex vertex = scanResult.typeToVertex.get(type);
 
     if (vertex == null) {
-      throw new IllegalArgumentException(
-          "Could not find " + type + " in this hierarchy.");
+      throw new IllegalArgumentException("Could not find " + type + " in this hierarchy.");
     }
 
     switch (vertex.type) {
@@ -301,11 +305,11 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
     }
     Optional<Vertex> superClassVertex =
-            graph.outgoingEdgesOf(classVertex).stream()
-                    .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-                    .map(graph::getEdgeTarget)
-                    .findAny();
-    return superClassVertex.map( v -> v.javaClassType);
+        graph.outgoingEdgesOf(classVertex).stream()
+            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+            .map(graph::getEdgeTarget)
+            .findAny();
+    return superClassVertex.map(v -> v.javaClassType);
   }
 
   @Override
@@ -324,6 +328,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
     return vertex.type == VertexType.Class;
   }
+
   /**
    * Visits the subgraph of the specified <code>vertex</code> and calls the <code>visitor</code> for
    * each vertex in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
