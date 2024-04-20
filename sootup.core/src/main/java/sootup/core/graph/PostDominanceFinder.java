@@ -4,7 +4,7 @@ package sootup.core.graph;
  * #%L
  * Soot - a J*va Optimization Framework
  * %%
- * Copyright (C) 1997-2021 Zun Wang
+ * Copyright (C) 2024 Junjie Shen
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
