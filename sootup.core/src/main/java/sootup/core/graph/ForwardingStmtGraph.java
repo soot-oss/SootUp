@@ -21,8 +21,6 @@ package sootup.core.graph;
  * #L%
  */
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -71,12 +69,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Nonnull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(
-                new ReversePostOrderBlockTraversal.ReversePostOrderBlockIterator(backingGraph),
-                Spliterator.ORDERED),
-            false)
-        .collect(Collectors.toList());
+    return ReversePostOrderBlockTraversal.getBlocksSorted(backingGraph);
   }
 
   @Override

@@ -1,129 +1,66 @@
 package sootup.core.graph;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 public class ReversePostOrderBlockTraversal {
-  private final StmtGraph<?> cfg;
+  private final BasicBlock<?> startNode;
 
   public ReversePostOrderBlockTraversal(StmtGraph<?> cfg) {
-    this.cfg = cfg;
+    startNode = cfg.getStartingStmtBlock();
   }
 
+  public ReversePostOrderBlockTraversal(BasicBlock<?> startNode) {
+    this.startNode = startNode;
+  }
+
+  @Nonnull
   public Iterable<BasicBlock<?>> getOrder() {
-    return () -> new ReversePostOrderBlockIterator(cfg);
+    return this::iterator;
   }
 
-  public static class ReversePostOrderBlockIterator implements Iterator<BasicBlock<?>> {
-    StmtGraph<?> cfg;
-    private Set<BasicBlock<?>> visited;
-    Map<BasicBlock<?>, WorkUnit> worklist;
-    boolean tryPop;
-    WorkUnit popResult;
+  @Nonnull
+  public BlockIterator iterator() {
+    return new BlockIterator(startNode);
+  }
 
-    private static class Frame {
-      final BasicBlock<?> node;
-      final Iterator<BasicBlock<?>> childIterator;
+  @Nonnull
+  public static List<BasicBlock<?>> getBlocksSorted(StmtGraph<?> cfg) {
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(
+                new ReversePostOrderBlockTraversal(cfg).iterator(), Spliterator.ORDERED),
+            false)
+        .collect(Collectors.toList());
+  }
 
-      Frame(BasicBlock<?> node, Iterator<BasicBlock<?>> childIterator) {
-        this.node = node;
-        this.childIterator = childIterator;
-      }
-    }
+  public static class BlockIterator implements Iterator<BasicBlock<?>> {
+    private List<BasicBlock<?>> blocks;
+    private int i = 0;
 
-    public ReversePostOrderBlockIterator(StmtGraph<?> cfg) {
-      this.cfg = cfg;
-      this.visited = new HashSet<>();
-      this.worklist = new HashMap<>();
-      this.tryPop = false;
-
-      initialize();
-    }
-
-    public void initialize() {
-      BasicBlock<?> startNode = cfg.getStartingStmtBlock();
-      if (startNode != null) {
-        worklist.put(startNode, new WorkUnit(startNode));
-      }
-    }
-
-    private void popWithHighestPriority() {
-      tryPop = true;
-      popResult = null;
-      if (worklist.isEmpty()) {
-        return;
-      }
-      Optional<Map.Entry<BasicBlock<?>, WorkUnit>> optEntry =
-          worklist.entrySet().stream()
-              .min(Map.Entry.comparingByValue(Comparator.comparingInt(WorkUnit::getPriority)));
-      if (optEntry.isPresent()) {
-        Map.Entry<BasicBlock<?>, WorkUnit> entry = optEntry.get();
-        worklist.remove(entry.getKey());
-        popResult = entry.getValue();
-      }
-    }
-
-    private void updateWorkListBySuccessors(BasicBlock<?> currentNode) {
-      for (BasicBlock<?> succ : currentNode.getSuccessors()) {
-        if (!visited.contains(succ)) {
-          WorkUnit work = worklist.getOrDefault(succ, new WorkUnit(succ));
-          work.addVisitedPred(currentNode);
-          worklist.put(succ, work);
-        }
-      }
+    public BlockIterator(@Nonnull BasicBlock<?> startNode) {
+      blocks =
+          StreamSupport.stream(
+                  Spliterators.spliteratorUnknownSize(
+                      new PostOrderBlockTraversal.BlockIterator(startNode), Spliterator.ORDERED),
+                  false)
+              .collect(Collectors.toList());
+      Collections.reverse(blocks);
     }
 
     @Override
     public boolean hasNext() {
-      if (!tryPop) {
-        popWithHighestPriority();
-      }
-      return popResult != null;
+      return i < blocks.size();
     }
 
     @Override
     public BasicBlock<?> next() {
-      if (!tryPop) {
-        popWithHighestPriority();
+      if (!hasNext()) {
+        throw new NoSuchElementException("There is no more block.");
       }
-      if (popResult == null) {
-        throw new NoSuchElementException("There are no more blocks.");
-      }
-
-      tryPop = false;
-      BasicBlock<?> currentNode = popResult.getNode();
-      visited.add(currentNode);
-
-      updateWorkListBySuccessors(currentNode);
-      return currentNode;
-    }
-
-    public static class WorkUnit {
-      private final BasicBlock<?> node;
-      private final Set<BasicBlock<?>> visitedPreds = new HashSet<>();
-      private int priority;
-
-      public WorkUnit(BasicBlock<?> node) {
-        this.node = node;
-        computePriority(node);
-      }
-
-      private void computePriority(BasicBlock<?> node) {
-        int totalPreds = node.getPredecessors().size();
-        this.priority = totalPreds - visitedPreds.size();
-      }
-
-      public void addVisitedPred(BasicBlock<?> node) {
-        this.visitedPreds.add(node);
-        computePriority(node);
-      }
-
-      public BasicBlock<?> getNode() {
-        return node;
-      }
-
-      public int getPriority() {
-        return priority;
-      }
+      i++;
+      return blocks.get(i - 1);
     }
   }
 }

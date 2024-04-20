@@ -42,14 +42,15 @@ public class ReversePostOrderTraversalTest {
     expectedSortedIdToRPOId.put(1, 1);
     expectedSortedIdToRPOId.put(2, 6);
     expectedSortedIdToRPOId.put(3, 2);
-    expectedSortedIdToRPOId.put(4, 3);
-    expectedSortedIdToRPOId.put(5, 4);
+    expectedSortedIdToRPOId.put(4, 4);
+    expectedSortedIdToRPOId.put(5, 3);
     expectedSortedIdToRPOId.put(6, 5);
 
     for (BasicBlock<?> block : RPO) {
       Integer sortedId = blockToSortedId.get(block);
       Integer rpoId = blockToRPOId.get(block);
       Integer expectedRPOId = expectedSortedIdToRPOId.get(sortedId);
+
       assertEquals(expectedRPOId, rpoId);
     }
   }

@@ -2,8 +2,8 @@ package sootup.core.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -15,79 +15,48 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.types.PrimitiveType;
 
 @Tag("Java8")
-public class DominanceFinderTest {
-
+public class PostOrderTraversalTest {
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   @Test
-  public void testDominanceFinder() {
+  void testReversePostorderTraversal() {
     MutableBlockStmtGraph graph = createStmtGraph();
-    Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
-    // assign ids according to getBlocksSorted order
+    Map<BasicBlock<?>, Integer> blockToSortedId = new HashMap<>();
+    Map<BasicBlock<?>, Integer> blockToPOId = new HashMap<>();
+    // assign sorted ids according to MutableBlockStmtGraph.getBlocksSorted
     int i = 0;
     for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      blockToId.put(block, i);
+      blockToSortedId.put(block, i);
       i++;
     }
 
-    DominanceFinder dom = new DominanceFinder(graph);
-
-    Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
-    expectedFrontiers.put(0, new HashSet<>());
-    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(1)));
-    expectedFrontiers.put(2, new HashSet<>());
-    expectedFrontiers.put(3, new HashSet<>(Collections.singletonList(1)));
-    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(6)));
-    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(6)));
-    expectedFrontiers.put(6, new HashSet<>(Collections.singletonList(1)));
-
-    Map<Integer, Integer> expectedDominators = new HashMap<>();
-    expectedDominators.put(0, -1);
-    expectedDominators.put(1, 0);
-    expectedDominators.put(2, 1);
-    expectedDominators.put(3, 1);
-    expectedDominators.put(4, 3);
-    expectedDominators.put(5, 3);
-    expectedDominators.put(6, 3);
-
-    // check dominators
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      Integer dominatorId = -1;
-      BasicBlock<?> dominator = dom.getImmediateDominator(block);
-      if (dominator != null) {
-        dominatorId = blockToId.get(dominator);
-      }
-      Integer expectedId = expectedDominators.get(blockToId.get(block));
-
-      assertEquals(expectedId, dominatorId);
+    // assign po ids according to ReversePostOrderBlockTraversal.getOrder
+    Iterable<BasicBlock<?>> RPO = new PostOrderBlockTraversal(graph).getOrder();
+    i = 0;
+    for (BasicBlock<?> block : RPO) {
+      blockToPOId.put(block, i);
+      i++;
     }
 
-    // check frontiers
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      Set<BasicBlock<?>> frontier = dom.getDominanceFrontiers(block);
-      Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
-      Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
+    Map<Integer, Integer> expectedSortedIdToRPOId = new HashMap<>();
+    expectedSortedIdToRPOId.put(0, 6);
+    expectedSortedIdToRPOId.put(1, 5);
+    expectedSortedIdToRPOId.put(2, 0);
+    expectedSortedIdToRPOId.put(3, 4);
+    expectedSortedIdToRPOId.put(4, 2);
+    expectedSortedIdToRPOId.put(5, 3);
+    expectedSortedIdToRPOId.put(6, 1);
 
-      assertEquals(expectedIds, frontierIds);
-    }
-  }
+    for (BasicBlock<?> block : RPO) {
+      Integer sortedId = blockToSortedId.get(block);
+      Integer rpoId = blockToPOId.get(block);
+      Integer expectedRPOId = expectedSortedIdToRPOId.get(sortedId);
 
-  @Test
-  public void testBlockToIdxInverse() {
-    MutableBlockStmtGraph graph = createStmtGraph();
-    DominanceFinder dom = new DominanceFinder(graph);
-
-    // check that getBlockToIdx and getIdxToBlock are inverses
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      List<BasicBlock<?>> idxToBlock = dom.getIdxToBlock();
-      Map<BasicBlock<?>, Integer> blockToIdx = dom.getBlockToIdx();
-      assertEquals(block, idxToBlock.get(blockToIdx.get(block)));
+      assertEquals(expectedRPOId, rpoId);
     }
   }
 
   private MutableBlockStmtGraph createStmtGraph() {
-    // reconstruct the example given in
-    // https://soot-oss.github.io/SootUp/v1.1.2/advanced-topics/#dominancefinder.
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());

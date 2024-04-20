@@ -38,7 +38,7 @@ public class DominanceFinder {
   private int[] doms;
   private ArrayList<Integer>[] domFrontiers;
 
-  protected AnalysisDirection direction = AnalysisDirection.FORWARD;
+  protected AnalysisDirection direction;
 
   public enum AnalysisDirection {
     BACKWARD {

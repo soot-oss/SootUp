@@ -51,13 +51,14 @@ public class PostDominanceFinderTest {
     expectedDominators.put(6, 1);
 
     // check dominators
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
+    for (BasicBlock<?> block : graph.getBlocks()) {
       BasicBlock<?> dominator = postDom.getImmediateDominator(block);
       Integer dominatorId = -1;
       if (dominator != null) {
         dominatorId = blockToId.get(dominator);
       }
       Integer expectedId = expectedDominators.get(blockToId.get(block));
+
       assertEquals(expectedId, dominatorId);
     }
 
@@ -74,7 +75,7 @@ public class PostDominanceFinderTest {
   @Test
   public void testBlockToIdxInverse() {
     MutableBlockStmtGraph graph = createStmtGraph();
-    DominanceFinder dom = new DominanceFinder(graph);
+    DominanceFinder dom = new PostDominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses
     for (BasicBlock<?> block : graph.getBlocksSorted()) {
