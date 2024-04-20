@@ -20,10 +20,9 @@ package sootup.core.graph;
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -72,7 +71,12 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Nonnull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return backingGraph.getBlocksSorted();
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(
+                new ReversePostOrderBlockTraversal.ReversePostOrderBlockIterator(backingGraph),
+                Spliterator.ORDERED),
+            false)
+        .collect(Collectors.toList());
   }
 
   @Override

@@ -23,8 +23,6 @@ package sootup.core.graph;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 
 /**
@@ -49,6 +47,12 @@ public class DominanceFinder {
       List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
         return block.getSuccessors();
       }
+
+      @Nonnull
+      @Override
+      List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
+        return Collections.unmodifiableList(new BackwardsStmtGraph(blockGraph).getBlocksSorted());
+      }
     },
     FORWARD {
       @Override
@@ -56,10 +60,19 @@ public class DominanceFinder {
       List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block) {
         return block.getPredecessors();
       }
+
+      @Nonnull
+      @Override
+      List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
+        return Collections.unmodifiableList(new ForwardingStmtGraph(blockGraph).getBlocksSorted());
+      }
     };
 
     @Nonnull
     abstract List<? extends BasicBlock<?>> getPredecessors(BasicBlock<?> block);
+
+    @Nonnull
+    abstract List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph);
   }
 
   public DominanceFinder(@Nonnull StmtGraph<?> blockGraph) {
@@ -67,31 +80,25 @@ public class DominanceFinder {
   }
 
   protected DominanceFinder(@Nonnull StmtGraph<?> blockGraph, AnalysisDirection direction) {
+    this.direction = direction;
 
     // we're locked into providing a List<BasicBlock<?>>, not a List<? extends BasicBlock<?>>, so
     // we'll use the block iterator directly (which provides this type) rather than
     // #getBlocksSorted.
-    blocks =
-        StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(
-                    blockGraph.getBlockIterator(), Spliterator.ORDERED),
-                false)
-            .collect(Collectors.toList());
+    blocks = direction.getSortedBlocks(blockGraph);
 
-    final BasicBlock<?> startingStmtBlock = blockGraph.getStartingStmtBlock();
     // assign each block a integer id. The starting block must have id 0; rely on
     // getBlocksSorted to have put the starting block first.
     for (int i = 0; i < blocks.size(); i++) {
       BasicBlock<?> block = blocks.get(i);
       blockToIdx.put(block, i);
     }
+    final BasicBlock<?> startingStmtBlock = blocks.get(0);
 
     // initialize doms
     doms = new int[blocks.size()];
+    Arrays.fill(doms, -1);
     doms[0] = 0;
-    for (int i = 1; i < doms.length; i++) {
-      doms[i] = -1;
-    }
 
     // calculate immediate dominator for each block
     boolean isChanged = true;
@@ -106,8 +113,11 @@ public class DominanceFinder {
         // ms: should not be necessary preds.addAll(block.getExceptionalPredecessors());
         int newIdom = getFirstDefinedBlockPredIdx(preds);
         if (!preds.isEmpty() && newIdom != -1) {
-          preds.remove(blocks.get(newIdom));
+          BasicBlock<?> processed = blocks.get(newIdom);
           for (BasicBlock<?> pred : preds) {
+            if (pred.equals(processed)) {
+              continue;
+            }
             int predIdx = blockToIdx.get(pred);
             if (this.doms[predIdx] != -1) {
               newIdom = isIntersecting(newIdom, predIdx);
@@ -120,6 +130,9 @@ public class DominanceFinder {
         }
       }
     }
+
+    // startBlockId should not have immediate dominator, actually.
+    doms[0] = -1;
 
     // initialize domFrontiers
     domFrontiers = new ArrayList[blockGraph.getBlocks().size()];
@@ -154,7 +167,6 @@ public class DominanceFinder {
     blocks.set(idx, newBlock);
   }
 
-  @Nonnull
   public BasicBlock<?> getImmediateDominator(@Nonnull BasicBlock<?> block) {
     if (!blockToIdx.containsKey(block)) {
       throw new RuntimeException("The given block: " + block + " is not in BlockGraph!");
@@ -162,7 +174,8 @@ public class DominanceFinder {
     int idx = blockToIdx.get(block);
     int idomIdx = this.doms[idx];
     if (idomIdx == -1) {
-      throw new RuntimeException("The given block: " + block + " has no immediate dominator!");
+      // start block should not have immediate dominator
+      return null;
     }
     return blocks.get(idomIdx);
   }
@@ -206,6 +219,7 @@ public class DominanceFinder {
     return -1;
   }
 
+  /** Finds the common dominator of two nodes using the meet operator in a dominator tree. */
   private int isIntersecting(int a, int b) {
     while (a != b) {
       if (a > b) {

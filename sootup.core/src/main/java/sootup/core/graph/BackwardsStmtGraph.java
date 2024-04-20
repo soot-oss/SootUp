@@ -50,6 +50,14 @@ public class BackwardsStmtGraph extends ForwardingStmtGraph {
 
   @Nonnull
   @Override
+  public List<? extends BasicBlock<?>> getBlocksSorted() {
+    List<? extends BasicBlock<?>> blocksSorted = super.getBlocksSorted();
+    Collections.reverse(blocksSorted);
+    return blocksSorted;
+  }
+
+  @Nonnull
+  @Override
   public List<Stmt> predecessors(@Nonnull Stmt node) {
     return backingGraph.successors(node);
   }
