@@ -3,6 +3,7 @@ package sootup.core.graph;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -20,12 +21,16 @@ public class ReversePostOrderTraversalTest {
   @Test
   void testReversePostorderTraversal() {
     MutableBlockStmtGraph graph = createStmtGraph();
-    Map<BasicBlock<?>, Integer> blockToSortedId = new HashMap<>();
+    Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
     Map<BasicBlock<?>, Integer> blockToRPOId = new HashMap<>();
-    // assign sorted ids according to MutableBlockStmtGraph.getBlocksSorted
+    // assign ids according to blocks sorted by BasicBlock::toString
+    List<? extends BasicBlock<?>> blocks =
+        graph.getBlocks().stream()
+            .sorted(Comparator.comparing(BasicBlock::toString))
+            .collect(Collectors.toList());
     int i = 0;
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      blockToSortedId.put(block, i);
+    for (BasicBlock<?> block : blocks) {
+      blockToId.put(block, i);
       i++;
     }
 
@@ -38,18 +43,18 @@ public class ReversePostOrderTraversalTest {
     }
 
     Map<Integer, Integer> expectedSortedIdToRPOId = new HashMap<>();
-    expectedSortedIdToRPOId.put(0, 0);
-    expectedSortedIdToRPOId.put(1, 1);
-    expectedSortedIdToRPOId.put(2, 6);
-    expectedSortedIdToRPOId.put(3, 2);
-    expectedSortedIdToRPOId.put(4, 4);
-    expectedSortedIdToRPOId.put(5, 3);
-    expectedSortedIdToRPOId.put(6, 5);
+    expectedSortedIdToRPOId.put(0, 5);
+    expectedSortedIdToRPOId.put(1, 2);
+    expectedSortedIdToRPOId.put(2, 1);
+    expectedSortedIdToRPOId.put(3, 0);
+    expectedSortedIdToRPOId.put(4, 3);
+    expectedSortedIdToRPOId.put(5, 4);
+    expectedSortedIdToRPOId.put(6, 6);
 
     for (BasicBlock<?> block : RPO) {
-      Integer sortedId = blockToSortedId.get(block);
+      Integer id = blockToId.get(block);
       Integer rpoId = blockToRPOId.get(block);
-      Integer expectedRPOId = expectedSortedIdToRPOId.get(sortedId);
+      Integer expectedRPOId = expectedSortedIdToRPOId.get(id);
 
       assertEquals(expectedRPOId, rpoId);
     }

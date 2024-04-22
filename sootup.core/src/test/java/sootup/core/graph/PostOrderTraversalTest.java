@@ -2,8 +2,11 @@ package sootup.core.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
@@ -21,38 +24,42 @@ public class PostOrderTraversalTest {
   @Test
   void testReversePostorderTraversal() {
     MutableBlockStmtGraph graph = createStmtGraph();
-    Map<BasicBlock<?>, Integer> blockToSortedId = new HashMap<>();
+    Map<BasicBlock<?>, Integer> blocksToId = new HashMap<>();
     Map<BasicBlock<?>, Integer> blockToPOId = new HashMap<>();
-    // assign sorted ids according to MutableBlockStmtGraph.getBlocksSorted
+    // assign ids according to blocks sorted by BasicBlock::toString
+    List<? extends BasicBlock<?>> blocks =
+        graph.getBlocks().stream()
+            .sorted(Comparator.comparing(BasicBlock::toString))
+            .collect(Collectors.toList());
     int i = 0;
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
-      blockToSortedId.put(block, i);
+    for (BasicBlock<?> block : blocks) {
+      blocksToId.put(block, i);
       i++;
     }
 
-    // assign po ids according to ReversePostOrderBlockTraversal.getOrder
-    Iterable<BasicBlock<?>> RPO = new PostOrderBlockTraversal(graph).getOrder();
+    // assign po ids according to PostOrderBlockTraversal.getOrder
+    Iterable<BasicBlock<?>> PO = new PostOrderBlockTraversal(graph).getOrder();
     i = 0;
-    for (BasicBlock<?> block : RPO) {
+    for (BasicBlock<?> block : PO) {
       blockToPOId.put(block, i);
       i++;
     }
 
     Map<Integer, Integer> expectedSortedIdToRPOId = new HashMap<>();
-    expectedSortedIdToRPOId.put(0, 6);
-    expectedSortedIdToRPOId.put(1, 5);
-    expectedSortedIdToRPOId.put(2, 0);
-    expectedSortedIdToRPOId.put(3, 4);
-    expectedSortedIdToRPOId.put(4, 2);
-    expectedSortedIdToRPOId.put(5, 3);
-    expectedSortedIdToRPOId.put(6, 1);
+    expectedSortedIdToRPOId.put(0, 1);
+    expectedSortedIdToRPOId.put(1, 4);
+    expectedSortedIdToRPOId.put(2, 5);
+    expectedSortedIdToRPOId.put(3, 6);
+    expectedSortedIdToRPOId.put(4, 3);
+    expectedSortedIdToRPOId.put(5, 2);
+    expectedSortedIdToRPOId.put(6, 0);
 
-    for (BasicBlock<?> block : RPO) {
-      Integer sortedId = blockToSortedId.get(block);
-      Integer rpoId = blockToPOId.get(block);
-      Integer expectedRPOId = expectedSortedIdToRPOId.get(sortedId);
+    for (BasicBlock<?> block : PO) {
+      Integer id = blocksToId.get(block);
+      Integer poId = blockToPOId.get(block);
+      Integer expectedPOId = expectedSortedIdToRPOId.get(id);
 
-      assertEquals(expectedRPOId, rpoId);
+      assertEquals(expectedPOId, poId);
     }
   }
 

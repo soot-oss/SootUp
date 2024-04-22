@@ -23,9 +23,13 @@ public class DominanceFinderTest {
   public void testDominanceFinder() {
     MutableBlockStmtGraph graph = createStmtGraph();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
-    // assign ids according to getBlocksSorted order
+    // assign ids according to blocks sorted by BasicBlock::toString
+    List<? extends BasicBlock<?>> blocks =
+        graph.getBlocks().stream()
+            .sorted(Comparator.comparing(BasicBlock::toString))
+            .collect(Collectors.toList());
     int i = 0;
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
+    for (BasicBlock<?> block : blocks) {
       blockToId.put(block, i);
       i++;
     }
@@ -33,25 +37,25 @@ public class DominanceFinderTest {
     DominanceFinder dom = new DominanceFinder(graph);
 
     Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
-    expectedFrontiers.put(0, new HashSet<>());
-    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(1)));
-    expectedFrontiers.put(2, new HashSet<>());
-    expectedFrontiers.put(3, new HashSet<>(Collections.singletonList(1)));
-    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(6)));
-    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(6)));
-    expectedFrontiers.put(6, new HashSet<>(Collections.singletonList(1)));
+    expectedFrontiers.put(0, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(2, new HashSet<>(Collections.singletonList(2)));
+    expectedFrontiers.put(3, new HashSet<>());
+    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(0)));
+    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(0)));
+    expectedFrontiers.put(6, new HashSet<>());
 
     Map<Integer, Integer> expectedDominators = new HashMap<>();
-    expectedDominators.put(0, -1);
-    expectedDominators.put(1, 0);
-    expectedDominators.put(2, 1);
-    expectedDominators.put(3, 1);
-    expectedDominators.put(4, 3);
-    expectedDominators.put(5, 3);
-    expectedDominators.put(6, 3);
+    expectedDominators.put(0, 1);
+    expectedDominators.put(1, 2);
+    expectedDominators.put(2, 3);
+    expectedDominators.put(3, -1);
+    expectedDominators.put(4, 1);
+    expectedDominators.put(5, 1);
+    expectedDominators.put(6, 2);
 
     // check dominators
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
+    for (BasicBlock<?> block : blocks) {
       Integer dominatorId = -1;
       BasicBlock<?> dominator = dom.getImmediateDominator(block);
       if (dominator != null) {
@@ -63,7 +67,7 @@ public class DominanceFinderTest {
     }
 
     // check frontiers
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
+    for (BasicBlock<?> block : blocks) {
       Set<BasicBlock<?>> frontier = dom.getDominanceFrontiers(block);
       Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
       Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
@@ -78,7 +82,7 @@ public class DominanceFinderTest {
     DominanceFinder dom = new DominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses
-    for (BasicBlock<?> block : graph.getBlocksSorted()) {
+    for (BasicBlock<?> block : graph.getBlocks()) {
       List<BasicBlock<?>> idxToBlock = dom.getIdxToBlock();
       Map<BasicBlock<?>, Integer> blockToIdx = dom.getBlockToIdx();
       assertEquals(block, idxToBlock.get(blockToIdx.get(block)));
