@@ -25,7 +25,6 @@ package sootup.core.validation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -49,10 +48,10 @@ public class TypesValidator implements BodyValidator {
     }
     SootMethod method = sootMethodOpt.get();
 
-    if (!(method.getReturnType() instanceof PrimitiveType ||
-            method.getReturnType() instanceof ClassType ||
-            method.getReturnType() instanceof VoidType ||
-            method.getReturnType() instanceof ReferenceType)) {
+    if (!(method.getReturnType() instanceof PrimitiveType
+            || method.getReturnType() instanceof VoidType
+            || method.getReturnType() instanceof ReferenceType)
+        || method.getReturnType() instanceof NullType) {
       validationExceptions.add(
           new ValidationException(
               method,
@@ -63,8 +62,7 @@ public class TypesValidator implements BodyValidator {
                   + method));
     }
     for (Type t : method.getParameterTypes()) {
-      if (!(t instanceof PrimitiveType ||
-              t instanceof ReferenceType)) {
+      if (t instanceof VoidType || !(t instanceof PrimitiveType || t instanceof ReferenceType)) {
         validationExceptions.add(
             new ValidationException(
                 method,
@@ -74,8 +72,7 @@ public class TypesValidator implements BodyValidator {
     }
     for (Local l : body.getLocals()) {
       Type t = l.getType();
-      if (!(t instanceof PrimitiveType ||
-              t instanceof ReferenceType)) {
+      if (!(t instanceof PrimitiveType || t instanceof ReferenceType || t instanceof UnknownType)) {
         validationExceptions.add(
             new ValidationException(
                 l,
