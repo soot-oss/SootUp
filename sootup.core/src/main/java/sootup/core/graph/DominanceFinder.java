@@ -64,7 +64,7 @@ public class DominanceFinder {
       @Nonnull
       @Override
       List<BasicBlock<?>> getSortedBlocks(StmtGraph<?> blockGraph) {
-        return Collections.unmodifiableList(new ForwardingStmtGraph(blockGraph).getBlocksSorted());
+        return Collections.unmodifiableList(blockGraph.getBlocksSorted());
       }
     };
 

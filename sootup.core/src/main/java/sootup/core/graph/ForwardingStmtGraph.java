@@ -69,7 +69,7 @@ public class ForwardingStmtGraph<V extends BasicBlock<V>> extends StmtGraph<V> {
   @Nonnull
   @Override
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return ReversePostOrderBlockTraversal.getBlocksSorted(backingGraph);
+    return backingGraph.getBlocksSorted();
   }
 
   @Override
