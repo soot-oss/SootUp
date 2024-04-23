@@ -15,7 +15,7 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.types.PrimitiveType;
 
 @Tag("Java8")
-public class DominanceFinderTest {
+public class PostDominanceFinderTest {
 
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
@@ -34,30 +34,30 @@ public class DominanceFinderTest {
       i++;
     }
 
-    DominanceFinder dom = new DominanceFinder(graph);
+    PostDominanceFinder postDom = new PostDominanceFinder(graph);
 
     Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
     expectedFrontiers.put(0, new HashSet<>(Collections.singletonList(2)));
     expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(2)));
     expectedFrontiers.put(2, new HashSet<>(Collections.singletonList(2)));
     expectedFrontiers.put(3, new HashSet<>());
-    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(0)));
-    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(0)));
+    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(1)));
+    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(1)));
     expectedFrontiers.put(6, new HashSet<>());
 
     Map<Integer, Integer> expectedDominators = new HashMap<>();
-    expectedDominators.put(0, 1);
-    expectedDominators.put(1, 2);
-    expectedDominators.put(2, 3);
-    expectedDominators.put(3, -1);
-    expectedDominators.put(4, 1);
-    expectedDominators.put(5, 1);
-    expectedDominators.put(6, 2);
+    expectedDominators.put(0, 2);
+    expectedDominators.put(1, 0);
+    expectedDominators.put(2, 6);
+    expectedDominators.put(3, 2);
+    expectedDominators.put(4, 0);
+    expectedDominators.put(5, 0);
+    expectedDominators.put(6, -1);
 
     // check dominators
     for (BasicBlock<?> block : blocks) {
+      BasicBlock<?> dominator = postDom.getImmediateDominator(block);
       Integer dominatorId = -1;
-      BasicBlock<?> dominator = dom.getImmediateDominator(block);
       if (dominator != null) {
         dominatorId = blockToId.get(dominator);
       }
@@ -68,7 +68,7 @@ public class DominanceFinderTest {
 
     // check frontiers
     for (BasicBlock<?> block : blocks) {
-      Set<BasicBlock<?>> frontier = dom.getDominanceFrontiers(block);
+      Set<BasicBlock<?>> frontier = postDom.getDominanceFrontiers(block);
       Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
       Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
 
@@ -79,7 +79,7 @@ public class DominanceFinderTest {
   @Test
   public void testBlockToIdxInverse() {
     MutableBlockStmtGraph graph = createStmtGraph();
-    DominanceFinder dom = new DominanceFinder(graph);
+    DominanceFinder dom = new PostDominanceFinder(graph);
 
     // check that getBlockToIdx and getIdxToBlock are inverses
     for (BasicBlock<?> block : graph.getBlocks()) {
@@ -90,8 +90,6 @@ public class DominanceFinderTest {
   }
 
   private MutableBlockStmtGraph createStmtGraph() {
-    // reconstruct the example given in
-    // https://soot-oss.github.io/SootUp/v1.1.2/advanced-topics/#dominancefinder.
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
