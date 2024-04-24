@@ -146,13 +146,13 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
   /**
-   * returns a list of associated traps
+   * returns a (reconstructed) list of traps like the traptable in the bytecode
    *
-   * <p>Note: you can use getTraps() but exceptionional flow information is now easier accessible on
-   * each Block
+   * <p>Note: if you need exceptionional flow information in more augmented with the affected
+   * blocks/stmts and not just a (reconstructed, possibly more verbose) traptable - have a look at
+   * BasicBlock.getExceptionalSuccessor()
    */
-  @Deprecated
-  public abstract List<Trap> getTraps();
+  public abstract List<Trap> buildTraps();
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
@@ -175,7 +175,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     stmts.add(getStartingStmt());
     // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
     // startingStmt+@caughtexception/predecessors().size() == 0?
-    getTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
+    buildTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
     return stmts;
   }
 
@@ -189,7 +189,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
         if (predecessors(stmt).size() == 0) {
           if (!(stmt == getStartingStmt()
-              || getTraps().stream()
+              || buildTraps().stream()
                   .map(Trap::getHandlerStmt)
                   .anyMatch(handler -> handler == stmt))) {
             throw new IllegalStateException(
@@ -336,7 +336,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return false;
     }
 
-    if (!getTraps().equals(otherGraph.getTraps())) {
+    if (!buildTraps().equals(otherGraph.buildTraps())) {
       return false;
     }
 
@@ -700,7 +700,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
     }
 
-    for (Trap trap : getTraps()) {
+    for (Trap trap : buildTraps()) {
       stmtList.add(trap.getBeginStmt());
       stmtList.add(trap.getEndStmt());
       stmtList.add(trap.getHandlerStmt());

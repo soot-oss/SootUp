@@ -114,7 +114,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Nonnull
   public List<Stmt> getStmts(@Nonnull StmtGraph<?> stmtGraph) {
     final Collection<Stmt> targetStmtsOfBranches = stmtGraph.getLabeledStmts();
-    final List<Trap> traps = stmtGraph.getTraps();
+    final List<Trap> traps = stmtGraph.buildTraps();
 
     final int maxEstimatedSize = targetStmtsOfBranches.size() + traps.size() * 3;
     labels = new HashMap<>(maxEstimatedSize, 1);
