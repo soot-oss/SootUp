@@ -55,18 +55,21 @@ public class DexClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Collection<? extends JavaSootMethod> resolveMethods() throws ResolveException {
-    Iterable<? extends Method> methodIterable = classInformation.classDefinition.getMethods();
-    DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
-    // Convert the Iterable to a Stream
-    Stream<? extends Method> methodStream =
-        StreamSupport.stream(methodIterable.spliterator(), false);
-    Iterable<? extends Method> virtualMethodIterable =
-        classInformation.classDefinition.getVirtualMethods();
-    Stream<? extends Method> virtualMethodStream =
-        StreamSupport.stream(virtualMethodIterable.spliterator(), false);
-    return Stream.concat(methodStream, virtualMethodStream)
-        .map(method -> loadMethod(method, dexMethod))
-        .collect(Collectors.toSet());
+    if (classInformation != null) {
+      Iterable<? extends Method> methodIterable = classInformation.classDefinition.getMethods();
+      DexMethod dexMethod = createDexMethodFactory(classInformation.dexEntry, classSignature);
+      // Convert the Iterable to a Stream
+      Stream<? extends Method> methodStream =
+              StreamSupport.stream(methodIterable.spliterator(), false);
+      Iterable<? extends Method> virtualMethodIterable =
+              classInformation.classDefinition.getVirtualMethods();
+      Stream<? extends Method> virtualMethodStream =
+              StreamSupport.stream(virtualMethodIterable.spliterator(), false);
+      return Stream.concat(methodStream, virtualMethodStream)
+              .map(method -> loadMethod(method, dexMethod))
+              .collect(Collectors.toSet());
+    }
+    return Collections.emptyList();
   }
 
   @Nonnull

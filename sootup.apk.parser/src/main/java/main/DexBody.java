@@ -331,10 +331,10 @@ public class DexBody {
     MethodSignature methodSignature =
         new MethodSignature(
             classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
-    //    while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
-    //      stmtList.remove(stmtList.size() - 1);
-    //    }
-    stmtList.removeIf(JNopStmt.class::isInstance);
+        while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
+          stmtList.remove(stmtList.size() - 1);
+        }
+//    stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
@@ -509,6 +509,9 @@ public class DexBody {
                     (BranchingStmt) dexLibAbstractInstruction.getStmt(),
                     Collections.singletonList(targetStmt));
               }
+              else{
+                System.out.println("Target stmt for " + dexLibAbstractInstruction.getStmt() + " is null.. and the targetInstruction is of type " + ((JumpInstruction) dexLibAbstractInstruction).targetInstruction +  " This should not happen");
+              }
             });
   }
 
@@ -516,7 +519,7 @@ public class DexBody {
     int specificStmtIndex = stmtList.indexOf(beforeThisStmt);
     if (specificStmtIndex > 0) {
       // If the specific statement is found in the list
-      stmtList.add(specificStmtIndex - 1, tobeInserted);
+      stmtList.add(specificStmtIndex, tobeInserted);
     }
   }
 
@@ -548,13 +551,13 @@ public class DexBody {
       List<? extends ExceptionHandler> hList = tryItem.getExceptionHandlers();
       for (ExceptionHandler handler : hList) {
         String exceptionType = handler.getExceptionType();
-        exceptionTypeList.add(exceptionType);
         if (exceptionType == null) {
           exceptionType = "Ljava/lang/Throwable$CatchAll;";
         }
-        //        if (exceptionTypeList.contains(exceptionType)) {
-        //          exceptionType = exceptionType + "$" + exceptionTypeList.size();
-        //        }
+        if (exceptionTypeList.contains(exceptionType)) {
+          exceptionType = exceptionType + "$" + exceptionTypeList.size();
+        }
+        exceptionTypeList.add(exceptionType);
         Type t = DexUtil.toSootType(exceptionType, 0);
         // exceptions can only be of ReferenceType
         if (t instanceof JavaClassType) {
@@ -584,8 +587,23 @@ public class DexBody {
           } else {
             handlerStmt = instruction.getStmt();
           }
-          Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
-          traps.add(trap);
+          if(beginStmt != endStmt) {
+            Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
+            traps.add(trap);
+          }
+
+
+//          try {
+//            System.out.println(42);
+//          }catch (IOException e){
+//            // e : csaughtexc
+//            System.out.println(1);
+//          }
+//          catch (IllegalArgumentException e1){
+//            // e1 : caught...
+//            System.out.println(3);
+//          }
+
         }
       }
     }

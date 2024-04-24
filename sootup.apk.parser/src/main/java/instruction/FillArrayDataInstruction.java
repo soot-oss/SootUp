@@ -29,7 +29,39 @@ public class FillArrayDataInstruction extends PseudoInstruction {
   private static final Logger logger = LoggerFactory.getLogger(FillArrayDataInstruction.class);
 
   @Override
-  public void jimplify(DexBody body) {}
+  public void jimplify(DexBody body) {
+    Instruction31t fillArrayInstr = (Instruction31t) instruction;
+    int destRegister = fillArrayInstr.getRegisterA();
+    int offset = fillArrayInstr.getCodeOffset();
+    int targetAddress = codeAddress + offset;
+
+    Instruction referenceTable = body.instructionAtAddress(targetAddress).instruction;
+
+    ArrayPayload arrayTable = (ArrayPayload) referenceTable;
+
+    Local arrayReference = body.getRegisterLocal(destRegister);
+    List<Number> elements = arrayTable.getArrayElements();
+    int numElements = elements.size();
+
+    Stmt firstAssign = null;
+    for (int i = 0; i < numElements; i++) {
+      JArrayRef arrayRef = JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
+      NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
+      if (element == null) {
+        break;
+      }
+      JAssignStmt assign = Jimple.newAssignStmt(arrayRef, element, StmtPositionInfo.getNoStmtPositionInfo());
+      body.add(assign);
+      if (i == 0) {
+        firstAssign = assign;
+      }
+    }
+    if (firstAssign == null) { // if numElements == 0. Is it possible?
+      firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+      body.add(firstAssign);
+    }
+    setStmt(firstAssign);
+  }
 
   public FillArrayDataInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
