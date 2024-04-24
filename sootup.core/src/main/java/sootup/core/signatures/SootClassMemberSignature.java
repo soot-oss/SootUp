@@ -35,7 +35,7 @@ import sootup.core.types.Type;
  * @author Jan Martin Persch
  */
 public abstract class SootClassMemberSignature<V extends SootClassMemberSubSignature>
-    implements Signature {
+    implements Signature, Comparable<SootClassMemberSignature<V>> {
 
   /** The signature of the declaring class. */
   @Nonnull private final ClassType declClassSignature;
@@ -94,5 +94,10 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
   @Nonnull
   public String toString() {
     return "<" + declClassSignature + ": " + getSubSignature() + '>';
+  }
+
+  @Override
+  public int compareTo(@Nonnull SootClassMemberSignature<V> member) {
+    return toString().compareTo(member.toString());
   }
 }
