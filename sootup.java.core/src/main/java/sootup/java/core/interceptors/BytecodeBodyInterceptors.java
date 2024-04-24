@@ -30,15 +30,16 @@ import sootup.core.transform.BodyInterceptor;
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {
   Default(
-      new NopEliminator(), // they should not be there anymore..
-      new ConditionalBranchFolder(),
+      new NopEliminator(), // Nops should not exist anymore
+      // new ConditionalBranchFolder(), bug: leaves unconnected edges sometimes - see
+      // RuntimeJarConversionTests
       new EmptySwitchEliminator(),
       new CastAndReturnInliner(),
       new LocalSplitter(),
       new Aggregator(),
       new CopyPropagator(),
       new ConstantPropagatorAndFolder(),
-      // , new DeadAssignmentEliminator() // bug: fix StmtGraph.Iterator - see
+      // new DeadAssignmentEliminator(), bug: creates unconnected exceptional flows - see
       // RuntimeJarConversionTests
       new TypeAssigner());
 
