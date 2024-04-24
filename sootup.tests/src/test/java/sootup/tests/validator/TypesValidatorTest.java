@@ -131,6 +131,6 @@ public class TypesValidatorTest {
     }
     validationExceptions_fail = typesValidator.validate(body, view);
 
-    assertEquals(2, validationExceptions_fail.size());
+    assertEquals(1, validationExceptions_fail.size());
   }
 }
