@@ -206,6 +206,10 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
                     signature.getFullyQualifiedName().replace('.', '/')
                         + classProvider.getHandledFileType().getExtensionWithDot()));
 
+    if (!Files.exists(pathToClass)) {
+      return Optional.empty();
+    }
+
     Optional<? extends SootClassSource> classSource =
         classProvider.createClassSource(this, pathToClass, signature);
 
@@ -246,7 +250,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
       super(classFilePath, srcType, bodyInterceptors);
       this.omittedPackageName = omittedPackageName;
 
-      if (!Files.isRegularFile(classFilePath) || Files.isDirectory(classFilePath)) {
+      if (!Files.isRegularFile(classFilePath)) {
+        throw new IllegalArgumentException("Needs to point to a regular file!");
+      }
+
+      if (Files.isDirectory(classFilePath)) {
         throw new IllegalArgumentException(
             "Needs to point to a regular file - not to a directory.");
       }
@@ -256,6 +264,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     @Nonnull
     public Optional<JavaSootClassSource> getClassSource(
         @Nonnull ClassType type, @Nonnull View view) {
+
+      if (!type.getPackageName().getName().startsWith(omittedPackageName)) {
+        return Optional.empty();
+      }
+
       return getSingleClass((JavaClassType) type, path, new AsmJavaClassProvider(view));
     }
 

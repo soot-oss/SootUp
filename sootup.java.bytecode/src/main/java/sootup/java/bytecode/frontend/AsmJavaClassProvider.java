@@ -21,7 +21,6 @@ package sootup.java.bytecode.frontend;
  * #L%
  */
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -56,14 +55,10 @@ public class AsmJavaClassProvider implements ClassProvider {
       @Nonnull Path sourcePath,
       @Nonnull ClassType classType) {
 
-    if (!Files.exists(sourcePath)) {
-      return Optional.empty();
-    }
-
-    SootClassNode classNode = new SootClassNode(analysisInputLocation);
-
+    SootClassNode classNode;
     final String actualClassSignature;
     try {
+      classNode = new SootClassNode(analysisInputLocation);
       actualClassSignature = AsmUtil.initAsmClassSource(sourcePath, classNode);
     } catch (IOException exception) {
       logger.warn("ioe: " + sourcePath, exception);
@@ -80,12 +75,6 @@ public class AsmJavaClassProvider implements ClassProvider {
             + classType.getClassName();
     String actualFQClassName = actualClassSignature.replace('/', '.');
     if (!actualFQClassName.equals(requestedFQClassName)) {
-      logger.warn(
-          "The given Classtype '"
-              + classType
-              + "' did not match the found ClassType in the compilation unit '"
-              + actualClassSignature
-              + "'. Possibly the AnalysisInputLocation points to a subfolder already including the PackageName directory while the ClassType you wanted to retrieve is missing a PackageName.");
       return Optional.empty();
     }
 

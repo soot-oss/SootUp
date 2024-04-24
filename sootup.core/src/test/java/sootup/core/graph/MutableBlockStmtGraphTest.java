@@ -637,7 +637,7 @@ public class MutableBlockStmtGraphTest {
     graph0.putEdge(stmt2, 0, returnStmt);
 
     {
-      final List<Trap> traps = graph0.getTraps();
+      final List<Trap> traps = graph0.buildTraps();
       assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
       assertEquals(stmt2, traps.get(1).getBeginStmt());
       assertEquals(returnStmt, traps.get(1).getEndStmt());
@@ -675,7 +675,7 @@ public class MutableBlockStmtGraphTest {
     graph2.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
     {
       assertEquals(5, graph2.getBlocks().size());
-      final List<Trap> traps = graph2.getTraps();
+      final List<Trap> traps = graph2.buildTraps();
       assertEquals(2, traps.size());
     }
 
@@ -691,7 +691,7 @@ public class MutableBlockStmtGraphTest {
     graph3.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph3.getTraps();
+      final List<Trap> traps = graph3.buildTraps();
       assertEquals(5, graph2.getBlocks().size());
       assertEquals(2, traps.size());
     }
@@ -714,7 +714,7 @@ public class MutableBlockStmtGraphTest {
     graph4.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
-    assertEquals(3, graph4.getTraps().size());
+    assertEquals(3, graph4.buildTraps().size());
 
     // mixed 2
     MutableBlockStmtGraph graph5 = new MutableBlockStmtGraph();
@@ -749,7 +749,7 @@ public class MutableBlockStmtGraphTest {
     graph5.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph5.getTraps();
+      final List<Trap> traps = graph5.buildTraps();
       assertEquals(6, traps.size());
       assertEquals(6, graph5.getBlocks().size());
     }
@@ -785,7 +785,7 @@ public class MutableBlockStmtGraphTest {
     graph6.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph6.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
     {
-      final List<Trap> traps = graph6.getTraps();
+      final List<Trap> traps = graph6.buildTraps();
       assertEquals(5, traps.size());
       assertEquals(6, graph6.getBlocks().size());
       assertEquals(
