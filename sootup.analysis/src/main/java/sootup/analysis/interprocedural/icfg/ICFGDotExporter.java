@@ -114,7 +114,9 @@ public class ICFGDotExporter {
     }
     return callGraph.callsFrom(source).stream()
         .filter(
-            methodSignature -> methodSignature.getSubSignature().equals(target.getSubSignature()))
+            methodSignature ->
+                !methodSignature.equals(target)
+                    && methodSignature.getSubSignature().equals(target.getSubSignature()))
         .collect(Collectors.toSet());
   }
 

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
@@ -567,7 +566,7 @@ public class StmtPositionInfoTest {
 
   }
 
-  @Ignore
+  @Disabled
   public void testLoadMetadataInstruction() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("metadata", declareClassSig, "void", Collections.emptyList());
@@ -590,7 +589,7 @@ public class StmtPositionInfoTest {
     */
   }
 
-  @Ignore
+  @Disabled
   public void testCheckCastInstruction() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());
@@ -613,7 +612,7 @@ public class StmtPositionInfoTest {
     */
   }
 
-  @Ignore
+  @Disabled
   public void testEnclosingObjectReference() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("enclosingobject", declareClassSig, "void", Collections.emptyList());
@@ -636,7 +635,7 @@ public class StmtPositionInfoTest {
     */
   }
 
-  @Ignore
+  @Disabled
   public void testAstLexicalRead() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());
@@ -659,7 +658,7 @@ public class StmtPositionInfoTest {
     */
   }
 
-  @Ignore
+  @Disabled
   public void testAstLexicalWrite() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());

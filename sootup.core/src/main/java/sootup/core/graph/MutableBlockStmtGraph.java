@@ -25,8 +25,6 @@ package sootup.core.graph;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.jimple.Jimple;
@@ -445,9 +443,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   @Nonnull
   public List<? extends BasicBlock<?>> getBlocksSorted() {
-    return StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(getBlockIterator(), Spliterator.ORDERED), false)
-        .collect(Collectors.toList());
+    return ReversePostOrderBlockTraversal.getBlocksSorted(this);
   }
 
   /**

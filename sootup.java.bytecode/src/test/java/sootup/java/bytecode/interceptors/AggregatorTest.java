@@ -3,8 +3,10 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -30,6 +32,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AggregatorTest {
 
   /**
@@ -189,6 +192,27 @@ public class AggregatorTest {
     JavaView view = new JavaView(inputLocation);
 
     final ClassType classType = view.getIdentifierFactory().getClassType("Issue739_Aggregator");
+    assertTrue(view.getClass(classType).isPresent());
+
+    for (JavaSootMethod javaSootMethod :
+        view.getClasses().stream().findFirst().get().getMethods()) {
+      final Body body = javaSootMethod.getBody();
+    }
+  }
+
+  @Test
+  public void testIssue911() {
+
+    AnalysisInputLocation inputLocationB =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/Issue911_Aggregator.class"),
+            "",
+            SourceType.Application,
+            Collections.singletonList(new Aggregator()));
+
+    JavaView view = new JavaView(inputLocationB);
+
+    final ClassType classType = view.getIdentifierFactory().getClassType("Issue911_Aggregator");
     assertTrue(view.getClass(classType).isPresent());
 
     for (JavaSootMethod javaSootMethod :
