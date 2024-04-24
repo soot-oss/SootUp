@@ -15,14 +15,14 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.types.PrimitiveType;
 
 @Tag("Java8")
-public class DominanceFinderTest {
-
+public class ReversePostOrderTraversalTest {
   StmtPositionInfo noPosInfo = StmtPositionInfo.getNoStmtPositionInfo();
 
   @Test
-  public void testDominanceFinder() {
+  void testReversePostorderTraversal() {
     MutableBlockStmtGraph graph = createStmtGraph();
     Map<BasicBlock<?>, Integer> blockToId = new HashMap<>();
+    Map<BasicBlock<?>, Integer> blockToRPOId = new HashMap<>();
     // assign ids according to blocks sorted by BasicBlock::toString
     List<? extends BasicBlock<?>> blocks =
         graph.getBlocks().stream()
@@ -34,64 +34,33 @@ public class DominanceFinderTest {
       i++;
     }
 
-    DominanceFinder dom = new DominanceFinder(graph);
-
-    Map<Integer, Set<Integer>> expectedFrontiers = new HashMap<>();
-    expectedFrontiers.put(0, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(1, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(2, new HashSet<>(Collections.singletonList(2)));
-    expectedFrontiers.put(3, new HashSet<>());
-    expectedFrontiers.put(4, new HashSet<>(Collections.singletonList(0)));
-    expectedFrontiers.put(5, new HashSet<>(Collections.singletonList(0)));
-    expectedFrontiers.put(6, new HashSet<>());
-
-    Map<Integer, Integer> expectedDominators = new HashMap<>();
-    expectedDominators.put(0, 1);
-    expectedDominators.put(1, 2);
-    expectedDominators.put(2, 3);
-    expectedDominators.put(3, -1);
-    expectedDominators.put(4, 1);
-    expectedDominators.put(5, 1);
-    expectedDominators.put(6, 2);
-
-    // check dominators
-    for (BasicBlock<?> block : blocks) {
-      Integer dominatorId = -1;
-      BasicBlock<?> dominator = dom.getImmediateDominator(block);
-      if (dominator != null) {
-        dominatorId = blockToId.get(dominator);
-      }
-      Integer expectedId = expectedDominators.get(blockToId.get(block));
-
-      assertEquals(expectedId, dominatorId);
+    // assign rpo ids according to ReversePostOrderBlockTraversal.getOrder
+    Iterable<BasicBlock<?>> RPO = new ReversePostOrderBlockTraversal(graph).getOrder();
+    i = 0;
+    for (BasicBlock<?> block : RPO) {
+      blockToRPOId.put(block, i);
+      i++;
     }
 
-    // check frontiers
-    for (BasicBlock<?> block : blocks) {
-      Set<BasicBlock<?>> frontier = dom.getDominanceFrontiers(block);
-      Set<Integer> frontierIds = frontier.stream().map(blockToId::get).collect(Collectors.toSet());
-      Set<Integer> expectedIds = expectedFrontiers.get(blockToId.get(block));
+    Map<Integer, Integer> expectedSortedIdToRPOId = new HashMap<>();
+    expectedSortedIdToRPOId.put(0, 5);
+    expectedSortedIdToRPOId.put(1, 2);
+    expectedSortedIdToRPOId.put(2, 1);
+    expectedSortedIdToRPOId.put(3, 0);
+    expectedSortedIdToRPOId.put(4, 3);
+    expectedSortedIdToRPOId.put(5, 4);
+    expectedSortedIdToRPOId.put(6, 6);
 
-      assertEquals(expectedIds, frontierIds);
-    }
-  }
+    for (BasicBlock<?> block : RPO) {
+      Integer id = blockToId.get(block);
+      Integer rpoId = blockToRPOId.get(block);
+      Integer expectedRPOId = expectedSortedIdToRPOId.get(id);
 
-  @Test
-  public void testBlockToIdxInverse() {
-    MutableBlockStmtGraph graph = createStmtGraph();
-    DominanceFinder dom = new DominanceFinder(graph);
-
-    // check that getBlockToIdx and getIdxToBlock are inverses
-    for (BasicBlock<?> block : graph.getBlocks()) {
-      List<BasicBlock<?>> idxToBlock = dom.getIdxToBlock();
-      Map<BasicBlock<?>, Integer> blockToIdx = dom.getBlockToIdx();
-      assertEquals(block, idxToBlock.get(blockToIdx.get(block)));
+      assertEquals(expectedRPOId, rpoId);
     }
   }
 
   private MutableBlockStmtGraph createStmtGraph() {
-    // reconstruct the example given in
-    // https://soot-oss.github.io/SootUp/v1.1.2/advanced-topics/#dominancefinder.
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
 
     Local l1 = new Local("l1", PrimitiveType.IntType.getInstance());
