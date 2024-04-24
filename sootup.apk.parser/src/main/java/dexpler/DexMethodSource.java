@@ -60,9 +60,9 @@ public class DexMethodSource implements BodySource {
             .setMethodSignature(getSignature())
             .setPosition(NoPositionInformation.getInstance())
             .setLocals(locals);
-    //    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
-    //      bodyInterceptor.interceptBody(bodyBuilder, view);
-    //    }
+    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+      bodyInterceptor.interceptBody(bodyBuilder, view);
+    }
     return bodyBuilder.build();
   }
 
