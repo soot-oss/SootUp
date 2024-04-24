@@ -117,7 +117,7 @@ public class Body implements HasPosition {
   @Nonnull
   @Deprecated()
   public List<Trap> getTraps() {
-    return graph.getTraps();
+    return graph.buildTraps();
   }
 
   /** Return unit containing the \@this-assignment * */

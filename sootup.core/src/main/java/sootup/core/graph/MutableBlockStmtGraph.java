@@ -1471,7 +1471,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
   /** hint: little expensive getter - its more of a build/create */
   @Override
-  public List<Trap> getTraps() {
+  public List<Trap> buildTraps() {
     // [ms] try to incorporate it into the serialisation of jimple printing so the other half of
     // iteration information is not wasted..
     BlockGraphIteratorAndTrapAggregator it =
