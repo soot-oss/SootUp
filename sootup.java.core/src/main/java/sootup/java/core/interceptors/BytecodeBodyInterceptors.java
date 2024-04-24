@@ -31,8 +31,7 @@ import sootup.core.transform.BodyInterceptor;
 public enum BytecodeBodyInterceptors {
   Default(
       new NopEliminator(), // they should not be there anymore..
-      //  new ConditionalBranchFolder(), // bug: leaves dead ends - see
-      // RuntimeJarConversionTests
+      new ConditionalBranchFolder(),
       new EmptySwitchEliminator(),
       new CastAndReturnInliner(),
       new LocalSplitter(),
