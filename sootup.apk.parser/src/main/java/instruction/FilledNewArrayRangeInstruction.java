@@ -26,16 +26,22 @@ public class FilledNewArrayRangeInstruction extends FilledArrayInstruction {
     Type t = DexUtil.toSootType(((TypeReference) filledNewArrayInstr.getReference()).getType(), 0);
     // NewArrayExpr needs the ElementType as it increases the array dimension by 1
     Type arrayType = ((ArrayType) t).getElementType();
-    JNewArrayExpr arrayExpr = JavaJimple.getInstance().newNewArrayExpr(arrayType, IntConstant.getInstance(usedRegister));
+    JNewArrayExpr arrayExpr =
+        JavaJimple.getInstance().newNewArrayExpr(arrayType, IntConstant.getInstance(usedRegister));
     Local arrayLocal = body.getStoreResultLocal();
-    JAssignStmt assignStmt = Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
+    JAssignStmt assignStmt =
+        Jimple.newAssignStmt(arrayLocal, arrayExpr, StmtPositionInfo.getNoStmtPositionInfo());
     body.add(assignStmt);
 
     for (int i = 0; i < usedRegister; i++) {
-      JArrayRef arrayRef = JavaJimple.getInstance().newArrayRef(arrayLocal, IntConstant.getInstance(i));
+      JArrayRef arrayRef =
+          JavaJimple.getInstance().newArrayRef(arrayLocal, IntConstant.getInstance(i));
 
-      JAssignStmt assign
-              = Jimple.newAssignStmt(arrayRef, body.getRegisterLocal(i + filledNewArrayInstr.getStartRegister()), StmtPositionInfo.getNoStmtPositionInfo());
+      JAssignStmt assign =
+          Jimple.newAssignStmt(
+              arrayRef,
+              body.getRegisterLocal(i + filledNewArrayInstr.getStartRegister()),
+              StmtPositionInfo.getNoStmtPositionInfo());
       body.add(assign);
     }
     setStmt(assignStmt);

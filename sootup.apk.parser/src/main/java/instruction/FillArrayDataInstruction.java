@@ -45,12 +45,14 @@ public class FillArrayDataInstruction extends PseudoInstruction {
 
     Stmt firstAssign = null;
     for (int i = 0; i < numElements; i++) {
-      JArrayRef arrayRef = JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
+      JArrayRef arrayRef =
+          JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
       NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
       if (element == null) {
         break;
       }
-      JAssignStmt assign = Jimple.newAssignStmt(arrayRef, element, StmtPositionInfo.getNoStmtPositionInfo());
+      JAssignStmt assign =
+          Jimple.newAssignStmt(arrayRef, element, StmtPositionInfo.getNoStmtPositionInfo());
       body.add(assign);
       if (i == 0) {
         firstAssign = assign;

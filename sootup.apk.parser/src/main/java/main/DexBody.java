@@ -331,10 +331,10 @@ public class DexBody {
     MethodSignature methodSignature =
         new MethodSignature(
             classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
-        while(stmtList.get(stmtList.size() - 1) instanceof JNopStmt){
-          stmtList.remove(stmtList.size() - 1);
-        }
-//    stmtList.removeIf(JNopStmt.class::isInstance);
+    while (stmtList.get(stmtList.size() - 1) instanceof JNopStmt) {
+      stmtList.remove(stmtList.size() - 1);
+    }
+    //    stmtList.removeIf(JNopStmt.class::isInstance);
     graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
@@ -508,9 +508,13 @@ public class DexBody {
                 branchingMap.put(
                     (BranchingStmt) dexLibAbstractInstruction.getStmt(),
                     Collections.singletonList(targetStmt));
-              }
-              else{
-                System.out.println("Target stmt for " + dexLibAbstractInstruction.getStmt() + " is null.. and the targetInstruction is of type " + ((JumpInstruction) dexLibAbstractInstruction).targetInstruction +  " This should not happen");
+              } else {
+                System.out.println(
+                    "Target stmt for "
+                        + dexLibAbstractInstruction.getStmt()
+                        + " is null.. and the targetInstruction is of type "
+                        + ((JumpInstruction) dexLibAbstractInstruction).targetInstruction
+                        + " This should not happen");
               }
             });
   }
@@ -587,22 +591,21 @@ public class DexBody {
           } else {
             handlerStmt = instruction.getStmt();
           }
-          if(beginStmt != endStmt) {
+          if (beginStmt != endStmt) {
             Trap trap = Jimple.newTrap(type, beginStmt, endStmt, handlerStmt);
             traps.add(trap);
           }
 
-
-//          try {
-//            System.out.println(42);
-//          }catch (IOException e){
-//            // e : csaughtexc
-//            System.out.println(1);
-//          }
-//          catch (IllegalArgumentException e1){
-//            // e1 : caught...
-//            System.out.println(3);
-//          }
+          //          try {
+          //            System.out.println(42);
+          //          }catch (IOException e){
+          //            // e : csaughtexc
+          //            System.out.println(1);
+          //          }
+          //          catch (IllegalArgumentException e1){
+          //            // e1 : caught...
+          //            System.out.println(3);
+          //          }
 
         }
       }
