@@ -3,6 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>SootUp Core</name>
+	<artifactId>sootup.core</artifactId>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>org.soot-oss</groupId>
+		<artifactId>sootup</artifactId>
+		<version>1.2.1-SNAPSHOT</version>
+	</parent>
+
+
     <dependencies>
         <dependency>
             <groupId>org.jgrapht</groupId>
@@ -10,12 +20,25 @@
             <version>1.3.1</version>
             <scope>compile</scope>
         </dependency>
-    </dependencies>
-    <artifactId>sootup.core</artifactId>
-	<packaging>jar</packaging>
-	<parent>
-		<groupId>org.soot-oss</groupId>
-		<artifactId>sootup</artifactId>
-		<version>1.2.1-SNAPSHOT</version>
-	</parent>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.11.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>5.11.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.25.3</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
 </project>
