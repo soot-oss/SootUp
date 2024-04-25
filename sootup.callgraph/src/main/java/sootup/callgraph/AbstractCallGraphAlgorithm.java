@@ -290,8 +290,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         .flatMap(
             classType ->
                 Stream.concat(
-                    Stream.of(classType),
-                    view.getTypeHierarchy().superClassesOf(classType)))
+                    Stream.of(classType), view.getTypeHierarchy().superClassesOf(classType)))
         .filter(Objects::nonNull)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)

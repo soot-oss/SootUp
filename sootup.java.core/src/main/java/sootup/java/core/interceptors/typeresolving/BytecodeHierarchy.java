@@ -216,7 +216,8 @@ public class BytecodeHierarchy {
 
   private boolean canStoreType(ClassType ancestor, ClassType child) {
     return ancestor == objectClassType
-        || (typeHierarchy.contains(ancestor) && typeHierarchy.subtypesOf(ancestor).anyMatch( t -> t == child));
+        || (typeHierarchy.contains(ancestor)
+            && typeHierarchy.subtypesOf(ancestor).anyMatch(t -> t == child));
   }
 
   private Set<AncestryPath> buildAncestryPaths(ClassType type) {
@@ -233,10 +234,14 @@ public class BytecodeHierarchy {
       } else {
         if (typeHierarchy.isInterface(node.type)) {
           Stream<ClassType> superInterfaces = typeHierarchy.directlyExtendedInterfacesOf(node.type);
-          Optional<ClassType> any = superInterfaces.peek(superInterface -> {
-            AncestryPath superNode = new AncestryPath(superInterface, node);
-            pathNodes.add(superNode);
-          }).findAny();
+          Optional<ClassType> any =
+              superInterfaces
+                  .peek(
+                      superInterface -> {
+                        AncestryPath superNode = new AncestryPath(superInterface, node);
+                        pathNodes.add(superNode);
+                      })
+                  .findAny();
           if (!any.isPresent()) {
             paths.add(node);
           }
@@ -245,7 +250,10 @@ public class BytecodeHierarchy {
           Set<ClassType> superInterfaces;
           Optional<ClassType> superClass;
           try {
-            superInterfaces = typeHierarchy.directlyImplementedInterfacesOf(node.type).collect(Collectors.toSet());
+            superInterfaces =
+                typeHierarchy
+                    .directlyImplementedInterfacesOf(node.type)
+                    .collect(Collectors.toSet());
             superClass = typeHierarchy.superClassOf(node.type);
           } catch (IllegalArgumentException iae) {
             // node.type does not exist in
