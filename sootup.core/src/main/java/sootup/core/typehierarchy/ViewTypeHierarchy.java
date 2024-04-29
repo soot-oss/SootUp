@@ -140,7 +140,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       superclassIterator.next();
     }
 
-      return StreamSupport.stream(Spliterators.spliteratorUnknownSize(superclassIterator, Spliterator.DISTINCT), false);
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(superclassIterator, Spliterator.NONNULL), false);
   }
 
   protected Stream<Vertex> directImplementedInterfacesOf(@Nonnull Vertex classVertex) {
@@ -426,11 +427,9 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private class SuperClassVertexIterator implements Iterator<Vertex> {
-    @Nonnull
-    final Graph<Vertex, Edge> graph;
+    @Nonnull final Graph<Vertex, Edge> graph;
     private final Vertex classVertex;
-    @Nonnull
-    Optional<Vertex> classVertexItBase;
+    @Nonnull Optional<Vertex> classVertexItBase;
 
     public SuperClassVertexIterator(Vertex classVertex) {
       this.classVertex = classVertex;
@@ -438,9 +437,11 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       classVertexItBase = Optional.of(classVertex);
     }
 
+    int i = 0;
+
     @Override
     public boolean hasNext() {
-      return classVertexItBase.isPresent();
+      return ++i < 3 && classVertexItBase.isPresent();
     }
 
     @Override
