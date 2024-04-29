@@ -47,10 +47,12 @@ import sootup.core.views.View;
 public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private final Supplier<ScanResult> lazyScanResult;
+  private final ClassType objectClassType;
 
   /** to allow caching use Typehierarchy.fromView() to get/create the Typehierarchy. */
   public ViewTypeHierarchy(@Nonnull View view) {
     lazyScanResult = Suppliers.memoize(() -> scanView(view));
+    objectClassType = view.getIdentifierFactory().getClassType("java.lang.Object");
   }
 
   @Nonnull
@@ -246,8 +248,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (classVertex == null) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
     }
-    Optional<Vertex> superClassVertex = directSuperClassOf(classVertex).findAny();
-    return superClassVertex.map(v -> v.javaClassType);
+    if(classVertex.type == VertexType.Interface){
+      return Optional.of(objectClassType);
+    }
+    if(objectClassType.equals(classType)){
+      return Optional.empty();
+    }
+    Optional<ClassType> superclassOpt = directSuperClassOf(classVertex).findAny().map(v -> v.javaClassType);
+    return Optional.of(superclassOpt.orElse(classType));
   }
 
   @Override

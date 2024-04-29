@@ -42,7 +42,6 @@ public abstract class AbstractView implements View {
   @Nullable private TypeHierarchy typeHierarchy;
 
   public AbstractView() {
-    this.typeHierarchy = new ViewTypeHierarchy(this);
   }
 
   @Override
