@@ -86,6 +86,7 @@ public interface TypeHierarchy {
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.
    */
+  @Nonnull
   Optional<ClassType> superClassOf(@Nonnull ClassType classType);
 
   /**
