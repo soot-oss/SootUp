@@ -17,7 +17,7 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     SootClass sootClass =
-        this.getView().getClass(identifierFactory.getClassType(this.getClassName())).orElse(null);
+        this.getView().getClass(getView().getIdentifierFactory().getClassType(this.getClassName())).orElse(null);
     assertNotNull(sootClass);
     assertTrue(sootClass.hasSuperclass());
 

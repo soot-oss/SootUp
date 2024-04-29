@@ -210,10 +210,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         // We ascend from vertex through its superclasses to java.lang.Object.
         // For each superclass, we take the interfaces it implements and merge
         // them together in a Set.
-        Stream<Vertex> superClasses = superClassesOf(vertex, false);
-        return superClasses
-            .flatMap(this::directImplementedInterfacesOf)
-            .flatMap(this::selfAndImplementedInterfaces);
+          return superClassesOf(vertex, true)
+            .flatMap(this::directImplementedInterfacesOf).map(v -> v.javaClassType);
       case Interface:
         return directExtendedInterfacesOf(vertex).flatMap(this::selfAndImplementedInterfaces);
       default:
@@ -427,32 +425,23 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private class SuperClassVertexIterator implements Iterator<Vertex> {
-    @Nonnull final Graph<Vertex, Edge> graph;
-    private final Vertex classVertex;
-    @Nonnull Optional<Vertex> classVertexItBase;
+    @Nonnull private final Graph<Vertex, Edge> graph;
+    @Nonnull private Optional<Vertex> classVertexItBase;
 
     public SuperClassVertexIterator(Vertex classVertex) {
-      this.classVertex = classVertex;
       graph = lazyScanResult.get().graph;
       classVertexItBase = Optional.of(classVertex);
     }
 
-    int i = 0;
-
     @Override
     public boolean hasNext() {
-      return ++i < 3 && classVertexItBase.isPresent();
+      return classVertexItBase.isPresent();
     }
 
     @Override
     public Vertex next() {
       Optional<Vertex> currentSuperClass = classVertexItBase;
-      classVertexItBase =
-          graph.outgoingEdgesOf(classVertex).stream()
-              .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-              .map(graph::getEdgeTarget)
-              .findAny();
-
+      classVertexItBase = directSuperClassOf(classVertexItBase.get()).findAny();
       return currentSuperClass.get();
     }
   }

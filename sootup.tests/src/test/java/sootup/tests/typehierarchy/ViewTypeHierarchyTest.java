@@ -118,12 +118,12 @@ public class ViewTypeHierarchyTest {
     ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
     ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace).get();
     assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
-    assertNull(
-        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")),
+    assertFalse(
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")).isPresent(),
         "java.lang.Object should not have a superclass");
     assertEquals(
         factory.getClassType("java.lang.Object"),
-        typeHierarchy.superClassOf(factory.getClassType("java.util.Collection")),
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Iterable")).get(),
         "In Soot, interfaces should have java.lang.Object as the superclass");
   }
 

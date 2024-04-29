@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -26,6 +28,6 @@ public class InterfaceInheritanceTest extends JavaTypeHierarchyTestBase {
     implementerSet.add(getClassType("InterfaceB"));
     assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceA")), implementerSet);
 
-    assertEquals(typeHierarchy.subtypesOf(getClassType("InterfaceA")), implementerSet);
+    assertEquals(typeHierarchy.subtypesOf(getClassType("InterfaceA")).collect(Collectors.toSet()), implementerSet);
   }
 }

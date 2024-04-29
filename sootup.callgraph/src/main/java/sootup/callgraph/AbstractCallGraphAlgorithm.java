@@ -517,14 +517,12 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                         identifierFactory.getMethodSignature(classType, sig.getSubSignature())))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .peek(System.out::println)
             .min(
                 (m1, m2) ->
                     hierarchyComparator.compare(
                         m1.getDeclaringClassType(), m2.getDeclaringClassType()))
             .map(method -> (SootMethod) method);
-    ;
-    System.out.println("---");
+    
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }

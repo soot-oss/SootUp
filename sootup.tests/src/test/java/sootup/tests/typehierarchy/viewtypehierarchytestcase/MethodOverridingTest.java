@@ -30,7 +30,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     SootMethod sootMethod =
         sootClass
             .getMethod(
-                identifierFactory
+                getView().getIdentifierFactory()
                     .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
                     .getSubSignature())
             .get();
@@ -41,7 +41,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
     SootMethod superMethod =
         superClass
             .getMethod(
-                identifierFactory
+                getView().getIdentifierFactory()
                     .getMethodSignature(
                         superClass.getType(), "method", "void", Collections.emptyList())
                     .getSubSignature())

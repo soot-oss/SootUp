@@ -34,10 +34,6 @@ public class HierarchyComparator implements Comparator<ClassType> {
 
   TypeHierarchy typeHierarchy;
 
-  public HierarchyComparator(@Nonnull View view) {
-    this(view.getTypeHierarchy());
-  }
-
   public HierarchyComparator(@Nonnull TypeHierarchy hierarchy) {
     this.typeHierarchy = hierarchy;
   }

@@ -13,8 +13,6 @@ public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
 
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
-
   private String className = "";
   private AnalysisInputLocation srcCode;
   private JavaView view;
@@ -51,7 +49,7 @@ public abstract class JavaTypeHierarchyTestBase {
   }
 
   public JavaClassType getClassType(String className) {
-    return identifierFactory.getClassType(className);
+    return view.getIdentifierFactory().getClassType(className);
   }
 
   public static String extractClassName(String classPath) {
