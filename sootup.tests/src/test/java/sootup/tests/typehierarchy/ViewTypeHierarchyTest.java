@@ -116,7 +116,7 @@ public class ViewTypeHierarchyTest {
   public void superClassOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
-    ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
+    ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace).get();
     assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
     assertNull(
         typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")),

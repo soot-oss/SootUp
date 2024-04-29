@@ -36,7 +36,11 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testObjectIsSuperclassOfSuperClass() {
     Set<ClassType> subClassSet = new HashSet<ClassType>();
-    subClassSet = getView().getTypeHierarchy().subclassesOf(getClassType("java.lang.Object"));
+    subClassSet =
+        getView()
+            .getTypeHierarchy()
+            .subclassesOf(getClassType("java.lang.Object"))
+            .collect(Collectors.toSet());
     assertTrue(subClassSet.contains(getClassType("SuperClass")));
     assertTrue(subClassSet.contains(getClassType("ClassInheritanceWithAdditionalMethod")));
   }

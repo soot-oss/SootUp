@@ -22,7 +22,6 @@ package sootup.java.core.interceptors.typeresolving;
  */
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -183,13 +182,18 @@ public class BytecodeHierarchy {
       Set<AncestryPath> pathsB = buildAncestryPaths((ClassType) b);
       // TODO: [ms] implement an algorithm with better wc runtime costs.. e.g.
       // https://www.baeldung.com/cs/tree-lowest-common-ancestor /
-      // https://de.wikipedia.org/wiki/Range_Minimum_Query
       for (AncestryPath pathA : pathsA) {
         for (AncestryPath pathB : pathsB) {
-          ClassType lcn = leastCommonNode(pathA, pathB);
+          ClassType lcn = null;
+          while (pathA != null && pathB != null && pathA.type == pathB.type) {
+            lcn = pathA.type;
+            pathA = pathA.next;
+            pathB = pathB.next;
+          }
           if (lcn == null) {
             continue;
           }
+
           boolean isLcn = true;
           Iterator<Type> it = ret.iterator();
           while (it.hasNext()) {
@@ -247,44 +251,27 @@ public class BytecodeHierarchy {
           }
         } else {
 
-          Set<ClassType> superInterfaces;
-          Optional<ClassType> superClass;
           try {
-            superInterfaces =
-                typeHierarchy
-                    .directlyImplementedInterfacesOf(node.type)
-                    .collect(Collectors.toSet());
-            superClass = typeHierarchy.superClassOf(node.type);
+            typeHierarchy
+                .directlyImplementedInterfacesOf(node.type)
+                .forEach(
+                    superInterface -> {
+                      pathNodes.add(new AncestryPath(superInterface, node));
+                    });
+
+            Optional<ClassType> superClass = typeHierarchy.superClassOf(node.type);
+            superClass.ifPresent(classType -> pathNodes.add(new AncestryPath(classType, node)));
+
           } catch (IllegalArgumentException iae) {
             // node.type does not exist in
+            // TODO: [ms] did such a case occur - we use a node.type from the hierarchy so it should
+            // be in the graph?!
             continue;
-          }
-
-          for (ClassType superInterface : superInterfaces) {
-            AncestryPath superNode = new AncestryPath(superInterface, node);
-            pathNodes.add(superNode);
-          }
-
-          // only java.lang.Object can have no SuperClass i.e. is null
-          if (!superClass.isPresent()) {
-            AncestryPath superNode = new AncestryPath(superClass.get(), node);
-            pathNodes.add(superNode);
           }
         }
       }
     }
     return paths;
-  }
-
-  @Nullable
-  private ClassType leastCommonNode(AncestryPath a, AncestryPath b) {
-    ClassType lcn = null;
-    while (a != null && b != null && a.type == b.type) {
-      lcn = a.type;
-      a = a.next;
-      b = b.next;
-    }
-    return lcn;
   }
 
   // TODO: [ms] thats a linked list.. please refactor that

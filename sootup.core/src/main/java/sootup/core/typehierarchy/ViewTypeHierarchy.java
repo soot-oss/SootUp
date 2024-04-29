@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
-
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import sootup.core.model.SootClass;
