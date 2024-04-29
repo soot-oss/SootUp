@@ -132,39 +132,15 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Nonnull
-  protected Stream<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean includingSelf) {
-    Iterator<Vertex> superclassIterator =
-        new Iterator<Vertex>() {
-          @Nonnull final Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
-          @Nonnull Optional<Vertex> classVertexItBase = Optional.of(classVertex);
+  protected Stream<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean excludeSelf) {
+    Iterator<Vertex> superclassIterator = new SuperClassVertexIterator(classVertex);
 
-          @Override
-          public boolean hasNext() {
-            return classVertexItBase.isPresent();
-          }
-
-          @Override
-          public Vertex next() {
-            Optional<Vertex> currentSuperClass = classVertexItBase;
-            classVertexItBase =
-                graph.outgoingEdgesOf(classVertex).stream()
-                    .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-                    .map(graph::getEdgeTarget)
-                    .findAny();
-
-            return currentSuperClass.get();
-          }
-        };
-
-    if (!includingSelf) {
+    if (excludeSelf) {
       // skip first element which is the classVertex
       superclassIterator.next();
     }
 
-    Stream<Vertex> stream =
-        StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(superclassIterator, Spliterator.DISTINCT), false);
-    return stream;
+      return StreamSupport.stream(Spliterators.spliteratorUnknownSize(superclassIterator, Spliterator.DISTINCT), false);
   }
 
   protected Stream<Vertex> directImplementedInterfacesOf(@Nonnull Vertex classVertex) {
@@ -233,7 +209,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         // We ascend from vertex through its superclasses to java.lang.Object.
         // For each superclass, we take the interfaces it implements and merge
         // them together in a Set.
-        Stream<Vertex> superClasses = superClassesOf(vertex, true);
+        Stream<Vertex> superClasses = superClassesOf(vertex, false);
         return superClasses
             .flatMap(this::directImplementedInterfacesOf)
             .flatMap(this::selfAndImplementedInterfaces);
@@ -446,6 +422,37 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         @Nonnull Map<ClassType, Vertex> typeToVertex, @Nonnull Graph<Vertex, Edge> graph) {
       this.typeToVertex = typeToVertex;
       this.graph = graph;
+    }
+  }
+
+  private class SuperClassVertexIterator implements Iterator<Vertex> {
+    @Nonnull
+    final Graph<Vertex, Edge> graph;
+    private final Vertex classVertex;
+    @Nonnull
+    Optional<Vertex> classVertexItBase;
+
+    public SuperClassVertexIterator(Vertex classVertex) {
+      this.classVertex = classVertex;
+      graph = lazyScanResult.get().graph;
+      classVertexItBase = Optional.of(classVertex);
+    }
+
+    @Override
+    public boolean hasNext() {
+      return classVertexItBase.isPresent();
+    }
+
+    @Override
+    public Vertex next() {
+      Optional<Vertex> currentSuperClass = classVertexItBase;
+      classVertexItBase =
+          graph.outgoingEdgesOf(classVertex).stream()
+              .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+              .map(graph::getEdgeTarget)
+              .findAny();
+
+      return currentSuperClass.get();
     }
   }
 }
