@@ -112,6 +112,9 @@ public interface TypeHierarchy {
       return true;
     }
 
+    final String jlObject = "java.lang.Object";
+    final String jiSerializable = "java.io.Serializable";
+    final String jlCloneable = "java.lang.Cloneable";
     if (supertype instanceof ArrayType) {
       if (!(potentialSubtype instanceof ArrayType)) {
         return false;
@@ -131,15 +134,13 @@ public interface TypeHierarchy {
         // Arrays are covariant: Object[] x = new String[0];
         return true;
       } else if (superArrayType.getBaseType() instanceof ClassType
-          && (((ClassType) superArrayType.getBaseType())
-                  .getFullyQualifiedName()
-                  .equals("java.lang.Object")
+          && (((ClassType) superArrayType.getBaseType()).getFullyQualifiedName().equals(jlObject)
               || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
-                  .equals("java.io.Serializable")
+                  .equals(jiSerializable)
               || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
-                  .equals("java.lang.Cloneable"))) {
+                  .equals(jlCloneable))) {
         // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
         return potentialSubArrayType.getDimension() > superArrayType.getDimension();
       } else {
@@ -151,16 +152,14 @@ public interface TypeHierarchy {
         String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
         // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
         // superClassOf() check is a fast path
-        return (supertypeName.equals("java.lang.Object")
-                && !potentialSubtypeName.equals("java.lang.Object"))
-            || supertype.equals(superClassOf((ClassType) potentialSubtype))
+        return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
             || superClassesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype)
             || implementedInterfacesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        return supertypeName.equals("java.lang.Object")
-            || supertypeName.equals("java.io.Serializable")
-            || supertypeName.equals("java.lang.Cloneable");
+        return supertypeName.equals(jlObject)
+            || supertypeName.equals(jiSerializable)
+            || supertypeName.equals(jlCloneable);
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }

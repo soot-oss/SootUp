@@ -23,7 +23,6 @@ package sootup.core.typehierarchy;
 
 import com.google.common.base.Suppliers;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -90,11 +89,8 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new IllegalArgumentException("Could not find '" + type + "' in hierarchy.");
     }
 
-    Set<ClassType> subclasses = new HashSet<>();
     // We now traverse the subgraph of the vertex to find all its subtypes
-    visitSubgraph(
-        scanResult.graph, vertex, false, subvertex -> subclasses.add(subvertex.javaClassType));
-    return subclasses.stream();
+    return visitSubgraph(scanResult.graph, vertex, false);
   }
 
   @Nonnull
@@ -212,10 +208,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
         // We ascend from vertex through its superclasses to java.lang.Object.
         // For each superclass, we take the interfaces it implements and merge
         // them together in a Set.
-          return superClassesOf(vertex, true)
-            .flatMap(this::directImplementedInterfacesOf).map(v -> v.javaClassType);
+        return superClassesOf(vertex, false)
+            .flatMap(this::directImplementedInterfacesOf)
+            .flatMap(this::selfAndImplementedInterfaces)
+            .distinct();
       case Interface:
-        return directExtendedInterfacesOf(vertex).flatMap(this::selfAndImplementedInterfaces);
+        return directExtendedInterfacesOf(vertex)
+            .flatMap(this::selfAndImplementedInterfaces)
+            .distinct();
       default:
         throw new AssertionError("Unexpected vertex type!");
     }
@@ -248,14 +248,20 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     if (classVertex == null) {
       throw new IllegalArgumentException("Could not find '" + classType + "' in the view.");
     }
-    if(classVertex.type == VertexType.Interface){
-      return Optional.of(objectClassType);
-    }
-    if(objectClassType.equals(classType)){
+    if (objectClassType.equals(classType)) {
       return Optional.empty();
     }
-    Optional<ClassType> superclassOpt = directSuperClassOf(classVertex).findAny().map(v -> v.javaClassType);
-    return Optional.of(superclassOpt.orElse(classType));
+    Optional<ClassType> superclassOpt =
+        directSuperClassOf(classVertex).findAny().map(v -> v.javaClassType);
+
+    if (superclassOpt.isPresent()) {
+      return superclassOpt;
+    } else {
+      if (classVertex.type == VertexType.Interface) {
+        return Optional.of(objectClassType);
+      }
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -280,27 +286,27 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * each vertex in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
    * also called with the <code>vertex</code>.
    */
-  private static void visitSubgraph(
-      Graph<Vertex, Edge> graph, Vertex vertex, boolean includeSelf, Consumer<Vertex> visitor) {
-    if (includeSelf) {
-      visitor.accept(vertex);
-    }
+  private Stream<ClassType> visitSubgraph(
+      Graph<Vertex, Edge> graph, Vertex vertex, boolean includeSelf) {
+    Stream<ClassType> subgraph = includeSelf ? Stream.of(vertex.javaClassType) : Stream.empty();
     switch (vertex.type) {
       case Interface:
-        graph.incomingEdgesOf(vertex).stream()
-            .filter(
-                edge ->
-                    edge.type == EdgeType.ClassDirectlyImplements
-                        || edge.type == EdgeType.InterfaceDirectlyExtends)
-            .map(graph::getEdgeSource)
-            .forEach(directSubtype -> visitSubgraph(graph, directSubtype, true, visitor));
-        break;
+        return Stream.concat(
+            subgraph,
+            graph.incomingEdgesOf(vertex).stream()
+                .filter(
+                    edge ->
+                        edge.type == EdgeType.ClassDirectlyImplements
+                            || edge.type == EdgeType.InterfaceDirectlyExtends)
+                .map(graph::getEdgeSource)
+                .flatMap(directSubtype -> visitSubgraph(graph, directSubtype, true)));
       case Class:
-        graph.incomingEdgesOf(vertex).stream()
-            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
-            .map(graph::getEdgeSource)
-            .forEach(directSubclass -> visitSubgraph(graph, directSubclass, true, visitor));
-        break;
+        return Stream.concat(
+            subgraph,
+            graph.incomingEdgesOf(vertex).stream()
+                .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+                .map(graph::getEdgeSource)
+                .flatMap(directSubclass -> visitSubgraph(graph, directSubclass, true)));
       default:
         throw new AssertionError("Unknown vertex type!");
     }

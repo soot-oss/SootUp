@@ -251,22 +251,16 @@ public class BytecodeHierarchy {
           }
         } else {
 
-          try {
-            typeHierarchy
-                .directlyImplementedInterfacesOf(node.type)
-                .forEach(
-                    superInterface -> {
-                      pathNodes.add(new AncestryPath(superInterface, node));
-                    });
+          typeHierarchy
+              .directlyImplementedInterfacesOf(node.type)
+              .forEach(
+                  superInterface -> {
+                    pathNodes.add(new AncestryPath(superInterface, node));
+                  });
 
-            Optional<ClassType> superClass = typeHierarchy.superClassOf(node.type);
-            superClass.ifPresent(classType -> pathNodes.add(new AncestryPath(classType, node)));
-
-          } catch (IllegalArgumentException iae) {
-            // node.type does not exist in
-            // TODO: [ms] did such a case occur - we use a node.type from the hierarchy so it should
-            // be in the graph?!
-            continue;
+          Optional<ClassType> superClass = typeHierarchy.superClassOf(node.type);
+          if (superClass.isPresent()) {
+            pathNodes.add(new AncestryPath(superClass.get(), node));
           }
         }
       }

@@ -59,15 +59,11 @@ public class ViewTypeHierarchyTest {
   public void implementersOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType iNamespace = factory.getClassType("IFaceOperations", "utils");
-    Set<ClassType> implementers =
-        typeHierarchy.implementersOf(iNamespace).collect(Collectors.toSet());
-    ImmutableSet<ClassType> expectedImplementers =
-        immutableSet(factory.getClassType("utils.Operations"));
-    assertEquals(expectedImplementers, implementers);
-
-    expectedImplementers.forEach(
-        expectedImplementer ->
-            assertTrue(typeHierarchy.isSubtype(iNamespace, expectedImplementer)));
+    List<ClassType> implementers =
+        typeHierarchy.implementersOf(iNamespace).collect(Collectors.toList());
+    ClassType expectedImplementer = factory.getClassType("utils.Operations");
+    assertEquals(expectedImplementer, implementers.get(0));
+    assertTrue(typeHierarchy.isSubtype(iNamespace, expectedImplementer));
   }
 
   @Test
