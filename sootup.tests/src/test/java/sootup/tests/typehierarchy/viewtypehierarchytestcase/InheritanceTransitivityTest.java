@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.typehierarchy.ViewTypeHierarchy;
@@ -20,11 +21,16 @@ public class InheritanceTransitivityTest extends JavaTypeHierarchyTestBase {
     Set<ClassType> subClassSet = new HashSet<>();
     subClassSet.add(getClassType("SubClassA"));
     subClassSet.add(getClassType("SubClassB"));
-    assertEquals(typeHierarchy.subclassesOf(getClassType("InheritanceTransitivity")), subClassSet);
-    assertEquals(typeHierarchy.superClassOf(getClassType("SubClassB")), getClassType("SubClassA"));
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("SubClassA")),
-        getClassType("InheritanceTransitivity"));
+        subClassSet,
+        typeHierarchy
+            .subclassesOf(getClassType("InheritanceTransitivity"))
+            .collect(Collectors.toSet()));
+    assertEquals(
+        getClassType("SubClassA"), typeHierarchy.superClassOf(getClassType("SubClassB")).get());
+    assertEquals(
+        getClassType("InheritanceTransitivity"),
+        typeHierarchy.superClassOf(getClassType("SubClassA")).get());
 
     assertEquals(typeHierarchy.subtypesOf(getClassType("InheritanceTransitivity")), subClassSet);
   }

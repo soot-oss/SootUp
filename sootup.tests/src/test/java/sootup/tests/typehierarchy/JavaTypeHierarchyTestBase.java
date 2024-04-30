@@ -3,7 +3,6 @@ package sootup.tests.typehierarchy;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;

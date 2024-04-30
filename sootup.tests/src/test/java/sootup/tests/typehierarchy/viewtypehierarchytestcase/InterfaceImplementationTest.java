@@ -19,8 +19,8 @@ public class InterfaceImplementationTest extends JavaTypeHierarchyTestBase {
     Set<ClassType> interfaceSet = new HashSet<>();
     interfaceSet.add(getClassType("InterfaceA"));
     assertEquals(
-        typeHierarchy.implementedInterfacesOf(getClassType("InterfaceImplementation")),
-        interfaceSet);
+        interfaceSet,
+        typeHierarchy.implementedInterfacesOf(getClassType("InterfaceImplementation")));
     Set<ClassType> implementerSet = new HashSet<>();
     implementerSet.add(getClassType("InterfaceImplementation"));
     assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceA")), implementerSet);

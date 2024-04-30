@@ -507,7 +507,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     // interface1 is a sub-interface of interface2
     // interface1 is a super-interface of interface2
     // due to multiple inheritance in interfaces
-    final HierarchyComparator hierarchyComparator = new HierarchyComparator(view.getTypeHierarchy());
+    final HierarchyComparator hierarchyComparator =
+        new HierarchyComparator(view.getTypeHierarchy());
     Optional<SootMethod> defaultMethod =
         typeHierarchy
             .implementedInterfacesOf(sig.getDeclClassType())
@@ -522,7 +523,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     hierarchyComparator.compare(
                         m1.getDeclaringClassType(), m2.getDeclaringClassType()))
             .map(method -> (SootMethod) method);
-    
+
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }
