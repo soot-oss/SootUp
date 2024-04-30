@@ -401,6 +401,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     protected static class Vertex {
       @Nonnull final ClassType javaClassType;
       @Nonnull final VertexType type;
+      int depth = -1;
 
       Vertex(@Nonnull ClassType javaClassType, @Nonnull VertexType type) {
         this.javaClassType = javaClassType;

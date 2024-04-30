@@ -8,8 +8,9 @@ import org.junit.jupiter.api.Test;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.java.core.types.JavaClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author: Hasitha Rajapakse * */
@@ -17,16 +18,18 @@ import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
-    ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+    JavaClassType superClass1 = getClassType("SuperClass");
+    TypeHierarchy typeHierarchy = getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(this.getClassName());
 
-    assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
-    assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
+    assertEquals(superClass1, typeHierarchy.superClassOf(sootClassType).get());
+    assertTrue(typeHierarchy.isSubtype(superClass1, sootClassType));
 
     SootClass sootClass =
         this.getView()
             .getClass(this.getView().getIdentifierFactory().getClassType(this.getClassName()))
             .get();
+
     SootMethod sootMethod =
         sootClass
             .getMethod(
@@ -35,10 +38,11 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
                     .getMethodSignature(sootClassType, "method", "void", Collections.emptyList())
                     .getSubSignature())
             .get();
+
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-    SootClass superClass = this.getView().getClass(sootClass.getSuperclass().get()).get();
+    SootClass superClass = getView().getClass(sootClass.getSuperclass().get()).get();
     SootMethod superMethod =
         superClass
             .getMethod(
@@ -48,6 +52,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyTestBase {
                         superClass.getType(), "method", "void", Collections.emptyList())
                     .getSubSignature())
             .get();
+
     Body superBody = superMethod.getBody();
     assertNotNull(superBody);
 

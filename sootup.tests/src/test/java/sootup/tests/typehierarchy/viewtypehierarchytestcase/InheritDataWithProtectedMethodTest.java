@@ -24,7 +24,7 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyTestBas
     ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
     ClassType sootClassType = getClassType(this.getClassName());
 
-    assertEquals(getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType));
+    assertEquals(getClassType("SuperClass"), typeHierarchy.superClassOf(sootClassType).get());
     assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =

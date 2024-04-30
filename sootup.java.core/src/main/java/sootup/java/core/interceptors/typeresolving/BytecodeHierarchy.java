@@ -225,11 +225,11 @@ public class BytecodeHierarchy {
   }
 
   private Set<AncestryPath> buildAncestryPaths(ClassType type) {
-    Deque<AncestryPath> pathNodes = new ArrayDeque<>();
-    pathNodes.add(new AncestryPath(type, null));
+    Deque<AncestryPath> pathNodeQ = new ArrayDeque<>();
+    pathNodeQ.add(new AncestryPath(type, null));
     Set<AncestryPath> paths = new HashSet<>();
-    while (!pathNodes.isEmpty()) {
-      AncestryPath node = pathNodes.removeFirst();
+    while (!pathNodeQ.isEmpty()) {
+      AncestryPath node = pathNodeQ.removeFirst();
       if (!typeHierarchy.contains(node.type)) {
         break;
       }
@@ -243,7 +243,7 @@ public class BytecodeHierarchy {
                   .peek(
                       superInterface -> {
                         AncestryPath superNode = new AncestryPath(superInterface, node);
-                        pathNodes.add(superNode);
+                        pathNodeQ.add(superNode);
                       })
                   .findAny();
           if (!any.isPresent()) {
@@ -255,12 +255,12 @@ public class BytecodeHierarchy {
               .directlyImplementedInterfacesOf(node.type)
               .forEach(
                   superInterface -> {
-                    pathNodes.add(new AncestryPath(superInterface, node));
+                    pathNodeQ.add(new AncestryPath(superInterface, node));
                   });
 
           Optional<ClassType> superClass = typeHierarchy.superClassOf(node.type);
           if (superClass.isPresent()) {
-            pathNodes.add(new AncestryPath(superClass.get(), node));
+            pathNodeQ.add(new AncestryPath(superClass.get(), node));
           }
         }
       }
