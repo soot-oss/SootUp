@@ -45,6 +45,33 @@ For feedback and feature requests, best create appropriate [issues](../../issues
 You want to collaborate? Please read our [coding guidelines and the contributors notice](../../wiki/contribution-to-SootUp).
 
 
+## Publications
+[the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
+[Preprint](/docs/SootUp-paper.pdf) is also available.
+
+If you use SootUp in your research work, feel free to cite it as follows:
+
+```
+@InProceedings{10.1007/978-3-031-57246-3_13,
+author="Karakaya, Kadiray
+and Schott, Stefan
+and Klauke, Jonas
+and Bodden, Eric
+and Schmidt, Markus
+and Luo, Linghui
+and He, Dongjie",
+editor="Finkbeiner, Bernd
+and Kov{\'a}cs, Laura",
+title="SootUp: A Redesign of the Soot Static Analysis Framework",
+booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+year="2024",
+publisher="Springer Nature Switzerland",
+address="Cham",
+pages="229--247",
+isbn="978-3-031-57246-3"
+}
+```
+
 ## Supporters
 The development of SootUp is financed by generous support from the German Research Foundation (DFG) and
 the Heinz Nixdorf Institute (HNI).
