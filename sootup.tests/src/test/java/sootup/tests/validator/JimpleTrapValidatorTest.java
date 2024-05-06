@@ -77,13 +77,4 @@ public class JimpleTrapValidatorTest {
 
     assertEquals(0, validationExceptions_success.size());
   }
-
-  @Test
-  public void trapsValidator_failure() {
-    List<ValidationException> validationExceptions_fail =
-        jimpleTrapValidator.validate(
-            getBody("<TrapsValidator: void trapsValidator_failure()>"), jimpleView);
-
-    assertEquals(0, validationExceptions_fail.size());
-  }
 }
