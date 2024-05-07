@@ -13,6 +13,8 @@ public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
 
     void addStmt(@Nonnull Stmt newStmt);
 
+    void removeStmt(int idx);
+
     void removeStmt(@Nonnull Stmt stmt);
 
     void replaceStmt(Stmt oldStmt, Stmt newStmt);

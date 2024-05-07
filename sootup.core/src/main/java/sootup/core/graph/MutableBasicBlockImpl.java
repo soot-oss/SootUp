@@ -67,9 +67,15 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
+  public void removeStmt(int idx) {
+    stmts.remove(idx);
+  }
+
+  @Override
+  @Deprecated // indexOf is quite expensive!
   public void removeStmt(@Nonnull Stmt stmt) {
     final int idx = stmts.indexOf(stmt);
-    stmts.remove(idx);
+    removeStmt(idx);
   }
 
   @Override

@@ -84,7 +84,7 @@ public class CastCounter extends TypeChecker {
 
     for (Map.Entry<Stmt, Set<JAssignStmt>> casts : tempAssignments.entrySet()) {
       for (JAssignStmt cast : casts.getValue()) {
-        // TODO this also places before labels, which is not correct
+        // FIXME this also places before labels, which is not correct
         graph.insertBefore(casts.getKey(), cast);
       }
     }
