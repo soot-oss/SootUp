@@ -1296,7 +1296,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
             // divide block and don't link them
             // from is not the tail Stmt and the from-Stmt is directly before the to-Stmt
             if ( blockOfToPair.getLeft()-blockOfFromPair.getLeft() == 1) {
-                MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked( blockOfFromPair.getLeft() );
+                MutableBasicBlock newBlock = blockOfFrom.splitBlockUnlinked( blockOfFromPair.getLeft()+1 );
                 newBlock.copyExceptionalFlowFrom(blockOfFrom);
                 List<MutableBasicBlock> successors = blockOfFrom.getSuccessors();
                 for (int i = 0; i < successors.size(); i++) {
