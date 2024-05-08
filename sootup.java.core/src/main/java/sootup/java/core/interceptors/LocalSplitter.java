@@ -227,8 +227,7 @@ public class LocalSplitter implements BodyInterceptor {
         PartialStmt defStmt = new PartialStmt(assignment, true);
         disjointSet.add(defStmt);
 
-        Deque<Stmt> stack = new ArrayDeque<>(graph.successors(assignment));
-        stack.addAll(graph.exceptionalSuccessors(assignment).values());
+        Deque<Stmt> stack = new ArrayDeque<>(graph.getAllSuccessors(assignment));
         Set<Stmt> visited = new HashSet<>();
 
         while (!stack.isEmpty()) {
