@@ -253,9 +253,10 @@ public class RuntimeJarConversionTests {
 
   @Test
   public void testIdx() {
-    convertMethod("<com.sun.xml.internal.messaging.saaj.soap.ver1_2.DetailEntry1_2Impl: javax.xml.soap.SOAPElement setElementQName(javax.xml.namespace.QName)>");
+    convertMethod(
+        "<com.sun.xml.internal.messaging.saaj.soap.ver1_2.DetailEntry1_2Impl: javax.xml.soap.SOAPElement setElementQName(javax.xml.namespace.QName)>");
     convertMethod("<java.net.Socket: void <init>(java.net.Proxy)>");
-    convertMethod("<javax.swing.JMenuBar: boolean processKeyBinding(javax.swing.KeyStroke,java.awt.event.KeyEvent,int,boolean)>");
+    convertMethod(
+        "<javax.swing.JMenuBar: boolean processKeyBinding(javax.swing.KeyStroke,java.awt.event.KeyEvent,int,boolean)>");
   }
-
 }

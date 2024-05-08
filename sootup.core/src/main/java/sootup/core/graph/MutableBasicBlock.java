@@ -1,94 +1,90 @@
 package sootup.core.graph;
 
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.types.ClassType;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import sootup.core.jimple.common.stmt.Stmt;
+import sootup.core.types.ClassType;
 
 public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
 
-    void addStmt(@Nonnull Stmt newStmt);
+  void addStmt(@Nonnull Stmt newStmt);
 
-    void removeStmt(int idx);
+  void removeStmt(int idx);
 
-    void removeStmt(@Nonnull Stmt stmt);
+  void removeStmt(@Nonnull Stmt stmt);
 
-    void replaceStmt(Stmt oldStmt, Stmt newStmt);
+  void replaceStmt(Stmt oldStmt, Stmt newStmt);
 
+  void addPredecessorBlock(@Nonnull MutableBasicBlock block);
 
-    void addPredecessorBlock(@Nonnull MutableBasicBlock block);
+  void linkSuccessor(int successorIdx, MutableBasicBlock blockB);
 
-    void linkSuccessor(int successorIdx, MutableBasicBlock blockB);
+  boolean removePredecessorBlock(@Nonnull MutableBasicBlock b);
 
-    boolean removePredecessorBlock(@Nonnull MutableBasicBlock b);
+  void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block);
 
-    void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block);
+  void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b);
 
-    void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b);
+  void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b);
 
-    void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b);
+  void removeExceptionalSuccessorBlock(@Nonnull ClassType exception);
 
-    void removeExceptionalSuccessorBlock(@Nonnull ClassType exception);
+  @Nonnull
+  MutableBasicBlockImpl splitBlockLinked(int splitIdx);
 
-    @Nonnull
-    MutableBasicBlockImpl splitBlockLinked(int splitIdx);
+  void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock);
 
-    void copyExceptionalFlowFrom(MutableBasicBlock sourceBlock);
+  MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead);
 
+  MutableBasicBlockImpl splitBlockUnlinked(int splitIdx);
 
-    MutableBasicBlock splitBlockUnlinked(@Nonnull Stmt newTail, @Nonnull Stmt newHead);
+  @Nonnull
+  MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead);
 
-    MutableBasicBlockImpl splitBlockUnlinked(int splitIdx);
+  void clearSuccessorBlocks();
 
-    @Nonnull
-    MutableBasicBlock splitBlockLinked(@Nonnull Stmt splitStmt, boolean shouldBeNewHead);
+  void clearExceptionalSuccessorBlocks();
 
-    void clearSuccessorBlocks();
+  void clearPredecessorBlocks();
 
-    void clearExceptionalSuccessorBlocks();
+  List<Integer> replaceSuccessorBlock(
+      @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock);
 
-    void clearPredecessorBlocks();
+  boolean replacePredecessorBlock(MutableBasicBlock oldBlock, MutableBasicBlock newBlock);
 
-    List<Integer> replaceSuccessorBlock(
-            @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock);
+  Collection<ClassType> collectExceptionalSuccessorBlocks(@Nonnull MutableBasicBlock block);
 
-    boolean replacePredecessorBlock(MutableBasicBlock oldBlock, MutableBasicBlock newBlock);
+  @Nonnull
+  @Override
+  List<MutableBasicBlock> getPredecessors();
 
-    Collection<ClassType> collectExceptionalSuccessorBlocks(@Nonnull MutableBasicBlock block);
+  @Nonnull
+  @Override
+  List<MutableBasicBlock> getSuccessors();
 
-    @Nonnull
-    @Override
-    List<MutableBasicBlock> getPredecessors();
+  @Override
+  Map<ClassType, MutableBasicBlock> getExceptionalPredecessors();
 
-    @Nonnull
-    @Override
-    List<MutableBasicBlock> getSuccessors();
+  @Nonnull
+  @Override
+  Map<ClassType, MutableBasicBlock> getExceptionalSuccessors();
 
-    @Override
-    Map<ClassType, MutableBasicBlock> getExceptionalPredecessors();
+  int getStmtCount();
 
-    @Nonnull
-    @Override
-    Map<ClassType, MutableBasicBlock> getExceptionalSuccessors();
+  @Nonnull
+  @Override
+  List<Stmt> getStmts();
 
-    int getStmtCount();
+  @Nonnull
+  @Override
+  Stmt getHead();
 
-    @Nonnull
-    @Override
-    List<Stmt> getStmts();
+  @Nonnull
+  @Override
+  Stmt getTail();
 
-    @Nonnull
-    @Override
-    Stmt getHead();
-
-    @Nonnull
-    @Override
-    Stmt getTail();
-
-    void replaceStmt(int idx, Stmt newStmt);
-
+  void replaceStmt(int idx, Stmt newStmt);
 }

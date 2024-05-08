@@ -54,9 +54,12 @@ public class ReplaceUseExprVisitorTest {
 
   BasicBlock<?> newBlock =
       new MutableBasicBlockImpl(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
-  BasicBlock<?> block1 = new MutableBasicBlockImpl(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
-  BasicBlock<?> block2 = new MutableBasicBlockImpl(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
-  BasicBlock<?> block3 = new MutableBasicBlockImpl(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
+  BasicBlock<?> block1 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
+  BasicBlock<?> block2 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
+  BasicBlock<?> block3 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
 
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);

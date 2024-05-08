@@ -93,7 +93,6 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     stmts.set(idx, newStmt);
   }
 
-
   protected void updateSuccessorContainer(@Nonnull Stmt newStmt) {
     // we are not keeping/copying the currently stored flows as they are associated with a specific
     // stmt
@@ -317,7 +316,6 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   @Nonnull
   public MutableBasicBlockImpl splitBlockLinked(int splitIdx) {
 
-
     MutableBasicBlockImpl newBlock = splitBlockUnlinked(splitIdx);
 
     for (int i = 0; i < successorBlocks.length; i++) {
@@ -388,7 +386,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   /** set newBlock to null to unset.. */
   @Override
   public List<Integer> replaceSuccessorBlock(
-          @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
+      @Nonnull MutableBasicBlock oldBlock, @Nullable MutableBasicBlock newBlock) {
     List<Integer> found =
         new ArrayList<>(successorBlocks.length); // max.. almost definitely smaller
     for (int i = 0; i < successorBlocks.length; i++) {
