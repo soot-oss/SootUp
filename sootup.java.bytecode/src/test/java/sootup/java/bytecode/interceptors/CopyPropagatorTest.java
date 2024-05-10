@@ -3,7 +3,6 @@ package sootup.java.bytecode.interceptors;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
-
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Set;
@@ -362,19 +361,20 @@ public class CopyPropagatorTest {
   @Test
   void testBigInput() {
     AnalysisInputLocation inputLocation =
-            new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
-                    Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
-                    "",
-                    SourceType.Application,
-                    Collections.singletonList(new CopyPropagator()));
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
+            "",
+            SourceType.Application,
+            Collections.singletonList(new CopyPropagator()));
 
     JavaView view = new JavaView(inputLocation);
     final SootMethod sootMethod =
-            view.getMethod(view.getIdentifierFactory().parseMethodSignature("<SlowCopyPropagator: void foo()>"))
-                    .get();
+        view.getMethod(
+                view.getIdentifierFactory()
+                    .parseMethodSignature("<SlowCopyPropagator: void foo()>"))
+            .get();
 
     Body body = sootMethod.getBody();
     System.out.println(body);
   }
-
 }

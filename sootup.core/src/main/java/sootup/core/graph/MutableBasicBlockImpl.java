@@ -72,14 +72,12 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  @Deprecated // indexOf is quite expensive!
   public void removeStmt(@Nonnull Stmt stmt) {
     final int idx = stmts.indexOf(stmt);
     removeStmt(idx);
   }
 
   @Override
-  @Deprecated // indexOf is quite expensive!
   public void replaceStmt(Stmt oldStmt, Stmt newStmt) {
     final int idx = stmts.indexOf(oldStmt);
     replaceStmt(idx, newStmt);
@@ -190,8 +188,6 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     }
 
     List<MutableBasicBlock> objects = new ArrayList<>(getTail().getExpectedSuccessorCount());
-    // TODO: does this change meaning?! i.e. with switchStmts that have partially populated
-    // successors?
     Arrays.stream(successorBlocks).filter(Objects::nonNull).forEach(objects::add);
     return objects;
   }
@@ -277,7 +273,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     }
 
     MutableBasicBlockImpl secondBlock =
-        new MutableBasicBlockImpl(new ArrayList<>(stmts.size() - splitIdx), new LinkedHashMap<>());
+        new MutableBasicBlockImpl(new ArrayList<>(stmts.size() - splitIdx), new HashMap<>());
     // copy stmts from current i.e. first block to new i.e. second block
     for (int i = splitIdx; i < stmts.size(); i++) {
       secondBlock.addStmt(stmts.get(i));
