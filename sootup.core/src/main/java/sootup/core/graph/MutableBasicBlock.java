@@ -40,7 +40,7 @@ public class MutableBasicBlock implements BasicBlock<MutableBasicBlock> {
   @Nonnull private final List<Stmt> stmts;
 
   public MutableBasicBlock() {
-    exceptionalSuccessorBlocks = new HashMap<>();
+    exceptionalSuccessorBlocks = new LinkedHashMap<>();
     stmts = new ArrayList<>();
   }
 
