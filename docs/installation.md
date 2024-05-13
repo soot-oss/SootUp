@@ -73,12 +73,12 @@ repositories {
 }
 
 compile "org.soot-oss:sootup.core:{{ git_latest_release }}"
-compile "org.soot-oss:sootup.java.core{{ git_latest_release }}"
-compile "org.soot-oss:sootup.java.sourcecode{{ git_latest_release }}"
-compile "org.soot-oss:sootup.java.bytecode{{ git_latest_release }}"
-compile "org.soot-oss:sootup.jimple.parser{{ git_latest_release }}"
-compile "org.soot-oss:sootup.callgraph{{ git_latest_release }}"
-compile "org.soot-oss:sootup.analysis{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.core:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.sourcecode:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.java.bytecode:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.jimple.parser:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.callgraph:{{ git_latest_release }}"
+compile "org.soot-oss:sootup.analysis:{{ git_latest_release }}"
 ```
 
 ## Building from Source

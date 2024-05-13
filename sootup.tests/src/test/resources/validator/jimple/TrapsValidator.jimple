@@ -1,0 +1,38 @@
+public class TrapsValidator extends java.lang.Object
+{
+    public void <init>()
+    {
+        TrapsValidator l0;
+
+        l0 := @this: TrapsValidator;
+        specialinvoke l0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void trapsValidator_success()
+    {
+        TrapsValidator l0;
+        unknown $stack4, $stack5, l1, l2, l3;
+
+        l0 := @this: TrapsValidator;
+
+      label1:
+        l1 = 10;
+        l3 = 10 / 0;
+
+      label2:
+        goto label4;
+
+      label3:
+        $stack4 := @caughtexception;
+        l2 = $stack4;
+        $stack5 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>($stack4);
+
+      label4:
+        return;
+
+     catch java.lang.ArithmeticException from label1 to label2 with label3;
+    }
+}

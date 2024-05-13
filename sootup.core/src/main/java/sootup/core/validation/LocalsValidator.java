@@ -55,8 +55,7 @@ public class LocalsValidator implements BodyValidator {
                             + " in "
                             + body.getMethodSignature())));
 
-    body.getDefs()
-        .parallelStream()
+    body.getDefs().stream()
         .filter(value -> value instanceof Local && !locals.contains(value))
         .forEach(
             value ->
@@ -69,10 +68,5 @@ public class LocalsValidator implements BodyValidator {
                             + body.getMethodSignature())));
 
     return exception;
-  }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
   }
 }

@@ -24,6 +24,7 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.TrapTightener;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -130,7 +131,7 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    List<Trap> actual = stmtGraph.getTraps();
+    List<Trap> actual = stmtGraph.buildTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
   /**
@@ -171,7 +172,7 @@ public class TrapTightenerTest {
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    List<Trap> actual = stmtGraph.getTraps();
+    List<Trap> actual = stmtGraph.buildTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 

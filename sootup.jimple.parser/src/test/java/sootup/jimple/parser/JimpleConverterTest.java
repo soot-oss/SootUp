@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -15,6 +16,7 @@ import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
+import sootup.core.jimple.basic.Trap;
 import sootup.core.model.*;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;
@@ -799,5 +801,30 @@ public class JimpleConverterTest {
     for (SootField field : fields) {
       assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
     }
+  }
+
+  @Test
+  public void testLegacyTransientMethodModifier() throws IOException {
+    SootClass clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName(
+                "src/test/java/resources/jimple/LegacyTransientMethodModifier.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    Set<MethodModifier> modifiers = method.getModifiers();
+    assertEquals(1, modifiers.size());
+    MethodModifier modifier = modifiers.iterator().next();
+    assertEquals(MethodModifier.VARARGS, modifier);
+  }
+
+  @Test
+  public void testRedundantTrapHandler() throws IOException {
+    SootClass clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/RedundantTrapHandler.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    List<Trap> traps = method.getBody().getTraps();
+    assertEquals(0, traps.size());
   }
 }

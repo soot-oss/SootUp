@@ -135,7 +135,7 @@ grammar Jimple;
    common_modifier | 'abstract' | 'super';
 
   method_modifier :
-   common_modifier | 'abstract' | 'native' | 'synchronized' | 'varargs'| 'bridge' | 'strictfp';
+   common_modifier | 'abstract' | 'native' | 'synchronized' | 'varargs' | 'bridge' | 'strictfp' | 'transient';
 
   field_modifier :
    common_modifier  | 'transient' | 'volatile';
