@@ -1617,12 +1617,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
       JavaClassType exceptionType = identifierFactory.getClassType(exceptionName);
 
-      Trap trap =
-          Jimple.newTrap(
-              exceptionType,
-              labelsToStmt.get(trycatch.start),
-              labelsToStmt.get(trycatch.end),
-              handler);
+      Stmt beginStmt = labelsToStmt.get(trycatch.start);
+      Stmt endStmt = labelsToStmt.get(trycatch.end);
+      if (endStmt==null || beginStmt==null) {
+        throw new IllegalStateException("Labels for Traps are missing.");
+      }
+      Trap trap = Jimple.newTrap(exceptionType, beginStmt, endStmt, handler);
       traps.add(trap);
     }
     return traps;
@@ -1634,8 +1634,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
-
-    Map<ClassType, Stmt> currentTraps = new HashMap<>();
 
     // (n, n+1) := (from, to)
     // List<Stmt> connectBlocks = new ArrayList<>();
@@ -1665,9 +1663,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt identityRef = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
-          if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
+          JIdentityStmt idStmt = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
+          if (idStmt != null && idStmt.getRightOp() instanceof JCaughtExceptionRef) {
+            danglingLabel.forEach(label -> trapHandler.put(label, idStmt));
           }
         }
         danglingLabel.clear();
@@ -1676,6 +1674,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       stmtList.add(stmt);
 
     } while ((insn = insn.getNext()) != null);
+
+    if (!danglingLabel.isEmpty()) {
+      throw new IllegalStateException("A dangling Label has no target Stmt! i.e. the last Instruction is a LabelNode.");
+    }
 
     Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
     for (Map.Entry<BranchingStmt, Collection<LabelNode>> entry :
