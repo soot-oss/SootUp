@@ -22,9 +22,9 @@ import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
+import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
@@ -178,11 +178,7 @@ public class CallGraphBuilder {
   }
 
   private void addVirtualEdge(
-    ContextMethod caller,
-      Stmt callStmt,
-      SootMethod callee,
-      Kind kind,
-      AllocNode receiverNode) {
+      ContextMethod caller, Stmt callStmt, SootMethod callee, Kind kind, AllocNode receiverNode) {
     Context tgtContext = pta.createCalleeCtx(caller, receiverNode, new CallSite(callStmt), callee);
     ContextMethod cstarget = pta.parameterize(callee, tgtContext);
     handleCallEdge(new Edge(caller, callStmt, cstarget, kind));
@@ -208,8 +204,7 @@ public class CallGraphBuilder {
     }
   }
 
-  public void addStaticEdge(
-    ContextMethod caller, Stmt callStmt, SootMethod calleem, Kind kind) {
+  public void addStaticEdge(ContextMethod caller, Stmt callStmt, SootMethod calleem, Kind kind) {
     Context typeContext = pta.createCalleeCtx(caller, null, new CallSite(callStmt), calleem);
     ContextMethod callee = pta.parameterize(calleem, typeContext);
     handleCallEdge(new Edge(caller, callStmt, callee, kind));

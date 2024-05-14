@@ -32,10 +32,7 @@ public class HybTypeCtxConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      ContextMethod caller,
-      ContextAllocNode receiverNode,
-      CallSite callSite,
-      SootMethod target) {
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     if (receiverNode == null) { // static invoke
       assert callerContext instanceof ContextElements;

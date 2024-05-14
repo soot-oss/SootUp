@@ -20,7 +20,6 @@ package qilin.core.sets;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
 import qilin.util.BitSetIterator;
 import qilin.util.BitVector;
 

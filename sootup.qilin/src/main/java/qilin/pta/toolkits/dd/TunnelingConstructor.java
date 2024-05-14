@@ -41,10 +41,7 @@ public class TunnelingConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      ContextMethod caller,
-      ContextAllocNode receiverNode,
-      CallSite callSite,
-      SootMethod target) {
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     CtxTunnelingFeaturesTrueTable ctftt1 = findOrCreateTunnelingFeaturesTrueTable(caller.method());
     CtxTunnelingFeaturesTrueTable ctftt2 = findOrCreateTunnelingFeaturesTrueTable(target);
     if (ctxCons instanceof CallsiteCtxConstructor) {

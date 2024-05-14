@@ -398,8 +398,7 @@ public final class PTAUtils {
     PackageName pkgName = clz.getType().getPackageName();
     String clzName = clz.getType().getClassName();
     File packageDirectory =
-        new File(
-            parentDir + File.separator + pkgName.getPackageName().replace(".", File.separator));
+        new File(parentDir + File.separator + pkgName.getName().replace(".", File.separator));
 
     try {
       packageDirectory.mkdirs();

@@ -28,10 +28,7 @@ import sootup.core.model.SootMethod;
 
 public interface CtxConstructor {
   Context constructCtx(
-      ContextMethod caller,
-      ContextAllocNode receiverNode,
-      CallSite callSite,
-      SootMethod target);
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target);
 
   Context emptyContext = new ContextElements(new ContextElement[0], 0);
 }

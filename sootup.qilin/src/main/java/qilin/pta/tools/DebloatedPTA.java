@@ -161,7 +161,7 @@ public class DebloatedPTA extends StagedPTA {
 
   @Override
   public Context createCalleeCtx(
-    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+      ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
     return basePTA.createCalleeCtx(caller, receiverNode, callSite, target);
   }
 

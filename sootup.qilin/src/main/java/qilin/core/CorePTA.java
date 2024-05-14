@@ -57,7 +57,7 @@ public abstract class CorePTA extends PTA {
 
   @Override
   public Context createCalleeCtx(
-    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
+      ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target) {
     return ctxCons.constructCtx(caller, (ContextAllocNode) receiverNode, callSite, target);
   }
 

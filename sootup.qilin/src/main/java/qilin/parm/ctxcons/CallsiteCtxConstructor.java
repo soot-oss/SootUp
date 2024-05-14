@@ -30,10 +30,7 @@ public class CallsiteCtxConstructor implements CtxConstructor {
 
   @Override
   public Context constructCtx(
-      ContextMethod caller,
-      ContextAllocNode receiverNode,
-      CallSite callSite,
-      SootMethod target) {
+      ContextMethod caller, ContextAllocNode receiverNode, CallSite callSite, SootMethod target) {
     Context callerContext = caller.context();
     assert callerContext instanceof ContextElements;
     ContextElements ctxElems = (ContextElements) callerContext;

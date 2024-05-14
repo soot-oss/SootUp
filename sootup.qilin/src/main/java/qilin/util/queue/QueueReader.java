@@ -25,7 +25,6 @@ package qilin.util.queue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
-
 import qilin.util.Invalidable;
 
 /**

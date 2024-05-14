@@ -30,9 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
-
 import qilin.core.pag.ContextMethod;
 import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
@@ -57,11 +55,9 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   protected Set<Edge> edges = new LinkedHashSet<Edge>();
   protected ChunkedQueue<Edge> stream = new ChunkedQueue<Edge>();
   protected QueueReader<Edge> reader = stream.reader();
-  protected Map<ContextMethod, Edge> srcMethodToEdge =
-      new LinkedHashMap<ContextMethod, Edge>();
+  protected Map<ContextMethod, Edge> srcMethodToEdge = new LinkedHashMap<ContextMethod, Edge>();
   protected Map<Stmt, Edge> srcUnitToEdge = new LinkedHashMap<Stmt, Edge>();
-  protected Map<ContextMethod, Edge> tgtToEdge =
-      new LinkedHashMap<ContextMethod, Edge>();
+  protected Map<ContextMethod, Edge> tgtToEdge = new LinkedHashMap<ContextMethod, Edge>();
   protected Edge dummy = new Edge(null, null, null, Kind.INVALID);
 
   /** Used to add an edge to the call graph. Returns true iff the edge was not already present. */
@@ -171,9 +167,9 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     MethodSignature srcSig = e.getSrc().method().getSignature();
     MethodSignature tgtSig = e.getTgt().method().getSignature();
     Set<MethodSignature> tgtSigs = calls.getOrDefault(srcSig, Collections.emptySet());
-    assert(!tgtSigs.isEmpty());
+    assert (!tgtSigs.isEmpty());
     tgtSigs.remove(tgtSig);
-    //!FIXME only edge is removed. I do not remove the added nodes.
+    // !FIXME only edge is removed. I do not remove the added nodes.
     e.remove();
 
     if (srcUnitToEdge.get(e.srcUnit()) == e) {
@@ -427,10 +423,12 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   }
 
   @Override
-  public void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    Set<MethodSignature> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
+  public void addCall(
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+    Set<MethodSignature> targets =
+        this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
     if (targets.add(targetMethod)) {
-      ++ callCnt;
+      ++callCnt;
     }
   }
 
@@ -452,9 +450,10 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   }
 
   @Override
-  public boolean containsCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+  public boolean containsCall(
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
     if (this.calls.containsKey(sourceMethod)) {
-      if(this.calls.get(sourceMethod).contains(targetMethod)) {
+      if (this.calls.get(sourceMethod).contains(targetMethod)) {
         return true;
       }
     }
@@ -471,7 +470,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     throw new UnsupportedOperationException();
   }
 
-   @Nonnull
+  @Nonnull
   @Override
   public Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod) {
     return this.calls.getOrDefault(sourceMethod, Collections.emptySet());

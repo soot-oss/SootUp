@@ -108,7 +108,7 @@ public abstract class PTA implements PointsToAnalysis {
   public abstract Context emptyContext();
 
   public abstract Context createCalleeCtx(
-    ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
+      ContextMethod caller, AllocNode receiverNode, CallSite callSite, SootMethod target);
 
   public abstract HeapAbstractor heapAbstractor();
 
