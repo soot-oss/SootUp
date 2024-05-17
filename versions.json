@@ -34,7 +34,10 @@
   {
     "version": "feature_InvokesCG_preview",
     "title": "PR Preview feature_InvokesCG",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
