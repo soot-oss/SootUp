@@ -117,7 +117,7 @@ public interface CallGraph {
    * @param sourceMethod the method signature of the requested node in the call graph
    * @return a set of method signatures that are reached by a direct outgoing edge in the call graph
    */
-  @Deprecated
+
   @Nonnull
   Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod);
 
@@ -129,7 +129,7 @@ public interface CallGraph {
    * @return a set of method signatures that reach the targetMethod by a direct edge in the call
    *     graph
    */
-  @Deprecated
+
   @Nonnull
   Set<Call> callsTo(@Nonnull MethodSignature targetMethod);
 
