@@ -70,8 +70,8 @@ public class JAssignStmtTest {
     Local local = LocalUtil.createDummyLocalForInt();
 
     assertEquals(
-        InvokeExprUtil.createDummyStaticInvokeExpr(),
-        AssignStmtUtil.createDummyAssignStmtWithExpr().getInvokeExpr());
+        InvokeExprUtil.createDummyStaticInvokeExpr().toString(),
+        AssignStmtUtil.createDummyAssignStmtWithExpr().getInvokeExpr().get().toString());
 
     assertFalse(
         AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).getInvokeExpr().isPresent());

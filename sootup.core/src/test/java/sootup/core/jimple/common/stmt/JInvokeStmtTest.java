@@ -49,7 +49,7 @@ public class JInvokeStmtTest {
     assertEquals(specialExpr, invokeStmt2.getInvokeExpr().get());
 
     JInterfaceInvokeExpr interfaceExpr = InvokeExprUtil.createDummyInterfaceInvokeExpr();
-    JInvokeStmt invokeStmt3 = new JInvokeStmt(staticExpr, pos);
-    assertEquals(interfaceExpr, invokeStmt3.getInvokeExpr().get());
+    JInvokeStmt invokeStmt3 = new JInvokeStmt(interfaceExpr, pos);
+    assertEquals(interfaceExpr.toString(), invokeStmt3.getInvokeExpr().get().toString());
   }
 }
