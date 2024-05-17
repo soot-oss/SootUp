@@ -44,6 +44,7 @@ package sootup.core.jimple.common.stmt;
  * #Value%
  */
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
@@ -52,11 +53,12 @@ import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
+import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt, InvokableStmt {
 
   @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
@@ -101,17 +103,29 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
     return getRightOp() instanceof AbstractInvokeExpr;
   }
 
+  /** Checks if the assignment statement invokes a method call
+   *
+   * @return it is true if the assignment statement contains an invoke expression or if the left or right operand is a static field
+   */
+  @Override
+  public boolean doesInvoke() {
+    if (containsInvokeExpr())
+      return true;
+    return getRightOp() instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef;
+  }
+
+
   /*
    * (non-Javadoc)
    *
    * @see de.upb.sootup.jimple.common.stmt.AbstractStmt#getInvokeExpr()
    */
   @Override
-  public AbstractInvokeExpr getInvokeExpr() {
+  public Optional<AbstractInvokeExpr> getInvokeExpr() {
     if (!containsInvokeExpr()) {
-      throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
+      return Optional.empty();
     }
-    return (AbstractInvokeExpr) getRightOp();
+    return Optional.of((AbstractInvokeExpr) getRightOp());
   }
 
   /*

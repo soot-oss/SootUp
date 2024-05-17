@@ -60,10 +60,6 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
 
   void toString(@Nonnull StmtPrinter up);
 
-  boolean containsInvokeExpr();
-
-  AbstractInvokeExpr getInvokeExpr();
-
   boolean containsArrayRef();
 
   JArrayRef getArrayRef();

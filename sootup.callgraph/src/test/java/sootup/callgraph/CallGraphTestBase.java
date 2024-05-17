@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -81,6 +82,15 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     assertTrue(
         cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
+  }
+
+  protected InvokableStmt getInvokableStmt(MethodSignature sourceMethod, MethodSignature staticTargetMethod){
+    return getInvokableStmt(sourceMethod,staticTargetMethod,0);
+  }
+
+  protected InvokableStmt getInvokableStmt(MethodSignature sourceMethod, MethodSignature staticTargetMethod, int index){
+    int currentIndex = 0;
+    as
   }
 
   @Test

@@ -23,6 +23,7 @@ package sootup.callgraph;
  */
 
 import javax.annotation.Nonnull;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 
 /**
@@ -43,6 +44,8 @@ public interface MutableCallGraph extends CallGraph {
    *
    * @param sourceMethod this parameter defines the source node of the edge in the call graph.
    * @param targetMethod this paramter defines the target node of the edge in the call graph.
+   * @param invokableStmt this paramter defines the invoke statement of the edge in the call graph.
    */
-  void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+  void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull
+      InvokableStmt invokableStmt);
 }

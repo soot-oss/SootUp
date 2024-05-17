@@ -79,20 +79,6 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public boolean containsInvokeExpr() {
-    return false;
-  }
-
-  /**
-   * This method must only be used for Stmts which contain an InvokeExpr (JInvokeStmt; possible in
-   * JAssignStmt) check via containsInvokExpr().
-   */
-  @Override
-  public AbstractInvokeExpr getInvokeExpr() {
-    throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
-  }
-
-  @Override
   public boolean containsArrayRef() {
     return false;
   }

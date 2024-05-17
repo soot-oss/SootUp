@@ -23,13 +23,16 @@ package sootup.callgraph;
  */
 
 import com.google.common.base.Preconditions;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DirectedPseudograph;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.SootClassMemberSignature;
 
@@ -53,23 +56,21 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     }
   }
 
-  /** This internal class is used to describe the edge in the graph. */
-  protected static class Edge {}
-
-  @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
+  @Nonnull private final DirectedPseudograph<Vertex, Call> graph;
   @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
+  @Nonnull private final List<MethodSignature> entryMethods;
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
-  public GraphBasedCallGraph() {
-    graph = new DefaultDirectedGraph<>(null, null, false);
-    signatureToVertex = new HashMap<>();
+  public GraphBasedCallGraph(List<MethodSignature> entryMethods) {
+    this(new DirectedPseudograph<>(null, null, false),new HashMap<>(), entryMethods);
   }
 
   public GraphBasedCallGraph(
-      @Nonnull DefaultDirectedGraph<Vertex, Edge> graph,
-      @Nonnull Map<MethodSignature, Vertex> signatureToVertex) {
+      @Nonnull DirectedPseudograph<Vertex, Call> graph,
+      @Nonnull Map<MethodSignature, Vertex> signatureToVertex, List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
+    this.entryMethods = entryMethods;
   }
 
   @Override
@@ -79,19 +80,27 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   protected void addMethod(@Nonnull MethodSignature calledMethod, Vertex vertex) {
+    if (containsMethod(calledMethod)){
+      return;
+    }
     graph.addVertex(vertex);
     signatureToVertex.put(calledMethod, vertex);
   }
 
   @Override
   public void addCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    addCall(sourceMethod, targetMethod, new Edge());
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull InvokableStmt invokableStmt) {
+    addCall(sourceMethod, targetMethod, new Call(sourceMethod,targetMethod,invokableStmt));
   }
 
   protected void addCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, Edge edge) {
-    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), edge);
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, Call call) {
+    if (!call.getSourceMethodSignature().equals(sourceMethod) || !call.getTargetMethodSignature().equals(targetMethod) || containsCall(call)){
+      return;
+    }
+    Vertex source=vertexOf(sourceMethod);
+    Vertex target=vertexOf(targetMethod);
+    graph.addEdge(source, target, call);
   }
 
   @Nonnull
@@ -102,7 +111,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull
   @Override
-  public Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod) {
+  public Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod) {
     return graph.outgoingEdgesOf(vertexOf(sourceMethod)).stream()
         .map(graph::getEdgeTarget)
         .map(targetVertex -> targetVertex.methodSignature)
@@ -111,11 +120,23 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull
   @Override
-  public Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod) {
+  public Set<MethodSignature> callSourcesTo(@Nonnull MethodSignature targetMethod) {
     return graph.incomingEdgesOf(vertexOf(targetMethod)).stream()
         .map(graph::getEdgeSource)
         .map(targetVertex -> targetVertex.methodSignature)
         .collect(Collectors.toSet());
+  }
+
+  @Nonnull
+  @Override
+  public Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod) {
+    return graph.outgoingEdgesOf(vertexOf(sourceMethod));
+  }
+
+  @Nonnull
+  @Override
+  public Set<Call> callsTo(@Nonnull MethodSignature targetMethod) {
+    return graph.incomingEdgesOf(vertexOf(targetMethod));
   }
 
   @Override
@@ -125,11 +146,16 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull InvokableStmt invokableStmt) {
     if (!containsMethod(sourceMethod) || !containsMethod(targetMethod)) {
       return false;
     }
-    return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
+    return containsCall(new Call(sourceMethod,targetMethod,invokableStmt));
+  }
+
+  @Override
+  public boolean containsCall(@Nonnull Call call) {
+    return graph.containsEdge(call);
   }
 
   @Override
@@ -146,33 +172,33 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     graph.edgeSet().stream()
         .sorted(
             Comparator.comparing(
-                    (Edge edge) -> {
-                      Vertex edgeSource = graph.getEdgeSource(edge);
+                    (Call call) -> {
+                      Vertex edgeSource = graph.getEdgeSource(call);
                       return edgeSource.methodSignature.getDeclClassType().getFullyQualifiedName();
                     })
                 .thenComparing(
-                    (Edge edge) -> {
-                      Vertex edgeSource = graph.getEdgeSource(edge);
+                    (Call call) -> {
+                      Vertex edgeSource = graph.getEdgeSource(call);
                       return edgeSource.methodSignature.getName();
                     })
                 .thenComparing(
-                    (Edge edge) -> {
-                      Vertex edgeSource = graph.getEdgeSource(edge);
+                    (Call call) -> {
+                      Vertex edgeSource = graph.getEdgeSource(call);
                       return edgeSource.methodSignature.getParameterTypes().toString();
                     })
                 .thenComparing(
-                    (Edge edge) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                    (Call call) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(call);
                       return edgeTarget.methodSignature.getDeclClassType().getClassName();
                     })
                 .thenComparing(
-                    (Edge edge) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                    (Call call) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(call);
                       return edgeTarget.methodSignature.getName();
                     })
                 .thenComparing(
-                    (Edge edge) -> {
-                      Vertex edgeTarget = graph.getEdgeTarget(edge);
+                    (Call call) -> {
+                      Vertex edgeTarget = graph.getEdgeTarget(call);
                       return edgeTarget.methodSignature.getParameterTypes().toString();
                     }))
         .forEach(
@@ -195,7 +221,8 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public MutableCallGraph copy() {
     return new GraphBasedCallGraph(
-        (DefaultDirectedGraph<Vertex, Edge>) graph.clone(), new HashMap<>(signatureToVertex));
+        (DirectedPseudograph<Vertex, Call>) graph.clone(), new HashMap<>(signatureToVertex),new ArrayList<>(
+        entryMethods));
   }
 
   /**
@@ -212,7 +239,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Nonnull
-  protected DefaultDirectedGraph<Vertex, Edge> getGraph() {
+  protected DirectedPseudograph<Vertex, Call> getGraph() {
     return graph;
   }
 
@@ -250,13 +277,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
           .forEach(
               method -> {
                 stringBuilder.append(method).append(":\n");
-                callsFrom(method).stream()
+                callTargetsFrom(method).stream()
                     .sorted(
                         Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
                             .thenComparing(SootClassMemberSignature::getName)
                             .thenComparing(o -> o.getParameterTypes().toString()))
                     .forEach(m -> stringBuilder.append("\tto ").append(m).append("\n"));
-                callsTo(method).stream()
+                callSourcesTo(method).stream()
                     .sorted(
                         Comparator.comparing((MethodSignature o) -> o.getDeclClassType().toString())
                             .thenComparing(SootClassMemberSignature::getName)
@@ -266,5 +293,10 @@ public class GraphBasedCallGraph implements MutableCallGraph {
               });
     }
     return stringBuilder.toString();
+  }
+
+  @Nonnull
+  public List<MethodSignature> getEntryMethods() {
+    return entryMethods;
   }
 }

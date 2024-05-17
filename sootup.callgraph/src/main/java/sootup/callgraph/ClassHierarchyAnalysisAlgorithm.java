@@ -30,6 +30,7 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JDynamicInvokeExpr;
 import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.model.MethodModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -77,7 +78,12 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    */
   @Override
   @Nonnull
-  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  protected Stream<MethodSignature> resolveCall(SootMethod method, InvokableStmt invokableStmt) {
+    Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
+    if (!optInvokeExpr.isPresent()) {
+      return Stream.empty();
+    }
+    AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
     if ((invokeExpr instanceof JDynamicInvokeExpr)) {
       return Stream.empty();
