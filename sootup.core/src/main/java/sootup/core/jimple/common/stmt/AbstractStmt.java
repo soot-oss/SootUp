@@ -28,7 +28,6 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
-import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.visitor.ReplaceUseStmtVisitor;

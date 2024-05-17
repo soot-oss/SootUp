@@ -73,8 +73,9 @@ public class ICFGDotExporter {
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
-          if (stmt instanceof InvokableStmt && ((InvokableStmt)stmt).containsInvokeExpr()) {
-            MethodSignature target = ((InvokableStmt)stmt).getInvokeExpr().get().getMethodSignature();
+          if (stmt instanceof InvokableStmt && ((InvokableStmt) stmt).containsInvokeExpr()) {
+            MethodSignature target =
+                ((InvokableStmt) stmt).getInvokeExpr().get().getMethodSignature();
             int hashCode = stmt.hashCode();
             calls.put(hashCode, target);
             // compute all the classes that are made to the subclasses as well

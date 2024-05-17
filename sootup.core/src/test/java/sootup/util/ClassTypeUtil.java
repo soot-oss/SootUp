@@ -5,14 +5,12 @@ import sootup.core.types.ClassType;
 
 public class ClassTypeUtil {
 
-  /**creates a dummy Class type
-   * Classname Test
-   * Package name test
-   * Fully Qualified Name test.Test
+  /**
+   * creates a dummy Class type Classname Test Package name test Fully Qualified Name test.Test
    *
    * @return a dummy class type
    */
-  public static ClassType createDummyClassType(){
+  public static ClassType createDummyClassType() {
     return new ClassType() {
       @Override
       public boolean isBuiltInClass() {
@@ -35,5 +33,4 @@ public class ClassTypeUtil {
       }
     };
   }
-
 }

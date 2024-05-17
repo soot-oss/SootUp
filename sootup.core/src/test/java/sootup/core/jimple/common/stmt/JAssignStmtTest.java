@@ -1,17 +1,12 @@
 package sootup.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
-import sootup.core.jimple.basic.SimpleStmtPositionInfo;
-import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.jimple.common.expr.JStaticInvokeExpr;
-import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.ref.JInstanceFieldRef;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.util.AssignStmtUtil;
@@ -29,15 +24,16 @@ public class JAssignStmtTest {
     Local local = LocalUtil.createDummyLocalForInt();
 
     assertTrue(AssignStmtUtil.createDummyAssignStmtWithExpr().doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,local).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(local,staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,instanceFieldRef).doesInvoke());
+    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).doesInvoke());
+    assertTrue(AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).doesInvoke());
+    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, staticFieldRef).doesInvoke());
+    assertTrue(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, staticFieldRef).doesInvoke());
+    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, instanceFieldRef).doesInvoke());
 
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,local).doesInvoke());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local,instanceFieldRef).doesInvoke());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,instanceFieldRef).doesInvoke());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, local).doesInvoke());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(local, instanceFieldRef).doesInvoke());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, instanceFieldRef).doesInvoke());
     assertFalse(AssignStmtUtil.createDummyAssignStmtWithLocals().doesInvoke());
   }
 
@@ -49,14 +45,21 @@ public class JAssignStmtTest {
 
     assertTrue(AssignStmtUtil.createDummyAssignStmtWithExpr().containsInvokeExpr());
 
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,local).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local,staticFieldRef).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,staticFieldRef).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,staticFieldRef).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,instanceFieldRef).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,local).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local,instanceFieldRef).containsInvokeExpr());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,instanceFieldRef).containsInvokeExpr());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).containsInvokeExpr());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).containsInvokeExpr());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, staticFieldRef).containsInvokeExpr());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, staticFieldRef)
+            .containsInvokeExpr());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, instanceFieldRef)
+            .containsInvokeExpr());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, local).containsInvokeExpr());
+    assertFalse(AssignStmtUtil.createDummyAssignStmt(local, instanceFieldRef).containsInvokeExpr());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, instanceFieldRef)
+            .containsInvokeExpr());
     assertFalse(AssignStmtUtil.createDummyAssignStmtWithLocals().containsInvokeExpr());
   }
 
@@ -66,17 +69,34 @@ public class JAssignStmtTest {
     JInstanceFieldRef instanceFieldRef = FieldRefUtil.createDummyInstanceFieldRef();
     Local local = LocalUtil.createDummyLocalForInt();
 
-    assertEquals(InvokeExprUtil.createDummyStaticInvokeExpr(),AssignStmtUtil.createDummyAssignStmtWithExpr().getInvokeExpr());
+    assertEquals(
+        InvokeExprUtil.createDummyStaticInvokeExpr(),
+        AssignStmtUtil.createDummyAssignStmtWithExpr().getInvokeExpr());
 
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,local).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local,staticFieldRef).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,staticFieldRef).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,staticFieldRef).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef,instanceFieldRef).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,local).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local,instanceFieldRef).getInvokeExpr().isPresent());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef,instanceFieldRef).getInvokeExpr().isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).getInvokeExpr().isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).getInvokeExpr().isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, staticFieldRef)
+            .getInvokeExpr()
+            .isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, staticFieldRef)
+            .getInvokeExpr()
+            .isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, instanceFieldRef)
+            .getInvokeExpr()
+            .isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, local).getInvokeExpr().isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(local, instanceFieldRef).getInvokeExpr().isPresent());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, instanceFieldRef)
+            .getInvokeExpr()
+            .isPresent());
     assertFalse(AssignStmtUtil.createDummyAssignStmtWithLocals().getInvokeExpr().isPresent());
   }
-
 }

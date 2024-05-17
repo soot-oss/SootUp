@@ -58,7 +58,8 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** Represents the assignment of one value to another */
-public final class JAssignStmt extends AbstractDefinitionStmt implements FallsThroughStmt, InvokableStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt
+    implements FallsThroughStmt, InvokableStmt {
 
   @Nonnull final LValue leftOp;
   @Nonnull final Value rightOp;
@@ -103,17 +104,17 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements FallsTh
     return getRightOp() instanceof AbstractInvokeExpr;
   }
 
-  /** Checks if the assignment statement invokes a method call
+  /**
+   * Checks if the assignment statement invokes a method call
    *
-   * @return it is true if the assignment statement contains an invoke expression or if the left or right operand is a static field
+   * @return it is true if the assignment statement contains an invoke expression or if the left or
+   *     right operand is a static field
    */
   @Override
   public boolean doesInvoke() {
-    if (containsInvokeExpr())
-      return true;
+    if (containsInvokeExpr()) return true;
     return getRightOp() instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef;
   }
-
 
   /*
    * (non-Javadoc)

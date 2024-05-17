@@ -97,8 +97,8 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (((InvokableStmt)curStmt).containsInvokeExpr()) {
-          AbstractInvokeExpr expr = ((InvokableStmt)curStmt).getInvokeExpr().get();
+        if (((InvokableStmt) curStmt).containsInvokeExpr()) {
+          AbstractInvokeExpr expr = ((InvokableStmt) curStmt).getInvokeExpr().get();
           if (!(expr instanceof JSpecialInvokeExpr)) {
             exception.add(
                 new ValidationException(

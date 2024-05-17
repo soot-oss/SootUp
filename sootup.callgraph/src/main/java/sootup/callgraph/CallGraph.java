@@ -30,15 +30,15 @@ import sootup.core.signatures.MethodSignature;
 /** The interface of all implemented call graph data structures */
 public interface CallGraph {
 
-  class Call{
-    @Nonnull
-    private MethodSignature sourceMethodSignature;
-    @Nonnull
-    private MethodSignature targetMethodSignature;
-    @Nonnull
-    private InvokableStmt invokableStmt;
+  class Call {
+    @Nonnull private MethodSignature sourceMethodSignature;
+    @Nonnull private MethodSignature targetMethodSignature;
+    @Nonnull private InvokableStmt invokableStmt;
 
-    Call(@Nonnull MethodSignature sourceMethodSignature,  @Nonnull MethodSignature targetMethodSignature, @Nonnull InvokableStmt invokableStmt) {
+    Call(
+        @Nonnull MethodSignature sourceMethodSignature,
+        @Nonnull MethodSignature targetMethodSignature,
+        @Nonnull InvokableStmt invokableStmt) {
       this.sourceMethodSignature = sourceMethodSignature;
       this.invokableStmt = invokableStmt;
       this.targetMethodSignature = targetMethodSignature;
@@ -67,8 +67,8 @@ public interface CallGraph {
 
       Call call = (Call) o;
       return sourceMethodSignature.equals(call.sourceMethodSignature)
-          && targetMethodSignature.equals(
-          call.targetMethodSignature) && invokableStmt.equals(call.invokableStmt);
+          && targetMethodSignature.equals(call.targetMethodSignature)
+          && invokableStmt.equals(call.invokableStmt);
     }
 
     @Override
@@ -102,7 +102,6 @@ public interface CallGraph {
   /**
    * This method returns all method signatures that call a given method signature. It returns the
    * sources of incoming edges of the given node (method signature) in the call graph
-   *
    *
    * @param targetMethod the method signature of the requested node in the call graph
    * @return a set of method signatures that reach the targetMethod by a direct edge in the call
@@ -153,7 +152,9 @@ public interface CallGraph {
    * @return true if the edge is contained in the call graph, otherwise it will be false.
    */
   boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, InvokableStmt invokableStmt);
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      InvokableStmt invokableStmt);
 
   /**
    * This method checks if an edge is contained in the call graph. The edge is defined by a source

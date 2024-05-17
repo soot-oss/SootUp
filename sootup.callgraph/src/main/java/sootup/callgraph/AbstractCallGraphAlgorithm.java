@@ -77,10 +77,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     Set<MethodSignature> processed = new HashSet<>();
 
     // find additional entry points
-    List<MethodSignature> clinits=getClinitFromEntryPoints(entryPoints);
+    List<MethodSignature> clinits = getClinitFromEntryPoints(entryPoints);
 
     workList.addAll(clinits);
-    MutableCallGraph cg = initializeCallGraph(entryPoints,clinits);
+    MutableCallGraph cg = initializeCallGraph(entryPoints, clinits);
 
     processWorkList(view, workList, processed, cg);
     return cg;
@@ -92,26 +92,33 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    *
    * @return the initialized call graph used in the call graph algorithm
    */
-  protected MutableCallGraph initializeCallGraph(List<MethodSignature> entryPoints, List<MethodSignature> clinits) {
-    ArrayList<MethodSignature> rootSignatures=new ArrayList<>(entryPoints);
+  protected MutableCallGraph initializeCallGraph(
+      List<MethodSignature> entryPoints, List<MethodSignature> clinits) {
+    ArrayList<MethodSignature> rootSignatures = new ArrayList<>(entryPoints);
     rootSignatures.addAll(clinits);
     return new GraphBasedCallGraph(rootSignatures);
   }
 
   /**
-   * This method returns a list of static initializers that should be considered by the given entry points
+   * This method returns a list of static initializers that should be considered by the given entry
+   * points
    *
    * @param entryPoints the entry points of the call graph algorithm
    */
-  protected List<MethodSignature> getClinitFromEntryPoints(
-      List<MethodSignature> entryPoints) {
+  protected List<MethodSignature> getClinitFromEntryPoints(List<MethodSignature> entryPoints) {
     return entryPoints.stream()
-        .map(methodSignature -> getSignatureOfImplementedStaticInitializer(methodSignature.getDeclClassType()))
-        .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        .map(
+            methodSignature ->
+                getSignatureOfImplementedStaticInitializer(methodSignature.getDeclClassType()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
   }
 
-  private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(ClassType classType){
-    return view.getMethod(classType.getStaticInitializer()).map(sootMethod -> sootMethod.getSignature());
+  private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(
+      ClassType classType) {
+    return view.getMethod(classType.getStaticInitializer())
+        .map(sootMethod -> sootMethod.getSignature());
   }
 
   /**
@@ -158,10 +165,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
           currentClass.getMethod(currentMethodSignature.getSubSignature()).orElse(null);
 
       // get all call targets of invocations in the method body
-      resolveAllCallsFromSourceMethod(currentMethod,cg,workList);
+      resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
 
       // get all call targets of implicit edges in the method body
-      resolveAllImplicitCallsFromSourceMethod(view, currentMethod,cg,workList);
+      resolveAllImplicitCallsFromSourceMethod(view, currentMethod, cg, workList);
 
       // set method as processed
       processed.add(currentMethodSignature);
@@ -171,15 +178,23 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
   }
 
-  /** Adds the defined call to the given call graph. If the source or target method was added as vertex to the call graph, they will be added to the worklist
+  /**
+   * Adds the defined call to the given call graph. If the source or target method was added as
+   * vertex to the call graph, they will be added to the worklist
    *
    * @param source the method signature of the caller
    * @param target the method signature of the callee
    * @param invokeStmt the stmt causing the call
    * @param cg the call graph that will be updated
-   * @param workList the worklist in which the method signature of newly added vertexes will be added
+   * @param workList the worklist in which the method signature of newly added vertexes will be
+   *     added
    */
-  protected void addCallToCG(@Nonnull MethodSignature source, @Nonnull MethodSignature target, @Nonnull InvokableStmt invokeStmt, @Nonnull MutableCallGraph cg, @Nonnull Deque<MethodSignature> workList) {
+  protected void addCallToCG(
+      @Nonnull MethodSignature source,
+      @Nonnull MethodSignature target,
+      @Nonnull InvokableStmt invokeStmt,
+      @Nonnull MutableCallGraph cg,
+      @Nonnull Deque<MethodSignature> workList) {
     if (!cg.containsMethod(source)) {
       cg.addMethod(source);
       workList.push(source);
@@ -188,31 +203,38 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       cg.addMethod(target);
       workList.push(target);
     }
-    if (!cg.containsCall(source, target,invokeStmt)) {
+    if (!cg.containsCall(source, target, invokeStmt)) {
       cg.addCall(source, target, invokeStmt);
     }
   }
 
   /**
    * This method resolves all calls from a given source method. resolveCall is called for each
-   * invokable statements in the body of the source method that is implemented in the corresponding call
-   * graph algorithm. If new methods will be added as vertexes in the call graph, the work list will be updated
+   * invokable statements in the body of the source method that is implemented in the corresponding
+   * call graph algorithm. If new methods will be added as vertexes in the call graph, the work list
+   * will be updated
    *
    * @param sourceMethod this signature is used to access the statements contained method body of
    *     the specified method
    * @param cg the call graph that will receive the found calls
    * @param workList the work list that will be updated of found target methods
    */
-  protected void resolveAllCallsFromSourceMethod(SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+  protected void resolveAllCallsFromSourceMethod(
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
 
     sourceMethod.getBody().getStmts().stream()
         .filter(stmt -> stmt instanceof InvokableStmt)
-        .map(stmt -> (InvokableStmt)stmt)
-        .forEach(stmt -> resolveCall(sourceMethod, stmt)
-            .forEach(targetMethod -> addCallToCG(sourceMethod.getSignature(),targetMethod,stmt,cg,workList)));
+        .map(stmt -> (InvokableStmt) stmt)
+        .forEach(
+            stmt ->
+                resolveCall(sourceMethod, stmt)
+                    .forEach(
+                        targetMethod ->
+                            addCallToCG(
+                                sourceMethod.getSignature(), targetMethod, stmt, cg, workList)));
   }
 
   /**
@@ -230,7 +252,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     // collect all static initializer calls
-    resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod,cg,workList);
+    resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod, cg, workList);
   }
 
   /**
@@ -247,38 +269,43 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
-    sourceMethod
-        .getBody()
-        .getStmts()
-        .stream().filter(stmt -> stmt instanceof InvokableStmt)
-        .map(stmt -> (InvokableStmt)stmt)
+    sourceMethod.getBody().getStmts().stream()
+        .filter(stmt -> stmt instanceof InvokableStmt)
+        .map(stmt -> (InvokableStmt) stmt)
         .forEach(
             invokableStmt -> {
               // static field usage
               ClassType targetClass = null;
-              if (invokableStmt.containsFieldRef() && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
-                targetClass= invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
-                addStaticInitializerCallsToCallGraph(sourceMethod.getSignature(),targetClass,invokableStmt,cg,workList);
+              if (invokableStmt.containsFieldRef()
+                  && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
+                targetClass = invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
+                addStaticInitializerCallsToCallGraph(
+                    sourceMethod.getSignature(), targetClass, invokableStmt, cg, workList);
               }
               // static method calls and constructor calls
               if (invokableStmt instanceof InvokableStmt && invokableStmt.containsInvokeExpr()) {
-                //static method call
+                // static method call
                 Optional<AbstractInvokeExpr> exprOptional = invokableStmt.getInvokeExpr();
-                if (!exprOptional.isPresent())
-                  return;
+                if (!exprOptional.isPresent()) return;
                 AbstractInvokeExpr expr = exprOptional.get();
-                if (expr instanceof JStaticInvokeExpr || (expr instanceof JSpecialInvokeExpr
-                    && view.getIdentifierFactory().isConstructorSignature(expr.getMethodSignature()))) {
+                if (expr instanceof JStaticInvokeExpr
+                    || (expr instanceof JSpecialInvokeExpr
+                        && view.getIdentifierFactory()
+                            .isConstructorSignature(expr.getMethodSignature()))) {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
-                  if (!newTargetClass.equals(targetClass)){
-                    addStaticInitializerCallsToCallGraph(sourceMethod.getSignature(),newTargetClass,invokableStmt,cg,workList);
+                  if (!newTargetClass.equals(targetClass)) {
+                    addStaticInitializerCallsToCallGraph(
+                        sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
                   }
                 }
               }
             });
   }
 
-  /** Adds all static initializer calls of the given targetClass. An edge from the sourceSig to all clinit methods of the targetClass and Superclasses will be added to the call graph. If new target methods will be found, the worklist will be updated.
+  /**
+   * Adds all static initializer calls of the given targetClass. An edge from the sourceSig to all
+   * clinit methods of the targetClass and Superclasses will be added to the call graph. If new
+   * target methods will be found, the worklist will be updated.
    *
    * @param sourceSig the source method causing the static initilzer call
    * @param targetClass the class that is statically initialized
@@ -286,11 +313,25 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph that will contain the found calls
    * @param workList the work list that will be updated with new target methods
    */
-  private void addStaticInitializerCallsToCallGraph(MethodSignature sourceSig, ClassType targetClass, InvokableStmt invokableStmt, MutableCallGraph cg, Deque<MethodSignature> workList){
-    //static initializer call of class
-    view.getMethod(targetClass.getStaticInitializer()).ifPresent(targetSig -> addCallToCG(sourceSig,targetSig.getSignature(),invokableStmt, cg, workList));
-    //static initializer calls of all superclasses
-    view.getTypeHierarchy().superClassesOf(targetClass).stream().map(classType -> view.getMethod(classType.getStaticInitializer())).filter(Optional::isPresent).map(Optional::get).forEach(targetSig -> addCallToCG(sourceSig,targetSig.getSignature(),invokableStmt,cg,workList) );
+  private void addStaticInitializerCallsToCallGraph(
+      MethodSignature sourceSig,
+      ClassType targetClass,
+      InvokableStmt invokableStmt,
+      MutableCallGraph cg,
+      Deque<MethodSignature> workList) {
+    // static initializer call of class
+    view.getMethod(targetClass.getStaticInitializer())
+        .ifPresent(
+            targetSig ->
+                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
+    // static initializer calls of all superclasses
+    view.getTypeHierarchy().superClassesOf(targetClass).stream()
+        .map(classType -> view.getMethod(classType.getStaticInitializer()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .forEach(
+            targetSig ->
+                addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
   }
 
   /**
@@ -372,7 +413,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
               if (updated.containsMethod(overriddenMethodSig)) {
                 for (Call calls : updated.callsTo(overriddenMethodSig)) {
-                  updated.addCall(calls.getSourceMethodSignature(), overridingMethodSig,calls.getInvokableStmt());
+                  updated.addCall(
+                      calls.getSourceMethodSignature(),
+                      overridingMethodSig,
+                      calls.getInvokableStmt());
                 }
               }
             });

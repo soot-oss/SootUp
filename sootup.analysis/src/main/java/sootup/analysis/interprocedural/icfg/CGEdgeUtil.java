@@ -60,13 +60,11 @@ public class CGEdgeUtil {
       SootMethod method = view.getMethod(caller).orElse(null);
       if (method != null && method.hasBody()) {
         for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
-          if (s instanceof InvokableStmt && ((InvokableStmt)s).containsInvokeExpr()) {
-            AbstractInvokeExpr invokeExpr = ((InvokableStmt)s).getInvokeExpr().get();
+          if (s instanceof InvokableStmt && ((InvokableStmt) s).containsInvokeExpr()) {
+            AbstractInvokeExpr invokeExpr = ((InvokableStmt) s).getInvokeExpr().get();
             CalleeMethodSignature callee =
                 new CalleeMethodSignature(
-                    invokeExpr.getMethodSignature(),
-                    findCallGraphEdgeType(invokeExpr),
-                    s);
+                    invokeExpr.getMethodSignature(), findCallGraphEdgeType(invokeExpr), s);
             callEdges.add(new ImmutablePair<>(caller, callee));
           }
         }

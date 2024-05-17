@@ -73,8 +73,10 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
-          if (!(stmt instanceof InvokableStmt) && !((InvokableStmt)stmt).containsInvokeExpr()) return res;
-          MethodSignature methodSignature = ((InvokableStmt)stmt).getInvokeExpr().get().getMethodSignature();
+          if (!(stmt instanceof InvokableStmt) && !((InvokableStmt) stmt).containsInvokeExpr())
+            return res;
+          MethodSignature methodSignature =
+              ((InvokableStmt) stmt).getInvokeExpr().get().getMethodSignature();
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();
@@ -222,15 +224,13 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         final SootMethod method = methodOpt.get();
         if (method.hasBody()) {
           for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
-            //TODO: Consider calls to clinit methods caused by static fields
+            // TODO: Consider calls to clinit methods caused by static fields
             // Assignment statements without invokeExpressions
-            if (s instanceof InvokableStmt && ((InvokableStmt)s).containsInvokeExpr()) {
-              AbstractInvokeExpr expr = ((InvokableStmt)s).getInvokeExpr().get();
+            if (s instanceof InvokableStmt && ((InvokableStmt) s).containsInvokeExpr()) {
+              AbstractInvokeExpr expr = ((InvokableStmt) s).getInvokeExpr().get();
               CalleeMethodSignature callee =
                   new CalleeMethodSignature(
-                      expr.getMethodSignature(),
-                      CGEdgeUtil.findCallGraphEdgeType(expr),
-                      s);
+                      expr.getMethodSignature(), CGEdgeUtil.findCallGraphEdgeType(expr), s);
               callEdges.add(new ImmutablePair<>(caller, callee));
             }
           }

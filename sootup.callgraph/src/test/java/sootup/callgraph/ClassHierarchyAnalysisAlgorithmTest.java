@@ -148,25 +148,69 @@ public class ClassHierarchyAnalysisAlgorithmTest
             "void",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(mainMethodSignature, constructorA, getInvokableStmt(mainMethodSignature, constructorA)));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorB, getInvokableStmt(mainMethodSignature, constructorB)));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorC, getInvokableStmt(mainMethodSignature, constructorC)));
-    assertFalse(cg.containsCall(mainMethodSignature, constructorD, getInvokableStmt(mainMethodSignature, constructorD)));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorE, getInvokableStmt(mainMethodSignature, constructorE)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorA,
+            getInvokableStmt(mainMethodSignature, constructorA)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorB,
+            getInvokableStmt(mainMethodSignature, constructorB)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorC,
+            getInvokableStmt(mainMethodSignature, constructorC)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorD,
+            getInvokableStmt(mainMethodSignature, constructorD)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            constructorE,
+            getInvokableStmt(mainMethodSignature, constructorE)));
 
     assertFalse(cg.containsMethod(staticMethodA));
-    assertTrue(cg.containsCall(mainMethodSignature, staticMethodB,getInvokableStmt(mainMethodSignature, staticMethodB)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            staticMethodB,
+            getInvokableStmt(mainMethodSignature, staticMethodB)));
     assertFalse(cg.containsMethod(staticMethodC));
     assertFalse(cg.containsMethod(staticMethodD));
     assertFalse(cg.containsMethod(staticMethodE));
 
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodA, getInvokableStmt(mainMethodSignature, virtualMethodA)));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodB, getInvokableStmt(mainMethodSignature, virtualMethodB)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodA,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodB,
+            getInvokableStmt(mainMethodSignature, virtualMethodB)));
     assertFalse(cg.containsMethod(virtualMethodC));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD, getInvokableStmt(mainMethodSignature, virtualMethodD)));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE, getInvokableStmt(mainMethodSignature, virtualMethodE)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodD,
+            getInvokableStmt(mainMethodSignature, virtualMethodD)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            virtualMethodE,
+            getInvokableStmt(mainMethodSignature, virtualMethodE)));
 
-    assertTrue(cg.containsCall(mainMethodSignature, clinitObject, getInvokableStmt(mainMethodSignature, clinitObject)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmt(mainMethodSignature, clinitObject)));
 
     assertEquals(9, cg.callsFrom(mainMethodSignature).size());
 

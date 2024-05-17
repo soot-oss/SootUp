@@ -120,10 +120,10 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   protected Stream<MethodSignature> resolveCall(
       SootMethod sourceMethod, InvokableStmt invokableStmt) {
     Optional<AbstractInvokeExpr> optInvokeExpr = invokableStmt.getInvokeExpr();
-    if (!optInvokeExpr.isPresent()){
+    if (!optInvokeExpr.isPresent()) {
       return Stream.empty();
     }
-    AbstractInvokeExpr invokeExpr= optInvokeExpr.get();
+    AbstractInvokeExpr invokeExpr = optInvokeExpr.get();
     MethodSignature resolveBaseMethodSignature = invokeExpr.getMethodSignature();
     Stream<MethodSignature> result = Stream.of(resolveBaseMethodSignature);
 
@@ -139,10 +139,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       if (instantiatedClasses.contains(resolveBaseMethodSignature.getDeclClassType())) {
         return Stream.concat(
             Stream.of(concreteBaseMethod.getSignature()),
-            resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature,invokableStmt));
+            resolveAllCallTargets(
+                sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt));
       } else {
-        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature,invokableStmt);
-        return resolveAllCallTargets(sourceMethod.getSignature(), resolveBaseMethodSignature,invokableStmt);
+        saveIgnoredCall(sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt);
+        return resolveAllCallTargets(
+            sourceMethod.getSignature(), resolveBaseMethodSignature, invokableStmt);
       }
     }
   }
@@ -160,7 +162,9 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    *     target from the given base method signature.
    */
   private Stream<MethodSignature> resolveAllCallTargets(
-      MethodSignature source, MethodSignature resolveBaseMethodSignature, InvokableStmt invokableStmt) {
+      MethodSignature source,
+      MethodSignature resolveBaseMethodSignature,
+      InvokableStmt invokableStmt) {
     return view.getTypeHierarchy().subtypesOf(resolveBaseMethodSignature.getDeclClassType())
         .stream()
         .map(
@@ -171,7 +175,7 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
               if (instantiatedClasses.contains(classType)) {
                 return resolveConcreteDispatch(view, method);
               } else {
-                saveIgnoredCall(source, method,invokableStmt);
+                saveIgnoredCall(source, method, invokableStmt);
                 return Optional.<MethodSignature>empty();
               }
             })
@@ -187,10 +191,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * @param target the target method of the call
    * @param invokableStmt the statement causing the call
    */
-  private void saveIgnoredCall(MethodSignature source, MethodSignature target, InvokableStmt invokableStmt) {
+  private void saveIgnoredCall(
+      MethodSignature source, MethodSignature target, InvokableStmt invokableStmt) {
     ClassType notInstantiatedClass = target.getDeclClassType();
     List<Call> calls = ignoredCalls.get(notInstantiatedClass);
-    Call ignoredCall = new Call(source, target,invokableStmt);
+    Call ignoredCall = new Call(source, target, invokableStmt);
     if (calls == null) {
       calls = new ArrayList<>();
       ignoredCalls.put(notInstantiatedClass, calls);
@@ -236,7 +241,12 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
                   if (concreteTarget == null) {
                     return;
                   }
-                  addCallToCG(call.getSourceMethodSignature(),concreteTarget,call.getInvokableStmt(),cg,workList);
+                  addCallToCG(
+                      call.getSourceMethodSignature(),
+                      concreteTarget,
+                      call.getInvokableStmt(),
+                      cg,
+                      workList);
                 });
             // can be removed because the instantiated class will be considered in future resolves
             ignoredCalls.remove(instantiatedClassType);

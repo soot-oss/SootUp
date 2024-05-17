@@ -75,7 +75,8 @@ public class CopyPropagator implements BodyInterceptor {
         AbstractDefinitionStmt defStmt = (AbstractDefinitionStmt) defsOfUse.get(0);
         Value rhs = defStmt.getRightOp();
         // if rhs is a constant, then replace use, if it is possible
-        if (rhs instanceof Constant && !((stmt instanceof InvokableStmt) && ((InvokableStmt)stmt).containsInvokeExpr())) {
+        if (rhs instanceof Constant
+            && !((stmt instanceof InvokableStmt) && ((InvokableStmt) stmt).containsInvokeExpr())) {
           replaceUse(stmtGraph, stmt, use, rhs);
         }
 

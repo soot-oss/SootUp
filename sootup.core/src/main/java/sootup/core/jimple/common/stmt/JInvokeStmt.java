@@ -32,7 +32,7 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /** A method call */
-public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,InvokableStmt {
+public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt, InvokableStmt {
 
   @Nonnull private final AbstractInvokeExpr invokeExpr;
 

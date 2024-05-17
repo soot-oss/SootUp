@@ -62,12 +62,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   /** The constructor of the graph based call graph. it initializes the call graph object. */
   public GraphBasedCallGraph(List<MethodSignature> entryMethods) {
-    this(new DirectedPseudograph<>(null, null, false),new HashMap<>(), entryMethods);
+    this(new DirectedPseudograph<>(null, null, false), new HashMap<>(), entryMethods);
   }
 
   public GraphBasedCallGraph(
       @Nonnull DirectedPseudograph<Vertex, Call> graph,
-      @Nonnull Map<MethodSignature, Vertex> signatureToVertex, List<MethodSignature> entryMethods) {
+      @Nonnull Map<MethodSignature, Vertex> signatureToVertex,
+      List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
     this.entryMethods = entryMethods;
@@ -80,7 +81,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   protected void addMethod(@Nonnull MethodSignature calledMethod, Vertex vertex) {
-    if (containsMethod(calledMethod)){
+    if (containsMethod(calledMethod)) {
       return;
     }
     graph.addVertex(vertex);
@@ -89,17 +90,21 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public void addCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull InvokableStmt invokableStmt) {
-    addCall(sourceMethod, targetMethod, new Call(sourceMethod,targetMethod,invokableStmt));
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      @Nonnull InvokableStmt invokableStmt) {
+    addCall(sourceMethod, targetMethod, new Call(sourceMethod, targetMethod, invokableStmt));
   }
 
   protected void addCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, Call call) {
-    if (!call.getSourceMethodSignature().equals(sourceMethod) || !call.getTargetMethodSignature().equals(targetMethod) || containsCall(call)){
+    if (!call.getSourceMethodSignature().equals(sourceMethod)
+        || !call.getTargetMethodSignature().equals(targetMethod)
+        || containsCall(call)) {
       return;
     }
-    Vertex source=vertexOf(sourceMethod);
-    Vertex target=vertexOf(targetMethod);
+    Vertex source = vertexOf(sourceMethod);
+    Vertex target = vertexOf(targetMethod);
     graph.addEdge(source, target, call);
   }
 
@@ -146,11 +151,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull InvokableStmt invokableStmt) {
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      @Nonnull InvokableStmt invokableStmt) {
     if (!containsMethod(sourceMethod) || !containsMethod(targetMethod)) {
       return false;
     }
-    return containsCall(new Call(sourceMethod,targetMethod,invokableStmt));
+    return containsCall(new Call(sourceMethod, targetMethod, invokableStmt));
   }
 
   @Override
@@ -221,8 +228,9 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   @Override
   public MutableCallGraph copy() {
     return new GraphBasedCallGraph(
-        (DirectedPseudograph<Vertex, Call>) graph.clone(), new HashMap<>(signatureToVertex),new ArrayList<>(
-        entryMethods));
+        (DirectedPseudograph<Vertex, Call>) graph.clone(),
+        new HashMap<>(signatureToVertex),
+        new ArrayList<>(entryMethods));
   }
 
   /**

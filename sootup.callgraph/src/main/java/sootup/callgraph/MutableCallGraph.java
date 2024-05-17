@@ -46,6 +46,8 @@ public interface MutableCallGraph extends CallGraph {
    * @param targetMethod this paramter defines the target node of the edge in the call graph.
    * @param invokableStmt this paramter defines the invoke statement of the edge in the call graph.
    */
-  void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod, @Nonnull
-      InvokableStmt invokableStmt);
+  void addCall(
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      @Nonnull InvokableStmt invokableStmt);
 }

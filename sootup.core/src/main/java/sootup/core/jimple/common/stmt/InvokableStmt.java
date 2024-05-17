@@ -22,34 +22,34 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.List;
 import java.util.Optional;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.model.Body;
 
 /**
- * Interface for Stmts that could invoke a different method which will be executed before the
- * next statement is executed
- *
+ * Interface for Stmts that could invoke a different method which will be executed before the next
+ * statement is executed
  */
 public interface InvokableStmt extends Stmt {
 
-  /** Checks if the invokable statement actually invokes
+  /**
+   * Checks if the invokable statement actually invokes
    *
    * @return true if the statement invokes something, and false if not.
    */
   boolean doesInvoke();
 
-  /** Checks if the invokable statement contains a invoke expression that defines the invoke.
+  /**
+   * Checks if the invokable statement contains a invoke expression that defines the invoke.
    *
    * @return true if the statement contains an invoke expression, false if not
    */
   boolean containsInvokeExpr();
 
-  /** Returns the possible invoke expression in the invokable statement
+  /**
+   * Returns the possible invoke expression in the invokable statement
    *
-   * @return The optional contains the invoke expression of the invokable statement
-   * or is empty if there is no invoke expression.
+   * @return The optional contains the invoke expression of the invokable statement or is empty if
+   *     there is no invoke expression.
    */
   Optional<AbstractInvokeExpr> getInvokeExpr();
 }
