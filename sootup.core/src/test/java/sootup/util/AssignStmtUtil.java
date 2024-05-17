@@ -6,13 +6,8 @@ import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.types.PrimitiveType.IntType;
 
 public class AssignStmtUtil {
-
-  private static Local createDummyLocal() {
-    return new Local("a", IntType.getInstance());
-  }
 
   /**
    * will return a dummy assignment statement with an invoke expression the left value will be the

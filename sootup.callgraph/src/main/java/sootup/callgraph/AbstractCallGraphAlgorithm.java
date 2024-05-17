@@ -559,7 +559,6 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     hierarchyComparator.compare(
                         m1.getDeclaringClassType(), m2.getDeclaringClassType()))
             .map(method -> (SootMethod) method);
-    ;
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }

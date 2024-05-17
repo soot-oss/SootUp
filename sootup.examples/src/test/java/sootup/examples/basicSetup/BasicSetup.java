@@ -12,6 +12,7 @@ import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
@@ -28,7 +29,8 @@ public class BasicSetup {
     // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
     // from the directory
     Path pathToBinary = Paths.get("src/test/resources/BasicSetup/binary");
-    AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
+    AnalysisInputLocation inputLocation =
+        PathBasedAnalysisInputLocation.create(pathToBinary, SourceType.Application);
 
     // Create a view for project, which allows us to retrieve classes
     View view = new JavaView(inputLocation);
