@@ -31,6 +31,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -185,7 +186,7 @@ public abstract class AbstractJimpleBasedICFG implements BiDiInterproceduralCFG<
 
   @Override
   public boolean isCallStmt(Stmt stmt) {
-    return stmt.containsInvokeExpr();
+    return stmt instanceof InvokableStmt && ((InvokableStmt)stmt).containsInvokeExpr();
   }
 
   @Override

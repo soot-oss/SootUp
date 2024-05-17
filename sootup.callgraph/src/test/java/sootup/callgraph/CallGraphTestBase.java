@@ -153,8 +153,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     // 2 methods + Object::clinit
     assertEquals(3, cg.getMethodSignatures().size());
 
-    assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
-    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature,getInvokableStmt(mainMethodSignature,mainMethodSignature)));
+    assertTrue(cg.containsCall(mainMethodSignature, method,getInvokableStmt(mainMethodSignature,method)));
     // 2 calls +1 clinit calls
     assertEquals(3, cg.callsFrom(mainMethodSignature).size());
   }
@@ -165,7 +165,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("cvc.Class"), "target", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod,getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -177,7 +177,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -195,8 +195,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, interfaceMethod));
-    assertTrue(cg.containsCall(mainMethodSignature, subInterfaceMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, interfaceMethod, getInvokableStmt(mainMethodSignature,interfaceMethod)));
+    assertTrue(cg.containsCall(mainMethodSignature, subInterfaceMethod,getInvokableStmt(mainMethodSignature,subInterfaceMethod)));
   }
 
   @Test
@@ -208,7 +208,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -220,7 +220,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -232,7 +232,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -244,7 +244,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "target",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -256,7 +256,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -271,7 +271,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccp.Class"), "method", "int", Collections.emptyList());
-    assertTrue(cg.containsCall(sourceMethod, targetMethod));
+    assertTrue(cg.containsCall(sourceMethod, targetMethod, getInvokableStmt(sourceMethod,targetMethod)));
   }
 
   @Test
@@ -283,28 +283,28 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
     MethodSignature arrayMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccc.ArrayType"),
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, arrayMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, arrayMethod, getInvokableStmt(mainMethodSignature,arrayMethod)));
     MethodSignature arrayDimMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccc.ArrayDimType"),
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, arrayDimMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, arrayDimMethod, getInvokableStmt(mainMethodSignature,arrayDimMethod)));
     MethodSignature arrayInArrayMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccc.ArrayInArrayType"),
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, arrayInArrayMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, arrayInArrayMethod, getInvokableStmt(mainMethodSignature,arrayInArrayMethod)));
   }
 
   @Test
@@ -316,14 +316,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
     MethodSignature targetMethod2 =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("ccsc.SuperClinit"),
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod2));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod2, getInvokableStmt(mainMethodSignature,targetMethod2)));
   }
 
   @Test
@@ -335,7 +335,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -347,7 +347,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "<clinit>",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -356,7 +356,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -365,7 +365,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "<init>", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -377,7 +377,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature uncalledMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "method", "void", Collections.singletonList("int"));
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
     assertFalse(cg.containsMethod(uncalledMethod));
   }
 
@@ -387,7 +387,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature firstMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, firstMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, firstMethod, getInvokableStmt(mainMethodSignature,firstMethod)));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
@@ -395,7 +395,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(firstMethod, targetMethod));
+    assertTrue(cg.containsCall(firstMethod, targetMethod, getInvokableStmt(firstMethod,targetMethod)));
   }
 
   @Test
@@ -405,7 +405,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature firstMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("nvc5.Sub"), "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, firstMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, firstMethod, getInvokableStmt(mainMethodSignature,firstMethod)));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
@@ -413,7 +413,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(firstMethod, targetMethod));
+    assertTrue(cg.containsCall(firstMethod, targetMethod, getInvokableStmt(firstMethod,targetMethod)));
   }
 
   @Test
@@ -423,7 +423,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "target", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, targetMethod, getInvokableStmt(mainMethodSignature,targetMethod)));
   }
 
   @Test
@@ -434,17 +434,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
             subClassSig, "<init>", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod, getInvokableStmt(mainMethodSignature,constructorMethod)));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "callMethod", "void", Collections.singletonList("vc2.Class"));
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             subClassSig, "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(callMethod, targetMethod));
+    assertTrue(cg.containsCall(callMethod, targetMethod, getInvokableStmt(callMethod,targetMethod)));
   }
 
   @Test
@@ -455,7 +455,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
             subClassSig, "<init>", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod, getInvokableStmt(mainMethodSignature,constructorMethod)));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
@@ -463,12 +463,12 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "callOnInterface",
             "void",
             Collections.singletonList("vc3.Interface"));
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             subClassSig, "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(callMethod, targetMethod));
+    assertTrue(cg.containsCall(callMethod, targetMethod,getInvokableStmt(callMethod,targetMethod)));
   }
 
   @Test
@@ -479,7 +479,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             identifierFactory.getClassType("vc4.Class"), "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
   }
 
   @Test
@@ -497,8 +497,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertFalse(cg.containsCall(mainMethodSignature, interfaceMethod));
-    assertTrue(cg.containsCall(mainMethodSignature, classMethod));
+    assertFalse(cg.containsCall(mainMethodSignature, interfaceMethod, getInvokableStmt(mainMethodSignature,interfaceMethod)));
+    assertTrue(cg.containsCall(mainMethodSignature, classMethod, getInvokableStmt(mainMethodSignature,classMethod)));
   }
 
   @Test
@@ -510,7 +510,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
   }
 
   @Test
@@ -523,7 +523,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
   }
 
   @Test
@@ -533,7 +533,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             mainClassSignature, "method", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
   }
 
   @Test
@@ -546,7 +546,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, callMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, callMethod, getInvokableStmt(mainMethodSignature,callMethod)));
   }
 
   @Test
@@ -559,12 +559,12 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertTrue(cg.containsCall(mainMethodSignature, method, getInvokableStmt(mainMethodSignature,method)));
 
     MethodSignature compute =
         identifierFactory.getMethodSignature(
             mainClassSignature, "compute", "void", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, compute));
+    assertTrue(cg.containsCall(mainMethodSignature, compute, getInvokableStmt(mainMethodSignature,compute)));
   }
 
   @Test
@@ -577,7 +577,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, combinedInterfaceMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, combinedInterfaceMethod, getInvokableStmt(mainMethodSignature,combinedInterfaceMethod)));
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
@@ -585,7 +585,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(combinedInterfaceMethod, method));
+    assertTrue(cg.containsCall(combinedInterfaceMethod, method, getInvokableStmt(combinedInterfaceMethod,method)));
 
     MethodSignature anotherMethod =
         identifierFactory.getMethodSignature(
@@ -593,7 +593,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(combinedInterfaceMethod, anotherMethod));
+    assertTrue(cg.containsCall(combinedInterfaceMethod, anotherMethod, getInvokableStmt(combinedInterfaceMethod,anotherMethod)));
   }
 
   @Test
@@ -607,7 +607,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertTrue(cg.containsCall(mainMethodSignature, method, getInvokableStmt(mainMethodSignature,method)));
   }
 
   @Test
@@ -625,8 +625,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
-    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, method, getInvokableStmt(mainMethodSignature,abstractMethod)));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod, getInvokableStmt(mainMethodSignature,abstractMethod)));
   }
 
   @Test
@@ -650,14 +650,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
-    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, method, getInvokableStmt(mainMethodSignature,abstractMethod)));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod, getInvokableStmt(mainMethodSignature,superMethod)));
 
     if (this instanceof ClassHierarchyAnalysisAlgorithmTest) {
-      assertTrue(cg.containsCall(mainMethodSignature, superMethod));
+      assertTrue(cg.containsCall(mainMethodSignature, superMethod, getInvokableStmt(mainMethodSignature,superMethod)));
     }
     if (this instanceof RapidTypeAnalysisAlgorithmTest) {
-      assertFalse(cg.containsCall(mainMethodSignature, superMethod));
+      assertFalse(cg.containsCall(mainMethodSignature, superMethod, getInvokableStmt(mainMethodSignature,superMethod) ));
     }
   }
 
@@ -676,8 +676,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             "void",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, method));
-    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, method, getInvokableStmt(mainMethodSignature,abstractMethod)));
+    assertFalse(cg.containsCall(mainMethodSignature, abstractMethod, getInvokableStmt(mainMethodSignature,abstractMethod)));
   }
 
   @Test

@@ -142,25 +142,25 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "void",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(mainMethodSignature, constructorA));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorB));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorC));
-    assertFalse(cg.containsCall(mainMethodSignature, constructorD));
-    assertTrue(cg.containsCall(mainMethodSignature, constructorE));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorA,getInvokableStmt(mainMethodSignature,constructorA)));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorB,getInvokableStmt(mainMethodSignature,constructorB)));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorC,getInvokableStmt(mainMethodSignature,constructorC)));
+    assertFalse(cg.containsCall(mainMethodSignature, constructorD,getInvokableStmt(mainMethodSignature,constructorD)));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorE,getInvokableStmt(mainMethodSignature,constructorE)));
 
     assertFalse(cg.containsMethod(staticMethodA));
-    assertTrue(cg.containsCall(mainMethodSignature, staticMethodB));
+    assertTrue(cg.containsCall(mainMethodSignature, staticMethodB,getInvokableStmt(staticMethodB,staticMethodB)));
     assertFalse(cg.containsMethod(staticMethodC));
     assertFalse(cg.containsMethod(staticMethodD));
     assertFalse(cg.containsMethod(staticMethodE));
 
     assertFalse(cg.containsMethod(virtualMethodA));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodB));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodB,getInvokableStmt(virtualMethodB,virtualMethodB)));
     assertFalse(cg.containsMethod(virtualMethodC));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD));
-    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodD,getInvokableStmt(virtualMethodD,virtualMethodD)));
+    assertTrue(cg.containsCall(mainMethodSignature, virtualMethodE,getInvokableStmt(virtualMethodE,virtualMethodE)));
 
-    assertTrue(cg.containsCall(mainMethodSignature, clinitObject));
+    assertTrue(cg.containsCall(mainMethodSignature, clinitObject,getInvokableStmt(clinitObject,clinitObject)));
 
     assertEquals(8, cg.callsFrom(mainMethodSignature).size());
 
@@ -251,9 +251,9 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "int",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(alreadyVisitedMethod, newTargetA));
-    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
-    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
+    assertFalse(cg.containsCall(alreadyVisitedMethod, newTargetA,getInvokableStmt(alreadyVisitedMethod, newTargetA)));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB,getInvokableStmt(alreadyVisitedMethod, newTargetB)));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC,getInvokableStmt(alreadyVisitedMethod, newTargetC)));
   }
 
   @Test
@@ -287,9 +287,9 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "int",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(alreadyVisitedMethod, newTargetA));
-    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB));
-    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC));
+    assertFalse(cg.containsCall(alreadyVisitedMethod, newTargetA,getInvokableStmt(alreadyVisitedMethod, newTargetA)));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetB,getInvokableStmt(alreadyVisitedMethod, newTargetB)));
+    assertTrue(cg.containsCall(alreadyVisitedMethod, newTargetC,getInvokableStmt(alreadyVisitedMethod, newTargetC)));
   }
 
   @Test
@@ -308,8 +308,8 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod));
-    assertFalse(cg.containsCall(mainMethodSignature, nonInstantiatedClassMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod,getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
+    assertFalse(cg.containsCall(mainMethodSignature, nonInstantiatedClassMethod,getInvokableStmt(mainMethodSignature, nonInstantiatedClassMethod)));
   }
 
   @Test
@@ -321,6 +321,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             "method",
             "void",
             Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod));
+    assertTrue(cg.containsCall(mainMethodSignature, instantiatedClassMethod,getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
   }
 }

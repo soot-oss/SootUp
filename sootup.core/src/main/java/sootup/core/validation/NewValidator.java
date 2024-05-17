@@ -29,6 +29,7 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -96,12 +97,12 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (curStmt.containsInvokeExpr()) {
-          AbstractInvokeExpr expr = curStmt.getInvokeExpr();
+        if (((InvokableStmt)curStmt).containsInvokeExpr()) {
+          AbstractInvokeExpr expr = ((InvokableStmt)curStmt).getInvokeExpr().get();
           if (!(expr instanceof JSpecialInvokeExpr)) {
             exception.add(
                 new ValidationException(
-                    curStmt.getInvokeExpr(),
+                    expr,
                     "<init> Method calls may only be used with specialinvoke.")); // At least we
             // found an initializer, so we return true...
             return true;
@@ -109,7 +110,7 @@ public class NewValidator implements BodyValidator {
           if (!(curStmt instanceof JInvokeStmt)) {
             exception.add(
                 new ValidationException(
-                    curStmt.getInvokeExpr(),
+                    expr,
                     "<init> methods may only be called with invoke statements.")); // At least we
             // found an initializer, so we return true...
             return true;
