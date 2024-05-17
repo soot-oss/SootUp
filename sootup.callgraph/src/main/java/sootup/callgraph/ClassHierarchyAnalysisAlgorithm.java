@@ -72,7 +72,7 @@ public class ClassHierarchyAnalysisAlgorithm extends AbstractCallGraphAlgorithm 
    * called in the invoke expression.
    *
    * @param method the method object that contains the given invoke expression in the body.
-   * @param invokeExpr it contains the call which is resolved.
+   * @param invokableStmt it contains the call which is resolved.
    * @return a stream containing all reachable method signatures after applying the CHA call graph
    *     algorithm
    */
