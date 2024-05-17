@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -25,6 +26,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
+  protected JavaView view;
 
   protected abstract T createAlgorithm(JavaView view);
 
@@ -63,7 +65,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             + (useSourceCodeFrontend ? "source" : "binary");
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    JavaView view = createViewForClassPath(classPath, useSourceCodeFrontend);
+    view = createViewForClassPath(classPath, useSourceCodeFrontend);
 
     mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
@@ -90,7 +92,17 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   protected InvokableStmt getInvokableStmt(MethodSignature sourceMethod, MethodSignature staticTargetMethod, int index){
     int currentIndex = 0;
-    as
+    SootMethod method = view.getMethod(sourceMethod).orElse(null);
+    assertNotNull(method);
+    for(Stmt invokableStmt: method.getBody().getStmts()){
+      if(invokableStmt instanceof InvokableStmt && ((InvokableStmt) invokableStmt).containsInvokeExpr() && ((InvokableStmt) invokableStmt).getInvokeExpr().get().getMethodSignature().equals(staticTargetMethod)){
+        if(currentIndex == index){
+          return (InvokableStmt) invokableStmt;
+        }
+        currentIndex++;
+      }
+    }
+    throw new RuntimeException("No invokable stmt found for " + sourceMethod);
   }
 
   @Test
