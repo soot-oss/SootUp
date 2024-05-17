@@ -38,18 +38,18 @@ public class JInvokeStmtTest {
 
     JStaticInvokeExpr staticExpr = InvokeExprUtil.createDummyStaticInvokeExpr();
     JInvokeStmt invokeStmt = new JInvokeStmt(staticExpr, pos);
-    assertEquals(staticExpr, invokeStmt.getInvokeExpr());
+    assertEquals(staticExpr, invokeStmt.getInvokeExpr().get());
 
     JVirtualInvokeExpr virtualExpr = InvokeExprUtil.createDummyVirtualInvokeExpr();
     JInvokeStmt invokeStmt1 = new JInvokeStmt(virtualExpr, pos);
-    assertEquals(virtualExpr, invokeStmt1.getInvokeExpr());
+    assertEquals(virtualExpr, invokeStmt1.getInvokeExpr().get());
 
     JSpecialInvokeExpr specialExpr = InvokeExprUtil.createDummySpecialInvokeExpr();
     JInvokeStmt invokeStmt2 = new JInvokeStmt(specialExpr, pos);
-    assertEquals(specialExpr, invokeStmt2.getInvokeExpr());
+    assertEquals(specialExpr, invokeStmt2.getInvokeExpr().get());
 
     JInterfaceInvokeExpr interfaceExpr = InvokeExprUtil.createDummyInterfaceInvokeExpr();
     JInvokeStmt invokeStmt3 = new JInvokeStmt(staticExpr, pos);
-    assertEquals(interfaceExpr, invokeStmt3.getInvokeExpr());
+    assertEquals(interfaceExpr, invokeStmt3.getInvokeExpr().get());
   }
 }
