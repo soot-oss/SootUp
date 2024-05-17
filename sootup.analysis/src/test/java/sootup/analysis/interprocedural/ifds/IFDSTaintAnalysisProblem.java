@@ -74,18 +74,18 @@ public class IFDSTaintAnalysisProblem
 
       @Override
       public FlowFunction<Value> getCallFlowFunction(Stmt callStmt, SootMethod destinationMethod) {
-        return getCallFlow(callStmt, destinationMethod);
+        return getCallFlow((InvokableStmt) callStmt, destinationMethod);
       }
 
       @Override
       public FlowFunction<Value> getReturnFlowFunction(
           Stmt callSite, SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
-        return getReturnFlow(callSite, calleeMethod, exitStmt, returnSite);
+        return getReturnFlow((InvokableStmt) callSite, calleeMethod, exitStmt, returnSite);
       }
 
       @Override
       public FlowFunction<Value> getCallToReturnFlowFunction(Stmt callSite, Stmt returnSite) {
-        return getCallToReturnFlow(callSite, returnSite);
+        return getCallToReturnFlow((InvokableStmt) callSite, returnSite);
       }
     };
   }
@@ -128,12 +128,12 @@ public class IFDSTaintAnalysisProblem
     return Identity.v();
   }
 
-  FlowFunction<Value> getCallFlow(Stmt callStmt, final SootMethod destinationMethod) {
+  FlowFunction<Value> getCallFlow(InvokableStmt callStmt, final SootMethod destinationMethod) {
     if ("<clinit>".equals(destinationMethod.getName())) {
       return KillAll.v();
     }
 
-    AbstractInvokeExpr ie = callStmt.getInvokeExpr();
+    AbstractInvokeExpr ie = callStmt.getInvokeExpr().get();
 
     final List<Immediate> callArgs = ie.getArgs();
     final List<Value> paramLocals = new ArrayList<Value>();
@@ -173,9 +173,9 @@ public class IFDSTaintAnalysisProblem
   }
 
   FlowFunction<Value> getReturnFlow(
-      final Stmt callSite, final SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
+      final InvokableStmt callSite, final SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
 
-    AbstractInvokeExpr ie = callSite.getInvokeExpr();
+    AbstractInvokeExpr ie = callSite.getInvokeExpr().get();
 
     Value base = null;
     if (ie instanceof JVirtualInvokeExpr) {
@@ -239,8 +239,8 @@ public class IFDSTaintAnalysisProblem
     return KillAll.v();
   }
 
-  FlowFunction<Value> getCallToReturnFlow(final Stmt callSite, Stmt returnSite) {
-    AbstractInvokeExpr ie = callSite.getInvokeExpr();
+  FlowFunction<Value> getCallToReturnFlow(final InvokableStmt callSite, Stmt returnSite) {
+    AbstractInvokeExpr ie = callSite.getInvokeExpr().get();
     final List<Immediate> callArgs = ie.getArgs();
 
     Value base = null;

@@ -12,6 +12,8 @@ import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
 import sootup.callgraph.RapidTypeAnalysisAlgorithm;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -28,6 +30,7 @@ public class CallGraphTest {
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
   private String algorithmName;
+  private JavaView view;
 
   protected AbstractCallGraphAlgorithm createAlgorithm(JavaView view) {
     if (algorithmName.equals("RTA")) {
@@ -54,7 +57,7 @@ public class CallGraphTest {
     String classPath = "src/test/resources/callgraph/" + "Misc";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    JavaView view = createViewForClassPath(classPath);
+    view = createViewForClassPath(classPath);
 
     mainClassSignature = identifierFactory.getClassType("Main");
     mainMethodSignature =
@@ -73,6 +76,33 @@ public class CallGraphTest {
     assertTrue(
         cg.containsMethod(mainMethodSignature), mainMethodSignature + " is not found in CallGraph");
     return cg;
+  }
+
+  protected InvokableStmt getInvokableStmt(
+      MethodSignature sourceMethod, MethodSignature staticTargetMethod) {
+    return getInvokableStmt(sourceMethod, staticTargetMethod, 0);
+  }
+
+  protected InvokableStmt getInvokableStmt(
+      MethodSignature sourceMethod, MethodSignature staticTargetMethod, int index) {
+    int currentIndex = 0;
+    SootMethod method = view.getMethod(sourceMethod).orElse(null);
+    assertNotNull(method);
+    for (Stmt invokableStmt : method.getBody().getStmts()) {
+      if (invokableStmt instanceof InvokableStmt
+          && ((InvokableStmt) invokableStmt).containsInvokeExpr()
+          && ((InvokableStmt) invokableStmt)
+              .getInvokeExpr()
+              .get()
+              .getMethodSignature()
+              .equals(staticTargetMethod)) {
+        if (currentIndex == index) {
+          return (InvokableStmt) invokableStmt;
+        }
+        currentIndex++;
+      }
+    }
+    throw new RuntimeException("No invokable stmt found for " + sourceMethod);
   }
 
   @Test
@@ -111,11 +141,31 @@ public class CallGraphTest {
             "int",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(mainMethodSignature, methodAbstract));
-    assertFalse(cg.containsCall(mainMethodSignature, methodMethodImplemented));
-    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplementedInstantiatedInSubClass));
-    assertFalse(cg.containsCall(mainMethodSignature, methodSubClassMethodNotImplemented));
-    assertTrue(cg.containsCall(mainMethodSignature, methodSubClassMethodImplemented));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodAbstract,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodMethodImplemented,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodMethodImplementedInstantiatedInSubClass,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodSubClassMethodNotImplemented,
+            getInvokableStmt(mainMethodSignature, methodSubClassMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodSubClassMethodImplemented,
+            getInvokableStmt(mainMethodSignature, methodSubClassMethodImplemented)));
 
     MethodSignature methodInterface =
         identifierFactory.getMethodSignature(
@@ -142,10 +192,26 @@ public class CallGraphTest {
             "int",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodInterface));
-    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementation));
-    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
-    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterface,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceImplementation,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceNoImplementation,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceImplementationNotInstatiated,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
   }
 
   @Test
@@ -184,11 +250,31 @@ public class CallGraphTest {
             "int",
             Collections.emptyList());
 
-    assertFalse(cg.containsCall(mainMethodSignature, methodAbstract));
-    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplemented));
-    assertTrue(cg.containsCall(mainMethodSignature, methodMethodImplementedInstantiatedInSubClass));
-    assertFalse(cg.containsCall(mainMethodSignature, methodSubClassMethodNotImplemented));
-    assertTrue(cg.containsCall(mainMethodSignature, methodSubClassMethodImplemented));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodAbstract,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodMethodImplemented,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodMethodImplementedInstantiatedInSubClass,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodSubClassMethodNotImplemented,
+            getInvokableStmt(mainMethodSignature, methodSubClassMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodSubClassMethodImplemented,
+            getInvokableStmt(mainMethodSignature, methodSubClassMethodImplemented)));
 
     MethodSignature methodInterface =
         identifierFactory.getMethodSignature(
@@ -215,10 +301,26 @@ public class CallGraphTest {
             "int",
             Collections.emptyList());
 
-    assertTrue(cg.containsCall(mainMethodSignature, methodInterface));
-    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementation));
-    assertFalse(cg.containsCall(mainMethodSignature, methodInterfaceNoImplementation));
-    assertTrue(cg.containsCall(mainMethodSignature, methodInterfaceImplementationNotInstatiated));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterface,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceImplementation,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertFalse(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceNoImplementation,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            methodInterfaceImplementationNotInstatiated,
+            getInvokableStmt(mainMethodSignature, methodMethodImplemented)));
   }
 
   @Test

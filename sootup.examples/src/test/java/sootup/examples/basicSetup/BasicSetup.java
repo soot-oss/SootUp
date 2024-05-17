@@ -64,8 +64,10 @@ public class BasicSetup {
             .anyMatch(
                 stmt ->
                     stmt instanceof JInvokeStmt
-                        && stmt.getInvokeExpr() instanceof JVirtualInvokeExpr
-                        && stmt.getInvokeExpr()
+                        && ((JInvokeStmt) stmt).getInvokeExpr().get() instanceof JVirtualInvokeExpr
+                        && ((JInvokeStmt) stmt)
+                            .getInvokeExpr()
+                            .get()
                             .getArg(0)
                             .equivTo(JavaJimple.getInstance().newStringConstant("Hello World!"))));
   }

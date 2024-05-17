@@ -29,6 +29,7 @@ import sootup.core.jimple.common.expr.JInterfaceInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.jimple.visitor.ExprVisitor;
 import sootup.core.model.SootClass;
@@ -163,7 +164,9 @@ public class CGEdgeUtilTest {
 
     List<Stmt> invokesStmts =
         m.getBody().getStmts().stream()
-            .filter(Stmt::containsInvokeExpr)
+            .filter(stmt -> stmt instanceof InvokableStmt)
+            .map(stmt -> (InvokableStmt) stmt)
+            .filter(InvokableStmt::containsInvokeExpr)
             .collect(Collectors.toList());
     assertEquals(invokesStmts.size(), 3);
     MethodSignature constructorMethodSignature =
@@ -222,7 +225,10 @@ public class CGEdgeUtilTest {
     assertNotNull(virtualCall);
     Stmt virtualStmt =
         invokesStmts.stream()
-            .filter(stmt -> stmt.getInvokeExpr().getClass() == invokeClass)
+            .filter(stmt -> stmt instanceof InvokableStmt)
+            .map(stmt -> (InvokableStmt) stmt)
+            .filter(InvokableStmt::containsInvokeExpr)
+            .filter(stmt -> stmt.getInvokeExpr().get().getClass() == invokeClass)
             .findAny()
             .orElse(null);
     assertNotNull(virtualStmt);
