@@ -7,12 +7,15 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
+import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -110,7 +113,51 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         currentIndex++;
       }
     }
-    throw new RuntimeException("No invokable stmt found for " + sourceMethod);
+    throw new RuntimeException("No invokable stmt of method "+staticTargetMethod+" found for " + sourceMethod);
+  }
+
+  protected InvokableStmt getInvokableStmtNonInvokeExpr(
+      MethodSignature sourceMethod, ClassType targetClass, boolean leftExpr) {
+    return getInvokableStmtNonInvokeExpr(sourceMethod, targetClass, leftExpr, 0);
+  }
+
+  protected InvokableStmt getInvokableStmtNonInvokeExpr(
+      MethodSignature sourceMethod, ClassType targetClass, boolean leftExpr,int index) {
+    int currentIndex = 0;
+    SootMethod method = view.getMethod(sourceMethod).orElse(null);
+    assertNotNull(method);
+    for (Stmt invokableStmt : method.getBody().getStmts()) {
+      //look only at assigments which do Invoke but does not contain a direct invoke expr
+      // static fields and new array expressions
+      if (invokableStmt instanceof InvokableStmt
+          && invokableStmt instanceof JAssignStmt
+          && !((InvokableStmt) invokableStmt).containsInvokeExpr()
+          && ((InvokableStmt) invokableStmt).doesInvoke()){
+        Value expr;
+        //look at the left or right side of the assigment
+        if (leftExpr){
+          expr=((JAssignStmt) invokableStmt).getLeftOp();
+        }
+        else {
+          expr=((JAssignStmt) invokableStmt).getRightOp();
+        }
+        //extract the class type
+        ClassType classType=null;
+        if (expr instanceof JFieldRef){
+            classType=((JFieldRef)expr).getFieldSignature().getDeclClassType();
+        }
+        assertNotNull(classType);
+        if (classType.equals(targetClass)){
+          //found fitting stmt in given position
+          if (currentIndex == index) {
+            return (InvokableStmt) invokableStmt;
+          }
+          //search next fitting stmt
+          currentIndex++;
+        }
+      }
+    }
+    throw new RuntimeException("No invokable assignment stmt of class "+ targetClass +" found for " + sourceMethod);
   }
 
   @Test
