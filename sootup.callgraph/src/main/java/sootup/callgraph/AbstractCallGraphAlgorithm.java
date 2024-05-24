@@ -38,6 +38,7 @@ import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootClassMember;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
@@ -119,7 +120,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   private Optional<MethodSignature> getSignatureOfImplementedStaticInitializer(
       ClassType classType) {
     return view.getMethod(classType.getStaticInitializer())
-        .map(sootMethod -> sootMethod.getSignature());
+        .map(SootClassMember::getSignature);
   }
 
   /**
@@ -169,7 +170,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       resolveAllCallsFromSourceMethod(currentMethod, cg, workList);
 
       // get all call targets of implicit edges in the method body
-      resolveAllImplicitCallsFromSourceMethod(view, currentMethod, cg, workList);
+      resolveAllImplicitCallsFromSourceMethod(currentMethod, cg, workList);
 
       // set method as processed
       processed.add(currentMethodSignature);
@@ -241,32 +242,29 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   /**
    * It resolves all implicit calls caused by the given source method
    *
-   * @param view it contains the class data
    * @param sourceMethod the inspected source method
    * @param cg new calls will be added to the call graph
    * @param workList new target methods will be added to the work list
    */
   protected void resolveAllImplicitCallsFromSourceMethod(
-      View view, SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
 
     // collect all static initializer calls
-    resolveAllStaticInitializerCallsFromSourceMethod(view, sourceMethod, cg, workList);
+    resolveAllStaticInitializerCallsFromSourceMethod(sourceMethod, cg, workList);
   }
 
   /**
    * It resolves all static initializer calls caused by the given source method
    *
-   * @param view it contains the class data
    * @param sourceMethod the inspected source method
    * @param cg clinit calls will be added to the call graph
    * @param workList found clinit methods will be added to the work list
    */
-  @Nonnull
   protected void resolveAllStaticInitializerCallsFromSourceMethod(
-      View view, SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
+      SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
