@@ -303,6 +303,7 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     return stringBuilder.toString();
   }
 
+  @Override
   @Nonnull
   public List<MethodSignature> getEntryMethods() {
     return entryMethods;

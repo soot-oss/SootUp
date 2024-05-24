@@ -22,6 +22,7 @@ package sootup.callgraph;
  * #L%
  */
 
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.common.stmt.InvokableStmt;
@@ -77,6 +78,11 @@ public interface CallGraph {
       result = 31 * result + targetMethodSignature.hashCode();
       result = 31 * result + invokableStmt.hashCode();
       return result;
+    }
+
+    @Override
+    public String toString() {
+      return "Call:"+sourceMethodSignature + " -> " + targetMethodSignature +" via " +invokableStmt+";";
     }
   }
 
@@ -180,4 +186,10 @@ public interface CallGraph {
    */
   @Nonnull
   MutableCallGraph copy();
+
+  /** This method returns all entry methods of the call graph
+   *
+   * @return a list of method signatures of entry points of the call graph
+   */
+  List<MethodSignature> getEntryMethods();
 }
