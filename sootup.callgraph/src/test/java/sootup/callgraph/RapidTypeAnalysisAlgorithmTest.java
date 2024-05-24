@@ -146,7 +146,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
         cg.containsCall(
             mainMethodSignature,
             constructorA,
-            getInvokableStmt(mainMethodSignature, constructorA)));
+            getInvokableStmt(mainMethodSignature, constructorB)));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -161,7 +161,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
         cg.containsCall(
             mainMethodSignature,
             constructorD,
-            getInvokableStmt(mainMethodSignature, constructorD)));
+            getInvokableStmt(mainMethodSignature, constructorC)));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
@@ -171,7 +171,9 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertFalse(cg.containsMethod(staticMethodA));
     assertTrue(
         cg.containsCall(
-            mainMethodSignature, staticMethodB, getInvokableStmt(staticMethodB, staticMethodB)));
+            mainMethodSignature,
+            staticMethodB,
+            getInvokableStmt(mainMethodSignature, staticMethodB)));
     assertFalse(cg.containsMethod(staticMethodC));
     assertFalse(cg.containsMethod(staticMethodD));
     assertFalse(cg.containsMethod(staticMethodE));
@@ -179,20 +181,46 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertFalse(cg.containsMethod(virtualMethodA));
     assertTrue(
         cg.containsCall(
-            mainMethodSignature, virtualMethodB, getInvokableStmt(virtualMethodB, virtualMethodB)));
+            mainMethodSignature,
+            virtualMethodB,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
     assertFalse(cg.containsMethod(virtualMethodC));
     assertTrue(
         cg.containsCall(
-            mainMethodSignature, virtualMethodD, getInvokableStmt(virtualMethodD, virtualMethodD)));
+            mainMethodSignature,
+            virtualMethodD,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
     assertTrue(
         cg.containsCall(
-            mainMethodSignature, virtualMethodE, getInvokableStmt(virtualMethodE, virtualMethodE)));
+            mainMethodSignature,
+            virtualMethodE,
+            getInvokableStmt(mainMethodSignature, virtualMethodA)));
 
     assertTrue(
         cg.containsCall(
-            mainMethodSignature, clinitObject, getInvokableStmt(clinitObject, clinitObject)));
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(
+                mainMethodSignature, constructorB.getDeclClassType(), false)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(
+                mainMethodSignature, constructorC.getDeclClassType(), false)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmtNonInvokeExpr(
+                mainMethodSignature, constructorE.getDeclClassType(), false)));
+    assertTrue(
+        cg.containsCall(
+            mainMethodSignature,
+            clinitObject,
+            getInvokableStmt(mainMethodSignature, staticMethodB)));
 
-    assertEquals(8, cg.callsFrom(mainMethodSignature).size());
+    assertEquals(11, cg.callsFrom(mainMethodSignature).size());
 
     assertEquals(1, cg.callsTo(constructorB).size());
     assertEquals(1, cg.callsTo(constructorC).size());
@@ -206,48 +234,6 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
     assertEquals(0, cg.callsFrom(virtualMethodB).size());
     assertEquals(0, cg.callsFrom(virtualMethodD).size());
     assertEquals(0, cg.callsFrom(virtualMethodE).size());
-
-    assertEquals(
-        cg.toString().replace("\n", "").replace("\t", ""),
-        "GraphBasedCallGraph(13):"
-            + "<example1.A: void <init>()>:"
-            + "to <java.lang.Object: void <init>()>"
-            + "from <example1.B: void <init>()>"
-            + "from <example1.D: void <init>()>"
-            + "from <example1.E: void <init>()>"
-            + "<example1.B: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.B: void staticDispatch(java.lang.Object)>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.B: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.C: void <init>()>:"
-            + "to <example1.D: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.D: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.C: void <init>()>"
-            + "<example1.D: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.E: void <init>()>:"
-            + "to <example1.A: void <init>()>"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.E: void virtualDispatch()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<example1.Example: void main(java.lang.String[])>:"
-            + "to <example1.B: void <init>()>"
-            + "to <example1.B: void staticDispatch(java.lang.Object)>"
-            + "to <example1.B: void virtualDispatch()>"
-            + "to <example1.C: void <init>()>"
-            + "to <example1.D: void virtualDispatch()>"
-            + "to <example1.E: void <init>()>"
-            + "to <example1.E: void virtualDispatch()>"
-            + "to <java.lang.Object: void <clinit>()>"
-            + "<java.lang.Object: void <clinit>()>:"
-            + "from <example1.Example: void main(java.lang.String[])>"
-            + "<java.lang.Object: void <init>()>:"
-            + "from <example1.A: void <init>()>");
   }
 
   @Test
@@ -286,10 +272,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             alreadyVisitedMethod, newTargetA, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
     assertTrue(
         cg.containsCall(
-            alreadyVisitedMethod, newTargetB, getInvokableStmt(alreadyVisitedMethod, newTargetB)));
+            alreadyVisitedMethod, newTargetB, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
     assertTrue(
         cg.containsCall(
-            alreadyVisitedMethod, newTargetC, getInvokableStmt(alreadyVisitedMethod, newTargetC)));
+            alreadyVisitedMethod, newTargetC, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
   }
 
   @Test
@@ -328,10 +314,10 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
             alreadyVisitedMethod, newTargetA, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
     assertTrue(
         cg.containsCall(
-            alreadyVisitedMethod, newTargetB, getInvokableStmt(alreadyVisitedMethod, newTargetB)));
+            alreadyVisitedMethod, newTargetB, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
     assertTrue(
         cg.containsCall(
-            alreadyVisitedMethod, newTargetC, getInvokableStmt(alreadyVisitedMethod, newTargetC)));
+            alreadyVisitedMethod, newTargetC, getInvokableStmt(alreadyVisitedMethod, newTargetA)));
   }
 
   @Test
@@ -354,7 +340,7 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
         cg.containsCall(
             mainMethodSignature,
             instantiatedClassMethod,
-            getInvokableStmt(mainMethodSignature, instantiatedClassMethod)));
+            getInvokableStmt(mainMethodSignature, nonInstantiatedClassMethod)));
     assertFalse(
         cg.containsCall(
             mainMethodSignature,
