@@ -136,8 +136,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
     for (Stmt invokableStmt : method.getBody().getStmts()) {
       // look only at assigments which do Invoke but does not contain a direct invoke expr
       // static fields and new array expressions
-      if (invokableStmt instanceof InvokableStmt
-          && invokableStmt instanceof JAssignStmt
+      if (invokableStmt instanceof JAssignStmt
           && !((InvokableStmt) invokableStmt).containsInvokeExpr()
           && ((InvokableStmt) invokableStmt).doesInvoke()) {
         Value expr;
@@ -162,7 +161,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         if (classType == null) {
           continue;
         }
-        ;
         if (classType.equals(targetClass)) {
           // found fitting stmt in given position
           if (currentIndex == index) {
