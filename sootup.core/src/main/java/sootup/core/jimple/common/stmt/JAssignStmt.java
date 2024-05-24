@@ -49,6 +49,9 @@ import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.Expr;
+import sootup.core.jimple.common.expr.JNewArrayExpr;
+import sootup.core.jimple.common.expr.JNewExpr;
+import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
 import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
@@ -112,8 +115,16 @@ public final class JAssignStmt extends AbstractDefinitionStmt
    */
   @Override
   public boolean doesInvoke() {
-    if (containsInvokeExpr()) return true;
-    return getRightOp() instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef;
+    if (containsInvokeExpr()) {
+      return true;
+    }
+    Value rightOp = getRightOp();
+    if (rightOp instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef) {
+      return true;
+    }
+    return rightOp instanceof JNewExpr
+        || rightOp instanceof JNewMultiArrayExpr
+        || rightOp instanceof JNewArrayExpr;
   }
 
   /*
