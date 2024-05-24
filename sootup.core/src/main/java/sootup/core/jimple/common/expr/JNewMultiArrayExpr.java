@@ -143,4 +143,8 @@ public final class JNewMultiArrayExpr implements Expr {
   public JNewMultiArrayExpr withSizes(@Nonnull List<Immediate> sizes) {
     return new JNewMultiArrayExpr(baseType, sizes);
   }
+
+  public boolean isArrayOfPrimitives() {
+    return ((ArrayType) baseType).isArrayTypeOfPrimitives();
+  }
 }

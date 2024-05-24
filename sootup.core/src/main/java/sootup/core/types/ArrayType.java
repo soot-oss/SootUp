@@ -99,4 +99,18 @@ public class ArrayType extends ReferenceType {
   public void accept(@Nonnull TypeVisitor v) {
     v.caseArrayType();
   }
+
+  public boolean isArrayTypeOfPrimitives() {
+    return isArrayTypeOfPrimitives(baseType);
+  }
+
+  private boolean isArrayTypeOfPrimitives(Type type) {
+    if (type instanceof PrimitiveType) {
+      return true;
+    }
+    if (type instanceof ArrayType) {
+      return isArrayTypeOfPrimitives(((ArrayType) type).getBaseType());
+    }
+    return false;
+  }
 }
