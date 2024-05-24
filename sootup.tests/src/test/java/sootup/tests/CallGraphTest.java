@@ -80,12 +80,6 @@ public class CallGraphTest {
 
   protected InvokableStmt getInvokableStmt(
       MethodSignature sourceMethod, MethodSignature staticTargetMethod) {
-    return getInvokableStmt(sourceMethod, staticTargetMethod, 0);
-  }
-
-  protected InvokableStmt getInvokableStmt(
-      MethodSignature sourceMethod, MethodSignature staticTargetMethod, int index) {
-    int currentIndex = 0;
     SootMethod method = view.getMethod(sourceMethod).orElse(null);
     assertNotNull(method);
     for (Stmt invokableStmt : method.getBody().getStmts()) {
@@ -96,10 +90,7 @@ public class CallGraphTest {
               .get()
               .getMethodSignature()
               .equals(staticTargetMethod)) {
-        if (currentIndex == index) {
-          return (InvokableStmt) invokableStmt;
-        }
-        currentIndex++;
+        return (InvokableStmt) invokableStmt;
       }
     }
     throw new RuntimeException("No invokable stmt found for " + sourceMethod);
