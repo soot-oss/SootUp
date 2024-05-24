@@ -30,11 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.callgraph.CallGraph.Call;
 import sootup.core.IdentifierFactory;
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
+import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -269,6 +270,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
     }
+    InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
         .filter(stmt -> stmt instanceof InvokableStmt)
         .map(stmt -> (InvokableStmt) stmt)
@@ -282,18 +284,29 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                 addStaticInitializerCallsToCallGraph(
                     sourceMethod.getSignature(), targetClass, invokableStmt, cg, workList);
               }
-              // static method calls and constructor calls
-              if (invokableStmt instanceof InvokableStmt && invokableStmt.containsInvokeExpr()) {
+              // static method
+              if (invokableStmt.containsInvokeExpr()) {
                 // static method call
                 Optional<AbstractInvokeExpr> exprOptional = invokableStmt.getInvokeExpr();
                 if (!exprOptional.isPresent()) return;
                 AbstractInvokeExpr expr = exprOptional.get();
-                if (expr instanceof JStaticInvokeExpr
-                    || (expr instanceof JSpecialInvokeExpr
-                        && view.getIdentifierFactory()
-                            .isConstructorSignature(expr.getMethodSignature()))) {
+                if (expr instanceof JStaticInvokeExpr) {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
+                  // checks if the field points to the same clinit
                   if (!newTargetClass.equals(targetClass)) {
+                    addStaticInitializerCallsToCallGraph(
+                        sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
+                  }
+                }
+              } else {
+                if (invokableStmt instanceof JAssignStmt) {
+                  Value rightOp = ((JAssignStmt) invokableStmt).getRightOp();
+                  // extract class type out of new, new array and new multi array
+                  instantiateVisitor.init();
+                  rightOp.accept(instantiateVisitor);
+                  ClassType newTargetClass = instantiateVisitor.getResult();
+                  // check if class type is the same as in the field which could be on the left op
+                  if (newTargetClass != null && !newTargetClass.equals(targetClass)) {
                     addStaticInitializerCallsToCallGraph(
                         sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
                   }
