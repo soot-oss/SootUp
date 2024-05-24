@@ -122,8 +122,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
   }
 
   protected InvokableStmt getInvokableStmtNonInvokeExpr(
-      MethodSignature sourceMethod, ClassType targetClass, boolean leftExpr) {
-    return getInvokableStmtNonInvokeExpr(sourceMethod, targetClass, leftExpr, 0);
+      MethodSignature sourceMethod, ClassType targetClass) {
+    return getInvokableStmtNonInvokeExpr(sourceMethod, targetClass, false, 0);
   }
 
   protected InvokableStmt getInvokableStmtNonInvokeExpr(
@@ -434,7 +434,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainMethodSignature,
             targetMethod,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, identifierFactory.getClassType("ccc.DirectType"), false)));
+                mainMethodSignature, identifierFactory.getClassType("ccc.DirectType"))));
 
     MethodSignature arrayMethod =
         identifierFactory.getMethodSignature(
@@ -447,7 +447,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainMethodSignature,
             arrayMethod,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, identifierFactory.getClassType("ccc.ArrayType"), false)));
+                mainMethodSignature, identifierFactory.getClassType("ccc.ArrayType"))));
 
     MethodSignature arrayDimMethod =
         identifierFactory.getMethodSignature(
@@ -461,7 +461,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainMethodSignature,
             arrayDimMethod,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, identifierFactory.getClassType("ccc.ArrayDimType"), false)));
+                mainMethodSignature, identifierFactory.getClassType("ccc.ArrayDimType"))));
 
     MethodSignature arrayInArrayMethod =
         identifierFactory.getMethodSignature(
@@ -475,8 +475,8 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             arrayInArrayMethod,
             getInvokableStmtNonInvokeExpr(
                 mainMethodSignature,
-                identifierFactory.getClassType("ccc.ArrayInArrayType"),
-                false)));
+                identifierFactory.getClassType("ccc.ArrayInArrayType")
+            )));
   }
 
   @Test
@@ -490,7 +490,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             Collections.emptyList());
     InvokableStmt invokedStmt =
         getInvokableStmtNonInvokeExpr(
-            mainMethodSignature, identifierFactory.getClassType("ccsc.Clinit"), false);
+            mainMethodSignature, identifierFactory.getClassType("ccsc.Clinit"));
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod, invokedStmt));
     MethodSignature targetMethod2 =
         identifierFactory.getMethodSignature(
@@ -537,7 +537,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainMethodSignature,
             targetMethod,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, targetMethod.getDeclClassType(), false)));
+                mainMethodSignature, targetMethod.getDeclClassType())));
   }
 
   @Test

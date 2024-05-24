@@ -213,21 +213,21 @@ public class ClassHierarchyAnalysisAlgorithmTest
             mainMethodSignature,
             clinitObject,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorB.getDeclClassType(), false)));
+                mainMethodSignature, constructorB.getDeclClassType())));
 
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             clinitObject,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorC.getDeclClassType(), false)));
+                mainMethodSignature, constructorC.getDeclClassType())));
 
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             clinitObject,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorE.getDeclClassType(), false)));
+                mainMethodSignature, constructorE.getDeclClassType())));
 
     assertTrue(
         cg.containsCall(
