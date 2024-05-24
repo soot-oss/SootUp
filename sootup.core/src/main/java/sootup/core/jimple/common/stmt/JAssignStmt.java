@@ -122,9 +122,16 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     if (rightOp instanceof JStaticFieldRef || getLeftOp() instanceof JStaticFieldRef) {
       return true;
     }
-    return rightOp instanceof JNewExpr
-        || rightOp instanceof JNewMultiArrayExpr
-        || rightOp instanceof JNewArrayExpr;
+    if (rightOp instanceof JNewExpr) {
+      return true;
+    }
+    if (rightOp instanceof JNewMultiArrayExpr) {
+      return !((JNewMultiArrayExpr) rightOp).isArrayOfPrimitives();
+    }
+    if (rightOp instanceof JNewArrayExpr) {
+      return !((JNewArrayExpr) rightOp).isArrayOfPrimitives();
+    }
+    return false;
   }
 
   /*

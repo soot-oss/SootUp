@@ -74,7 +74,7 @@ public final class JNewArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (") + baseType.toString() + ")" + "[" + size.toString() + "]";
+    return (Jimple.NEWARRAY + " (") + baseType + ")" + "[" + size + "]";
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
