@@ -474,9 +474,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             mainMethodSignature,
             arrayInArrayMethod,
             getInvokableStmtNonInvokeExpr(
-                mainMethodSignature,
-                identifierFactory.getClassType("ccc.ArrayInArrayType")
-            )));
+                mainMethodSignature, identifierFactory.getClassType("ccc.ArrayInArrayType"))));
   }
 
   @Test
@@ -536,8 +534,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
         cg.containsCall(
             mainMethodSignature,
             targetMethod,
-            getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, targetMethod.getDeclClassType())));
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, targetMethod.getDeclClassType())));
   }
 
   @Test

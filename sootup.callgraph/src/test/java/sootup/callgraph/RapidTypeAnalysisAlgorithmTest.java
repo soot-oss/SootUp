@@ -200,20 +200,17 @@ public class RapidTypeAnalysisAlgorithmTest extends CallGraphTestBase<RapidTypeA
         cg.containsCall(
             mainMethodSignature,
             clinitObject,
-            getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorB.getDeclClassType())));
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorB.getDeclClassType())));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             clinitObject,
-            getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorC.getDeclClassType())));
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorC.getDeclClassType())));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
             clinitObject,
-            getInvokableStmtNonInvokeExpr(
-                mainMethodSignature, constructorE.getDeclClassType())));
+            getInvokableStmtNonInvokeExpr(mainMethodSignature, constructorE.getDeclClassType())));
     assertTrue(
         cg.containsCall(
             mainMethodSignature,
