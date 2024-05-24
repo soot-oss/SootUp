@@ -32,9 +32,9 @@ import sootup.core.signatures.MethodSignature;
 public interface CallGraph {
 
   class Call {
-    @Nonnull private MethodSignature sourceMethodSignature;
-    @Nonnull private MethodSignature targetMethodSignature;
-    @Nonnull private InvokableStmt invokableStmt;
+    @Nonnull private final MethodSignature sourceMethodSignature;
+    @Nonnull private final MethodSignature targetMethodSignature;
+    @Nonnull private final InvokableStmt invokableStmt;
 
     Call(
         @Nonnull MethodSignature sourceMethodSignature,
@@ -45,14 +45,17 @@ public interface CallGraph {
       this.targetMethodSignature = targetMethodSignature;
     }
 
+    @Nonnull
     public MethodSignature getSourceMethodSignature() {
       return sourceMethodSignature;
     }
 
+    @Nonnull
     public MethodSignature getTargetMethodSignature() {
       return targetMethodSignature;
     }
 
+    @Nonnull
     public InvokableStmt getInvokableStmt() {
       return invokableStmt;
     }
@@ -82,7 +85,13 @@ public interface CallGraph {
 
     @Override
     public String toString() {
-      return "Call:"+sourceMethodSignature + " -> " + targetMethodSignature +" via " +invokableStmt+";";
+      return "Call:"
+          + sourceMethodSignature
+          + " -> "
+          + targetMethodSignature
+          + " via "
+          + invokableStmt
+          + ";";
     }
   }
 
@@ -187,7 +196,8 @@ public interface CallGraph {
   @Nonnull
   MutableCallGraph copy();
 
-  /** This method returns all entry methods of the call graph
+  /**
+   * This method returns all entry methods of the call graph
    *
    * @return a list of method signatures of entry points of the call graph
    */

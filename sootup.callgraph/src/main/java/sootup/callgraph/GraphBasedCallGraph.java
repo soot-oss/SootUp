@@ -65,10 +65,10 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     this(new DirectedPseudograph<>(null, null, false), new HashMap<>(), entryMethods);
   }
 
-  public GraphBasedCallGraph(
+  protected GraphBasedCallGraph(
       @Nonnull DirectedPseudograph<Vertex, Call> graph,
       @Nonnull Map<MethodSignature, Vertex> signatureToVertex,
-      List<MethodSignature> entryMethods) {
+      @Nonnull List<MethodSignature> entryMethods) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
     this.entryMethods = entryMethods;
@@ -214,9 +214,13 @@ public class GraphBasedCallGraph implements MutableCallGraph {
               Vertex targetVertex = graph.getEdgeTarget(edge);
               dotFormatBuilder
                   .append("\t")
-                  .append("\"" + sourceVertex.methodSignature + "\"")
+                  .append("\"")
+                  .append(sourceVertex.methodSignature)
+                  .append("\"")
                   .append(" -> ")
-                  .append("\"" + targetVertex.methodSignature + "\"")
+                  .append("\"")
+                  .append(targetVertex.methodSignature)
+                  .append("\"")
                   .append(";\n");
             });
 
@@ -244,21 +248,6 @@ public class GraphBasedCallGraph implements MutableCallGraph {
     Vertex methodVertex = signatureToVertex.get(method);
     Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
     return methodVertex;
-  }
-
-  @Nonnull
-  protected DirectedPseudograph<Vertex, Call> getGraph() {
-    return graph;
-  }
-
-  @Nonnull
-  protected Map<MethodSignature, Vertex> getSignatureToVertex() {
-    return signatureToVertex;
-  }
-
-  @Nonnull
-  protected MethodSignature vertex2MethodSignature(@Nonnull Vertex vertex) {
-    return vertex.getMethodSignature();
   }
 
   /**
