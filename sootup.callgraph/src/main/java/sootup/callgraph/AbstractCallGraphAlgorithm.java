@@ -252,7 +252,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     // collect all static initializer calls
-    resolveAllStaticInitializerCallsFromSourceMethod(sourceMethod, cg, workList);
+    resolveAllStaticInitializerCalls(sourceMethod, cg, workList);
   }
 
   /**
@@ -262,7 +262,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg clinit calls will be added to the call graph
    * @param workList found clinit methods will be added to the work list
    */
-  protected void resolveAllStaticInitializerCallsFromSourceMethod(
+  protected void resolveAllStaticInitializerCalls(
       SootMethod sourceMethod, MutableCallGraph cg, Deque<MethodSignature> workList) {
     if (sourceMethod == null || !sourceMethod.hasBody()) {
       return;
@@ -278,7 +278,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
               if (invokableStmt.containsFieldRef()
                   && invokableStmt.getFieldRef() instanceof JStaticFieldRef) {
                 targetClass = invokableStmt.getFieldRef().getFieldSignature().getDeclClassType();
-                addStaticInitializerCallsToCallGraph(
+                addStaticInitializerCalls(
                     sourceMethod.getSignature(), targetClass, invokableStmt, cg, workList);
               }
               // static method
@@ -291,7 +291,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = expr.getMethodSignature().getDeclClassType();
                   // checks if the field points to the same clinit
                   if (!newTargetClass.equals(targetClass)) {
-                    addStaticInitializerCallsToCallGraph(
+                    addStaticInitializerCalls(
                         sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
                   }
                 }
@@ -304,7 +304,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                   ClassType newTargetClass = instantiateVisitor.getResult();
                   // check if class type is the same as in the field which could be on the left op
                   if (newTargetClass != null && !newTargetClass.equals(targetClass)) {
-                    addStaticInitializerCallsToCallGraph(
+                    addStaticInitializerCalls(
                         sourceMethod.getSignature(), newTargetClass, invokableStmt, cg, workList);
                   }
                 }
@@ -323,7 +323,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
    * @param cg the call graph that will contain the found calls
    * @param workList the work list that will be updated with new target methods
    */
-  private void addStaticInitializerCallsToCallGraph(
+  private void addStaticInitializerCalls(
       MethodSignature sourceSig,
       ClassType targetClass,
       InvokableStmt invokableStmt,
