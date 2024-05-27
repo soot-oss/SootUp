@@ -1233,20 +1233,14 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
 
   @Test
   public void testIssue903() {
-    CallGraph cg = loadCallGraph("Bugfixes", false,"issue903.B");
+    CallGraph cg = loadCallGraph("Bugfixes", false, "issue903.B");
 
     MethodSignature closingCall =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("issue903.A"),
-            "close",
-            "void",
-            Collections.emptyList());
+            identifierFactory.getClassType("issue903.A"), "close", "void", Collections.emptyList());
     MethodSignature closingCallInvoked =
         identifierFactory.getMethodSignature(
-            identifierFactory.getClassType("issue903.B"),
-            "close",
-            "void",
-            Collections.emptyList());
+            identifierFactory.getClassType("issue903.B"), "close", "void", Collections.emptyList());
 
     assertTrue(
         cg.containsCall(
@@ -1255,12 +1249,6 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
             getInvokableStmt(mainMethodSignature, closingCallInvoked, 0)));
 
     assertTrue(
-        cg.containsCall(
-            closingCall,
-            closingCall,
-            getInvokableStmt(closingCall, closingCall, 0)));
-
+        cg.containsCall(closingCall, closingCall, getInvokableStmt(closingCall, closingCall, 0)));
   }
-
 }
-
