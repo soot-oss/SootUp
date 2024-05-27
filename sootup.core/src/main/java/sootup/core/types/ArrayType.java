@@ -104,7 +104,7 @@ public class ArrayType extends ReferenceType {
     return isArrayTypeOfPrimitives(baseType);
   }
 
-  private boolean isArrayTypeOfPrimitives(Type type) {
+  public static boolean isArrayTypeOfPrimitives(Type type) {
     if (type instanceof PrimitiveType) {
       return true;
     }
