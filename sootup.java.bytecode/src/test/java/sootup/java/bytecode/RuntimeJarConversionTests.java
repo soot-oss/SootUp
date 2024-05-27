@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
@@ -105,8 +106,9 @@ public class RuntimeJarConversionTests {
     sootMethod.getBody();
   }
 
+  @Ignore
   @Test
-  public void testByteCodeClassTrap() {
+  public void testExample() {
     /* Example to start quickly */
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableBasicBlock;
+import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -53,10 +53,13 @@ public class ReplaceUseExprVisitorTest {
   Stmt stmtPhi = Jimple.newAssignStmt(newArg, IntConstant.getInstance(0), noStmtPositionInfo);
 
   BasicBlock<?> newBlock =
-      new MutableBasicBlock(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
-  BasicBlock<?> block1 = new MutableBasicBlock(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
-  BasicBlock<?> block2 = new MutableBasicBlock(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
-  BasicBlock<?> block3 = new MutableBasicBlock(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
+      new MutableBasicBlockImpl(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
+  BasicBlock<?> block1 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
+  BasicBlock<?> block2 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
+  BasicBlock<?> block3 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
 
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
