@@ -52,6 +52,7 @@ import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JNewMultiArrayExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.ConcreteRef;
 import sootup.core.jimple.common.ref.JArrayRef;
 import sootup.core.jimple.common.ref.JFieldRef;
@@ -107,15 +108,9 @@ public final class JAssignStmt extends AbstractDefinitionStmt
     return getRightOp() instanceof AbstractInvokeExpr;
   }
 
-  /**
-   * Checks if the assignment statement invokes a method call
-   *
-   * @return it is true if the assignment statement contains an invoke expression or if the left or
-   *     right operand is a static field
-   */
   @Override
-  public boolean doesInvoke() {
-    if (containsInvokeExpr()) {
+  public boolean invokesStaticInitializer() {
+    if (getInvokeExpr().isPresent() && getInvokeExpr().get() instanceof JStaticInvokeExpr) {
       return true;
     }
     Value rightOp = getRightOp();

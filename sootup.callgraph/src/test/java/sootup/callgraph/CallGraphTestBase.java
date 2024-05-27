@@ -138,7 +138,7 @@ public abstract class CallGraphTestBase<T extends AbstractCallGraphAlgorithm> {
       // static fields and new array expressions
       if (invokableStmt instanceof JAssignStmt
           && !((InvokableStmt) invokableStmt).containsInvokeExpr()
-          && ((InvokableStmt) invokableStmt).doesInvoke()) {
+          && ((InvokableStmt) invokableStmt).invokesStaticInitializer()) {
         Value expr;
         // look at the left or right side of the assigment
         if (leftExpr) {

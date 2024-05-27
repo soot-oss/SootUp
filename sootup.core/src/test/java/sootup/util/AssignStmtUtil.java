@@ -4,6 +4,7 @@ import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.SimpleStmtPositionInfo;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.ref.JFieldRef;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 
@@ -11,15 +12,16 @@ public class AssignStmtUtil {
 
   /**
    * will return a dummy assignment statement with an invoke expression the left value will be the
-   * dummy int local the right value will be the dummy static invoke expression stmt position is the
-   * dummy SimpleStatementPositionInfo
+   * dummy int local the right value will be the given invoke expression stmt position is the dummy
+   * SimpleStatementPositionInfo
    *
+   * @param invokeExpr the invokeExpr in the dummy assignment statement
    * @return a dummy JAssignStmt with a static invoke expression
    */
-  public static JAssignStmt createDummyAssignStmtWithExpr() {
+  public static JAssignStmt createDummyAssignStmtWithExpr(AbstractInvokeExpr invokeExpr) {
     Local local = LocalUtil.createDummyLocalForInt();
     SimpleStmtPositionInfo pos = StmtPosUtil.createDummySimpleStmtPositionInfo();
-    return new JAssignStmt(local, InvokeExprUtil.createDummyStaticInvokeExpr(), pos);
+    return new JAssignStmt(local, invokeExpr, pos);
   }
 
   /**

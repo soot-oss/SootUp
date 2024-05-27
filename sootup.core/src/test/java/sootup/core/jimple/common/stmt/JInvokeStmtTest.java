@@ -1,6 +1,7 @@
 package sootup.core.jimple.common.stmt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Tag;
@@ -30,6 +31,23 @@ public class JInvokeStmtTest {
 
     JInvokeStmt invokeStmt3 = new JInvokeStmt(InvokeExprUtil.createDummyVirtualInvokeExpr(), pos);
     assertTrue(invokeStmt3.containsInvokeExpr());
+  }
+
+  @Test
+  public void testInvokesStaticInitializer() {
+    SimpleStmtPositionInfo pos = new SimpleStmtPositionInfo(1);
+
+    JInvokeStmt invokeStmt = new JInvokeStmt(InvokeExprUtil.createDummyStaticInvokeExpr(), pos);
+    assertTrue(invokeStmt.invokesStaticInitializer());
+
+    JInvokeStmt invokeStmt1 = new JInvokeStmt(InvokeExprUtil.createDummyInterfaceInvokeExpr(), pos);
+    assertFalse(invokeStmt1.invokesStaticInitializer());
+
+    JInvokeStmt invokeStmt2 = new JInvokeStmt(InvokeExprUtil.createDummySpecialInvokeExpr(), pos);
+    assertFalse(invokeStmt2.invokesStaticInitializer());
+
+    JInvokeStmt invokeStmt3 = new JInvokeStmt(InvokeExprUtil.createDummyVirtualInvokeExpr(), pos);
+    assertFalse(invokeStmt3.invokesStaticInitializer());
   }
 
   @Test

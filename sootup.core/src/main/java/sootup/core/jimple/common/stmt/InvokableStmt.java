@@ -32,11 +32,13 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 public interface InvokableStmt extends Stmt {
 
   /**
-   * Checks if the invokable statement actually invokes
+   * Checks if the invokable statement can potentially invoke a static initializer To cause a static
+   * initializer call, the statement contains a static method call, a new expression, or a static
+   * field reference.
    *
-   * @return true if the statement invokes something, and false if not.
+   * @return true if the statement can cause a static initializer call, and false if not.
    */
-  boolean doesInvoke();
+  boolean invokesStaticInitializer();
 
   /**
    * Checks if the invokable statement contains a invoke expression that defines the invoke.

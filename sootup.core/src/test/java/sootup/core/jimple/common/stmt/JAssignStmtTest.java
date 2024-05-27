@@ -18,23 +18,47 @@ import sootup.util.LocalUtil;
 public class JAssignStmtTest {
 
   @Test
-  public void testDoesInvoke() {
+  public void testInvokesStaticInitializer() {
     JStaticFieldRef staticFieldRef = FieldRefUtil.createDummyStaticFieldRef();
     JInstanceFieldRef instanceFieldRef = FieldRefUtil.createDummyInstanceFieldRef();
     Local local = LocalUtil.createDummyLocalForInt();
 
-    assertTrue(AssignStmtUtil.createDummyAssignStmtWithExpr().doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, staticFieldRef).doesInvoke());
-    assertTrue(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, instanceFieldRef).doesInvoke());
-
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, local).doesInvoke());
-    assertFalse(AssignStmtUtil.createDummyAssignStmt(local, instanceFieldRef).doesInvoke());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmtWithExpr(InvokeExprUtil.createDummyStaticInvokeExpr())
+            .invokesStaticInitializer());
     assertFalse(
-        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, instanceFieldRef).doesInvoke());
-    assertFalse(AssignStmtUtil.createDummyAssignStmtWithLocals().doesInvoke());
+        AssignStmtUtil.createDummyAssignStmtWithExpr(InvokeExprUtil.createDummyVirtualInvokeExpr())
+            .invokesStaticInitializer());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmtWithExpr(InvokeExprUtil.createDummySpecialInvokeExpr())
+            .invokesStaticInitializer());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmtWithExpr(
+                InvokeExprUtil.createDummyInterfaceInvokeExpr())
+            .invokesStaticInitializer());
+
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).invokesStaticInitializer());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).invokesStaticInitializer());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, staticFieldRef)
+            .invokesStaticInitializer());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, staticFieldRef)
+            .invokesStaticInitializer());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmt(staticFieldRef, instanceFieldRef)
+            .invokesStaticInitializer());
+
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, local).invokesStaticInitializer());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(local, instanceFieldRef).invokesStaticInitializer());
+    assertFalse(
+        AssignStmtUtil.createDummyAssignStmt(instanceFieldRef, instanceFieldRef)
+            .invokesStaticInitializer());
+    assertFalse(AssignStmtUtil.createDummyAssignStmtWithLocals().invokesStaticInitializer());
   }
 
   @Test
@@ -43,7 +67,9 @@ public class JAssignStmtTest {
     JInstanceFieldRef instanceFieldRef = FieldRefUtil.createDummyInstanceFieldRef();
     Local local = LocalUtil.createDummyLocalForInt();
 
-    assertTrue(AssignStmtUtil.createDummyAssignStmtWithExpr().containsInvokeExpr());
+    assertTrue(
+        AssignStmtUtil.createDummyAssignStmtWithExpr(InvokeExprUtil.createDummyStaticInvokeExpr())
+            .containsInvokeExpr());
 
     assertFalse(AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).containsInvokeExpr());
     assertFalse(AssignStmtUtil.createDummyAssignStmt(local, staticFieldRef).containsInvokeExpr());
@@ -71,7 +97,10 @@ public class JAssignStmtTest {
 
     assertEquals(
         InvokeExprUtil.createDummyStaticInvokeExpr().toString(),
-        AssignStmtUtil.createDummyAssignStmtWithExpr().getInvokeExpr().get().toString());
+        AssignStmtUtil.createDummyAssignStmtWithExpr(InvokeExprUtil.createDummyStaticInvokeExpr())
+            .getInvokeExpr()
+            .get()
+            .toString());
 
     assertFalse(
         AssignStmtUtil.createDummyAssignStmt(staticFieldRef, local).getInvokeExpr().isPresent());

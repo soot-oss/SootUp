@@ -28,6 +28,7 @@ import sootup.core.jimple.basic.JimpleComparator;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
+import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
@@ -48,8 +49,8 @@ public final class JInvokeStmt extends AbstractStmt implements FallsThroughStmt,
   }
 
   @Override
-  public boolean doesInvoke() {
-    return true;
+  public boolean invokesStaticInitializer() {
+    return invokeExpr instanceof JStaticInvokeExpr;
   }
 
   @Override
