@@ -269,7 +269,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   public MutableBasicBlockImpl splitBlockUnlinked(int splitIdx) {
     if (splitIdx < 1 || splitIdx >= stmts.size()) {
       throw new IndexOutOfBoundsException(
-          "splitIdx makes no sense. please copy/create a new block.");
+          "splitIdx " + splitIdx + "  makes no sense. please copy/create a new block.");
     }
 
     MutableBasicBlockImpl secondBlock =

@@ -918,10 +918,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
 
         blockOfRemovedStmt.removeStmt(blockOfRemovedStmtPair.getLeft());
       } else {
-        blockOfRemovedStmt.removeStmt(blockOfRemovedStmtPair.getLeft());
         // stmt2bRemoved is in the middle of a Block
         if (keepFlow) {
           int startIdx = blockOfRemovedStmtPair.getLeft();
+          blockOfRemovedStmt.removeStmt(startIdx);
           List<Stmt> stmts = blockOfRemovedStmt.getStmts();
           for (int i = startIdx, stmtsSize = stmts.size(); i < stmtsSize; i++) {
             Stmt s = stmts.get(i);
@@ -930,6 +930,9 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         } else {
           int splitIdx = blockOfRemovedStmtPair.getLeft();
           MutableBasicBlock secondBlock = blockOfRemovedStmt.splitBlockUnlinked(splitIdx + 1);
+          blockOfRemovedStmt.removeStmt(
+              splitIdx); // remove after splitting the blocks to save stmt copying (its the last
+          // element now)
           blocks.add(secondBlock);
           int idx = 0;
           for (Stmt s : secondBlock.getStmts()) {

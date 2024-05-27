@@ -59,21 +59,19 @@ public class ViewTypeHierarchyTest {
   public void implementersOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType iNamespace = factory.getClassType("IFaceOperations", "utils");
-    Set<ClassType> implementers = typeHierarchy.implementersOf(iNamespace);
-    ImmutableSet<ClassType> expectedImplementers =
-        immutableSet(factory.getClassType("utils.Operations"));
-    assertEquals(expectedImplementers, implementers);
-
-    expectedImplementers.forEach(
-        expectedImplementer ->
-            assertTrue(typeHierarchy.isSubtype(iNamespace, expectedImplementer)));
+    List<ClassType> implementers =
+        typeHierarchy.implementersOf(iNamespace).collect(Collectors.toList());
+    ClassType expectedImplementer = factory.getClassType("utils.Operations");
+    assertEquals(expectedImplementer, implementers.get(0));
+    assertTrue(typeHierarchy.isSubtype(iNamespace, expectedImplementer));
   }
 
   @Test
   public void subclassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType abstractNamespace = factory.getClassType("AbstractDataStrcture", "ds");
-    Set<ClassType> subclasses = typeHierarchy.subclassesOf(abstractNamespace);
+    Set<ClassType> subclasses =
+        typeHierarchy.subclassesOf(abstractNamespace).collect(Collectors.toSet());
     ImmutableSet<ClassType> expectedSubclasses =
         immutableSet(factory.getClassType("ds.Employee"), factory.getClassType("ds.Department"));
     assertEquals(expectedSubclasses, subclasses);
@@ -90,7 +88,7 @@ public class ViewTypeHierarchyTest {
     ClassType javaClassPathNamespace = factory.getClassType("Operations", "utils");
     ClassType iNamespace = factory.getClassType("utils.IFaceOperations");
     Set<ClassType> implementedInterfaces =
-        typeHierarchy.implementedInterfacesOf(javaClassPathNamespace);
+        typeHierarchy.implementedInterfacesOf(javaClassPathNamespace).collect(Collectors.toSet());
     assertEquals(immutableSet(iNamespace), implementedInterfaces);
     assertTrue(typeHierarchy.isSubtype(iNamespace, javaClassPathNamespace));
 
@@ -99,14 +97,14 @@ public class ViewTypeHierarchyTest {
     ClassType collection = factory.getClassType("Collection", "java.util");
     ClassType list = factory.getClassType("List", "java.util");
     Set<ClassType> implementedInterfacesOfArrayList =
-        typeHierarchy.implementedInterfacesOf(arrayList);
+        typeHierarchy.implementedInterfacesOf(arrayList).collect(Collectors.toSet());
     assertTrue(
         implementedInterfacesOfArrayList.contains(collection), "ArrayList implements Collection");
     assertTrue(typeHierarchy.isSubtype(collection, arrayList), "ArrayList implements Collection");
     assertTrue(implementedInterfacesOfArrayList.contains(list), "ArrayList implements List");
     assertTrue(typeHierarchy.isSubtype(list, arrayList), "ArrayList implements List");
     assertTrue(
-        typeHierarchy.implementersOf(collection).contains(list),
+        typeHierarchy.implementersOf(collection).collect(Collectors.toSet()).contains(list),
         "List is an implementer of Collection");
   }
 
@@ -114,14 +112,14 @@ public class ViewTypeHierarchyTest {
   public void superClassOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
-    ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
+    ClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace).get();
     assertEquals(factory.getClassType("ds.AbstractDataStrcture"), superClass);
-    assertNull(
-        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")),
+    assertFalse(
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")).isPresent(),
         "java.lang.Object should not have a superclass");
     assertEquals(
         factory.getClassType("java.lang.Object"),
-        typeHierarchy.superClassOf(factory.getClassType("java.util.Collection")),
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Iterable")).get(),
         "In Soot, interfaces should have java.lang.Object as the superclass");
   }
 
@@ -129,7 +127,8 @@ public class ViewTypeHierarchyTest {
   public void superClassesOf() {
     IdentifierFactory factory = view.getIdentifierFactory();
     ClassType javaClassPathNamespace = factory.getClassType("Employee", "ds");
-    List<ClassType> superClasses = typeHierarchy.superClassesOf(javaClassPathNamespace);
+    List<ClassType> superClasses =
+        typeHierarchy.superClassesOf(javaClassPathNamespace).collect(Collectors.toList());
     ImmutableList<ClassType> expectedSuperClasses =
         immutableList(
             factory.getClassType("ds.AbstractDataStrcture"),
@@ -198,6 +197,7 @@ public class ViewTypeHierarchyTest {
     assertTrue(
         typeHierarchy
             .subclassesOf(factory.getClassType("ds.AbstractDataStrcture"))
+            .collect(Collectors.toSet())
             .contains(sootClass.getType()),
         "Newly added type must be detected as a subtype");
   }

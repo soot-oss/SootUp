@@ -41,9 +41,7 @@ import sootup.core.typehierarchy.ViewTypeHierarchy;
 public abstract class AbstractView implements View {
   @Nullable private TypeHierarchy typeHierarchy;
 
-  public AbstractView() {
-    this.typeHierarchy = new ViewTypeHierarchy(this);
-  }
+  public AbstractView() {}
 
   @Override
   @Nonnull
