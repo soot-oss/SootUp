@@ -545,8 +545,35 @@ public class WalaIRToJimpleConverter {
           */
         }
 
+        Set<Stmt> blockBegin = new HashSet<>();
+        Set<Stmt> blockEnd = new HashSet<>();
+
+        branchingMap.entrySet().stream().foreach( (k,v) -> {
+            blockEnd.add(k);
+            blockBegin.addAll(v);
+        });
+
+        List<List<Stmt>> listList = new ArrayList<>();
+        List<Stmt> currentList = new ArrayLisst<>();
+        for( Stmt stmt : stmtList){
+          if(blockBegin.contains(stmt)) {
+            if(currentList.isEmpty()) {
+              listList.add(currentList);
+              currentList = new ArrayList<>();
+            }
+          }
+          currentList.add(stmt);
+          if(blockEnd.contains(stmt)){
+            listList.add(currentList);
+            currentList = new ArrayList<>();
+          }
+        }
+        if (!currentList.isEmpty()){
+          listList.add(currentList);
+        }
+
         MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-        graph.initializeWith(stmtList, branchingMap, traps);
+        graph.initializeWith(listList, branchingMap, traps);
 
         return Body.builder(graph)
             .setMethodSignature(methodSignature)

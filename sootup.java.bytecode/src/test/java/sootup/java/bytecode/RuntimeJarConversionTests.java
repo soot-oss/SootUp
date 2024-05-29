@@ -1,6 +1,7 @@
 package sootup.java.bytecode;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.util.DotExporter;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.interceptors.CopyPropagator;
 import sootup.java.core.interceptors.DeadAssignmentEliminator;
@@ -23,7 +25,7 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class RuntimeJarConversionTests {
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   @Test
   public void testJarWithDefaultInterceptors() {
@@ -60,6 +62,7 @@ public class RuntimeJarConversionTests {
             .peek(
                 javaSootMethod -> {
                   try {
+                    System.out.println(javaSootMethod.getSignature());
                     javaSootMethod.getBody();
                   } catch (Exception e) {
                     e.printStackTrace();
@@ -78,32 +81,40 @@ public class RuntimeJarConversionTests {
     convertInputLocation(inputLocation);
   }
 
-  /** helps debugging the conversion of a single method */
-  private static void convertMethod(String methodSignature) {
+  /**
+   * helps debugging the conversion of a single method
+   *
+   * @return
+   */
+  static BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
+      (interceptor, builder) -> {
+        if (interceptor.getClass() != CopyPropagator.class
+            && interceptor.getClass() != DeadAssignmentEliminator.class) {
+          return false;
+        }
+        if (debug) {
+          System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+        }
+        return true;
+      };
 
-    BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
-        (interceptor, builder) -> {
-          if (interceptor.getClass() != CopyPropagator.class
-              && interceptor.getClass() != DeadAssignmentEliminator.class) {
-            return false;
-          }
-          if (debug) {
-            System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
-          }
-          return true;
-        };
+  static List<BodyInterceptor> bodyInterceptors =
+      Utils.wrapEachBodyInterceptorWith(
+          BytecodeBodyInterceptors.Default.getBodyInterceptors(), step);
 
-    List<BodyInterceptor> bodyInterceptors =
-        Utils.wrapEachBodyInterceptorWith(
-            BytecodeBodyInterceptors.Default.getBodyInterceptors(), step);
+  private static Body convertMethod(String methodSignature) {
     AnalysisInputLocation inputLocation =
         new DefaultRTJarAnalysisInputLocation(SourceType.Library, bodyInterceptors);
+    return convertMethod(methodSignature, inputLocation);
+  }
+
+  private static Body convertMethod(String methodSignature, AnalysisInputLocation inputLocation) {
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod =
         view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
-    sootMethod.getBody();
+    return sootMethod.getBody();
   }
 
   @Ignore
@@ -112,4 +123,21 @@ public class RuntimeJarConversionTests {
     /* Example to start quickly */
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }
+
+    @Test
+    public void testJCA() {
+        AnalysisInputLocation inputLocation =
+                new JavaClassPathAnalysisInputLocation(
+                        "../rt_1.6.jar", SourceType.Library, Collections.emptyList());
+        convertInputLocation(inputLocation);
+
+        // <javax.management.remote.rmi._RMIServer_Stub: javax.management.remote.rmi.RMIConnection newClient(java.lang.Object
+        // <java.io.Console: char[] readPassword(java.lang.String,java.lang.Object[])>
+        // <sun.security.jca.ProviderConfig: java.security.Provider getProvider()>
+
+        String methodSignature = "<sun.nio.ch.SocketChannelImpl: boolean finishConnect()>";
+
+        Body body = convertMethod(methodSignature, inputLocation);
+        System.out.println(body);
+    }
 }

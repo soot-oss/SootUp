@@ -224,26 +224,18 @@ public class StaticSingleAssignmentFormerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
     builder.setLocals(locals);
 
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
-    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
-    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
-    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
+    Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+    successorMap.put(ifStmt, Collections.singletonList(returnStmt));
+    successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
+    successorMap.put(gotoStmt, Collections.singletonList(ifStmt));
 
     graph.initializeWith(
         Arrays.asList(
-            startingStmt,
-            assign1tol1,
-            assign1tol2,
-            assign0tol3,
-            ifStmt,
-            ifStmt2,
-            assignl1tol2,
-            assignl3plus1tol3,
-            gotoStmt,
-            assignl3tol2,
-            assignl3plus2tol3,
-            returnStmt),
-        branchingMap,
+            Arrays.asList(startingStmt, assign1tol1, assign1tol2, assign0tol3, ifStmt),
+            Collections.singletonList(ifStmt2),
+            Arrays.asList(assignl1tol2, assignl3plus1tol3, gotoStmt),
+            Arrays.asList(assignl3tol2, assignl3plus2tol3, returnStmt)),
+        successorMap,
         Collections.emptyList());
 
     return builder;
@@ -286,26 +278,18 @@ public class StaticSingleAssignmentFormerTest {
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack4);
     builder.setLocals(locals);
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
-    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
-    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
-    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
+    Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+    successorMap.put(ifStmt, Collections.singletonList(returnStmt));
+    successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
+    successorMap.put(gotoStmt, Collections.singletonList(ifStmt));
 
     graph.initializeWith(
         Arrays.asList(
-            startingStmt,
-            assign1tol1,
-            assign1tol2,
-            assign0tol3,
-            ifStmt,
-            ifStmt2,
-            assignl1tol2,
-            assignl3plus1tol3,
-            gotoStmt,
-            assignl3tol2,
-            assignl3plus2tol3,
-            returnStmt),
-        branchingMap,
+            Arrays.asList(startingStmt, assign1tol1, assign1tol2, assign0tol3, ifStmt),
+            Collections.singletonList(ifStmt2),
+            Arrays.asList(assignl1tol2, assignl3plus1tol3, gotoStmt),
+            Arrays.asList(assignl3tol2, assignl3plus2tol3, returnStmt)),
+        successorMap,
         Collections.emptyList());
 
     // add exception
