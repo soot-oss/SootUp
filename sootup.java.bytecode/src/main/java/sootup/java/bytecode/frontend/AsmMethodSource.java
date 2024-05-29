@@ -182,6 +182,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
 
+    List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+
     /* convert instructions */
     try {
       convert();
@@ -200,7 +202,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // add converted insn as stmts into the graph
     try {
-      arrangeStmts(graph, bodyBuilder);
+      arrangeStmts(graph, bodyBuilder, preambleStmts);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -1628,9 +1630,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   }
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
-  private void arrangeStmts(MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder) {
-
-    List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+  private void arrangeStmts(
+      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
@@ -1674,7 +1675,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           currentStmtList = new ArrayList<>();
 
           if (tailStmtOfLastBlock.fallsThrough()) {
-            //successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
+            // successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
           }
         }
         // there is (at least) a LabelNode ->

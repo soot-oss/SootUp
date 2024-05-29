@@ -64,7 +64,8 @@ public class JimpleClassProvider implements ClassProvider {
               + classSignature
               + " in path: "
               + sourcePath
-              + " could not be converted.", e);
+              + " could not be converted.",
+          e);
       return Optional.empty();
     }
   }

@@ -364,13 +364,12 @@ public class JimpleConverter {
 
               currentStmtList.add(newestStmt);
 
-              if(newestStmt.branches()){
-                if(!currentStmtList.isEmpty()) {
+              if (newestStmt.branches()) {
+                if (!currentStmtList.isEmpty()) {
                   blocks.add(currentStmtList);
                   currentStmtList = new ArrayList<>();
                 }
               }
-
             }
 
             // check for dangling Block
