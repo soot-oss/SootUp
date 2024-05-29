@@ -548,27 +548,29 @@ public class WalaIRToJimpleConverter {
         Set<Stmt> blockBegin = new HashSet<>();
         Set<Stmt> blockEnd = new HashSet<>();
 
-        branchingMap.entrySet().stream().foreach( (k,v) -> {
-            blockEnd.add(k);
-            blockBegin.addAll(v);
-        });
+        // FIXME!
+        branchingMap.forEach(
+            (key, value) -> {
+              blockEnd.add(key);
+              blockBegin.addAll(value);
+            });
 
         List<List<Stmt>> listList = new ArrayList<>();
-        List<Stmt> currentList = new ArrayLisst<>();
-        for( Stmt stmt : stmtList){
-          if(blockBegin.contains(stmt)) {
-            if(currentList.isEmpty()) {
+        List<Stmt> currentList = new ArrayList<>();
+        for (Stmt bstmt : stmtList) {
+          if (blockBegin.contains(bstmt)) {
+            if (!currentList.isEmpty()) {
               listList.add(currentList);
               currentList = new ArrayList<>();
             }
           }
-          currentList.add(stmt);
-          if(blockEnd.contains(stmt)){
+          currentList.add(bstmt);
+          if (blockEnd.contains(bstmt) && !currentList.isEmpty()) {
             listList.add(currentList);
             currentList = new ArrayList<>();
           }
         }
-        if (!currentList.isEmpty()){
+        if (!currentList.isEmpty()) {
           listList.add(currentList);
         }
 

@@ -299,8 +299,8 @@ public class JimpleConverter {
                 : util.getClassTypeList(ctx.throws_clause().type_list());
 
         List<Trap> traps = new ArrayList<>();
-        List<List<Stmt>> stmtList = new ArrayList<>();
-        Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+        List<List<Stmt>> blocks = new ArrayList<>();
+        Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
 
         if (ctx.method_body() == null) {
           throw new ResolveException(
@@ -351,24 +351,32 @@ public class JimpleConverter {
               method_body_contentsContext.statements();
           if (statements != null && statements.statement() != null) {
             List<Stmt> currentStmtList = new ArrayList<>();
-              for (JimpleParser.StatementContext stmtCtx : statements.statement()) {
-                Stmt newestStmt = stmtVisitor.visitStatement(stmtCtx);
-                currentStmtList.add(newestStmt);
-                if (stmtCtx.label_name != null) {
-                  Stmt tailStmtOfLastBlock = currentStmtList.get( currentStmtList.size()-1 );
-                  if( tailStmtOfLastBlock.fallsThrough() ){
-                    successorMap.put( tailStmtOfLastBlock, Collections.singletonList(newestStmt));
-                  }
-                  stmtList.add(currentStmtList);
-                  final String labelname = stmtCtx.label_name.getText();
-                  labeledStmts.put(labelname, newestStmt);
+            for (JimpleParser.StatementContext stmtCtx : statements.statement()) {
+              Stmt newestStmt = stmtVisitor.visitStatement(stmtCtx);
+              if (stmtCtx.label_name != null) {
+                if (!currentStmtList.isEmpty()) {
+                  blocks.add(currentStmtList);
+                  currentStmtList = new ArrayList<>();
+                }
+                final String labelname = stmtCtx.label_name.getText();
+                labeledStmts.put(labelname, newestStmt);
+              }
+
+              currentStmtList.add(newestStmt);
+
+              if(newestStmt.branches()){
+                if(!currentStmtList.isEmpty()) {
+                  blocks.add(currentStmtList);
+                  currentStmtList = new ArrayList<>();
                 }
               }
 
-              // check for dangling Block
-              if (!currentStmtList.isEmpty()) {
-                stmtList.add(currentStmtList);
-              }
+            }
+
+            // check for dangling Block
+            if (!currentStmtList.isEmpty()) {
+              blocks.add(currentStmtList);
+            }
           }
 
           // catch_clause
@@ -419,7 +427,7 @@ public class JimpleConverter {
         try {
 
           MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-          graph.initializeWith(stmtList, successorMap, traps);
+          graph.initializeWith(blocks, successorMap, traps);
           Body.BodyBuilder builder = Body.builder(graph);
 
           builder.setModifiers(modifier);
@@ -448,7 +456,7 @@ public class JimpleConverter {
             throw new ResolveException(
                 "Couldn't parse Stmt.", path, JimpleConverterUtil.buildPositionFromCtx(ctx));
           }
-            return visitStmt(stmtCtx);
+          return visitStmt(stmtCtx);
         }
 
         @Override

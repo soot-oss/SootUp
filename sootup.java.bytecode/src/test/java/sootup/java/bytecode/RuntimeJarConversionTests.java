@@ -124,20 +124,21 @@ public class RuntimeJarConversionTests {
     convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }
 
-    @Test
-    public void testJCA() {
-        AnalysisInputLocation inputLocation =
-                new JavaClassPathAnalysisInputLocation(
-                        "../rt_1.6.jar", SourceType.Library, Collections.emptyList());
-        convertInputLocation(inputLocation);
+  @Test
+  public void testJCA() {
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(
+            "../rt_1.6.jar", SourceType.Library, Collections.emptyList());
+    convertInputLocation(inputLocation);
 
-        // <javax.management.remote.rmi._RMIServer_Stub: javax.management.remote.rmi.RMIConnection newClient(java.lang.Object
-        // <java.io.Console: char[] readPassword(java.lang.String,java.lang.Object[])>
-        // <sun.security.jca.ProviderConfig: java.security.Provider getProvider()>
+    // <javax.management.remote.rmi._RMIServer_Stub: javax.management.remote.rmi.RMIConnection
+    // newClient(java.lang.Object
+    // <java.io.Console: char[] readPassword(java.lang.String,java.lang.Object[])>
+    // <sun.security.jca.ProviderConfig: java.security.Provider getProvider()>
 
-        String methodSignature = "<sun.nio.ch.SocketChannelImpl: boolean finishConnect()>";
+    String methodSignature = "<sun.nio.ch.SocketChannelImpl: boolean finishConnect()>";
 
-        Body body = convertMethod(methodSignature, inputLocation);
-        System.out.println(body);
-    }
+    Body body = convertMethod(methodSignature, inputLocation);
+    System.out.println(body);
+  }
 }

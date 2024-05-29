@@ -1617,7 +1617,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       Stmt beginStmt = labelsToStmt.get(trycatch.start);
       Stmt endStmt = labelsToStmt.get(trycatch.end);
-      if (/*endStmt == null ||*/ beginStmt == null) {
+      if (
+      /*endStmt == null ||*/ beginStmt == null) {
         throw new IllegalStateException("Labels for Traps are missing.");
       }
       Trap trap = Jimple.newTrap(exceptionType, beginStmt, endStmt, handler);
@@ -1634,9 +1635,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
-    Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
     List<List<Stmt>> blockStmtList = new ArrayList<>();
-    List<Stmt> currentStmtList = preambleStmts.isEmpty()? new ArrayList<>() : preambleStmts;  // so we can refer to that list later on
+    List<Stmt> currentStmtList =
+        preambleStmts.isEmpty()
+            ? new ArrayList<>()
+            : preambleStmts; // so we can refer to that list later on
 
     // (n, n+1) := (from, to)
     // List<Stmt> connectBlocks = new ArrayList<>();
@@ -1661,50 +1665,42 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       if (!danglingLabel.isEmpty()) {
         // if fallsthroughStmt: remember link between the blocks
-       if(!currentStmtList.isEmpty()) {
-         Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
+        if (!currentStmtList.isEmpty()) {
+          Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
 
-         // when we have at least one label in front of a Stmt -> we know a new BasicBlock starts
-         blockStmtList.add(currentStmtList);
+          // when we have at least one label in front of a Stmt -> we know a new BasicBlock starts
+          blockStmtList.add(currentStmtList);
 
-         currentStmtList = new ArrayList<>();
+          currentStmtList = new ArrayList<>();
 
-         if (tailStmtOfLastBlock.fallsThrough()) {
-           successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
-         }
-       }
+          if (tailStmtOfLastBlock.fallsThrough()) {
+            //successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
+          }
+        }
         // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
         danglingLabel.forEach(l -> labelsToStmt.put(l, stmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-            if (stmt instanceof JIdentityStmt) {
-              JIdentityStmt identityRef = (JIdentityStmt) stmt;
-              if (identityRef.getRightOp() instanceof JCaughtExceptionRef) {
-                danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
-              }
+          if (stmt instanceof JIdentityStmt) {
+            JIdentityStmt identityRef = (JIdentityStmt) stmt;
+            if (identityRef.getRightOp() instanceof JCaughtExceptionRef) {
+              danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
             }
+          }
         }
         danglingLabel.clear();
       }
 
       currentStmtList.add(stmt);
-      if(stmt.branches() && !currentStmtList.isEmpty()){
-        Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
+      if (stmt instanceof BranchingStmt && !currentStmtList.isEmpty()) {
         blockStmtList.add(currentStmtList);
-        if (tailStmtOfLastBlock.fallsThrough()) {
-          successorMap.put(tailStmtOfLastBlock, Collections.singletonList(currentStmtList.get(0)));
-        }
         currentStmtList = new ArrayList<>();
       }
     } while ((insn = insn.getNext()) != null);
 
-    if(!currentStmtList.isEmpty()){
-      Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
+    if (!currentStmtList.isEmpty()) {
       blockStmtList.add(currentStmtList);
-      if (tailStmtOfLastBlock.fallsThrough()) {
-        successorMap.put(tailStmtOfLastBlock, Collections.singletonList(currentStmtList.get(0)));
-      }
     }
 
     /*

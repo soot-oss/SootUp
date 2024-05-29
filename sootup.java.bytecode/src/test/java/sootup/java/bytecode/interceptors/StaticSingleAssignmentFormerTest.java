@@ -57,10 +57,10 @@ public class StaticSingleAssignmentFormerTest {
   Stmt assign1tol1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
   Stmt assign1tol2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
   Stmt assign0tol3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt ifStmt =
+  BranchingStmt ifStmt =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l3, IntConstant.getInstance(100)), noStmtPositionInfo);
-  Stmt ifStmt2 =
+  BranchingStmt ifStmt2 =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l2, IntConstant.getInstance(20)), noStmtPositionInfo);
   Stmt returnStmt = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
@@ -72,7 +72,7 @@ public class StaticSingleAssignmentFormerTest {
   Stmt assignl3plus2tol3 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(2)), noStmtPositionInfo);
-  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   FallsThroughStmt handlerStmt =
       JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
@@ -224,7 +224,7 @@ public class StaticSingleAssignmentFormerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
     builder.setLocals(locals);
 
-    Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
     successorMap.put(ifStmt, Collections.singletonList(returnStmt));
     successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
     successorMap.put(gotoStmt, Collections.singletonList(ifStmt));
@@ -278,7 +278,7 @@ public class StaticSingleAssignmentFormerTest {
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack4);
     builder.setLocals(locals);
-    Map<Stmt, List<Stmt>> successorMap = new HashMap<>();
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
     successorMap.put(ifStmt, Collections.singletonList(returnStmt));
     successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
     successorMap.put(gotoStmt, Collections.singletonList(ifStmt));

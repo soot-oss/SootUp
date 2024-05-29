@@ -131,7 +131,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    */
   public void initializeWith(
       @Nonnull List<List<Stmt>> blocks,
-      @Nonnull Map<Stmt, List<Stmt>> successorMap,
+      @Nonnull Map<BranchingStmt, List<Stmt>> successorMap,
       @Nonnull List<Trap> traps) {
 
     if (blocks.isEmpty()) {
@@ -162,13 +162,13 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
           trap -> {
             Integer beginIdx = blockIdxMap.get(trap.getBeginStmt());
             if (beginIdx == null) {
-                throw new AssertionError();
+              throw new AssertionError();
             }
             trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
             Integer endIdx = blockIdxMap.get(trap.getEndStmt());
             if (endIdx == null) {
               endIdx = blockIdxMap.size();
-                // throw new AssertionError();
+              // throw new AssertionError();
             }
             trapstmtToIdx.put(trap.getEndStmt(), endIdx);
             Integer handlerIdx = blockIdxMap.get(trap.getHandlerStmt());
@@ -203,74 +203,75 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       List<Stmt> block = blocks.get(i);
       Stmt headStmt = block.get(0);
 
-        boolean trapsChanged = false;
-        while (nextEndingTrap != null && (nextEndingTrap.getEndStmt() == headStmt || nextEndingTrap.getEndStmt() == null)) {
-          Trap trap = nextEndingTrap;
-          nextEndingTrap = trapEnd.poll();
-          // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
-          final ClassType exceptionType = trap.getExceptionType();
-          final boolean isRemovedFromActive = activeTrapMap.remove(exceptionType, trap);
-          final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
-          if (overridenTrapHandlers != null) {
-            // System.out.println("overlapping traps found");
-            if (isRemovedFromActive) {
-              // is there an overridden traprange that needs to take its place?
-              if (!overridenTrapHandlers.isEmpty()) {
-                // System.out.println("update activeTrapMap with next trap from overlaps");
-                activeTrapMap.put(exceptionType, overridenTrapHandlers.poll());
-              }
-            } else {
-              // check if there is an overlapping trap that has a less specific TrapRange which is
-              // ending before it gets the active exception information again
-              // not logical as a compiler output... but possible.
-              overridenTrapHandlers.remove(trap);
-              // System.out.println("remove from overlapping: " + trap);
+      boolean trapsChanged = false;
+      while (nextEndingTrap != null
+          && (nextEndingTrap.getEndStmt() == headStmt || nextEndingTrap.getEndStmt() == null)) {
+        Trap trap = nextEndingTrap;
+        nextEndingTrap = trapEnd.poll();
+        // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
+        final ClassType exceptionType = trap.getExceptionType();
+        final boolean isRemovedFromActive = activeTrapMap.remove(exceptionType, trap);
+        final PriorityQueue<Trap> overridenTrapHandlers = overlappingTraps.get(exceptionType);
+        if (overridenTrapHandlers != null) {
+          // System.out.println("overlapping traps found");
+          if (isRemovedFromActive) {
+            // is there an overridden traprange that needs to take its place?
+            if (!overridenTrapHandlers.isEmpty()) {
+              // System.out.println("update activeTrapMap with next trap from overlaps");
+              activeTrapMap.put(exceptionType, overridenTrapHandlers.poll());
             }
-          }
-
-          trapsChanged = true;
-        }
-
-
-        // e.g. LabelNode as last instruction to denote the end of a trap including the last Stmt in serializd form
-
-        while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == headStmt) {
-          Trap trap = nextStartingTrap;
-          nextStartingTrap = trapStart.poll();
-          final Trap existingTrapForException = activeTrapMap.get(trap.getExceptionType());
-          if (existingTrapForException == null) {
-            activeTrapMap.put(trap.getExceptionType(), trap);
           } else {
-            final PriorityQueue<Trap> overridenTraps =
-                overlappingTraps.computeIfAbsent(
-                    trap.getExceptionType(), k -> new PriorityQueue<>(trapComparator));
-
-            Trap trapToApply;
-            if (trapComparator.compare(existingTrapForException, trap) < 0) {
-              overridenTraps.add(trap);
-              trapToApply = existingTrapForException;
-            } else {
-              overridenTraps.add(existingTrapForException);
-              trapToApply = trap;
-            }
-
-            activeTrapMap.put(trapToApply.getExceptionType(), trapToApply);
+            // check if there is an overlapping trap that has a less specific TrapRange which is
+            // ending before it gets the active exception information again
+            // not logical as a compiler output... but possible.
+            overridenTrapHandlers.remove(trap);
+            // System.out.println("remove from overlapping: " + trap);
           }
-          trapsChanged = true;
         }
 
-        if (trapsChanged) {
-          exceptionToHandlerMap.clear();
-          activeTrapMap.forEach(
-              (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
+        trapsChanged = true;
+      }
 
-          /* debugprint
-           System.out.println("-- "+ i +" --");
-           activeTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
-          */
+      // e.g. LabelNode as last instruction to denote the end of a trap including the last Stmt in
+      // serializd form
+
+      while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == headStmt) {
+        Trap trap = nextStartingTrap;
+        nextStartingTrap = trapStart.poll();
+        final Trap existingTrapForException = activeTrapMap.get(trap.getExceptionType());
+        if (existingTrapForException == null) {
+          activeTrapMap.put(trap.getExceptionType(), trap);
+        } else {
+          final PriorityQueue<Trap> overridenTraps =
+              overlappingTraps.computeIfAbsent(
+                  trap.getExceptionType(), k -> new PriorityQueue<>(trapComparator));
+
+          Trap trapToApply;
+          if (trapComparator.compare(existingTrapForException, trap) < 0) {
+            overridenTraps.add(trap);
+            trapToApply = existingTrapForException;
+          } else {
+            overridenTraps.add(existingTrapForException);
+            trapToApply = trap;
+          }
+
+          activeTrapMap.put(trapToApply.getExceptionType(), trapToApply);
         }
+        trapsChanged = true;
+      }
 
-        addBlock(block, exceptionToHandlerMap);
+      if (trapsChanged) {
+        exceptionToHandlerMap.clear();
+        activeTrapMap.forEach(
+            (type, trap) -> exceptionToHandlerMap.put(type, trap.getHandlerStmt()));
+
+        /* debugprint
+         System.out.println("-- "+ i +" --");
+         activeTrapMap.values().stream().sorted(getTrapComparator(trapstmtToIdx)).forEach(t -> System.out.println( t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " +trapstmtToIdx.get(t.getHandlerStmt())));
+        */
+      }
+
+      addBlock(block, exceptionToHandlerMap);
     }
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
@@ -278,52 +279,51 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     // link blocks
-      for (int i = 0, blockStmtsSize = blocks.size(); i < blockStmtsSize; i++) {
-          List<Stmt> block = blocks.get(i);
-          Stmt tailStmt = block.get(block.size() - 1);
+    for (int i = 0, blockStmtsSize = blocks.size(); i < blockStmtsSize; i++) {
+      List<Stmt> block = blocks.get(i);
+      Stmt tailStmt = block.get(block.size() - 1);
 
-          if (tailStmt instanceof FallsThroughStmt) {
-            int fallsThroughTargetIdx = i + 1;
-            if(fallsThroughTargetIdx >= blocks.size()){
-              throw new IllegalStateException("FallsthroughStmt falls into the abyss - as there is no following Block!");
-            }
-            List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
-            Stmt followingBlocksHead = followingBlock.get(0);
-            putEdge((FallsThroughStmt) tailStmt, followingBlocksHead);
-          }
-
-          if (tailStmt instanceof BranchingStmt) {
-              // => end of Block
-              final List<Stmt> targets = successorMap.get(tailStmt);
-              int idxOffset = (tailStmt instanceof FallsThroughStmt) ? 1 : 0;
-              int expectedBranchEntries = tailStmt.getExpectedSuccessorCount() - idxOffset;
-              if (targets == null || targets.size() != expectedBranchEntries) {
-                  int targetCount;
-                  if (targets == null) {
-                      targetCount = 0;
-                  } else {
-                      targetCount = targets.size();
-                  }
-
-                  throw new IllegalArgumentException(
-                          "The corresponding successorMap entry for the BranchingStmt ('"
-                                  + tailStmt
-                                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
-                                  + expectedBranchEntries
-                                  + " but has "
-                                  + targetCount
-                                  + ".");
-              }
-              final BranchingStmt bStmt = (BranchingStmt) tailStmt;
-              for (int k = 0; k < targets.size(); k++) {
-                  Stmt target = targets.get(k);
-                  // a possible fallsthrough (i.e. from IfStmt) is not in successorMap
-                  putEdge(bStmt, k+idxOffset, target);
-              }
-
-          }
-
+      if (tailStmt instanceof FallsThroughStmt) {
+        int fallsThroughTargetIdx = i + 1;
+        if (fallsThroughTargetIdx >= blocks.size()) {
+          throw new IllegalStateException(
+              "FallsthroughStmt falls into the abyss - as there is no following Block!");
+        }
+        List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
+        Stmt followingBlocksHead = followingBlock.get(0);
+        putEdge((FallsThroughStmt) tailStmt, followingBlocksHead);
       }
+
+      if (tailStmt instanceof BranchingStmt) {
+        // => end of Block
+        final List<Stmt> targets = successorMap.get(tailStmt);
+        int idxOffset = (tailStmt instanceof FallsThroughStmt) ? 1 : 0;
+        int expectedBranchEntries = tailStmt.getExpectedSuccessorCount() - idxOffset;
+        if (targets == null || targets.size() != expectedBranchEntries) {
+          int targetCount;
+          if (targets == null) {
+            targetCount = 0;
+          } else {
+            targetCount = targets.size();
+          }
+
+          throw new IllegalArgumentException(
+              "The corresponding successorMap entry for the BranchingStmt ('"
+                  + tailStmt
+                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
+                  + expectedBranchEntries
+                  + " but has "
+                  + targetCount
+                  + ".");
+        }
+        final BranchingStmt bStmt = (BranchingStmt) tailStmt;
+        for (int k = 0; k < targets.size(); k++) {
+          Stmt target = targets.get(k);
+          // a possible fallsthrough (i.e. from IfStmt) is not in successorMap
+          putEdge(bStmt, k + idxOffset, target);
+        }
+      }
+    }
   }
 
   private static int getTrapApplicationComparator(
