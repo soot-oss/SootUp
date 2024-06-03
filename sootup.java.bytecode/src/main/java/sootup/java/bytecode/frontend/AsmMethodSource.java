@@ -1743,7 +1743,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       // jump back to the original implementation
       JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
-      blockStmtList.add(currentStmtList);
+      currentStmtList.add(gotoStmt);
 
       Stmt targetStmt = insnToStmt.get(labelNode);
       successorMap.put(gotoStmt, Collections.singletonList(targetStmt));
