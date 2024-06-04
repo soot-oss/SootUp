@@ -18,11 +18,7 @@
 
 package qilin.core;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
@@ -87,7 +83,7 @@ public class VirtualCalls {
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);
-      if (otgt.isEmpty()) {
+      if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
       }
@@ -237,25 +233,33 @@ public class VirtualCalls {
     worklist.add(base);
     while (!worklist.isEmpty()) {
       ClassType classType = worklist.removeFirst();
-      SootClass cl = (SootClass) PTAScene.v().getView().getClass(classType).get();
+      SootClass cl = PTAScene.v().getView().getClass(classType).get();
       if (cl.isInterface()) {
-        for (final ClassType c :
-            PTAScene.v().getView().getTypeHierarchy().implementersOf(cl.getType())) {
-          if (workset.add(c)) {
-            worklist.add(c);
-          }
-        }
+        PTAScene.v()
+            .getView()
+            .getTypeHierarchy()
+            .implementersOf(cl.getType())
+            .forEach(
+                (ClassType c) -> {
+                  if (workset.add(c)) {
+                    worklist.add(c);
+                  }
+                });
       } else {
         if (cl.isConcrete()) {
           resolve(cl.getType(), declaredType, sigType, subSig, container, targets, appOnly);
           newSubTypes.add(cl.getType());
         }
-        for (final ClassType c :
-            PTAScene.v().getView().getTypeHierarchy().subclassesOf(classType)) {
-          if (workset.add(c)) {
-            worklist.add(c);
-          }
-        }
+        PTAScene.v()
+            .getView()
+            .getTypeHierarchy()
+            .subclassesOf(classType)
+            .forEach(
+                (ClassType c) -> {
+                  if (workset.add(c)) {
+                    worklist.add(c);
+                  }
+                });
       }
     }
 
