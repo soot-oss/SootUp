@@ -279,39 +279,39 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     }
 
     // link blocks
-    for (int i = 0, blockStmtsSize = blocks.size(); i < blockStmtsSize; i++) {
-      List<Stmt> block = blocks.get(i);
+    for (int blockIdx = 0, blockStmtsSize = blocks.size(); blockIdx < blockStmtsSize; blockIdx++) {
+      List<Stmt> block = blocks.get(blockIdx);
       Stmt tailStmt = block.get(block.size() - 1);
 
+      int succIdxOffset;
       if (tailStmt instanceof FallsThroughStmt) {
-        int fallsThroughTargetIdx = i + 1;
+        succIdxOffset = 1;
+        int fallsThroughTargetIdx = blockIdx + 1;
         if (fallsThroughTargetIdx >= blocks.size()) {
           throw new IllegalStateException(
-              "FallsthroughStmt falls into the abyss - as there is no following Block!");
+              "FallsthroughStmt '"
+                  + tailStmt
+                  + "' falls into the abyss - as there is no following Block!");
         }
         List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
         Stmt followingBlocksHead = followingBlock.get(0);
         putEdge((FallsThroughStmt) tailStmt, followingBlocksHead);
+      } else {
+        succIdxOffset = 0;
       }
 
       if (tailStmt instanceof BranchingStmt) {
         // => end of Block
         final List<Stmt> targets = successorMap.get(tailStmt);
-        int idxOffset = (tailStmt instanceof FallsThroughStmt) ? 1 : 0;
-        int expectedBranchEntries = tailStmt.getExpectedSuccessorCount() - idxOffset;
-        if (targets == null || targets.size() != expectedBranchEntries) {
-          int targetCount;
-          if (targets == null) {
-            targetCount = 0;
-          } else {
-            targetCount = targets.size();
-          }
+        int expectedBranchingEntries = tailStmt.getExpectedSuccessorCount() - succIdxOffset;
+        if (targets == null || targets.size() != expectedBranchingEntries) {
+          int targetCount = targets == null ? 0 : targets.size();
 
           throw new IllegalArgumentException(
               "The corresponding successorMap entry for the BranchingStmt ('"
                   + tailStmt
-                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
-                  + expectedBranchEntries
+                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors blockIdx.e. "
+                  + expectedBranchingEntries
                   + " but has "
                   + targetCount
                   + ".");
@@ -319,8 +319,8 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         final BranchingStmt bStmt = (BranchingStmt) tailStmt;
         for (int k = 0; k < targets.size(); k++) {
           Stmt target = targets.get(k);
-          // a possible fallsthrough (i.e. from IfStmt) is not in successorMap
-          putEdge(bStmt, k + idxOffset, target);
+          // a possible fallsthrough (e.g. from IfStmt) is not in successorMap
+          putEdge(bStmt, k + succIdxOffset, target);
         }
       }
     }
@@ -513,7 +513,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Iterator<? extends Stmt> iterator = stmts.iterator();
     final Stmt node = iterator.next();
     MutableBasicBlock block = getOrCreateBlock(node);
-    if (block.getHead() != node || !block.getSuccessors().isEmpty()) {
+    if (block.getHead() != node || block.getSuccessors().stream().anyMatch(Objects::nonNull)) {
       throw new IllegalArgumentException(
           "The first Stmt in the List is already in the StmtGraph and and is not the head of a Block where currently no successor are set, yet.");
     } else if (block.getStmtCount() > 1) {
@@ -1239,6 +1239,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // stmtA does not branch
       if (blockBPair == null) {
         // stmtB is new in the graph -> just add it to the same block
+        // TODO: think about exceptions.. could add a Stmt to an exception range
         addNodeToBlock(blockA, stmtB);
       } else {
         blockB = blockBPair.getRight();
@@ -1252,6 +1253,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               addNodeToBlock(blockA, stmt);
             }
             blocks.remove(blockB);
+            // update exceptional predecessors to the new block!
+            blockB
+                .getExceptionalSuccessors()
+                .values()
+                .forEach(
+                    eb -> {
+                      eb.removePredecessorBlock(blockB);
+                      eb.addPredecessorBlock(blockA);
+                    });
+
           } else {
             // stmtA does not branch but stmtB is already a branch target or has different traps =>
             // link blocks

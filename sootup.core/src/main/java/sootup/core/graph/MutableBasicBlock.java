@@ -48,7 +48,7 @@ public interface MutableBasicBlock extends BasicBlock<MutableBasicBlock> {
 
   void setSuccessorBlock(int successorIdx, @Nullable MutableBasicBlock block);
 
-  void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b);
+  void removeFromSuccessorBlocks(@Nonnull MutableBasicBlock b);
 
   void linkExceptionalSuccessorBlock(@Nonnull ClassType exception, MutableBasicBlock b);
 
