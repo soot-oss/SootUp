@@ -1,22 +1,17 @@
 package sootup.java.bytecode.interceptors.typeresolving;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import categories.TestCategories;
-import java.io.File;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.IdentifierFactory;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.*;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.interceptors.typeresolving.BytecodeHierarchy;
 import sootup.java.core.interceptors.typeresolving.types.BottomType;
@@ -43,14 +38,6 @@ public class BytecodeHierarchyTest {
       cloneable,
       number,
       comparable;
-
-  private Type double_prim = PrimitiveType.getDouble();
-  private Type int_prim = PrimitiveType.getInt();
-  private Type short_prim = PrimitiveType.getShort();
-  private Type byte_prim = PrimitiveType.getByte();
-  private Type bt = BottomType.getInstance();
-  private Type nullType = NullType.getInstance();
-
   private ArrayType objArr,
       seriArr,
       doubleArr,
@@ -67,20 +54,10 @@ public class BytecodeHierarchyTest {
   public void setUp() {
     String jarFile =
         "../shared-test-resources/TypeResolverTestSuite/ByteCodeHierarchyTest/MiniHierarchy.jar";
-    String currentClassPath =
-        System.getProperty("java.class.path")
-            + File.pathSeparator
-            + ManagementFactory.getRuntimeMXBean().getBootClassPath();
-    String rtJarClassPath =
-        Arrays.stream(currentClassPath.split(File.pathSeparator))
-            .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
-            .distinct()
-            .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-
-    view = new JavaView(analysisInputLocation);
-    ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+        new JavaClassPathAnalysisInputLocation(jarFile);
+    view =
+        new JavaView(Arrays.asList(new DefaultRTJarAnalysisInputLocation(), analysisInputLocation));
 
     // create types
     IdentifierFactory factory = view.getIdentifierFactory();
@@ -102,15 +79,15 @@ public class BytecodeHierarchyTest {
     objArr = factory.getArrayType(object, 1);
     seriArr = factory.getArrayType(serializable, 1);
     doubleArr = factory.getArrayType(double_class1, 1);
-    doubleArr_prim = factory.getArrayType(double_prim, 1);
-    intArr_prim = factory.getArrayType(int_prim, 1);
+    doubleArr_prim = factory.getArrayType(PrimitiveType.getDouble(), 1);
+    intArr_prim = factory.getArrayType(PrimitiveType.getInt(), 1);
     class1AArr = factory.getArrayType(class1, 2);
     class2AArr = factory.getArrayType(class2, 2);
     class2Arr = factory.getArrayType(class2, 1);
     class3Arr = factory.getArrayType(class3, 1);
     class4Arr = factory.getArrayType(class4, 1);
-    shortArr = factory.getArrayType(short_prim, 1);
-    byteArr = factory.getArrayType(byte_prim, 1);
+    shortArr = factory.getArrayType(PrimitiveType.getShort(), 1);
+    byteArr = factory.getArrayType(PrimitiveType.getByte(), 1);
   }
 
   @Test
@@ -121,15 +98,15 @@ public class BytecodeHierarchyTest {
 
     // tests
     assertTrue(hierarchy.isAncestor(double_class1, double_class2));
-    assertFalse(hierarchy.isAncestor(double_class1, double_prim));
-    assertTrue(hierarchy.isAncestor(int_prim, bt));
-    assertFalse(hierarchy.isAncestor(double_prim, int_prim));
-    assertFalse(hierarchy.isAncestor(bt, double_prim));
-    assertFalse(hierarchy.isAncestor(bt, double_class1));
-    assertTrue(hierarchy.isAncestor(nullType, bt));
-    assertFalse(hierarchy.isAncestor(bt, nullType));
-    assertTrue(hierarchy.isAncestor(int_class, nullType));
-    assertFalse(hierarchy.isAncestor(object, double_prim));
+    assertFalse(hierarchy.isAncestor(double_class1, PrimitiveType.getDouble()));
+    assertTrue(hierarchy.isAncestor(PrimitiveType.getInt(), BottomType.getInstance()));
+    assertFalse(hierarchy.isAncestor(PrimitiveType.getDouble(), PrimitiveType.getInt()));
+    assertFalse(hierarchy.isAncestor(BottomType.getInstance(), PrimitiveType.getDouble()));
+    assertFalse(hierarchy.isAncestor(BottomType.getInstance(), double_class1));
+    assertTrue(hierarchy.isAncestor(NullType.getInstance(), BottomType.getInstance()));
+    assertFalse(hierarchy.isAncestor(BottomType.getInstance(), NullType.getInstance()));
+    assertTrue(hierarchy.isAncestor(int_class, NullType.getInstance()));
+    assertFalse(hierarchy.isAncestor(object, PrimitiveType.getDouble()));
     assertTrue(hierarchy.isAncestor(rootInterface1, class1));
     assertTrue(hierarchy.isAncestor(rootInterface1, class2));
     assertTrue(hierarchy.isAncestor(rootInterface2, class4));
@@ -154,16 +131,19 @@ public class BytecodeHierarchyTest {
     BytecodeHierarchy hierarchy = new BytecodeHierarchy(view);
 
     // tests
-    Collection<Type> actualSet = hierarchy.getLeastCommonAncestor(double_prim, int_prim);
-    Collection<Type> expectedSet = Collections.singleton(TopType.getInstance());
+    Collection<Type> actualSet;
+    Collection<Type> expectedSet;
+
+    actualSet = hierarchy.getLeastCommonAncestor(double_class1, int_class);
+    expectedSet = ImmutableUtils.immutableSet(number, comparable);
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, class1);
     expectedSet = Collections.singleton(rootInterface1);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(double_class1, int_class);
-    expectedSet = ImmutableUtils.immutableSet(number, comparable);
+    actualSet = hierarchy.getLeastCommonAncestor(PrimitiveType.getDouble(), PrimitiveType.getInt());
+    expectedSet = Collections.singleton(TopType.getInstance());
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(rootInterface1, rootInterface2);
@@ -198,8 +178,8 @@ public class BytecodeHierarchyTest {
     expectedSet = Collections.singleton(object);
     assertEquals(expectedSet, actualSet);
 
-    actualSet = hierarchy.getLeastCommonAncestor(short_prim, byte_prim);
-    expectedSet = Collections.singleton(short_prim);
+    actualSet = hierarchy.getLeastCommonAncestor(PrimitiveType.getShort(), PrimitiveType.getByte());
+    expectedSet = Collections.singleton(PrimitiveType.getShort());
     assertEquals(expectedSet, actualSet);
 
     actualSet = hierarchy.getLeastCommonAncestor(shortArr, byteArr);

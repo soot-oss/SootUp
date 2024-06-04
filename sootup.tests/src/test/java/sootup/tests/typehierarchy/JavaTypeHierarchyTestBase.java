@@ -3,7 +3,6 @@ package sootup.tests.typehierarchy;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -12,8 +11,6 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
-
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   private String className = "";
   private AnalysisInputLocation srcCode;
@@ -51,7 +48,7 @@ public abstract class JavaTypeHierarchyTestBase {
   }
 
   public JavaClassType getClassType(String className) {
-    return identifierFactory.getClassType(className);
+    return view.getIdentifierFactory().getClassType(className);
   }
 
   public static String extractClassName(String classPath) {

@@ -23,9 +23,9 @@ package sootup.core.typehierarchy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sootup.core.types.*;
@@ -51,7 +51,7 @@ public interface TypeHierarchy {
    * implementations of methods.
    */
   @Nonnull
-  Set<ClassType> implementersOf(@Nonnull ClassType interfaceType);
+  Stream<ClassType> implementersOf(@Nonnull ClassType interfaceType);
 
   /**
    * Returns all classes that extend the specified class. This is transitive: If <code>A extends B
@@ -59,7 +59,7 @@ public interface TypeHierarchy {
    * extenders of <code>classType</code>.
    */
   @Nonnull
-  Set<ClassType> subclassesOf(@Nonnull ClassType classType);
+  Stream<ClassType> subclassesOf(@Nonnull ClassType classType);
 
   /**
    * Returns the interfaces implemented by <code>type</code> if it is a class or extended by <code>
@@ -69,25 +69,25 @@ public interface TypeHierarchy {
    * </code>. <code>I2</code> will be considered an implemented interface of <code>classType</code>.
    */
   @Nonnull
-  Set<ClassType> implementedInterfacesOf(@Nonnull ClassType type);
+  Stream<ClassType> implementedInterfacesOf(@Nonnull ClassType type);
 
   /**
    * For an interface type, this does the same as {@link #implementersOf(ClassType)}. For a class
    * type, this does the same as {@link #subclassesOf(ClassType)}.
    */
   @Nonnull
-  Set<ClassType> subtypesOf(@Nonnull ClassType type);
+  Stream<ClassType> subtypesOf(@Nonnull ClassType type);
 
   /** Returns the direct implementers of an interface or direct subclasses of a class. */
   @Nonnull
-  Set<ClassType> directSubtypesOf(@Nonnull ClassType type);
+  Stream<ClassType> directSubtypesOf(@Nonnull ClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.
    */
-  @Nullable
-  ClassType superClassOf(@Nonnull ClassType classType);
+  @Nonnull
+  Optional<ClassType> superClassOf(@Nonnull ClassType classType);
 
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
@@ -112,6 +112,9 @@ public interface TypeHierarchy {
       return true;
     }
 
+    final String jlObject = "java.lang.Object";
+    final String jiSerializable = "java.io.Serializable";
+    final String jlCloneable = "java.lang.Cloneable";
     if (supertype instanceof ArrayType) {
       if (!(potentialSubtype instanceof ArrayType)) {
         return false;
@@ -131,15 +134,13 @@ public interface TypeHierarchy {
         // Arrays are covariant: Object[] x = new String[0];
         return true;
       } else if (superArrayType.getBaseType() instanceof ClassType
-          && (((ClassType) superArrayType.getBaseType())
-                  .getFullyQualifiedName()
-                  .equals("java.lang.Object")
+          && (((ClassType) superArrayType.getBaseType()).getFullyQualifiedName().equals(jlObject)
               || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
-                  .equals("java.io.Serializable")
+                  .equals(jiSerializable)
               || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
-                  .equals("java.lang.Cloneable"))) {
+                  .equals(jlCloneable))) {
         // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
         return potentialSubArrayType.getDimension() > superArrayType.getDimension();
       } else {
@@ -151,16 +152,14 @@ public interface TypeHierarchy {
         String potentialSubtypeName = ((ClassType) potentialSubtype).getFullyQualifiedName();
         // any potential subtype is a subtype of java.lang.Object except java.lang.Object itself
         // superClassOf() check is a fast path
-        return (supertypeName.equals("java.lang.Object")
-                && !potentialSubtypeName.equals("java.lang.Object"))
-            || supertype.equals(superClassOf((ClassType) potentialSubtype))
-            || superClassesOf((ClassType) potentialSubtype).contains(supertype)
-            || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
+        return (supertypeName.equals(jlObject) && !potentialSubtypeName.equals(jlObject))
+            || superClassesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype)
+            || implementedInterfacesOf((ClassType) potentialSubtype).anyMatch(t -> t == supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        return supertypeName.equals("java.lang.Object")
-            || supertypeName.equals("java.io.Serializable")
-            || supertypeName.equals("java.lang.Cloneable");
+        return supertypeName.equals(jlObject)
+            || supertypeName.equals(jiSerializable)
+            || supertypeName.equals(jlCloneable);
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }
@@ -174,30 +173,31 @@ public interface TypeHierarchy {
    * will be the last entry in the list, or till one of the superclasses is not contained in view.
    */
   @Nonnull
-  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
+  default Stream<ClassType> superClassesOf(@Nonnull ClassType classType) {
     List<ClassType> superClasses = new ArrayList<>();
-    ClassType currentSuperClass = null;
+    Optional<ClassType> currentSuperClass = Optional.empty();
     try {
       currentSuperClass = superClassOf(classType);
-      while (currentSuperClass != null) {
-        superClasses.add(currentSuperClass);
-        currentSuperClass = superClassOf(currentSuperClass);
+      while (currentSuperClass.isPresent()) {
+        ClassType superClassType = currentSuperClass.get();
+        superClasses.add(superClassType);
+        currentSuperClass = superClassOf(superClassType);
       }
     } catch (IllegalArgumentException ex) {
       logger.warn(
           "Could not find "
-              + (currentSuperClass != null ? currentSuperClass : classType)
+              + (currentSuperClass.isPresent() ? currentSuperClass : classType)
               + " and stopped there the resolve of superclasses of "
               + classType);
     }
-    return superClasses;
+    return superClasses.stream();
   }
 
-  Set<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
+  Stream<ClassType> directlyImplementedInterfacesOf(@Nonnull ClassType type);
 
   boolean isInterface(@Nonnull ClassType type);
 
-  Set<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
+  Stream<ClassType> directlyExtendedInterfacesOf(@Nonnull ClassType type);
 
   // checks if a Type is contained int the TypeHierarchy - should return the equivalent to
   // View.getClass(...).isPresent()

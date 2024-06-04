@@ -175,7 +175,7 @@ public class AggregatorTest {
           view.getMethod(view.getIdentifierFactory().parseMethodSignature("<Misuse: void test1()>"))
               .get();
 
-      System.out.println(sootMethod.getBody());
+      sootMethod.getBody();
     }
   }
 

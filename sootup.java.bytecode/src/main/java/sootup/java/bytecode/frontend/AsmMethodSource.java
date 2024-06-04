@@ -182,7 +182,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
 
-    final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+    List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
     /* convert instructions */
     try {
@@ -202,7 +202,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // add converted insn as stmts into the graph
     try {
-      arrangeStmts(graph, preambleStmts, bodyBuilder);
+      arrangeStmts(graph, bodyBuilder, preambleStmts);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -1619,7 +1619,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
       Stmt beginStmt = labelsToStmt.get(trycatch.start);
       Stmt endStmt = labelsToStmt.get(trycatch.end);
-      if (endStmt==null || beginStmt==null) {
+      if (
+      /*endStmt == null ||*/ beginStmt == null) {
         throw new IllegalStateException("Labels for Traps are missing.");
       }
       Trap trap = Jimple.newTrap(exceptionType, beginStmt, endStmt, handler);
@@ -1630,10 +1631,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
   private void arrangeStmts(
-      MutableBlockStmtGraph graph, List<Stmt> stmtList, Body.BodyBuilder builder) {
+      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
+
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
+    List<List<Stmt>> blockStmtList = new ArrayList<>();
+    List<Stmt> currentStmtList =
+        preambleStmts.isEmpty()
+            ? new ArrayList<>()
+            : preambleStmts; // so we can refer to that list later on
 
     // (n, n+1) := (from, to)
     // List<Stmt> connectBlocks = new ArrayList<>();
@@ -1657,29 +1665,51 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
 
       if (!danglingLabel.isEmpty()) {
+        // if fallsthroughStmt: remember link between the blocks
+        if (!currentStmtList.isEmpty()) {
+          Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
+
+          // when we have at least one label in front of a Stmt -> we know a new BasicBlock starts
+          blockStmtList.add(currentStmtList);
+
+          currentStmtList = new ArrayList<>();
+
+          if (tailStmtOfLastBlock.fallsThrough()) {
+            // successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
+          }
+        }
         // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
-        Stmt targetStmt = stmt;
-        danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
+        danglingLabel.forEach(l -> labelsToStmt.put(l, stmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt idStmt = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
-          if (idStmt != null && idStmt.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(label -> trapHandler.put(label, idStmt));
+          if (stmt instanceof JIdentityStmt) {
+            JIdentityStmt identityRef = (JIdentityStmt) stmt;
+            if (identityRef.getRightOp() instanceof JCaughtExceptionRef) {
+              danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
+            }
           }
         }
         danglingLabel.clear();
       }
 
-      stmtList.add(stmt);
-
+      currentStmtList.add(stmt);
+      if (stmt instanceof BranchingStmt && !currentStmtList.isEmpty()) {
+        blockStmtList.add(currentStmtList);
+        currentStmtList = new ArrayList<>();
+      }
     } while ((insn = insn.getNext()) != null);
 
-    if (!danglingLabel.isEmpty()) {
-      throw new IllegalStateException("A dangling Label has no target Stmt! i.e. the last Instruction is a LabelNode.");
+    if (!currentStmtList.isEmpty()) {
+      blockStmtList.add(currentStmtList);
     }
 
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    /*
+    if (!danglingLabel.isEmpty()) {
+      throw new IllegalStateException(
+          "A dangling Label has no target Stmt! i.e. the last Instruction is a LabelNode.");
+    }*/
+
     for (Map.Entry<BranchingStmt, Collection<LabelNode>> entry :
         stmtsThatBranchToLabel.asMap().entrySet()) {
       final BranchingStmt fromStmt = entry.getKey();
@@ -1697,31 +1727,35 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
         targets.add(targetStmt);
       }
-      branchingMap.put(fromStmt, targets);
+      successorMap.put(fromStmt, targets);
     }
 
     // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
     // flow
     for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
 
+      // TODO: [ms] check if we need to add a trap as well? !
+      currentStmtList = new ArrayList<>();
       JIdentityStmt handlerStmt = entry.getValue();
-      stmtList.add(handlerStmt);
+      currentStmtList.add(handlerStmt);
       LabelNode labelNode = entry.getKey();
       trapHandler.put(labelNode, handlerStmt);
 
       // jump back to the original implementation
       JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
-      stmtList.add(gotoStmt);
+      currentStmtList.add(gotoStmt);
 
       Stmt targetStmt = insnToStmt.get(labelNode);
-      branchingMap.put(gotoStmt, Collections.singletonList(targetStmt));
+      successorMap.put(gotoStmt, Collections.singletonList(targetStmt));
+      blockStmtList.add(currentStmtList);
     }
 
     final List<Trap> traps = buildTraps();
     // TODO: performance: [ms] we already know Blocks borders from the label information -> use
     // addBlocks+collect trap data and connect blocks afterwards via branching information +
     // collected fallsthroughBlock information
-    graph.initializeWith(stmtList, branchingMap, traps);
+
+    graph.initializeWith(blockStmtList, successorMap, traps);
   }
 
   /**

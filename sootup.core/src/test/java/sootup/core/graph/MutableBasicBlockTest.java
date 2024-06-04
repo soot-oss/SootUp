@@ -19,7 +19,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplitBeginningNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -34,7 +34,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplitBeginning() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -47,7 +47,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplit() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -60,7 +60,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplitEnd() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -73,7 +73,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitBeginningNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -86,7 +86,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitBeginningNewTail() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -99,7 +99,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplit() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -111,7 +111,7 @@ public class MutableBasicBlockTest {
   }
 
   public void testLinkedSplitEndNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -124,7 +124,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitEnd() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -137,7 +137,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitEndException() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
