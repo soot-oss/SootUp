@@ -1,6 +1,7 @@
 package sootup.java.bytecode;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,7 @@ import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class RuntimeJarConversionTests {
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   @Test
   public void testJarWithDefaultInterceptors() {
@@ -60,6 +61,7 @@ public class RuntimeJarConversionTests {
             .peek(
                 javaSootMethod -> {
                   try {
+                    System.out.println(javaSootMethod.getSignature());
                     javaSootMethod.getBody();
                   } catch (Exception e) {
                     e.printStackTrace();
@@ -78,32 +80,40 @@ public class RuntimeJarConversionTests {
     convertInputLocation(inputLocation);
   }
 
-  /** helps debugging the conversion of a single method */
-  private static void convertMethod(String methodSignature) {
+  /**
+   * helps debugging the conversion of a single method
+   *
+   * @return
+   */
+  static BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
+      (interceptor, builder) -> {
+        if (interceptor.getClass() != CopyPropagator.class
+            && interceptor.getClass() != DeadAssignmentEliminator.class) {
+          return false;
+        }
+        if (debug) {
+          System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+        }
+        return true;
+      };
 
-    BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
-        (interceptor, builder) -> {
-          if (interceptor.getClass() != CopyPropagator.class
-              && interceptor.getClass() != DeadAssignmentEliminator.class) {
-            return false;
-          }
-          if (debug) {
-            System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
-          }
-          return true;
-        };
+  static List<BodyInterceptor> bodyInterceptors =
+      Utils.wrapEachBodyInterceptorWith(
+          BytecodeBodyInterceptors.Default.getBodyInterceptors(), step);
 
-    List<BodyInterceptor> bodyInterceptors =
-        Utils.wrapEachBodyInterceptorWith(
-            BytecodeBodyInterceptors.Default.getBodyInterceptors(), step);
+  private static Body convertMethod(String methodSignature) {
     AnalysisInputLocation inputLocation =
         new DefaultRTJarAnalysisInputLocation(SourceType.Library, bodyInterceptors);
+    return convertMethod(methodSignature, inputLocation);
+  }
+
+  private static Body convertMethod(String methodSignature, AnalysisInputLocation inputLocation) {
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     final SootMethod sootMethod =
         view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
-    sootMethod.getBody();
+    return sootMethod.getBody();
   }
 
   @Ignore

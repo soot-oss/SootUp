@@ -138,7 +138,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   }
 
   @Override
-  public void removePredecessorFromSuccessorBlock(@Nonnull MutableBasicBlock b) {
+  public void removeFromSuccessorBlocks(@Nonnull MutableBasicBlock b) {
     for (int i = 0; i < successorBlocks.length; i++) {
       if (successorBlocks[i] == b) {
         successorBlocks[i] = null;
@@ -184,7 +184,8 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
   @Override
   public List<MutableBasicBlock> getSuccessors() {
     if (stmts.isEmpty()) {
-      return Collections.emptyList();
+      throw new IllegalStateException(
+          "Can't determine how many successors would be allowed as this block contains no Stmts(, yet).");
     }
 
     List<MutableBasicBlock> objects = new ArrayList<>(getTail().getExpectedSuccessorCount());
@@ -360,7 +361,7 @@ public class MutableBasicBlockImpl implements MutableBasicBlock {
     Map<MutableBasicBlock, Collection<ClassType>> exceptionalFlowstoRemove = new HashMap<>();
     predecessorBlocks.forEach(
         pb -> {
-          pb.removePredecessorFromSuccessorBlock(this);
+          pb.removeFromSuccessorBlocks(this);
           exceptionalFlowstoRemove.put(pb, pb.collectExceptionalSuccessorBlocks(this));
         });
 

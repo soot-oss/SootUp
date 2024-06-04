@@ -130,20 +130,12 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
    * Creates a Graph representation from the 'legacy' representation i.e. a List of Stmts and Traps.
    */
   public void initializeWith(
-      @Nonnull List<Stmt> stmts,
-      @Nonnull Map<BranchingStmt, List<Stmt>> branchingMap,
+      @Nonnull List<List<Stmt>> blocks,
+      @Nonnull Map<BranchingStmt, List<Stmt>> successorMap,
       @Nonnull List<Trap> traps) {
 
-    if (stmts.isEmpty()) {
+    if (blocks.isEmpty()) {
       return;
-    }
-
-    final Stmt lastStmt = stmts.get(stmts.size() - 1);
-    if (lastStmt instanceof FallsThroughStmt) {
-      throw new IllegalArgumentException(
-          "Theres FallsthroughStmt at the end of the list of stmts ('"
-              + lastStmt
-              + "') which has no successor - which means it currently falls into the abyss i.e. it can't fall through to another Stmt.");
     }
 
     HashMap<Stmt, Integer> trapstmtToIdx = new HashMap<>();
@@ -153,39 +145,67 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     PriorityQueue<Trap> trapEnd =
         new PriorityQueue<>(Comparator.comparingInt((Trap t) -> trapstmtToIdx.get(t.getEndStmt())));
 
-    traps.forEach(
-        trap -> {
-          trapstmtToIdx.put(trap.getBeginStmt(), stmts.indexOf(trap.getBeginStmt()));
-          trapstmtToIdx.put(trap.getEndStmt(), stmts.indexOf(trap.getEndStmt()));
-          trapstmtToIdx.put(trap.getHandlerStmt(), stmts.indexOf(trap.getHandlerStmt()));
-        });
+    Comparator<Trap> trapComparator;
+    if (!traps.isEmpty()) {
+      Map<Stmt, Integer> blockIdxMap = new HashMap<>();
+      int i = 0;
+      for (List<Stmt> block : blocks) {
+        blockIdxMap.put(block.get(0), i++);
+        /*
+        for (int j = 0; j < block.size(); j++) {
+          blockIdxMap.put(block.get(j), i++);
+        }
+         */
+      }
 
-    duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
-    Comparator<Trap> trapComparator =
-        (trapA, trapB) -> getTrapApplicationComparator(trapstmtToIdx, trapA, trapB);
+      traps.forEach(
+          trap -> {
+            Integer beginIdx = blockIdxMap.get(trap.getBeginStmt());
+            if (beginIdx == null) {
+              throw new AssertionError();
+            }
+            trapstmtToIdx.put(trap.getBeginStmt(), beginIdx);
+            Integer endIdx = blockIdxMap.get(trap.getEndStmt());
+            if (endIdx == null) {
+              endIdx = blockIdxMap.size();
+              // throw new AssertionError();
+            }
+            trapstmtToIdx.put(trap.getEndStmt(), endIdx);
+            Integer handlerIdx = blockIdxMap.get(trap.getHandlerStmt());
+            assert handlerIdx != null;
+            trapstmtToIdx.put(trap.getHandlerStmt(), handlerIdx);
+          });
 
-    traps.forEach(
-        trap -> {
-          trapStart.add(trap);
-          trapEnd.add(trap);
-        });
+      duplicateCatchAllTrapRemover(traps, trapstmtToIdx);
+      trapComparator = (trapA, trapB) -> getTrapApplicationComparator(trapstmtToIdx, trapA, trapB);
+      traps.forEach(
+          trap -> {
+            trapStart.add(trap);
+            trapEnd.add(trap);
+          });
 
-    // traps.sort(getTrapComparator(trapstmtToIdx));
-    /* debug print:
-         traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
-    */
-    setStartingStmt(stmts.get(0));
+      // traps.sort(getTrapComparator(trapstmtToIdx));
+      /* debug print:
+           traps.forEach(t ->  System.out.println(t.getExceptionType() + " "+ trapstmtToIdx.get(t.getBeginStmt()) + " " + trapstmtToIdx.get(t.getEndStmt()) + " -> " + trapstmtToIdx.get(t.getHandlerStmt()) + " " + t.getHandlerStmt()  ));
+      */
+    } else {
+      trapComparator = null;
+    }
+
+    setStartingStmt(blocks.get(0).get(0));
     Map<ClassType, Stmt> exceptionToHandlerMap = new HashMap<>();
     Map<ClassType, Trap> activeTrapMap = new HashMap<>();
     Map<ClassType, PriorityQueue<Trap>> overlappingTraps = new HashMap<>();
 
     Trap nextStartingTrap = trapStart.poll();
     Trap nextEndingTrap = trapEnd.poll();
-    for (int i = 0, stmtsSize = stmts.size(); i < stmtsSize; i++) {
-      Stmt stmt = stmts.get(i);
+    for (int i = 0, stmtsSize = blocks.size(); i < stmtsSize; i++) {
+      List<Stmt> block = blocks.get(i);
+      Stmt headStmt = block.get(0);
 
       boolean trapsChanged = false;
-      while (nextEndingTrap != null && nextEndingTrap.getEndStmt() == stmt) {
+      while (nextEndingTrap != null
+          && (nextEndingTrap.getEndStmt() == headStmt || nextEndingTrap.getEndStmt() == null)) {
         Trap trap = nextEndingTrap;
         nextEndingTrap = trapEnd.poll();
         // endStmt is exclusive! -> trap ends before this stmt -> remove exception info here
@@ -212,7 +232,10 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         trapsChanged = true;
       }
 
-      while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == stmt) {
+      // e.g. LabelNode as last instruction to denote the end of a trap including the last Stmt in
+      // serializd form
+
+      while (nextStartingTrap != null && nextStartingTrap.getBeginStmt() == headStmt) {
         Trap trap = nextStartingTrap;
         nextStartingTrap = trapStart.poll();
         final Trap existingTrapForException = activeTrapMap.get(trap.getExceptionType());
@@ -236,7 +259,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         }
         trapsChanged = true;
       }
-      // TODO: [ms] use more performant addBlock() as we already know where the Blocks borders are
+
       if (trapsChanged) {
         exceptionToHandlerMap.clear();
         activeTrapMap.forEach(
@@ -248,46 +271,58 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
         */
       }
 
-      addNode(stmt, exceptionToHandlerMap);
-
-      if (stmt instanceof FallsThroughStmt) {
-        // hint: possible bad performance if stmts is not instanceof RandomAccess
-        putEdge((FallsThroughStmt) stmt, stmts.get(i + 1));
-      }
-
-      if (stmt instanceof BranchingStmt) {
-        // => end of Block
-        final List<Stmt> targets = branchingMap.get(stmt);
-        int idxOffset = (stmt instanceof FallsThroughStmt) ? 1 : 0;
-        int expectedBranchEntries = stmt.getExpectedSuccessorCount() - idxOffset;
-        if (targets == null || targets.size() != expectedBranchEntries) {
-          int targetCount;
-          if (targets == null) {
-            targetCount = 0;
-          } else {
-            targetCount = targets.size();
-          }
-
-          throw new IllegalArgumentException(
-              "The corresponding branchingMap entry for the BranchingStmt ('"
-                  + stmt
-                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors i.e. "
-                  + expectedBranchEntries
-                  + " but has "
-                  + targetCount
-                  + ".");
-        }
-        final BranchingStmt bStmt = (BranchingStmt) stmt;
-        for (int j = 0; j < targets.size(); j++) {
-          Stmt target = targets.get(j);
-          // a possible fallsthrough (i.e. from IfStmt) is not in branchingMap
-          putEdge(bStmt, j + idxOffset, target);
-        }
-      }
+      addBlock(block, exceptionToHandlerMap);
     }
 
     if (nextStartingTrap != null || nextEndingTrap != null) {
       throw new IllegalStateException("The Traps are not iterated completely/correctly!");
+    }
+
+    // link blocks
+    for (int blockIdx = 0, blockStmtsSize = blocks.size(); blockIdx < blockStmtsSize; blockIdx++) {
+      List<Stmt> block = blocks.get(blockIdx);
+      Stmt tailStmt = block.get(block.size() - 1);
+
+      int succIdxOffset;
+      if (tailStmt instanceof FallsThroughStmt) {
+        succIdxOffset = 1;
+        int fallsThroughTargetIdx = blockIdx + 1;
+        if (fallsThroughTargetIdx >= blocks.size()) {
+          throw new IllegalStateException(
+              "FallsthroughStmt '"
+                  + tailStmt
+                  + "' falls into the abyss - as there is no following Block!");
+        }
+        List<Stmt> followingBlock = blocks.get(fallsThroughTargetIdx);
+        Stmt followingBlocksHead = followingBlock.get(0);
+        putEdge((FallsThroughStmt) tailStmt, followingBlocksHead);
+      } else {
+        succIdxOffset = 0;
+      }
+
+      if (tailStmt instanceof BranchingStmt) {
+        // => end of Block
+        final List<Stmt> targets = successorMap.get(tailStmt);
+        int expectedBranchingEntries = tailStmt.getExpectedSuccessorCount() - succIdxOffset;
+        if (targets == null || targets.size() != expectedBranchingEntries) {
+          int targetCount = targets == null ? 0 : targets.size();
+
+          throw new IllegalArgumentException(
+              "The corresponding successorMap entry for the BranchingStmt ('"
+                  + tailStmt
+                  + "') needs to have exactly the amount of targets as the BranchingStmt has successors blockIdx.e. "
+                  + expectedBranchingEntries
+                  + " but has "
+                  + targetCount
+                  + ".");
+        }
+        final BranchingStmt bStmt = (BranchingStmt) tailStmt;
+        for (int k = 0; k < targets.size(); k++) {
+          Stmt target = targets.get(k);
+          // a possible fallsthrough (e.g. from IfStmt) is not in successorMap
+          putEdge(bStmt, k + succIdxOffset, target);
+        }
+      }
     }
   }
 
@@ -478,7 +513,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     final Iterator<? extends Stmt> iterator = stmts.iterator();
     final Stmt node = iterator.next();
     MutableBasicBlock block = getOrCreateBlock(node);
-    if (block.getHead() != node || !block.getSuccessors().isEmpty()) {
+    if (block.getHead() != node || block.getSuccessors().stream().anyMatch(Objects::nonNull)) {
       throw new IllegalArgumentException(
           "The first Stmt in the List is already in the StmtGraph and and is not the head of a Block where currently no successor are set, yet.");
     } else if (block.getStmtCount() > 1) {
@@ -538,10 +573,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     MutableBasicBlock blockOf = blockOfPair.getRight();
 
     List<Stmt> stmts = block.getStmts();
-    stmts.forEach(
-        stmt -> {
-          stmtToBlock.remove(stmt);
-        });
+    stmts.forEach(stmtToBlock::remove);
 
     // unlink block from graph
     blockOf.clearPredecessorBlocks();
@@ -1207,6 +1239,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
       // stmtA does not branch
       if (blockBPair == null) {
         // stmtB is new in the graph -> just add it to the same block
+        // TODO: think about exceptions.. could add a Stmt to an exception range
         addNodeToBlock(blockA, stmtB);
       } else {
         blockB = blockBPair.getRight();
@@ -1220,6 +1253,16 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
               addNodeToBlock(blockA, stmt);
             }
             blocks.remove(blockB);
+            // update exceptional predecessors to the new block!
+            blockB
+                .getExceptionalSuccessors()
+                .values()
+                .forEach(
+                    eb -> {
+                      eb.removePredecessorBlock(blockB);
+                      eb.addPredecessorBlock(blockA);
+                    });
+
           } else {
             // stmtA does not branch but stmtB is already a branch target or has different traps =>
             // link blocks
@@ -1553,7 +1596,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
   }
 
   /** Comparator which sorts the trap output in getTraps() */
-  public Comparator<Trap> getTrapComparator(@Nonnull HashMap<Stmt, Integer> stmtsBlockIdx) {
+  public Comparator<Trap> getTrapComparator(@Nonnull Map<Stmt, Integer> stmtsBlockIdx) {
     return (a, b) ->
         ComparisonChain.start()
             .compare(stmtsBlockIdx.get(a.getBeginStmt()), stmtsBlockIdx.get(b.getBeginStmt()))
@@ -1571,7 +1614,7 @@ public class MutableBlockStmtGraph extends MutableStmtGraph {
     BlockGraphIteratorAndTrapAggregator it =
         new BlockGraphIteratorAndTrapAggregator(new MutableBasicBlockImpl());
     // it.getTraps() is valid/completely build when the iterator is done.
-    HashMap<Stmt, Integer> stmtsBlockIdx = new HashMap<>();
+    Map<Stmt, Integer> stmtsBlockIdx = new IdentityHashMap<>();
     int i = 0;
     // collect BlockIdx positions to sort the traps according to the numbering
     while (it.hasNext()) {
