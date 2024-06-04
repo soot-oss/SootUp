@@ -79,7 +79,6 @@ public class VirtualCalls {
       SootClass cls =
           (SootClass) PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
       ClassType superClsType = (ClassType) cls.getSuperclass().get();
-      System.out.println("resolve" + iie + ";;" + subSig + ";;" + container);
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);

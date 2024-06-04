@@ -64,7 +64,7 @@ public class TamiflexModel extends ReflectionModel {
 
   public TamiflexModel() {
     reflectionMap = DataFactory.createMap();
-    parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, true);
+    parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
   }
 
   @Override
@@ -187,7 +187,11 @@ public class TamiflexModel extends ReflectionModel {
         int argCount = method.getParameterCount();
         List<Immediate> mArgs = new ArrayList<>(argCount);
         for (int i = 0; i < argCount; i++) {
-          mArgs.add(arg);
+          if (arg != null) {
+            mArgs.add(arg);
+          } else {
+            mArgs.add(NullConstant.getInstance());
+          }
         }
         AbstractInvokeExpr ie;
         if (method.isStatic()) {
@@ -411,6 +415,7 @@ public class TamiflexModel extends ReflectionModel {
     String inMethodStr = inClzDotMthd.substring(inClzDotMthd.lastIndexOf(".") + 1);
     if (!PTAScene.v().containsClass(inClassStr)) {
       System.out.println("Warning: unknown class \"" + inClassStr + "\" is referenced.");
+      return Collections.emptySet();
     }
     SootClass sootClass = PTAScene.v().getSootClass(inClassStr);
     Set<SootMethod> ret = DataFactory.createSet();

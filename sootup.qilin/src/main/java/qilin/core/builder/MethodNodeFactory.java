@@ -160,75 +160,74 @@ public class MethodNodeFactory {
 
   private void resolveClinit(JStaticFieldRef staticFieldRef) {
     FieldSignature fieldSig = staticFieldRef.getFieldSignature();
-    SootField field = (SootField) PTAScene.v().getView().getField(fieldSig).get();
+    Optional<? extends SootField> optField = PTAScene.v().getView().getField(fieldSig);
+    if (optField.isEmpty()) {
+      System.out.println("!to be fixed!");
+    }
+    SootField field = optField.get();
     ClassType classType = field.getDeclaringClassType();
-    SootClass sootClass = (SootClass) PTAScene.v().getView().getClass(classType).get();
+    SootClass sootClass = PTAScene.v().getView().getClass(classType).get();
     PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
   }
 
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-        new AbstractStmtVisitor<Object>() {
-          @Override
-          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
-            Value l = stmt.getLeftOp();
-            Value r = stmt.getRightOp();
-            if (l instanceof JStaticFieldRef) {
-              resolveClinit((JStaticFieldRef) l);
-            } else if (r instanceof JStaticFieldRef) {
-              resolveClinit((JStaticFieldRef) r);
-            }
-
-            if (!(l.getType() instanceof ReferenceType)) return;
-            // check for improper casts, with mal-formed code we might get
-            // l = (refliketype)int_type, if so just return
-            if (r instanceof JCastExpr
-                && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
-              return;
-            }
-
-            if (!(r.getType() instanceof ReferenceType))
-              throw new RuntimeException(
-                  "Type mismatch in assignment (rhs not a RefLikeType) "
-                      + stmt
-                      + " in method "
-                      + method.getSignature());
-            Node dest = getNode(l);
-            Node src = getNode(r);
-            mpag.addInternalEdge(src, dest);
+      new AbstractStmtVisitor<>() {
+        @Override
+        public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+          Value l = stmt.getLeftOp();
+          Value r = stmt.getRightOp();
+          if (l instanceof JStaticFieldRef) {
+            resolveClinit((JStaticFieldRef) l);
+          } else if (r instanceof JStaticFieldRef) {
+            resolveClinit((JStaticFieldRef) r);
           }
 
-          @Override
-          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
-            if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
-              return;
-            }
-            Node dest = getNode(stmt.getLeftOp());
-            Node src = getNode(stmt.getRightOp());
-            mpag.addInternalEdge(src, dest);
+          if (!(l.getType() instanceof ReferenceType)) return;
+          // check for improper casts, with mal-formed code we might get
+          // l = (refliketype)int_type, if so just return
+          if (r instanceof JCastExpr
+                  && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
+            return;
           }
 
-          @Override
-          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-            defaultCaseStmt(stmt);
-          }
+          if (!(r.getType() instanceof ReferenceType)) return;
+          Node dest = getNode(l);
+          Node src = getNode(r);
+          mpag.addInternalEdge(src, dest);
+        }
 
-          @Override
-          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-            if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
-            Node retNode = getNode(stmt.getOp());
-            mpag.addInternalEdge(retNode, caseRet());
+        @Override
+        public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+          if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
+            return;
           }
+          Node dest = getNode(stmt.getLeftOp());
+          Node src = getNode(stmt.getRightOp());
+          mpag.addInternalEdge(src, dest);
+        }
 
-          @Override
-          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-            if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-              mpag.addInternalEdge(
-                  getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
-            }
+        @Override
+        public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+          defaultCaseStmt(stmt);
+        }
+
+        @Override
+        public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+          if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
+          Node retNode = getNode(stmt.getOp());
+          mpag.addInternalEdge(retNode, caseRet());
+        }
+
+        @Override
+        public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+          if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+            mpag.addInternalEdge(
+                    getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
           }
-        });
+        }
+      });
   }
 
   private VarNode caseLocal(Local l) {
@@ -255,7 +254,7 @@ public class MethodNodeFactory {
               fieldSig,
               Collections.singleton(FieldModifier.PUBLIC),
               NoPositionInformation.getInstance());
-      System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
+      // System.out.println("Warnning:" + ifr + " is resolved to be a null field in Scene.");
     } else {
       sf = osf.get();
     }
@@ -281,7 +280,7 @@ public class MethodNodeFactory {
       ++pos;
       Immediate sizeVal;
       if (pos < nmae.getSizeCount()) {
-        sizeVal = (Immediate) nmae.getSize(pos);
+        sizeVal = nmae.getSize(pos);
       } else {
         sizeVal = IntConstant.getInstance(1);
       }
