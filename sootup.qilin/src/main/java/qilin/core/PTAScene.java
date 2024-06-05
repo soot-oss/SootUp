@@ -198,22 +198,17 @@ public class PTAScene {
   public SootMethod getMethod(String methodSignature) {
     MethodSignature mthdSig =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
-    return (SootMethod) view.getMethod(mthdSig).get();
+    return view.getMethod(mthdSig).get();
   }
 
   public Collection<SootClass> getApplicationClasses() {
     Collection<? extends SootClass> classes = view.getClasses();
     return classes.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-    //        for (SootClass sc : classes) {
-    //            sc.isApplicationClass()
-    //        }
-    //        return sootScene.getApplicationClasses();
   }
 
   public Collection<SootClass> getLibraryClasses() {
     Collection<? extends SootClass> classes = view.getClasses();
     return classes.stream().filter(SootClass::isLibraryClass).collect(Collectors.toSet());
-    //        return sootScene.getLibraryClasses();
   }
 
   public boolean containsMethod(String methodSignature) {

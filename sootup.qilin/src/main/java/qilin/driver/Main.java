@@ -24,6 +24,7 @@ import qilin.pta.PTAConfig;
 import qilin.util.MemoryWatcher;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
+import sootup.callgraph.CallGraph;
 
 public class Main {
 
@@ -35,8 +36,11 @@ public class Main {
       PTAUtils.dumpJimple(jimplePath);
       System.out.println("Jimple files have been dumped to: " + jimplePath);
     }
-    pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+    PTAPattern ptaPattern = new PTAPattern("2o");
+    pta = PTAFactory.createPTA(ptaPattern);
+    //    pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
     pta.run();
+    CallGraph cg = pta.getCallGraph();
     return pta;
   }
 
@@ -44,7 +48,7 @@ public class Main {
     Stopwatch ptaTimer = Stopwatch.newAndStart("Main PTA (including pre-analysis)");
     String jvmName = ManagementFactory.getRuntimeMXBean().getName();
     String s = jvmName.split("@")[0];
-    long pid = Long.valueOf(s);
+    long pid = Long.parseLong(s);
     MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
     memoryWatcher.start();
     run(args);
