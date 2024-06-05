@@ -57,7 +57,7 @@ public class PTAScene {
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
-  private SootClass mainClass = null;
+  private SootClass mainClass;
 
   public void setMainClass(SootClass m) {
     mainClass = m;
