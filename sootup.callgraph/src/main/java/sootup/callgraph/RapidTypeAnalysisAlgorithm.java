@@ -165,7 +165,8 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
       MethodSignature source,
       MethodSignature resolveBaseMethodSignature,
       InvokableStmt invokableStmt) {
-    return view.getTypeHierarchy().subtypesOf(resolveBaseMethodSignature.getDeclClassType())
+    return view.getTypeHierarchy()
+        .subtypesOf(resolveBaseMethodSignature.getDeclClassType())
         .map(
             classType -> {
               MethodSignature method =

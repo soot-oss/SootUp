@@ -335,7 +335,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             targetSig ->
                 addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
     // static initializer calls of all superclasses
-    view.getTypeHierarchy().superClassesOf(targetClass)
+    view.getTypeHierarchy()
+        .superClassesOf(targetClass)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)
         .map(Optional::get)

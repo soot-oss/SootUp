@@ -57,7 +57,7 @@ public class CallGraphTest {
     String classPath = "src/test/resources/callgraph/" + "Misc";
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
-    view =createViewForClassPath(classPath);
+    view = createViewForClassPath(classPath);
     identifierFactory = view.getIdentifierFactory();
 
     mainClassSignature = identifierFactory.getClassType("Main");
