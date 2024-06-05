@@ -31,6 +31,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.NullType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 /**
  * Resolves virtual calls.
@@ -42,8 +43,11 @@ public class VirtualCalls {
   private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl =
       DataFactory.createMap(PTAScene.v().getView().getClasses().size());
   protected Map<Type, Set<Type>> baseToSubTypes = DataFactory.createMap();
+  protected View view;
 
-  private VirtualCalls() {}
+  private VirtualCalls() {
+    this.view = PTAScene.v().getView();
+  }
 
   public static VirtualCalls v() {
     if (instance == null) {
@@ -69,16 +73,14 @@ public class VirtualCalls {
       JSpecialInvokeExpr iie, MethodSubSignature subSig, SootMethod container, boolean appOnly) {
     MethodSignature methodSig = iie.getMethodSignature();
     /* cf. JVM spec, invokespecial instruction */
-    if (PTAScene.v()
-            .getView()
-            .getTypeHierarchy()
+    if (view.getTypeHierarchy()
             .isSubtype(methodSig.getDeclClassType(), container.getDeclaringClassType())
         && container.getDeclaringClassType() != methodSig.getDeclClassType()
         && !methodSig.getName().equals("<init>")
         && !subSig.toString().equals("void <clinit>()")) {
       SootClass cls =
-          (SootClass) PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
-      ClassType superClsType = (ClassType) cls.getSuperclass().get();
+              PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
+      ClassType superClsType = cls.getSuperclass().get();
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
       Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);
@@ -86,8 +88,7 @@ public class VirtualCalls {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
       }
-      SootMethod target = (SootMethod) otgt.get();
-      return target;
+      return otgt.get();
     }
   }
 
@@ -102,7 +103,7 @@ public class VirtualCalls {
     if (ret != null) {
       return ret;
     }
-    SootClass cls = PTAScene.v().getView().getClass(t).get();
+    SootClass cls = view.getClass(t).get();
     if (appOnly && cls.isLibraryClass()) {
       return null;
     }
@@ -116,7 +117,7 @@ public class VirtualCalls {
       Optional<? extends ClassType> oc = cls.getSuperclass();
       if (oc.isPresent()) {
         ClassType ct = oc.get();
-        SootClass c = PTAScene.v().getView().getClass(ct).get();
+        SootClass c = view.getClass(ct).get();
         ret = resolveNonSpecial(c.getType(), subSig);
       }
     }
@@ -205,63 +206,4 @@ public class VirtualCalls {
     }
   }
 
-  protected void resolveAnySubType(
-      Type declaredType,
-      Type sigType,
-      MethodSubSignature subSig,
-      SootMethod container,
-      ChunkedQueue<SootMethod> targets,
-      boolean appOnly,
-      ClassType base) {
-    {
-      Set<Type> subTypes = baseToSubTypes.get(base);
-      if (subTypes != null && !subTypes.isEmpty()) {
-        for (final Type st : subTypes) {
-          resolve(st, declaredType, sigType, subSig, container, targets, appOnly);
-        }
-        return;
-      }
-    }
-
-    Set<Type> newSubTypes = new HashSet<>();
-    newSubTypes.add(base);
-
-    LinkedList<ClassType> worklist = new LinkedList<>();
-    HashSet<ClassType> workset = new HashSet<>();
-    workset.add(base);
-    worklist.add(base);
-    while (!worklist.isEmpty()) {
-      ClassType classType = worklist.removeFirst();
-      SootClass cl = PTAScene.v().getView().getClass(classType).get();
-      if (cl.isInterface()) {
-        PTAScene.v()
-            .getView()
-            .getTypeHierarchy()
-            .implementersOf(cl.getType())
-            .forEach(
-                (ClassType c) -> {
-                  if (workset.add(c)) {
-                    worklist.add(c);
-                  }
-                });
-      } else {
-        if (cl.isConcrete()) {
-          resolve(cl.getType(), declaredType, sigType, subSig, container, targets, appOnly);
-          newSubTypes.add(cl.getType());
-        }
-        PTAScene.v()
-            .getView()
-            .getTypeHierarchy()
-            .subclassesOf(classType)
-            .forEach(
-                (ClassType c) -> {
-                  if (workset.add(c)) {
-                    worklist.add(c);
-                  }
-                });
-      }
-    }
-
-    baseToSubTypes.computeIfAbsent(base, k -> DataFactory.createSet()).addAll(newSubTypes);
-  }
 }

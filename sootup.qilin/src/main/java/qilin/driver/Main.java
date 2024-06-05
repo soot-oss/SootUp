@@ -36,9 +36,9 @@ public class Main {
       PTAUtils.dumpJimple(jimplePath);
       System.out.println("Jimple files have been dumped to: " + jimplePath);
     }
-    PTAPattern ptaPattern = new PTAPattern("2o");
-    pta = PTAFactory.createPTA(ptaPattern);
-    //    pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+    // PTAPattern ptaPattern = new PTAPattern("2o");
+    // pta = PTAFactory.createPTA(ptaPattern);
+    pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
     pta.run();
     CallGraph cg = pta.getCallGraph();
     return pta;
