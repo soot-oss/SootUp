@@ -26,7 +26,6 @@ import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
-import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
@@ -35,7 +34,6 @@ import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
-import sootup.core.util.DotExporter;
 
 /**
  * Part of a pointer assignment graph for a single method.
@@ -92,7 +90,8 @@ public class MethodPAG {
   protected void build() {
     // this method is invalid but exists in pmd-deps.jar
     if (method
-        .getSignature().toString()
+        .getSignature()
+        .toString()
         .equals(
             "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
       return;
@@ -104,7 +103,7 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      if (!PTAUtils.isFakeMainMethod(method )) {
+      if (!PTAUtils.isFakeMainMethod(method)) {
         SootClass sc = PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
         PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }
@@ -138,7 +137,8 @@ public class MethodPAG {
 
   protected void addMiscEdges() {
     if (method
-        .getSignature().toString()
+        .getSignature()
+        .toString()
         .equals(
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop

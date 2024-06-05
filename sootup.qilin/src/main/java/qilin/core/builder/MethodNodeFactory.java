@@ -171,61 +171,61 @@ public class MethodNodeFactory {
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-      new AbstractStmtVisitor<Object>() {
-        @Override
-        public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
-          Value l = stmt.getLeftOp();
-          Value r = stmt.getRightOp();
-          if (l instanceof JStaticFieldRef) {
-            resolveClinit((JStaticFieldRef) l);
-          } else if (r instanceof JStaticFieldRef) {
-            resolveClinit((JStaticFieldRef) r);
+        new AbstractStmtVisitor<Object>() {
+          @Override
+          public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
+            Value l = stmt.getLeftOp();
+            Value r = stmt.getRightOp();
+            if (l instanceof JStaticFieldRef) {
+              resolveClinit((JStaticFieldRef) l);
+            } else if (r instanceof JStaticFieldRef) {
+              resolveClinit((JStaticFieldRef) r);
+            }
+
+            if (!(l.getType() instanceof ReferenceType)) return;
+            // check for improper casts, with mal-formed code we might get
+            // l = (refliketype)int_type, if so just return
+            if (r instanceof JCastExpr
+                && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
+              return;
+            }
+
+            if (!(r.getType() instanceof ReferenceType)) return;
+            Node dest = getNode(l);
+            Node src = getNode(r);
+            mpag.addInternalEdge(src, dest);
           }
 
-          if (!(l.getType() instanceof ReferenceType)) return;
-          // check for improper casts, with mal-formed code we might get
-          // l = (refliketype)int_type, if so just return
-          if (r instanceof JCastExpr
-                  && (!(((JCastExpr) r).getOp().getType() instanceof ReferenceType))) {
-            return;
+          @Override
+          public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
+            if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
+              return;
+            }
+            Node dest = getNode(stmt.getLeftOp());
+            Node src = getNode(stmt.getRightOp());
+            mpag.addInternalEdge(src, dest);
           }
 
-          if (!(r.getType() instanceof ReferenceType)) return;
-          Node dest = getNode(l);
-          Node src = getNode(r);
-          mpag.addInternalEdge(src, dest);
-        }
-
-        @Override
-        public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
-          if (!(stmt.getLeftOp().getType() instanceof ReferenceType)) {
-            return;
+          @Override
+          public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
+            defaultCaseStmt(stmt);
           }
-          Node dest = getNode(stmt.getLeftOp());
-          Node src = getNode(stmt.getRightOp());
-          mpag.addInternalEdge(src, dest);
-        }
 
-        @Override
-        public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
-          defaultCaseStmt(stmt);
-        }
-
-        @Override
-        public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
-          if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
-          Node retNode = getNode(stmt.getOp());
-          mpag.addInternalEdge(retNode, caseRet());
-        }
-
-        @Override
-        public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
-          if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-            mpag.addInternalEdge(
-                    getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+          @Override
+          public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
+            if (!(stmt.getOp().getType() instanceof ReferenceType)) return;
+            Node retNode = getNode(stmt.getOp());
+            mpag.addInternalEdge(retNode, caseRet());
           }
-        }
-      });
+
+          @Override
+          public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
+            if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
+              mpag.addInternalEdge(
+                  getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+            }
+          }
+        });
   }
 
   private VarNode caseLocal(Local l) {
