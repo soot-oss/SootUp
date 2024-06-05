@@ -45,7 +45,6 @@ public class Main {
     String jvmName = ManagementFactory.getRuntimeMXBean().getName();
     String s = jvmName.split("@")[0];
     long pid = Long.valueOf(s);
-    System.out.println("xxxPid:" + pid);
     MemoryWatcher memoryWatcher = new MemoryWatcher(pid, "Main PTA");
     memoryWatcher.start();
     run(args);

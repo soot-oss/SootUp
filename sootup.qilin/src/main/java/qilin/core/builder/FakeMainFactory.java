@@ -131,15 +131,6 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   public SootMethod getFakeMain() {
-    //        if (bodyBuilder == null) {
-    //            synchronized (this) {
-    //                if (bodyBuilder == null) {
-    //                    this.method.setSource((m, phaseName) -> new JimpleBody(this.method));
-    //                    makeFakeMain();
-    //                    this.body = PTAUtils.getMethodBody(method);
-    //                }
-    //            }
-    //        }
     return this.method;
   }
 
@@ -160,7 +151,6 @@ public class FakeMainFactory extends ArtificialMethod {
         ret.addAll(entries);
       }
     } else {
-      System.out.println("include implicit entry!");
       ret.addAll(entryPoints.application());
       ret.addAll(entryPoints.implicit());
     }

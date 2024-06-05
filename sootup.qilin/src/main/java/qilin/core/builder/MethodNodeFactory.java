@@ -160,12 +160,10 @@ public class MethodNodeFactory {
 
   private void resolveClinit(JStaticFieldRef staticFieldRef) {
     FieldSignature fieldSig = staticFieldRef.getFieldSignature();
-    Optional<? extends SootField> optField = PTAScene.v().getView().getField(fieldSig);
-    if (optField.isEmpty()) {
-      System.out.println("!to be fixed!");
+    ClassType classType = fieldSig.getDeclClassType();
+    if (PTAUtils.isFakeMainClass(classType)) { // skip FakeMain
+      return;
     }
-    SootField field = optField.get();
-    ClassType classType = field.getDeclaringClassType();
     SootClass sootClass = PTAScene.v().getView().getClass(classType).get();
     PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
   }
@@ -173,7 +171,7 @@ public class MethodNodeFactory {
   /** Adds the edges required for this statement to the graph. */
   private void handleIntraStmt(Stmt s) {
     s.accept(
-      new AbstractStmtVisitor<>() {
+      new AbstractStmtVisitor<Object>() {
         @Override
         public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
           Value l = stmt.getLeftOp();

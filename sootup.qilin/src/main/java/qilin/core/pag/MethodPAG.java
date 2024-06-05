@@ -92,7 +92,7 @@ public class MethodPAG {
   protected void build() {
     // this method is invalid but exists in pmd-deps.jar
     if (method
-        .getSignature()
+        .getSignature().toString()
         .equals(
             "<org.apache.xerces.parsers.XML11Configuration: boolean getFeature0(java.lang.String)>")) {
       return;
@@ -104,20 +104,16 @@ public class MethodPAG {
 
   protected void buildNormal() {
     if (method.isStatic()) {
-      Optional<? extends SootClass> osc =
-          PTAScene.v().getView().getClass(method.getDeclaringClassType());
-      if (osc.isPresent()) {
-        SootClass sc = osc.get();
+      if (!PTAUtils.isFakeMainMethod(method )) {
+        SootClass sc = PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
         PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);
-      } else {
-        System.out.println("why?eoweiweoiew:" + method.getSignature());
       }
     }
     for (Stmt unit : body.getStmts()) {
       try {
         nodeFactory.handleStmt(unit);
       } catch (Exception e) {
-        System.out.println("Warning:" + e);
+        System.out.println("Warning:" + e + " in " + this.getClass());
       }
     }
   }
@@ -126,29 +122,6 @@ public class MethodPAG {
     // we use the same logic as doop (library/exceptions/precise.logic).
     if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
       return;
-    }
-    if (method
-            .getSignature()
-            .toString()
-            .equals(
-                "<qilin.microben.core.exception.SimpleException: void main(java.lang.String[])>")
-        || method
-            .getSignature()
-            .toString()
-            .equals("<qilin.microben.core.exception.ExceptionChain: void foo(int)>")) {
-      StmtGraph<?> stmtGraph = body.getStmtGraph();
-      for (Stmt stmt : stmtGraph.getStmts()) {
-        System.out.println("my: " + stmt);
-        stmtGraph
-            .exceptionalSuccessors(stmt)
-            .forEach(
-                (t, s) -> {
-                  System.out.println(t + "=>" + s);
-                });
-      }
-      System.out.println("===========================================");
-      System.out.println(DotExporter.createUrlToWebeditor(stmtGraph));
-      System.out.println("++++++++++++++++++++++++++++++++++++++++++++");
     }
     // List<Trap> traps = body.getTraps();
     // //    List<Stmt> units = body.getStmts();
@@ -165,13 +138,13 @@ public class MethodPAG {
 
   protected void addMiscEdges() {
     if (method
-        .getSignature()
+        .getSignature().toString()
         .equals(
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop
       // (library/reference.logic).
       SootClass sootClass = PTAScene.v().getSootClass("java.lang.ref.Reference");
-      SootField sf = (SootField) sootClass.getField("pending").get();
+      SootField sf = sootClass.getField("pending").get();
       JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
       addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));
     }

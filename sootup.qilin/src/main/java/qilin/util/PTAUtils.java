@@ -374,7 +374,12 @@ public final class PTAUtils {
 
   public static boolean isFakeMainMethod(SootMethod method) {
     String sig = "<qilin.pta.FakeMain: void main()>";
-    return method.getSignature().equals(sig);
+    return method.getSignature().toString().equals(sig);
+  }
+
+  public static boolean isFakeMainClass(ClassType classType) {
+    String sig = "qilin.pta.FakeMain";
+    return classType.toString().equals(sig);
   }
 
   public static boolean isOfPrimitiveBaseType(AllocNode heap) {

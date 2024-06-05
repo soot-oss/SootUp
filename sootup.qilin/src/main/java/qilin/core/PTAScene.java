@@ -96,11 +96,6 @@ public class PTAScene {
     cps.addAll(getLibJars(appConfig.LIB_PATH));
     cps.addAll(getJreJars(appConfig.JRE));
     final String classpath = String.join(File.pathSeparator, cps);
-    System.out.println(cps.size());
-    for (String s : cps) {
-      System.out.println("\t cps:" + s);
-    }
-    //    System.out.println("xxx:" + classpath);
     logger.info("Setting Soot ClassPath: {}", classpath);
     //    System.setProperty("soot.class.path", classpath);
     this.view = createViewForClassPath(cps);
