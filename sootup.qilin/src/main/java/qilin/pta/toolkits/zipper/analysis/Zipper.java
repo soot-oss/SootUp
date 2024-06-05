@@ -19,6 +19,7 @@ import qilin.pta.toolkits.zipper.flowgraph.ObjectFlowGraph;
 import qilin.util.ANSIColor;
 import qilin.util.Stopwatch;
 import qilin.util.graph.ConcurrentDirectedGraphImpl;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -204,7 +205,7 @@ public class Zipper {
     // are also considered as the OUT methods of current type
     pce.PCEMethodsOf(type).stream()
         .filter(m -> !m.isPrivate() && !m.isStatic())
-        .filter(m -> ToolUtil.isInnerType(m.getDeclaringClassType(), type))
+        .filter(m -> isInnerType(m.getDeclaringClassType(), type))
         .forEach(outms::add);
     pce.PCEMethodsOf(type).stream()
         .filter(m -> !m.isPrivate() && !m.isStatic())
@@ -235,6 +236,24 @@ public class Zipper {
         type, fa.numberOfPFGNodes(), fa.numberOfPFGEdges(), precisionCriticalMethods);
     mergeSinglePFG(fa.getPFG());
     fa.clear();
+  }
+
+  /**
+   * @param pInner potential inner class
+   * @param pOuter potential outer class
+   * @return whether pInner is an inner class of pOuter
+   */
+  public boolean isInnerType(final ClassType pInner, ClassType pOuter) {
+    final String pInnerStr = pInner.toString();
+    while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
+      SootClass sc = pta.getView().getClass(pOuter).get();
+      if (sc.hasSuperclass()) {
+        pOuter = sc.getSuperclass().get();
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 
   private void mergeSinglePFG(ConcurrentDirectedGraphImpl<Node> pfg) {

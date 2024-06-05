@@ -148,7 +148,7 @@ public class PointsToStat implements AbstractStat {
         if (!handledNatives.contains(method.toString())) {
           mLocalVarNodesNoNative.add(lvn);
         }
-        boolean app = PTAUtils.isApplicationMethod(lvn.getMethod());
+        boolean app = pta.getPtaScene().isApplicationMethod(lvn.getMethod());
         totalLocalPointersCi++;
         if (app) {
           appLocalPointersCi++;

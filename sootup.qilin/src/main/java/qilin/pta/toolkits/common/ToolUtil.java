@@ -22,13 +22,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.PAG;
 import qilin.core.pag.VarNode;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 
 public class ToolUtil {
@@ -60,23 +57,5 @@ public class ToolUtil {
 
   public static int pointsToSetSizeOf(final PTA pta, VarNode var) {
     return pta.reachingObjects(var).toCIPointsToSet().size();
-  }
-
-  /**
-   * @param pInner potential inner class
-   * @param pOuter potential outer class
-   * @return whether pInner is an inner class of pOuter
-   */
-  public static boolean isInnerType(final ClassType pInner, ClassType pOuter) {
-    final String pInnerStr = pInner.toString();
-    while (!pInnerStr.startsWith(pOuter.toString() + "$")) {
-      SootClass sc = PTAScene.v().getView().getClass(pOuter).get();
-      if (sc.hasSuperclass()) {
-        pOuter = sc.getSuperclass().get();
-      } else {
-        return false;
-      }
-    }
-    return true;
   }
 }

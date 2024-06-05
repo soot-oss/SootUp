@@ -76,13 +76,6 @@ public final class PTAUtils {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
   }
 
-  public static boolean isApplicationMethod(SootMethod sm) {
-    ClassType classType = sm.getDeclaringClassType();
-    View view = PTAScene.v().getView();
-    Optional<? extends SootClass> osc = view.getClass(classType);
-    return osc.map(SootClass::isApplicationClass).orElse(false);
-  }
-
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
   }

@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Set;
 import qilin.CoreConfig;
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -77,9 +78,10 @@ public class CallGraphStat implements AbstractStat {
     //
     OnFlyCallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();
+    PTAScene scene = pta.getPtaScene();
     for (final ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod m = momc.method();
-      boolean toApp = PTAUtils.isApplicationMethod(m);
+      boolean toApp = scene.isApplicationMethod(m);
       reachableParameterizedMethods.add(momc);
       reachableMethods.add(m);
       //            if (m.toString().equals("<sun.security.provider.PolicyParser: void
@@ -95,7 +97,7 @@ public class CallGraphStat implements AbstractStat {
       for (Iterator<Edge> iterator = csCallGraph.edgesInto(momc); iterator.hasNext(); ) {
         Edge e = iterator.next();
         final SootMethod srcm = e.getSrc().method();
-        boolean fromApp = PTAUtils.isApplicationMethod(srcm);
+        boolean fromApp = scene.isApplicationMethod(srcm);
         if (fromApp && toApp) {
           CSApp2app++;
         } else if (fromApp) {
@@ -121,7 +123,7 @@ public class CallGraphStat implements AbstractStat {
     OnFlyCallGraph ciCallGraph = pta.getCallGraph();
     CICallEdges = ciCallGraph.size();
     for (SootMethod sm : reachableMethods) {
-      boolean toApp = PTAUtils.isApplicationMethod(sm);
+      boolean toApp = scene.isApplicationMethod(sm);
       if (sm.isStatic()) {
         reachableStatic++;
         if (toApp) {
@@ -133,11 +135,7 @@ public class CallGraphStat implements AbstractStat {
           iterator.hasNext(); ) {
         Edge e = iterator.next();
         final SootMethod srcm = e.getSrc().method();
-        //                if (sm.toString().equals("<java.lang.ClassNotFoundException:
-        // java.lang.Throwable getCause()>")) {
-        //                    System.out.println("from:" + srcm);
-        //                }
-        boolean fromApp = PTAUtils.isApplicationMethod(srcm);
+        boolean fromApp = scene.isApplicationMethod(srcm);
         if (fromApp && toApp) {
           CIApp2app++;
         } else if (fromApp) {

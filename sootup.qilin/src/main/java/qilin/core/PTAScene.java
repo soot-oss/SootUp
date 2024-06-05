@@ -241,4 +241,10 @@ public class PTAScene {
         JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
     return view.getField(fieldSig).get();
   }
+
+  public boolean isApplicationMethod(SootMethod sm) {
+    ClassType classType = sm.getDeclaringClassType();
+    Optional<? extends SootClass> osc = view.getClass(classType);
+    return osc.map(SootClass::isApplicationClass).orElse(false);
+  }
 }
