@@ -48,7 +48,7 @@ public class SimplifiedEvaluator implements IEvaluator {
 
   public SimplifiedEvaluator(PTA pta) {
     this.pta = pta;
-    exporter = new Exporter();
+    exporter = new Exporter(pta);
   }
 
   @Override

@@ -97,7 +97,6 @@ public abstract class JunitTests {
 
   public PTA run(String mainClass, String ptaPattern) {
     PTAConfig.v().getAppConfig().MAIN_CLASS = mainClass;
-    PTAScene.v().setMainClass(PTAScene.v().getSootClass(mainClass));
     PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
     PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
     System.out.println(PTAConfig.v().getAppConfig().APP_PATH);

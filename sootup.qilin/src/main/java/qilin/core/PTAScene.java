@@ -57,12 +57,6 @@ public class PTAScene {
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
-  private SootClass mainClass;
-
-  public void setMainClass(SootClass m) {
-    mainClass = m;
-  }
-
   public static PTAScene v() {
     if (instance == null) {
       synchronized (PTAScene.class) {
@@ -103,7 +97,7 @@ public class PTAScene {
     if (appConfig.MAIN_CLASS == null) {
       appConfig.MAIN_CLASS = PTAUtils.findMainFromMetaInfo(appConfig.APP_PATH);
     }
-    this.mainClass = getSootClass(appConfig.MAIN_CLASS);
+    SootClass mainClass = getSootClass(appConfig.MAIN_CLASS);
     // setup fakemain
     this.fakeMainFactory = new FakeMainFactory(view, mainClass);
   }

@@ -21,7 +21,6 @@ package qilin.core.solver;
 import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.builder.ExceptionHandler;
 import qilin.core.builder.MethodNodeFactory;
@@ -146,7 +145,7 @@ public class Solver extends Propagator {
           }
         } else {
           MethodSignature tgtSig = ie.getMethodSignature();
-          Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(tgtSig);
+          Optional<? extends SootMethod> otgt = pta.getView().getMethod(tgtSig);
           if (otgt.isPresent()) {
             // static invoke or dynamic invoke
             VarNode recNode = pag.getMethodPAG(m.method()).nodeFactory().caseThis();
@@ -217,7 +216,7 @@ public class Solver extends Propagator {
   private void handleImplicitCallToFinalizerRegister(AllocNode heap) {
     if (PTAUtils.supportFinalize(heap)) {
       SootMethod rm =
-          PTAScene.v().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
+          pta.getPtaScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
       Node parm = tgtnf.caseParm(0);

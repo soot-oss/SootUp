@@ -40,7 +40,7 @@ public class PTAEvaluator implements IEvaluator {
   public PTAEvaluator(PTA pta) {
     this.pta = pta;
     runtimeStat = new RuntimeStat();
-    exporter = new Exporter();
+    exporter = new Exporter(pta);
   }
 
   /** Note the start of a qilin.pta run. */

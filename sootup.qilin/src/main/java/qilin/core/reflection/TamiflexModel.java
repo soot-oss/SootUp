@@ -59,11 +59,12 @@ import sootup.java.core.language.JavaJimple;
  * Tamiflex.
  */
 public class TamiflexModel extends ReflectionModel {
-
+  protected PTAScene ptaScene;
   protected Map<ReflectionKind, Map<Stmt, Set<String>>> reflectionMap;
 
-  public TamiflexModel() {
-    reflectionMap = DataFactory.createMap();
+  public TamiflexModel(PTAScene ptaScene) {
+    this.ptaScene = ptaScene;
+    this.reflectionMap = DataFactory.createMap();
     parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
   }
 
@@ -106,7 +107,7 @@ public class TamiflexModel extends ReflectionModel {
     if (classNewInstances.containsKey(s)) {
       Collection<String> classNames = classNewInstances.get(s);
       for (String clsName : classNames) {
-        SootClass cls = PTAScene.v().getSootClass(clsName);
+        SootClass cls = ptaScene.getSootClass(clsName);
         MethodSubSignature initSubSig =
             JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <init>()");
         Optional<? extends SootMethod> omthd = cls.getMethod(initSubSig);
@@ -145,7 +146,7 @@ public class TamiflexModel extends ReflectionModel {
           Jimple.newLocal("intermediate/" + arrayRef, PTAUtils.getClassType("java.lang.Object"));
       ret.add(new JAssignStmt(arg, arrayRef, StmtPositionInfo.getNoStmtPositionInfo()));
       for (String constructorSignature : constructorSignatures) {
-        SootMethod constructor = PTAScene.v().getMethod(constructorSignature);
+        SootMethod constructor = ptaScene.getMethod(constructorSignature);
         JNewExpr newExpr = new JNewExpr(constructor.getDeclaringClassType());
         ret.add(new JAssignStmt(lvalue, newExpr, StmtPositionInfo.getNoStmtPositionInfo()));
         int argCount = constructor.getParameterCount();
@@ -183,7 +184,7 @@ public class TamiflexModel extends ReflectionModel {
       }
 
       for (String methodSignature : methodSignatures) {
-        SootMethod method = PTAScene.v().getMethod(methodSignature);
+        SootMethod method = ptaScene.getMethod(methodSignature);
         int argCount = method.getParameterCount();
         List<Immediate> mArgs = new ArrayList<>(argCount);
         for (int i = 0; i < argCount; i++) {
@@ -226,7 +227,7 @@ public class TamiflexModel extends ReflectionModel {
       for (String fieldSignature : fieldSignatures) {
         FieldSignature fieldSig =
             JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
-        SootField field = (SootField) PTAScene.v().getView().getField(fieldSig).get();
+        SootField field = ptaScene.getView().getField(fieldSig).get();
         JFieldRef fieldRef;
         if (field.isStatic()) {
           assert base instanceof NullConstant;
@@ -256,7 +257,7 @@ public class TamiflexModel extends ReflectionModel {
       for (String fieldSignature : fieldSignatures) {
         FieldSignature fieldSig =
             JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
-        SootField field = (SootField) PTAScene.v().getView().getField(fieldSig).get();
+        SootField field = ptaScene.getView().getField(fieldSig).get();
         JFieldRef fieldRef;
         if (field.isStatic()) {
           assert base instanceof NullConstant;
@@ -363,7 +364,7 @@ public class TamiflexModel extends ReflectionModel {
           case ClassForName:
             break;
           case ClassNewInstance:
-            if (!PTAScene.v().containsClass(mappedTarget)) {
+            if (!ptaScene.containsClass(mappedTarget)) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped class for signature: " + mappedTarget);
               }
@@ -372,7 +373,7 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case ConstructorNewInstance:
           case MethodInvoke:
-            if (!PTAScene.v().containsMethod(mappedTarget)) {
+            if (!ptaScene.containsMethod(mappedTarget)) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped method for signature: " + mappedTarget);
               }
@@ -381,7 +382,7 @@ public class TamiflexModel extends ReflectionModel {
             break;
           case FieldSet:
           case FieldGet:
-            if (!PTAScene.v().containsField(mappedTarget)) {
+            if (!ptaScene.containsField(mappedTarget)) {
               if (verbose) {
                 System.out.println("Warning: Unknown mapped field for signature: " + mappedTarget);
               }
@@ -413,11 +414,11 @@ public class TamiflexModel extends ReflectionModel {
   private Collection<SootMethod> inferSourceMethod(String inClzDotMthd) {
     String inClassStr = inClzDotMthd.substring(0, inClzDotMthd.lastIndexOf("."));
     String inMethodStr = inClzDotMthd.substring(inClzDotMthd.lastIndexOf(".") + 1);
-    if (!PTAScene.v().containsClass(inClassStr)) {
+    if (!ptaScene.containsClass(inClassStr)) {
       System.out.println("Warning: unknown class \"" + inClassStr + "\" is referenced.");
       return Collections.emptySet();
     }
-    SootClass sootClass = PTAScene.v().getSootClass(inClassStr);
+    SootClass sootClass = ptaScene.getSootClass(inClassStr);
     Set<SootMethod> ret = DataFactory.createSet();
     Set<? extends SootMethod> declMethods = sootClass.getMethods();
     for (SootMethod m : declMethods) {

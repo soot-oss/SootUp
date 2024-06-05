@@ -74,6 +74,10 @@ public abstract class PTA implements PointsToAnalysis {
     return ptaScene.getView();
   }
 
+  public PTAScene getPtaScene() {
+    return ptaScene;
+  }
+
   public CallGraphBuilder getCgb() {
     return cgb;
   }

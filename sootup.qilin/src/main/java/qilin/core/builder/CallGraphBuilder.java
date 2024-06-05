@@ -57,13 +57,15 @@ public class CallGraphBuilder {
   protected final Set<Edge> calledges;
   protected final PTA pta;
   protected final PAG pag;
+  protected final PTAScene ptaScene;
   protected OnFlyCallGraph cicg;
 
   public CallGraphBuilder(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
-    PTAScene.v().setCallGraph(new OnFlyCallGraph());
-    receiverToSites = DataFactory.createMap(PTAScene.v().getView().getClasses().size());
+    this.ptaScene = pta.getPtaScene();
+    ptaScene.setCallGraph(new OnFlyCallGraph());
+    receiverToSites = DataFactory.createMap(ptaScene.getView().getClasses().size());
     methodToInvokeStmt = DataFactory.createMap();
     reachMethods = DataFactory.createSet();
     calledges = DataFactory.createSet();
@@ -91,7 +93,7 @@ public class CallGraphBuilder {
     if (cicg == null) {
       constructCallGraph();
     }
-    return PTAScene.v().getCallGraph();
+    return ptaScene.getCallGraph();
   }
 
   public OnFlyCallGraph getCICallGraph() {
@@ -106,7 +108,7 @@ public class CallGraphBuilder {
     Map<Stmt, Map<SootMethod, Set<SootMethod>>> map = DataFactory.createMap();
     calledges.forEach(
         e -> {
-          PTAScene.v().getCallGraph().addEdge(e);
+          ptaScene.getCallGraph().addEdge(e);
           SootMethod src = e.src();
           SootMethod tgt = e.tgt();
           Stmt unit = e.srcUnit();
@@ -125,11 +127,11 @@ public class CallGraphBuilder {
   }
 
   public List<ContextMethod> getEntryPoints() {
-    Node thisRef = pag.getMethodPAG(PTAScene.v().getFakeMainMethod()).nodeFactory().caseThis();
+    Node thisRef = pag.getMethodPAG(ptaScene.getFakeMainMethod()).nodeFactory().caseThis();
     thisRef = pta.parameterize(thisRef, pta.emptyContext());
     pag.addEdge(pta.getRootNode(), thisRef);
     return Collections.singletonList(
-        pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()));
+        pta.parameterize(ptaScene.getFakeMainMethod(), pta.emptyContext()));
   }
 
   public void initReachableMethods() {
@@ -169,7 +171,7 @@ public class CallGraphBuilder {
       SootMethod target = targets.next();
       if (site.iie() instanceof JSpecialInvokeExpr) {
         Type calleeDeclType = target.getDeclaringClassType();
-        if (!PTAScene.v().canStoreType(type, calleeDeclType)) {
+        if (!ptaScene.canStoreType(type, calleeDeclType)) {
           continue;
         }
       }
@@ -197,7 +199,7 @@ public class CallGraphBuilder {
       stmtMap.put(heapOrType, stmt);
       handleCallEdge(
           new Edge(
-              pta.parameterize(PTAScene.v().getFakeMainMethod(), pta.emptyContext()),
+              pta.parameterize(ptaScene.getFakeMainMethod(), pta.emptyContext()),
               stmtMap.get(heapOrType),
               callee,
               kind));

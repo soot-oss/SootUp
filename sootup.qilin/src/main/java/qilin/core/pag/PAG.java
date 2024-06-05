@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.PointsToAnalysis;
 import qilin.core.context.Context;
 import qilin.core.natives.NativeMethodDriver;
@@ -524,7 +523,7 @@ public class PAG {
     ReflectionModel model;
     if (CoreConfig.v().getAppConfig().REFLECTION_LOG != null
         && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
-      model = new TamiflexModel();
+      model = new TamiflexModel(pta.getPtaScene());
     } else {
       model = new NopReflectionModel();
     }
@@ -547,7 +546,7 @@ public class PAG {
        * <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>
        * directly to its caller methods.
        * */
-      if (PTAScene.v().arraycopyBuilt.add(m)) {
+      if (pta.getPtaScene().arraycopyBuilt.add(m)) {
         handleArrayCopy(m);
       }
     }

@@ -46,7 +46,7 @@ public class GlobalVarNode extends VarNode {
   public SootClass getDeclaringClass() {
     if (variable instanceof SootField) {
       SootField sf = (SootField) variable;
-      return (SootClass) PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
+      return PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
     }
 
     return null;

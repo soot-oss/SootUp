@@ -3,7 +3,6 @@ package qilin.pta.toolkits.debloaterx;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.util.PTAUtils;
@@ -98,9 +97,15 @@ public class XPAG {
         LocalVarNode receiver = pag.findLocalVarNode(method, base, base.getType());
         if (iie instanceof JSpecialInvokeExpr) {
           JSpecialInvokeExpr sie = (JSpecialInvokeExpr) iie;
-          SootMethod target =
-              (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
-          inline(s, target);
+          Optional<? extends SootMethod> optMethod =
+              pta.getView().getMethod(sie.getMethodSignature());
+          if (optMethod.isPresent()) {
+            SootMethod target = optMethod.get();
+            inline(s, target);
+          } else {
+            /* instance call with non-this base variable are modeled as in Eagle/Turner. */
+            modelVirtualCall(numArgs, args, receiver, retDest);
+          }
         } else {
           /* instance call with non-this base variable are modeled as in Eagle/Turner. */
           modelVirtualCall(numArgs, args, receiver, retDest);
@@ -108,9 +113,12 @@ public class XPAG {
       } else {
         if (ie instanceof JStaticInvokeExpr) {
           JStaticInvokeExpr sie = (JStaticInvokeExpr) ie;
-          SootMethod target =
-              (SootMethod) PTAScene.v().getView().getMethod(sie.getMethodSignature()).get();
-          inline(s, target);
+          Optional<? extends SootMethod> optMethod =
+              pta.getView().getMethod(sie.getMethodSignature());
+          if (optMethod.isPresent()) {
+            SootMethod target = optMethod.get();
+            inline(s, target);
+          }
         }
       }
     }

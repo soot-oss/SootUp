@@ -21,7 +21,6 @@ package qilin.pta.toolkits.conch;
 import java.util.*;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
@@ -77,8 +76,7 @@ public class Conch extends AbstractConch {
           Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           PointsToSet v1pts = pta.reachingObjects(baseNode);
-          SootMethod target =
-              (SootMethod) PTAScene.v().getView().getMethod(iie.getMethodSignature()).get();
+          SootMethod target = pta.getView().getMethod(iie.getMethodSignature()).get();
           if (v1pts.size() == 1
               && v1pts.toCIPointsToSet().contains(heap)
               && PTAUtils.isConstructor(target)) {
@@ -103,7 +101,7 @@ public class Conch extends AbstractConch {
           Value base = iie.getBase();
           VarNode baseNode = (VarNode) nodeFactory.getNode(base);
           MethodSignature targetSig = iie.getMethodSignature();
-          SootMethod target = (SootMethod) PTAScene.v().getView().getMethod(targetSig).get();
+          SootMethod target = pta.getView().getMethod(targetSig).get();
           if (PTAUtils.mustAlias(pta, thisNode, baseNode)
               && targetSig.getSubSignature().getName().equals("<init>")) {
             return target;
@@ -138,8 +136,7 @@ public class Conch extends AbstractConch {
         continue;
       }
       MethodSignature methodSig = stmt.getInvokeExpr().getMethodSignature();
-      Optional<SootMethod> otarget =
-          (Optional<SootMethod>) PTAScene.v().getView().getMethod(methodSig);
+      Optional<? extends SootMethod> otarget = pta.getView().getMethod(methodSig);
       if (otarget.isPresent() && otarget.get().equals(curr)) {
         for (Node n : params) {
           if (n instanceof VarNode) {

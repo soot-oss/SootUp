@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.Set;
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -71,7 +70,7 @@ public class CallGraphStat implements AbstractStat {
 
   private void init() {
     // stat method numbers
-    Collection<? extends SootClass> clazzs = PTAScene.v().getView().getClasses();
+    Collection<? extends SootClass> clazzs = pta.getView().getClasses();
     for (SootClass clazz : clazzs) {
       allMethods += clazz.getMethods().size();
     }

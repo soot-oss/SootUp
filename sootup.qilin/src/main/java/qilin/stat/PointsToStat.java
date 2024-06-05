@@ -31,6 +31,7 @@ import qilin.util.Triple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
@@ -112,7 +113,8 @@ public class PointsToStat implements AbstractStat {
       try {
         if (!global.isStatic()) continue;
         GlobalVarNode gvn = pag.findGlobalVarNode(global);
-        boolean app = gvn.getDeclaringClass().isApplicationClass();
+        ClassType classType = global.getDeclaringClassType();
+        boolean app = pta.getView().getClass(classType).get().isApplicationClass();
 
         totalGlobalPointers++;
         if (app) {

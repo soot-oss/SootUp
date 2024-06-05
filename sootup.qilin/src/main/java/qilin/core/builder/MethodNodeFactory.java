@@ -67,11 +67,13 @@ public class MethodNodeFactory {
   protected PAG pag;
   protected MethodPAG mpag;
   protected SootMethod method;
+  private final PTAScene scene;
 
   public MethodNodeFactory(PAG pag, MethodPAG mpag) {
     this.pag = pag;
     this.mpag = mpag;
     method = mpag.getMethod();
+    this.scene = pag.getPta().getPtaScene();
   }
 
   public Node getNode(Value v) {
@@ -164,7 +166,7 @@ public class MethodNodeFactory {
     if (PTAUtils.isFakeMainClass(classType)) { // skip FakeMain
       return;
     }
-    SootClass sootClass = PTAScene.v().getView().getClass(classType).get();
+    SootClass sootClass = scene.getView().getClass(classType).get();
     PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
   }
 
@@ -221,8 +223,7 @@ public class MethodNodeFactory {
           @Override
           public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
             if (!CoreConfig.v().getPtaConfig().preciseExceptions) {
-              mpag.addInternalEdge(
-                  getNode(stmt.getOp()), getNode(PTAScene.v().getFieldGlobalThrow()));
+              mpag.addInternalEdge(getNode(stmt.getOp()), getNode(scene.getFieldGlobalThrow()));
             }
           }
         });
@@ -237,14 +238,14 @@ public class MethodNodeFactory {
   }
 
   private AllocNode caseNewExpr(JNewExpr ne) {
-    SootClass cl = PTAScene.v().getSootClass(ne.getType().toString());
+    SootClass cl = scene.getSootClass(ne.getType().toString());
     PTAUtils.clinitsOf(cl).forEach(mpag::addTriggeredClinit);
     return pag.makeAllocNode(ne, ne.getType(), method);
   }
 
   private FieldRefNode caseInstanceFieldRef(JInstanceFieldRef ifr) {
     FieldSignature fieldSig = ifr.getFieldSignature();
-    Optional<? extends SootField> osf = PTAScene.v().getView().getField(fieldSig);
+    Optional<? extends SootField> osf = scene.getView().getField(fieldSig);
     SootField sf;
     if (!osf.isPresent()) {
       sf =
@@ -343,7 +344,7 @@ public class MethodNodeFactory {
       // we model caughtException expression as an local assignment.
       return pag.makeLocalVarNode(cer, cer.getType(), method);
     } else {
-      return getNode(PTAScene.v().getFieldGlobalThrow());
+      return getNode(scene.getFieldGlobalThrow());
     }
   }
 

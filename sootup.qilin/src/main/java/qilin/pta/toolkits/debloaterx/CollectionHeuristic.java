@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.FieldRefNode;
 import qilin.core.pag.LocalVarNode;
@@ -94,17 +93,17 @@ public class CollectionHeuristic {
     Set<ClassType> allInterfaces = new HashSet<>(sc.getInterfaces());
     while (sc.hasSuperclass()) {
       ClassType classType = sc.getSuperclass().get();
-      sc = PTAScene.v().getView().getClass(classType).get();
+      sc = pta.getView().getClass(classType).get();
       allInterfaces.addAll(sc.getInterfaces());
     }
     // interface may also have super class
     Set<SootClass> worklist = new HashSet<>();
     for (ClassType tmp : allInterfaces) {
-      SootClass msc = PTAScene.v().getView().getClass(tmp).get();
+      SootClass msc = pta.getView().getClass(tmp).get();
       worklist.add(msc);
       while (msc.hasSuperclass()) {
         ClassType superType = msc.getSuperclass().get();
-        SootClass superClazz = PTAScene.v().getView().getClass(superType).get();
+        SootClass superClazz = pta.getView().getClass(superType).get();
         if (!superClazz.isInterface()) break;
         worklist.add(superClazz);
         msc = superClazz;
@@ -126,7 +125,7 @@ public class CollectionHeuristic {
       return false;
     }
     ClassType outerType = sc.getOuterClass().get();
-    SootClass outer = PTAScene.v().getView().getClass(outerType).get();
+    SootClass outer = pta.getView().getClass(outerType).get();
     if (isImplementingCollection(outer)) {
       return true;
     }
@@ -137,7 +136,7 @@ public class CollectionHeuristic {
     for (Type type : t2Fields.keySet()) {
       if (type instanceof ClassType) {
         ClassType refType = (ClassType) type;
-        SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
+        SootClass sc = pta.getView().getClass(refType).get();
         if (isImplementingCollection(sc) || isNestedInClassImplementCollection(sc)) {
           containerType.add(type);
         } else {

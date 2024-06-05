@@ -254,7 +254,7 @@ public final class PTAUtils {
           SootMethod sm = ((LocalVarNode) vn).getMethod();
           if (sm != null
               && !sm.getSignature().toString().equals("<qilin.pta.FakeMain: void main()>")) {
-            clz = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
+            clz = PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
           }
         } else if (vn instanceof GlobalVarNode) {
           GlobalVarNode gvn = (GlobalVarNode) vn;
@@ -264,12 +264,7 @@ public final class PTAUtils {
           VarNode varNode = cv.base();
           if (varNode instanceof LocalVarNode) {
             LocalVarNode cvbase = (LocalVarNode) varNode;
-            clz =
-                (SootClass)
-                    PTAScene.v()
-                        .getView()
-                        .getClass(cvbase.getMethod().getDeclaringClassType())
-                        .get();
+            clz = PTAScene.v().getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
           } else if (varNode instanceof GlobalVarNode) {
             GlobalVarNode gvn = (GlobalVarNode) varNode;
             clz = gvn.getDeclaringClass();

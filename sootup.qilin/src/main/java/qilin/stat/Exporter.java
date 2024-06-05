@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.AllocNode;
@@ -42,11 +41,16 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 public class Exporter {
+  private final PTA pta;
   private final String metrics = "Metrics.csv";
   private final String staticFPTs = "StaticFieldPointsTo.csv";
 
   private static final int STATLENGTH = 50;
   private final StringBuffer report = new StringBuffer();
+
+  public Exporter(PTA pta) {
+    this.pta = pta;
+  }
 
   public void addLine(String str) {
     report.append(str).append('\n');
@@ -136,7 +140,7 @@ public class Exporter {
   public void dumpPolyCalls(Map<AbstractInvokeExpr, SootMethod> polys) {
     StringBuilder builder = new StringBuilder();
     for (AbstractInvokeExpr ie : polys.keySet()) {
-      SootMethod tgt = (SootMethod) PTAScene.v().getView().getMethod(ie.getMethodSignature()).get();
+      SootMethod tgt = pta.getView().getMethod(ie.getMethodSignature()).get();
       String polySig =
           polys.get(ie).getSignature()
               + "/"

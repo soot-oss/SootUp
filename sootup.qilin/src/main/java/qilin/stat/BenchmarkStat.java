@@ -45,24 +45,23 @@ public class BenchmarkStat implements AbstractStat {
   }
 
   private void init() {
-    View view = PTAScene.v().getView();
+    View view = pta.getView();
     reachableClasses =
         pta.getNakedReachableMethods().stream()
             .map(
                 m -> {
                   ClassType classType = m.getDeclaringClassType();
-                  Optional<? extends SootClass> osc = view.getClass(classType);
-                  return osc;
+                  return view.getClass(classType);
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toSet());
     reachableAppClasses =
         reachableClasses.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-
-    classes = PTAScene.v().getClasses().size();
-    appClasses = PTAScene.v().getApplicationClasses().size();
-    phantomClasses = PTAScene.v().getPhantomClasses().size();
+    PTAScene scene = pta.getPtaScene();
+    classes = scene.getClasses().size();
+    appClasses = scene.getApplicationClasses().size();
+    phantomClasses = scene.getPhantomClasses().size();
     libClasses = classes - appClasses - phantomClasses;
     libReachableClasses = (reachableClasses.size() - reachableAppClasses.size() - 1); // -FakeMain
   }
@@ -78,7 +77,7 @@ public class BenchmarkStat implements AbstractStat {
     exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
 
     if (CoreConfig.v().getOutConfig().dumpStats) {
-      exporter.dumpClassTypes(PTAScene.v().getClasses());
+      exporter.dumpClassTypes(pta.getPtaScene().getClasses());
     }
   }
 }

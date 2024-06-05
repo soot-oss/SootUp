@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -81,7 +80,7 @@ public class XUtility {
     }
     if (type instanceof ClassType) {
       ClassType refType = (ClassType) type;
-      SootClass sc = (SootClass) PTAScene.v().getView().getClass(refType).get();
+      SootClass sc = pta.getView().getClass(refType).get();
       return sc.isAbstract() || sc.isInterface() || refType.getClassName().startsWith("Abstract");
     }
     return false;
@@ -309,13 +308,13 @@ public class XUtility {
       } else {
         ret = this.t2Fields.computeIfAbsent(refType, k -> new HashSet<>());
         for (AllocNode heap : this.o2Fields.keySet()) {
-          if (PTAScene.v().canStoreType(heap.getType(), refType)) {
+          if (pta.getPtaScene().canStoreType(heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
               if (sparkField instanceof Field) {
                 Field f = (Field) sparkField;
                 SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
-                if (PTAScene.v().canStoreType(type, declType)) {
+                if (pta.getPtaScene().canStoreType(type, declType)) {
                   ret.add(sparkField);
                 }
               } else {

@@ -18,7 +18,6 @@
 
 package qilin.pta.toolkits.dd;
 
-import qilin.core.PTAScene;
 import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -37,15 +36,18 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 /*
  * features and formulas used in "Precise and Scalable Points-to Analysis via Data-Driven
  * Context Tunneling" (OOPSLA 2018).
  * */
 public class CtxTunnelingFeaturesTrueTable {
+  private final View view;
   private final boolean[] f = new boolean[24];
 
-  public CtxTunnelingFeaturesTrueTable(SootMethod sm) {
+  public CtxTunnelingFeaturesTrueTable(View view, SootMethod sm) {
+    this.view = view;
     String sig = sm.getSignature().toString();
     // the 10 atomic signature features.
     this.f[1] = sig.contains("java");
@@ -107,12 +109,12 @@ public class CtxTunnelingFeaturesTrueTable {
         heapAllocCnt
             >= 1; // note, the original implementation is >=1 not > 1 which is conflict with the
     // paper.
-    SootClass sc = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
+    SootClass sc = view.getClass(sm.getDeclaringClassType()).get();
     this.f[23] = sc.getMethods().size() > 20; // their artifact uses 20 as the threshold.
   }
 
   public boolean containedInNestedClass(SootMethod sm) {
-    SootClass sc = (SootClass) PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
+    SootClass sc = view.getClass(sm.getDeclaringClassType()).get();
     return sc.toString().contains("$");
   }
 

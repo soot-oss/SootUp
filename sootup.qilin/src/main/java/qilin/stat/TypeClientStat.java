@@ -21,7 +21,6 @@ package qilin.stat;
 import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.OnFlyCallGraph;

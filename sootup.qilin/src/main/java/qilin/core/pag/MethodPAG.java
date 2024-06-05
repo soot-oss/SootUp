@@ -54,6 +54,7 @@ public class MethodPAG {
   private final Map<Node, Set<Node>> exceptionEdges = DataFactory.createMap();
 
   protected MethodNodeFactory nodeFactory;
+  protected final PTAScene ptaScene;
   SootMethod method;
   /*
    * List[i-1] is wrappered in List[i].
@@ -65,6 +66,7 @@ public class MethodPAG {
   public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
+    this.ptaScene = pag.getPta().getPtaScene();
     this.method = m;
     this.nodeFactory = new MethodNodeFactory(pag, this);
     this.body = body;
@@ -104,7 +106,7 @@ public class MethodPAG {
   protected void buildNormal() {
     if (method.isStatic()) {
       if (!PTAUtils.isFakeMainMethod(method)) {
-        SootClass sc = PTAScene.v().getView().getClass(method.getDeclaringClassType()).get();
+        SootClass sc = ptaScene.getView().getClass(method.getDeclaringClassType()).get();
         PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }
     }
@@ -143,7 +145,7 @@ public class MethodPAG {
             "<java.lang.ref.Reference: void <init>(java.lang.Object,java.lang.ref.ReferenceQueue)>")) {
       // Implements the special status of java.lang.ref.Reference just as in Doop
       // (library/reference.logic).
-      SootClass sootClass = PTAScene.v().getSootClass("java.lang.ref.Reference");
+      SootClass sootClass = ptaScene.getSootClass("java.lang.ref.Reference");
       SootField sf = sootClass.getField("pending").get();
       JStaticFieldRef sfr = Jimple.newStaticFieldRef(sf.getSignature());
       addInternalEdge(nodeFactory.caseThis(), nodeFactory.getNode(sfr));

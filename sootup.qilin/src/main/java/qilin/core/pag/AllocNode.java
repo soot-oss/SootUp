@@ -18,16 +18,10 @@
 
 package qilin.core.pag;
 
-import java.util.Optional;
-import qilin.CoreConfig;
-import qilin.core.PTAScene;
 import qilin.core.context.ContextElement;
 import qilin.util.Numberable;
-import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.types.ClassType;
 import sootup.core.types.Type;
-import sootup.core.views.View;
 
 /**
  * Represents an allocation site node in the pointer assignment graph.

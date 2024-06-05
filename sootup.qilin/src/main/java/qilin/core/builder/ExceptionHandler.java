@@ -20,7 +20,6 @@ package qilin.core.builder;
 
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.context.Context;
 import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
@@ -33,14 +32,14 @@ import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 public class ExceptionHandler {
-  protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites =
-      DataFactory.createMap(PTAScene.v().getView().getClasses().size());
+  protected final Map<Node, Collection<ExceptionThrowSite>> throwNodeToSites;
   protected PTA pta;
   protected PAG pag;
 
   public ExceptionHandler(PTA pta) {
     this.pta = pta;
     this.pag = pta.getPag();
+    this.throwNodeToSites = DataFactory.createMap(pta.getView().getClasses().size());
   }
 
   public Collection<ExceptionThrowSite> throwSitesLookUp(VarNode throwNode) {
@@ -76,7 +75,7 @@ public class ExceptionHandler {
     List<Trap> trapList =
         mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
     for (Trap trap : trapList) {
-      if (PTAScene.v().canStoreType(type, trap.getExceptionType())) {
+      if (pta.getPtaScene().canStoreType(type, trap.getExceptionType())) {
         Stmt handler = trap.getHandlerStmt();
         assert handler instanceof JIdentityStmt;
         JIdentityStmt handlerStmt = (JIdentityStmt) handler;
