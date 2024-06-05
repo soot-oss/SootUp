@@ -27,14 +27,15 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 /*
  * This file will be temporarily discarded. Yes, it is correct but need one more level of context.
  * Thus it will make qilin.spark less precise than its counterpart in Doop.
  * */
 public class JavaLangSystemArraycopyNative extends NativeMethod {
-  public JavaLangSystemArraycopyNative(SootMethod method) {
-    super(method);
+  public JavaLangSystemArraycopyNative(View view, SootMethod method) {
+    super(view, method);
   }
 
   /**

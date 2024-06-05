@@ -22,10 +22,11 @@ import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public class JavaIoFileSystemListNative extends NativeMethod {
-  public JavaIoFileSystemListNative(SootMethod method) {
-    super(method);
+  public JavaIoFileSystemListNative(View view, SootMethod method) {
+    super(view, method);
   }
 
   /** ********************** java.io.FileSystem ********************** */

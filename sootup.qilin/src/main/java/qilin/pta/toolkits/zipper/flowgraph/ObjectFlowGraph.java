@@ -56,12 +56,10 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
       ContextVarNode cvn = (ContextVarNode) valNode;
       VarNode base = cvn.base();
       if (base instanceof LocalVarNode) {
-        LocalVarNode lvn = (LocalVarNode) base;
-        return lvn;
+        return (LocalVarNode) base;
       }
     } else if (valNode instanceof LocalVarNode) {
-      LocalVarNode lvn = (LocalVarNode) valNode;
-      return lvn;
+      return (LocalVarNode) valNode;
     }
     return null;
   }

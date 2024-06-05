@@ -20,17 +20,17 @@ package qilin.core.natives;
 
 import java.util.Collections;
 import qilin.core.ArtificialMethod;
-import qilin.core.PTAScene;
 import qilin.util.PTAUtils;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public abstract class NativeMethod extends ArtificialMethod {
-  NativeMethod(SootMethod method) {
-    super(PTAScene.v().getView());
+  NativeMethod(View view, SootMethod method) {
+    super(view);
     this.method = method;
     Body body = PTAUtils.getMethodBody(method);
     this.bodyBuilder = Body.builder(body, Collections.emptySet());

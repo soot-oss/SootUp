@@ -22,10 +22,11 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod {
-  public JavaLangRefFinalizerInvokeFinalizeMethodNative(SootMethod method) {
-    super(method);
+  public JavaLangRefFinalizerInvokeFinalizeMethodNative(View view, SootMethod method) {
+    super(view, method);
   }
 
   /** "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>" */

@@ -111,7 +111,7 @@ public class PAG {
     this.allocInv = DataFactory.createMap();
     this.store = DataFactory.createMap();
     this.storeInv = DataFactory.createMap();
-    this.nativeDriver = new NativeMethodDriver();
+    this.nativeDriver = new NativeMethodDriver(pta.getPtaScene());
     this.reflectionModel = createReflectionModel();
     this.contextVarNodeMap = DataFactory.createMap(16000);
     this.contextAllocNodeMap = DataFactory.createMap(6000);
@@ -525,7 +525,7 @@ public class PAG {
         && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
       model = new TamiflexModel(pta.getPtaScene());
     } else {
-      model = new NopReflectionModel();
+      model = new NopReflectionModel(pta.getPtaScene());
     }
     return model;
   }

@@ -23,10 +23,11 @@ import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public class JavaLangSystemSetErr0Native extends NativeMethod {
-  public JavaLangSystemSetErr0Native(SootMethod method) {
-    super(method);
+  public JavaLangSystemSetErr0Native(View view, SootMethod method) {
+    super(view, method);
   }
 
   /**

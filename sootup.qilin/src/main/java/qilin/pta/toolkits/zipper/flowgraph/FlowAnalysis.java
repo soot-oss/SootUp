@@ -178,13 +178,11 @@ public class FlowAnalysis {
       for (Edge edge : outEdgesOf(node)) {
         switch (edge.getKind()) {
           case UNWRAPPED_FLOW:
-            {
-              nextEdges.add(edge);
-            }
           case LOCAL_ASSIGN:
             {
               nextEdges.add(edge);
             }
+            break;
           case INTERPROCEDURAL_ASSIGN:
           case INSTANCE_LOAD:
           case WRAPPED_FLOW:
@@ -199,6 +197,7 @@ public class FlowAnalysis {
                 nextEdges.add(edge);
               }
             }
+            break;
           case INSTANCE_STORE:
             {
               ContextField next = (ContextField) edge.getTarget();
@@ -246,6 +245,7 @@ public class FlowAnalysis {
                 nextEdges.add(edge);
               }
             }
+            break;
           default:
             {
               throw new RuntimeException("Unknown edge: " + edge);

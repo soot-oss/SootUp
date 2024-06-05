@@ -20,7 +20,6 @@ package qilin.core.sets;
 
 import java.util.*;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ClassConstantNode;
 import qilin.core.pag.Node;
@@ -68,8 +67,8 @@ public class UnmodifiablePointsToSet implements PointsToSet {
             Type t = n.getType();
             if (t instanceof ClassType) {
               ClassType rt = (ClassType) t;
-              View view = PTAScene.v().getView();
-              Optional<SootClass> osc = (Optional<SootClass>) view.getClass(rt);
+              View view = pta.getView();
+              Optional<? extends SootClass> osc = view.getClass(rt);
               if (osc.isPresent() && osc.get().isAbstract()) {
                 return;
               }

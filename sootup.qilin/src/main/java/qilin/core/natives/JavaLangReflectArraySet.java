@@ -27,14 +27,15 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.views.View;
 
 /*
  * handle <java.lang.reflect.Array: void set(java.lang.Object,int,java.lang.Object)>
  * */
 
 public class JavaLangReflectArraySet extends NativeMethod {
-  JavaLangReflectArraySet(SootMethod method) {
-    super(method);
+  JavaLangReflectArraySet(View view, SootMethod method) {
+    super(view, method);
   }
 
   @Override

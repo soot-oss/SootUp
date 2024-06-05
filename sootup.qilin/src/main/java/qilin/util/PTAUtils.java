@@ -53,6 +53,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
+import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
@@ -258,7 +259,11 @@ public final class PTAUtils {
           }
         } else if (vn instanceof GlobalVarNode) {
           GlobalVarNode gvn = (GlobalVarNode) vn;
-          clz = gvn.getDeclaringClass();
+          Object variable = gvn.getVariable();
+          if (variable instanceof SootField) {
+            SootField sf = (SootField) variable;
+            clz = PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
+          }
         } else if (vn instanceof ContextVarNode) {
           ContextVarNode cv = (ContextVarNode) vn;
           VarNode varNode = cv.base();
@@ -267,7 +272,11 @@ public final class PTAUtils {
             clz = PTAScene.v().getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
           } else if (varNode instanceof GlobalVarNode) {
             GlobalVarNode gvn = (GlobalVarNode) varNode;
-            clz = gvn.getDeclaringClass();
+            Object variable = gvn.getVariable();
+            if (variable instanceof SootField) {
+              SootField sf = (SootField) variable;
+              clz = PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
+            }
           }
         }
         if (appOnly && clz != null && !clz.isApplicationClass()) {

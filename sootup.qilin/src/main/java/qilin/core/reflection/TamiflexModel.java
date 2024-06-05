@@ -59,11 +59,10 @@ import sootup.java.core.language.JavaJimple;
  * Tamiflex.
  */
 public class TamiflexModel extends ReflectionModel {
-  protected PTAScene ptaScene;
   protected Map<ReflectionKind, Map<Stmt, Set<String>>> reflectionMap;
 
   public TamiflexModel(PTAScene ptaScene) {
-    this.ptaScene = ptaScene;
+    super(ptaScene);
     this.reflectionMap = DataFactory.createMap();
     parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
   }

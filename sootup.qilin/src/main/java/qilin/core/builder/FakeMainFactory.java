@@ -67,10 +67,6 @@ public class FakeMainFactory extends ArtificialMethod {
     this.mainClass = mainClazz;
     this.entryPoints = new EntryPoints();
     this.localStart = 0;
-    // this.fakeClass = new SootClass("FakeMain");
-    //        this.fakeClass.setResolvingLevel(SootClass.BODIES);
-    //        this.method = new SootMethod("fakeMain", null, VoidType);
-    //        this.method.setModifiers(Modifier.STATIC);
     String className = "qilin.pta.FakeMain";
     IdentifierFactory fact = view.getIdentifierFactory();
     ClassType declaringClassSignature = JavaIdentifierFactory.getInstance().getClassType(className);
@@ -82,9 +78,6 @@ public class FakeMainFactory extends ArtificialMethod {
         fact.getFieldSignature("globalThrow", declaringClassSignature, "java.lang.Exception");
     SootField globalThrow =
         new SootField(gtSig, EnumSet.of(FieldModifier.STATIC), NoPositionInformation.getInstance());
-    //        fakeClass.addMethod(this.method);
-    //        fakeClass.addField(currentThread);
-    //        fakeClass.addField(globalThrow);
 
     MethodSignature methodSignatureOne =
         view.getIdentifierFactory()
@@ -159,12 +152,12 @@ public class FakeMainFactory extends ArtificialMethod {
   }
 
   public JStaticFieldRef getFieldCurrentThread() {
-    SootField field = (SootField) fakeClass.getField("currentThread").get();
+    SootField field = fakeClass.getField("currentThread").get();
     return Jimple.newStaticFieldRef(field.getSignature());
   }
 
   public Value getFieldGlobalThrow() {
-    SootField field = (SootField) fakeClass.getField("globalThrow").get();
+    SootField field = fakeClass.getField("globalThrow").get();
     return Jimple.newStaticFieldRef(field.getSignature());
   }
 

@@ -35,6 +35,7 @@ import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 
 public abstract class ReflectionModel {
+  protected final PTAScene ptaScene;
   protected final String sigForName =
       "<java.lang.Class: java.lang.Class forName(java.lang.String)>";
   protected final String sigForName2 =
@@ -71,6 +72,10 @@ public abstract class ReflectionModel {
   protected final String sigReifiedDeclaredMethodArray =
       "<java.lang.Class: java.lang.reflect.Method[] getDeclaredMethods()>";
 
+  protected ReflectionModel(PTAScene ptaScene) {
+    this.ptaScene = ptaScene;
+  }
+
   private Collection<Stmt> transform(Stmt s) {
     AbstractInvokeExpr ie = s.getInvokeExpr();
     switch (ie.getMethodSignature().toString()) {
@@ -100,7 +105,7 @@ public abstract class ReflectionModel {
 
   /** replace reflection call with appropriate statements */
   public void buildReflection(SootMethod m) {
-    if (!PTAScene.v().reflectionBuilt.add(m)) {
+    if (!ptaScene.reflectionBuilt.add(m)) {
       return;
     }
     Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();

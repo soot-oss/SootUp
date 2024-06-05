@@ -20,6 +20,7 @@ package qilin.core.reflection;
 
 import java.util.Collection;
 import java.util.Collections;
+import qilin.core.PTAScene;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /*
@@ -27,6 +28,10 @@ import sootup.core.jimple.common.stmt.Stmt;
  * */
 
 public class NopReflectionModel extends ReflectionModel {
+
+  public NopReflectionModel(PTAScene scene) {
+    super(scene);
+  }
 
   @Override
   Collection<Stmt> transformClassForName(Stmt s) {
