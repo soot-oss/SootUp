@@ -251,7 +251,7 @@ public class XUtility {
       LocalVarNode receiver =
           pag.findLocalVarNode(vcallsite.container().method(), base, base.getType());
       for (AllocNode heap : pta.reachingObjects(receiver).toCIPointsToSet().toCollection()) {
-        QueueReader<SootMethod> reader = PTAUtils.dispatch(heap.getType(), vcallsite);
+        QueueReader<SootMethod> reader = pta.getCgb().dispatch(heap.getType(), vcallsite);
         while (reader.hasNext()) {
           SootMethod tgtM = reader.next();
           m2receiverObjects.computeIfAbsent(tgtM, k -> new HashSet<>()).add(heap);

@@ -22,6 +22,7 @@ import java.util.*;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
+import qilin.core.VirtualCalls;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.builder.callgraph.Kind;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
@@ -44,11 +45,13 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 
 public class CallGraphBuilder {
+  private static final ClassType clRunnable = PTAUtils.getClassType("java.lang.Runnable");
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
   protected final Map<SootMethod, Map<Object, Stmt>> methodToInvokeStmt;
   protected final Set<ContextMethod> reachMethods;
@@ -145,19 +148,6 @@ public class CallGraphBuilder {
   public VarNode getReceiverVarNode(Local receiver, ContextMethod m) {
     if (receiver.getType() == UnknownType.getInstance()) {
       System.out.println("why unknown??" + m.method() + ";;" + receiver);
-      //      Body body = PTAUtils.getMethodBody(m.method());
-      //      try {
-      //        //        OutputStream streamOut = new FileOutputStream(m.method().getName() +
-      // ".jimple");
-      //        // PrintWriter writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
-      //        PrintWriter writerOut = new PrintWriter(System.out);
-      //        new JimplePrinter().printTo(body, writerOut);
-      //        writerOut.flush();
-      //        writerOut.close();
-      //        //        streamOut.close();
-      //      } catch (Exception e) {
-      //        System.out.println("Error writing jimple to file ");
-      //      }
       throw new RuntimeException();
     }
     LocalVarNode base = pag.makeLocalVarNode(receiver, receiver.getType(), m.method());
@@ -166,7 +156,7 @@ public class CallGraphBuilder {
 
   protected void dispatch(AllocNode receiverNode, VirtualCallSite site) {
     Type type = receiverNode.getType();
-    final QueueReader<SootMethod> targets = PTAUtils.dispatch(type, site);
+    final QueueReader<SootMethod> targets = dispatch(type, site);
     while (targets.hasNext()) {
       SootMethod target = targets.next();
       if (site.iie() instanceof JSpecialInvokeExpr) {
@@ -297,5 +287,28 @@ public class CallGraphBuilder {
       dst = pta.parameterize(dst, srcContext);
       pag.addEdge(throwNode, dst);
     }
+  }
+
+  public QueueReader<SootMethod> dispatch(Type type, VirtualCallSite site) {
+    final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
+    final QueueReader<SootMethod> targets = targetsQueue.reader();
+    if (site.kind() == Kind.THREAD && !ptaScene.canStoreType(type, clRunnable)) {
+      return targets;
+    }
+    ContextMethod container = site.container();
+    if (site.iie() instanceof JSpecialInvokeExpr && site.kind() != Kind.THREAD) {
+      SootMethod target =
+          VirtualCalls.v()
+              .resolveSpecial((JSpecialInvokeExpr) site.iie(), site.subSig(), container.method());
+      // if the call target resides in a phantom class then
+      // "target" will be null, simply do not add the target in that case
+      if (target != null) {
+        targetsQueue.add(target);
+      }
+    } else {
+      Type mType = site.recNode().getType();
+      VirtualCalls.v().resolve(type, mType, site.subSig(), container.method(), targetsQueue);
+    }
+    return targets;
   }
 }

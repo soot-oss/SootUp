@@ -171,7 +171,7 @@ public class IntraFlowAnalysis {
               iie,
               subSig,
               qilin.core.builder.callgraph.Edge.ieToKind(iie));
-      QueueReader<SootMethod> targets = PTAUtils.dispatch(type, virtualCallSite);
+      QueueReader<SootMethod> targets = pag.getCgb().dispatch(type, virtualCallSite);
       while (targets.hasNext()) {
         SootMethod target = targets.next();
         MethodPAG tgtmpag = pag.getMethodPAG(target);

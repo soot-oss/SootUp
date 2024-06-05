@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PointsToAnalysis;
+import qilin.core.builder.CallGraphBuilder;
 import qilin.core.context.Context;
 import qilin.core.natives.NativeMethodDriver;
 import qilin.core.reflection.NopReflectionModel;
@@ -151,6 +152,10 @@ public class PAG {
 
   public PTA getPta() {
     return this.pta;
+  }
+
+  public CallGraphBuilder getCgb() {
+    return pta.getCgb();
   }
 
   public QueueReader<Node> edgeReader() {

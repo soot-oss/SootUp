@@ -31,14 +31,11 @@ import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
-import qilin.core.builder.callgraph.Kind;
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import qilin.util.queue.ChunkedQueue;
-import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -46,7 +43,6 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewArrayExpr;
-import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -169,29 +165,6 @@ public final class PTAUtils {
       ret.append("\t").append(n).append("\n");
     }
     System.out.print(ret);
-  }
-
-  public static QueueReader<SootMethod> dispatch(Type type, VirtualCallSite site) {
-    final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
-    final QueueReader<SootMethod> targets = targetsQueue.reader();
-    if (site.kind() == Kind.THREAD && !PTAScene.v().canStoreType(type, clRunnable)) {
-      return targets;
-    }
-    ContextMethod container = site.container();
-    if (site.iie() instanceof JSpecialInvokeExpr && site.kind() != Kind.THREAD) {
-      SootMethod target =
-          VirtualCalls.v()
-              .resolveSpecial((JSpecialInvokeExpr) site.iie(), site.subSig(), container.method());
-      // if the call target resides in a phantom class then
-      // "target" will be null, simply do not add the target in that case
-      if (target != null) {
-        targetsQueue.add(target);
-      }
-    } else {
-      Type mType = site.recNode().getType();
-      VirtualCalls.v().resolve(type, mType, site.subSig(), container.method(), targetsQueue);
-    }
-    return targets;
   }
 
   /** dump pts to sootoutput/pts */
