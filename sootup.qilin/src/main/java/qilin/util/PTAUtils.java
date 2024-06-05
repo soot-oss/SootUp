@@ -37,7 +37,6 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import qilin.core.sets.PointsToSetInternal;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import qilin.util.queue.UniqueQueue;
@@ -59,11 +58,9 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
-import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 
 public final class PTAUtils {
@@ -174,36 +171,6 @@ public final class PTAUtils {
     System.out.print(ret);
   }
 
-  public static boolean isUnresolved(Type type) {
-    if (type instanceof ArrayType) {
-      ArrayType at = (ArrayType) type;
-      type = at.getBaseType();
-    }
-    if (!(type instanceof ClassType)) return false;
-    ClassType rt = (ClassType) type;
-    //        if (!rt.hasSootClass()) {
-    //            return true;
-    //        }
-    Optional<? extends SootClass> ocl = PTAScene.v().getView().getClass(rt);
-    return !ocl.isPresent();
-    //        SootClass cl = rt.getSootClass();
-    //        return cl.resolvingLevel() < SootClass.HIERARCHY;
-  }
-
-  public static boolean castNeverFails(Type src, Type dst) {
-    if (dst == null) return true;
-    if (dst == src) return true;
-    if (src == null) return false;
-    if (dst.equals(src)) return true;
-    if (src instanceof NullType) return true;
-    //        if (src instanceof AnySubType)
-    //            return true;
-    if (dst instanceof NullType) return false;
-    //        if (dst instanceof AnySubType)
-    //            throw new RuntimeException("oops src=" + src + " dst=" + dst);
-    return PTAScene.v().canStoreType(src, dst);
-  }
-
   public static QueueReader<SootMethod> dispatch(Type type, VirtualCallSite site) {
     final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
     final QueueReader<SootMethod> targets = targetsQueue.reader();
@@ -225,13 +192,6 @@ public final class PTAUtils {
       VirtualCalls.v().resolve(type, mType, site.subSig(), container.method(), targetsQueue);
     }
     return targets;
-  }
-
-  public static boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, Node node) {
-    if (PTAUtils.castNeverFails(node.getType(), type)) {
-      return pts.add(node.getNumber());
-    }
-    return false;
   }
 
   /** dump pts to sootoutput/pts */

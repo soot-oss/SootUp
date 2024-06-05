@@ -32,7 +32,6 @@ import qilin.core.pag.Node;
 import qilin.core.pag.SparkField;
 import qilin.core.pag.VarNode;
 import qilin.core.sets.PointsToSet;
-import qilin.util.PTAUtils;
 import qilin.util.Pair;
 import qilin.util.Util;
 import qilin.util.queue.QueueReader;

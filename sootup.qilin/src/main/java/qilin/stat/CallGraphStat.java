@@ -31,7 +31,6 @@ import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.util.PTAUtils;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 

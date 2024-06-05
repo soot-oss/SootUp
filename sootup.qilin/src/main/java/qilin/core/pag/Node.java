@@ -20,7 +20,6 @@ package qilin.core.pag;
 
 import qilin.core.sets.DoublePointsToSet;
 import qilin.util.Numberable;
-import qilin.util.PTAUtils;
 import sootup.core.types.Type;
 
 /**
@@ -35,9 +34,6 @@ public class Node implements Numberable {
 
   /** Creates a new node of pointer assignment graph pag, with type type. */
   protected Node(Type type) {
-    if (PTAUtils.isUnresolved(type)) {
-      System.out.println("Warning: Unresolved type" + type + " in " + this.getClass());
-    }
     this.type = type;
   }
 

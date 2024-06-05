@@ -43,6 +43,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.Type;
 
 public class Solver extends Propagator {
   private final TreeSet<ValNode> valNodeWorkList = new TreeSet<>();
@@ -322,7 +323,7 @@ public class Solver extends Propagator {
         new P2SetVisitor(pta) {
           @Override
           public void visit(Node n) {
-            if (PTAUtils.addWithTypeFiltering(addTo, pointer.getType(), n)) {
+            if (addWithTypeFiltering(addTo, pointer.getType(), n)) {
               returnValue = true;
             }
           }
@@ -334,7 +335,7 @@ public class Solver extends Propagator {
   }
 
   protected void propagatePTS(final ValNode pointer, AllocNode heap) {
-    if (PTAUtils.addWithTypeFiltering(pointer.getP2Set(), pointer.getType(), heap)) {
+    if (addWithTypeFiltering(pointer.getP2Set(), pointer.getType(), heap)) {
       valNodeWorkList.add(pointer);
     }
   }
@@ -344,5 +345,12 @@ public class Solver extends Propagator {
     AllocNode base = heap.base();
     // return base instanceof StringConstantNode || PTAUtils.isEmptyArray(base);
     return PTAUtils.isEmptyArray(base);
+  }
+
+  private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, Node node) {
+    if (pta.getPtaScene().castNeverFails(node.getType(), type)) {
+      return pts.add(node.getNumber());
+    }
+    return false;
   }
 }
