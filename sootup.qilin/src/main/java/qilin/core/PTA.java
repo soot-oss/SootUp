@@ -35,9 +35,10 @@ import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public abstract class PTA implements PointsToAnalysis {
-
+  protected PTAScene ptaScene;
   protected AllocNode rootNode;
   protected PAG pag;
   protected OnFlyCallGraph callGraph;
@@ -45,6 +46,7 @@ public abstract class PTA implements PointsToAnalysis {
   protected ExceptionHandler eh;
 
   public PTA() {
+    this.ptaScene = PTAScene.v();
     this.pag = createPAG();
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);
@@ -66,6 +68,10 @@ public abstract class PTA implements PointsToAnalysis {
 
   public PAG getPag() {
     return pag;
+  }
+
+  public View getView() {
+    return ptaScene.getView();
   }
 
   public CallGraphBuilder getCgb() {

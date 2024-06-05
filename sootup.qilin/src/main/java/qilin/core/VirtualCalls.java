@@ -40,13 +40,12 @@ import sootup.core.views.View;
  */
 public class VirtualCalls {
   private static volatile VirtualCalls instance = null;
-  private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl =
-      DataFactory.createMap(PTAScene.v().getView().getClasses().size());
-  protected Map<Type, Set<Type>> baseToSubTypes = DataFactory.createMap();
+  private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl;
   protected View view;
 
   private VirtualCalls() {
     this.view = PTAScene.v().getView();
+    this.typeToVtbl = DataFactory.createMap(view.getClasses().size());
   }
 
   public static VirtualCalls v() {
@@ -78,12 +77,11 @@ public class VirtualCalls {
         && container.getDeclaringClassType() != methodSig.getDeclClassType()
         && !methodSig.getName().equals("<init>")
         && !subSig.toString().equals("void <clinit>()")) {
-      SootClass cls =
-              PTAScene.v().getView().getClass(container.getDeclaringClassType()).get();
+      SootClass cls = view.getClass(container.getDeclaringClassType()).get();
       ClassType superClsType = cls.getSuperclass().get();
       return resolveNonSpecial(superClsType, subSig, appOnly);
     } else {
-      Optional<? extends SootMethod> otgt = PTAScene.v().getView().getMethod(methodSig);
+      Optional<? extends SootMethod> otgt = view.getMethod(methodSig);
       if (!otgt.isPresent()) {
         System.out.println(
             "Wrarning: signature " + methodSig + " does not have a concrete method.");
@@ -205,5 +203,4 @@ public class VirtualCalls {
       throw new RuntimeException("oops " + t);
     }
   }
-
 }

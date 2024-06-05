@@ -51,10 +51,13 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -308,6 +311,17 @@ public class PAG {
 
   // ==========================create nodes==================================
   public AllocNode makeAllocNode(Object newExpr, Type type, SootMethod m) {
+    if (type instanceof ClassType) {
+      ClassType rt = (ClassType) type;
+      View view = pta.getView();
+      Optional<? extends SootClass> osc = view.getClass(rt);
+      if (osc.isPresent() && osc.get().isAbstract()) {
+        boolean usesReflectionLog = CoreConfig.v().getAppConfig().REFLECTION_LOG != null;
+        if (!usesReflectionLog) {
+          throw new RuntimeException("Attempt to create allocnode with abstract type " + rt);
+        }
+      }
+    }
     AllocNode ret = valToAllocNode.get(newExpr);
     if (ret == null) {
       valToAllocNode.put(newExpr, ret = new AllocNode(newExpr, type, m));

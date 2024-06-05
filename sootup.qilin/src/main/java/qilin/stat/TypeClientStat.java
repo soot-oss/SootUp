@@ -75,7 +75,7 @@ public class TypeClientStat implements AbstractStat {
     }
 
     for (SootMethod sm : reachableMethods) {
-      View view = PTAScene.v().getView();
+      View view = pta.getView();
       Optional<? extends SootClass> osc = view.getClass(sm.getDeclaringClassType());
       if (!osc.isPresent()) {
         continue;
