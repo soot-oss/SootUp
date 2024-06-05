@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CallsiteCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -33,7 +34,8 @@ import qilin.pta.PTAConfig;
 
 public class CallSiteSensPTA extends BasePTA {
 
-  public CallSiteSensPTA(int k, int hk) {
+  public CallSiteSensPTA(PTAScene scene, int k, int hk) {
+    super(scene);
     this.ctxCons = new CallsiteCtxConstructor();
     CtxSelector us = new UniformSelector(k, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import qilin.core.CorePTA;
+import qilin.core.PTAScene;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.CallsiteCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
@@ -51,7 +52,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
   Set<SootMethod> PCSM = new HashSet<>();
   Set<SootMethod> CSM = new HashSet<>();
 
-  public PartialCallSiteSensPTA(int ctxLen) {
+  public PartialCallSiteSensPTA(PTAScene scene, int ctxLen) {
+    super(scene);
     this.ctxCons = new CallsiteCtxConstructor();
     CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -64,7 +66,7 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
     } else {
       this.heapAbst = new AllocSiteAbstractor();
     }
-    this.prePTA = new Spark();
+    this.prePTA = new Spark(scene);
     this.prePAG = prePTA.getPag();
   }
 

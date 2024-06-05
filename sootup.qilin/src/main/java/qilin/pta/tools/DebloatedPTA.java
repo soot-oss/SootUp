@@ -50,13 +50,15 @@ public class DebloatedPTA extends StagedPTA {
 
   protected BasePTA basePTA;
   protected Set<Object> ctxDepHeaps = new HashSet<>();
-  protected DebloatApproach debloatApproach = DebloatApproach.CONCH;
+  protected DebloatApproach debloatApproach;
 
   /*
    * The debloating approach is currently for object-sensitive PTA only.
    * Thus the base PTA should be k-OBJ, Zipper-OBJ or Eagle-OBJ.
    * */
-  public DebloatedPTA(BasePTA basePTA) {
+  /* this constructor is used to specify the debloating approach. */
+  public DebloatedPTA(BasePTA basePTA, DebloatApproach approach) {
+    super(basePTA.getPtaScene());
     this.basePTA = basePTA;
     CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
     basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
@@ -64,14 +66,9 @@ public class DebloatedPTA extends StagedPTA {
       StagedPTA stagedPTA = (StagedPTA) basePTA;
       this.prePTA = stagedPTA.getPrePTA();
     } else {
-      this.prePTA = new Spark();
+      this.prePTA = new Spark(basePTA.getPtaScene());
     }
     System.out.println("debloating ....");
-  }
-
-  /* this constructor is used to specify the debloating approach. */
-  public DebloatedPTA(BasePTA basePTA, DebloatApproach approach) {
-    this(basePTA);
     this.debloatApproach = approach;
   }
 

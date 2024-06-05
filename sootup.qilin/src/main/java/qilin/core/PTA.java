@@ -45,8 +45,8 @@ public abstract class PTA implements PointsToAnalysis {
   protected CallGraphBuilder cgb;
   protected ExceptionHandler eh;
 
-  public PTA() {
-    this.ptaScene = PTAScene.v();
+  public PTA(PTAScene scene) {
+    this.ptaScene = scene;
     this.pag = createPAG();
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);

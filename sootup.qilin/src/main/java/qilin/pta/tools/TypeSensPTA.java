@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.TypeCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -32,7 +33,8 @@ import qilin.pta.PTAConfig;
  * */
 public class TypeSensPTA extends BasePTA {
 
-  public TypeSensPTA(int k, int hk) {
+  public TypeSensPTA(PTAScene scene, int k, int hk) {
+    super(scene);
     this.ctxCons = new TypeCtxConstructor();
     CtxSelector us = new UniformSelector(k, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

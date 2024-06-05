@@ -19,6 +19,7 @@
 package qilin.pta.tools;
 
 import java.util.Map;
+import qilin.core.PTAScene;
 import qilin.pta.toolkits.turner.Turner;
 
 /*
@@ -27,8 +28,8 @@ import qilin.pta.toolkits.turner.Turner;
 public class TurnerPTA extends PartialObjSensPTA {
   private final int k;
 
-  public TurnerPTA(int k) {
-    super(k);
+  public TurnerPTA(PTAScene scene, int k) {
+    super(scene, k);
     this.k = k;
     System.out.println("Turner ...");
   }

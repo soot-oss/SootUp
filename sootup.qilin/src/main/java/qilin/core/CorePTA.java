@@ -37,6 +37,10 @@ public abstract class CorePTA extends PTA {
   protected CtxSelector ctxSel;
   protected HeapAbstractor heapAbst;
 
+  public CorePTA(PTAScene scene) {
+    super(scene);
+  }
+
   public CtxSelector ctxSelector() {
     return ctxSel;
   }

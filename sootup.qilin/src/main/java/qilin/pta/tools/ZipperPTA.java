@@ -20,6 +20,7 @@ package qilin.pta.tools;
 
 import java.util.HashSet;
 import java.util.Set;
+import qilin.core.PTAScene;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
@@ -53,7 +54,8 @@ public class ZipperPTA extends StagedPTA {
    * Zipper support object-sensitivity, callsite-sensitivity by using corresponding
    * context-constructor.
    * */
-  public ZipperPTA(int k, int hk, CtxConstructor ctxCons) {
+  public ZipperPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
+    super(scene);
     this.ctxCons = ctxCons;
     CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -66,7 +68,7 @@ public class ZipperPTA extends StagedPTA {
     } else {
       this.heapAbst = new AllocSiteAbstractor();
     }
-    this.prePTA = new Spark();
+    this.prePTA = new Spark(scene);
   }
 
   @Override

@@ -20,6 +20,7 @@ package qilin.pta.tools;
 
 import java.util.HashMap;
 import java.util.Map;
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -39,7 +40,8 @@ public class BeanPTA extends StagedPTA {
   // [current heap, [allocator heap, [heap ctx, new ctx]]] only for B-2obj;
   Map<Object, Map<Object, Map<Object, Object>>> beanNexCtxMap = new HashMap<>();
 
-  public BeanPTA(CtxConstructor ctxCons) {
+  public BeanPTA(PTAScene scene, CtxConstructor ctxCons) {
+    super(scene);
     this.ctxCons = ctxCons;
     CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -52,7 +54,7 @@ public class BeanPTA extends StagedPTA {
     } else {
       this.heapAbst = new AllocSiteAbstractor();
     }
-    prePTA = new Spark();
+    prePTA = new Spark(scene);
     System.out.println("bean ...");
   }
 

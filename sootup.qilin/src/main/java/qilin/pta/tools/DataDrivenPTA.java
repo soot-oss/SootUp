@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -39,7 +40,8 @@ import qilin.pta.toolkits.dd.DataDrivenSelector;
 
 public class DataDrivenPTA extends BasePTA {
 
-  public DataDrivenPTA(CtxConstructor ctxCons) {
+  public DataDrivenPTA(PTAScene scene, CtxConstructor ctxCons) {
+    super(scene);
     this.ctxCons = ctxCons;
     CtxSelector us = new DataDrivenSelector(ctxCons.getClass());
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

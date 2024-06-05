@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
-import qilin.core.VirtualCalls;
 import qilin.core.builder.MethodNodeFactory;
 import qilin.core.builder.callgraph.Edge;
 import qilin.core.context.Context;
@@ -47,7 +46,6 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -206,22 +204,6 @@ public final class PTAUtils {
     ClassType rt = (ClassType) t;
     String s = rt.toString();
     return (s.equals("java.lang.StringBuffer") || s.equals("java.lang.StringBuilder"));
-  }
-
-  public static boolean supportFinalize(AllocNode heap) {
-    MethodSubSignature sigFinalize =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
-    Type type = heap.getType();
-    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
-      ClassType refType = (ClassType) type;
-      SootMethod finalizeMethod = VirtualCalls.v().resolveNonSpecial(refType, sigFinalize);
-      if (finalizeMethod != null
-          && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
-        return false;
-      }
-      return finalizeMethod != null;
-    }
-    return false;
   }
 
   public static Context plusplusOp(AllocNode heap) {

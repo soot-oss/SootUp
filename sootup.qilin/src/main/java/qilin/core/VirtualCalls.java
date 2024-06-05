@@ -39,28 +39,12 @@ import sootup.core.views.View;
  * @author Ondrej Lhotak
  */
 public class VirtualCalls {
-  private static volatile VirtualCalls instance = null;
   private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl;
   protected View view;
 
-  private VirtualCalls() {
-    this.view = PTAScene.v().getView();
+  public VirtualCalls(View view) {
+    this.view = view;
     this.typeToVtbl = DataFactory.createMap(view.getClasses().size());
-  }
-
-  public static VirtualCalls v() {
-    if (instance == null) {
-      synchronized (VirtualCalls.class) {
-        if (instance == null) {
-          instance = new VirtualCalls();
-        }
-      }
-    }
-    return instance;
-  }
-
-  public static void reset() {
-    instance = null;
   }
 
   public SootMethod resolveSpecial(

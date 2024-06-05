@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import qilin.CoreConfig;
 import qilin.core.CorePTA;
 import qilin.core.PTA;
+import qilin.core.PTAScene;
 import qilin.core.builder.CallGraphBuilder;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.ContextVarNode;
@@ -49,7 +50,9 @@ import sootup.core.model.SootMethod;
 public abstract class BasePTA extends CorePTA {
   protected IEvaluator evaluator;
 
-  public BasePTA() {
+  public BasePTA(PTAScene scene) {
+    super(scene);
+    //    super(new PTAScene());
     //        this.evaluator = new PTAEvaluator(this);
     this.evaluator = new SimplifiedEvaluator(this);
   }

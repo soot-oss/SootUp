@@ -21,6 +21,7 @@ package qilin.pta.tools;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import qilin.core.PTAScene;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.ObjCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
@@ -52,7 +53,8 @@ public abstract class PartialObjSensPTA extends StagedPTA {
   Set<SootMethod> PCSM = new HashSet<>();
   Set<SootMethod> CSM = new HashSet<>();
 
-  public PartialObjSensPTA(int ctxLen) {
+  public PartialObjSensPTA(PTAScene scene, int ctxLen) {
+    super(scene);
     this.ctxCons = new ObjCtxConstructor();
     CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
@@ -65,7 +67,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     } else {
       this.heapAbst = new AllocSiteAbstractor();
     }
-    this.prePTA = new Spark();
+    this.prePTA = new Spark(scene);
     this.prePAG = prePTA.getPag();
   }
 

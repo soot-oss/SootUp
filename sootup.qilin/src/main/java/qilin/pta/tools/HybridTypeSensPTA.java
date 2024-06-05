@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.HybTypeCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -30,7 +31,8 @@ import qilin.pta.PTAConfig;
 /** refer to "Hybrid Context-Sensitivity for Points-To Analysis" (PLDI'13) */
 public class HybridTypeSensPTA extends BasePTA {
 
-  public HybridTypeSensPTA(int k, int hk) {
+  public HybridTypeSensPTA(PTAScene scene, int k, int hk) {
+    super(scene);
     this.ctxCons = new HybTypeCtxConstructor();
     CtxSelector us = new UniformSelector(k, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

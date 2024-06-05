@@ -43,7 +43,9 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
+import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class Solver extends Propagator {
   private final TreeSet<ValNode> valNodeWorkList = new TreeSet<>();
@@ -215,7 +217,7 @@ public class Solver extends Propagator {
   // handle implicit calls to java.lang.ref.Finalizer.register by the JVM.
   // please refer to library/finalization.logic in doop.
   private void handleImplicitCallToFinalizerRegister(AllocNode heap) {
-    if (PTAUtils.supportFinalize(heap)) {
+    if (supportFinalize(heap)) {
       SootMethod rm =
           pta.getPtaScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
@@ -227,6 +229,22 @@ public class Solver extends Propagator {
       pag.addEdge(heap, parm);
       cgb.injectCallEdge(baseHeap, pta.parameterize(rm, calleeCtx), Kind.STATIC);
     }
+  }
+
+  private boolean supportFinalize(AllocNode heap) {
+    MethodSubSignature sigFinalize =
+        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
+    Type type = heap.getType();
+    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
+      ClassType refType = (ClassType) type;
+      SootMethod finalizeMethod = cgb.resolveNonSpecial(refType, sigFinalize);
+      if (finalizeMethod != null
+          && finalizeMethod.toString().equals("<java.lang.Object: void finalize()>")) {
+        return false;
+      }
+      return finalizeMethod != null;
+    }
+    return false;
   }
 
   private void handleStoreAndLoadOnBase(VarNode base) {

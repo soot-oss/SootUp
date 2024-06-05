@@ -21,6 +21,7 @@ package qilin.pta.tools;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Map;
+import qilin.core.PTAScene;
 import qilin.core.pag.AllocNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.core.pag.Parm;
@@ -38,8 +39,8 @@ import sootup.core.jimple.common.stmt.Stmt;
  * (TOSEM'21)
  * */
 public class EaglePTA extends PartialObjSensPTA {
-  public EaglePTA(int ctxLen) {
-    super(ctxLen);
+  public EaglePTA(PTAScene scene, int ctxLen) {
+    super(scene, ctxLen);
     System.out.println("Eagle ....");
   }
 

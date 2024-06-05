@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.pta.PTAConfig;
 
 /*
@@ -26,6 +27,10 @@ import qilin.pta.PTAConfig;
  * */
 public abstract class StagedPTA extends BasePTA {
   protected BasePTA prePTA;
+
+  public StagedPTA(PTAScene scene) {
+    super(scene);
+  }
 
   public BasePTA getPrePTA() {
     return this.prePTA;

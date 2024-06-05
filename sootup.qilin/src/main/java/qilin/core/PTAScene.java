@@ -50,34 +50,19 @@ import sootup.java.core.views.JavaView;
 
 public class PTAScene {
   private static final Logger logger = LoggerFactory.getLogger(PTAScene.class);
-  private static volatile PTAScene instance = null;
 
   private final View view;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
-  public static PTAScene v() {
-    if (instance == null) {
-      synchronized (PTAScene.class) {
-        if (instance == null) {
-          instance = new PTAScene();
-        }
-      }
-    }
-    return instance;
-  }
+  public final Set<SootMethod> nativeBuilt;
+  public final Set<SootMethod> reflectionBuilt;
+  public final Set<SootMethod> arraycopyBuilt;
 
-  public static void junitReset() {
-    VirtualCalls.reset();
-    instance = null;
-  }
-
-  public static void reset() {
-    VirtualCalls.reset();
-    instance = null;
-  }
-
-  private PTAScene() {
+  public PTAScene() {
+    this.nativeBuilt = DataFactory.createSet();
+    this.reflectionBuilt = DataFactory.createSet();
+    this.arraycopyBuilt = DataFactory.createSet();
     /**
      * Set the soot class path to point to the default class path appended with the app path (the
      * classes dir or the application jar) and jar files in the library dir of the application.
@@ -101,7 +86,7 @@ public class PTAScene {
     this.fakeMainFactory = new FakeMainFactory(view, mainClass);
   }
 
-  private static JavaView createViewForClassPath(List<String> classPaths) {
+  private JavaView createViewForClassPath(List<String> classPaths) {
     List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     for (String clazzPath : classPaths) {
       analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
@@ -109,7 +94,7 @@ public class PTAScene {
     return new JavaView(analysisInputLocations);
   }
 
-  private static Collection<String> getJreJars(String JRE) {
+  private Collection<String> getJreJars(String JRE) {
     if (JRE == null) {
       return Collections.emptySet();
     }
@@ -120,7 +105,7 @@ public class PTAScene {
   }
 
   /** Returns a collection of files, one for each of the jar files in the app's lib folder */
-  private static Collection<String> getLibJars(String LIB_PATH) {
+  private Collection<String> getLibJars(String LIB_PATH) {
     if (LIB_PATH == null) {
       return Collections.emptySet();
     }
@@ -145,10 +130,6 @@ public class PTAScene {
     System.exit(1);
     return null;
   }
-
-  public final Set<SootMethod> nativeBuilt = DataFactory.createSet();
-  public final Set<SootMethod> reflectionBuilt = DataFactory.createSet();
-  public final Set<SootMethod> arraycopyBuilt = DataFactory.createSet();
 
   /*
    * wrapper methods for FakeMain.

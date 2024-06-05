@@ -45,6 +45,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
@@ -61,6 +62,7 @@ public class CallGraphBuilder {
   protected final PTA pta;
   protected final PAG pag;
   protected final PTAScene ptaScene;
+  protected final VirtualCalls virtualCalls;
   protected OnFlyCallGraph cicg;
 
   public CallGraphBuilder(PTA pta) {
@@ -68,6 +70,7 @@ public class CallGraphBuilder {
     this.pag = pta.getPag();
     this.ptaScene = pta.getPtaScene();
     ptaScene.setCallGraph(new OnFlyCallGraph());
+    this.virtualCalls = new VirtualCalls(ptaScene.getView());
     receiverToSites = DataFactory.createMap(ptaScene.getView().getClasses().size());
     methodToInvokeStmt = DataFactory.createMap();
     reachMethods = DataFactory.createSet();
@@ -90,6 +93,10 @@ public class CallGraphBuilder {
 
   public Collection<VirtualCallSite> callSitesLookUp(VarNode receiver) {
     return receiverToSites.getOrDefault(receiver, Collections.emptySet());
+  }
+
+  public SootMethod resolveNonSpecial(ClassType t, MethodSubSignature subSig) {
+    return virtualCalls.resolveNonSpecial(t, subSig);
   }
 
   public OnFlyCallGraph getCallGraph() {
@@ -299,8 +306,8 @@ public class CallGraphBuilder {
     ContextMethod container = site.container();
     if (site.iie() instanceof JSpecialInvokeExpr && site.kind() != Kind.THREAD) {
       SootMethod target =
-          VirtualCalls.v()
-              .resolveSpecial((JSpecialInvokeExpr) site.iie(), site.subSig(), container.method());
+          virtualCalls.resolveSpecial(
+              (JSpecialInvokeExpr) site.iie(), site.subSig(), container.method());
       // if the call target resides in a phantom class then
       // "target" will be null, simply do not add the target in that case
       if (target != null) {
@@ -308,7 +315,7 @@ public class CallGraphBuilder {
       }
     } else {
       Type mType = site.recNode().getType();
-      VirtualCalls.v().resolve(type, mType, site.subSig(), container.method(), targetsQueue);
+      virtualCalls.resolve(type, mType, site.subSig(), container.method(), targetsQueue);
     }
     return targets;
   }

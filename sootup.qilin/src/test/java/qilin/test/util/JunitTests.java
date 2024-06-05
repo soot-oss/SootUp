@@ -23,10 +23,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import qilin.core.PTA;
-import qilin.core.PTAScene;
 import qilin.driver.PTAFactory;
 import qilin.driver.PTAOption;
 import qilin.driver.PTAPattern;
@@ -84,11 +82,6 @@ public abstract class JunitTests {
     PTAOption ptaOption = new PTAOption();
     ptaOption.parseCommandLine(args);
     isSetUp = true;
-  }
-
-  @Before
-  public void reset() {
-    PTAScene.junitReset();
   }
 
   public PTA run(String mainClass) {

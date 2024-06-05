@@ -18,6 +18,7 @@
 
 package qilin.pta.tools;
 
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.ObjCtxConstructor;
 import qilin.parm.heapabst.AllocSiteAbstractor;
 import qilin.parm.heapabst.HeuristicAbstractor;
@@ -31,7 +32,8 @@ import qilin.pta.PTAConfig;
  * refer to "Parameterized object sensitivity for points-to analysis for Java" (TSE'05)
  * */
 public class ObjectSensPTA extends BasePTA {
-  public ObjectSensPTA(int k, int hk) {
+  public ObjectSensPTA(PTAScene scene, int k, int hk) {
+    super(scene);
     this.ctxCons = new ObjCtxConstructor();
     CtxSelector us = new UniformSelector(k, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {

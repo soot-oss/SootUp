@@ -19,12 +19,13 @@
 package qilin.pta.tools;
 
 import java.util.Map;
+import qilin.core.PTAScene;
 import qilin.pta.toolkits.selectx.Selectx;
 
 public class SelectxPTA extends PartialCallSiteSensPTA {
 
-  public SelectxPTA(int ctxLen) {
-    super(ctxLen);
+  public SelectxPTA(PTAScene scene, int ctxLen) {
+    super(scene, ctxLen);
     System.out.println("selectx ... ");
   }
 

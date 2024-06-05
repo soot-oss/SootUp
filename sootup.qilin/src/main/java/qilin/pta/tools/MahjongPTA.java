@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import qilin.core.PTAScene;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.MahjongAbstractor;
 import qilin.parm.select.CtxSelector;
@@ -39,12 +40,14 @@ public class MahjongPTA extends StagedPTA {
   public Set<Object> mergedHeap = new HashSet<>();
   public Set<Object> csHeap = new HashSet<>();
 
-  public MahjongPTA(int k, int hk, CtxConstructor ctxCons) {
+  public MahjongPTA(PTAScene scene, int k, int hk, CtxConstructor ctxCons) {
+    super(scene);
     this.ctxCons = ctxCons;
     CtxSelector us = new UniformSelector(k, hk);
     CtxSelector ds = new DebloatingSelector(csHeap);
     this.ctxSel = new PipelineSelector(us, ds);
     this.heapAbst = new MahjongAbstractor(pag, mergedHeap, heapModelMap);
+    this.prePTA = new Spark(scene);
     System.out.println("Mahjong ...");
   }
 
