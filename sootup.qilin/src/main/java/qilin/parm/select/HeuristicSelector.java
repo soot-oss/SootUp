@@ -25,8 +25,14 @@ import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
+import sootup.core.views.View;
 
 public class HeuristicSelector extends CtxSelector {
+  private final View view;
+
+  public HeuristicSelector(View view) {
+    this.view = view;
+  }
 
   @Override
   public Context select(SootMethod m, Context context) {
@@ -45,7 +51,7 @@ public class HeuristicSelector extends CtxSelector {
 
   @Override
   public Context select(AllocNode heap, Context context) {
-    if (PTAUtils.isThrowable(heap.getType())
+    if (PTAUtils.isThrowable(view, heap.getType())
         || PTAUtils.subtypeOfAbstractStringBuilder(heap.getType())) {
       return CtxConstructor.emptyContext;
     }

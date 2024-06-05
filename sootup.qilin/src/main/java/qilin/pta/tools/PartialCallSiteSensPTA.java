@@ -55,7 +55,7 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
     this.ctxCons = new CallsiteCtxConstructor();
     CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }

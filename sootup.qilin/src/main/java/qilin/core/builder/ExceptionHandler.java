@@ -25,6 +25,7 @@ import qilin.core.pag.*;
 import qilin.core.sets.P2SetVisitor;
 import qilin.core.sets.PointsToSetInternal;
 import qilin.util.DataFactory;
+import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Trap;
 import sootup.core.jimple.common.stmt.JIdentityStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -75,7 +76,7 @@ public class ExceptionHandler {
     List<Trap> trapList =
         mpag.stmt2wrapperedTraps.getOrDefault(site.getUnit(), Collections.emptyList());
     for (Trap trap : trapList) {
-      if (pta.getPtaScene().canStoreType(type, trap.getExceptionType())) {
+      if (PTAUtils.canStoreType(pta.getView(), type, trap.getExceptionType())) {
         Stmt handler = trap.getHandlerStmt();
         assert handler instanceof JIdentityStmt;
         JIdentityStmt handlerStmt = (JIdentityStmt) handler;

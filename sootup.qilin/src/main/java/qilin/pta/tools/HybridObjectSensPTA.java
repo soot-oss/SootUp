@@ -34,7 +34,7 @@ public class HybridObjectSensPTA extends BasePTA {
     this.ctxCons = new HybObjCtxConstructor();
     CtxSelector us = new UniformSelector(k + 1, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }

@@ -56,7 +56,7 @@ public abstract class PartialObjSensPTA extends StagedPTA {
     this.ctxCons = new ObjCtxConstructor();
     CtxSelector us = new PartialVarSelector(ctxLen, ctxLen - 1, csnodes, csmethods);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }

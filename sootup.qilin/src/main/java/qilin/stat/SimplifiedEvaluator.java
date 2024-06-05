@@ -110,7 +110,7 @@ public class SimplifiedEvaluator implements IEvaluator {
               if (fails) {
                 break;
               }
-              fails = !pta.getPtaScene().castNeverFails(n.getType(), targetType);
+              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
             }
             if (fails) {
               totalCastsMayFail++;

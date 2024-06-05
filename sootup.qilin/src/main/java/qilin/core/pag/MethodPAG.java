@@ -107,7 +107,7 @@ public class MethodPAG {
     if (method.isStatic()) {
       if (!PTAUtils.isFakeMainMethod(method)) {
         SootClass sc = ptaScene.getView().getClass(method.getDeclaringClassType()).get();
-        PTAUtils.clinitsOf(sc).forEach(this::addTriggeredClinit);
+        nodeFactory.clinitsOf(sc).forEach(this::addTriggeredClinit);
       }
     }
     for (Stmt unit : body.getStmts()) {

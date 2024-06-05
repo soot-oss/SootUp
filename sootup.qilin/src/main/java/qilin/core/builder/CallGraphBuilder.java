@@ -161,7 +161,7 @@ public class CallGraphBuilder {
       SootMethod target = targets.next();
       if (site.iie() instanceof JSpecialInvokeExpr) {
         Type calleeDeclType = target.getDeclaringClassType();
-        if (!ptaScene.canStoreType(type, calleeDeclType)) {
+        if (!PTAUtils.canStoreType(pta.getView(), type, calleeDeclType)) {
           continue;
         }
       }
@@ -292,7 +292,8 @@ public class CallGraphBuilder {
   public QueueReader<SootMethod> dispatch(Type type, VirtualCallSite site) {
     final ChunkedQueue<SootMethod> targetsQueue = new ChunkedQueue<>();
     final QueueReader<SootMethod> targets = targetsQueue.reader();
-    if (site.kind() == Kind.THREAD && !ptaScene.canStoreType(type, clRunnable)) {
+    if (site.kind() == Kind.THREAD
+        && !PTAUtils.canStoreType(ptaScene.getView(), type, clRunnable)) {
       return targets;
     }
     ContextMethod container = site.container();

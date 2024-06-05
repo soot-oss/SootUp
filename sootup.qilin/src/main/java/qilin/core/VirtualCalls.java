@@ -163,10 +163,10 @@ public class VirtualCalls {
       t = PTAUtils.getClassType("java.lang.Object");
     }
 
-    if (declaredType != null && !PTAScene.v().canStoreType(t, declaredType)) {
+    if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {
       return;
     }
-    if (sigType != null && !PTAScene.v().canStoreType(t, sigType)) {
+    if (sigType != null && !PTAUtils.canStoreType(view, t, sigType)) {
       return;
     }
     if (t instanceof ClassType) {

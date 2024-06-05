@@ -132,7 +132,7 @@ public class TypeClientStat implements AbstractStat {
               if (fails) {
                 break;
               }
-              fails = !pta.getPtaScene().castNeverFails(n.getType(), targetType);
+              fails = !PTAUtils.castNeverFails(pta.getView(), n.getType(), targetType);
             }
 
             if (fails) {

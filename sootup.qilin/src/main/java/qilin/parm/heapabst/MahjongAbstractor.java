@@ -25,14 +25,17 @@ import qilin.core.pag.PAG;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
+import sootup.core.views.View;
 
 public class MahjongAbstractor implements HeapAbstractor {
   private final Set<Object> mergedHeap;
   private final Map<Object, Object> heapModelMap;
   private final PAG pag;
+  private final View view;
 
   public MahjongAbstractor(PAG pag, Set<Object> mergedHeap, Map<Object, Object> heapModelMap) {
     this.pag = pag;
+    this.view = pag.getPta().getView();
     this.mergedHeap = mergedHeap;
     this.heapModelMap = heapModelMap;
   }
@@ -46,7 +49,7 @@ public class MahjongAbstractor implements HeapAbstractor {
     if (this.mergedHeap.contains(mergedIr)) {
       return pag.makeAllocNode(mergedIr, type, null);
     } else {
-      if (PTAUtils.isThrowable(type)) {
+      if (PTAUtils.isThrowable(view, type)) {
         // Mahjong still needs heuristics to handle throwable types.
         return pag.makeAllocNode("Merged " + type, type, null);
       }

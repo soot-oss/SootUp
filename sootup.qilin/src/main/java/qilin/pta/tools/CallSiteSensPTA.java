@@ -37,7 +37,7 @@ public class CallSiteSensPTA extends BasePTA {
     this.ctxCons = new CallsiteCtxConstructor();
     CtxSelector us = new UniformSelector(k, hk);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }

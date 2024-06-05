@@ -43,7 +43,7 @@ public class BeanPTA extends StagedPTA {
     this.ctxCons = ctxCons;
     CtxSelector us = new BeanSelector(pag, beanNexCtxMap);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }

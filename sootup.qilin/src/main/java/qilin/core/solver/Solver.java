@@ -348,7 +348,7 @@ public class Solver extends Propagator {
   }
 
   private boolean addWithTypeFiltering(PointsToSetInternal pts, Type type, Node node) {
-    if (pta.getPtaScene().castNeverFails(node.getType(), type)) {
+    if (PTAUtils.castNeverFails(pta.getView(), node.getType(), type)) {
       return pts.add(node.getNumber());
     }
     return false;

@@ -25,7 +25,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qilin.CoreConfig;
 import qilin.core.PTA;
 import qilin.core.PTAScene;
 import qilin.core.VirtualCalls;
@@ -36,7 +35,6 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
-import qilin.util.queue.UniqueQueue;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -48,22 +46,20 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
+import sootup.core.types.NullType;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
+import sootup.core.views.View;
 import sootup.java.core.JavaIdentifierFactory;
 
 public final class PTAUtils {
   private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
-  static final String output_dir = CoreConfig.v().getOutConfig().outDir;
-  static Map<String, Node> nodes = new TreeMap<>();
-  private static final ClassType clRunnable = getClassType("java.lang.Runnable");
 
   public static ClassType getClassType(String fullyQualifiedClassName) {
     return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
@@ -167,73 +163,6 @@ public final class PTAUtils {
     System.out.print(ret);
   }
 
-  /** dump pts to sootoutput/pts */
-  public static void dumpPts(PTA pta, boolean appOnly) {
-    try {
-      PrintWriter file = new PrintWriter(new File(output_dir, "pts.txt"));
-      file.println("Points-to results:");
-      for (final ValNode vn : pta.getPag().getValNodes()) {
-        if (!(vn instanceof VarNode)) {
-          continue;
-        }
-        SootClass clz = null;
-        if (vn instanceof LocalVarNode) {
-          SootMethod sm = ((LocalVarNode) vn).getMethod();
-          if (sm != null
-              && !sm.getSignature().toString().equals("<qilin.pta.FakeMain: void main()>")) {
-            clz = PTAScene.v().getView().getClass(sm.getDeclaringClassType()).get();
-          }
-        } else if (vn instanceof GlobalVarNode) {
-          GlobalVarNode gvn = (GlobalVarNode) vn;
-          Object variable = gvn.getVariable();
-          if (variable instanceof SootField) {
-            SootField sf = (SootField) variable;
-            clz = PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
-          }
-        } else if (vn instanceof ContextVarNode) {
-          ContextVarNode cv = (ContextVarNode) vn;
-          VarNode varNode = cv.base();
-          if (varNode instanceof LocalVarNode) {
-            LocalVarNode cvbase = (LocalVarNode) varNode;
-            clz = PTAScene.v().getView().getClass(cvbase.getMethod().getDeclaringClassType()).get();
-          } else if (varNode instanceof GlobalVarNode) {
-            GlobalVarNode gvn = (GlobalVarNode) varNode;
-            Object variable = gvn.getVariable();
-            if (variable instanceof SootField) {
-              SootField sf = (SootField) variable;
-              clz = PTAScene.v().getView().getClass(sf.getDeclaringClassType()).get();
-            }
-          }
-        }
-        if (appOnly && clz != null && !clz.isApplicationClass()) {
-          continue;
-        }
-
-        String label = getNodeLabel(vn);
-        nodes.put("[" + label + "]", vn);
-        file.print(label + " -> {");
-        PointsToSet p2set = pta.reachingObjects(vn);
-
-        if (p2set == null || p2set.isEmpty()) {
-          file.print(" empty }\n");
-          continue;
-        }
-        for (Iterator<AllocNode> it = p2set.iterator(); it.hasNext(); ) {
-          Node n = it.next();
-          label = getNodeLabel(n);
-          nodes.put("[" + label + "]", n);
-          file.print(" ");
-          file.print(label);
-        }
-        file.print(" }\n");
-      }
-      dumpNodeNames(file);
-      file.close();
-    } catch (IOException e) {
-      throw new RuntimeException("Couldn't dump solution." + e);
-    }
-  }
-
   public static String getNodeLabel(Node node) {
     int num = node.getNumber();
     if (node instanceof LocalVarNode) return "L" + num;
@@ -246,15 +175,28 @@ public final class PTAUtils {
     else throw new RuntimeException("no such node type exists!");
   }
 
-  private static void dumpNodeNames(PrintWriter file) {
-    nodes.forEach((l, n) -> file.println(l + n));
-  }
-
-  public static boolean isThrowable(Type type) {
+  public static boolean isThrowable(View view, Type type) {
     if (type instanceof ClassType) {
-      return PTAScene.v().canStoreType(type, PTAUtils.getClassType("java.lang.Throwable"));
+      return canStoreType(view, type, PTAUtils.getClassType("java.lang.Throwable"));
     }
     return false;
+  }
+
+  public static boolean canStoreType(View view, final Type child, final Type parent) {
+    if (child == parent || child.equals(parent)) {
+      return true;
+    }
+    return view.getTypeHierarchy().isSubtype(parent, child);
+  }
+
+  public static boolean castNeverFails(View view, Type src, Type dst) {
+    if (dst == null) return true;
+    if (dst == src) return true;
+    if (src == null) return false;
+    if (dst.equals(src)) return true;
+    if (src instanceof NullType) return true;
+    if (dst instanceof NullType) return false;
+    return canStoreType(view, src, dst);
   }
 
   public static boolean subtypeOfAbstractStringBuilder(Type t) {
@@ -328,6 +270,15 @@ public final class PTAUtils {
     return false;
   }
 
+  public static void dumpJimple(PTAScene scene, String outputDir) {
+    for (SootClass clz : scene.getLibraryClasses()) {
+      PTAUtils.writeJimple(outputDir, clz);
+    }
+    for (SootClass clz : scene.getApplicationClasses()) {
+      PTAUtils.writeJimple(outputDir, clz);
+    }
+  }
+
   /** Write the jimple file for clz. ParentDir is the absolute path of parent directory. */
   public static void writeJimple(String parentDir, SootClass clz) {
     PackageName pkgName = clz.getType().getPackageName();
@@ -347,15 +298,6 @@ public final class PTAUtils {
 
     } catch (Exception e) {
       logger.error("Error writing jimple to file {}", clz, e);
-    }
-  }
-
-  public static void dumpJimple(String outputDir) {
-    for (SootClass clz : PTAScene.v().getLibraryClasses()) {
-      writeJimple(outputDir, clz);
-    }
-    for (SootClass clz : PTAScene.v().getApplicationClasses()) {
-      writeJimple(outputDir, clz);
     }
   }
 
@@ -459,38 +401,5 @@ public final class PTAUtils {
     } else {
       return pag.findLocalVarNode(srcmpag.getMethod(), arg, arg.getType());
     }
-  }
-
-  /*
-   * We use this method to replace EntryPoints.v().clinitsOf() because it is infested with bugs.
-   * */
-  public static Set<SootMethod> clinitsOf(SootClass cl) {
-    Set<SootMethod> ret = new HashSet<>();
-    Set<SootClass> visit = new HashSet<>();
-    Queue<SootClass> worklist = new UniqueQueue<>();
-    Optional<? extends ClassType> curr = Optional.of(cl.getType());
-    while (curr.isPresent()) {
-      ClassType ct = curr.get();
-      SootClass sc = PTAScene.v().getView().getClass(ct).get();
-      worklist.add(sc);
-      curr = sc.getSuperclass();
-    }
-    while (!worklist.isEmpty()) {
-      SootClass sc = worklist.poll();
-      if (visit.add(sc)) {
-        Set<? extends ClassType> itfs = sc.getInterfaces();
-        for (ClassType itf : itfs) {
-          Optional<? extends SootClass> xsc = PTAScene.v().getView().getClass(itf);
-          xsc.ifPresent(worklist::add);
-        }
-      }
-    }
-    for (SootClass sc : visit) {
-      MethodSubSignature subclinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
-      final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
-      initStart.ifPresent(ret::add);
-    }
-    return ret;
   }
 }

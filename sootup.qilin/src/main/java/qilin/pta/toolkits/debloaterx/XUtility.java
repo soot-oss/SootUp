@@ -308,13 +308,13 @@ public class XUtility {
       } else {
         ret = this.t2Fields.computeIfAbsent(refType, k -> new HashSet<>());
         for (AllocNode heap : this.o2Fields.keySet()) {
-          if (pta.getPtaScene().canStoreType(heap.getType(), refType)) {
+          if (PTAUtils.canStoreType(pta.getView(), heap.getType(), refType)) {
             for (SparkField sparkField : this.o2Fields.get(heap)) {
               if (sparkField instanceof Field) {
                 Field f = (Field) sparkField;
                 SootField sf = f.getField();
                 Type declType = sf.getDeclaringClassType();
-                if (pta.getPtaScene().canStoreType(type, declType)) {
+                if (PTAUtils.canStoreType(pta.getView(), type, declType)) {
                   ret.add(sparkField);
                 }
               } else {

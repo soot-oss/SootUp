@@ -19,7 +19,10 @@
 package qilin.core.builder;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import qilin.CoreConfig;
 import qilin.core.PTAScene;
@@ -27,6 +30,7 @@ import qilin.core.PointsToAnalysis;
 import qilin.core.pag.*;
 import qilin.core.pag.Field;
 import qilin.util.PTAUtils;
+import qilin.util.queue.UniqueQueue;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -56,10 +60,12 @@ import sootup.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import sootup.core.jimple.visitor.AbstractStmtVisitor;
 import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
+import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /** @author Ondrej Lhotak */
@@ -167,7 +173,7 @@ public class MethodNodeFactory {
       return;
     }
     SootClass sootClass = scene.getView().getClass(classType).get();
-    PTAUtils.clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
+    clinitsOf(sootClass).forEach(mpag::addTriggeredClinit);
   }
 
   /** Adds the edges required for this statement to the graph. */
@@ -239,7 +245,7 @@ public class MethodNodeFactory {
 
   private AllocNode caseNewExpr(JNewExpr ne) {
     SootClass cl = scene.getSootClass(ne.getType().toString());
-    PTAUtils.clinitsOf(cl).forEach(mpag::addTriggeredClinit);
+    clinitsOf(cl).forEach(mpag::addTriggeredClinit);
     return pag.makeAllocNode(ne, ne.getType(), method);
   }
 
@@ -385,5 +391,38 @@ public class MethodNodeFactory {
     VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.getClassType("java.lang.Class"), method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
+  }
+
+  /*
+   * We use this method to replace EntryPoints.v().clinitsOf() because it is infested with bugs.
+   * */
+  public Set<SootMethod> clinitsOf(SootClass cl) {
+    Set<SootMethod> ret = new HashSet<>();
+    Set<SootClass> visit = new HashSet<>();
+    Queue<SootClass> worklist = new UniqueQueue<>();
+    Optional<? extends ClassType> curr = Optional.of(cl.getType());
+    while (curr.isPresent()) {
+      ClassType ct = curr.get();
+      SootClass sc = scene.getView().getClass(ct).get();
+      worklist.add(sc);
+      curr = sc.getSuperclass();
+    }
+    while (!worklist.isEmpty()) {
+      SootClass sc = worklist.poll();
+      if (visit.add(sc)) {
+        Set<? extends ClassType> itfs = sc.getInterfaces();
+        for (ClassType itf : itfs) {
+          Optional<? extends SootClass> xsc = scene.getView().getClass(itf);
+          xsc.ifPresent(worklist::add);
+        }
+      }
+    }
+    for (SootClass sc : visit) {
+      MethodSubSignature subclinit =
+          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+      final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
+      initStart.ifPresent(ret::add);
+    }
+    return ret;
   }
 }

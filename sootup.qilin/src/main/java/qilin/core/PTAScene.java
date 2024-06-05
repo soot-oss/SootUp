@@ -43,8 +43,6 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.types.NullType;
-import sootup.core.types.Type;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
@@ -181,23 +179,6 @@ public class PTAScene {
 
   public OnFlyCallGraph getCallGraph() {
     return this.callgraph;
-  }
-
-  public boolean canStoreType(final Type child, final Type parent) {
-    if (child == parent || child.equals(parent)) {
-      return true;
-    }
-    return view.getTypeHierarchy().isSubtype(parent, child);
-  }
-
-  public boolean castNeverFails(Type src, Type dst) {
-    if (dst == null) return true;
-    if (dst == src) return true;
-    if (src == null) return false;
-    if (dst.equals(src)) return true;
-    if (src instanceof NullType) return true;
-    if (dst instanceof NullType) return false;
-    return canStoreType(src, dst);
   }
 
   public SootMethod getMethod(String methodSignature) {

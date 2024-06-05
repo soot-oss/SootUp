@@ -57,7 +57,7 @@ public class ZipperPTA extends StagedPTA {
     this.ctxCons = ctxCons;
     CtxSelector us = new PartialMethodLvSelector(k, hk, PCMs);
     if (PTAConfig.v().getPtaConfig().enforceEmptyCtxForIgnoreTypes) {
-      this.ctxSel = new PipelineSelector(new HeuristicSelector(), us);
+      this.ctxSel = new PipelineSelector(new HeuristicSelector(getView()), us);
     } else {
       this.ctxSel = us;
     }
