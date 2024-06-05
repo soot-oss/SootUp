@@ -18,23 +18,15 @@
 
 package qilin.core;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
-import qilin.pta.PTAConfig;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
@@ -44,13 +36,9 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.views.JavaView;
 
 public class PTAScene {
-  private static final Logger logger = LoggerFactory.getLogger(PTAScene.class);
-
   private final View view;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
@@ -59,76 +47,14 @@ public class PTAScene {
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
 
-  public PTAScene() {
+  public PTAScene(View view, String mainClassSig) {
     this.nativeBuilt = DataFactory.createSet();
     this.reflectionBuilt = DataFactory.createSet();
     this.arraycopyBuilt = DataFactory.createSet();
-    /**
-     * Set the soot class path to point to the default class path appended with the app path (the
-     * classes dir or the application jar) and jar files in the library dir of the application.
-     */
-    List<String> cps = new ArrayList<>();
-    PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
-    // note that the order is important!
-    cps.add(appConfig.APP_PATH);
-    cps.addAll(getLibJars(appConfig.LIB_PATH));
-    cps.addAll(getJreJars(appConfig.JRE));
-    final String classpath = String.join(File.pathSeparator, cps);
-    logger.info("Setting Soot ClassPath: {}", classpath);
-    //    System.setProperty("soot.class.path", classpath);
-    this.view = createViewForClassPath(cps);
-    // setup mainclass
-    if (appConfig.MAIN_CLASS == null) {
-      appConfig.MAIN_CLASS = PTAUtils.findMainFromMetaInfo(appConfig.APP_PATH);
-    }
-    SootClass mainClass = getSootClass(appConfig.MAIN_CLASS);
+    this.view = view;
+    SootClass mainClass = getSootClass(mainClassSig);
     // setup fakemain
     this.fakeMainFactory = new FakeMainFactory(view, mainClass);
-  }
-
-  private JavaView createViewForClassPath(List<String> classPaths) {
-    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
-    for (String clazzPath : classPaths) {
-      analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
-    }
-    return new JavaView(analysisInputLocations);
-  }
-
-  private Collection<String> getJreJars(String JRE) {
-    if (JRE == null) {
-      return Collections.emptySet();
-    }
-    final String jreLibDir = JRE + File.separator + "lib";
-    return FileUtils.listFiles(new File(jreLibDir), new String[] {"jar"}, false).stream()
-        .map(File::toString)
-        .collect(Collectors.toList());
-  }
-
-  /** Returns a collection of files, one for each of the jar files in the app's lib folder */
-  private Collection<String> getLibJars(String LIB_PATH) {
-    if (LIB_PATH == null) {
-      return Collections.emptySet();
-    }
-    File libFile = new File(LIB_PATH);
-    if (libFile.exists()) {
-      if (libFile.isDirectory()) {
-        return FileUtils.listFiles(libFile, new String[] {"jar"}, true).stream()
-            .map(File::toString)
-            .collect(Collectors.toList());
-      } else if (libFile.isFile()) {
-        if (libFile.getName().endsWith(".jar")) {
-          return Collections.singletonList(LIB_PATH);
-        }
-        logger.error(
-            "Project not configured properly. Application library path {} is not a jar file.",
-            libFile);
-        System.exit(1);
-      }
-    }
-    logger.error(
-        "Project not configured properly. Application library path {} is not correct.", libFile);
-    System.exit(1);
-    return null;
   }
 
   /*

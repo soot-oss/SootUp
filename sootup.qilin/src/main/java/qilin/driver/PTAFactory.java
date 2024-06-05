@@ -23,10 +23,11 @@ import qilin.core.PTAScene;
 import qilin.parm.ctxcons.*;
 import qilin.pta.PTAConfig;
 import qilin.pta.tools.*;
+import sootup.core.views.View;
 
 public class PTAFactory {
-  public static PTA createPTA(PTAPattern ptaPattern) {
-    PTAScene scene = new PTAScene();
+  public static PTA createPTA(PTAPattern ptaPattern, View view, String mainClassSig) {
+    PTAScene scene = new PTAScene(view, mainClassSig);
     switch (ptaPattern.getContextKind()) {
       case HYBOBJ:
         {

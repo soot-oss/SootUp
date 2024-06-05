@@ -29,6 +29,8 @@ import qilin.driver.PTAFactory;
 import qilin.driver.PTAOption;
 import qilin.driver.PTAPattern;
 import qilin.pta.PTAConfig;
+import qilin.util.PTAUtils;
+import sootup.core.views.View;
 
 public abstract class JunitTests {
   protected static String appPath, jrePath, refLogPath;
@@ -93,7 +95,8 @@ public abstract class JunitTests {
     PTAConfig.v().getPtaConfig().ptaPattern = new PTAPattern(ptaPattern);
     PTAConfig.v().getPtaConfig().ptaName = PTAConfig.v().getPtaConfig().ptaPattern.toString();
     System.out.println(PTAConfig.v().getAppConfig().APP_PATH);
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+    View view = PTAUtils.createView();
+    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern, view, mainClass);
     pta.pureRun();
     return pta;
   }

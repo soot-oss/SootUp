@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qilin.core.PTA;
@@ -34,6 +36,8 @@ import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
 import qilin.core.pag.*;
 import qilin.core.sets.PointsToSet;
+import qilin.pta.PTAConfig;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
@@ -54,7 +58,9 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
+import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.views.JavaView;
 
 public final class PTAUtils {
   private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
@@ -383,5 +389,66 @@ public final class PTAUtils {
     } else {
       return pag.findLocalVarNode(srcmpag.getMethod(), arg, arg.getType());
     }
+  }
+
+  public static View createView() {
+    /**
+     * Set the soot class path to point to the default class path appended with the app path (the
+     * classes dir or the application jar) and jar files in the library dir of the application.
+     */
+    List<String> cps = new ArrayList<>();
+    PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
+    // note that the order is important!
+    cps.add(appConfig.APP_PATH);
+    cps.addAll(getLibJars(appConfig.LIB_PATH));
+    cps.addAll(getJreJars(appConfig.JRE));
+    final String classpath = String.join(File.pathSeparator, cps);
+    logger.info("Soot ClassPath: {}", classpath);
+    return createViewForClassPath(cps);
+  }
+
+  private static JavaView createViewForClassPath(List<String> classPaths) {
+    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
+    for (String clazzPath : classPaths) {
+      analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
+    }
+    return new JavaView(analysisInputLocations);
+  }
+
+  /** Returns a collection of files, one for each of the jar files in the app's lib folder */
+  private static Collection<String> getLibJars(String LIB_PATH) {
+    if (LIB_PATH == null) {
+      return Collections.emptySet();
+    }
+    File libFile = new File(LIB_PATH);
+    if (libFile.exists()) {
+      if (libFile.isDirectory()) {
+        return FileUtils.listFiles(libFile, new String[] {"jar"}, true).stream()
+            .map(File::toString)
+            .collect(Collectors.toList());
+      } else if (libFile.isFile()) {
+        if (libFile.getName().endsWith(".jar")) {
+          return Collections.singletonList(LIB_PATH);
+        }
+        logger.error(
+            "Project not configured properly. Application library path {} is not a jar file.",
+            libFile);
+        System.exit(1);
+      }
+    }
+    logger.error(
+        "Project not configured properly. Application library path {} is not correct.", libFile);
+    System.exit(1);
+    return null;
+  }
+
+  private static Collection<String> getJreJars(String JRE) {
+    if (JRE == null) {
+      return Collections.emptySet();
+    }
+    final String jreLibDir = JRE + File.separator + "lib";
+    return FileUtils.listFiles(new File(jreLibDir), new String[] {"jar"}, false).stream()
+        .map(File::toString)
+        .collect(Collectors.toList());
   }
 }

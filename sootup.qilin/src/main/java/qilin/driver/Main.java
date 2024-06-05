@@ -24,22 +24,25 @@ import qilin.pta.PTAConfig;
 import qilin.util.MemoryWatcher;
 import qilin.util.PTAUtils;
 import qilin.util.Stopwatch;
-import sootup.callgraph.CallGraph;
+import sootup.core.views.View;
 
 public class Main {
 
   public static PTA run(String[] args) {
     new PTAOption().parseCommandLine(args);
-    // PTAPattern ptaPattern = new PTAPattern("2o");
-    // pta = PTAFactory.createPTA(ptaPattern);
-    PTA pta = PTAFactory.createPTA(PTAConfig.v().getPtaConfig().ptaPattern);
+    PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
+    if (appConfig.MAIN_CLASS == null) {
+      appConfig.MAIN_CLASS = PTAUtils.findMainFromMetaInfo(appConfig.APP_PATH);
+    }
+    View view = PTAUtils.createView();
+    PTAPattern ptaPattern = PTAConfig.v().getPtaConfig().ptaPattern;
+    PTA pta = PTAFactory.createPTA(ptaPattern, view, appConfig.MAIN_CLASS);
     if (PTAConfig.v().getOutConfig().dumpJimple) {
       String jimplePath = PTAConfig.v().getAppConfig().APP_PATH.replace(".jar", "");
       PTAUtils.dumpJimple(pta.getPtaScene(), jimplePath);
       System.out.println("Jimple files have been dumped to: " + jimplePath);
     }
     pta.run();
-    CallGraph cg = pta.getCallGraph();
     return pta;
   }
 
