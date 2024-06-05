@@ -39,7 +39,7 @@ public class HierarchyComparatorTest {
     ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
     ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
     assertEquals(-1, hc.compare(subclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, subclass));
@@ -63,7 +63,7 @@ public class HierarchyComparatorTest {
     ClassType subInterface = view.getIdentifierFactory().getClassType("SubInterface", "");
     ClassType subSubInterface2 = view.getIdentifierFactory().getClassType("SubSubInterface", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
     assertEquals(-1, hc.compare(subInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, subInterface));
@@ -90,7 +90,7 @@ public class HierarchyComparatorTest {
     ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
     ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
 
     assertEquals(-1, hc.compare(subSubInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface, subInterface));

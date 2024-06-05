@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.model.SootClass;
@@ -17,24 +18,28 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
     SootClass sootClass =
-        this.getView().getClass(identifierFactory.getClassType(this.getClassName())).orElse(null);
+        getView()
+            .getClass(getView().getIdentifierFactory().getClassType(getClassName()))
+            .orElse(null);
     assertNotNull(sootClass);
     assertTrue(sootClass.hasSuperclass());
 
     ClassType superClassType = sootClass.getSuperclass().orElse(null);
     assertNotNull(superClassType);
-    SootClass superClass = this.getView().getClass(superClassType).orElse(null);
+    SootClass superClass = getView().getClass(superClassType).orElse(null);
     assertNotNull(superClass);
     assertTrue(superClass.isAbstract());
 
-    ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+    ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) getView().getTypeHierarchy();
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("AbstractClassInheritance")),
-        getClassType("AbstractClass"));
+        getClassType("AbstractClass"),
+        typeHierarchy.superClassOf(getClassType("AbstractClassInheritance")).get());
 
     Set<ClassType> subclassSet = new HashSet<>();
     subclassSet.add(getClassType("AbstractClassInheritance"));
-    assertEquals(typeHierarchy.subclassesOf(getClassType("AbstractClass")), subclassSet);
+    assertEquals(
+        subclassSet,
+        typeHierarchy.subclassesOf(getClassType("AbstractClass")).collect(Collectors.toSet()));
 
     assertTrue(
         typeHierarchy.isSubtype(

@@ -335,7 +335,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
             targetSig ->
                 addCallToCG(sourceSig, targetSig.getSignature(), invokableStmt, cg, workList));
     // static initializer calls of all superclasses
-    view.getTypeHierarchy().superClassesOf(targetClass).stream()
+    view.getTypeHierarchy().superClassesOf(targetClass)
         .map(classType -> view.getMethod(classType.getStaticInitializer()))
         .filter(Optional::isPresent)
         .map(Optional::get)
@@ -396,11 +396,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     processWorkList(view, workList, processed, updated);
 
     // Step 2: Add edges from old methods to methods overridden in the new class
-    List<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
-    Set<ClassType> implementedInterfaces =
+    Stream<ClassType> superClasses = view.getTypeHierarchy().superClassesOf(classType);
+    Stream<ClassType> implementedInterfaces =
         view.getTypeHierarchy().implementedInterfacesOf(classType);
-    Stream<ClassType> superTypes =
-        Stream.concat(superClasses.stream(), implementedInterfaces.stream());
+    Stream<ClassType> superTypes = Stream.concat(superClasses, implementedInterfaces);
 
     Set<MethodSubSignature> newMethodSubSigs =
         newMethodSignatures.stream()
@@ -541,8 +540,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
     TypeHierarchy typeHierarchy = view.getTypeHierarchy();
 
-    List<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
-    for (ClassType superClassType : superClasses) {
+    Stream<ClassType> superClasses = typeHierarchy.superClassesOf(sig.getDeclClassType());
+    Iterator<ClassType> iterator = superClasses.iterator();
+    while (iterator.hasNext()) {
+      ClassType superClassType = iterator.next();
       Optional<SootMethod> method =
           view.getMethod(
                   identifierFactory.getMethodSignature(superClassType, sig.getSubSignature()))
@@ -551,13 +552,15 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         return method;
       }
     }
-    Set<ClassType> interfaces = typeHierarchy.implementedInterfacesOf(sig.getDeclClassType());
+
     // interface1 is a sub-interface of interface2
     // interface1 is a super-interface of interface2
     // due to multiple inheritance in interfaces
-    final HierarchyComparator hierarchyComparator = new HierarchyComparator(view);
+    final HierarchyComparator hierarchyComparator =
+        new HierarchyComparator(view.getTypeHierarchy());
     Optional<SootMethod> defaultMethod =
-        interfaces.stream()
+        typeHierarchy
+            .implementedInterfacesOf(sig.getDeclClassType())
             .map(
                 classType ->
                     view.getMethod(
@@ -569,6 +572,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
                     hierarchyComparator.compare(
                         m1.getDeclaringClassType(), m2.getDeclaringClassType()))
             .map(method -> (SootMethod) method);
+
     if (defaultMethod.isPresent()) {
       return defaultMethod;
     }

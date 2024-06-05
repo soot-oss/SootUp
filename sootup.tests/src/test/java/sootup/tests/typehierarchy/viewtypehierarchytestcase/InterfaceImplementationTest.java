@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.java.core.types.JavaClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author: Hasitha Rajapakse * */
@@ -15,15 +17,20 @@ import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 public class InterfaceImplementationTest extends JavaTypeHierarchyTestBase {
   @Test
   public void method() {
-    ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) this.getView().getTypeHierarchy();
+    JavaClassType interfaceA = getClassType("InterfaceA");
+    JavaClassType interfaceImplementation = getClassType("InterfaceImplementation");
+
+    TypeHierarchy typeHierarchy = getView().getTypeHierarchy();
     Set<ClassType> interfaceSet = new HashSet<>();
-    interfaceSet.add(getClassType("InterfaceA"));
+    interfaceSet.add(interfaceA);
     assertEquals(
-        typeHierarchy.implementedInterfacesOf(getClassType("InterfaceImplementation")),
-        interfaceSet);
+        interfaceSet,
+        typeHierarchy.implementedInterfacesOf(interfaceImplementation).collect(Collectors.toSet()));
+
     Set<ClassType> implementerSet = new HashSet<>();
-    implementerSet.add(getClassType("InterfaceImplementation"));
-    assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceA")), implementerSet);
-    assertEquals(typeHierarchy.subtypesOf(getClassType("InterfaceA")), implementerSet);
+    implementerSet.add(interfaceImplementation);
+    assertEquals(
+        implementerSet, typeHierarchy.implementersOf(interfaceA).collect(Collectors.toSet()));
+    assertEquals(implementerSet, typeHierarchy.subtypesOf(interfaceA).collect(Collectors.toSet()));
   }
 }

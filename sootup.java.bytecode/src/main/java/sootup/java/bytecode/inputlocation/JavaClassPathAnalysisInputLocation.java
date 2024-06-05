@@ -92,13 +92,10 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     this.srcType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
-    if (classPath.length() <= 0) {
-      throw new IllegalArgumentException("Empty class path given");
-    }
-    cpEntries = explodeClassPath(classPath);
-
+    cpEntries = classPath.length() <= 0 ? Collections.emptyList() : explodeClassPath(classPath);
     if (cpEntries.isEmpty()) {
-      throw new IllegalArgumentException("Empty class path is given.");
+      throw new IllegalArgumentException(
+          "The given classpath does not point to any existing directory/directories.");
     }
   }
 
