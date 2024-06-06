@@ -141,8 +141,8 @@ public class XPAG {
     }
   }
 
-  private void modelVirtualCall(SootMethod method,
-      int numArgs, Value[] args, LocalVarNode receiver, LocalVarNode retDest) {
+  private void modelVirtualCall(
+      SootMethod method, int numArgs, Value[] args, LocalVarNode receiver, LocalVarNode retDest) {
     for (int i = 0; i < numArgs; i++) {
       if (args[i] == null) {
         continue;

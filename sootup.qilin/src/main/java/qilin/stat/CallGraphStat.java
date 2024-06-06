@@ -83,9 +83,10 @@ public class CallGraphStat implements AbstractStat {
       boolean toApp = scene.isApplicationMethod(m);
       reachableParameterizedMethods.add(momc);
       reachableMethods.add(m);
-//      if (m.toString().equals("<java.util.Arrays: java.util.List asList(java.lang.Object[])>")) {
-//        System.out.println(PTAUtils.getMethodBody(m));
-//      }
+      //      if (m.toString().equals("<java.util.Arrays: java.util.List
+      // asList(java.lang.Object[])>")) {
+      //        System.out.println(PTAUtils.getMethodBody(m));
+      //      }
 
       if (toApp) {
         reachableAppParameterizedMethods.add(momc);

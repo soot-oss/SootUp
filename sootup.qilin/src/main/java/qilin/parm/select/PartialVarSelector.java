@@ -21,6 +21,7 @@ package qilin.parm.select;
 import java.util.Set;
 import qilin.core.context.Context;
 import qilin.core.pag.AllocNode;
+import qilin.core.pag.Field;
 import qilin.core.pag.FieldValNode;
 import qilin.core.pag.LocalVarNode;
 import qilin.parm.ctxcons.CtxConstructor;
@@ -62,7 +63,11 @@ public class PartialVarSelector extends CtxSelector {
 
   @Override
   public Context select(FieldValNode fvn, Context context) {
-    if (csnodes.contains(fvn.getField())) {
+    Object tmp = fvn.getField();
+    if (tmp instanceof Field) {
+      tmp = ((Field) tmp).getField();
+    }
+    if (csnodes.contains(tmp)) {
       return contextTailor(context, k);
     } else {
       return CtxConstructor.emptyContext;

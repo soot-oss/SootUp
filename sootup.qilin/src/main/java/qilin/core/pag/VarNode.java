@@ -105,6 +105,7 @@ public abstract class VarNode extends ValNode {
   }
 
   public abstract VarNode base();
+
   public abstract SootMethod getMethod();
 
   /** Registers a frn as having this node as its base. */

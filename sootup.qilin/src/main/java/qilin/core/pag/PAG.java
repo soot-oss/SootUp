@@ -301,7 +301,8 @@ public class PAG {
   public ValNode findValNode(Object value, SootMethod containingMethod) {
     if (value instanceof Local) {
       Local local = (Local) value;
-      Triple<SootMethod, Object, Type> localTriple = new Triple<>(containingMethod, local, local.getType());
+      Triple<SootMethod, Object, Type> localTriple =
+          new Triple<>(containingMethod, local, local.getType());
       return valToValNode.get(localTriple);
     } else {
       return valToValNode.get(value);
