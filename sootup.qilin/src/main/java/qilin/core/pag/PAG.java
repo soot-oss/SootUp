@@ -33,7 +33,6 @@ import qilin.core.reflection.TamiflexModel;
 import qilin.util.ArrayNumberer;
 import qilin.util.DataFactory;
 import qilin.util.PTAUtils;
-import qilin.util.Pair;
 import qilin.util.Triple;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
@@ -299,11 +298,11 @@ public class PAG {
   }
 
   /** Finds the ValNode for the variable value, or returns null. */
-  public ValNode findValNode(Object value) {
+  public ValNode findValNode(Object value, SootMethod containingMethod) {
     if (value instanceof Local) {
       Local local = (Local) value;
-      Pair<Local, Type> localTypePair = new Pair<>(local, local.getType());
-      return valToValNode.get(localTypePair);
+      Triple<SootMethod, Object, Type> localTriple = new Triple<>(containingMethod, local, local.getType());
+      return valToValNode.get(localTriple);
     } else {
       return valToValNode.get(value);
     }
@@ -504,13 +503,18 @@ public class PAG {
 
   /** Finds the GlobalVarNode for the variable value, or returns null. */
   public GlobalVarNode findGlobalVarNode(Object value) {
-    return (GlobalVarNode) findValNode(value);
+    if (value instanceof Local) {
+      System.out.println("Warning: find global varnode for local value:" + value);
+      return null;
+    } else {
+      return (GlobalVarNode) valToValNode.get(value);
+    }
   }
 
   /** Finds the LocalVarNode for the variable value, or returns null. */
   public LocalVarNode findLocalVarNode(SootMethod m, Object value, Type type) {
     Triple<SootMethod, Object, Type> key = new Triple<>(m, value, type);
-    ValNode ret = findValNode(key);
+    ValNode ret = valToValNode.get(key);
     if (ret instanceof LocalVarNode) {
       return (LocalVarNode) ret;
     }

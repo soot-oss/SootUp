@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import qilin.core.context.Context;
 import qilin.util.DataFactory;
+import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
 
@@ -104,6 +105,7 @@ public abstract class VarNode extends ValNode {
   }
 
   public abstract VarNode base();
+  public abstract SootMethod getMethod();
 
   /** Registers a frn as having this node as its base. */
   void addField(FieldRefNode frn, SparkField field) {

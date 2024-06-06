@@ -19,6 +19,7 @@
 package qilin.core.pag;
 
 import qilin.core.context.Context;
+import sootup.core.model.SootMethod;
 
 public class ContextVarNode extends VarNode {
   private final Context context;
@@ -48,6 +49,11 @@ public class ContextVarNode extends VarNode {
   @Override
   public VarNode base() {
     return base;
+  }
+
+  @Override
+  public SootMethod getMethod() {
+    return base.getMethod();
   }
 
   public String toString() {

@@ -18,6 +18,7 @@
 
 package qilin.core.pag;
 
+import sootup.core.model.SootMethod;
 import sootup.core.types.Type;
 
 /**
@@ -34,6 +35,11 @@ public class GlobalVarNode extends VarNode {
   @Override
   public VarNode base() {
     return this;
+  }
+
+  @Override
+  public SootMethod getMethod() {
+    return null;
   }
 
   public String toString() {

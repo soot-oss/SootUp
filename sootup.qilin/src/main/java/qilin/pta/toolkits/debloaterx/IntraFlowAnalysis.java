@@ -183,7 +183,7 @@ public class IntraFlowAnalysis {
         for (int i = 0; i < numParms; i++) {
           if (target.getParameterType(i) instanceof ReferenceType) {
             if (args[i] != null) {
-              ValNode argNode = pag.findValNode(args[i]);
+              ValNode argNode = pag.findValNode(args[i], method);
               if (argNode instanceof LocalVarNode) {
                 LocalVarNode lvn = (LocalVarNode) argNode;
                 LocalVarNode param = (LocalVarNode) tgtnf.caseParm(i);

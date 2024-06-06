@@ -192,7 +192,7 @@ public abstract class AbstractMVFG {
       if (!targets.isEmpty()) {
         for (int i = 0; i < numArgs; i++) {
           if (args[i] == null) continue;
-          ValNode argNode = pag.findValNode(args[i]);
+          ValNode argNode = pag.findValNode(args[i], method);
           if (argNode instanceof LocalVarNode && satisfyAddingStoreCondition(i, targets)) {
             this.addStoreEdge((LocalVarNode) argNode, receiver);
           }

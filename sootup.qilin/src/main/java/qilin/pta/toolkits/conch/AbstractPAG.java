@@ -71,7 +71,7 @@ public abstract class AbstractPAG {
     prePTA
         .getNakedReachableMethods()
         .parallelStream()
-        .filter(SootMethod::isConcrete)
+        .filter(PTAUtils::hasBody)
         .forEach(this::buildFG);
   }
 

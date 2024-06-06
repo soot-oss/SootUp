@@ -30,16 +30,6 @@ public class Field implements SparkField {
     this.field = sf;
   }
 
-  //    @Override
-  //    public int getNumber() {
-  //        return field.getNumber();
-  //    }
-  //
-  //    @Override
-  //    public void setNumber(int number) {
-  //        throw new UnsupportedOperationException();
-  //    }
-
   @Override
   public Type getType() {
     return field.getType();

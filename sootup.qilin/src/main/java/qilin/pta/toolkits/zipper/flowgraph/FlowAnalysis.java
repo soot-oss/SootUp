@@ -158,7 +158,7 @@ public class FlowAnalysis {
                       if (!(lv.getType() instanceof ReferenceType)) {
                         return;
                       }
-                      final VarNode to = (VarNode) pta.getPag().findValNode(lv);
+                      final VarNode to = (VarNode) pta.getPag().findValNode(lv, var.getMethod());
                       if (outNodes.contains(to)) {
                         for (VarNode inVar : inVars) {
                           if (!Collections.disjoint(

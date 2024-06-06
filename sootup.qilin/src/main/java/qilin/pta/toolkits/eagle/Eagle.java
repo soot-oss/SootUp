@@ -233,6 +233,15 @@ public class Eagle {
               BNode node = getBNode(sparkNode, true);
               BNode nodeInv = getBNode(sparkNode, false);
               ret.put(sparkNode, node.cs && nodeInv.cs ? 1 : 0);
+//              SootMethod sm = null;
+//              if (sparkNode instanceof AllocNode) {
+//                sm = ((AllocNode) sparkNode).getMethod();
+//              } else if (sparkNode instanceof LocalVarNode) {
+//                sm = ((LocalVarNode) sparkNode).getMethod();
+//              }
+//              if (sm != null && sm.getSignature().toString().equals("<java.util.Arrays: java.util.List asList(java.lang.Object[])>")) {
+//                System.out.println("xxx" + sparkNode + ";" + node.cs + ";" + nodeInv.cs);
+//              }
             });
     return ret;
   }
@@ -274,7 +283,7 @@ public class Eagle {
 
     OnFlyCallGraph callGraph = prePTA.getCallGraph();
     for (SootMethod method : prePTA.getNakedReachableMethods()) {
-      if (!method.isConcrete()) {
+      if (!PTAUtils.hasBody(method)) {
         continue;
       }
       MethodPAG srcmpag = prePAG.getMethodPAG(method);
@@ -374,7 +383,7 @@ public class Eagle {
           SootMethod tgtmtd = e.tgt();
           for (int i = 0; i < numArgs; i++) {
             if (args[i] == null || !(tgtmtd.getParameterType(i) instanceof ReferenceType)) continue;
-            ValNode argNode = prePAG.findValNode(args[i]);
+            ValNode argNode = prePAG.findValNode(args[i], method);
             if (argNode instanceof LocalVarNode) {
               this.addStoreEdge((LocalVarNode) argNode, receiver);
             }

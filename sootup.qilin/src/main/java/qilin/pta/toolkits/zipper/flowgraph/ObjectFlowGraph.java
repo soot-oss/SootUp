@@ -126,7 +126,7 @@ public class ObjectFlowGraph implements IObjectFlowGraph {
                     base = iie.getBase();
                   }
                   if (base != null) {
-                    LocalVarNode fromNode = (LocalVarNode) pta.getPag().findValNode(base);
+                    LocalVarNode fromNode = (LocalVarNode) pta.getPag().findValNode(base, caller);
                     addOutEdge(new Edge(Kind.INTERPROCEDURAL_ASSIGN, fromNode, thisVar));
                   }
                 }

@@ -101,14 +101,14 @@ public class XPAG {
               pta.getView().getMethod(sie.getMethodSignature());
           if (optMethod.isPresent()) {
             SootMethod target = optMethod.get();
-            inline(s, target);
+            inline(method, s, target);
           } else {
             /* instance call with non-this base variable are modeled as in Eagle/Turner. */
-            modelVirtualCall(numArgs, args, receiver, retDest);
+            modelVirtualCall(method, numArgs, args, receiver, retDest);
           }
         } else {
           /* instance call with non-this base variable are modeled as in Eagle/Turner. */
-          modelVirtualCall(numArgs, args, receiver, retDest);
+          modelVirtualCall(method, numArgs, args, receiver, retDest);
         }
       } else {
         if (ie instanceof JStaticInvokeExpr) {
@@ -117,7 +117,7 @@ public class XPAG {
               pta.getView().getMethod(sie.getMethodSignature());
           if (optMethod.isPresent()) {
             SootMethod target = optMethod.get();
-            inline(s, target);
+            inline(method, s, target);
           }
         }
       }
@@ -141,13 +141,13 @@ public class XPAG {
     }
   }
 
-  private void modelVirtualCall(
+  private void modelVirtualCall(SootMethod method,
       int numArgs, Value[] args, LocalVarNode receiver, LocalVarNode retDest) {
     for (int i = 0; i < numArgs; i++) {
       if (args[i] == null) {
         continue;
       }
-      ValNode argNode = pag.findValNode(args[i]);
+      ValNode argNode = pag.findValNode(args[i], method);
       if (argNode instanceof LocalVarNode) {
         addCStoreEdge((LocalVarNode) argNode, receiver);
       }
@@ -158,7 +158,7 @@ public class XPAG {
     addCStoreEdge(receiver, receiver);
   }
 
-  private void inline(Stmt invokeStmt, SootMethod method) {
+  private void inline(SootMethod srcMethod, Stmt invokeStmt, SootMethod tgtMethod) {
     AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
     int numArgs = ie.getArgCount();
     Value[] args = new Value[numArgs];
@@ -171,27 +171,27 @@ public class XPAG {
     if (invokeStmt instanceof JAssignStmt) {
       Value dest = ((JAssignStmt) invokeStmt).getLeftOp();
       if (dest.getType() instanceof ReferenceType) {
-        retDest = pag.findLocalVarNode(method, dest, dest.getType());
+        retDest = pag.findLocalVarNode(tgtMethod, dest, dest.getType());
       }
     }
     LocalVarNode receiver = null;
     if (ie instanceof AbstractInstanceInvokeExpr) {
       AbstractInstanceInvokeExpr iie = (AbstractInstanceInvokeExpr) ie;
       Local base = iie.getBase();
-      receiver = pag.findLocalVarNode(method, base, base.getType());
+      receiver = pag.findLocalVarNode(tgtMethod, base, base.getType());
     }
-    MethodPAG mpag = pag.getMethodPAG(method);
+    MethodPAG mpag = pag.getMethodPAG(tgtMethod);
     MethodNodeFactory nodeFactory = mpag.nodeFactory();
-    if (numArgs != method.getParameterCount()) {
+    if (numArgs != tgtMethod.getParameterCount()) {
       return;
     }
     // handle parameters
-    for (int i = 0; i < method.getParameterCount(); ++i) {
+    for (int i = 0; i < tgtMethod.getParameterCount(); ++i) {
       if (args[i] != null
-          && method.getParameterType(i) instanceof ReferenceType
-          && !PTAUtils.isPrimitiveArrayType(method.getParameterType(i))) {
+          && tgtMethod.getParameterType(i) instanceof ReferenceType
+          && !PTAUtils.isPrimitiveArrayType(tgtMethod.getParameterType(i))) {
         LocalVarNode param = (LocalVarNode) nodeFactory.caseParm(i);
-        ValNode argVal = pag.findValNode(args[i]);
+        ValNode argVal = pag.findValNode(args[i], srcMethod);
         if (argVal instanceof LocalVarNode) {
           LocalVarNode argNode = (LocalVarNode) argVal;
           addAssignEdge(argNode, param);
@@ -200,8 +200,8 @@ public class XPAG {
     }
     // handle return node
     if (retDest != null
-        && method.getReturnType() instanceof ReferenceType
-        && !PTAUtils.isPrimitiveArrayType(method.getReturnType())) {
+        && tgtMethod.getReturnType() instanceof ReferenceType
+        && !PTAUtils.isPrimitiveArrayType(tgtMethod.getReturnType())) {
       addAssignEdge((LocalVarNode) nodeFactory.caseRet(), retDest);
     }
     // handle this node

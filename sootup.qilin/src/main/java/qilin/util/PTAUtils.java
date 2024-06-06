@@ -148,7 +148,11 @@ public final class PTAUtils {
     } else if (sparkNode instanceof AllocNode) {
       return ((AllocNode) sparkNode).getNewExpr();
     } else { // sparkField?
-      return sparkNode;
+      if (sparkNode instanceof Field) {
+        return ((Field) sparkNode).getField();
+      } else { // ArrayElement
+        return sparkNode;
+      }
     }
   }
 
@@ -342,6 +346,10 @@ public final class PTAUtils {
     methodToBody.put(m, body);
   }
 
+  public static boolean hasBody(SootMethod m) {
+    return methodToBody.containsKey(m);
+  }
+
   public static boolean isEmptyArray(AllocNode heap) {
     Object var = heap.getNewExpr();
     if (var instanceof JNewArrayExpr) {
@@ -375,7 +383,7 @@ public final class PTAUtils {
       if (invokeStmt instanceof JAssignStmt) {
         JAssignStmt assignStmt = (JAssignStmt) invokeStmt;
         Value mR = assignStmt.getLeftOp();
-        return (LocalVarNode) pag.findValNode(mR);
+        return (LocalVarNode) pag.findValNode(mR, srcmpag.getMethod());
       } else {
         return null;
       }
