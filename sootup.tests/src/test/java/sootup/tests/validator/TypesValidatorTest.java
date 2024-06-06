@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.EagerInputLocation;
@@ -25,6 +26,7 @@ import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.views.JavaView;
 import sootup.java.core.views.MutableJavaView;
 
+@Tag("Java8")
 public class TypesValidatorTest {
   static MutableJavaView view;
   static TypesValidator typesValidator;

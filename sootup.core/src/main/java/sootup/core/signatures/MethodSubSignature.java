@@ -75,7 +75,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
       return true;
     }
 
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof MethodSubSignature)) {
       return false;
     }
 
@@ -84,11 +84,6 @@ public class MethodSubSignature extends SootClassMemberSubSignature
     }
 
     MethodSubSignature that = (MethodSubSignature) o;
-
-    if (!super.equals(that)) {
-      return false;
-    }
-
     return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 
