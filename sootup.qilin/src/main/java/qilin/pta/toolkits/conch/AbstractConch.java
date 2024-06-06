@@ -57,7 +57,7 @@ public class AbstractConch {
      * */
     Map<LocalVarNode, Set<AllocNode>> pts = PTAUtils.calcStaticThisPTS(pta);
     pta.getNakedReachableMethods().stream()
-        .filter(SootMethod::isConcrete)
+        .filter(PTAUtils::hasBody)
         .forEach(
             method -> {
               collectStoresIn(method);

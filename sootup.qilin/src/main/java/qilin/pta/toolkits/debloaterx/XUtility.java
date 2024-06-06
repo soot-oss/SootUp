@@ -209,7 +209,7 @@ public class XUtility {
 
   private void buildHeapFieldsMapping() {
     pta.getNakedReachableMethods().stream()
-        .filter(SootMethod::isConcrete)
+        .filter(PTAUtils::hasBody)
         .forEach(this::buildHeapFieldsMappingIn);
   }
 
@@ -221,7 +221,7 @@ public class XUtility {
     for (Edge edge : callgraph) {
       SootMethod srcM = edge.src();
       SootMethod tgtM = edge.tgt();
-      if (tgtM.isStatic() || !tgtM.isConcrete()) {
+      if (tgtM.isStatic() || !PTAUtils.hasBody(tgtM)) {
         continue;
       }
       final Stmt s = edge.srcStmt();

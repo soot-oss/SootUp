@@ -25,6 +25,7 @@ import qilin.core.pag.AllocNode;
 import qilin.core.pag.PAG;
 import qilin.core.pag.SparkField;
 import qilin.pta.PTAConfig;
+import qilin.util.PTAUtils;
 import qilin.util.graph.MergedNode;
 import qilin.util.graph.SCCMergedGraph;
 import qilin.util.graph.TopologicalSorter;
@@ -174,7 +175,7 @@ public class Turner {
   }
 
   private Collection<Object> computeCtxLevelForVariables(SootMethod method) {
-    if (!method.isConcrete()) {
+    if (!PTAUtils.hasBody(method)) {
       return Collections.emptySet();
     } else {
       AbstractMVFG mvfg = MethodVFG.findOrCreateMethodVFG(prePTA, method, ocg);
@@ -186,7 +187,7 @@ public class Turner {
 
   private Collection<Object> computeCtxLevelForVariables(
       SootMethod method, MergedNode<SootMethod> sccNode) {
-    if (!method.isConcrete()) {
+    if (!PTAUtils.hasBody(method)) {
       return Collections.emptySet();
     } else {
       AbstractMVFG mvfg = ModularMVFG.findOrCreateMethodVFG(prePTA, method, ocg, sccNode);

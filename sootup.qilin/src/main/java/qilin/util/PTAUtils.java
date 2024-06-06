@@ -83,7 +83,7 @@ public final class PTAUtils {
     PAG pag = pta.getPag();
     // add all instance methods which potentially contain static call
     for (SootMethod method : pta.getNakedReachableMethods()) {
-      if (PTAUtils.isFakeMainMethod(method) || method.isConcrete() && !method.isStatic()) {
+      if (PTAUtils.isFakeMainMethod(method) || hasBody(method) && !method.isStatic()) {
         MethodPAG srcmpag = pag.getMethodPAG(method);
         LocalVarNode thisRef = (LocalVarNode) srcmpag.nodeFactory().caseThis();
         final PointsToSet other = pta.reachingObjects(thisRef).toCIPointsToSet();
