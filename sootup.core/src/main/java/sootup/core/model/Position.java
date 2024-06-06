@@ -53,7 +53,7 @@ public abstract class Position implements Comparable<Position> {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Position)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
     Position position = (Position) o;
