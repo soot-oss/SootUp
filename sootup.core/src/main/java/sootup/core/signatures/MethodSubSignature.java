@@ -75,7 +75,7 @@ public class MethodSubSignature extends SootClassMemberSubSignature
       return true;
     }
 
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof MethodSubSignature)) {
       return false;
     }
 
