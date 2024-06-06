@@ -233,15 +233,6 @@ public class Eagle {
               BNode node = getBNode(sparkNode, true);
               BNode nodeInv = getBNode(sparkNode, false);
               ret.put(sparkNode, node.cs && nodeInv.cs ? 1 : 0);
-//              SootMethod sm = null;
-//              if (sparkNode instanceof AllocNode) {
-//                sm = ((AllocNode) sparkNode).getMethod();
-//              } else if (sparkNode instanceof LocalVarNode) {
-//                sm = ((LocalVarNode) sparkNode).getMethod();
-//              }
-//              if (sm != null && sm.getSignature().toString().equals("<java.util.Arrays: java.util.List asList(java.lang.Object[])>")) {
-//                System.out.println("xxx" + sparkNode + ";" + node.cs + ";" + nodeInv.cs);
-//              }
             });
     return ret;
   }
