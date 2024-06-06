@@ -152,7 +152,7 @@ public class AliasStat implements AbstractStat {
     Pair<Integer, Integer> r1 =
         recordAndComputeIntraAliases(
             reachableMethods.stream()
-                .filter(pta.getPtaScene()::isApplicationMethod)
+                .filter(pta.getScene()::isApplicationMethod)
                 .collect(Collectors.toSet()));
     this.intraAlias_app = r1.getFirst();
     this.intraAlias_incstst_app = r1.getSecond();
@@ -162,7 +162,7 @@ public class AliasStat implements AbstractStat {
     Pair<Integer, Integer> r3 =
         recordAndComputeIntraAliases(
             reachableMethods.stream()
-                .filter(m -> !pta.getPtaScene().isApplicationMethod(m))
+                .filter(m -> !pta.getScene().isApplicationMethod(m))
                 .collect(Collectors.toSet()));
     this.intraAlias = this.intraAlias_app + r3.getFirst();
     this.intraAlias_incstst = this.intraAlias_incstst_app + r3.getSecond();

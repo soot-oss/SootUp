@@ -219,7 +219,7 @@ public class Solver extends Propagator {
   private void handleImplicitCallToFinalizerRegister(AllocNode heap) {
     if (supportFinalize(heap)) {
       SootMethod rm =
-          pta.getPtaScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
+          pta.getScene().getMethod("<java.lang.ref.Finalizer: void register(java.lang.Object)>");
       MethodPAG tgtmpag = pag.getMethodPAG(rm);
       MethodNodeFactory tgtnf = tgtmpag.nodeFactory();
       Node parm = tgtnf.caseParm(0);

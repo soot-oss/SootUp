@@ -79,7 +79,7 @@ public class MethodNodeFactory {
     this.pag = pag;
     this.mpag = mpag;
     method = mpag.getMethod();
-    this.scene = pag.getPta().getPtaScene();
+    this.scene = pag.getPta().getScene();
   }
 
   public Node getNode(Value v) {

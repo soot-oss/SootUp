@@ -111,7 +111,7 @@ public class PAG {
     this.allocInv = DataFactory.createMap();
     this.store = DataFactory.createMap();
     this.storeInv = DataFactory.createMap();
-    this.nativeDriver = new NativeMethodDriver(pta.getPtaScene());
+    this.nativeDriver = new NativeMethodDriver(pta.getScene());
     this.reflectionModel = createReflectionModel();
     this.contextVarNodeMap = DataFactory.createMap(16000);
     this.contextAllocNodeMap = DataFactory.createMap(6000);
@@ -532,9 +532,9 @@ public class PAG {
     ReflectionModel model;
     if (CoreConfig.v().getAppConfig().REFLECTION_LOG != null
         && CoreConfig.v().getAppConfig().REFLECTION_LOG.length() > 0) {
-      model = new TamiflexModel(pta.getPtaScene());
+      model = new TamiflexModel(pta.getScene());
     } else {
-      model = new NopReflectionModel(pta.getPtaScene());
+      model = new NopReflectionModel(pta.getScene());
     }
     return model;
   }
@@ -555,7 +555,7 @@ public class PAG {
        * <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>
        * directly to its caller methods.
        * */
-      if (pta.getPtaScene().arraycopyBuilt.add(m)) {
+      if (pta.getScene().arraycopyBuilt.add(m)) {
         handleArrayCopy(m);
       }
     }

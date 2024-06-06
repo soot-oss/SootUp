@@ -31,7 +31,6 @@ import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.core.pag.ContextMethod;
 import qilin.core.pag.ContextVarNode;
 import qilin.core.pag.LocalVarNode;
-import qilin.util.PTAUtils;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 
@@ -78,7 +77,7 @@ public class CallGraphStat implements AbstractStat {
     //
     OnFlyCallGraph csCallGraph = pta.getCgb().getCallGraph();
     CSCallEdges = csCallGraph.size();
-    PTAScene scene = pta.getPtaScene();
+    PTAScene scene = pta.getScene();
     for (final ContextMethod momc : pta.getCgb().getReachableMethods()) {
       final SootMethod m = momc.method();
       boolean toApp = scene.isApplicationMethod(m);

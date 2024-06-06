@@ -66,7 +66,7 @@ public class MethodPAG {
   public final Map<Node, Map<Stmt, List<Trap>>> node2wrapperedTraps = DataFactory.createMap();
 
   public MethodPAG(PAG pag, SootMethod m, Body body) {
-    this.ptaScene = pag.getPta().getPtaScene();
+    this.ptaScene = pag.getPta().getScene();
     this.method = m;
     this.nodeFactory = new MethodNodeFactory(pag, this);
     this.body = body;

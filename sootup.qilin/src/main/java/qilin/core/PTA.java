@@ -38,7 +38,7 @@ import sootup.core.model.SootMethod;
 import sootup.core.views.View;
 
 public abstract class PTA implements PointsToAnalysis {
-  protected PTAScene ptaScene;
+  protected PTAScene scene;
   protected AllocNode rootNode;
   protected PAG pag;
   protected OnFlyCallGraph callGraph;
@@ -46,7 +46,7 @@ public abstract class PTA implements PointsToAnalysis {
   protected ExceptionHandler eh;
 
   public PTA(PTAScene scene) {
-    this.ptaScene = scene;
+    this.scene = scene;
     this.pag = createPAG();
     this.cgb = createCallGraphBuilder();
     this.eh = new ExceptionHandler(this);
@@ -71,11 +71,11 @@ public abstract class PTA implements PointsToAnalysis {
   }
 
   public View getView() {
-    return ptaScene.getView();
+    return scene.getView();
   }
 
-  public PTAScene getPtaScene() {
-    return ptaScene;
+  public PTAScene getScene() {
+    return scene;
   }
 
   public CallGraphBuilder getCgb() {

@@ -58,7 +58,7 @@ public class BenchmarkStat implements AbstractStat {
             .collect(Collectors.toSet());
     reachableAppClasses =
         reachableClasses.stream().filter(SootClass::isApplicationClass).collect(Collectors.toSet());
-    PTAScene scene = pta.getPtaScene();
+    PTAScene scene = pta.getScene();
     classes = scene.getClasses().size();
     appClasses = scene.getApplicationClasses().size();
     phantomClasses = scene.getPhantomClasses().size();
@@ -77,7 +77,7 @@ public class BenchmarkStat implements AbstractStat {
     exporter.collectMetric("#Libclass(reachable):", String.valueOf(libReachableClasses));
 
     if (CoreConfig.v().getOutConfig().dumpStats) {
-      exporter.dumpClassTypes(pta.getPtaScene().getClasses());
+      exporter.dumpClassTypes(pta.getScene().getClasses());
     }
   }
 }

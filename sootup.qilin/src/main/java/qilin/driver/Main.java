@@ -39,7 +39,7 @@ public class Main {
     PTA pta = PTAFactory.createPTA(ptaPattern, view, appConfig.MAIN_CLASS);
     if (PTAConfig.v().getOutConfig().dumpJimple) {
       String jimplePath = PTAConfig.v().getAppConfig().APP_PATH.replace(".jar", "");
-      PTAUtils.dumpJimple(pta.getPtaScene(), jimplePath);
+      PTAUtils.dumpJimple(pta.getScene(), jimplePath);
       System.out.println("Jimple files have been dumped to: " + jimplePath);
     }
     pta.run();

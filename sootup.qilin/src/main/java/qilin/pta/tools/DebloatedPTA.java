@@ -58,7 +58,7 @@ public class DebloatedPTA extends StagedPTA {
    * */
   /* this constructor is used to specify the debloating approach. */
   public DebloatedPTA(BasePTA basePTA, DebloatApproach approach) {
-    super(basePTA.getPtaScene());
+    super(basePTA.getScene());
     this.basePTA = basePTA;
     CtxSelector debloatingSelector = new DebloatingSelector(ctxDepHeaps);
     basePTA.setContextSelector(new PipelineSelector(basePTA.ctxSelector(), debloatingSelector));
@@ -66,7 +66,7 @@ public class DebloatedPTA extends StagedPTA {
       StagedPTA stagedPTA = (StagedPTA) basePTA;
       this.prePTA = stagedPTA.getPrePTA();
     } else {
-      this.prePTA = new Spark(basePTA.getPtaScene());
+      this.prePTA = new Spark(basePTA.getScene());
     }
     System.out.println("debloating ....");
     this.debloatApproach = approach;
