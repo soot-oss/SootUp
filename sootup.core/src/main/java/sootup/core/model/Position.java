@@ -56,7 +56,7 @@ public abstract class Position implements Comparable<Position> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FullPosition position = (FullPosition) o;
+    Position position = (Position) o;
     return getFirstLine() == position.getFirstLine()
         && getFirstCol() == position.getFirstCol()
         && getLastLine() == position.getLastLine()
