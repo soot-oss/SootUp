@@ -55,11 +55,7 @@ public class Main {
 
     System.out.println("Writing Zipper precision-critical methods ...\n");
     System.out.println();
-    writeZipperResults(pcm, zipperPCMOutput);
+    zipperPCMOutput.addAll(pcm);
   }
 
-  private static void writeZipperResults(
-      final Set<SootMethod> results, final Set<SootMethod> outputSet) {
-    results.stream().sorted(Comparator.comparing(Object::toString)).forEach(outputSet::add);
-  }
 }
