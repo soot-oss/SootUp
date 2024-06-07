@@ -52,12 +52,12 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   protected Map<MethodSignature, Set<MethodSignature>> calls = DataFactory.createMap();
   protected int callCnt = 0;
 
-  protected Set<Edge> edges = new LinkedHashSet<Edge>();
-  protected ChunkedQueue<Edge> stream = new ChunkedQueue<Edge>();
+  protected Set<Edge> edges = new LinkedHashSet<>();
+  protected ChunkedQueue<Edge> stream = new ChunkedQueue<>();
   protected QueueReader<Edge> reader = stream.reader();
-  protected Map<ContextMethod, Edge> srcMethodToEdge = new LinkedHashMap<ContextMethod, Edge>();
-  protected Map<Stmt, Edge> srcUnitToEdge = new LinkedHashMap<Stmt, Edge>();
-  protected Map<ContextMethod, Edge> tgtToEdge = new LinkedHashMap<ContextMethod, Edge>();
+  protected Map<ContextMethod, Edge> srcMethodToEdge = new LinkedHashMap<>();
+  protected Map<Stmt, Edge> srcUnitToEdge = new LinkedHashMap<>();
+  protected Map<ContextMethod, Edge> tgtToEdge = new LinkedHashMap<>();
   protected Edge dummy = new Edge(null, null, null, Kind.INVALID);
 
   /** Used to add an edge to the call graph. Returns true iff the edge was not already present. */

@@ -181,7 +181,7 @@ public final class Edge implements Invalidable {
 
   @Override
   public String toString() {
-    return String.valueOf(this.kind) + " edge: " + srcUnit + " in " + src + " ==> " + tgt;
+    return this.kind + " edge: " + srcUnit + " in " + src + " ==> " + tgt;
   }
 
   private Edge nextByUnit = this;
