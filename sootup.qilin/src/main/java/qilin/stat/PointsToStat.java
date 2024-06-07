@@ -29,6 +29,7 @@ import qilin.core.sets.PointsToSet;
 import qilin.util.PTAUtils;
 import qilin.util.Triple;
 import sootup.core.jimple.basic.Local;
+import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ClassType;
@@ -113,8 +114,11 @@ public class PointsToStat implements AbstractStat {
       try {
         GlobalVarNode gvn = pag.findGlobalVarNode(global);
         ClassType classType = global.getDeclClassType();
-        boolean app = pta.getView().getClass(classType).get().isApplicationClass();
-
+        if (PTAUtils.isFakeMainClass(classType)) {
+          continue;
+        }
+        Optional<? extends SootClass> optClass = pta.getView().getClass(classType);
+        boolean app = optClass.get().isApplicationClass();
         totalGlobalPointers++;
         if (app) {
           appGlobalPointers++;

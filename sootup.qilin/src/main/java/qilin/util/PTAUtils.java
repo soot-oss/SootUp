@@ -50,6 +50,7 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
@@ -404,22 +405,23 @@ public final class PTAUtils {
      * Set the soot class path to point to the default class path appended with the app path (the
      * classes dir or the application jar) and jar files in the library dir of the application.
      */
-    List<String> cps = new ArrayList<>();
+    List<String> classPaths = new ArrayList<>();
+    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     PTAConfig.ApplicationConfiguration appConfig = PTAConfig.v().getAppConfig();
     // note that the order is important!
-    cps.add(appConfig.APP_PATH);
-    cps.addAll(getLibJars(appConfig.LIB_PATH));
-    cps.addAll(getJreJars(appConfig.JRE));
-    final String classpath = String.join(File.pathSeparator, cps);
-    logger.info("Soot ClassPath: {}", classpath);
-    return createViewForClassPath(cps);
-  }
-
-  private static JavaView createViewForClassPath(List<String> classPaths) {
-    List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
-    for (String clazzPath : classPaths) {
+    classPaths.add(appConfig.APP_PATH);
+    analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(appConfig.APP_PATH));
+    classPaths.addAll(getLibJars(appConfig.LIB_PATH));
+    for (String clazzPath : getLibJars(appConfig.LIB_PATH)) {
       analysisInputLocations.add(new JavaClassPathAnalysisInputLocation(clazzPath));
     }
+    classPaths.addAll(getJreJars(appConfig.JRE));
+    for (String clazzPath : getJreJars(appConfig.JRE)) {
+      analysisInputLocations.add(
+          new JavaClassPathAnalysisInputLocation(clazzPath, SourceType.Library));
+    }
+    final String classpath = String.join(File.pathSeparator, classPaths);
+    logger.info("Soot ClassPath: {}", classpath);
     return new JavaView(analysisInputLocations);
   }
 
