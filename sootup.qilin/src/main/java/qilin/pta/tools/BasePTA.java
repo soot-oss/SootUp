@@ -41,7 +41,7 @@ import qilin.core.sets.PointsToSet;
 import qilin.core.solver.Propagator;
 import qilin.core.solver.Solver;
 import qilin.stat.IEvaluator;
-import qilin.stat.PTAEvaluator;
+import qilin.stat.SimplifiedEvaluator;
 import qilin.util.PTAUtils;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootField;
@@ -52,8 +52,8 @@ public abstract class BasePTA extends CorePTA {
 
   public BasePTA(PTAScene scene) {
     super(scene);
-    this.evaluator = new PTAEvaluator(this);
-    //    this.evaluator = new SimplifiedEvaluator(this);
+    //    this.evaluator = new PTAEvaluator(this);
+    this.evaluator = new SimplifiedEvaluator(this);
   }
 
   public IEvaluator evaluator() {
@@ -104,8 +104,7 @@ public abstract class BasePTA extends CorePTA {
         SootClass clz = null;
         if (vn instanceof LocalVarNode) {
           SootMethod sm = ((LocalVarNode) vn).getMethod();
-          if (sm != null
-              && !sm.getSignature().toString().equals("<qilin.pta.FakeMain: void main()>")) {
+          if (sm != null && !PTAUtils.isFakeMainMethod(sm)) {
             clz = getView().getClass(sm.getDeclaringClassType()).get();
           }
         } else if (vn instanceof GlobalVarNode) {

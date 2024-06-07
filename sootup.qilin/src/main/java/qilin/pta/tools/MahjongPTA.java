@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import qilin.core.PTAScene;
+import qilin.core.pag.PAG;
 import qilin.parm.ctxcons.CtxConstructor;
 import qilin.parm.heapabst.MahjongAbstractor;
 import qilin.parm.select.CtxSelector;
@@ -55,14 +56,14 @@ public class MahjongPTA extends StagedPTA {
   protected void preAnalysis() {
     PTAConfig.v().getPtaConfig().mergeHeap = false;
     prePTA.pureRun();
-
+    PAG prePAG = prePTA.getPag();
     Mahjong.run(prePTA, heapModelMap);
     heapModelMap.forEach(
         (origin, merged) -> {
-          if (pag.findAllocNode(origin) == null || pag.findAllocNode(merged) == null) {
+          if (prePAG.findAllocNode(origin) == null || prePAG.findAllocNode(merged) == null) {
             return;
           }
-          if (pag.findAllocNode(origin).getType() != pag.findAllocNode(merged).getType()) {
+          if (prePAG.findAllocNode(origin).getType() != prePAG.findAllocNode(merged).getType()) {
             return;
           }
           if (!csHeap.add(merged)) {
@@ -72,8 +73,8 @@ public class MahjongPTA extends StagedPTA {
     csHeap.removeAll(mergedHeap);
     System.out.println("#MERGE HEAP (not-single):" + mergedHeap.size());
     System.out.println("#NON-MERGED HEAP (single):" + csHeap.size());
-    for (Object mh : mergedHeap) {
-      System.out.println(mh);
-    }
+//    for (Object mh : mergedHeap) {
+//      System.out.println(mh);
+//    }
   }
 }
