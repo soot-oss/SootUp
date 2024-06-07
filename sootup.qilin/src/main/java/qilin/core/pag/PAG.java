@@ -51,8 +51,8 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
 import sootup.core.model.SootMethod;
+import sootup.core.signatures.FieldSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
@@ -85,7 +85,7 @@ public class PAG {
   protected final Map<Object, AllocNode> valToAllocNode;
   protected final Map<Object, ValNode> valToValNode;
   protected final Map<SootMethod, MethodPAG> methodToPag;
-  protected final Set<SootField> globals;
+  protected final Set<FieldSignature> globals;
   protected final Set<Triple<SootMethod, Local, Type>> locals;
   // ==========================outer objects==============================
   protected ChunkedQueue<Node> edgeQueue;
@@ -289,7 +289,7 @@ public class PAG {
     return valToAllocNode.values();
   }
 
-  public Set<SootField> getGlobalPointers() {
+  public Set<FieldSignature> getGlobalPointers() {
     return globals;
   }
 
@@ -367,8 +367,8 @@ public class PAG {
       ret =
           (GlobalVarNode) valToValNode.computeIfAbsent(value, k -> new GlobalVarNode(value, type));
       valNodeNumberer.add(ret);
-      if (value instanceof SootField) {
-        globals.add((SootField) value);
+      if (value instanceof FieldSignature) {
+        globals.add((FieldSignature) value);
       }
     } else if (!(ret.getType().equals(type))) {
       throw new RuntimeException(
