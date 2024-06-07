@@ -67,6 +67,7 @@
         <module>sootup.java.sourcecode</module>
         <module>sootup.tests</module>
         <module>sootup.callgraph</module>
+        <module>sootup.qilin</module>
         <module>sootup.analysis</module>
         <module>sootup.examples</module>
         <module>sootup.report</module>
