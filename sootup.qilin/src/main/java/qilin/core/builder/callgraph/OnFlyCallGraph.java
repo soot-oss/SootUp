@@ -361,7 +361,10 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
     @Override
     public boolean hasNext() {
-      if (position.getTgt() != m) {
+      if (position == dummy) {
+        return false;
+      }
+      if (!position.getTgt().equals(m)) {
         return false;
       }
       return position.kind() != Kind.INVALID;

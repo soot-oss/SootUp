@@ -18,7 +18,6 @@
 
 package qilin.pta.toolkits.zipper;
 
-import java.util.Comparator;
 import java.util.Set;
 import qilin.core.PTA;
 import qilin.pta.toolkits.zipper.analysis.Zipper;
@@ -57,5 +56,4 @@ public class Main {
     System.out.println();
     zipperPCMOutput.addAll(pcm);
   }
-
 }
