@@ -232,30 +232,41 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
     newInstantiatedClasses.forEach(
-        instantiatedClassType -> {
-          List<Call> newEdges = ignoredCalls.get(instantiatedClassType);
-          if (newEdges != null) {
-            newEdges.forEach(
-                call -> {
-                  MethodSignature concreteTarget =
-                      resolveConcreteDispatch(view, call.target).orElse(null);
-                  if (concreteTarget == null) {
-                    return;
-                  }
-                  if (cg.containsMethod(concreteTarget)) {
-                    // method is already analyzed or is in the work list, simply add the call
-                    cg.addCall(call.source, concreteTarget);
-                  } else {
-                    // new target method found that has to be analyzed
-                    cg.addMethod(concreteTarget);
-                    cg.addCall(call.source, concreteTarget);
-                    workList.push(concreteTarget);
-                  }
-                });
-            // can be removed because the instantiated class will be considered in future resolves
-            ignoredCalls.remove(instantiatedClassType);
-          }
-        });
+        classType -> includeIgnoredCallsToClass(classType, cg, workList));
+  }
+
+  /**
+   * This method will add all saved ignored calls from a given class to the call graph. All new
+   * targets will be added to the worklist
+   *
+   * @param classType the class type which is the target of all ignored calls
+   * @param cg the call graph that will be extended by the ignored calls
+   * @param workList the work list that will be extended by the new targets of ignored calls.
+   */
+  protected void includeIgnoredCallsToClass(
+      ClassType classType, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    List<Call> newEdges = ignoredCalls.get(classType);
+    if (newEdges != null) {
+      newEdges.forEach(
+          call -> {
+            MethodSignature concreteTarget =
+                resolveConcreteDispatch(view, call.target).orElse(null);
+            if (concreteTarget == null) {
+              return;
+            }
+            if (cg.containsMethod(concreteTarget)) {
+              // method is already analyzed or is in the work list, simply add the call
+              cg.addCall(call.source, concreteTarget);
+            } else {
+              // new target method found that has to be analyzed
+              cg.addMethod(concreteTarget);
+              cg.addCall(call.source, concreteTarget);
+              workList.push(concreteTarget);
+            }
+          });
+      // can be removed because the instantiated class will be considered in future resolves
+      ignoredCalls.remove(classType);
+    }
   }
 
   /**
