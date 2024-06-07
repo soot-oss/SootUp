@@ -29,7 +29,7 @@ import qilin.core.PTA;
  * <p>- Wall time (sec) - Memory (max, current) before and after - Reachable methods (context and
  * no-context) - Total reachable casts - Reachable casts that may fail - Call graph edges - Context
  * sensitive call graph edges - Total reachable virtual call sites - Polymorphic virtual call sites
- * (sites with >1 target methods) - Number of pointers (local and global) - Total points to sets
+ * (sites with &gt;1 target methods) - Number of pointers (local and global) - Total points to sets
  * size (local and global) context insensitive (convert to alloc site)
  */
 public class PTAEvaluator implements IEvaluator {

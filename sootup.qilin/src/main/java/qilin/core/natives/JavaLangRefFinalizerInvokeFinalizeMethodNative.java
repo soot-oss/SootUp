@@ -29,7 +29,7 @@ public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod
     super(view, method);
   }
 
-  /** "<java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)>" */
+  /** "&lt;java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)&gt;" */
   protected void simulateImpl() {
     Local r0 = getPara(0);
     addInvoke(r0, "<java.lang.Object: void finalize()>");
