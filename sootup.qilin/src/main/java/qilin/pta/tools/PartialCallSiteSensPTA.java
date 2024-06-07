@@ -21,7 +21,6 @@ package qilin.pta.tools;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import qilin.core.CorePTA;
 import qilin.core.PTAScene;
 import qilin.core.pag.*;
 import qilin.parm.ctxcons.CallsiteCtxConstructor;
@@ -45,8 +44,6 @@ import sootup.core.types.ReferenceType;
 public abstract class PartialCallSiteSensPTA extends StagedPTA {
   protected Set<Object> csnodes = new HashSet<>();
   protected Set<SootMethod> csmethods = new HashSet<>();
-  protected CorePTA prePTA;
-  protected PAG prePAG;
 
   // just for stats
   Set<SootMethod> PCSM = new HashSet<>();
@@ -67,7 +64,6 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
       this.heapAbst = new AllocSiteAbstractor();
     }
     this.prePTA = new Spark(scene);
-    this.prePAG = prePTA.getPag();
   }
 
   @Override
@@ -125,7 +121,8 @@ public abstract class PartialCallSiteSensPTA extends StagedPTA {
       if (!PTAUtils.hasBody(method)) {
         return;
       }
-      MethodPAG srcmpag = pag.getMethodPAG(method);
+      PAG prePAG = prePTA.getPag();
+      MethodPAG srcmpag = prePAG.getMethodPAG(method);
       QueueReader<Node> reader = srcmpag.getInternalReader().clone();
       while (reader.hasNext()) {
         Node from = reader.next(), to = reader.next();

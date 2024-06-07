@@ -36,7 +36,6 @@ public class SelectxPTA extends PartialCallSiteSensPTA {
     System.out.print("Construct transPAG...");
     long time = System.currentTimeMillis();
 
-    prePAG = prePTA.getPag();
     Selectx selectx = new Selectx(prePTA);
 
     System.out.println((System.currentTimeMillis() - time) / 1000 + "s");
