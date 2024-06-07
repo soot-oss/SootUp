@@ -51,11 +51,11 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
    * once, ignored calls are saved to include them at a later time if their class is instantiated at
    * a later time.
    */
-  private static class Call {
+  protected static class Call {
     @Nonnull final MethodSignature source;
     @Nonnull final MethodSignature target;
 
-    private Call(@Nonnull MethodSignature source, @Nonnull MethodSignature target) {
+    protected Call(@Nonnull MethodSignature source, @Nonnull MethodSignature target) {
       this.source = source;
       this.target = target;
     }
