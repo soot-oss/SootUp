@@ -34,7 +34,7 @@ public class PTAOption extends Options {
     addOption(new Option(brief, option, false, description));
   }
 
-  /** add option "-brief -option <arg>" with description */
+  /** add option "-brief -option &lt;arg&gt;" with description */
   protected void addOption(String brief, String option, String arg, String description) {
     addOption(
         OptionBuilder.withLongOpt(option)

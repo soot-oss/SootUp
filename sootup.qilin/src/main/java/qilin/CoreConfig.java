@@ -44,9 +44,9 @@ public class CoreConfig {
     public boolean singleentry = false;
 
     /**
-     * Clinit loading mode: APP: A debug mode for testing which load only the minimum <clinit> of
-     * classes needed. FULL: load all <clinit> of classes that are currently loaded in the scene.
-     * ON_THE_FLY: we load <clinit> on the fly, this mode is same as DOOP (default mode).
+     * Clinit loading mode: APP: A debug mode for testing which load only the minimum &lt;clinit&gt; of
+     * classes needed. FULL: load all &lt;clinit&gt; of classes that are currently loaded in the scene.
+     * ON_THE_FLY: we load &lt;clinit&gt; on the fly, this mode is same as DOOP (default mode).
      */
     public ClinitMode clinitMode = ClinitMode.ONFLY;
 
