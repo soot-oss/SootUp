@@ -10,7 +10,10 @@
   {
     "version": "OTFCompileAnalysisInputLocation_preview",
     "title": "PR Preview OTFCompileAnalysisInputLocation",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "fix_ci_preview",
