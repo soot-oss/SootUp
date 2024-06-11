@@ -3,7 +3,12 @@ package sootup.java.bytecode.inputlocation;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Paths;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.views.JavaView;
 
 class OTFCompileAnalysisInputLocationTest {
 
@@ -12,6 +17,9 @@ class OTFCompileAnalysisInputLocationTest {
     String cucontent = "public class A { }\n";
     OTFCompileAnalysisInputLocation inputLocation =
         new OTFCompileAnalysisInputLocation("A.java", cucontent);
+    JavaView javaView = new JavaView(inputLocation);
+    Optional<JavaSootClass> aClass = javaView.getClass(javaView.getIdentifierFactory().getClassType("A"));
+    Assertions.assertTrue(aClass.isPresent());
   }
 
   @Test
@@ -41,6 +49,12 @@ class OTFCompileAnalysisInputLocationTest {
             + "}\n";
     OTFCompileAnalysisInputLocation inputLocation =
         new OTFCompileAnalysisInputLocation("FieldAssignment.java", cucontent);
+    JavaView javaView = new JavaView(inputLocation);
+    Optional<JavaSootClass> aClass = javaView.getClass(javaView.getIdentifierFactory().getClassType("FieldAssignment"));
+    Assertions.assertTrue(aClass.isPresent());
+
+    Optional<JavaSootClass> aInnerClass = javaView.getClass(javaView.getIdentifierFactory().getClassType("FieldAssignment$A"));
+    Assertions.assertTrue(aInnerClass.isPresent());
   }
 
   @Test
@@ -48,5 +62,11 @@ class OTFCompileAnalysisInputLocationTest {
     String str = "../shared-test-resources/TypeResolverTestSuite/Misc/FieldAssignment.java";
     OTFCompileAnalysisInputLocation inputLocation =
         new OTFCompileAnalysisInputLocation(Paths.get(str));
+    JavaView javaView = new JavaView(inputLocation);
+    Optional<JavaSootClass> aClass = javaView.getClass(javaView.getIdentifierFactory().getClassType("FieldAssignment"));
+    Assertions.assertTrue(aClass.isPresent());
+
+    Optional<JavaSootClass> aInnerClass = javaView.getClass(javaView.getIdentifierFactory().getClassType("FieldAssignment$A"));
+    Assertions.assertTrue(aInnerClass.isPresent());
   }
 }
