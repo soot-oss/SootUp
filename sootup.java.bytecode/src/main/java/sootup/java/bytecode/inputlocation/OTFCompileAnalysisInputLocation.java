@@ -90,18 +90,20 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
     return inputLocation.getBodyInterceptors();
   }
 
-  private static Path getTempDirectory(String fileName) throws IOException {
+  private static Path getTempDirectoryPath(String fileName) throws IOException {
     return Files.createTempDirectory("sootup-otfcompile-" + fileName.hashCode());
   }
 
   static Path compile(String fileName, String fileContent) {
+    // TODO: use MemoryFileManager to compile the String 'fileContent' directly i.e. without saving
+    // it to the filesystem
+    Path srcFile;
     try {
-      Path tmp = getTempDirectory(fileName);
-      Path path = tmp.resolve(fileName.hashCode() + "/");
-      boolean dirWasCreated = path.toFile().mkdirs();
-      Path srcFile = tmp.resolve(fileName);
+      Path path = getTempDirectoryPath(fileName);
+      boolean isDirNewlyCreated = path.toFile().mkdirs();
+      srcFile = path.resolve(fileName);
 
-      if (dirWasCreated) {
+      if (isDirNewlyCreated || !Files.exists(srcFile)) {
         Files.write(srcFile, fileContent.getBytes());
       } else {
         // when the directory with the same content.hashcode() already exists, check its content as
@@ -112,21 +114,10 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
           Files.write(srcFile, fileContent.getBytes());
         }
       }
-
-      /* TODO: don't save source as file - make use of JavaFileObjectImpl
-      int i = name.lastIndexOf('.');
-      String packageName = i < 0 ? "" : name.substring(0, i);
-      String className = i < 0 ? name : name.substring(i + 1);
-      JavaFileObjectImpl javaFileObject = new JavaFileObjectImpl(className, sourceCode);
-      javaFileManager.putFileForInput(StandardLocation.SOURCE_PATH, packageName,
-              className + ClassUtils.JAVA_EXTENSION, javaFileObject);
-      */
-
-      return compile(Collections.singletonList(srcFile));
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    return compile(Collections.singletonList(srcFile));
   }
 
   @Nonnull
@@ -140,7 +131,7 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
     String concatenatedFileNames = sb.toString();
 
     try {
-      Path binDirpath = getTempDirectory(concatenatedFileNames).resolve("bin/");
+      Path binDirpath = getTempDirectoryPath(concatenatedFileNames).resolve("bin/");
       File binDir = binDirpath.toFile();
       boolean binDirCreated = binDir.mkdirs();
       if (!binDirCreated) {
