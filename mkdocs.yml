@@ -9,17 +9,17 @@ nav:
     - Getting Started:
         - Installation: installation.md
         - First Steps: getting-started.md
-        - Configure your Input: analysisinputlocations.md
+        - Configure your Inputs: analysisinputlocations.md
 
     - Basics:
       - Jimple IR: jimple.md
       - BodyInterceptors: bodyinterceptors.md
       - Callgraph Construction: call-graph-construction.md
-      - Analyses: advanced-topics.md
+      - Shipped Analyses: advanced-topics.md
 
     - How to..:
-      - Write your own analysis: write_analyses.md
-      - Incorporate QilinPTA: qilin.md
+      - Write a Dataflow analysis: write_analyses.md
+      - Incorporate Pointer Analysis: qilin.md
     #  - Modify a StmtGraph: mutable_stmtgraph.md
     #  - Modify a View: mutable_view.md
     #  - Implement a BodyInterceptor: body_interceptor.md
@@ -29,9 +29,10 @@ nav:
     - Misc:
         - Announcements: announce.md
         - Design Decisions: whatsnew.md
+        - Migrating from Soot: migrating.md
 
     - More information:
-      - latest Javadoc: /SootUp/apidocs
+      - Latest Javadoc: /SootUp/apidocs
       - Troubleshooting & FAQ: faq.md
       # - Based on SootUp: tools.md
 

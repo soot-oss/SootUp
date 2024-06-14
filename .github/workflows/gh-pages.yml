@@ -51,11 +51,7 @@ jobs:
           python-version: 3.x
 
       # install dependencies
-      - run: pip install mike
-      - run: pip install mkdocs-material
-      - run: pip install mkdocs-tooltips
-      - run: pip install git+https://github.com/RedisLabs/mkdocs-include.git
-      - run: pip install git+https://github.com/swissiety/LspLexer4Pygments.git
+      - run: pip install mike mkdocs-material mkdocs-tooltips git+https://github.com/RedisLabs/mkdocs-include.git git+https://github.com/swissiety/LspLexer4Pygments.git
       # grab latest release url of the JimpleLSP jar and download it
       - run: curl -s -L -o ./jimplelsp.jar $(curl -s https://api.github.com/repos/swissiety/jimpleLsp/releases/latest | grep 'browser_download_url".*jar"' | cut -d ':' -f 2,3 | tr -d \")
 

@@ -4,8 +4,6 @@ This page walks you through the core data structures, as well as shows how to ge
 ## The core datastructures
 Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
-- `Language`: represents the programming language of the analyzed code. 
-
 - `AnalysisInputLocation`: points to the target code to be analyzed.
 
 !!! info "Soot Equivalent"
@@ -18,15 +16,13 @@ Before you get started with the SootUp library, it helps to learn about the foll
 
     It corresponds to the `Scene` class, but it is not a singleton. So it is possible to instantiate multiple views simultaneously.
 
-- `Scope`: defines the scope of the `View`. By default, the `View` is created with all code found on the `AnalysisInputLocation` specified for the `Project` instance.
-
 - `SootClass`: represents a class loaded into the `View`.
 
 - `SootMethod`: represents a method of a class.
 
 - `SootField`: represents a field of a class.
 
-- `Body`: represents a method body in Jimpe.
+- `Body`: represents a method body in Jimple.
 
 - `StmtGraph`: represents the control flow graph of a method body in Jimple statements.
 
