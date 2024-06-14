@@ -40,6 +40,11 @@
     }
   },
   {
+    "version": "doc_how2startATool_preview",
+    "title": "PR Preview doc_how2startATool",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
