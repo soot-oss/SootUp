@@ -47,7 +47,7 @@ You want to collaborate? Please read our [coding guidelines and the contributors
 
 ## Publications
 [the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
-[Preprint](/docs/SootUp-paper.pdf) is also available.
+[Preprint](/docs/assets/SootUp-paper.pdf) is also available.
 
 If you use SootUp in your research work, feel free to cite it as follows:
 
