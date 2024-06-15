@@ -65,7 +65,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       # sanitive head_ref name
-      - run: echo "DOC_VERSION_NAME=$(echo ${{ github.head_ref }} | sed "s/[^[:alnum:]-]/_/g" )" >> $GITHUB_ENV
+      - run: echo "DOC_VERSION_NAME=$(echo ${{ github.head_ref }} | sed "s/[^[:alnum:]_-.#@]/_/g" )" >> $GITHUB_ENV
 
       # on push to develop branch - keep a doc around for develop to show the current state
       - name: deploy doc in subdirectory
