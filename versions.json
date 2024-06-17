@@ -1,64 +1,8 @@
 [
   {
-    "version": "qilin_preview",
-    "title": "PR Preview qilin",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
-    "version": "OTFCompileAnalysisInputLocation_preview",
-    "title": "PR Preview OTFCompileAnalysisInputLocation",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
-    "version": "fix_ci_preview",
-    "title": "PR Preview fix_ci",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
-    "version": "feature_moveLanguageIntoInputLocation_preview",
-    "title": "PR Preview feature_moveLanguageIntoInputLocation",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
-    "version": "feature_InvokesCG_preview",
-    "title": "PR Preview feature_InvokesCG",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
-    "version": "doc_how2startATool_preview",
-    "title": "PR Preview doc_how2startATool",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
-  },
-  {
-    "version": "_preview",
-    "title": "PR Preview ",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
   },
   {
     "version": "v1.1.2",
@@ -66,15 +10,15 @@
     "aliases": []
   },
   {
-    "version": "v1_3_0",
-    "title": "v1_3_0",
+    "version": "v1.3.0",
+    "title": "v1.3.0",
     "aliases": [
       "latest"
     ]
   },
   {
-    "version": "v1_2_0",
-    "title": "v1_2_0",
+    "version": "v1.2.0",
+    "title": "v1.2.0",
     "aliases": []
   }
 ]
