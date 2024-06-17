@@ -55,7 +55,10 @@
   {
     "version": "_preview",
     "title": "PR Preview ",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "v1.1.2",
