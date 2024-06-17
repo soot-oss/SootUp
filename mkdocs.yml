@@ -9,6 +9,7 @@ nav:
     - Getting Started:
         - Installation: installation.md
         - First Steps: getting-started.md
+        - Examples: examples.md
         - Configure your Inputs: analysisinputlocations.md
 
     - Basics:
@@ -29,7 +30,7 @@ nav:
     - Misc:
         - Announcements: announce.md
         - Design Decisions: whatsnew.md
-        - Migrating from Soot: migrating.md
+        - Migration Help: migrating.md
 
     - More information:
       - Latest Javadoc: /SootUp/apidocs
@@ -38,13 +39,15 @@ nav:
 
 
 theme:
-  palette:
-    primary: white
-  name: material
   logo: ./img/SootUpLogo.svg
   favicon: ./img/icon.svg
+  palette:
+    primary: custom
+  custom_dir: ./docs/overrides
+  name: material
   features:
     - navigation.sections
+
 
 plugins:
   - tooltips
@@ -53,6 +56,7 @@ plugins:
       src_path: 'sootup.examples/src/test/java/sootup/examples'
 
 extra_css:
+  - css/customizetheme.css
   - css/hint.min.css
 
 markdown_extensions:

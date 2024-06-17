@@ -2,9 +2,20 @@
 see [QilinPTA](https://github.com/QilinPTA/Qilin).
 
 ### Dependencies
-```maven
-    // TODO: add submodule
-```
+=== "Maven"
+    ```maven
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.java.sourcecode</artifactId>
+            <version></version>
+        </dependency>
+    ```
+
+=== "Gradle"
+
+    ```groovy
+        compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
+    ```
 
 ### How to
 

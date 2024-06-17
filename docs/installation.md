@@ -1,4 +1,5 @@
 # Installation
+
 ## Use the latest [develop branch](https://github.com/soot-oss/SootUp/tree/develop)
 For configuration options of your build tool please visit [SootUp on Jitpack.io](https://jitpack.io/#soot-oss/SootUp/develop-SNAPSHOT)
 
@@ -48,12 +49,17 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
             <artifactId>sootup.analysis</artifactId>
             <version>{{ git_latest_release }}</version>
         </dependency>
+        <dependency>
+            <groupId>org.soot-oss</groupId>
+            <artifactId>sootup.qilin</artifactId>
+            <version>{{ git_latest_release }}</version>
+        </dependency>
     </dependencies>
     ```
 
 === "Gradle"
 
-    ```gradle
+    ```groovy
     repositories {
         mavenCentral()
         google()
@@ -66,6 +72,7 @@ Add the following dependencies to your ```pom.xml``` / ```build.gradle```.
     compile "org.soot-oss:sootup.jimple.parser:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.callgraph:{{ git_latest_release }}"
     compile "org.soot-oss:sootup.analysis:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
     ```
 
 ## Build from Source
