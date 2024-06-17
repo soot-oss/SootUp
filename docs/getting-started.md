@@ -1,20 +1,10 @@
-# General Usage of SootUp
-This page walks you through the core data structures, as well as shows how to get started with SootUp.
-
-## The core datastructures
+# First Steps with SootUp
 Before you get started with the SootUp library, it helps to learn about the following core data structures:
 
-- `AnalysisInputLocation`: points to the target code to be analyzed.
+- [`AnalysisInputLocation`]{It corresponds to the `cp` option, which specifies the classpath for Soot to find classes to be analyzed.}
+  : points to the target code to be analyzed.
 
-!!! info "Soot Equivalent"
-
-    It corresponds to the `cp` option, which specifies the classpath for Soot to find classes to be analyzed.
-
-- `View`: presents the code/classes under analysis.
-
-!!! info "Soot Equivalent"
-
-    It corresponds to the `Scene` class, but it is not a singleton. So it is possible to instantiate multiple views simultaneously.
+- [`View`]{Corresponds to the `Scene` class, but it is not a singleton. So it is possible to instantiate multiple views simultaneously.}: presents the code/classes under analysis. 
 
 - `SootClass`: represents a class loaded into the `View`.
 
@@ -56,7 +46,7 @@ If you have access to the source code, it is also possible to create a view for 
 
 If you have a [Jimple](../jimple) file, you can create a view for analyzing jimple code directly. Following example shows how to create a view for analyzing jimple code.
 
-!!! example "Create a project to analyze jimple code"
+!!! example "Create a view to analyze jimple code"
 
     ~~~java
     Path pathToJimple = Paths.get("path2Jimple");
@@ -132,17 +122,25 @@ Once we have a `ClassType` that identifies the `HelloWorld` class, we can use it
 Like the classes, methods also have an identifier which we call `MethodSignature`. For instance, we can define the method signature for identifying the `main` method of the `HelloWorld` class as follows:
 
 !!! example "Defining a MethodSignature"
-
-    ```java
-    MethodSignature methodSignature =
-        view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                "main", // method name
-                classType,
-                "void", // return type
-                Collections.singletonList("java.lang.String[]")); // args
-    ```
+    === "Pure"
+        ```java
+        MethodSignature methodSignature =
+            view
+                .getIdentifierFactory()
+                .getMethodSignature(
+                    "main", // method name
+                    classType,
+                    "void", // return type
+                    Collections.singletonList("java.lang.String[]")); // args
+        ```
+    === "Parse from String"
+        ```java
+        MethodSignature methodSignature =
+            view
+                .getIdentifierFactory()
+                .parseMethodSignature(
+                    "<packageName.classType: void main(java.lang.String[])>");
+        ```
 
 Once we have a `MethodSignature` that identifies the `main` method of the `HelloWorld` class, we can use it to retrieve the corresponding `SootMethod` object from the `view` as shown below:
 
@@ -160,7 +158,8 @@ Alternatively, we can also retrieve a `SootMethod` from `SootClass` that contain
 !!! example "Retrieving a SootMethod from a SootClass"
 
     ```java
-    Optional<JavaSootMethod> opt = sootClass.getMethod(methodSignature.getSubSignature());
+    MethodSubSignature mss = methodSignature.getSubSignature()
+    Optional<JavaSootMethod> opt = sootClass.getMethod(mss);
     
     if(opt.isPresent()){
       JavaSootMethod method = opt.get();
@@ -174,11 +173,11 @@ Each `SootMethod` contains a Control-Flow Graph (CFG) which is represented via t
 !!! example "Retrieving the CFG of a SootMethod"
 
     ```java
-    sootMethod.getBody().getStmts();
+    sootMethod.getBody().getStmtGraph();
     ```
 
 
 
-!!! info "Access or Download all of the code used above"
+!!! info "Access a complete example of the code used above"
 
-    [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
+    Download [BasicSetup.java](https://github.com/secure-software-engineering/soot-reloaded/blob/develop/sootup.examples/src/test/java/sootup/examples/basicSetup/BasicSetup.java)
