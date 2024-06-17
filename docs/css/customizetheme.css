@@ -11,7 +11,6 @@
     --md-accent-fg-color: rgba(255,140,0, 1);
 }
 
-
 .md-typeset a {
     color: rgba(255,140,0, 0.8);
 }
@@ -87,8 +86,14 @@
 }
 
 .tabbed-set.tabbed-alternate{
-    background: #EEE;
+    background: rgba(255,140,0, 0.1);
+    color:  rgba(255,140,0, 1);
 }
+
+.md-typeset .tabbed-labels>label>[href]:first-child{
+    color:  rgba(255,140,0, 1);
+}
+
 .md-footer{
     margin-top: 2em;
     padding:1em;
@@ -107,6 +112,20 @@ html .md-footer-meta.md-typeset a{
 .md-typeset table:not([class]), .md-typeset table:not([class]) td{
     border-collapse: collapse;
     border:none;
+}
+
+.highlighttable{
+    border-bottom:1px solid  rgba(255,140,0, 0.1);
+    border-right:1px solid  rgba(255,140,0, 0.1);
+}
+
+.highlighttable .linenos{
+    background-color:#EEE;
+    border-color: rgba(255,140,0, 0.1);
+}
+
+.md-typeset code {
+    background-color: #FFF;
 }
 
 #developedBy{

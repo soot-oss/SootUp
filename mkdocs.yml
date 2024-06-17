@@ -14,6 +14,11 @@ nav:
 
     - Basics:
       - Jimple IR: jimple.md
+      - Jimple Body: jimple-body.md
+      - Jimple Statements: jimple-stmts.md
+      - Jimple Types: jimple-types.md
+      - Jimple Values: jimple-values.md
+
       - BodyInterceptors: bodyinterceptors.md
       - Callgraph Construction: call-graph-construction.md
       - Shipped Analyses: advanced-topics.md
