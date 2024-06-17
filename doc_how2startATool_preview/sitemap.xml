@@ -1,92 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/advanced-topics/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/advanced-topics/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/analysisinputlocations/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/analysisinputlocations/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/announce/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/announce/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/bodyinterceptors/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/bodyinterceptors/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/call-graph-construction/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/call-graph-construction/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/docguide/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/docguide/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/examples/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/examples/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/faq/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/faq/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/getting-started/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/getting-started/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/installation/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/installation/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/jimple/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/jimple-body/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/migrating/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/jimple-stmts/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/qilin/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/jimple-types/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/tool_ux/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/jimple-values/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/tools/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/jimple/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/whatsnew/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/migrating/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/_preview/write_analyses/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/qilin/</loc>
+         <lastmod>2024-06-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/tool_ux/</loc>
+         <lastmod>2024-06-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/tools/</loc>
+         <lastmod>2024-06-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/whatsnew/</loc>
+         <lastmod>2024-06-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/write_analyses/</loc>
          <lastmod>2024-06-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
