@@ -1,5 +1,5 @@
 # Jimple Stmt ("Statements")
-The main piece of Jimple is a Statement (Stmt). [**Stmts**]{formerly known as Units} represent that can be executed by the JVM.
+[Stmts]{formerly known as Units} represent instructions of the JVM.
 
 
 ## Branching Statements

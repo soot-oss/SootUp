@@ -83,6 +83,8 @@
 .md-typeset code {
     padding:0.2em;
     margin:0.2em;
+    font-size: 10pt;
+    background-color: #FCFCFC;
 }
 
 .tabbed-set.tabbed-alternate{
@@ -115,19 +117,20 @@ html .md-footer-meta.md-typeset a{
 }
 
 .highlighttable{
+    border-left:1px solid  rgba(255,140,0, 0.1);
     border-bottom:1px solid  rgba(255,140,0, 0.1);
     border-right:1px solid  rgba(255,140,0, 0.1);
 }
 
 .highlighttable .linenos{
-    background-color:#EEE;
-    border-color: rgba(255,140,0, 0.1);
-}
-
-.md-typeset code {
-    background-color: #FFF;
+    background-color: #FCFCFC;;
+    font-size: 10pt;
 }
 
 #developedBy{
     font-size: 11pt;
+}
+
+.tooltip{
+    color:  rgba(255,140,0, 0.8);
 }
