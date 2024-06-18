@@ -2,8 +2,8 @@
 An AnalysisInputLocation tells SootUp what code input it should analyze.
 
 ### Java Runtime
-- Java <9: `DefaultRTJaAnalysisInputLocation` current rt.jar (or point to any rt.jar as its just a usual .jar file)
-- Java >8: `JRTFilesystemAnalysisInputLocation`
+- Java <=8: `DefaultRTJaAnalysisInputLocation` current rt.jar (or point to any rt.jar as its just a usual .jar file)
+- Java >=9: `JRTFilesystemAnalysisInputLocation`
 
 If you have errors like Java.lang.String, Java.lang.Object, ... you are most likely missing this AnalysisInput.
 

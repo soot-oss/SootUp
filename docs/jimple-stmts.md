@@ -1171,3 +1171,45 @@ Ends the execution inside the current Method if the thrown exception is not caug
 		MAXLOCALS = 3
 	}
     ```
+
+## Good to know
+A lot of the SootUp APIs return the `Stmt` Interface. To determine and handle its subtypes you can make use of instanceof.
+=== "Stmt If-Else forest"
+    ```java
+    
+        List<Stmt> stmts = ... ;
+        for( Stmt stms : stmts ){
+            if(stmt instanceof JAssignStmt){
+                // found a JAssignStmt
+                Value rhsOp = ((JAssignStmt) stmt).getRightOp();
+                ...
+            }else if(stmt instanceof JInvokeStmt){
+                // found a JInvokeStmt
+                JInvokeStmt ivkStmt = ((JInvokeStmt) stmt);
+                MethodSignature rhsOp = ivkStmt.getInvokeExpr().getMethodSignature();
+                    ...
+            }
+        }
+                        
+    ```
+
+But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of `AbstractStmtVisitor`.
+Just subclass the methods to the respective Stmts you need to handle. 
+=== "StmtVisitor"
+    ```java
+    
+        List<Stmt> stmts = ...;
+        AbstractStmtVisitor visitor = new AbstractStmtVisitor<Integer>() {
+            private int countAssignStmts = 0;
+            @Override
+            public void caseIfStmt(@Nonnull JAssignStmt stmt) {
+                countAssignStmts++;
+            }
+        };
+        
+        for( Stmt stms : stmts ){
+            stmt.accept(visitor);
+        }
+        
+        int amountOfAssignStmts = visitor.getResult();
+    ```
