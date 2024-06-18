@@ -1135,30 +1135,38 @@ Below, we show how to create a type hierarchy:</p>
 </div>
 <h2 id="defining-an-entry-method">Defining an Entry Method</h2>
 <p>All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">SootUp</label><label for="__tabbed_2_2">Soot</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">SootUp (performant)</label><label for="__tabbed_2_2">SootUp (alternative)</label><label for="__tabbed_2_3">Soot</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">);</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageNameA.A&quot;</span><span class="p">);</span>
 
 <span class="n">MethodSignature</span><span class="w"> </span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">getMethodSignature</span><span class="p">(</span>
 <span class="w">            </span><span class="n">classTypeA</span><span class="p">,</span>
-<span class="w">            </span><span class="n">JavaIdentifierFactory</span><span class="p">.</span><span class="na">getInstance</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">getMethodSubSignature</span><span class="p">(</span>
-<span class="w">                    </span><span class="s">&quot;calc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">VoidType</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(),</span><span class="w"> </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">)));</span><span class="w">    </span>
+<span class="w">            </span><span class="s">&quot;calc&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">VoidType</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">)</span>
+<span class="w">        </span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">&quot;doStuff&quot;</span><span class="p">);</span><span class="w">     </span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">MethodSignature</span><span class="w"> </span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">parseMethodSignature</span><span class="p">(</span><span class="s">&quot;&lt;packageNameA.A: void calc(packageNameA.A)&quot;</span><span class="p">));</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;packageNameA.A&quot;</span><span class="p">;</span>
+<span class="n">SootMethod</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">).</span><span class="na">getMethodByName</span><span class="p">(</span><span class="s">&quot;doStuff&quot;</span><span class="p">);</span><span class="w">     </span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1174,14 +1182,12 @@ You can construct a call graph with CHA as follows:</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassHierarchyAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cha</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
 
-<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">cg</span><span class="p">);</span>
+<span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">tgt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; may call &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
@@ -1199,7 +1205,7 @@ You can construct a call graph with CHA as follows:</p>
 <span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">targets</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">SootMethod</span><span class="w"> </span><span class="n">tgt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">SootMethod</span><span class="p">)</span><span class="n">targets</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
 <span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; may call &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
@@ -1215,14 +1221,12 @@ You can construct a call graph with RTA as follows:</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">rta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">RapidTypeAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CallGraphAlgorithm</span><span class="w"> </span><span class="n">rta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RapidTypeAnalysisAlgorithm</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 
-<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
-<span class="w">        </span><span class="n">rta</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rta</span><span class="p">.</span><span class="na">initialize</span><span class="p">(</span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">));</span>
 
-<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">cg</span><span class="p">);</span>
+<span class="n">cg</span><span class="p">.</span><span class="na">callsFrom</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">tgt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">entryMethodSignature</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; may call &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
@@ -1256,6 +1260,7 @@ You can construct a call graph with RTA as follows:</p>
 </div>
 </div>
 <h2 id="variable-type-analysis">Variable Type Analysis</h2>
+<p>(<strong>WIP!</strong>)</p>
 <p>Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
 When considering assignments, we usually need to consider <strong>pointer</strong> (points-to) relationship.</p>
 <div class="admonition info">
