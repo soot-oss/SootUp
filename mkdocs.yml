@@ -7,8 +7,8 @@ nav:
     - Getting Started:
         - Installation: installation.md
         - First Steps: getting-started.md
+        - Possible Analysis Input: analysisinputlocations.md
         - Examples: examples.md
-        - Configure your Inputs: analysisinputlocations.md
 
     - Basics:
       - Jimple IR: jimple.md

@@ -1,5 +1,6 @@
-# AnalysisInputLocations
-An AnalysisInputLocation tells SootUp what code input it should analyze.
+# Analysis Input
+i.e. What should be analyzed - an `AnalysisInputLocation` points to code input SootUp can analyze.
+We ship multiple Subclasses that can handle different code input.
 
 ### Java Runtime
 - Java <=8: `DefaultRTJaAnalysisInputLocation` current rt.jar (or point to any rt.jar as its just a usual .jar file)
@@ -18,7 +19,7 @@ If you have errors like Java.lang.String, Java.lang.Object, ... you are most lik
 - `JimpleAnalysisInputLocation` - needs a Path to a .jimple file or a directory.
 
 ### Android Bytecode .dex
-- `ApkAnalysisInputLocation` - currenlty uses dex2jar internally - SootUp solution is WIP!
+- `ApkAnalysisInputLocation` - currenlty uses dex2jar internally - A SootUp solution to directly generate Jimple is WIP!
 
 
 ### Java cli arguments to configure SootUp
