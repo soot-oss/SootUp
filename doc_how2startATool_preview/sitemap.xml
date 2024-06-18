@@ -11,7 +11,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/announce/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/announcement/</loc>
          <lastmod>2024-06-18</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -21,7 +21,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/call-graph-construction/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/builtin-analyses/</loc>
+         <lastmod>2024-06-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/callgraphs/</loc>
          <lastmod>2024-06-18</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -82,11 +87,6 @@
     </url>
     <url>
          <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/qilin/</loc>
-         <lastmod>2024-06-18</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/shipped-analyses/</loc>
          <lastmod>2024-06-18</lastmod>
          <changefreq>daily</changefreq>
     </url>
