@@ -4,7 +4,7 @@
 An `Immediate` has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
 
 #### Local
-```jimple
+```
 i0 
 ```
 
@@ -142,7 +142,7 @@ And a bunch more!
 
 ### Ref
 #### JArrayRef
-```jimple
+```
 $arr[1] = 42;
 $anotherLocal = arr[99];
 ```
@@ -160,19 +160,19 @@ referencing an array position.
 The IdentityRef makes those implicit special value assignments explicit.
 
 ##### JThisRef
-```jimple
+```
 @this: package.fruit.Banana
 ```
 represents the this pointer of the current class.
 
 ##### JCaughtExceptionRef
-```jimple
+```
 @caughtexception
 ```
 represents the value of the thrown exception (caught by this exceptionhandler).
 
 ##### JParameterRef
-```jimple
+```
 i0 := @parameter0
 i1 := @parameter1 
 ```
