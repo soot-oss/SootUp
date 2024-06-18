@@ -21,9 +21,8 @@ Below is an overview of what’s new.
 SootUp is not a drop-in replacement for Soot! Due to its completely new architecture and API it is essentially an almost complete rewrite. For a while, Soot and SootUp will coexist, as many existing tools depend on Soot, yet our maintenance efforts will henceforth be focused on SootUp, not Soot, and on extending SootUp with those capabilities that people still find missing. For now, we recommend using SootUp for greenfield projects.
 
 For more details, check out
-- 
-- The SootUp home page: [This Page](https://soot-oss.github.io/SootUp/), and 
-- The SootUp repository: [https://github.com/soot-oss/SootUp/](https://soot-oss.github.io/SootUp/)
+
+[This Page ;-)](https://soot-oss.github.io/SootUp/) and The SootUp repository: [https://github.com/soot-oss/SootUp/](https://soot-oss.github.io/SootUp/)
 
 We are very much looking forward to your feedback and feature requests. To this end, best create appropriate issues in the repository.
 

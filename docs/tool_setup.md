@@ -1,4 +1,4 @@
-# From Prototype to a user friendly tool
+# From Prototype to an intuitive Tool
 
 `How was the parameter order again?`
 For a lot of cli tools we see an arbitrary order of cli parameters, different options for giving a working directory etc..

@@ -22,4 +22,4 @@ If you have errors like Java.lang.String, Java.lang.Object, ... you are most lik
 
 
 ### Java cli arguments to configure SootUp
-We created a [Utility](tool_setup) that parses a String of java command line arguments and configures SootUp respectively.
+We created a [Utility](tool_setup.md) that parses a String of java command line arguments and configures SootUp respectively.

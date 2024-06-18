@@ -2,8 +2,7 @@
 
 ### Version 1.3.0
 - The Typehierarchy API is now returning `Stream<ClassType>` instead of `Collection<ClassType>`. The simplest fix to have the same behaviour as before would be to collect the Stream on your own ( e.g. via `.collect(Collectors.toList())` ).
-- Default Bodyinterceptors are added to improve Jimple. To mitigate that adapt the List of BodyInterceptors to your needs. 
-- 
+- Default BytecodeBodyinterceptors are enabled to improve Jimple. To mitigate that adapt the List of BodyInterceptors to your needs.
 
 ### Version 1.2.0
 - The (Java)Project structure was removed. You can configure the (Java)View directly.
@@ -36,7 +35,8 @@ Below we show a comparison of the code so far with the same functionality in soo
 
     JavaSootClass sootClass = view.getClass(classType).get();
 
-    JavaSootMethod sootMethod =  sootClass.getMethod(methodSignature.getSubSignature()).get();
+    MethodSubSignature mss = methodSignature.getSubSignature();
+    JavaSootMethod sootMethod =  sootClass.getMethod(mss).get();
     
     sootMethod.getBody().getStmts();
     ```
