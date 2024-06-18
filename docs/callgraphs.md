@@ -10,8 +10,9 @@ Below, we show how to create a type hierarchy:
 === "SootUp"
 
     ```java
+    String cpString = "src/test/resources/Callgraph/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList();
-    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(cpStr));
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
 
     JavaView view = new JavaView(inputLocations);
@@ -61,7 +62,9 @@ All the call graph construction algorithms require an entry method to start with
 === "SootUp (alternative)"
 
     ```java
-    MethodSignature entryMethodSignature = view.getIdentifierFactory().parseMethodSignature("<packageNameA.A: void calc(packageNameA.A)"));
+    String methodSigStr = "<packageNameA.A: void calc(packageNameA.A)";
+    MethodSignature entryMethodSignature = view
+                        .getIdentifierFactory().parseMethodSignature(methodSigStr));
     ```
 
 === "Soot"
@@ -139,9 +142,9 @@ You can construct a call graph with RTA as follows:
 Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
 When considering assignments, we usually need to consider **pointer** (points-to) relationship.
 
-!!! info
+!!! info "WIP"
 
-    VTA algorithm was implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
+    VTA algorithm will be implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
     A reimplementation of Spark in SootUp is currently under development.
 
 Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:

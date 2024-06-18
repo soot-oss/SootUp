@@ -9,7 +9,8 @@ The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - 
 - The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.
 - t.b.c.
 
-Method scoped optimisations:
+Optimizations (method scope)
+
 - ConditionalBranchFolder: removes tautologic ifs that are always true/false - if we can determine it in the scope of the method.
 - EmptySwitchEliminator: removes switches that are not really switching
 - ConstantPropagatorAndFolder: calculates constant values before runtime
@@ -17,15 +18,13 @@ Method scoped optimisations:
 - UnreachableCodeEliminator: speaks for itself.
 - TrapTightener
 
-Make Local names standardized:
+Standardize Jimple appearance
+
 - LocalNameStandardizer: numbers Locals with the scheme: type-initial + number of type occurence 
 
 !!! info "Soot Equivalent"
-
     [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
-
-Below, we show how these BodyInterceptors work for the users who are interested in their internal workings.
 
 ### LocalSplitter
 

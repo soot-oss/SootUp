@@ -10,14 +10,14 @@ nav:
         - Examples: examples.md
         - Configure your Inputs: analysisinputlocations.md
 
-    - Basics I:
+    - Basics:
       - Jimple IR: jimple.md
       - Jimple Body: jimple-body.md
       - Jimple Statements: jimple-stmts.md
       - Jimple Types: jimple-types.md
       - Jimple Values: jimple-values.md
 
-    - Basics II:
+    - Advanced Topics:
       - BodyInterceptors: bodyinterceptors.md
       - Callgraphs: callgraphs.md
       - BuiltIn Analyses: builtin-analyses.md
@@ -31,12 +31,10 @@ nav:
     #  - Implement an AnalysisTool: write_analysis_tool.md
     #  - From Prototype to Tool: tool_setup.md
 
-    - Misc:
-        - Announcements: announcement.md
-        - Design Decisions: whatsnew.md
-        - Migration Help: migrating.md
-
-    - More information:
+    - Misc & More information:
+      - Announcements: announcement.md
+      - Design Decisions: whatsnew.md
+      - Migration Help: migrating.md
       - Latest Javadoc: /SootUp/apidocs
       - Troubleshooting & FAQ: faq.md
       # - Based on SootUp: tools.md

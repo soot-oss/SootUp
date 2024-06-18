@@ -6,8 +6,7 @@ Therefore, Jimple aims to bring the best of both worlds, a non-stack-based and f
 For this purpose Jimple was designed as a representation of JVM bytecode which is human readable.
 
 !!! info
-
-    To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
+ To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
 
 
 Lets have a look at the following Jimple code representing Java code of a `HelloWorld` class.

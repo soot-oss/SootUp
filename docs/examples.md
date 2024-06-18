@@ -1,14 +1,19 @@
 # SootUp Example projects
-Example code to help getting start with SootUp
-Here we will provide some examples that uses SootUp to provide insights about a Java program.
-The Examples can be cloned or downloaded from our [Example Repository](https://github.com/soot-oss/SootUp-Examples.git).
+Some examples that use SootUp to get insights about a Java program.
 
-- BasicSetupExample
-- BodyInterceptorExample
-- CallGraphExample
-- ClassHierarchyExample
-- MutatingSootClassExample
+- Basic setup [Example](https://github.com/soot-oss/SootUp-Examples/blob/main/BasicSetupExample/src/main/java/sootup/examples/BasicSetup.java)
+- Configure a BodyInterceptor [Example](https://github.com/soot-oss/SootUp-Examples/blob/main/BodyInterceptorExample/src/main/java/sootup/examples/BodyInterceptor.java)
+- CallGraph [Example](https://github.com/soot-oss/SootUp-Examples/blob/main/CallgraphExample/src/main/java/sootup/examples/CallgraphExample.java)
+- Class Hierarchy Algoritm [Example](https://github.com/soot-oss/SootUp-Examples/blob/main/ClassHierarchyExample/src/main/java/sootup/examples/ClassHierarchy.java)
+- Replace a SootMethod of a SootClass [Example](https://github.com/soot-oss/SootUp-Examples/blob/main/MutatingSootClassExample/src/main/java/sootup/examples/MutatingSootClass.java)
 
+
+!!! info "Download"
+    The Examples can be cloned or downloaded from our [Example Repository](https://github.com/soot-oss/SootUp-Examples.git).
+
+
+
+<!--
 We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
 
 ### BasicSetupExample
@@ -82,3 +87,5 @@ We have included all the five projects in 5 different branches under SootUp-Exam
 9. Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
 10. Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old method in the class with the new method having the modified body.
 11. Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a corresponding message.
+
+-->
