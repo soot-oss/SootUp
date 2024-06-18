@@ -1,18 +1,19 @@
 # Jimple Values
 
-### Immediate
-An Immediate has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
+### Immediates
+An `Immediate` has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
 
 #### Local
 ```jimple
 i0 
 ```
+
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
-=== "Jimple"
+=== "Jimple" 
 
-    ```jimple
+    ```
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -40,14 +41,14 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
       }
     }
     /*
-      $stack2, this, $stack3, local#2 are all JimpleLocal.
+      $stack2, this, $stack3, local#2 are all Locals.
 
-      "this := @this: target.exercise1.DemoClass" is JIdentityStmt
+      "this := @this: target.exercise1.DemoClass" is a JIdentityStmt assigning to a Local.
 
       "$stack2 = <java.lang.System: java.io.PrintStream out>", 
         "local#2 = this.<target.exercise1.DemoClass: int global>", 
           "$stack3 = <java.lang.System: java.io.PrintStream out>" 
-            are JAssignStmt
+            are JAssignStmts assigning to a Local.
 
     */  
     ```
@@ -142,9 +143,10 @@ And a bunch more!
 ### Ref
 #### JArrayRef
 ```jimple
-$arr[1]
+$arr[1] = 42;
+$anotherLocal = arr[99];
 ```
-referencing a position inside an array.
+referencing an array position.
 
 #### JFieldRef
 `JFieldRef`s are referencing a `SootField` via its FieldSignature
