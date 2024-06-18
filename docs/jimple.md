@@ -504,7 +504,7 @@ A Trap is a mechanism to model exceptional flow.
       }
     }
     /*
-      By calling getTraps() method, we can get the Traip chain.
+      By calling getTraps() method, we can get the trap chain.
       For the above jimple code, we have the below trap:
       Trap :
       begin  : $stack5 = <java.lang.System: java.io.PrintStream out>
