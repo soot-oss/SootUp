@@ -1182,8 +1182,8 @@
 <h3 id="immediates">Immediates</h3>
 <p>An <code>Immediate</code> has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").</p>
 <h4 id="local">Local</h4>
-<p><code>jimple
-i0</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>i0 
+</code></pre></div></td></tr></table></div>
 <p>A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
@@ -1410,9 +1410,10 @@ E.g. a binary operation <code>AbstracBinopExpr</code> such as an addition <code>
 And a bunch more!</p>
 <h3 id="ref">Ref</h3>
 <h4 id="jarrayref">JArrayRef</h4>
-<p><code>jimple
-$arr[1] = 42;
-$anotherLocal = arr[99];</code>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$arr[1] = 42;
+$anotherLocal = arr[99];
+</code></pre></div></td></tr></table></div>
 referencing an array position.</p>
 <h4 id="jfieldref">JFieldRef</h4>
 <p><code>JFieldRef</code>s are referencing a <code>SootField</code> via its FieldSignature</p>
@@ -1424,17 +1425,18 @@ referencing an array position.</p>
 <h4 id="identityref">IdentityRef</h4>
 <p>The IdentityRef makes those implicit special value assignments explicit.</p>
 <h5 id="jthisref">JThisRef</h5>
-<p><code>jimple
-@this: package.fruit.Banana</code>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>@this: package.fruit.Banana
+</code></pre></div></td></tr></table></div>
 represents the this pointer of the current class.</p>
 <h5 id="jcaughtexceptionref">JCaughtExceptionRef</h5>
-<p><code>jimple
-@caughtexception</code>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>@caughtexception
+</code></pre></div></td></tr></table></div>
 represents the value of the thrown exception (caught by this exceptionhandler).</p>
 <h5 id="jparameterref">JParameterRef</h5>
-<p><code>jimple
-i0 := @parameter0
-i1 := @parameter1</code>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>i0 := @parameter0
+i1 := @parameter1 
+</code></pre></div></td></tr></table></div>
 represents a parameter of a method, identified by its index.</p>
 
 
