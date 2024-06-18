@@ -1,4 +1,4 @@
-# Jimple Stmt ("Statements")
+# Jimple Stmt ("Statement")
 [Stmts]{formerly known as Units} represent instructions of the JVM.
 Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.
 
