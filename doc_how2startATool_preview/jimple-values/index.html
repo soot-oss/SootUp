@@ -534,13 +534,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#immediate" class="md-nav__link">
+  <a href="#immediates" class="md-nav__link">
     <span class="md-ellipsis">
-      Immediate
+      Immediates
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Immediate">
+    <nav class="md-nav" aria-label="Immediates">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1044,13 +1044,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#immediate" class="md-nav__link">
+  <a href="#immediates" class="md-nav__link">
     <span class="md-ellipsis">
-      Immediate
+      Immediates
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Immediate">
+    <nav class="md-nav" aria-label="Immediates">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1179,58 +1179,90 @@
 
 
 <h1 id="jimple-values">Jimple Values</h1>
-<h3 id="immediate">Immediate</h3>
-<p>An Immediate has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").</p>
+<h3 id="immediates">Immediates</h3>
+<p>An <code>Immediate</code> has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").</p>
 <h4 id="local">Local</h4>
 <p><code>jimple
-i0</code>
-A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
+i0</code></p>
+<p>A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<p>```jimple
-public class target.exercise1.DemoClass extends java.lang.Object
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
 {
-  public void <init>()
+  public void &lt;init&gt;()
   {
     target.exercise1.DemoClass this;
     this := @this: target.exercise1.DemoClass;
-    specialinvoke this.<java.lang.Object: void \<init>()>();
+    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
     return;
-  }</p>
-<p>public void compute()
+  }
+
+  public void compute()
   {
     java.io.PrintStream $stack2, $stack3;
     target.exercise1.DemoClass this;
-    int local#2;</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>this := @this: target.exercise1.DemoClass;
-$stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-virtualinvoke $stack2.&lt;java.io.PrintStream: void println(int)&gt;(1);
+    int local#2;
 
-local#2 = this.&lt;target.exercise1.DemoClass: int global&gt;;
-$stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-virtualinvoke $stack3.&lt;java.io.PrintStream: void println(int)&gt;(local#2);
-return;
-</code></pre></div></td></tr></table></div>
-<p>}
+    this := @this: target.exercise1.DemoClass;
+    $stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    virtualinvoke $stack2.&lt;java.io.PrintStream: void println(int)&gt;(1);
+
+    local#2 = this.&lt;target.exercise1.DemoClass: int global&gt;;
+    $stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
+    virtualinvoke $stack3.&lt;java.io.PrintStream: void println(int)&gt;(local#2);
+    return;
+  }
 }
 /*
-  $stack2, this, $stack3, local#2 are all JimpleLocal.</p>
-<p>"this := @this: target.exercise1.DemoClass" is JIdentityStmt</p>
-<p>"$stack2 = <java.lang.System: java.io.PrintStream out>", 
-    "local#2 = this.<target.exercise1.DemoClass: int global>", 
-      "$stack3 = <java.lang.System: java.io.PrintStream out>" 
-        are JAssignStmt</p>
-<p>*/<br />
-```</p>
+  $stack2, this, $stack3, local#2 are all Locals.
+
+  &quot;this := @this: target.exercise1.DemoClass&quot; is a JIdentityStmt assigning to a Local.
+
+  &quot;$stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot;, 
+    &quot;local#2 = this.&lt;target.exercise1.DemoClass: int global&gt;&quot;, 
+      &quot;$stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot; 
+        are JAssignStmts assigning to a Local.
+
+*/  
+</code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
@@ -1379,8 +1411,9 @@ And a bunch more!</p>
 <h3 id="ref">Ref</h3>
 <h4 id="jarrayref">JArrayRef</h4>
 <p><code>jimple
-$arr[1]</code>
-referencing a position inside an array.</p>
+$arr[1] = 42;
+$anotherLocal = arr[99];</code>
+referencing an array position.</p>
 <h4 id="jfieldref">JFieldRef</h4>
 <p><code>JFieldRef</code>s are referencing a <code>SootField</code> via its FieldSignature</p>
 <ul>
