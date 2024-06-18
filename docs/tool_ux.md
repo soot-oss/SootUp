@@ -25,12 +25,12 @@ Dependencies:
 
 ### Java Code
 
-```java
-
-class SootUpConfiguration{
-    // TODO incorporate
-}
-
-```
+    ```java
+    
+    class SootUpConfiguration{
+        // TODO incorporate
+    }
+    
+    ```
 
 We are happy if you steal the following code to create a tool where the setup is just simple.

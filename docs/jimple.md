@@ -10,7 +10,7 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
     To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
 
 
-It might help to visualize how the Jimple version of a Java code looks like. Have a look at the following example on the `HelloWorld` class.
+Lets have a look at the following Jimple code representing Java code of a `HelloWorld` class.
 
 === "Jimple"
 
@@ -94,6 +94,12 @@ It might help to visualize how the Jimple version of a Java code looks like. Hav
         MAXLOCALS = 1
     }
     ```
+
+The Java Sourcecode is the easiest representation - So why all the fuzz and just use that?
+Sometimes we have no access to the sourcecode but have a binary with the bytecode.
+For most People reading bytecode is not that intuitive. So SootUp generates Jimple from the bytecode.
+Jimple is very verbose, but makes everything explicit, that the JVM does implicitly and transforms the stack-machine strategy by a register-machine strategy i.e. Variable (`Local`) handling .
+
 
 ## Jimple Grammar Structure
 Jimple mimics the JVMs class file structure.

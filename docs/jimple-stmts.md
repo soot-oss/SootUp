@@ -1,12 +1,16 @@
 # Jimple Stmt ("Statements")
 [Stmts]{formerly known as Units} represent instructions of the JVM.
+Stmts can be roughly grouped by the amount of successors (in the `StmtGraph` of a `Body` of a `Method`).
 
+- A `FallsThroughStmt` has always one successor - it basically represents `program counter++`.
+- A `BranchingStmt` can have one, two or even n successors.
+- All others (neither FallsThrough nor BranchingStmt) have no successors and therefore end the execution of the current method.
 
-## Branching Statements
+## Branching Stmts
 A BranchingStmt's job is to model the jumps or conditional branching flow between Stmts.
 
 ##### JGotoStmt
-for unconditional flow.  
+represents unconditional jumps to another Stmt.  
 
 === "Jimple"
 
@@ -118,8 +122,9 @@ for unconditional flow.
     ```
 
 ##### JIfStmt
-for conditional flow depending on boolean Expression (AbstractConditionExpr) so they have two successor Stmt's.  
-note: The JIfStmt is also a FallsthroughStmt if the branching condition is not met.
+For conditional jumps depending on the result of the conditional expression `AbstractConditionExpr` which needs to have boolean result.
+If the conditional expression is false, the next Stmt is the successor as the JIFStmt is also a `FallsthroughStmt`.
+Therefore, the JIfStmt has two successor Stmt's.
 
 === "Jimple"
 
@@ -236,8 +241,6 @@ note: The JIfStmt is also a FallsthroughStmt if the branching condition is not m
 
 ##### JSwitchStmt
 for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. 
-
-All other Stmts are not manipulating the flow, which means they have a single successor Stmt as long as they are not exiting the flow inside a method.  
 
 === "Jimple"
 
@@ -402,264 +405,8 @@ All other Stmts are not manipulating the flow, which means they have a single su
 	}
     ```
 
-## FallsThrough Statements
-The execution of a FallsthroughStmt goes on with the following Stmt (when no exception was thrown). 
-
-##### JReturnStmt & JReturnVoidStmt
-They end the execution/flow inside the current method and return (a value) to its caller.  
-
-=== "Jimple"
-
-    ```jimple
-    public class target.exercise1.DemoClass extends java.lang.Object
-    {
-      public void <init>()
-      {
-        target.exercise1.DemoClass this;
-        this := @this: target.exercise1.DemoClass;
-        specialinvoke this.<java.lang.Object: void <init>()>();
-        return;
-      }
-
-      public int increment(int)
-      {
-        int x, $stack2;
-        target.exercise1.DemoClass this;
-
-        this := @this: target.exercise1.DemoClass;
-        x := @parameter0: int;
-
-        $stack2 = x + 1;
-        return $stack2;
-      }
-
-      public void print()
-      {
-        java.io.PrintStream $stack1;
-        target.exercise1.DemoClass this;
-
-        this := @this: target.exercise1.DemoClass;
-        $stack1 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack1.<java.io.PrintStream: 
-          void println(java.lang.String)>("Inside method print");
-        return;
-      }
-    }
-    /*
-      "return $stack2" is JReturnStmt.
-      "return" is JReturnVoidStmt.
-    */
-    ```
-
-=== "Java"
-
-    ```java
-	package target.exercise1;
-
-	public class DemoClass {
-	  public int increment(int x){
-	    return x + 1;
-	  }
-	  public void print(){
-	    System.out.println("Inside method print");
-	  }
-	}
-    ```
-
-=== "Bytecode"
-
-    ```
-    // class version 52.0 (52)
-	// access flags 0x21
-	public class target/exercise1/DemoClass {
-
-	// compiled from: DemoClass.java
-
-	// access flags 0x1
-	public <init>()V
-      L0
-		LINENUMBER 3 L0
-		ALOAD 0
-		INVOKESPECIAL java/lang/Object.<init> ()V
-		RETURN
-      L1
-		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-		MAXSTACK = 1
-		MAXLOCALS = 1
-
-	// access flags 0x1
-	public increment(I)I
-      L0
-		LINENUMBER 5 L0
-		ILOAD 1
-		ICONST_1
-		IADD
-		IRETURN
-      L1
-		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-		LOCALVARIABLE x I L0 L1 1
-		MAXSTACK = 2
-		MAXLOCALS = 2
-
-	// access flags 0x1
-	public print()V
-      L0
-		LINENUMBER 8 L0
-		GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-		LDC "Inside method print"
-		INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-      L1
-		LINENUMBER 9 L1
-		RETURN
-      L2
-		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
-		MAXSTACK = 2
-		MAXLOCALS = 1
-	}
-    ```
-
-
-##### JThrowStmt
-Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.  
-
-
-=== "Jimple"
-
-    ```jimple
-    public class target.exercise1.DemoClass extends java.lang.Object
-    {
-      public void <init>()
-      {
-        target.exercise1.DemoClass this;
-        this := @this: target.exercise1.DemoClass;
-        specialinvoke this.<java.lang.Object: void <init>()>();
-        return;
-      }
-
-      public void divideExample(int, int)
-      {
-        int y, x, $stack6;
-        java.lang.StringBuilder $stack3, $stack5, $stack7;
-        java.io.PrintStream $stack4;
-        java.lang.String $stack8;
-        java.lang.RuntimeException $stack9;
-        target.exercise1.DemoClass this;
-
-        this := @this: target.exercise1.DemoClass;
-        x := @parameter0: int;
-        y := @parameter1: int;
-
-        if y != 0 goto label1;
-
-        $stack9 = new java.lang.RuntimeException;
-        specialinvoke $stack9.<java.lang.RuntimeException: 
-          void <init>(java.lang.String)>("Divide by zero error");
-        throw $stack9;
-
-        label1:
-          $stack4 = <java.lang.System: java.io.PrintStream out>;
-          $stack3 = new java.lang.StringBuilder;
-          specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
-
-          $stack5 = virtualinvoke $stack3.<java.lang.StringBuilder: 
-            java.lang.StringBuilder append(java.lang.String)>("Divide result : ");
-          $stack6 = x / y;
-          $stack7 = virtualinvoke $stack5.<java.lang.StringBuilder: 
-            java.lang.StringBuilder append(int)>($stack6);
-          $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
-            java.lang.String toString()>();
-
-          virtualinvoke $stack4.<java.io.PrintStream: 
-            void println(java.lang.String)>($stack8);
-          return;
-      }
-    }
-    /*
-      "throw $stack9" is JThrowStmt.
-    */
-    ```
-
-=== "Java"
-
-    ```java
-	package target.exercise1;
-
-	public class DemoClass {
-	  public void divideExample(int x, int y){
-	    if(y == 0){
-	      throw new RuntimeException("Divide by zero error");
-	    }
-	    System.out.println("Divide result : " + x / y);
-	  }
-	}
-    ```
-
-=== "Bytecode"
-
-    ```
-    // class version 52.0 (52)
-	// access flags 0x21
-	public class target/exercise1/DemoClass {
-
-    // compiled from: DemoClass.java
-
-    // access flags 0x1
-    public <init>()V
-      L0
-		LINENUMBER 3 L0
-		ALOAD 0
-		INVOKESPECIAL java/lang/Object.<init> ()V
-		RETURN
-      L1
-		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-		MAXSTACK = 1
-		MAXLOCALS = 1
-
-    // access flags 0x1
-    public divideExample(II)V
-      L0
-		LINENUMBER 5 L0
-		ILOAD 2
-		IFNE L1
-      L2
-		LINENUMBER 6 L2
-		NEW java/lang/RuntimeException
-		DUP
-		LDC "Divide by zero error"
-		INVOKESPECIAL java/lang/RuntimeException.<init> 
-          (Ljava/lang/String;)V
-		ATHROW
-      L1
-		LINENUMBER 8 L1
-		FRAME SAME
-		GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-		NEW java/lang/StringBuilder
-		DUP
-		INVOKESPECIAL java/lang/StringBuilder.<init> ()V
-		LDC "Divide result : "
-		INVOKEVIRTUAL java/lang/StringBuilder.append 
-          (Ljava/lang/String;)Ljava/lang/StringBuilder;
-		ILOAD 1
-		ILOAD 2
-		IDIV
-		INVOKEVIRTUAL java/lang/StringBuilder.append 
-          (I)Ljava/lang/StringBuilder;
-		INVOKEVIRTUAL java/lang/StringBuilder.toString 
-          ()Ljava/lang/String;
-		INVOKEVIRTUAL java/io/PrintStream.println 
-          (Ljava/lang/String;)V
-      L3
-		LINENUMBER 9 L3
-		RETURN
-      L4
-		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L4 0
-		LOCALVARIABLE x I L0 L4 1
-		LOCALVARIABLE y I L0 L4 2
-		MAXSTACK = 4
-		MAXLOCALS = 3
-	}
-    ```
-
+## FallsThrough Stmts
+The execution of a FallsthroughStmt goes on with the following Stmt (if no exception was thrown). 
 
 ##### JInvokeStmt
 transfers the control flow to another method until the called method returns.  
@@ -1160,7 +907,265 @@ marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.
 	}
     ```
 
-
 ##### JRetStmt
+// TODO: [java 1.6 spec](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret)
+
 ##### JBreakpointStmt
-models a Breakpoint set by a Debugger (usually not relevant for static analyses)
+models a Breakpoint set by a Debugger. Therefore, not really relevant for static analyses but useful for code generation.
+
+## Other Stmts
+
+##### JReturnStmt & JReturnVoidStmt
+They end the execution/flow inside the current method and return (a value) to its caller.
+
+=== "Jimple"
+
+    ```jimple
+    public class target.exercise1.DemoClass extends java.lang.Object
+    {
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
+
+      public int increment(int)
+      {
+        int x, $stack2;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
+
+        $stack2 = x + 1;
+        return $stack2;
+      }
+
+      public void print()
+      {
+        java.io.PrintStream $stack1;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        $stack1 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $stack1.<java.io.PrintStream: 
+          void println(java.lang.String)>("Inside method print");
+        return;
+      }
+    }
+    /*
+      "return $stack2" is JReturnStmt.
+      "return" is JReturnVoidStmt.
+    */
+    ```
+
+=== "Java"
+
+    ```java
+	package target.exercise1;
+
+	public class DemoClass {
+	  public int increment(int x){
+	    return x + 1;
+	  }
+	  public void print(){
+	    System.out.println("Inside method print");
+	  }
+	}
+    ```
+
+=== "Bytecode"
+
+    ```
+    // class version 52.0 (52)
+	// access flags 0x21
+	public class target/exercise1/DemoClass {
+
+	// compiled from: DemoClass.java
+
+	// access flags 0x1
+	public <init>()V
+      L0
+		LINENUMBER 3 L0
+		ALOAD 0
+		INVOKESPECIAL java/lang/Object.<init> ()V
+		RETURN
+      L1
+		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+		MAXSTACK = 1
+		MAXLOCALS = 1
+
+	// access flags 0x1
+	public increment(I)I
+      L0
+		LINENUMBER 5 L0
+		ILOAD 1
+		ICONST_1
+		IADD
+		IRETURN
+      L1
+		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+		LOCALVARIABLE x I L0 L1 1
+		MAXSTACK = 2
+		MAXLOCALS = 2
+
+	// access flags 0x1
+	public print()V
+      L0
+		LINENUMBER 8 L0
+		GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+		LDC "Inside method print"
+		INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+      L1
+		LINENUMBER 9 L1
+		RETURN
+      L2
+		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+		MAXSTACK = 2
+		MAXLOCALS = 1
+	}
+    ```
+
+
+##### JThrowStmt
+Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.
+
+
+=== "Jimple"
+
+    ```jimple
+    public class target.exercise1.DemoClass extends java.lang.Object
+    {
+      public void <init>()
+      {
+        target.exercise1.DemoClass this;
+        this := @this: target.exercise1.DemoClass;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+      }
+
+      public void divideExample(int, int)
+      {
+        int y, x, $stack6;
+        java.lang.StringBuilder $stack3, $stack5, $stack7;
+        java.io.PrintStream $stack4;
+        java.lang.String $stack8;
+        java.lang.RuntimeException $stack9;
+        target.exercise1.DemoClass this;
+
+        this := @this: target.exercise1.DemoClass;
+        x := @parameter0: int;
+        y := @parameter1: int;
+
+        if y != 0 goto label1;
+
+        $stack9 = new java.lang.RuntimeException;
+        specialinvoke $stack9.<java.lang.RuntimeException: 
+          void <init>(java.lang.String)>("Divide by zero error");
+        throw $stack9;
+
+        label1:
+          $stack4 = <java.lang.System: java.io.PrintStream out>;
+          $stack3 = new java.lang.StringBuilder;
+          specialinvoke $stack3.<java.lang.StringBuilder: void <init>()>();
+
+          $stack5 = virtualinvoke $stack3.<java.lang.StringBuilder: 
+            java.lang.StringBuilder append(java.lang.String)>("Divide result : ");
+          $stack6 = x / y;
+          $stack7 = virtualinvoke $stack5.<java.lang.StringBuilder: 
+            java.lang.StringBuilder append(int)>($stack6);
+          $stack8 = virtualinvoke $stack7.<java.lang.StringBuilder: 
+            java.lang.String toString()>();
+
+          virtualinvoke $stack4.<java.io.PrintStream: 
+            void println(java.lang.String)>($stack8);
+          return;
+      }
+    }
+    /*
+      "throw $stack9" is JThrowStmt.
+    */
+    ```
+
+=== "Java"
+
+    ```java
+	package target.exercise1;
+
+	public class DemoClass {
+	  public void divideExample(int x, int y){
+	    if(y == 0){
+	      throw new RuntimeException("Divide by zero error");
+	    }
+	    System.out.println("Divide result : " + x / y);
+	  }
+	}
+    ```
+
+=== "Bytecode"
+
+    ```
+    // class version 52.0 (52)
+	// access flags 0x21
+	public class target/exercise1/DemoClass {
+
+    // compiled from: DemoClass.java
+
+    // access flags 0x1
+    public <init>()V
+      L0
+		LINENUMBER 3 L0
+		ALOAD 0
+		INVOKESPECIAL java/lang/Object.<init> ()V
+		RETURN
+      L1
+		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+		MAXSTACK = 1
+		MAXLOCALS = 1
+
+    // access flags 0x1
+    public divideExample(II)V
+      L0
+		LINENUMBER 5 L0
+		ILOAD 2
+		IFNE L1
+      L2
+		LINENUMBER 6 L2
+		NEW java/lang/RuntimeException
+		DUP
+		LDC "Divide by zero error"
+		INVOKESPECIAL java/lang/RuntimeException.<init> 
+          (Ljava/lang/String;)V
+		ATHROW
+      L1
+		LINENUMBER 8 L1
+		FRAME SAME
+		GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+		NEW java/lang/StringBuilder
+		DUP
+		INVOKESPECIAL java/lang/StringBuilder.<init> ()V
+		LDC "Divide result : "
+		INVOKEVIRTUAL java/lang/StringBuilder.append 
+          (Ljava/lang/String;)Ljava/lang/StringBuilder;
+		ILOAD 1
+		ILOAD 2
+		IDIV
+		INVOKEVIRTUAL java/lang/StringBuilder.append 
+          (I)Ljava/lang/StringBuilder;
+		INVOKEVIRTUAL java/lang/StringBuilder.toString 
+          ()Ljava/lang/String;
+		INVOKEVIRTUAL java/io/PrintStream.println 
+          (Ljava/lang/String;)V
+      L3
+		LINENUMBER 9 L3
+		RETURN
+      L4
+		LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L4 0
+		LOCALVARIABLE x I L0 L4 1
+		LOCALVARIABLE y I L0 L4 2
+		MAXSTACK = 4
+		MAXLOCALS = 3
+	}
+    ```
