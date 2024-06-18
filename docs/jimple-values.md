@@ -151,8 +151,8 @@ referencing an array position.
 #### JFieldRef
 `JFieldRef`s are referencing a `SootField` via its FieldSignature
 
-- `JStaticFieldRef` like `#!jimple <SomePackage.ExampleClass: fieldname>`
-- `JInstanceFieldRef` like `#!jimple r1.<SomePackage.ExampleClass: fieldname>`
+- `JStaticFieldRef` like ` <SomePackage.ExampleClass: fieldname>`
+- `JInstanceFieldRef` like ` r1.<SomePackage.ExampleClass: fieldname>`
   You can see the JInstanceFieldRef has the corresponding Local instance that points to the instance of the object which is holding the field.
 
 

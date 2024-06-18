@@ -6,7 +6,7 @@ Therefore, Jimple aims to bring the best of both worlds, a non-stack-based and f
 For this purpose Jimple was designed as a representation of JVM bytecode which is human readable.
 
 !!! info
- To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
+    To learn more about jimple, refer to the [thesis](https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf) by Raja Vallee-Rai.
 
 
 Lets have a look at the following Jimple code representing Java code of a `HelloWorld` class.
@@ -246,7 +246,7 @@ Sidenote: Locals, do not have a signature, since they are referenced within meth
     }
     ```
 
-### SootClass 
+### SootClass
 A `SootClass` consists of SootFields and SootMethods.
 It is referenced by its global identifier the `ClassType` like `java.lang.String`.
 
@@ -299,7 +299,7 @@ It is referenced by its global identifier the `ClassType` like `java.lang.String
 
 ### SootField
 A SootField is a piece of memory which can store a value that is accessible according to its visibility modifier.
-It is referenced by its FieldSignature like `#!jimple <java.lang.String: int hash>`.
+It is referenced by its FieldSignature like ` <java.lang.String: int hash>`.
 
 === "Jimple"
 
@@ -364,7 +364,7 @@ It is referenced by its FieldSignature like `#!jimple <java.lang.String: int has
 
 ### SootMethod and its Body
 The interesting part is a method. A method is a "piece of code" that can be executed.
-It is referenced by its MethodSignature like `#!jimple <java.lang.Object: java.lang.String toString()>`.
+It is referenced by its MethodSignature like ` <java.lang.Object: java.lang.String toString()>`.
 
 === "Jimple"
 
