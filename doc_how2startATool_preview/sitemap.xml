@@ -6,11 +6,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/advanced-topics/</loc>
-         <lastmod>2024-06-18</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/analysisinputlocations/</loc>
          <lastmod>2024-06-18</lastmod>
          <changefreq>daily</changefreq>
@@ -91,7 +86,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/tool_ux/</loc>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/shipped-analyses/</loc>
+         <lastmod>2024-06-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://soot-oss.github.io/SootUp/doc_how2startATool_preview/tool_setup/</loc>
          <lastmod>2024-06-18</lastmod>
          <changefreq>daily</changefreq>
     </url>
