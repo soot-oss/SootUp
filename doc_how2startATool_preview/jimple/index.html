@@ -489,36 +489,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#class-or-interface" class="md-nav__link">
+  <a href="#sootclass" class="md-nav__link">
     <span class="md-ellipsis">
-      Class (or Interface)
+      SootClass
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#field" class="md-nav__link">
+  <a href="#sootfield" class="md-nav__link">
     <span class="md-ellipsis">
-      Field
+      SootField
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-and-its-body" class="md-nav__link">
+  <a href="#sootmethod-and-its-body" class="md-nav__link">
     <span class="md-ellipsis">
-      Method and its Body
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#traps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Traps
+      SootMethod and its Body
     </span>
   </a>
   
@@ -1047,36 +1038,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#class-or-interface" class="md-nav__link">
+  <a href="#sootclass" class="md-nav__link">
     <span class="md-ellipsis">
-      Class (or Interface)
+      SootClass
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#field" class="md-nav__link">
+  <a href="#sootfield" class="md-nav__link">
     <span class="md-ellipsis">
-      Field
+      SootField
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#method-and-its-body" class="md-nav__link">
+  <a href="#sootmethod-and-its-body" class="md-nav__link">
     <span class="md-ellipsis">
-      Method and its Body
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#traps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Traps
+      SootMethod and its Body
     </span>
   </a>
   
@@ -1115,7 +1097,7 @@ For this purpose Jimple was designed as a representation of JVM bytecode which i
 <p class="admonition-title">Info</p>
 <p>To learn more about jimple, refer to the <a href="https://courses.cs.washington.edu/courses/cse501/01wi/project/sable-thesis.pdf">thesis</a> by Raja Vallee-Rai.</p>
 </div>
-<p>It might help to visualize how the Jimple version of a Java code looks like. Have a look at the following example on the <code>HelloWorld</code> class.</p>
+<p>Lets have a look at the following Jimple code representing Java code of a <code>HelloWorld</code> class.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1262,6 +1244,10 @@ public static main([Ljava/lang/String;)V
 </div>
 </div>
 </div>
+<p>The Java Sourcecode is the easiest representation - So why all the fuzz and just use that?
+Sometimes we have no access to the sourcecode but have a binary with the bytecode.
+For most People reading bytecode is not that intuitive. So SootUp generates Jimple from the bytecode.
+Jimple is very verbose, but makes everything explicit, that the JVM does implicitly and transforms the stack-machine strategy by a register-machine strategy i.e. Variable (<code>Local</code>) handling .</p>
 <h2 id="jimple-grammar-structure">Jimple Grammar Structure</h2>
 <p>Jimple mimics the JVMs class file structure.
 Therefore it is object oriented.
@@ -1519,9 +1505,9 @@ public demoMethod()V
 </div>
 </div>
 </div>
-<h3 id="class-or-interface">Class (or Interface)</h3>
-<p>A class consists of Fields and Methods.
-It is referenced by its ClassType.</p>
+<h3 id="sootclass">SootClass</h3>
+<p>A <code>SootClass</code> consists of SootFields and SootMethods.
+It is referenced by its global identifier the <code>ClassType</code> like <code>java.lang.String</code>.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Jimple</label><label for="__tabbed_3_2">Java</label><label for="__tabbed_3_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1594,9 +1580,9 @@ public &lt;init&gt;()V
 </div>
 </div>
 </div>
-<h3 id="field">Field</h3>
-<p>A Field is a piece of memory which can store a value that is accessible according to its visibility modifier.
-It is referenced by its FieldSignature.</p>
+<h3 id="sootfield">SootField</h3>
+<p>A SootField is a piece of memory which can store a value that is accessible according to its visibility modifier.
+It is referenced by its FieldSignature like `#!jimple <java.lang.String: int hash>`.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Jimple</label><label for="__tabbed_4_2">Java</label><label for="__tabbed_4_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1697,9 +1683,9 @@ public &lt;init&gt;()V
 </div>
 </div>
 </div>
-<h3 id="method-and-its-body">Method and its Body</h3>
+<h3 id="sootmethod-and-its-body">SootMethod and its Body</h3>
 <p>The interesting part is a method. A method is a "piece of code" that can be executed.
-It is referenced by its MethodSignature and contains a <span class="tooltip hint--top" aria-label="a control flow graph"><strong>StmtGraph</strong></span> that models the sequence of single instructions/statements (Stmts).</p>
+It is referenced by its MethodSignature like `#!jimple <java.lang.Object: java.lang.String toString()>`.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Jimple</label><label for="__tabbed_5_2">Java</label><label for="__tabbed_5_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1868,242 +1854,7 @@ public demoMethod()V
 </div>
 </div>
 </div>
-<h3 id="traps">Traps</h3>
-<p>A Trap is a mechanism to model exceptional flow.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Jimple</label><label for="__tabbed_6_2">Java</label><label for="__tabbed_6_3">Bytecode</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
-{
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
-  {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
-  }
-
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
-  {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">y</span>, <span class="nv">$stack4</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
-    <span class="nc">java.lang.Exception</span> <span class="nv">$stack6</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
-
-   label1:
-      <span class="nv">$stack5</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack4</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack4</span>);
-
-   label2:
-      <span class="k">goto</span> label4;
-
-   label3:
-      <span class="nv">$stack6</span> := <span class="k">@caughtexception</span>;
-      <span class="nv">$stack7</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Exception caught&quot;</span>);
-
-   label4:
-      <span class="k">return</span>;
-
-      <span class="k">catch</span> <span class="nc">java.lang.Exception</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
-  }
-}
-/*
-  By calling getTraps() method, we can get the Traip chain.
-  For the above jimple code, we have the below trap:
-  Trap :
-  begin  : $stack5 = &lt;java.lang.System: java.io.PrintStream out&gt;
-  end    : goto [?= return]
-  handler: $stack6 := @caughtexception
-*/
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
-
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">divideExample</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">){</span>
-<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">){</span>
-<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Exception caught&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
-// access flags 0x21
-public class target/exercise1/DemoClass {
-
-// compiled from: DemoClass.java
-
-// access flags 0x1
-public &lt;init&gt;()V
-  L0
-    LINENUMBER 3 L0
-    ALOAD 0
-    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
-    RETURN
-    L1
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-    MAXSTACK = 1
-    MAXLOCALS = 1
-
-// access flags 0x1
-public divideExample(II)V
-  TRYCATCHBLOCK L0 L1 L2 java/lang/Exception
-  L0
-    LINENUMBER 6 L0
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    ILOAD 1
-    ILOAD 2
-    IDIV
-    INVOKEVIRTUAL java/io/PrintStream.println (I)V
-  L1
-    LINENUMBER 9 L1
-    GOTO L3
-  L2
-    LINENUMBER 7 L2
-    FRAME SAME1 java/lang/Exception
-    ASTORE 3
-  L4
-    LINENUMBER 8 L4
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;Exception caught&quot;
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-  L3
-    LINENUMBER 10 L3
-    FRAME SAME
-    RETURN
-  L5
-    LOCALVARIABLE e Ljava/lang/Exception; L4 L3 3
-    LOCALVARIABLE this Land Ttarget/exercise1/DemoClass; L0 L5 0
-    LOCALVARIABLE x I L0 L5 1
-    LOCALVARIABLE y I L0 L5 2
-    MAXSTACK = 3
-    MAXLOCALS = 4
-}
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
+<p>More about the <a href="../jimple-body/">Body</a> of the SootMethod.</p>
 
 
 

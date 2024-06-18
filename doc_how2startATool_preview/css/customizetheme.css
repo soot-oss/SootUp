@@ -11,6 +11,10 @@
     --md-accent-fg-color: rgba(255,140,0, 1);
 }
 
+.md-typeset{
+    font-size: 12pt;
+}
+
 .md-typeset a {
     color: rgba(255,140,0, 0.8);
 }
@@ -33,7 +37,7 @@
 }
 
 .md-typeset .admonition, .md-typeset .admonition.info, .md-typeset .admonition.example, .md-typeset .admonition{
-    border-color: rgba(255,140,0, 0.2);
+    border-color: rgba(255,140,0, 0.1);
     margin-bottom: 3em;
 }
 
@@ -42,10 +46,13 @@
 }
 
 .md-typeset .admonition>.admonition-title, .md-typeset .admonition>.admonition-title{
-    background: rgba(255,140,0, 0.2);
+    background: rgba(255,140,0, 0.1);
+    color: rgba(255,140,0, 1);
 }
 .md-typeset .admonition, .md-typeset details {
     border-color: rgba(255,140,0, 1);
+    box-shadow: none;
+
 }
 
 .md-nav label.md-nav__title{
@@ -76,6 +83,14 @@
     padding-left: 2em;
 }
 
+.md-sidebar.md-sidebar--secondary .md-nav__item a {
+    padding: 0;
+}
+
+.md-sidebar.md-sidebar--secondary .md-nav__item .md-nav{
+    padding-bottom: 1em;
+}
+
 .md-search__form{
     background: #EEE;
 }
@@ -90,6 +105,7 @@
 .tabbed-set.tabbed-alternate{
     background: rgba(255,140,0, 0.1);
     color:  rgba(255,140,0, 1);
+    margin-bottom: 3em;
 }
 
 .md-typeset .tabbed-labels>label>[href]:first-child{
@@ -116,7 +132,6 @@ html .md-footer-meta.md-typeset a{
     border:none;
 }
 
-
 .admonition .highlighttable{
     margin: 0;
     border: none;
@@ -127,6 +142,7 @@ html .md-footer-meta.md-typeset a{
 
 .highlighttable{
     border:1px solid  rgba(255,140,0, 0.1);
+    border-top: 6px solid rgba(255,140,0, 0.1);
 }
 
 .admonition .highlighttable, .tabbed-set .highlighttable{
@@ -144,4 +160,8 @@ html .md-footer-meta.md-typeset a{
 
 .tooltip{
     color:  rgba(255,140,0, 0.8);
+}
+
+p{
+    margin-bottom:1.5em;
 }

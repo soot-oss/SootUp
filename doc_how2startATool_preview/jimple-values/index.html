@@ -615,9 +615,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#jfieldref-jstaticfieldref-jinstancefieldref" class="md-nav__link">
+  <a href="#jfieldref" class="md-nav__link">
     <span class="md-ellipsis">
-      JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)
+      JFieldRef
     </span>
   </a>
   
@@ -1146,9 +1146,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#jfieldref-jstaticfieldref-jinstancefieldref" class="md-nav__link">
+  <a href="#jfieldref" class="md-nav__link">
     <span class="md-ellipsis">
-      JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)
+      JFieldRef
     </span>
   </a>
   
@@ -1410,8 +1410,9 @@ public compute()V
 </div>
 </div>
 <h4 id="constant">Constant</h4>
-<p>represents a value itself. don't confuse it with a variable/Local which has a immutable (i.e. final) attribute.</p>
-<p>There exists a constant entity for every Type - that way all value types can have a representation.</p>
+<p>represents an actual value itself like <code>42</code> or <code>"This is a String"</code>.
+Constants are usually assigned to <code>Local</code>s or <code>Ref</code>s.
+There exists a constant entity for every <a href="../jimple-types/">Primitive Type</a>.</p>
 <h3 id="expr">Expr</h3>
 <p>An expression is a language construct that returns a value. E.g. a binary operation such as addition.</p>
 <h3 id="ref">Ref</h3>
@@ -1419,12 +1420,13 @@ public compute()V
 <p><code>jimple
 $arr[1]</code>
 referencing a position inside an array.</p>
-<h4 id="jfieldref-jstaticfieldref-jinstancefieldref">JFieldRef (JStaticFieldRef &amp; JInstanceFieldRef)</h4>
-<p><code>jimple
-&lt;SomePackage.ExampleClass: fieldname&gt;
-// or
-r1.&lt;SomePackage.ExampleClass: fieldname&gt;</code>
-referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.</p>
+<h4 id="jfieldref">JFieldRef</h4>
+<p><code>JFieldRef</code>s are referencing a <code>SootField</code> via its FieldSignature</p>
+<ul>
+<li><code>JStaticFieldRef</code> like `#!jimple <SomePackage.ExampleClass: fieldname>`</li>
+<li><code>JInstanceFieldRef</code> like `#!jimple r1.<SomePackage.ExampleClass: fieldname>`
+  You can see the JInstanceFieldRef has the corresponding Local instance that points to the instance of the object which is holding the field.</li>
+</ul>
 <h4 id="identityref">IdentityRef</h4>
 <p>The IdentityRef makes those implicit special value assignments explicit.</p>
 <h5 id="jthisref">JThisRef</h5>

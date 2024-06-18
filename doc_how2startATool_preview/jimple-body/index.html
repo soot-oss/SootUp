@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jimple-methodbody" class="md-skip">
+        <a href="#jimple-body" class="md-skip">
           Skip to content
         </a>
       
@@ -1039,9 +1039,9 @@
   
 
 
-<h1 id="jimple-methodbody">Jimple MethodBody</h1>
-<p>A Methodbody consists of the Modifiers and its StmtGraph - SootUps Control Flow Graph Structure.
-The StmtGraph organizes the flow of <a href="../jimple-stmts/">Stmts</a>. </p>
+<h1 id="jimple-body">Jimple Body</h1>
+<p>A SootMethod <code>Body</code> consists of the <code>Modifiers</code> and its <code>StmtGraph</code> - SootUps Control Flow Graph Structure.
+The StmtGraph models the flow of <a href="../jimple-stmts/">Stmts</a>.</p>
 <h3 id="control-flow-graph">Control Flow Graph</h3>
 <ul>
 <li>unexceptional flow -&gt; like FallsThroughStmts and BranchingStmts for if,goto etc.</li>
@@ -1050,7 +1050,9 @@ The StmtGraph organizes the flow of <a href="../jimple-stmts/">Stmts</a>. </p>
 <h3 id="stmts">Stmts</h3>
 <p>Learn more about the types of <a href="../jimple-stmts/">Stmts</a>.</p>
 <h3 id="traps">Traps</h3>
-<p>A Trap is a mechanism to model exceptional flow.</p>
+<p>A Trap is a mechanism to model exceptional flow.
+A Trap represents the try-catch (finally) construct and therefore defines the type of the caught exception, the try-catch range (from-to) and the actual code that handles the exception (handler).
+In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1140,11 +1142,11 @@ The StmtGraph organizes the flow of <a href="../jimple-stmts/">Stmts</a>. </p>
    label4:
       <span class="k">return</span>;
 
-      <span class="k">catch</span> <span class="nc">java.lang.Exception</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
-  }
+<span class="hll">      <span class="k">catch</span> <span class="nc">java.lang.Exception</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
+</span>  }
 }
 /*
-  By calling getTraps() method, we can get the Trap.
+  By calling getTraps() method, we can get the Traip chain.
   For the above jimple code, we have the below trap:
   Trap :
   begin  : $stack5 = &lt;java.lang.System: java.io.PrintStream out&gt;

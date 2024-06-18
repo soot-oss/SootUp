@@ -512,13 +512,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#branching-statements" class="md-nav__link">
+  <a href="#branching-stmts" class="md-nav__link">
     <span class="md-ellipsis">
-      Branching Statements
+      Branching Stmts
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Branching Statements">
+    <nav class="md-nav" aria-label="Branching Stmts">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -554,32 +554,14 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#fallsthrough-statements" class="md-nav__link">
+  <a href="#fallsthrough-stmts" class="md-nav__link">
     <span class="md-ellipsis">
-      FallsThrough Statements
+      FallsThrough Stmts
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="FallsThrough Statements">
+    <nav class="md-nav" aria-label="FallsThrough Stmts">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
-    <span class="md-ellipsis">
-      JReturnStmt &amp; JReturnVoidStmt
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jthrowstmt" class="md-nav__link">
-    <span class="md-ellipsis">
-      JThrowStmt
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#jinvokestmt" class="md-nav__link">
@@ -630,6 +612,39 @@
   <a href="#jbreakpointstmt" class="md-nav__link">
     <span class="md-ellipsis">
       JBreakpointStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JReturnStmt &amp; JReturnVoidStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThrowStmt
     </span>
   </a>
   
@@ -1097,13 +1112,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#branching-statements" class="md-nav__link">
+  <a href="#branching-stmts" class="md-nav__link">
     <span class="md-ellipsis">
-      Branching Statements
+      Branching Stmts
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Branching Statements">
+    <nav class="md-nav" aria-label="Branching Stmts">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1139,32 +1154,14 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#fallsthrough-statements" class="md-nav__link">
+  <a href="#fallsthrough-stmts" class="md-nav__link">
     <span class="md-ellipsis">
-      FallsThrough Statements
+      FallsThrough Stmts
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="FallsThrough Statements">
+    <nav class="md-nav" aria-label="FallsThrough Stmts">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
-    <span class="md-ellipsis">
-      JReturnStmt &amp; JReturnVoidStmt
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jthrowstmt" class="md-nav__link">
-    <span class="md-ellipsis">
-      JThrowStmt
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#jinvokestmt" class="md-nav__link">
@@ -1225,6 +1222,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#other-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JReturnStmt &amp; JReturnVoidStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThrowStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1244,11 +1274,18 @@
 
 
 <h1 id="jimple-stmt-statements">Jimple Stmt ("Statements")</h1>
-<p><span class="tooltip hint--top" aria-label="formerly known as Units">Stmts</span> represent instructions of the JVM.</p>
-<h2 id="branching-statements">Branching Statements</h2>
+<p><span class="tooltip hint--top" aria-label="formerly known as Units">Stmts</span> represent instructions of the JVM.
+Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.</p>
+<p>Stmts can be roughly grouped by the amount of successors (in the <code>StmtGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
+<ul>
+<li>A <code>FallsThroughStmt</code> has always one successor - it basically represents <code>program counter++</code>.</li>
+<li>A <code>BranchingStmt</code> can have one, two or even n successors.</li>
+<li>All others (neither FallsThrough nor BranchingStmt) have no successors and therefore end the execution of the current method.</li>
+</ul>
+<h2 id="branching-stmts">Branching Stmts</h2>
 <p>A BranchingStmt's job is to model the jumps or conditional branching flow between Stmts.</p>
-<h5 id="jgotostmt">JGotoStmt</h5>
-<p>for unconditional flow.  </p>
+<h3 id="jgotostmt">JGotoStmt</h3>
+<p>represents unconditional jumps to another Stmt.  </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1300,12 +1337,12 @@
     label1:
       <span class="k">if</span> <span class="nv">i</span> <span class="o">&gt;=</span> <span class="m">5</span> <span class="k">goto</span> label3;
       <span class="k">if</span> <span class="nv">i</span> <span class="o">!=</span> <span class="m">3</span> <span class="k">goto</span> label2;
-      <span class="k">goto</span> label3;
-
+<span class="hll">      <span class="k">goto</span> label3;
+</span>
     label2:
       <span class="nv">i</span> = <span class="nv">i</span> <span class="o">+</span> <span class="m">1</span>;
-      <span class="k">goto</span> label1;
-
+<span class="hll">      <span class="k">goto</span> label1;
+</span>
     label3:
       <span class="k">return</span>;
   }
@@ -1447,9 +1484,10 @@ public static sampleMethod()V
 </div>
 </div>
 </div>
-<h5 id="jifstmt">JIfStmt</h5>
-<p>for conditional flow depending on boolean Expression (AbstractConditionExpr) so they have two successor Stmt's.<br />
-note: The JIfStmt is also a FallsthroughStmt if the branching condition is not met.</p>
+<h3 id="jifstmt">JIfStmt</h3>
+<p>For conditional jumps depending on the result of the conditional expression <code>AbstractConditionExpr</code> which needs to have boolean result.
+If the conditional expression is false, the next Stmt is the successor as the JIFStmt is also a <code>FallsthroughStmt</code>.
+Therefore, the JIfStmt has two successor Stmt's.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Jimple</label><label for="__tabbed_2_2">Java</label><label for="__tabbed_2_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1510,8 +1548,8 @@ note: The JIfStmt is also a FallsthroughStmt if the branching condition is not m
     <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
 
     <span class="nv">$stack1</span> = <span class="nv">x</span> <span class="o">%</span> <span class="m">2</span>;
-    <span class="k">if</span> <span class="nv">$stack1</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
-
+<span class="hll">    <span class="k">if</span> <span class="nv">$stack1</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+</span>
     <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
     <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
       <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Even&quot;</span>);
@@ -1656,9 +1694,8 @@ public static sampleMethod(I)V
 </div>
 </div>
 </div>
-<h5 id="jswitchstmt">JSwitchStmt</h5>
+<h3 id="jswitchstmt">JSwitchStmt</h3>
 <p>for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. </p>
-<p>All other Stmts are not manipulating the flow, which means they have a single successor Stmt as long as they are not exiting the flow inside a method.  </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Jimple</label><label for="__tabbed_3_2">Java</label><label for="__tabbed_3_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1747,13 +1784,13 @@ public static sampleMethod(I)V
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
     <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
 
-    <span class="k">lookupswitch</span>(<span class="nv">x</span>)
-    {
-      <span class="k">case</span> 1: <span class="k">goto</span> label1;
-      <span class="k">case</span> 2: <span class="k">goto</span> label2;
-      <span class="k">default</span>: <span class="k">goto</span> label3;
-    };
-
+<span class="hll">    <span class="k">lookupswitch</span>(<span class="nv">x</span>)
+</span><span class="hll">    {
+</span><span class="hll">      <span class="k">case</span> 1: <span class="k">goto</span> label1;
+</span><span class="hll">      <span class="k">case</span> 2: <span class="k">goto</span> label2;
+</span><span class="hll">      <span class="k">default</span>: <span class="k">goto</span> label3;
+</span><span class="hll">    };
+</span>
     label1:
       <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
       <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
@@ -1965,10 +2002,10 @@ public switchExample(I)V
 </div>
 </div>
 </div>
-<h2 id="fallsthrough-statements">FallsThrough Statements</h2>
-<p>The execution of a FallsthroughStmt goes on with the following Stmt (when no exception was thrown). </p>
-<h5 id="jreturnstmt-jreturnvoidstmt">JReturnStmt &amp; JReturnVoidStmt</h5>
-<p>They end the execution/flow inside the current method and return (a value) to its caller.  </p>
+<h2 id="fallsthrough-stmts">FallsThrough Stmts</h2>
+<p>The execution of a FallsthroughStmt goes on with the following Stmt (if no exception was thrown). </p>
+<h3 id="jinvokestmt">JInvokeStmt</h3>
+<p>transfers the control flow to another method until the called method returns.  </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Jimple</label><label for="__tabbed_4_2">Java</label><label for="__tabbed_4_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -2009,208 +2046,6 @@ public switchExample(I)V
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
-{
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
-  {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
-  }
-
-  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
-  {
-    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-
-    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
-    <span class="k">return</span> <span class="nv">$stack2</span>;
-  }
-
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>()
-  {
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method print&quot;</span>);
-    <span class="k">return</span>;
-  }
-}
-/*
-  &quot;return $stack2&quot; is JReturnStmt.
-  &quot;return&quot; is JReturnVoidStmt.
-*/
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
-
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">increment</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">(){</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Inside method print&quot;</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
-// access flags 0x21
-public class target/exercise1/DemoClass {
-
-// compiled from: DemoClass.java
-
-// access flags 0x1
-public &lt;init&gt;()V
-  L0
-    LINENUMBER 3 L0
-    ALOAD 0
-    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
-    RETURN
-  L1
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-    MAXSTACK = 1
-    MAXLOCALS = 1
-
-// access flags 0x1
-public increment(I)I
-  L0
-    LINENUMBER 5 L0
-    ILOAD 1
-    ICONST_1
-    IADD
-    IRETURN
-  L1
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-    LOCALVARIABLE x I L0 L1 1
-    MAXSTACK = 2
-    MAXLOCALS = 2
-
-// access flags 0x1
-public print()V
-  L0
-    LINENUMBER 8 L0
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    LDC &quot;Inside method print&quot;
-    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
-  L1
-    LINENUMBER 9 L1
-    RETURN
-  L2
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
-    MAXSTACK = 2
-    MAXLOCALS = 1
-}
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h5 id="jthrowstmt">JThrowStmt</h5>
-<p>Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.  </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Jimple</label><label for="__tabbed_5_2">Java</label><label for="__tabbed_5_3">Bytecode</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
@@ -2221,274 +2056,14 @@ public print()V
 <span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
   <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
     <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
-  }
-
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
-  {
-    <span class="nc">int</span> <span class="nv">y</span>, <span class="nv">x</span>, <span class="nv">$stack6</span>;
-    <span class="nc">java.lang.StringBuilder</span> <span class="nv">$stack3</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
-    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>;
-    <span class="nc">java.lang.String</span> <span class="nv">$stack8</span>;
-    <span class="nc">java.lang.RuntimeException</span> <span class="nv">$stack9</span>;
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
-
-    <span class="k">if</span> <span class="nv">y</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
-
-    <span class="nv">$stack9</span> = <span class="k">new</span> <span class="nc">java.lang.RuntimeException</span>;
-    <span class="k">specialinvoke</span> <span class="nv">$stack9</span>.&lt;<span class="nv">java.lang.RuntimeException</span>: 
-      <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide by zero error&quot;</span>);
-    <span class="k">throw</span> <span class="nv">$stack9</span>;
-
-    label1:
-      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-      <span class="nv">$stack3</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
-      <span class="k">specialinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-
-      <span class="nv">$stack5</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide result : &quot;</span>);
-      <span class="nv">$stack6</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
-      <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack6</span>);
-      <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
-        <span class="nc">java.lang.String</span> <span class="nf">toString</span>()&gt;();
-
-      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">$stack8</span>);
-      <span class="k">return</span>;
-  }
-}
-/*
-  &quot;throw $stack9&quot; is JThrowStmt.
-*/
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
-
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">divideExample</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">){</span>
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">){</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">&quot;Divide by zero error&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Divide result : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
-// access flags 0x21
-public class target/exercise1/DemoClass {
-
-// compiled from: DemoClass.java
-
-// access flags 0x1
-public &lt;init&gt;()V
-  L0
-    LINENUMBER 3 L0
-    ALOAD 0
-    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
-    RETURN
-  L1
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
-    MAXSTACK = 1
-    MAXLOCALS = 1
-
-// access flags 0x1
-public divideExample(II)V
-  L0
-    LINENUMBER 5 L0
-    ILOAD 2
-    IFNE L1
-  L2
-    LINENUMBER 6 L2
-    NEW java/lang/RuntimeException
-    DUP
-    LDC &quot;Divide by zero error&quot;
-    INVOKESPECIAL java/lang/RuntimeException.&lt;init&gt; 
-      (Ljava/lang/String;)V
-    ATHROW
-  L1
-    LINENUMBER 8 L1
-    FRAME SAME
-    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
-    NEW java/lang/StringBuilder
-    DUP
-    INVOKESPECIAL java/lang/StringBuilder.&lt;init&gt; ()V
-    LDC &quot;Divide result : &quot;
-    INVOKEVIRTUAL java/lang/StringBuilder.append 
-      (Ljava/lang/String;)Ljava/lang/StringBuilder;
-    ILOAD 1
-    ILOAD 2
-    IDIV
-    INVOKEVIRTUAL java/lang/StringBuilder.append 
-      (I)Ljava/lang/StringBuilder;
-    INVOKEVIRTUAL java/lang/StringBuilder.toString 
-      ()Ljava/lang/String;
-    INVOKEVIRTUAL java/io/PrintStream.println 
-      (Ljava/lang/String;)V
-  L3
-    LINENUMBER 9 L3
-    RETURN
-  L4
-    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L4 0
-    LOCALVARIABLE x I L0 L4 1
-    LOCALVARIABLE y I L0 L4 2
-    MAXSTACK = 4
-    MAXLOCALS = 3
-}
-</code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
-<h5 id="jinvokestmt">JInvokeStmt</h5>
-<p>transfers the control flow to another method until the called method returns.  </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Jimple</label><label for="__tabbed_6_2">Java</label><label for="__tabbed_6_3">Bytecode</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
-{
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
-  {
-    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="k">return</span>;
+<span class="hll">    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+</span>    <span class="k">return</span>;
   }
 
   <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>(<span class="nc">int</span>)
@@ -2500,18 +2075,14 @@ public divideExample(II)V
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
     <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
 
-    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: 
-      <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">x</span>);
-    <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
-
-    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: 
-      <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
-    <span class="nv">$stack6</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
-    <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
-      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
-
+<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">x</span>);
+</span>    <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>
+<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>    <span class="nv">$stack6</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>
     <span class="k">return</span>;
   }
 
@@ -2699,11 +2270,11 @@ public increment(I)I
 </div>
 </div>
 </div>
-<h5 id="jassignstmt">JAssignStmt</h5>
+<h3 id="jassignstmt">JAssignStmt</h3>
 <p>assigns a Value from the right hand-side to the left hand-side.
 Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
 Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.  </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Jimple</label><label for="__tabbed_7_2">Java</label><label for="__tabbed_7_3">Bytecode</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Jimple</label><label for="__tabbed_5_2">Java</label><label for="__tabbed_5_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
@@ -2746,8 +2317,8 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
     <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
     <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
-    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
-    <span class="k">return</span>;
+<span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
+</span>    <span class="k">return</span>;
   }
 
   <span class="k">public</span> <span class="nc">int</span> <span class="nf">updateCounter</span>()
@@ -2757,11 +2328,11 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
 
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
 
-    <span class="nv">$stack1</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
-    <span class="nv">$stack2</span> = <span class="nv">$stack1</span> <span class="o">+</span> <span class="m">1</span>;
-    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack2</span>;
-    <span class="nv">$stack3</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
-
+<span class="hll">    <span class="nv">$stack1</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+</span><span class="hll">    <span class="nv">$stack2</span> = <span class="nv">$stack1</span> <span class="o">+</span> <span class="m">1</span>;
+</span><span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack2</span>;
+</span><span class="hll">    <span class="nv">$stack3</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+</span>
     <span class="k">return</span> <span class="nv">$stack3</span>;
   }
 }
@@ -2891,9 +2462,14 @@ public updateCounter()I
 </div>
 </div>
 </div>
-<h5 id="jidentitystmt">JIdentityStmt</h5>
-<p>is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph.  </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Jimple</label><label for="__tabbed_8_2">Java</label><label for="__tabbed_8_3">Bytecode</label></div>
+<h3 id="jidentitystmt">JIdentityStmt</h3>
+<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>StmtGraph</code>.</p>
+<ul>
+<li>Assigns parameters to a <code>Local</code> via <code>JParameterRef</code> like <code>@parameter0: int</code> refering to the first argument of the method (which is of Type int in this case).</li>
+<li>Assigns exceptions to a <code>Local</code> via <code>JCaughtExceptionRef</code> like <code>@caughtexception: java.lang.NullpointerException</code></li>
+<li>Assigns the <code>this</code> Variable to a <code>Local</code> via a <code>JThisRef</code></li>
+</ul>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Jimple</label><label for="__tabbed_6_2">Java</label><label for="__tabbed_6_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
@@ -2935,9 +2511,9 @@ public updateCounter()I
     <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
     <span class="nc">int</span> <span class="nv">counter</span>;
 
-    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
-    <span class="nv">counter</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
-    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">counter</span>;
+<span class="hll">    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+</span><span class="hll">    <span class="nv">counter</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+</span>    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">counter</span>;
     <span class="k">return</span>;
   }
 }
@@ -3043,9 +2619,9 @@ public DemoClass(I)V
 </div>
 </div>
 </div>
-<h5 id="jentermonitorstmt-jexitmonitorstmt">JEnterMonitorStmt &amp; JExitMonitorStmt</h5>
+<h3 id="jentermonitorstmt-jexitmonitorstmt">JEnterMonitorStmt &amp; JExitMonitorStmt</h3>
 <p>marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.  </p>
-<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Jimple</label><label for="__tabbed_9_2">Java</label><label for="__tabbed_9_3">Bytecode</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Jimple</label><label for="__tabbed_7_2">Java</label><label for="__tabbed_7_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
@@ -3117,23 +2693,23 @@ public DemoClass(I)V
 
     <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
 
-    <span class="k">entermonitor</span> <span class="nv">this</span>;
-
+<span class="hll">    <span class="k">entermonitor</span> <span class="nv">this</span>;
+</span>
     label1:
       <span class="nv">$stack4</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
       <span class="nv">$stack5</span> = <span class="nv">$stack4</span> <span class="o">+</span> <span class="m">1</span>;
       <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack5</span>;
 
-      <span class="k">exitmonitor</span> <span class="nv">this</span>;
-
+<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+</span>
     label2:
       <span class="k">goto</span> label5;
 
     label3:
       <span class="nv">$stack8</span> := <span class="k">@caughtexception</span>;
 
-      <span class="k">exitmonitor</span> <span class="nv">this</span>;
-
+<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+</span>
     label4:
       <span class="k">throw</span> <span class="nv">$stack8</span>;
 
@@ -3319,9 +2895,469 @@ public updateCounter()I
 </div>
 </div>
 </div>
-<h5 id="jretstmt">JRetStmt</h5>
-<h5 id="jbreakpointstmt">JBreakpointStmt</h5>
-<p>models a Breakpoint set by a Debugger (usually not relevant for static analyses)</p>
+<h3 id="jretstmt">JRetStmt</h3>
+<p>// TODO: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret">java 1.6 spec</a></p>
+<h3 id="jbreakpointstmt">JBreakpointStmt</h3>
+<p>models a Breakpoint set by a Debugger. Therefore, not really relevant for static analyses but useful for code generation.</p>
+<h2 id="other-stmts">Other Stmts</h2>
+<h3 id="jreturnstmt-jreturnvoidstmt">JReturnStmt &amp; JReturnVoidStmt</h3>
+<p>They end the execution/flow inside the current method and return (a value) to its caller.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Jimple</label><label for="__tabbed_8_2">Java</label><label for="__tabbed_8_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
+<span class="hll">    <span class="k">return</span> <span class="nv">$stack2</span>;
+</span>  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>()
+  {
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method print&quot;</span>);
+<span class="hll">    <span class="k">return</span>;
+</span>  }
+}
+/*
+  &quot;return $stack2&quot; is JReturnStmt.
+  &quot;return&quot; is JReturnVoidStmt.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">increment</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">(){</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Inside method print&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public increment(I)I
+  L0
+    LINENUMBER 5 L0
+    ILOAD 1
+    ICONST_1
+    IADD
+    IRETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    LOCALVARIABLE x I L0 L1 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+
+// access flags 0x1
+public print()V
+  L0
+    LINENUMBER 8 L0
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Inside method print&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L1
+    LINENUMBER 9 L1
+    RETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jthrowstmt">JThrowStmt</h3>
+<p>Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Jimple</label><label for="__tabbed_9_2">Java</label><label for="__tabbed_9_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">y</span>, <span class="nv">x</span>, <span class="nv">$stack6</span>;
+    <span class="nc">java.lang.StringBuilder</span> <span class="nv">$stack3</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>;
+    <span class="nc">java.lang.String</span> <span class="nv">$stack8</span>;
+    <span class="nc">java.lang.RuntimeException</span> <span class="nv">$stack9</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
+
+    <span class="k">if</span> <span class="nv">y</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+
+    <span class="nv">$stack9</span> = <span class="k">new</span> <span class="nc">java.lang.RuntimeException</span>;
+    <span class="k">specialinvoke</span> <span class="nv">$stack9</span>.&lt;<span class="nv">java.lang.RuntimeException</span>: 
+      <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide by zero error&quot;</span>);
+<span class="hll">    <span class="k">throw</span> <span class="nv">$stack9</span>;
+</span>
+    label1:
+      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="nv">$stack3</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
+      <span class="k">specialinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+
+      <span class="nv">$stack5</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide result : &quot;</span>);
+      <span class="nv">$stack6</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
+      <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack6</span>);
+      <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.String</span> <span class="nf">toString</span>()&gt;();
+
+      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">$stack8</span>);
+      <span class="k">return</span>;
+  }
+}
+/*
+  &quot;throw $stack9&quot; is JThrowStmt.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">divideExample</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">){</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">){</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">&quot;Divide by zero error&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Divide result : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public divideExample(II)V
+  L0
+    LINENUMBER 5 L0
+    ILOAD 2
+    IFNE L1
+  L2
+    LINENUMBER 6 L2
+    NEW java/lang/RuntimeException
+    DUP
+    LDC &quot;Divide by zero error&quot;
+    INVOKESPECIAL java/lang/RuntimeException.&lt;init&gt; 
+      (Ljava/lang/String;)V
+    ATHROW
+  L1
+    LINENUMBER 8 L1
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    NEW java/lang/StringBuilder
+    DUP
+    INVOKESPECIAL java/lang/StringBuilder.&lt;init&gt; ()V
+    LDC &quot;Divide result : &quot;
+    INVOKEVIRTUAL java/lang/StringBuilder.append 
+      (Ljava/lang/String;)Ljava/lang/StringBuilder;
+    ILOAD 1
+    ILOAD 2
+    IDIV
+    INVOKEVIRTUAL java/lang/StringBuilder.append 
+      (I)Ljava/lang/StringBuilder;
+    INVOKEVIRTUAL java/lang/StringBuilder.toString 
+      ()Ljava/lang/String;
+    INVOKEVIRTUAL java/io/PrintStream.println 
+      (Ljava/lang/String;)V
+  L3
+    LINENUMBER 9 L3
+    RETURN
+  L4
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L4 0
+    LOCALVARIABLE x I L0 L4 1
+    LOCALVARIABLE y I L0 L4 2
+    MAXSTACK = 4
+    MAXLOCALS = 3
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
 
 
 

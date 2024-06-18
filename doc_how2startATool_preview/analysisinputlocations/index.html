@@ -1097,26 +1097,26 @@
 <p>An AnalysisInputLocation tells SootUp what code input it should analyze.</p>
 <h3 id="java-runtime">Java Runtime</h3>
 <ul>
-<li>Java &lt;9: DefaultRTJaAnalysisInputLocation current rt.jar (or point to any rt.jar as its just a usual .jar file)</li>
-<li>Java &gt;8: JRTFilesystemAnalysisInputLocation</li>
+<li>Java &lt;9: <code>DefaultRTJaAnalysisInputLocation</code> current rt.jar (or point to any rt.jar as its just a usual .jar file)</li>
+<li>Java &gt;8: <code>JRTFilesystemAnalysisInputLocation</code></li>
 </ul>
 <p>If you have errors like Java.lang.String, Java.lang.Object, ... you are most likely missing this AnalysisInput.</p>
 <h3 id="java-bytecode-class-jar-war">Java Bytecode .class, .jar, .war</h3>
 <ul>
-<li>JavaClassPathAnalysisInputLocation - its the equivalent of the classpath you would pass to the java executable i.e. point to root(s) of package(s).</li>
+<li><code>JavaClassPathAnalysisInputLocation</code> - its the equivalent of the classpath you would pass to the java executable i.e. point to root(s) of package(s).</li>
 </ul>
 <h3 id="java-sourcecode-java">Java Sourcecode .java</h3>
 <ul>
-<li>OTFCompileAnalysisInputLocation - you can point directly to .java files or pass a String with Java sourcecode</li>
-<li>JavaSourcePathInputLocation - points to a directory that is the root source directory (containing the package directory structure)</li>
+<li><code>OTFCompileAnalysisInputLocation</code> - you can point directly to .java files or pass a String with Java sourcecode, SootUp delegates to the <code>JavaCompiler</code> and transform the bytecode from the compiler to Jimple</li>
+<li><code>JavaSourcePathInputLocation</code> <span class="tooltip hint--top" aria-label="Has huge problems with exceptional flow!"><strong><em>experimental!</em></strong></span> - points to a directory that is the root source directory (containing the package directory structure).</li>
 </ul>
 <h3 id="jimple-jimple">Jimple .jimple</h3>
 <ul>
-<li>JimpleAnalysisInputLocation - needs a Path to a .jimple file or a directory.</li>
+<li><code>JimpleAnalysisInputLocation</code> - needs a Path to a .jimple file or a directory.</li>
 </ul>
 <h3 id="android-bytecode-dex">Android Bytecode .dex</h3>
 <ul>
-<li>ApkAnalysisInputLocation - currenlty uses dex2jar internally - SootUp solution is WIP!</li>
+<li><code>ApkAnalysisInputLocation</code> - currenlty uses dex2jar internally - SootUp solution is WIP!</li>
 </ul>
 <h3 id="java-cli-arguments-to-configure-sootup">Java cli arguments to configure SootUp</h3>
 <p>We created a <a href="../tool_ux/">Utility</a> that parses a String of java command line arguments and configures SootUp respectively.</p>

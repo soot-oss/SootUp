@@ -1040,16 +1040,17 @@
 
 
 <h1 id="jimple-types">Jimple Types</h1>
-<h4 id="primarytype">PrimaryType</h4>
+<p>represents primary types i.e. non-reference types and non-void</p>
+<h3 id="primarytype">PrimaryType</h3>
 <ul>
-<li>BooleanType</li>
-<li>ByteType</li>
-<li>CharType</li>
-<li>ShortType</li>
-<li>IntType</li>
-<li>LongType</li>
-<li>DoubleType</li>
-<li>FloatType</li>
+<li><code>BooleanType</code></li>
+<li><code>ByteType</code></li>
+<li><code>CharType</code></li>
+<li><code>ShortType</code></li>
+<li><code>IntType</code></li>
+<li><code>LongType</code></li>
+<li><code>DoubleType</code></li>
+<li><code>FloatType</code></li>
 </ul>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
 <div class="tabbed-content">
@@ -1141,15 +1142,15 @@
 
   <span class="k">public</span> <span class="nc">void</span> <span class="nf">display</span>()
   {
-      <span class="nc">java.io.PrintStream</span> <span class="nv">$stack11</span>, <span class="nv">$stack13</span>, <span class="nv">$stack15</span>, 
-        <span class="nv">$stack17</span>, <span class="nv">$stack19</span>, <span class="nv">$stack21</span>, <span class="nv">$stack23</span>, <span class="nv">$stack25</span>;
-      <span class="nc">int</span> <span class="nv">$stack12</span>, <span class="nv">$stack14</span>, <span class="nv">$stack16</span>, <span class="nv">$stack18</span>;
-      <span class="nc">long</span> <span class="nv">$stack20</span>;
-      <span class="nc">double</span> <span class="nv">$stack22</span>;
-      <span class="nc">float</span> <span class="nv">$stack24</span>;
-      <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-      <span class="nc">boolean</span> <span class="nv">$stack26</span>;
-
+<span class="hll">      <span class="nc">java.io.PrintStream</span> <span class="nv">$stack11</span>, <span class="nv">$stack13</span>, <span class="nv">$stack15</span>, 
+</span><span class="hll">        <span class="nv">$stack17</span>, <span class="nv">$stack19</span>, <span class="nv">$stack21</span>, <span class="nv">$stack23</span>, <span class="nv">$stack25</span>;
+</span><span class="hll">      <span class="nc">int</span> <span class="nv">$stack12</span>, <span class="nv">$stack14</span>, <span class="nv">$stack16</span>, <span class="nv">$stack18</span>;
+</span><span class="hll">      <span class="nc">long</span> <span class="nv">$stack20</span>;
+</span><span class="hll">      <span class="nc">double</span> <span class="nv">$stack22</span>;
+</span><span class="hll">      <span class="nc">float</span> <span class="nv">$stack24</span>;
+</span><span class="hll">      <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+</span><span class="hll">      <span class="nc">boolean</span> <span class="nv">$stack26</span>;
+</span>
       <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
 
       <span class="nv">$stack11</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
@@ -1523,11 +1524,11 @@ public display()V
 </div>
 </div>
 </div>
-<h4 id="referencetype">ReferenceType</h4>
+<h3 id="referencetype">ReferenceType</h3>
 <ul>
-<li>ClassType</li>
-<li>ArrayType</li>
-<li>NullType</li>
+<li><code>(Java)ClassType</code> - represents the type of a Class.</li>
+<li><code>ArrayType</code> - represents an array.</li>
+<li><code>NullType</code> - assignable to one of the other ReferenceTypes.</li>
 </ul>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Jimple</label><label for="__tabbed_2_2">Java</label><label for="__tabbed_2_3">Bytecode</label></div>
 <div class="tabbed-content">
@@ -1612,13 +1613,13 @@ public display()V
 
   <span class="k">public</span> <span class="nc">void</span> <span class="nf">compute</span>(<span class="nc">boolean</span>)
   {
-  <span class="nc">int[]</span> <span class="nv">b</span>;
-  <span class="nc">java.io.PrintStream</span> <span class="nv">$stack5</span>, <span class="nv">$stack6</span>;
+<span class="hll">  <span class="nc">int[]</span> <span class="nv">b</span>;
+</span>  <span class="nc">java.io.PrintStream</span> <span class="nv">$stack5</span>, <span class="nv">$stack6</span>;
   <span class="nc">boolean</span> <span class="nv">check</span>;
-  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
-  <span class="nc">int</span> <span class="nv">i</span>;
-  <span class="nc">null_type</span> <span class="nv">r0</span>;
-  <span class="nc">java.lang.NullPointerException</span> <span class="nv">soot0</span>;
+<span class="hll">  <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+</span>  <span class="nc">int</span> <span class="nv">i</span>;
+<span class="hll">  <span class="nc">null_type</span> <span class="nv">r0</span>;
+</span>  <span class="nc">java.lang.NullPointerException</span> <span class="nv">soot0</span>;
   <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
   <span class="nv">check</span> := <span class="k">@parameter0</span>: <span class="nc">boolean</span>;
   <span class="nv">b</span> = <span class="k">newarray</span> (<span class="nc">int</span>)[5];
@@ -1650,8 +1651,8 @@ public display()V
   }
 }
 /*
-  The JimpleLocal b is of ArrayType,
-    and JimpleLocal r0 is of NullType.
+  The Local b is of ArrayType,
+    and Local r0 is of NullType.
 */
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1891,8 +1892,8 @@ public compute(Z)V
 </div>
 </div>
 </div>
-<h4 id="voidtype">VoidType</h4>
-<p>Only used as a possible return type of a method.</p>
+<h3 id="voidtype">VoidType</h3>
+<p>Used as a possible return type of a method.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Jimple</label><label for="__tabbed_3_2">Java</label><label for="__tabbed_3_3">Bytecode</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1930,8 +1931,8 @@ public compute(Z)V
   <span class="k">return</span>;
   }
 
-  <span class="k">public</span> <span class="nc">void</span> <span class="nf">voidMethod</span>()
-  {
+<span class="hll">  <span class="k">public</span> <span class="nc">void</span> <span class="nf">voidMethod</span>()
+</span>  {
   <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
   <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
   <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
