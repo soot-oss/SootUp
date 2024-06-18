@@ -135,8 +135,9 @@ Constants are usually assigned to `Local`s or `Ref`s.
 There exists a constant entity for every [Primitive Type](jimple-types.md).
 
 ### Expr
-An expression is a language construct that returns a value. E.g. a binary operation such as addition.
-
+An expression is a language construct that calculates an operation and returns a value.
+E.g. a binary operation `AbstracBinopExpr` such as an addition `a + b`, an `AbstractInvokeExpr` such as `virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(1);` or an `UnaryExpr` such as `!valid`.
+And a bunch more!
 
 ### Ref
 #### JArrayRef

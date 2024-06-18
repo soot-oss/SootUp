@@ -21,7 +21,7 @@ nav:
 
       - BodyInterceptors: bodyinterceptors.md
       - Callgraph Construction: call-graph-construction.md
-      - Shipped Analyses: advanced-topics.md
+      - Shipped Analyses: shipped-analyses.md
 
     - How to..:
       - Write a Dataflow analysis: write_analyses.md
@@ -30,7 +30,7 @@ nav:
     #  - Modify a View: mutable_view.md
     #  - Implement a BodyInterceptor: body_interceptor.md
     #  - Implement an AnalysisTool: write_analysis_tool.md
-      - From Prototype to Tool: tool_ux.md
+    #  - From Prototype to Tool: tool_setup.md
 
     - Misc:
         - Announcements: announce.md

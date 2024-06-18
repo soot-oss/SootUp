@@ -25,6 +25,10 @@ Taint Analysis, TypeState Analysis, Linear Constant Propagation, ...
 
 ```
 // TODO incorporate & guide through examples
+
+In the meantime please have a look into the test cases of the
+analysis submodule to see example implementations of interprocedural
+data-flow analysis via the IFDS or IDE Framework.
+
 ```
 
-If you wish to implement an interprocedural data-flow analysis via the IFDS or IDE Framework please have a look at the test cases in the sootup.analysis submodule.
