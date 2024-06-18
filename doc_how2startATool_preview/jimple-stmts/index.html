@@ -3337,7 +3337,7 @@ public divideExample(II)V
 </div>
 <h2 id="good-to-know">Good to know</h2>
 <p>A lot of the SootUp APIs return the <code>Stmt</code> Interface. To determine and handle its subtypes you can make use of instanceof.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="10:1"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Stmt If-Else forest</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:1"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">instanceOf &amp; If-Else</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
@@ -3363,7 +3363,7 @@ public divideExample(II)V
 <span class="w">            </span><span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">ivkStmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">JInvokeStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">);</span>
 <span class="w">            </span><span class="n">MethodSignature</span><span class="w"> </span><span class="n">rhsOp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ivkStmt</span><span class="p">.</span><span class="na">getInvokeExpr</span><span class="p">().</span><span class="na">getMethodSignature</span><span class="p">();</span>
 <span class="w">                </span><span class="p">...</span>
-<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">...</span>
 <span class="w">    </span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 </div>
@@ -3387,12 +3387,14 @@ Just subclass the methods to the respective Stmts you need to handle. </p>
 <span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
 <span class="w">    </span><span class="n">AbstractStmtVisitor</span><span class="w"> </span><span class="n">visitor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AbstractStmtVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">countAssignStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ifStmtsCounter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">        </span><span class="nd">@Override</span>
-<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">caseIfStmt</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">countAssignStmts</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">caseIfStmt</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">JIfStmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">ifStmtsCounter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="n">setResult</span><span class="p">(</span><span class="n">ifStmtCounter</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
@@ -3400,7 +3402,7 @@ Just subclass the methods to the respective Stmts you need to handle. </p>
 <span class="w">        </span><span class="n">stmt</span><span class="p">.</span><span class="na">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfAssignStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfIfStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>

@@ -1225,39 +1225,39 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.</p>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>public class target.exercise1.DemoClass extends java.lang.Object
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
 {
-  public void &lt;init&gt;()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
   {
-    target.exercise1.DemoClass this;
-    this := @this: target.exercise1.DemoClass;
-    specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;();
-    return;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
   }
 
-  public void compute()
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">compute</span>()
   {
-    java.io.PrintStream $stack2, $stack3;
-    target.exercise1.DemoClass this;
-    int local#2;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">local2</span>;
 
-    this := @this: target.exercise1.DemoClass;
-    $stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-    virtualinvoke $stack2.&lt;java.io.PrintStream: void println(int)&gt;(1);
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">1</span>);
 
-    local#2 = this.&lt;target.exercise1.DemoClass: int global&gt;;
-    $stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;;
-    virtualinvoke $stack3.&lt;java.io.PrintStream: void println(int)&gt;(local#2);
-    return;
+    <span class="nv">local2</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">global</span>&gt;;
+    <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">local2</span>);
+    <span class="k">return</span>;
   }
 }
 /*
-  $stack2, this, $stack3, local#2 are all Locals.
+  $stack2, this, $stack3, local2 are all Locals.
 
   &quot;this := @this: target.exercise1.DemoClass&quot; is a JIdentityStmt assigning to a Local.
 
   &quot;$stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot;, 
-    &quot;local#2 = this.&lt;target.exercise1.DemoClass: int global&gt;&quot;, 
+    &quot;local2 = this.&lt;target.exercise1.DemoClass: int global&gt;&quot;, 
       &quot;$stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot; 
         are JAssignStmts assigning to a Local.
 
