@@ -1,27 +1,26 @@
-site_name: SootUp
+site_name: ""
 site_url: https://soot-oss.github.io/SootUp/
 repo_url: https://github.com/soot-oss/SootUp/
 edit_uri: edit/develop/docs/
 
 nav:
-    - Home: index.md
-
     - Getting Started:
         - Installation: installation.md
         - First Steps: getting-started.md
         - Examples: examples.md
         - Configure your Inputs: analysisinputlocations.md
 
-    - Basics:
+    - Basics I:
       - Jimple IR: jimple.md
       - Jimple Body: jimple-body.md
       - Jimple Statements: jimple-stmts.md
       - Jimple Types: jimple-types.md
       - Jimple Values: jimple-values.md
 
+    - Basics II:
       - BodyInterceptors: bodyinterceptors.md
-      - Callgraph Construction: call-graph-construction.md
-      - Shipped Analyses: shipped-analyses.md
+      - Callgraphs: callgraphs.md
+      - BuiltIn Analyses: builtin-analyses.md
 
     - How to..:
       - Write a Dataflow analysis: write_analyses.md
@@ -33,7 +32,7 @@ nav:
     #  - From Prototype to Tool: tool_setup.md
 
     - Misc:
-        - Announcements: announce.md
+        - Announcements: announcement.md
         - Design Decisions: whatsnew.md
         - Migration Help: migrating.md
 

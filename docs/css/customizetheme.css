@@ -11,6 +11,11 @@
     --md-accent-fg-color: rgba(255,140,0, 1);
 }
 
+.md-main__inner {
+    margin-top: 0;
+    margin-bottom: 5em;
+}
+
 .md-typeset{
     font-size: 12pt;
 }

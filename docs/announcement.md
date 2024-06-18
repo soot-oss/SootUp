@@ -12,17 +12,18 @@ SootUp is a library that can easily be included in other projects, leaving those
 
 Below is an overview of what’s new. 
  
-* Library by default, framework as an option
-* Modular Architecture, no more singletons
-* New source code frontend
-* Immutable Jimple IR
-* Greatly increased testability and test coverage
+- Library by default, framework as an option
+- Modular Architecture, no more singletons
+- New source code frontend 
+- Immutable Jimple IR
+- Greatly increased testability and test coverage ![Coverage](https://camo.githubusercontent.com/adc4ab244f7c0c2b2f3fec0a6e5d778421ddc0be7f89a608c16533c9a964766f/68747470733a2f2f636f6465636f762e696f2f67682f736f6f742d6f73732f536f6f7455702f6272616e63682f646576656c6f702f67726170682f62616467652e7376673f746f6b656e3d454c4137553749415744)
 
 SootUp is not a drop-in replacement for Soot! Due to its completely new architecture and API it is essentially an almost complete rewrite. For a while, Soot and SootUp will coexist, as many existing tools depend on Soot, yet our maintenance efforts will henceforth be focused on SootUp, not Soot, and on extending SootUp with those capabilities that people still find missing. For now, we recommend using SootUp for greenfield projects.
 
 For more details, check out
-* The SootUp home page: https://soot-oss.github.io/SootUp/, and 
-* The SootUp repository: https://github.com/soot-oss/SootUp/
+- 
+- The SootUp home page: [This Page](https://soot-oss.github.io/SootUp/), and 
+- The SootUp repository: [https://github.com/soot-oss/SootUp/](https://soot-oss.github.io/SootUp/)
 
 We are very much looking forward to your feedback and feature requests. To this end, best create appropriate issues in the repository.
 
