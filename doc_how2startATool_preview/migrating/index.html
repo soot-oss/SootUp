@@ -1002,8 +1002,7 @@
 <h3 id="version-130">Version 1.3.0</h3>
 <ul>
 <li>The Typehierarchy API is now returning <code>Stream&lt;ClassType&gt;</code> instead of <code>Collection&lt;ClassType&gt;</code>. The simplest fix to have the same behaviour as before would be to collect the Stream on your own ( e.g. via <code>.collect(Collectors.toList())</code> ).</li>
-<li>Default Bodyinterceptors are added to improve Jimple. To mitigate that adapt the List of BodyInterceptors to your needs. </li>
-<li></li>
+<li>Default BytecodeBodyinterceptors are enabled to improve Jimple. To mitigate that adapt the List of BodyInterceptors to your needs.</li>
 </ul>
 <h3 id="version-120">Version 1.2.0</h3>
 <ul>
@@ -1039,7 +1038,8 @@
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="o">&lt;</span><span class="n">JavaSootClass</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span>
 <span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="s">&quot;path2Binary&quot;</span><span class="p">);</span>
 
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
@@ -1056,7 +1056,8 @@
 
 <span class="n">JavaSootClass</span><span class="w"> </span><span class="n">sootClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getClass</span><span class="p">(</span><span class="n">classType</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 
-<span class="n">JavaSootMethod</span><span class="w"> </span><span class="n">sootMethod</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">()).</span><span class="na">get</span><span class="p">();</span>
+<span class="n">MethodSubSignature</span><span class="w"> </span><span class="n">mss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">methodSignature</span><span class="p">.</span><span class="na">getSubSignature</span><span class="p">();</span>
+<span class="n">JavaSootMethod</span><span class="w"> </span><span class="n">sootMethod</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">sootClass</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="n">mss</span><span class="p">).</span><span class="na">get</span><span class="p">();</span>
 
 <span class="n">sootMethod</span><span class="p">.</span><span class="na">getBody</span><span class="p">().</span><span class="na">getStmts</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
