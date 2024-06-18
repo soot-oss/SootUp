@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://soot-oss.github.io/SootUp/doc_how2startATool_preview/analysisinputlocations/">
       
       
-        <link rel="prev" href="../examples/">
+        <link rel="prev" href="../getting-started/">
       
       
-        <link rel="next" href="../jimple/">
+        <link rel="next" href="../examples/">
       
       
       <link rel="icon" href="../img/icon.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Configure your Inputs - </title>
+        <title>Possible Analysis Input - </title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#analysisinputlocations" class="md-skip">
+        <a href="#analysis-input" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configure your Inputs
+              Possible Analysis Input
             
           </span>
         </div>
@@ -312,27 +312,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Examples
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -349,7 +328,7 @@
           
   
   <span class="md-ellipsis">
-    Configure your Inputs
+    Possible Analysis Input
   </span>
   
 
@@ -360,7 +339,7 @@
         
   
   <span class="md-ellipsis">
-    Configure your Inputs
+    Possible Analysis Input
   </span>
   
 
@@ -439,6 +418,27 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1052,8 +1052,9 @@
   
 
 
-<h1 id="analysisinputlocations">AnalysisInputLocations</h1>
-<p>An AnalysisInputLocation tells SootUp what code input it should analyze.</p>
+<h1 id="analysis-input">Analysis Input</h1>
+<p>i.e. What should be analyzed - an <code>AnalysisInputLocation</code> points to code input SootUp can analyze.
+We ship multiple Subclasses that can handle different code input.</p>
 <h3 id="java-runtime">Java Runtime</h3>
 <ul>
 <li>Java &lt;=8: <code>DefaultRTJaAnalysisInputLocation</code> current rt.jar (or point to any rt.jar as its just a usual .jar file)</li>
@@ -1075,7 +1076,7 @@
 </ul>
 <h3 id="android-bytecode-dex">Android Bytecode .dex</h3>
 <ul>
-<li><code>ApkAnalysisInputLocation</code> - currenlty uses dex2jar internally - SootUp solution is WIP!</li>
+<li><code>ApkAnalysisInputLocation</code> - currenlty uses dex2jar internally - A SootUp solution to directly generate Jimple is WIP!</li>
 </ul>
 <h3 id="java-cli-arguments-to-configure-sootup">Java cli arguments to configure SootUp</h3>
 <p>We created a <a href="../tool_setup/">Utility</a> that parses a String of java command line arguments and configures SootUp respectively.</p>
