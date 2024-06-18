@@ -1,5 +1,7 @@
 # Jimple Stmt ("Statements")
 [Stmts]{formerly known as Units} represent instructions of the JVM.
+Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.
+
 Stmts can be roughly grouped by the amount of successors (in the `StmtGraph` of a `Body` of a `Method`).
 
 - A `FallsThroughStmt` has always one successor - it basically represents `program counter++`.
@@ -9,12 +11,12 @@ Stmts can be roughly grouped by the amount of successors (in the `StmtGraph` of 
 ## Branching Stmts
 A BranchingStmt's job is to model the jumps or conditional branching flow between Stmts.
 
-##### JGotoStmt
+### JGotoStmt
 represents unconditional jumps to another Stmt.  
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="18 22"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -121,14 +123,14 @@ represents unconditional jumps to another Stmt.
 	}
     ```
 
-##### JIfStmt
+### JIfStmt
 For conditional jumps depending on the result of the conditional expression `AbstractConditionExpr` which needs to have boolean result.
 If the conditional expression is false, the next Stmt is the successor as the JIFStmt is also a `FallsthroughStmt`.
 Therefore, the JIfStmt has two successor Stmt's.
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="19"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
        public void <init>()
@@ -239,12 +241,12 @@ Therefore, the JIfStmt has two successor Stmt's.
 	}
     ```
 
-##### JSwitchStmt
+### JSwitchStmt
 for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. 
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="20-25"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -408,12 +410,12 @@ for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels
 ## FallsThrough Stmts
 The execution of a FallsthroughStmt goes on with the following Stmt (if no exception was thrown). 
 
-##### JInvokeStmt
+### JInvokeStmt
 transfers the control flow to another method until the called method returns.  
 
 === "Jimple"
 
-    ```jimple
+    ```jimple  hl_lines="7 20 22 24 26"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -433,17 +435,13 @@ transfers the control flow to another method until the called method returns.
         this := @this: target.exercise1.DemoClass;
         x := @parameter0: int;
 
-        a = virtualinvoke this.<target.exercise1.DemoClass: 
-          int increment(int)>(x);
+        a = virtualinvoke this.<target.exercise1.DemoClass: int increment(int)>(x);
         $stack4 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack4.<java.io.PrintStream: 
-          void println(int)>(a);
+        virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(a);
 
-        a = virtualinvoke this.<target.exercise1.DemoClass: 
-          int increment(int)>(a);
+        a = virtualinvoke this.<target.exercise1.DemoClass: int increment(int)>(a);
         $stack6 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack6.<java.io.PrintStream: 
-          void println(int)>(a);
+        virtualinvoke $stack6.<java.io.PrintStream: void println(int)>(a);
 
         return;
       }
@@ -558,14 +556,14 @@ transfers the control flow to another method until the called method returns.
     ```
 
 
-##### JAssignStmt
+### JAssignStmt
 assigns a Value from the right hand-side to the left hand-side.
 Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
 Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.  
 
 === "Jimple"
 
-    ```jimple
+    ```jimple  hl_lines="8 19-22"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -668,12 +666,16 @@ Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRe
     ```
 
 
-##### JIdentityStmt
-is semantically like the JAssignStmt and handles assignments of IdentityRef's to make implicit assignments explicit into the StmtGraph.  
+### JIdentityStmt
+is similar to the `JAssignStmt` and but handles assignments of `IdentityRef`s to make implicit assignments explicit into the `StmtGraph`.
+
+- Assigns parameters to a `Local` via `JParameterRef` like `@parameter0: int` refering to the first argument of the method (which is of Type int in this case).
+- Assigns exceptions to a `Local` via `JCaughtExceptionRef` like `@caughtexception: java.lang.NullpointerException`
+- Assigns the `this` Variable to a `Local` via a `JThisRef`
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="16 17"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -757,12 +759,12 @@ is semantically like the JAssignStmt and handles assignments of IdentityRef's to
     ```
 
 
-#####JEnterMonitorStmt & JExitMonitorStmt
+###JEnterMonitorStmt & JExitMonitorStmt
 marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.  
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="20 27 35"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -907,20 +909,20 @@ marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.
 	}
     ```
 
-##### JRetStmt
+### JRetStmt
 // TODO: [java 1.6 spec](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret)
 
-##### JBreakpointStmt
+### JBreakpointStmt
 models a Breakpoint set by a Debugger. Therefore, not really relevant for static analyses but useful for code generation.
 
 ## Other Stmts
 
-##### JReturnStmt & JReturnVoidStmt
+### JReturnStmt & JReturnVoidStmt
 They end the execution/flow inside the current method and return (a value) to its caller.
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="20 32"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -1029,13 +1031,13 @@ They end the execution/flow inside the current method and return (a value) to it
     ```
 
 
-##### JThrowStmt
+### JThrowStmt
 Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.
 
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="29"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()

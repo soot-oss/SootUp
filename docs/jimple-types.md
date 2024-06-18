@@ -1,18 +1,20 @@
-#Jimple Types
+# Jimple Types
+represents primary types i.e. non-reference types and non-void
 
-#### PrimaryType
-- BooleanType
-- ByteType
-- CharType
-- ShortType
-- IntType
-- LongType
-- DoubleType
-- FloatType
+### PrimaryType
+
+- `BooleanType`
+- `ByteType`
+- `CharType`
+- `ShortType`
+- `IntType`
+- `LongType`
+- `DoubleType`
+- `FloatType`
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="14-21"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -257,14 +259,14 @@
     ```
 
 
-#### ReferenceType
-- ClassType
-- ArrayType
-- NullType
+### ReferenceType
+- `(Java)ClassType` - represents the type of a Class.
+- `ArrayType` - represents an array.
+- `NullType` - assignable to one of the other ReferenceTypes.
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="21 24 26"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
     public void <init>()
@@ -323,8 +325,8 @@
       }
     }
     /*
-      The JimpleLocal b is of ArrayType,
-        and JimpleLocal r0 is of NullType.
+      The Local b is of ArrayType,
+        and Local r0 is of NullType.
     */
     ```
 
@@ -454,12 +456,12 @@
     ```
 
 
-#### VoidType
-Only used as a possible return type of a method.
+### VoidType
+Used as a possible return type of a method.
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="11"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()

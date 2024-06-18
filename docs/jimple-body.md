@@ -1,6 +1,6 @@
-# Jimple MethodBody
-A Methodbody consists of the Modifiers and its StmtGraph - SootUps Control Flow Graph Structure.
-The StmtGraph organizes the flow of [Stmts](jimple-stmts.md). 
+# Jimple Body
+A SootMethod `Body` consists of the `Modifiers` and its `StmtGraph` - SootUps Control Flow Graph Structure.
+The StmtGraph models the flow of [Stmts](jimple-stmts.md).
 
 ### Control Flow Graph
 - unexceptional flow -> like FallsThroughStmts and BranchingStmts for if,goto etc.
@@ -11,10 +11,12 @@ Learn more about the types of [Stmts](jimple-stmts.md).
 
 ### Traps
 A Trap is a mechanism to model exceptional flow.
+A Trap represents the try-catch (finally) construct and therefore defines the type of the caught exception, the try-catch range (from-to) and the actual code that handles the exception (handler).
+In serialized(!) Jimple Labels are used to denote from,to and handler Stmts.
 
 === "Jimple"
 
-    ```jimple
+    ```jimple hl_lines="39"
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -57,7 +59,7 @@ A Trap is a mechanism to model exceptional flow.
       }
     }
     /*
-      By calling getTraps() method, we can get the Trap.
+      By calling getTraps() method, we can get the Traip chain.
       For the above jimple code, we have the below trap:
       Trap :
       begin  : $stack5 = <java.lang.System: java.io.PrintStream out>

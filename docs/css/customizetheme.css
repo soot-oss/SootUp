@@ -37,7 +37,7 @@
 }
 
 .md-typeset .admonition, .md-typeset .admonition.info, .md-typeset .admonition.example, .md-typeset .admonition{
-    border-color: rgba(255,140,0, 0.2);
+    border-color: rgba(255,140,0, 0.1);
     margin-bottom: 3em;
 }
 
@@ -46,7 +46,8 @@
 }
 
 .md-typeset .admonition>.admonition-title, .md-typeset .admonition>.admonition-title{
-    background: rgba(255,140,0, 0.2);
+    background: rgba(255,140,0, 0.1);
+    color: rgba(255,140,0, 1);
 }
 .md-typeset .admonition, .md-typeset details {
     border-color: rgba(255,140,0, 1);
@@ -80,6 +81,14 @@
     border-left: 1px solid #DDD;
     margin-left: 2em;
     padding-left: 2em;
+}
+
+.md-sidebar.md-sidebar--secondary .md-nav__item a {
+    padding: 0;
+}
+
+.md-sidebar.md-sidebar--secondary .md-nav__item .md-nav{
+    padding-bottom: 1em;
 }
 
 .md-search__form{

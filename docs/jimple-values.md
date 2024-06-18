@@ -130,10 +130,9 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
 
 #### Constant
-represents a value itself. don't confuse it with a variable/Local which has a immutable (i.e. final) attribute.
-
-There exists a constant entity for every Type - that way all value types can have a representation.
-
+represents an actual value itself like `42` or `"This is a String"`.
+Constants are usually assigned to `Local`s or `Ref`s.
+There exists a constant entity for every [Primitive Type](jimple-types.md).
 
 ### Expr
 An expression is a language construct that returns a value. E.g. a binary operation such as addition.
@@ -146,13 +145,13 @@ $arr[1]
 ```
 referencing a position inside an array.
 
-#### JFieldRef (JStaticFieldRef & JInstanceFieldRef)
-```jimple
-<SomePackage.ExampleClass: fieldname>
-// or
-r1.<SomePackage.ExampleClass: fieldname>
-```
-referencing a Field via its FieldSignature and if necessary (i.e. with JInstanceFieldRef) the corresponding Local instance that points to the object instance.
+#### JFieldRef
+`JFieldRef`s are referencing a `SootField` via its FieldSignature
+
+- `JStaticFieldRef` like `#!jimple <SomePackage.ExampleClass: fieldname>`
+- `JInstanceFieldRef` like `#!jimple r1.<SomePackage.ExampleClass: fieldname>`
+  You can see the JInstanceFieldRef has the corresponding Local instance that points to the instance of the object which is holding the field.
+
 
 #### IdentityRef
 The IdentityRef makes those implicit special value assignments explicit.
