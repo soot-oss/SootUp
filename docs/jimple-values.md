@@ -13,7 +13,7 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
 === "Jimple" 
 
-    ```
+    ```jimple
     public class target.exercise1.DemoClass extends java.lang.Object
     {
       public void <init>()
@@ -23,30 +23,30 @@ Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
         specialinvoke this.<java.lang.Object: void <init>()>();
         return;
       }
-
+    
       public void compute()
       {
         java.io.PrintStream $stack2, $stack3;
         target.exercise1.DemoClass this;
-        int local#2;
-
+        int local2;
+        
         this := @this: target.exercise1.DemoClass;
         $stack2 = <java.lang.System: java.io.PrintStream out>;
         virtualinvoke $stack2.<java.io.PrintStream: void println(int)>(1);
-
-        local#2 = this.<target.exercise1.DemoClass: int global>;
+    
+        local2 = this.<target.exercise1.DemoClass: int global>;
         $stack3 = <java.lang.System: java.io.PrintStream out>;
-        virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(local#2);
+        virtualinvoke $stack3.<java.io.PrintStream: void println(int)>(local2);
         return;
       }
     }
     /*
-      $stack2, this, $stack3, local#2 are all Locals.
+      $stack2, this, $stack3, local2 are all Locals.
 
       "this := @this: target.exercise1.DemoClass" is a JIdentityStmt assigning to a Local.
 
       "$stack2 = <java.lang.System: java.io.PrintStream out>", 
-        "local#2 = this.<target.exercise1.DemoClass: int global>", 
+        "local2 = this.<target.exercise1.DemoClass: int global>", 
           "$stack3 = <java.lang.System: java.io.PrintStream out>" 
             are JAssignStmts assigning to a Local.
 

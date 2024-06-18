@@ -1174,7 +1174,7 @@ Ends the execution inside the current Method if the thrown exception is not caug
 
 ## Good to know
 A lot of the SootUp APIs return the `Stmt` Interface. To determine and handle its subtypes you can make use of instanceof.
-=== "Stmt If-Else forest"
+=== "instanceOf & If-Else"
     ```java
     
         List<Stmt> stmts = ... ;
@@ -1188,7 +1188,7 @@ A lot of the SootUp APIs return the `Stmt` Interface. To determine and handle it
                 JInvokeStmt ivkStmt = ((JInvokeStmt) stmt);
                 MethodSignature rhsOp = ivkStmt.getInvokeExpr().getMethodSignature();
                     ...
-            }
+            }else ...
         }
                         
     ```
@@ -1200,10 +1200,11 @@ Just subclass the methods to the respective Stmts you need to handle.
     
         List<Stmt> stmts = ...;
         AbstractStmtVisitor visitor = new AbstractStmtVisitor<Integer>() {
-            private int countAssignStmts = 0;
+            private int ifStmtsCounter = 0;
             @Override
-            public void caseIfStmt(@Nonnull JAssignStmt stmt) {
-                countAssignStmts++;
+            public void caseIfStmt(@Nonnull JIfStmt stmt) {
+                ifStmtsCounter++;
+                setResult(ifStmtCounter);
             }
         };
         
@@ -1211,5 +1212,5 @@ Just subclass the methods to the respective Stmts you need to handle.
             stmt.accept(visitor);
         }
         
-        int amountOfAssignStmts = visitor.getResult();
+        int amountOfIfStmts = visitor.getResult();
     ```
