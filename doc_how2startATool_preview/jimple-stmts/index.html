@@ -317,7 +317,7 @@
         
   
   <span class="md-ellipsis">
-    Possible Analysis Input
+    Analysis Input
   </span>
   
 
@@ -3370,7 +3370,7 @@ public divideExample(II)V
 </div>
 </div>
 <p>But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of <code>AbstractStmtVisitor</code>.
-Just subclass the methods to the respective Stmts you need to handle. </p>
+Just subclass the methods to the respective Stmts you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="11:1"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">StmtVisitor</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -3404,6 +3404,7 @@ Just subclass the methods to the respective Stmts you need to handle. </p>
 
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfIfStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
+<p>Sidenote: Of course its possible can create a subclass instead of an anonymous class.</p>
 </div>
 </div>
 </div>

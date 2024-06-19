@@ -317,7 +317,7 @@
         
   
   <span class="md-ellipsis">
-    Possible Analysis Input
+    Analysis Input
   </span>
   
 
@@ -534,13 +534,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#immediates" class="md-nav__link">
+  <a href="#immediate" class="md-nav__link">
     <span class="md-ellipsis">
-      Immediates
+      Immediate
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Immediates">
+    <nav class="md-nav" aria-label="Immediate">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -647,6 +647,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#good-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good to know
+    </span>
+  </a>
   
 </li>
       
@@ -1044,13 +1053,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#immediates" class="md-nav__link">
+  <a href="#immediate" class="md-nav__link">
     <span class="md-ellipsis">
-      Immediates
+      Immediate
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Immediates">
+    <nav class="md-nav" aria-label="Immediate">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1160,6 +1169,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#good-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good to know
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1179,7 +1197,7 @@
 
 
 <h1 id="jimple-values">Jimple Values</h1>
-<h3 id="immediates">Immediates</h3>
+<h3 id="immediate">Immediate</h3>
 <p>An <code>Immediate</code> has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").</p>
 <h4 id="local">Local</h4>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>i0 
@@ -1438,6 +1456,64 @@ represents the value of the thrown exception (caught by this exceptionhandler).<
 i1 := @parameter1 
 </code></pre></div></td></tr></table></div>
 represents a parameter of a method, identified by its index.</p>
+<h2 id="good-to-know">Good to know</h2>
+<p>A lot of the SootUp APIs return the <code>Value</code> Interface. To determine and handle its subtypes you can make use of instanceof.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">instanceOf &amp; If-Else</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assignStmt</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">){</span>
+<span class="w">        </span><span class="c1">// found a Local</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Constant</span><span class="p">){</span>
+<span class="w">        </span><span class="c1">// found a Constant</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">...</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of <code>AbstractValueVisitor</code>.
+Just subclass the methods to the respective <code>Value</code>s you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">StmtVisitor</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assignStmt</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">()</span><span class="w"> </span><span class="p">;</span>
+<span class="w">    </span><span class="n">AbstractValueVisitor</span><span class="w"> </span><span class="n">visitor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AbstractValueVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">intConstantCounter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="nd">@Override</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">caseConstant</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">Constant</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">intConstantCounter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="n">setResult</span><span class="p">(</span><span class="n">intConstantCounter</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">op</span><span class="p">.</span><span class="na">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfIfStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>If you only need a visitor for a subset of Value, you can consider ImmediateVisitor, ConstantVisitor, ExprVisitor, RefVisitor.
+Sidenote: Of course its possible can create a subclass instead of an anonymous class.</p>
+</div>
+</div>
+</div>
 
 
 
