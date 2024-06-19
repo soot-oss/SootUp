@@ -10,8 +10,9 @@ Below, we show how to create a type hierarchy:
 === "SootUp"
 
     ```java
+    String cpString = "src/test/resources/Callgraph/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList();
-    inputLocations.add(new JavaClassPathAnalysisInputLocation("src/test/resources/Callgraph/binary"));
+    inputLocations.add(new JavaClassPathAnalysisInputLocation(cpStr));
     inputLocations.add(new DefaultRTJarAnalysisInputLocation());
 
     JavaView view = new JavaView(inputLocations);
@@ -43,23 +44,33 @@ Below, we show how to create a type hierarchy:
 ## Defining an Entry Method
 All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
 
-=== "SootUp"
+=== "SootUp (performant)"
 
     ```java
-    JavaClassType classTypeA = view.getIdentifierFactory().getClassType("A");
+    JavaClassType classTypeA = view.getIdentifierFactory().getClassType("packageNameA.A");
 
     MethodSignature entryMethodSignature =
         view.getIdentifierFactory()
             .getMethodSignature(
                 classTypeA,
-                JavaIdentifierFactory.getInstance()
-                    .getMethodSubSignature(
-                        "calc", VoidType.getInstance(), Collections.singletonList(classTypeA)));    
+                "calc",
+                VoidType.getInstance(),
+                Collections.singletonList(classTypeA)
+            );
     ```
-    
+
+=== "SootUp (alternative)"
+
+    ```java
+    String methodSigStr = "<packageNameA.A: void calc(packageNameA.A)";
+    MethodSignature entryMethodSignature = view
+                        .getIdentifierFactory().parseMethodSignature(methodSigStr));
+    ```
+
 === "Soot"
 
     ```java
+    String targetTestClassName = "packageNameA.A";
     SootMethod src = Scene.v().getSootClass(targetTestClassName).getMethodByName("doStuff");     
    
     ```
@@ -71,13 +82,12 @@ You can construct a call graph with CHA as follows:
 === "SootUp"
 
     ```java
-    CallGraphAlgorithm cha = 
-            new ClassHierarchyAnalysisAlgorithm(view);
+    CallGraphAlgorithm cha = new ClassHierarchyAnalysisAlgorithm(view);
     
-    CallGraph cg = 
-            cha.initialize(Collections.singletonList(entryMethodSignature));
-
-    System.out.println(cg);
+    CallGraph cg = cha.initialize(Collections.singletonList(entryMethodSignature));
+    
+    cg.callsFrom(entryMethodSignature).stream()
+        .forEach(tgt -> System.out.println(entryMethodSignature + " may call " + tgt);
     ```
     
 === "Soot"
@@ -90,7 +100,7 @@ You can construct a call graph with CHA as follows:
     while (targets.hasNext()) {
 	    SootMethod tgt = (SootMethod)targets.next();
 	    System.out.println(src + " may call " + tgt);
-	    }
+    }
     ```
 
 ## Rapid Type Analysis
@@ -100,13 +110,12 @@ You can construct a call graph with RTA as follows:
 === "SootUp"
 
     ```java
-    CallGraphAlgorithm rta = 
-            new RapidTypeAnalysisAlgorithm(view);
+    CallGraphAlgorithm rta = new RapidTypeAnalysisAlgorithm(view);
     
-    CallGraph cg = 
-            rta.initialize(Collections.singletonList(entryMethodSignature));
+    CallGraph cg = rta.initialize(Collections.singletonList(entryMethodSignature));
 
-    System.out.println(cg);
+    cg.callsFrom(entryMethodSignature).stream()
+        .forEach(tgt -> System.out.println(entryMethodSignature + " may call " + tgt);
     ```
     
 === "Soot"
@@ -128,12 +137,14 @@ You can construct a call graph with RTA as follows:
     ```
 
 ## Variable Type Analysis
+(**WIP!**)
+
 Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
 When considering assignments, we usually need to consider **pointer** (points-to) relationship.
 
-!!! info
+!!! info "WIP"
 
-    VTA algorithm was implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
+    VTA algorithm will be implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
     A reimplementation of Spark in SootUp is currently under development.
 
 Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:
