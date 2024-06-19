@@ -1,0 +1,3503 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/jimple-stmts/">
+      
+      
+        <link rel="prev" href="../jimple-body/">
+      
+      
+        <link rel="next" href="../jimple-types/">
+      
+      
+      <link rel="icon" href="../img/icon.svg">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+    
+    
+      
+        <title>Jimple Statements - </title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/customizetheme.css">
+    
+      <link rel="stylesheet" href="../css/hint.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#jimple-stmt-statement" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="" class="md-header__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Jimple Statements
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="" class="md-nav__button md-logo" aria-label="" data-md-component="logo">
+      
+  <img src="../img/SootUpLogo.svg" alt="logo">
+
+    </a>
+    
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/soot-oss/SootUp/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    First Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysisinputlocations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analysis Input
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Basics
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Basics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jimple IR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-body/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jimple Body
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Jimple Statements
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Jimple Statements
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#branching-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Branching Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Branching Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jgotostmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JGotoStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jifstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIfStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jswitchstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSwitchStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fallsthrough-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      FallsThrough Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FallsThrough Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jinvokestmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JInvokeStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jassignstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JAssignStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jidentitystmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIdentityStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jentermonitorstmt-jexitmonitorstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JEnterMonitorStmt &amp; JExitMonitorStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jretstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JRetStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jbreakpointstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JBreakpointStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JReturnStmt &amp; JReturnVoidStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThrowStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#good-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good to know
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jimple Types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jimple-values/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jimple Values
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Advanced Topics
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bodyinterceptors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BodyInterceptors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../callgraphs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Callgraphs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builtin-analyses/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BuiltIn Analyses
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    How to..
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How to..
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../write_analyses/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Write a Dataflow analysis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qilin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Incorporate Pointer Analysis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Misc & More information
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Misc & More information
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../announcement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Announcements
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Design Decisions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migrating/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migration Help
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/SootUp/apidocs" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Latest Javadoc
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting & FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#branching-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Branching Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Branching Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jgotostmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JGotoStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jifstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIfStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jswitchstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JSwitchStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fallsthrough-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      FallsThrough Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FallsThrough Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jinvokestmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JInvokeStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jassignstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JAssignStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jidentitystmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JIdentityStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jentermonitorstmt-jexitmonitorstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JEnterMonitorStmt &amp; JExitMonitorStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jretstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JRetStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jbreakpointstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JBreakpointStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-stmts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Stmts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Stmts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jreturnstmt-jreturnvoidstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JReturnStmt &amp; JReturnVoidStmt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jthrowstmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThrowStmt
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#good-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good to know
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="jimple-stmt-statement">Jimple Stmt ("Statement")</h1>
+<p><span class="tooltip hint--top" aria-label="formerly known as Units">Stmts</span> represent instructions of the JVM.
+Jimple is a 3-address form code so there are max 3 operands used in a ("manipulating") Stmt - i.e. this does not apply to invokes as this is just operand/parameter passing.</p>
+<p>Stmts can be roughly grouped by the amount of successors (in the <code>StmtGraph</code> of a <code>Body</code> of a <code>Method</code>).</p>
+<ul>
+<li>A <code>FallsThroughStmt</code> has always one successor - it basically represents <code>program counter++</code>.</li>
+<li>A <code>BranchingStmt</code> can have one, two or even n successors.</li>
+<li>All others (neither FallsThrough nor BranchingStmt) have no successors and therefore end the execution of the current method.</li>
+</ul>
+<h2 id="branching-stmts">Branching Stmts</h2>
+<p>A BranchingStmt's job is to model the jumps or conditional branching flow between Stmts.</p>
+<h3 id="jgotostmt">JGotoStmt</h3>
+<p>represents unconditional jumps to another Stmt.  </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+  <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">sampleMethod</span>()
+  {
+    <span class="nc">int</span> <span class="nv">i</span>;
+    <span class="nv">i</span> = <span class="m">0</span>;
+
+    label1:
+      <span class="k">if</span> <span class="nv">i</span> <span class="o">&gt;=</span> <span class="m">5</span> <span class="k">goto</span> label3;
+      <span class="k">if</span> <span class="nv">i</span> <span class="o">!=</span> <span class="m">3</span> <span class="k">goto</span> label2;
+<span class="hll">      <span class="k">goto</span> label3;
+</span>
+    label2:
+      <span class="nv">i</span> = <span class="nv">i</span> <span class="o">+</span> <span class="m">1</span>;
+<span class="hll">      <span class="k">goto</span> label1;
+</span>
+    label3:
+      <span class="k">return</span>;
+  }
+}
+/*
+  Here for statements &quot;goto label3;&quot; and &quot;goto label1;&quot;, 
+  we have two instances of JGotoStmt : 
+    &quot;goto[?=return]&quot; and &quot;goto[?=(branch)]&quot;.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sampleMethod</span><span class="p">(){</span>
+<span class="w">    </span><span class="n">label1</span><span class="p">:</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+<span class="w">      </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span><span class="p">){</span>
+<span class="w">        </span><span class="k">break</span><span class="w"> </span><span class="n">label1</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x9
+public static sampleMethod()V
+  L0
+    LINENUMBER 6 L0
+    ICONST_0
+    ISTORE 0
+  L1
+    FRAME APPEND [I]
+    ILOAD 0
+    ICONST_5
+    IF_ICMPGE L2
+  L3
+    LINENUMBER 7 L3
+    ILOAD 0
+    ICONST_3
+    IF_ICMPNE L4
+  L5
+    LINENUMBER 8 L5
+    GOTO L2
+  L4
+    LINENUMBER 6 L4
+    FRAME SAME
+    IINC 0 1
+    GOTO L1
+  L2
+    LINENUMBER 11 L2
+    FRAME CHOP 1
+    RETURN
+    LOCALVARIABLE i I L1 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jifstmt">JIfStmt</h3>
+<p>For conditional jumps depending on the result of the conditional expression <code>AbstractConditionExpr</code> which needs to have boolean result.
+If the conditional expression is false, the next Stmt is the successor as the JIFStmt is also a <code>FallsthroughStmt</code>.
+Therefore, the JIfStmt has two successor Stmt's.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Jimple</label><label for="__tabbed_2_2">Java</label><label for="__tabbed_2_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+   <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="k">static</span> <span class="nc">void</span> <span class="nf">sampleMethod</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack1</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+    <span class="nv">$stack1</span> = <span class="nv">x</span> <span class="o">%</span> <span class="m">2</span>;
+<span class="hll">    <span class="k">if</span> <span class="nv">$stack1</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+</span>
+    <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Even&quot;</span>);
+    <span class="k">goto</span> label2;
+
+    label1:
+      <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Odd&quot;</span>);
+
+    label2:
+      <span class="k">return</span>;
+  }
+}
+/*
+  For statement &quot;if $stack1 != 0 goto label1;&quot;, 
+  we have an instance of JIfStmt :
+    &quot;if $stack1 != 0 goto $stack2 
+        = &lt;java.lang.System:java.io.PrintStream out&gt;&quot;.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sampleMethod</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">){</span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Even&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="p">{</span>
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Odd&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x9
+public static sampleMethod(I)V
+  L0
+    LINENUMBER 5 L0
+    ILOAD 0
+    ICONST_2
+    IREM
+    IFNE L1
+  L2
+    LINENUMBER 6 L2
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Even&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+    GOTO L3
+  L1
+    LINENUMBER 8 L1
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Odd&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L3
+    LINENUMBER 10 L3
+    FRAME SAME
+    RETURN
+  L4
+    LOCALVARIABLE x I L0 L4 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jswitchstmt">JSwitchStmt</h3>
+<p>for conditional flow that behaves like a switch-case. It has #numberOfCaseLabels+1 (for default) successor Stmt's. </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Jimple</label><label for="__tabbed_3_2">Java</label><label for="__tabbed_3_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">switchExample</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">x</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>, <span class="nv">$stack4</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+<span class="hll">    <span class="k">lookupswitch</span>(<span class="nv">x</span>)
+</span><span class="hll">    {
+</span><span class="hll">      <span class="k">case</span> 1: <span class="k">goto</span> label1;
+</span><span class="hll">      <span class="k">case</span> 2: <span class="k">goto</span> label2;
+</span><span class="hll">      <span class="k">default</span>: <span class="k">goto</span> label3;
+</span><span class="hll">    };
+</span>
+    label1:
+      <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input 1&quot;</span>);
+      <span class="k">goto</span> label4;
+
+    label2:
+      <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input 2&quot;</span>);
+      <span class="k">goto</span> label4;
+
+    label3:
+      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Input more than 2&quot;</span>);
+
+    label4:
+      <span class="k">return</span>;
+  }
+}
+/*
+  Here for below statement:
+    lookupswitch(x)
+      {
+        case 1: goto label1;
+        case 2: goto label2;
+        default: goto label3;
+      };
+
+  we have an instance of JLookupSwitchStmt :
+    lookupswitch(x) 
+      {     
+        case 1: goto $stack3 
+                        = &lt;java.lang.System: java.io.PrintStream out&gt;;     
+        case 2: goto $stack2 
+                        = &lt;java.lang.System: java.io.PrintStream out&gt;;     
+        default: goto $stack4 
+                        = &lt;java.lang.System: java.io.PrintStream out&gt;; 
+      }
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">switchExample</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Input 1&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Input 2&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+
+<span class="w">      </span><span class="k">default</span><span class="p">:</span>
+<span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Input more than 2&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">break</span><span class="p">;</span>
+
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public switchExample(I)V
+  L0
+    LINENUMBER 5 L0
+    ILOAD 1
+    LOOKUPSWITCH
+    1: L1
+    2: L2
+    default: L3
+  L1
+    LINENUMBER 7 L1
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Input 1&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L4
+    LINENUMBER 8 L4
+    GOTO L5
+  L2
+    LINENUMBER 11 L2
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Input 2&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L6
+    LINENUMBER 12 L6
+    GOTO L5
+  L3
+    LINENUMBER 15 L3
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Input more than 2&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L5
+    LINENUMBER 19 L5
+    FRAME SAME
+    RETURN
+  L7
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L7 0
+    LOCALVARIABLE x I L0 L7 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h2 id="fallsthrough-stmts">FallsThrough Stmts</h2>
+<p>The execution of a FallsthroughStmt goes on with the following Stmt (if no exception was thrown). </p>
+<h3 id="jinvokestmt">JInvokeStmt</h3>
+<p>transfers the control flow to another method until the called method returns.  </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Jimple</label><label for="__tabbed_4_2">Java</label><label for="__tabbed_4_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+<span class="hll">    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+</span>    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">a</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>, <span class="nv">$stack6</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">x</span>);
+</span>    <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>
+<span class="hll">    <span class="nv">a</span> = <span class="k">virtualinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>    <span class="nv">$stack6</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+<span class="hll">    <span class="k">virtualinvoke</span> <span class="nv">$stack6</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">a</span>);
+</span>
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
+    <span class="k">return</span> <span class="nv">$stack2</span>;
+  }
+}
+/*
+  &quot;specialinvoke this.&lt;java.lang.Object: void &lt;init&gt;()&gt;()&quot;, 
+  &quot;virtualinvoke this.&lt;target.exercise1.DemoClass: int increment(int)&gt;(x)&quot;, 
+  &quot;virtualinvoke this.&lt;target.exercise1.DemoClass: int increment(int)&gt;(a)&quot; 
+    are JInvokeStmts.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">increment</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">increment</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">increment</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public print(I)V
+  L0
+    LINENUMBER 5 L0
+    ALOAD 0
+    ILOAD 1
+    INVOKEVIRTUAL target/exercise1/DemoClass.increment (I)I
+    ISTORE 2
+  L1
+    LINENUMBER 6 L1
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 2
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+  L2
+    LINENUMBER 7 L2
+    ALOAD 0
+    ILOAD 2
+    INVOKEVIRTUAL target/exercise1/DemoClass.increment (I)I
+    ISTORE 2
+  L3
+    LINENUMBER 8 L3
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 2
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+  L4
+    LINENUMBER 9 L4
+    RETURN
+  L5
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L5 0
+    LOCALVARIABLE x I L0 L5 1
+    LOCALVARIABLE a I L1 L5 2
+    MAXSTACK = 2
+    MAXLOCALS = 3
+
+// access flags 0x1
+public increment(I)I
+  L0
+    LINENUMBER 11 L0
+    ILOAD 1
+    ICONST_1
+    IADD
+    IRETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    LOCALVARIABLE x I L0 L1 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jassignstmt">JAssignStmt</h3>
+<p>assigns a Value from the right hand-side to the left hand-side.
+Left hand-side of an assignment can be a Local referencing a variable (i.e. a Local) or a FieldRef referencing a Field.
+Right hand-side of an assignment can be an expression (Expr), a Local, a FieldRef or a Constant.  </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:3"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Jimple</label><label for="__tabbed_5_2">Java</label><label for="__tabbed_5_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+<span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
+</span>    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">int</span> <span class="nf">updateCounter</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">$stack1</span>, <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+
+<span class="hll">    <span class="nv">$stack1</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+</span><span class="hll">    <span class="nv">$stack2</span> = <span class="nv">$stack1</span> <span class="o">+</span> <span class="m">1</span>;
+</span><span class="hll">    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack2</span>;
+</span><span class="hll">    <span class="nv">$stack3</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+</span>
+    <span class="k">return</span> <span class="nv">$stack3</span>;
+  }
+}
+/*
+  &quot;this.&lt;target.exercise1.DemoClass: int counter&gt; = 0&quot;, 
+  &quot;$stack1 = this.&lt;target.exercise1.DemoClass: int counter&gt;&quot;,
+  &quot;$stack2 = $stack1 + 1&quot;
+  &quot;this.&lt;target.exercise1.DemoClass: int counter&gt; = $stack2&quot;
+  &quot;$stack3 = this.&lt;target.exercise1.DemoClass: int counter&gt;&quot;
+    are JAssignStmts.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">updateCounter</span><span class="p">(){</span>
+<span class="w">    </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x2
+private I counter
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+  L1
+    LINENUMBER 4 L1
+    ALOAD 0
+    ICONST_0
+    PUTFIELD target/exercise1/DemoClass.counter : I
+    RETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+
+// access flags 0x1
+public updateCounter()I
+  L0
+    LINENUMBER 6 L0
+    ALOAD 0
+    ALOAD 0
+    GETFIELD target/exercise1/DemoClass.counter : I
+    ICONST_1
+    IADD
+    PUTFIELD target/exercise1/DemoClass.counter : I
+  L1
+    LINENUMBER 7 L1
+    ALOAD 0
+    GETFIELD target/exercise1/DemoClass.counter : I
+    IRETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    MAXSTACK = 3
+    MAXLOCALS = 1
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jidentitystmt">JIdentityStmt</h3>
+<p>is similar to the <code>JAssignStmt</code> and but handles assignments of <code>IdentityRef</code>s to make implicit assignments explicit into the <code>StmtGraph</code>.</p>
+<ul>
+<li>Assigns parameters to a <code>Local</code> via <code>JParameterRef</code> like <code>@parameter0: int</code> refering to the first argument of the method (which is of Type int in this case).</li>
+<li>Assigns exceptions to a <code>Local</code> via <code>JCaughtExceptionRef</code> like <code>@caughtexception: java.lang.NullpointerException</code></li>
+<li>Assigns the <code>this</code> Variable to a <code>Local</code> via a <code>JThisRef</code></li>
+</ul>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:3"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Jimple</label><label for="__tabbed_6_2">Java</label><label for="__tabbed_6_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">DemoClass</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">counter</span>;
+
+<span class="hll">    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+</span><span class="hll">    <span class="nv">counter</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+</span>    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">counter</span>;
+    <span class="k">return</span>;
+  }
+}
+/*
+  &quot;this := @this: target.exercise1.DemoClass&quot; and 
+    &quot;counter := @parameter0: int&quot; are JIdentityStmts
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">DemoClass</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="p">){</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x2
+private I counter
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public DemoClass(I)V
+  L0
+    LINENUMBER 6 L0
+    ALOAD 0
+    ILOAD 1
+    PUTFIELD target/exercise1/DemoClass.counter : I
+  L1
+    LINENUMBER 7 L1
+    RETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    LOCALVARIABLE counter I L0 L2 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jentermonitorstmt-jexitmonitorstmt">JEnterMonitorStmt &amp; JExitMonitorStmt</h3>
+<p>marks synchronized blocks of code from JEnterMonitorStmt to JExitMonitorStmt.  </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Jimple</label><label for="__tabbed_7_2">Java</label><label for="__tabbed_7_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="m">0</span>;
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">int</span> <span class="nf">updateCounter</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">$stack4</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
+    <span class="nc">java.lang.Throwable</span> <span class="nv">$stack8</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+
+<span class="hll">    <span class="k">entermonitor</span> <span class="nv">this</span>;
+</span>
+    label1:
+      <span class="nv">$stack4</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+      <span class="nv">$stack5</span> = <span class="nv">$stack4</span> <span class="o">+</span> <span class="m">1</span>;
+      <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt; = <span class="nv">$stack5</span>;
+
+<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+</span>
+    label2:
+      <span class="k">goto</span> label5;
+
+    label3:
+      <span class="nv">$stack8</span> := <span class="k">@caughtexception</span>;
+
+<span class="hll">      <span class="k">exitmonitor</span> <span class="nv">this</span>;
+</span>
+    label4:
+      <span class="k">throw</span> <span class="nv">$stack8</span>;
+
+    label5:
+      <span class="nv">$stack7</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">counter</span>&gt;;
+      <span class="k">return</span> <span class="nv">$stack7</span>;
+
+      <span class="k">catch</span> <span class="nc">java.lang.Throwable</span> <span class="k">from</span> label1 <span class="k">to</span> label2 <span class="k">with</span> label3;
+      <span class="k">catch</span> <span class="nc">java.lang.Throwable</span> <span class="k">from</span> label3 <span class="k">to</span> label4 <span class="k">with</span> label3;
+  }
+}
+/*
+  &quot;entermonitor this&quot; is JEnterMonitorStmt.
+  &quot;exitmonitor this&quot; is JExitMonitorStmt.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">updateCounter</span><span class="p">(){</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x2
+private I counter
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+  L1
+    LINENUMBER 4 L1
+    ALOAD 0
+    ICONST_0
+    PUTFIELD target/exercise1/DemoClass.counter : I
+    RETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+
+// access flags 0x1
+public updateCounter()I
+    TRYCATCHBLOCK L0 L1 L2 null
+    TRYCATCHBLOCK L2 L3 L2 null
+  L4
+    LINENUMBER 6 L4
+    ALOAD 0
+    DUP
+    ASTORE 1
+    MONITORENTER
+  L0
+    LINENUMBER 7 L0
+    ALOAD 0
+    ALOAD 0
+    GETFIELD target/exercise1/DemoClass.counter : I
+    ICONST_1
+    IADD
+    PUTFIELD target/exercise1/DemoClass.counter : I
+  L5
+    LINENUMBER 8 L5
+    ALOAD 1
+    MONITOREXIT
+  L1
+    GOTO L6
+  L2
+    FRAME FULL [target/exercise1/DemoClass java/lang/Object] 
+      [java/lang/Throwable]
+    ASTORE 2
+    ALOAD 1
+    MONITOREXIT
+  L3
+    ALOAD 2
+    ATHROW
+  L6
+    LINENUMBER 9 L6
+    FRAME CHOP 1
+    ALOAD 0
+    GETFIELD target/exercise1/DemoClass.counter : I
+    IRETURN
+  L7
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L4 L7 0
+    MAXSTACK = 3
+    MAXLOCALS = 3
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jretstmt">JRetStmt</h3>
+<p>// TODO: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret">java 1.6 spec</a></p>
+<h3 id="jbreakpointstmt">JBreakpointStmt</h3>
+<p>models a Breakpoint set by a Debugger. Therefore, not really relevant for static analyses but useful for code generation.</p>
+<h2 id="other-stmts">Other Stmts</h2>
+<h3 id="jreturnstmt-jreturnvoidstmt">JReturnStmt &amp; JReturnVoidStmt</h3>
+<p>They end the execution/flow inside the current method and return (a value) to its caller.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:3"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><input id="__tabbed_8_3" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Jimple</label><label for="__tabbed_8_2">Java</label><label for="__tabbed_8_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">int</span> <span class="nf">increment</span>(<span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">x</span>, <span class="nv">$stack2</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+
+    <span class="nv">$stack2</span> = <span class="nv">x</span> <span class="o">+</span> <span class="m">1</span>;
+<span class="hll">    <span class="k">return</span> <span class="nv">$stack2</span>;
+</span>  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">print</span>()
+  {
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack1</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack1</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack1</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+      <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Inside method print&quot;</span>);
+<span class="hll">    <span class="k">return</span>;
+</span>  }
+}
+/*
+  &quot;return $stack2&quot; is JReturnStmt.
+  &quot;return&quot; is JReturnVoidStmt.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">increment</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">){</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print</span><span class="p">(){</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Inside method print&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public increment(I)I
+  L0
+    LINENUMBER 5 L0
+    ILOAD 1
+    ICONST_1
+    IADD
+    IRETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    LOCALVARIABLE x I L0 L1 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
+
+// access flags 0x1
+public print()V
+  L0
+    LINENUMBER 8 L0
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    LDC &quot;Inside method print&quot;
+    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V
+  L1
+    LINENUMBER 9 L1
+    RETURN
+  L2
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L2 0
+    MAXSTACK = 2
+    MAXLOCALS = 1
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h3 id="jthrowstmt">JThrowStmt</h3>
+<p>Ends the execution inside the current Method if the thrown exception is not caught by a Trap, which redirects the execution to an exceptionhandler.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Jimple</label><label for="__tabbed_9_2">Java</label><label for="__tabbed_9_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
+
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">divideExample</span>(<span class="nc">int</span>, <span class="nc">int</span>)
+  {
+    <span class="nc">int</span> <span class="nv">y</span>, <span class="nv">x</span>, <span class="nv">$stack6</span>;
+    <span class="nc">java.lang.StringBuilder</span> <span class="nv">$stack3</span>, <span class="nv">$stack5</span>, <span class="nv">$stack7</span>;
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack4</span>;
+    <span class="nc">java.lang.String</span> <span class="nv">$stack8</span>;
+    <span class="nc">java.lang.RuntimeException</span> <span class="nv">$stack9</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">x</span> := <span class="k">@parameter0</span>: <span class="nc">int</span>;
+    <span class="nv">y</span> := <span class="k">@parameter1</span>: <span class="nc">int</span>;
+
+    <span class="k">if</span> <span class="nv">y</span> <span class="o">!=</span> <span class="m">0</span> <span class="k">goto</span> label1;
+
+    <span class="nv">$stack9</span> = <span class="k">new</span> <span class="nc">java.lang.RuntimeException</span>;
+    <span class="k">specialinvoke</span> <span class="nv">$stack9</span>.&lt;<span class="nv">java.lang.RuntimeException</span>: 
+      <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide by zero error&quot;</span>);
+<span class="hll">    <span class="k">throw</span> <span class="nv">$stack9</span>;
+</span>
+    label1:
+      <span class="nv">$stack4</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+      <span class="nv">$stack3</span> = <span class="k">new</span> <span class="nc">java.lang.StringBuilder</span>;
+      <span class="k">specialinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+
+      <span class="nv">$stack5</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">&quot;Divide result : &quot;</span>);
+      <span class="nv">$stack6</span> = <span class="nv">x</span> <span class="o">/</span> <span class="nv">y</span>;
+      <span class="nv">$stack7</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack5</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.StringBuilder</span> <span class="nf">append</span>(<span class="nc">int</span>)&gt;(<span class="nv">$stack6</span>);
+      <span class="nv">$stack8</span> = <span class="k">virtualinvoke</span> <span class="nv">$stack7</span>.&lt;<span class="nv">java.lang.StringBuilder</span>: 
+        <span class="nc">java.lang.String</span> <span class="nf">toString</span>()&gt;();
+
+      <span class="k">virtualinvoke</span> <span class="nv">$stack4</span>.&lt;<span class="nv">java.io.PrintStream</span>: 
+        <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">java.lang.String</span>)&gt;(<span class="nv">$stack8</span>);
+      <span class="k">return</span>;
+  }
+}
+/*
+  &quot;throw $stack9&quot; is JThrowStmt.
+*/
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">divideExample</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">){</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">){</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">&quot;Divide by zero error&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Divide result : &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
+
+// compiled from: DemoClass.java
+
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
+
+// access flags 0x1
+public divideExample(II)V
+  L0
+    LINENUMBER 5 L0
+    ILOAD 2
+    IFNE L1
+  L2
+    LINENUMBER 6 L2
+    NEW java/lang/RuntimeException
+    DUP
+    LDC &quot;Divide by zero error&quot;
+    INVOKESPECIAL java/lang/RuntimeException.&lt;init&gt; 
+      (Ljava/lang/String;)V
+    ATHROW
+  L1
+    LINENUMBER 8 L1
+    FRAME SAME
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    NEW java/lang/StringBuilder
+    DUP
+    INVOKESPECIAL java/lang/StringBuilder.&lt;init&gt; ()V
+    LDC &quot;Divide result : &quot;
+    INVOKEVIRTUAL java/lang/StringBuilder.append 
+      (Ljava/lang/String;)Ljava/lang/StringBuilder;
+    ILOAD 1
+    ILOAD 2
+    IDIV
+    INVOKEVIRTUAL java/lang/StringBuilder.append 
+      (I)Ljava/lang/StringBuilder;
+    INVOKEVIRTUAL java/lang/StringBuilder.toString 
+      ()Ljava/lang/String;
+    INVOKEVIRTUAL java/io/PrintStream.println 
+      (Ljava/lang/String;)V
+  L3
+    LINENUMBER 9 L3
+    RETURN
+  L4
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L4 0
+    LOCALVARIABLE x I L0 L4 1
+    LOCALVARIABLE y I L0 L4 2
+    MAXSTACK = 4
+    MAXLOCALS = 3
+}
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h2 id="good-to-know">Good to know</h2>
+<p>A lot of the SootUp APIs return the <code>Stmt</code> Interface. To determine and handle its subtypes you can make use of instanceof.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:1"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">instanceOf &amp; If-Else</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="n">Stmt</span><span class="w"> </span><span class="n">stms</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="p">){</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JAssignStmt</span><span class="p">){</span>
+<span class="w">            </span><span class="c1">// found a JAssignStmt</span>
+<span class="w">            </span><span class="n">Value</span><span class="w"> </span><span class="n">rhsOp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">JAssignStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">).</span><span class="na">getRightOp</span><span class="p">();</span>
+<span class="w">            </span><span class="p">...</span>
+<span class="w">        </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">JInvokeStmt</span><span class="p">){</span>
+<span class="w">            </span><span class="c1">// found a JInvokeStmt</span>
+<span class="w">            </span><span class="n">JInvokeStmt</span><span class="w"> </span><span class="n">ivkStmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">JInvokeStmt</span><span class="p">)</span><span class="w"> </span><span class="n">stmt</span><span class="p">);</span>
+<span class="w">            </span><span class="n">MethodSignature</span><span class="w"> </span><span class="n">rhsOp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ivkStmt</span><span class="p">.</span><span class="na">getInvokeExpr</span><span class="p">().</span><span class="na">getMethodSignature</span><span class="p">();</span>
+<span class="w">                </span><span class="p">...</span>
+<span class="w">        </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of <code>AbstractStmtVisitor</code>.
+Just subclass the methods to the respective Stmts you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="11:1"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">StmtVisitor</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">    </span><span class="n">AbstractStmtVisitor</span><span class="w"> </span><span class="n">visitor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AbstractStmtVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ifStmtsCounter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="nd">@Override</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">caseIfStmt</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">JIfStmt</span><span class="w"> </span><span class="n">stmt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">ifStmtsCounter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="n">setResult</span><span class="p">(</span><span class="n">ifStmtCounter</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="w"> </span><span class="n">Stmt</span><span class="w"> </span><span class="n">stms</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">stmts</span><span class="w"> </span><span class="p">){</span>
+<span class="w">        </span><span class="n">stmt</span><span class="p">.</span><span class="na">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfIfStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Sidenote: Of course its possible can create a subclass instead of an anonymous class.</p>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2024 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Footer -->
+<footer class="md-footer">
+
+    <!-- Link to previous and/or next page -->
+    
+
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <span id="developedBy">
+            Developed & Maintained by <a href="https://www.hni.uni-paderborn.de/sse">Secure Software Engineering Group </a>, Paderborn University
+            </span>
+        </div>
+    </div>
+
+
+    <!-- Further information -->
+    <div class="md-footer-meta md-typeset">
+        <div class="md-footer-meta__inner md-grid">
+            <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+
+            <!-- Social links -->
+            
+        </div>
+    </div>
+
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+    
+  </body>
+</html>

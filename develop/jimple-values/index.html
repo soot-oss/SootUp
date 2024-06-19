@@ -8,9 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/docguide/">
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/jimple-values/">
       
       
+        <link rel="prev" href="../jimple-types/">
+      
+      
+        <link rel="next" href="../bodyinterceptors/">
       
       
       <link rel="icon" href="../img/icon.svg">
@@ -18,7 +22,7 @@
     
     
       
-        <title>Docguide - </title>
+        <title>Jimple Values - </title>
       
     
     
@@ -72,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#general" class="md-skip">
+        <a href="#jimple-values" class="md-skip">
           Skip to content
         </a>
       
@@ -111,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Docguide
+              Jimple Values
             
           </span>
         </div>
@@ -355,8 +359,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -366,11 +372,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -384,7 +390,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Basics
@@ -479,10 +485,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../jimple-values/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Jimple Values
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -491,6 +517,152 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#immediate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Immediate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Immediate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constant
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ref" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ref
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ref">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarrayref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JArrayRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jfieldref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JFieldRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identityref" class="md-nav__link">
+    <span class="md-ellipsis">
+      IdentityRef
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IdentityRef">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jthisref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThisRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jcaughtexceptionref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JCaughtExceptionRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jparameterref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JParameterRef
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#good-to-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good to know
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -871,6 +1043,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -879,36 +1053,126 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#general" class="md-nav__link">
+  <a href="#immediate" class="md-nav__link">
     <span class="md-ellipsis">
-      General
+      Immediate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Immediate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Constant
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Expr
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#mkdocsextensions" class="md-nav__link">
+  <a href="#ref" class="md-nav__link">
     <span class="md-ellipsis">
-      MkDocsExtensions
+      Ref
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ref">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarrayref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JArrayRef
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#tooltip" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#jfieldref" class="md-nav__link">
     <span class="md-ellipsis">
-      Tooltip
+      JFieldRef
     </span>
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#identityref" class="md-nav__link">
+    <span class="md-ellipsis">
+      IdentityRef
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IdentityRef">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jthisref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JThisRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jcaughtexceptionref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JCaughtExceptionRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jparameterref" class="md-nav__link">
+    <span class="md-ellipsis">
+      JParameterRef
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#example-file-inclusion" class="md-nav__link">
+  <a href="#good-to-know" class="md-nav__link">
     <span class="md-ellipsis">
-      Example File inclusion
+      Good to know
     </span>
   </a>
   
@@ -932,14 +1196,123 @@
   
 
 
-  <h1>Docguide</h1>
+<h1 id="jimple-values">Jimple Values</h1>
+<h3 id="immediate">Immediate</h3>
+<p>An <code>Immediate</code> has a <span class="tooltip hint--top" aria-label="as in constant or immutable"><strong>given</strong></span> Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").</p>
+<h4 id="local">Local</h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>i0 
+</code></pre></div></td></tr></table></div>
+<p>A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
+Values can be assigned to Locals via JIdentityStmt or JAssignStmt.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Jimple</label><label for="__tabbed_1_2">Java</label><label for="__tabbed_1_3">Bytecode</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code>public <span class="k">class</span> <span class="nc">target.exercise1.DemoClass</span> <span class="k">extends</span> <span class="nc">java.lang.Object</span>
+{
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()
+  {
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="k">specialinvoke</span> <span class="nv">this</span>.&lt;<span class="nv">java.lang.Object</span>: <span class="nc">void</span> <span class="nf">&lt;init&gt;</span>()&gt;();
+    <span class="k">return</span>;
+  }
 
-<h2 id="general">General</h2>
-<h2 id="mkdocsextensions">MkDocsExtensions</h2>
-<h2 id="tooltip">Tooltip</h2>
-<p><span class="tooltip hint--top" aria-label="Im not a hovercraft"><strong>Hover me</strong></span></p>
-<h2 id="example-file-inclusion">Example File inclusion</h2>
-<p>this enables that tutorial code can be tested and will fail if its not up to date anymore :)</p>
+  <span class="k">public</span> <span class="nc">void</span> <span class="nf">compute</span>()
+  {
+    <span class="nc">java.io.PrintStream</span> <span class="nv">$stack2</span>, <span class="nv">$stack3</span>;
+    <span class="nc">target.exercise1.DemoClass</span> <span class="nv">this</span>;
+    <span class="nc">int</span> <span class="nv">local2</span>;
+
+    <span class="nv">this</span> := <span class="k">@this:</span> <span class="nc">target.exercise1.DemoClass</span>;
+    <span class="nv">$stack2</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack2</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">1</span>);
+
+    <span class="nv">local2</span> = <span class="nv">this</span>.&lt;<span class="nc">target.exercise1.DemoClass</span>: <span class="nc">int</span> <span class="nv">global</span>&gt;;
+    <span class="nv">$stack3</span> = &lt;<span class="nc">java.lang.System</span>: <span class="nc">java.io.PrintStream</span> <span class="nv">out</span>&gt;;
+    <span class="k">virtualinvoke</span> <span class="nv">$stack3</span>.&lt;<span class="nv">java.io.PrintStream</span>: <span class="nc">void</span> <span class="nf">println</span>(<span class="nc">int</span>)&gt;(<span class="nv">local2</span>);
+    <span class="k">return</span>;
+  }
+}
+/*
+  $stack2, this, $stack3, local2 are all Locals.
+
+  &quot;this := @this: target.exercise1.DemoClass&quot; is a JIdentityStmt assigning to a Local.
+
+  &quot;$stack2 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot;, 
+    &quot;local2 = this.&lt;target.exercise1.DemoClass: int global&gt;&quot;, 
+      &quot;$stack3 = &lt;java.lang.System: java.io.PrintStream out&gt;&quot; 
+        are JAssignStmts assigning to a Local.
+
+*/  
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">target.exercise1</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DemoClass</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">global</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">compute</span><span class="p">(){</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">local</span><span class="p">;</span>
+<span class="w">    </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">local</span><span class="p">);</span>
+<span class="w">    </span><span class="n">local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">global</span><span class="p">;</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">local</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -990,100 +1363,157 @@
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code>package sootup.examples.basicSetup;
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code>// class version 52.0 (52)
+// access flags 0x21
+public class target/exercise1/DemoClass {
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+// compiled from: DemoClass.java
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.jimple.common.expr.JVirtualInvokeExpr;
-import sootup.core.jimple.common.stmt.JInvokeStmt;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
-import sootup.core.signatures.MethodSignature;
-import sootup.core.types.ClassType;
-import sootup.core.views.View;
-import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.language.JavaJimple;
-import sootup.java.core.views.JavaView;
+// access flags 0x2
+private I global
 
-/** This example illustrates how to create and use a new Soot Project. */
-@Tag(&quot;Java8&quot;)
-public class BasicSetup {
+// access flags 0x1
+public &lt;init&gt;()V
+  L0
+    LINENUMBER 3 L0
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.&lt;init&gt; ()V
+    RETURN
+  L1
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L1 0
+    MAXSTACK = 1
+    MAXLOCALS = 1
 
-  @Test
-  public void createByteCodeProject() {
-    // Create a AnalysisInputLocation, which points to a directory. All class files will be loaded
-    // from the directory
-    Path pathToBinary = Paths.get(&quot;src/test/resources/BasicSetup/binary&quot;);
-    AnalysisInputLocation inputLocation = PathBasedAnalysisInputLocation.create(pathToBinary, null);
-
-    // Create a view for project, which allows us to retrieve classes
-    View view = new JavaView(inputLocation);
-
-    // Create a signature for the class we want to analyze
-    ClassType classType = view.getIdentifierFactory().getClassType(&quot;HelloWorld&quot;);
-
-    // Create a signature for the method we want to analyze
-    MethodSignature methodSignature =
-        view.getIdentifierFactory()
-            .getMethodSignature(
-                classType, &quot;main&quot;, &quot;void&quot;, Collections.singletonList(&quot;java.lang.String[]&quot;));
-
-    // Assert that class is present
-    assertTrue(view.getClass(classType).isPresent());
-
-    // Retrieve class
-    SootClass sootClass = view.getClass(classType).get();
-
-    // Retrieve method
-    view.getMethod(methodSignature);
-
-    // Alternatively:
-    assertTrue(sootClass.getMethod(methodSignature.getSubSignature()).isPresent());
-    SootMethod sootMethod = sootClass.getMethod(methodSignature.getSubSignature()).get();
-
-    // Read jimple code of method
-    System.out.println(sootMethod.getBody());
-
-    // Assert that Hello world print is present
-    assertTrue(
-        sootMethod.getBody().getStmts().stream()
-            .anyMatch(
-                stmt -&gt;
-                    stmt instanceof JInvokeStmt
-                        &amp;&amp; stmt.getInvokeExpr() instanceof JVirtualInvokeExpr
-                        &amp;&amp; stmt.getInvokeExpr()
-                            .getArg(0)
-                            .equivTo(JavaJimple.getInstance().newStringConstant(&quot;Hello World!&quot;))));
-  }
+// access flags 0x1
+public compute()V
+  L0
+    LINENUMBER 9 L0
+    ICONST_1
+    ISTORE 1
+  L1
+    LINENUMBER 10 L1
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 1
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+  L2
+    LINENUMBER 11 L2
+    ALOAD 0
+    GETFIELD target/exercise1/DemoClass.global : I
+    ISTORE 1
+  L3
+    LINENUMBER 12 L3
+    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;
+    ILOAD 1
+    INVOKEVIRTUAL java/io/PrintStream.println (I)V
+  L4
+    LINENUMBER 14 L4
+    RETURN
+  L5
+    LOCALVARIABLE this Ltarget/exercise1/DemoClass; L0 L5 0
+    LOCALVARIABLE local I L1 L5 1
+    MAXSTACK = 2
+    MAXLOCALS = 2
 }
 </code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h4 id="constant">Constant</h4>
+<p>represents an actual value itself like <code>42</code> or <code>"This is a String"</code>.
+Constants are usually assigned to <code>Local</code>s or <code>Ref</code>s.
+There exists a constant entity for every <a href="../jimple-types/">Primitive Type</a>.</p>
+<h3 id="expr">Expr</h3>
+<p>An expression is a language construct that calculates an operation and returns a value.
+E.g. a binary operation <code>AbstracBinopExpr</code> such as an addition <code>a + b</code>, an <code>AbstractInvokeExpr</code> such as <code>virtualinvoke $stack2.&lt;java.io.PrintStream: void println(int)&gt;(1);</code> or an <code>UnaryExpr</code> such as <code>!valid</code>.
+And a bunch more!</p>
+<h3 id="ref">Ref</h3>
+<h4 id="jarrayref">JArrayRef</h4>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>$arr[1] = 42;
+$anotherLocal = arr[99];
+</code></pre></div></td></tr></table></div>
+referencing an array position.</p>
+<h4 id="jfieldref">JFieldRef</h4>
+<p><code>JFieldRef</code>s are referencing a <code>SootField</code> via its FieldSignature</p>
+<ul>
+<li><code>JStaticFieldRef</code> like <code>&lt;SomePackage.ExampleClass: fieldname&gt;</code></li>
+<li><code>JInstanceFieldRef</code> like <code>r1.&lt;SomePackage.ExampleClass: fieldname&gt;</code>
+  You can see the JInstanceFieldRef has the corresponding Local instance that points to the instance of the object which is holding the field.</li>
+</ul>
+<h4 id="identityref">IdentityRef</h4>
+<p>The IdentityRef makes those implicit special value assignments explicit.</p>
+<h5 id="jthisref">JThisRef</h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>@this: package.fruit.Banana
+</code></pre></div></td></tr></table></div>
+represents the this pointer of the current class.</p>
+<h5 id="jcaughtexceptionref">JCaughtExceptionRef</h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>@caughtexception
+</code></pre></div></td></tr></table></div>
+represents the value of the thrown exception (caught by this exceptionhandler).</p>
+<h5 id="jparameterref">JParameterRef</h5>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>i0 := @parameter0
+i1 := @parameter1 
+</code></pre></div></td></tr></table></div>
+represents a parameter of a method, identified by its index.</p>
+<h2 id="good-to-know">Good to know</h2>
+<p>A lot of the SootUp APIs return the <code>Value</code> Interface. To determine and handle its subtypes you can make use of instanceof.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">instanceOf &amp; If-Else</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assignStmt</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">op</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Local</span><span class="p">){</span>
+<span class="w">        </span><span class="c1">// found a Local</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="p">(</span><span class="n">stmt</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Constant</span><span class="p">){</span>
+<span class="w">        </span><span class="c1">// found a Constant</span>
+<span class="w">        </span><span class="p">...</span>
+<span class="w">    </span><span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">...</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of <code>AbstractValueVisitor</code>.
+Just subclass the methods to the respective <code>Value</code>s you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">StmtVisitor</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">Value</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">assignStmt</span><span class="p">.</span><span class="na">getRightOp</span><span class="p">()</span><span class="w"> </span><span class="p">;</span>
+<span class="w">    </span><span class="n">AbstractValueVisitor</span><span class="w"> </span><span class="n">visitor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AbstractValueVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">intConstantCounter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="nd">@Override</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">caseConstant</span><span class="p">(</span><span class="nd">@Nonnull</span><span class="w"> </span><span class="n">Constant</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">intConstantCounter</span><span class="o">++</span><span class="p">;</span>
+<span class="w">            </span><span class="n">setResult</span><span class="p">(</span><span class="n">intConstantCounter</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">op</span><span class="p">.</span><span class="na">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">amountOfIfStmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">visitor</span><span class="p">.</span><span class="na">getResult</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>If you only need a visitor for a subset of Value, you can consider ImmediateVisitor, ConstantVisitor, ExprVisitor, RefVisitor.
+Sidenote: Of course its possible can create a subclass instead of an anonymous class.</p>
+</div>
+</div>
+</div>
 
 
 
