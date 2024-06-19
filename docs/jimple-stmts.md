@@ -1194,7 +1194,7 @@ A lot of the SootUp APIs return the `Stmt` Interface. To determine and handle it
     ```
 
 But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of `AbstractStmtVisitor`.
-Just subclass the methods to the respective Stmts you need to handle. 
+Just subclass the methods to the respective Stmts you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.
 === "StmtVisitor"
     ```java
     
@@ -1214,3 +1214,5 @@ Just subclass the methods to the respective Stmts you need to handle.
         
         int amountOfIfStmts = visitor.getResult();
     ```
+    
+    Sidenote: Of course its possible can create a subclass instead of an anonymous class.

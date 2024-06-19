@@ -4,62 +4,61 @@ repo_url: https://github.com/soot-oss/SootUp/
 edit_uri: edit/develop/docs/
 
 nav:
-    - Getting Started:
-        - Installation: installation.md
-        - First Steps: getting-started.md
-        - Possible Analysis Input: analysisinputlocations.md
-        - Examples: examples.md
+  - Getting Started:
+      - Installation: installation.md
+      - First Steps: getting-started.md
+      - Analysis Input: analysisinputlocations.md
+      - Examples: examples.md
 
-    - Basics:
+  - Basics:
       - Jimple IR: jimple.md
       - Jimple Body: jimple-body.md
       - Jimple Statements: jimple-stmts.md
       - Jimple Types: jimple-types.md
       - Jimple Values: jimple-values.md
 
-    - Advanced Topics:
+  - Advanced Topics:
       - BodyInterceptors: bodyinterceptors.md
       - Callgraphs: callgraphs.md
       - BuiltIn Analyses: builtin-analyses.md
 
-    - How to..:
+  - How to..:
       - Write a Dataflow analysis: write_analyses.md
       - Incorporate Pointer Analysis: qilin.md
-    #  - Modify a StmtGraph: mutable_stmtgraph.md
-    #  - Modify a View: mutable_view.md
-    #  - Implement a BodyInterceptor: body_interceptor.md
-    #  - Implement an AnalysisTool: write_analysis_tool.md
-    #  - From Prototype to Tool: tool_setup.md
+  #  - Modify a StmtGraph: mutable_stmtgraph.md
+  #  - Modify a View: mutable_view.md
+  #  - Implement a BodyInterceptor: body_interceptor.md
+  #  - Implement an AnalysisTool: write_analysis_tool.md
+  #  - From Prototype to Tool: tool_setup.md
 
-    - Misc & More information:
+  - Misc & More information:
       - Announcements: announcement.md
       - Design Decisions: whatsnew.md
       - Migration Help: migrating.md
       - Latest Javadoc: /SootUp/apidocs
       - Troubleshooting & FAQ: faq.md
-      # - Based on SootUp: tools.md
+    # - Based on SootUp: tools.md
 
 
 theme:
+  name: material
   logo: ./img/SootUpLogo.svg
   favicon: ./img/icon.svg
   palette:
     primary: custom
   custom_dir: ./docs/overrides
-  name: material
   features:
     - navigation.sections
 
+extra_css:
+  - css/customizetheme.css
+  - css/hint.min.css
 
 plugins:
   - tooltips
   - search
   - include:
       src_path: 'sootup.examples/src/test/java/sootup/examples'
-
-extra_css:
-  - css/customizetheme.css
-  - css/hint.min.css
 
 markdown_extensions:
   - pymdownx.highlight:

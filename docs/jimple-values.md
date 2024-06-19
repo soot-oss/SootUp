@@ -1,6 +1,6 @@
 # Jimple Values
 
-### Immediates
+### Immediate
 An `Immediate` has a [**given**]{as in constant or immutable} Type and consists of a Local ("a Variable", "Something that contains a Value") or a Constant ("Something that is a Value").
 
 #### Local
@@ -11,7 +11,7 @@ i0
 A Local is a variable and its scope is inside its method i.e. no referencing from outside a method.
 Values can be assigned to Locals via JIdentityStmt or JAssignStmt.
 
-=== "Jimple" 
+=== "Jimple"
 
     ```jimple
     public class target.exercise1.DemoClass extends java.lang.Object
@@ -178,3 +178,40 @@ i1 := @parameter1
 ```
 represents a parameter of a method, identified by its index.
 
+## Good to know
+A lot of the SootUp APIs return the `Value` Interface. To determine and handle its subtypes you can make use of instanceof.
+=== "instanceOf & If-Else"
+    ```java
+
+        Value op = assignStmt.getRightOp();
+        if(op instanceof Local){
+            // found a Local
+            ...
+        }else if(stmt instanceof Constant){
+            // found a Constant
+            ...
+        }else ...
+                    
+    ```
+
+But this could escalate to a huge if-else-tree - almost a forest. To mitigate such scenario you can implement a subclass of `AbstractValueVisitor`.
+Just subclass the methods to the respective `Value`s you need to handle. This is visitor acts like a switch-case, implemented via two dynamic calls.
+=== "StmtVisitor"
+    ```java
+
+        Value op = assignStmt.getRightOp() ;
+        AbstractValueVisitor visitor = new AbstractValueVisitor<Integer>() {
+            private int intConstantCounter = 0;
+            @Override
+            public void caseConstant(@Nonnull Constant c) {
+                intConstantCounter++;
+                setResult(intConstantCounter);
+            }
+        };
+
+        op.accept(visitor);
+        int amountOfIfStmts = visitor.getResult();
+    ```
+
+    If you only need a visitor for a subset of Value, you can consider ImmediateVisitor, ConstantVisitor, ExprVisitor, RefVisitor.
+    Sidenote: Of course its possible can create a subclass instead of an anonymous class.
