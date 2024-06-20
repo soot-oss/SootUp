@@ -679,27 +679,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   @Nonnull
   public Collection<Stmt> getLabeledStmts() {
-    Set<Stmt> stmtList = new HashSet<>();
-    for (Stmt stmt : getNodes()) {
-      if (stmt instanceof BranchingStmt) {
-        if (stmt instanceof JIfStmt) {
-          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
-        } else if (stmt instanceof JGotoStmt) {
-          // [ms] bounds are validated in Body if its a valid StmtGraph
-          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
-        } else if (stmt instanceof JSwitchStmt) {
-          stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
-        }
-      }
-    }
-
-    for (Trap trap : buildTraps()) {
-      stmtList.add(trap.getBeginStmt());
-      stmtList.add(trap.getEndStmt());
-      stmtList.add(trap.getHandlerStmt());
-    }
-
-    return stmtList;
+    return getBlocks().stream().map(BasicBlock::getHead).collect(Collectors.toSet());
   }
 
   @Override
