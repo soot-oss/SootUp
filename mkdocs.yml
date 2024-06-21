@@ -7,7 +7,7 @@ nav:
   - Getting Started:
       - Installation: installation.md
       - First Steps: getting-started.md
-      - Analysis Input: analysisinputlocations.md
+      - Analysis Input: analysisinput.md
       - Examples: examples.md
 
   - Basics:
@@ -19,6 +19,7 @@ nav:
 
   - Advanced Topics:
       - BodyInterceptors: bodyinterceptors.md
+      - TypeHierarchy: typehierarchy.md
       - Callgraphs: callgraphs.md
       - BuiltIn Analyses: builtin-analyses.md
 
