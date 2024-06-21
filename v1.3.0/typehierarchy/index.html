@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://soot-oss.github.io/SootUp/doc_typehierarchy_preview/whatsnew/">
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/doc_typehierarchy_preview/typehierarchy/">
       
       
-        <link rel="prev" href="../announcement/">
+        <link rel="prev" href="../bodyinterceptors/">
       
       
-        <link rel="next" href="../migrating/">
+        <link rel="next" href="../callgraphs/">
       
       
       <link rel="icon" href="../img/icon.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Design Decisions - </title>
+        <title>TypeHierarchy - </title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#whats-new-in-sootup" class="md-skip">
+        <a href="#typehierarchy" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Design Decisions
+              TypeHierarchy
             
           </span>
         </div>
@@ -511,8 +511,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -522,11 +524,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -540,7 +542,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Advanced Topics
@@ -572,10 +574,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../typehierarchy/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    TypeHierarchy
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -584,6 +606,77 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-typehierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating TypeHierarchy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-javaclasstype" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a JavaClassType
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-the-typehierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query the TypeHierarchy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query the TypeHierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -731,8 +824,6 @@
       
   
   
-    
-  
   
   
     
@@ -744,11 +835,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
@@ -762,7 +853,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Misc & More information
@@ -794,30 +885,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Design Decisions
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -826,95 +897,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#library-by-default" class="md-nav__link">
-    <span class="md-ellipsis">
-      Library by default
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modular-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modular Architecture
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#no-more-singletons" class="md-nav__link">
-    <span class="md-ellipsis">
-      No More Singletons
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#immutable-by-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Immutable by Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Immutable by Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#withers-instead-of-setters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Withers instead of Setters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#intermediate-representation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Intermediate Representation
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1017,55 +999,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#library-by-default" class="md-nav__link">
+  <a href="#creating-typehierarchy" class="md-nav__link">
     <span class="md-ellipsis">
-      Library by default
+      Creating TypeHierarchy
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modular-architecture" class="md-nav__link">
+  <a href="#create-a-javaclasstype" class="md-nav__link">
     <span class="md-ellipsis">
-      Modular Architecture
+      Create a JavaClassType
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#no-more-singletons" class="md-nav__link">
+  <a href="#query-the-typehierarchy" class="md-nav__link">
     <span class="md-ellipsis">
-      No More Singletons
+      Query the TypeHierarchy
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#immutable-by-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Immutable by Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Immutable by Design">
+    <nav class="md-nav" aria-label="Query the TypeHierarchy">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#withers-instead-of-setters" class="md-nav__link">
+  <a href="#classes" class="md-nav__link">
     <span class="md-ellipsis">
-      Withers instead of Setters
+      Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
     </span>
   </a>
   
@@ -1073,15 +1046,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#intermediate-representation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Intermediate Representation
-    </span>
-  </a>
   
 </li>
       
@@ -1103,40 +1067,28 @@
   
 
 
-<h1 id="whats-new-in-sootup">What's new in SootUp?</h1>
-<h3 id="library-by-default">Library by default</h3>
-<p>While Soot is a library and a stand-alone command-line application. SootUp, on the other hand, is designed to be a core library.
-It assumes that it is embedded in a client application that owns the thread of control.
-It can be extended with a command-line interface, included in other software projects as a library, or integrated into IDEs with <a href="https://github.com/swissiety/Jimplelsp">JimpleLSP</a>.</p>
-<h3 id="modular-architecture">Modular Architecture</h3>
-<p>SootUp has a modular architecture, which enables its clients to include only the necessary functionality to their applications.</p>
-<ul>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.core">core module</a> contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core">java.core module</a> contains parts that are essential for analyzing Java code.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode">java.bytecode module</a> contains the functionality that is necessary for taking as input java bytecode.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode">java.sourcecode module</a> contains the functionality that is necessary for taking as input java source code. 
-<strong>Beware: The sourcecodefrontend is currently unable to handle inputs with exceptions (try/catch/finally)!</strong> </li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph">callgraph module</a> contains implementations of common call graph construction algorithms such as <strong>CHA</strong>, <strong>RTA</strong>. A reimplementation of <strong>Spark</strong> pointer analysis framework is in progress.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser">jimple.parser module</a> contains the functionalty that is necessary for taking as input .jimple files.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis">analysis module</a> enables performing interprocedural dataflow analyses.</li>
-</ul>
-<h3 id="no-more-singletons">No More Singletons</h3>
-<p>Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
-SootUp does not make use of singletons such the <code>Scene</code> class in the old Soot any more. It enables analyzing multiple programs simultaneously.</p>
-<h3 id="new-source-code-frontend">New Source Code Frontend</h3>
-<p>Soot's JastAdd-based java frontend is not maintained anymore.
-In SootUp, we use WALA's well-maintained source code frontend, which will not only allow Soot to analyze Java source code, but also JavaScript and Python.</p>
-<h3 id="immutable-by-design">Immutable by Design</h3>
-<p>SootUp has been designed with the goal of immutability in mind.
-This makes sharing objects between several entities easier, because there is no need to worry about unintended changes to other entities.</p>
-<h4 id="withers-instead-of-setters">Withers instead of Setters</h4>
-<p>Due to the goal of immutability, many classes do not have setters anymore.
-For example, a <code>Body</code> does not have a method <code>setStmts(List&lt;Stmt&gt; stmts)</code>.
-Instead, a method called <code>withStmts(List&lt;Stmt&gt; stmts)</code> has been added.
-This does not modify the original instance, but returns a copy of the Body but with the provided <code>stmts</code> in its instance.
-This concept of so-called <code>with</code>-ers can be found all throughout SootUp.</p>
-<div class="admonition example">
-<p class="admonition-title">A simplified example</p>
+<h1 id="typehierarchy">TypeHierarchy</h1>
+<p>The TypeHierarchy models the relationship of Classes or Interfaces of a OOP program.</p>
+<h2 id="creating-typehierarchy">Creating TypeHierarchy</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">SootUp</label><label for="__tabbed_1_2">Soot</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">cpString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;src/test/resources/Callgraph/binary&quot;</span><span class="p">;</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">AnalysisInputLocation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inputLocations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="p">();</span>
+<span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">JavaClassPathAnalysisInputLocation</span><span class="p">(</span><span class="n">cpStr</span><span class="p">));</span>
+<span class="n">inputLocations</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRTJarAnalysisInputLocation</span><span class="p">());</span>
+
+<span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocations</span><span class="p">);</span>
+<span class="n">TypeHierarchy</span><span class="w"> </span><span class="n">typehierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getTypeHierarchy</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
@@ -1148,22 +1100,98 @@ This concept of so-called <code>with</code>-ers can be found all throughout Soot
 <span class="normal"> 9</span>
 <span class="normal">10</span>
 <span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">class</span> <span class="nc">Body</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">;</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">;</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;target&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;test-classes&quot;</span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;lib&quot;</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">&quot;rt.jar&quot;</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">Body</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmts</span><span class="p">;</span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">locals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locals</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span><span class="w">  </span>
+<span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">exercise1</span><span class="p">.</span><span class="na">Hierarchy</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
+<span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_whole_program</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_soot_classpath</span><span class="p">(</span><span class="n">sootCp</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_no_bodies_for_excluded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">process_dir</span><span class="p">();</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_allow_phantom_refs</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">setPhaseOption</span><span class="p">(</span><span class="s">&quot;jb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;use-original-names:true&quot;</span><span class="p">);</span>
+<span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_prepend_classpath</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="n">SootClass</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">forceResolve</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">,</span><span class="w"> </span><span class="n">SootClass</span><span class="p">.</span><span class="na">BODIES</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span>
+<span class="w">    </span><span class="n">c</span><span class="p">.</span><span class="na">setApplicationClass</span><span class="p">();</span>
+<span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">loadNecessaryClasses</span><span class="p">();</span>
 
-<span class="w">  </span><span class="n">Body</span><span class="w"> </span><span class="nf">withStmts</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Body</span><span class="p">(</span><span class="n">stmts</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">locals</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="n">Body</span><span class="w"> </span><span class="nf">withLocals</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Body</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">stmts</span><span class="p">,</span><span class="w"> </span><span class="n">locals</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-<span class="p">}</span>
+<span class="n">Hierarchy</span><span class="w"> </span><span class="n">hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Hierarchy</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
-<h3 id="intermediate-representation">Intermediate Representation</h3>
-<p><a href="../jimple/">Jimple</a> is the only intermediate representation (IR) in SootUp. We modified it slightly to be able to accommodate different programming languages in the future.</p>
+</div>
+</div>
+<h2 id="create-a-javaclasstype">Create a JavaClassType</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">SootUp</label><label for="__tabbed_2_2">Soot</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.A&quot;</span><span class="p">);</span>
+<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.B&quot;</span><span class="p">);</span>
+<span class="n">JavaClassType</span><span class="w"> </span><span class="n">classTypeC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;packageName.C&quot;</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;packageNameA.A&quot;</span><span class="p">;</span>
+<span class="n">SootClass</span><span class="w"> </span><span class="n">methodA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Scene</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">getSootClass</span><span class="p">(</span><span class="n">targetTestClassName</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<h2 id="query-the-typehierarchy">Query the TypeHierarchy</h2>
+<h3 id="classes">Classes</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="c1">// if the assertion fails, the following methods will throw an Exception (you don&#39;t have to call it - it&#39;s just to illustrate the assumption)</span>
+<span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">superclassOf</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">subclassesOf</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">isSubtypeOf</span><span class="p">(</span><span class="n">classTypeA</span><span class="p">,</span><span class="w"> </span><span class="n">classTypeB</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="interfaces">Interfaces</h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">JavaClassType</span><span class="w"> </span><span class="n">iterableInterface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="p">.</span><span class="na">getIdentifierFactory</span><span class="p">().</span><span class="na">getClassType</span><span class="p">(</span><span class="s">&quot;java.lang.Iterable&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// if any of the assertions fail, the following methods will throw an Exception (you don&#39;t have to call these - it&#39;s just to illustrate the assumptions)</span>
+<span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+<span class="w">    </span><span class="k">assert</span><span class="w"> </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">isInterface</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// transitive relations as well</span>
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">implementedInterfacesOf</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">implementersOf</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// only the direct related relations</span>
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">directlyImplementedInterfacesOf</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+<span class="w">    </span><span class="n">typehierarchy</span><span class="p">.</span><span class="na">directlyExtendedInterfacesOf</span><span class="p">(</span><span class="n">iterableInterface</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
 
 
 

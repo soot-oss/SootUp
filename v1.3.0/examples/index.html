@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://soot-oss.github.io/SootUp/doc_typehierarchy_preview/whatsnew/">
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/doc_typehierarchy_preview/examples/">
       
       
-        <link rel="prev" href="../announcement/">
+        <link rel="prev" href="../analysisinput/">
       
       
-        <link rel="next" href="../migrating/">
+        <link rel="next" href="../jimple/">
       
       
       <link rel="icon" href="../img/icon.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Design Decisions - </title>
+        <title>Examples - </title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#whats-new-in-sootup" class="md-skip">
+        <a href="#sootup-example-projects" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Design Decisions
+              Examples
             
           </span>
         </div>
@@ -228,8 +228,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -239,11 +241,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
         
           
           <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
@@ -257,7 +259,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             Getting Started
@@ -331,10 +333,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -343,6 +354,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -731,8 +743,6 @@
       
   
   
-    
-  
   
   
     
@@ -744,11 +754,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
@@ -762,7 +772,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Misc & More information
@@ -794,30 +804,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Design Decisions
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../whatsnew/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -826,95 +816,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#library-by-default" class="md-nav__link">
-    <span class="md-ellipsis">
-      Library by default
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modular-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modular Architecture
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#no-more-singletons" class="md-nav__link">
-    <span class="md-ellipsis">
-      No More Singletons
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#immutable-by-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Immutable by Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Immutable by Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#withers-instead-of-setters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Withers instead of Setters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#intermediate-representation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Intermediate Representation
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1010,83 +911,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#library-by-default" class="md-nav__link">
-    <span class="md-ellipsis">
-      Library by default
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#modular-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modular Architecture
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#no-more-singletons" class="md-nav__link">
-    <span class="md-ellipsis">
-      No More Singletons
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#new-source-code-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Source Code Frontend
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#immutable-by-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      Immutable by Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Immutable by Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#withers-instead-of-setters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Withers instead of Setters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#intermediate-representation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Intermediate Representation
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1103,67 +927,95 @@
   
 
 
-<h1 id="whats-new-in-sootup">What's new in SootUp?</h1>
-<h3 id="library-by-default">Library by default</h3>
-<p>While Soot is a library and a stand-alone command-line application. SootUp, on the other hand, is designed to be a core library.
-It assumes that it is embedded in a client application that owns the thread of control.
-It can be extended with a command-line interface, included in other software projects as a library, or integrated into IDEs with <a href="https://github.com/swissiety/Jimplelsp">JimpleLSP</a>.</p>
-<h3 id="modular-architecture">Modular Architecture</h3>
-<p>SootUp has a modular architecture, which enables its clients to include only the necessary functionality to their applications.</p>
+<h1 id="sootup-example-projects">SootUp Example projects</h1>
+<p>Some examples that use SootUp to get insights about a Java program.</p>
 <ul>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.core">core module</a> contains the core building blocks such as the jimple IR, control flow graphs, and frontend interfaces. The rest of the modules build on the core module.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.core">java.core module</a> contains parts that are essential for analyzing Java code.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.bytecode">java.bytecode module</a> contains the functionality that is necessary for taking as input java bytecode.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.java.sourcecode">java.sourcecode module</a> contains the functionality that is necessary for taking as input java source code. 
-<strong>Beware: The sourcecodefrontend is currently unable to handle inputs with exceptions (try/catch/finally)!</strong> </li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.callgraph">callgraph module</a> contains implementations of common call graph construction algorithms such as <strong>CHA</strong>, <strong>RTA</strong>. A reimplementation of <strong>Spark</strong> pointer analysis framework is in progress.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.jimple.parser">jimple.parser module</a> contains the functionalty that is necessary for taking as input .jimple files.</li>
-<li><a href="https://github.com/soot-oss/SootUp/tree/develop/sootup.analysis">analysis module</a> enables performing interprocedural dataflow analyses.</li>
+<li>Basic setup <a href="https://github.com/soot-oss/SootUp-Examples/blob/main/BasicSetupExample/src/main/java/sootup/examples/BasicSetup.java">Example</a></li>
+<li>Configure a BodyInterceptor <a href="https://github.com/soot-oss/SootUp-Examples/blob/main/BodyInterceptorExample/src/main/java/sootup/examples/BodyInterceptor.java">Example</a></li>
+<li>CallGraph <a href="https://github.com/soot-oss/SootUp-Examples/blob/main/CallgraphExample/src/main/java/sootup/examples/CallgraphExample.java">Example</a></li>
+<li>Class Hierarchy Algoritm <a href="https://github.com/soot-oss/SootUp-Examples/blob/main/ClassHierarchyExample/src/main/java/sootup/examples/ClassHierarchy.java">Example</a></li>
+<li>Replace a SootMethod of a SootClass <a href="https://github.com/soot-oss/SootUp-Examples/blob/main/MutatingSootClassExample/src/main/java/sootup/examples/MutatingSootClass.java">Example</a></li>
 </ul>
-<h3 id="no-more-singletons">No More Singletons</h3>
-<p>Singletons offer a single view of a single program version, which makes it impossible to analyze multiple programs or multiple versions of the same program.
-SootUp does not make use of singletons such the <code>Scene</code> class in the old Soot any more. It enables analyzing multiple programs simultaneously.</p>
-<h3 id="new-source-code-frontend">New Source Code Frontend</h3>
-<p>Soot's JastAdd-based java frontend is not maintained anymore.
-In SootUp, we use WALA's well-maintained source code frontend, which will not only allow Soot to analyze Java source code, but also JavaScript and Python.</p>
-<h3 id="immutable-by-design">Immutable by Design</h3>
-<p>SootUp has been designed with the goal of immutability in mind.
-This makes sharing objects between several entities easier, because there is no need to worry about unintended changes to other entities.</p>
-<h4 id="withers-instead-of-setters">Withers instead of Setters</h4>
-<p>Due to the goal of immutability, many classes do not have setters anymore.
-For example, a <code>Body</code> does not have a method <code>setStmts(List&lt;Stmt&gt; stmts)</code>.
-Instead, a method called <code>withStmts(List&lt;Stmt&gt; stmts)</code> has been added.
-This does not modify the original instance, but returns a copy of the Body but with the provided <code>stmts</code> in its instance.
-This concept of so-called <code>with</code>-ers can be found all throughout SootUp.</p>
-<div class="admonition example">
-<p class="admonition-title">A simplified example</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">class</span> <span class="nc">Body</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">;</span>
-<span class="w">  </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">Body</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">stmts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmts</span><span class="p">;</span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">locals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locals</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span><span class="w">  </span>
-
-<span class="w">  </span><span class="n">Body</span><span class="w"> </span><span class="nf">withStmts</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stmt</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stmts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Body</span><span class="p">(</span><span class="n">stmts</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">locals</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="n">Body</span><span class="w"> </span><span class="nf">withLocals</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Local</span><span class="o">&gt;</span><span class="w"> </span><span class="n">locals</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Body</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">stmts</span><span class="p">,</span><span class="w"> </span><span class="n">locals</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div>
+<div class="admonition info">
+<p class="admonition-title">Download</p>
+<p>The Examples can be cloned or downloaded from our <a href="https://github.com/soot-oss/SootUp-Examples.git">Example Repository</a>.</p>
 </div>
-<h3 id="intermediate-representation">Intermediate Representation</h3>
-<p><a href="../jimple/">Jimple</a> is the only intermediate representation (IR) in SootUp. We modified it slightly to be able to accommodate different programming languages in the future.</p>
+<!--
+We have included all the five projects in 5 different branches under SootUp-Examples with detailed explanation about the project.
+
+### BasicSetupExample
+1. package sootup.examples; - defines the package name for the Java class.
+2. import statement - defines various classes and interfaces from different packages that the program uses.
+3. public class BasicSetup - declares a public class named 'BasicSetup' which is the main class for this program.
+4. Then we have created a main method which is the entry point of the progrram
+5. Path pathToBinary object pointing to a directory that contains the binary files ie class files to be analyzed and Paths.get is a static method that converts string path to a 'Path' object.
+6. AnalysisInputLocation object specifying where SootUp should look for classes to analyze.
+7. View object is created for the project allowing the retrieal of classes from the specified input location. JavaView is specific implementation of View tailed for Java projects.
+8. The ClassType object is created for the class name 'HelloWorld'. This object represents the type of class to be analyzed.
+9. A MethodSignature object is created for the main method of the HelloWorld class. This signature specifies the method's return type (void) and its parameter types (a single parameter of type String[]).
+10. The if statment checks for the presences of the class 'HelloWorld'. If not it prints "Class not ffound!" and exits the program.
+11. Then it retrieves the SootClass object representing the HelloWorld class, assuming it is present.
+12. view.getMethod(methodSignature); - Attempts to retrieve the specified method from the project.
+13. The if statment after this, checks if the main method is present in the HelloWorld class. If not, it prints "Method not found!" and exits.
+14. Then the next statment retrieves the SootMethod object for the main method and prints its body, which is in Jimple, a simplified version of Java bytecode used by Soot for analysis and transformation.
+15. Then the next if condition checks if the method containts a specific statement called 'Hello World!'.
+
+### BodyInterceptor
+1. package sootup.examples; - defines the package name for the Java class.
+2. import statement - defines various classes and interfaces from different packages that the program uses.
+3. public class BodyInterceptor - declares a public class named "BodyInterceptor".
+4. Then we have created a main method in which is the entry point for the code.
+5. Then we have created an AnalysisInputLocation pointing to a directory with class files to be loaded. It specifies that the DeadAssignmentEliminator interceptor should be applied to these classes.
+6. Then created a View that initializes a JavaView with the specified inputLocation, allowing interaction with the classes for analysis.
+7. Then have created a ClassType and MethodSignature which is used for analysis. The signature contains method name, return type and parameters.
+8.  Then we check for the existence of the class and method in the given view.
+9. If they exist, a SootClass and SootMethod objects are used to retrieve the same.
+10. Then prints the body of the SootMethod object.
+11. Then we check if the interceptor worked.  ie here we check if the DeadAssignmentEliminator interceptor has successfully removed a specific assignment (l1 = 3. from the method's body. It does this by looking through all statements (JAssignStmt) in the method body and checking if the assignment is not                     present.
+12. Then it prints the result of the interceptor check.
+
+
+### CallGraphExample
+1. package sootup.examples; - defines the package name for the Java class.
+2. import statement - defines various classes and interfaces from different packages that the program uses.
+3. public class CallgraphExample  - declares a public class named "CallGraphExample".
+4. Then we have created a main method in which is the entry point for the code.
+5. List<AnalysisInputLocation> inputLocations creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis.
+6. Then we have provided towo inputLocations.add() - one for the project's class file directory and another for Java's runtime library (rt.jar).
+7. Then we have created a JavaView which is used for analysing the Java program.
+8. Then we have created two ClassType for two classes ie 'A' and 'B'. They are used to create a MethodSignature for a method that will be analysed.
+9. ViewTypeHierarchy  - then we have set up a type hierarchy from the provided view and prints the subclasses of class 'A'.
+10. Initializes a CallGraphAlgorithm using the ClassHierarchyAnalysisAlgorithm, which is a method for constructing call graphs.
+11. Then we creates a call graph by initialising the Class Hierarchy Analysis (cha) with the entry method signature.
+12. Prints information about calls from the entry method in the call graph.
+
+### ClassHierarchyExample
+1. package sootup.examples; - defines the package name for the Java class.
+2. import statement - defines various classes and interfaces from different packages that the program uses.
+3. public class ClassHierarchy - declares a public class named "ClassHierarchy".
+4. Then we have created a main method in which is the entry point for the code.
+5. Then creates a list of AnalysisInputLocation objects. These specify where Soot should look for Java class files for analysis. Two locations are added: one for the project's binary directory and another for the default Java runtime library (rt.jar).
+6. Initializes a JavaView object with the previously created input locations.
+7. Initializes a ViewTypeHierarchy object using the view. This object will be used to analyze the class hierarchy.
+8. Then we have created two ClassTypes. These lines get JavaClassType objects for classes "A" and "C". These types are used for further hierarchy analysis.
+9. Checks the direct subclasses of class "C". It verifies if all direct subclasses are "D" using two different methods: comparing class names and fully qualified names.
+10. Then prints a message based on whether all direct subtypes of "C" are correctly identified as "D".
+11. Retrieves and checks the superclasses of class "C". It then verifies if these superclasses include class "A" and java.lang.Object, printing a message based on the result.
+
+### MutatingSootClassExample
+1. package sootup.examples; - defines the package name for the Java class.
+2. import statement - defines various classes and interfaces from different packages that the program uses.
+3. public class MutatingSootClass - declares a public class named "MutatingSootClass".
+4. Then we have created a main method in which is the entry point for the code.
+5. First we have created an 'AnalysisInputLocation' which points to a directory which contains the class files to be analysed.
+6. Then we have created a JavaView which allos us to retrievet the classes.
+7. And also created a ClassType to get the class 'HelloWorld' and a method within that class ie main for analysis using MethodSignature.
+8. THen we are checking and retrieving the class and method.
+9. Then we retrives the existing body of the method and prints it. Then we create a new local variable to add it copy to the method body.
+10. Then we are overriding the method body and class. ie this lines creates new sources that overrides teh original method body and class. It replaces the old method in the class with the new method having the modified body.
+11. Prints the modified method body and checks if the new local variable (newLocal) exists in the modified method. Depending on the result, it prints a corresponding message.
+
+-->
 
 
 
