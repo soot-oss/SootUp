@@ -1,5 +1,10 @@
 [
   {
+    "version": "doc_typehierarchy_preview",
+    "title": "PR Preview doc_typehierarchy",
+    "aliases": []
+  },
+  {
     "version": "develop",
     "title": "develop",
     "aliases": []
