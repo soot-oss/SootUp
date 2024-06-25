@@ -1,5 +1,10 @@
 [
   {
+    "version": "qilin_preview",
+    "title": "PR Preview qilin",
+    "aliases": []
+  },
+  {
     "version": "doc_typehierarchy_preview",
     "title": "PR Preview doc_typehierarchy",
     "aliases": [],
