@@ -313,7 +313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysisinputlocations/" class="md-nav__link">
+      <a href="../analysisinput/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -559,6 +559,27 @@
   
   <span class="md-ellipsis">
     BodyInterceptors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typehierarchy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeHierarchy
   </span>
   
 
@@ -1017,7 +1038,6 @@
 
 
 <h1 id="incorporate-qilin-pointer-analysis">Incorporate Qilin Pointer Analysis</h1>
-<p>see <a href="https://github.com/QilinPTA/Qilin">QilinPTA</a>.</p>
 <h3 id="dependencies">Dependencies</h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
 <div class="tabbed-content">
@@ -1029,7 +1049,7 @@
 <span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>    &lt;dependency&gt;
         &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
         &lt;artifactId&gt;sootup.java.sourcecode&lt;/artifactId&gt;
-        &lt;version&gt;&lt;/version&gt;
+        &lt;version&gt;1.3.0&lt;/version&gt;
     &lt;/dependency&gt;
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1047,9 +1067,9 @@
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// just an example</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="n">PTAPattern</span><span class="w"> </span><span class="n">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">&quot;insens&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">);</span>
+<span class="w">    </span><span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">entrypoint</span><span class="p">);</span>
 <span class="w">    </span><span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
 </div>
@@ -1057,7 +1077,7 @@
 </div>
 <p>Users must specify the program's <code>View</code>, select a <code>PTAPattern</code>
 (indicating the desired types of pointer analyses to perform),
-and designate the <code>MAINCLASS</code> (serving as the entry point for the analysis).</p>
+and designate the <code>entrypoint</code> - which is serving as the entry point for the analysis.</p>
 <h3 id="how-to-use-pointer-analysis-results">How to use pointer analysis results</h3>
 <p>First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
@@ -1069,15 +1089,14 @@ and designate the <code>MAINCLASS</code> (serving as the entry point for the ana
 </code></pre></div></td></tr></table></div>
 <p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
 whether there is an object that exists in both of their points-to sets.</p>
-<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class.
-However, a similar functionality can be found
+<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class. However, a similar functionality can be found
 in <code>qilin.test.util.AliasAssertion</code> with the method:
 <code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>.
 This method allows users to check for potential aliasing between two values
 given a PTA instance.</p>
 <h3 id="a-full-list-of-point-analyses">A Full list of Point Analyses</h3>
-<p>Qilin's toolbox includes a rich set of pointer analyses, which are given below:</p>
-<p>Note that the symbol <em>k</em> used in the table should be replaced with a concrete small constant like 1 or 2.</p>
+<p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
+<p>Note that the symbol <strong>k</strong> used in the table should be replaced with a concrete small constant like 1 or 2.</p>
 <table>
 <thead>
 <tr>
@@ -1088,99 +1107,99 @@ given a PTA instance.</p>
 </thead>
 <tbody>
 <tr>
-<td>-pta=<em>insens</em></td>
+<td><strong>insens</strong></td>
 <td>Andersen's context-insensitive analysis</td>
-<td>https://link.springer.com/chapter/10.1007/3-540-36579-6_12</td>
+<td><a href="https://link.springer.com/chapter/10.1007/3-540-36579-6_12">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>c</td>
-<td><em>k</em>-callsite-sensitive pointer analysis (denoted <em>k</em>CFA).</td>
-<td>https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf</td>
+<td><strong>k</strong>c</td>
+<td><strong>k</strong>-callsite-sensitive pointer analysis (denoted <strong>k</strong>CFA).</td>
+<td><a href="https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>o</td>
-<td><em>k</em>-object-sensitive pointer analysis (denoted <em>k</em>OBJ).</td>
-<td>https://dl.acm.org/doi/abs/10.1145/1044834.1044835</td>
+<td><strong>k</strong>o</td>
+<td><strong>k</strong>-object-sensitive pointer analysis (denoted <strong>k</strong>OBJ).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1044834.1044835">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>t</td>
-<td><em>k</em>-type-sensitive pointer analysis (denoted <em>k</em>TYPE).</td>
-<td>https://dl.acm.org/doi/abs/10.1145/1926385.1926390</td>
+<td><strong>k</strong>t</td>
+<td><strong>k</strong>-type-sensitive pointer analysis (denoted <strong>k</strong>TYPE).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1926385.1926390">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>h</td>
-<td>hybrid <em>k</em>-object-sensitive pointer analysis.</td>
-<td>https://dl.acm.org/doi/10.1145/2499370.2462191</td>
+<td><strong>k</strong>h</td>
+<td>hybrid <strong>k</strong>-object-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>ht</td>
-<td>hybrid <em>k</em>-type-sensitive pointer analysis.</td>
-<td>https://dl.acm.org/doi/10.1145/2499370.2462191</td>
+<td><strong>k</strong>ht</td>
+<td>hybrid <strong>k</strong>-type-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=B-2o</td>
+<td>B-2o</td>
 <td>BEAN-guided 2OBJ. Only k=2 is supported.</td>
-<td>https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24</td>
+<td><a href="https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=D-2o</td>
+<td>D-2o</td>
 <td>Data-driven 2OBJ. Only k=2 is supported.</td>
-<td>https://dl.acm.org/doi/10.1145/3133924</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=D-2c</td>
+<td>D-2c</td>
 <td>Data-driven 2CFA. Only k=2 is supported.</td>
-<td>https://dl.acm.org/doi/10.1145/3133924</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=M-<em>k</em>o</td>
-<td>MAHJONG-guided <em>k</em>OBJ.</td>
-<td>https://dl.acm.org/doi/10.1145/3062341.3062360</td>
+<td>M-<strong>k</strong>o</td>
+<td>MAHJONG-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=M-<em>k</em>c</td>
-<td>MAHJONG-guided <em>k</em>CFA.</td>
-<td>https://dl.acm.org/doi/10.1145/3062341.3062360</td>
+<td>M-<strong>k</strong>c</td>
+<td>MAHJONG-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=E-<em>k</em>o</td>
-<td>EAGLE-guided <em>k</em>OBJ.</td>
-<td>https://dl.acm.org/doi/10.1145/3360574</td>
+<td>E-<strong>k</strong>o</td>
+<td>EAGLE-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3360574">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=T-<em>k</em>o</td>
-<td>TURNER-guided <em>k</em>OBJ.</td>
-<td>https://drops.dagstuhl.de/opus/volltexte/2021/14059/</td>
+<td>T-<strong>k</strong>o</td>
+<td>TURNER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://drops.dagstuhl.de/opus/volltexte/2021/14059/">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=Z-<em>k</em>o</td>
-<td>ZIPPER-guided <em>k</em>OBJ.</td>
-<td>https://dl.acm.org/doi/10.1145/3276511</td>
+<td>Z-<strong>k</strong>o</td>
+<td>ZIPPER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=Z-<em>k</em>c</td>
-<td>ZIPPER-guided <em>k</em>CFA.</td>
-<td>https://dl.acm.org/doi/10.1145/3276511</td>
+<td>Z-<strong>k</strong>c</td>
+<td>ZIPPER-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=Z-<em>k</em>o -cd</td>
-<td>The context debloated version of ZIPPER-guided <em>k</em>OBJ.</td>
-<td>https://doi.org/10.1109/ASE51524.2021.9678880</td>
+<td>Z-<strong>k</strong>o -cd</td>
+<td>The context debloated version of ZIPPER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>o -cd -cda=CONCH</td>
-<td>The context debloated version of <em>k</em>OBJ using Conch.</td>
-<td>https://doi.org/10.1109/ASE51524.2021.9678880</td>
+<td><strong>k</strong>o -cd -cda=CONCH</td>
+<td>The context debloated version of <strong>k</strong>OBJ using Conch.</td>
+<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=<em>k</em>o -cd -cda=DEBLOATERX</td>
-<td>The context debloated version of <em>k</em>OBJ using DebloaterX.</td>
-<td>https://dl.acm.org/doi/10.1145/3622832</td>
+<td><strong>k</strong>o -cd -cda=DEBLOATERX</td>
+<td>The context debloated version of <strong>k</strong>OBJ using DebloaterX.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3622832">Paper</a></td>
 </tr>
 <tr>
-<td>-pta=s-<em>k</em>c</td>
-<td>SELECTX-guided <em>k</em>CFA.</td>
-<td>https://doi.org/10.1007/978-3-030-88806-0_13</td>
+<td>s-<strong>k</strong>c</td>
+<td>SELECTX-guided <strong>k</strong>CFA.</td>
+<td><a href="https://doi.org/10.1007/978-3-030-88806-0_13">Paper</a></td>
 </tr>
 </tbody>
 </table>

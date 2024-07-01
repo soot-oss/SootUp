@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://soot-oss.github.io/SootUp/qilin_preview/callgraphs/">
       
       
-        <link rel="prev" href="../bodyinterceptors/">
+        <link rel="prev" href="../typehierarchy/">
       
       
         <link rel="next" href="../builtin-analyses/">
@@ -313,7 +313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysisinputlocations/" class="md-nav__link">
+      <a href="../analysisinput/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -574,6 +574,27 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../typehierarchy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeHierarchy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -653,15 +674,6 @@
   <a href="#rapid-type-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       Rapid Type Analysis
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#variable-type-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      Variable Type Analysis
     </span>
   </a>
   
@@ -1017,15 +1029,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#variable-type-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      Variable Type Analysis
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#qilin-pointer-analysis" class="md-nav__link">
     <span class="md-ellipsis">
       Qilin Pointer Analysis
@@ -1091,10 +1094,10 @@ Below, we show how to create a type hierarchy:</p>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">exercise1</span><span class="p">.</span><span class="na">Hierarchy</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
-<span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
-<span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">);</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getProperty</span><span class="p">(</span><span class="s">&quot;user.dir&quot;</span><span class="p">);</span>
 <span class="n">String</span><span class="w"> </span><span class="n">sootCp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;target&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;test-classes&quot;</span><span class="o">+</span><span class="w"> </span><span class="n">File</span><span class="p">.</span><span class="na">pathSeparator</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;lib&quot;</span><span class="o">+</span><span class="n">File</span><span class="p">.</span><span class="na">separator</span><span class="o">+</span><span class="s">&quot;rt.jar&quot;</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">targetTestClassName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="na">exercise1</span><span class="p">.</span><span class="na">Hierarchy</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getName</span><span class="p">();</span>
+<span class="n">G</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_whole_program</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_soot_classpath</span><span class="p">(</span><span class="n">sootCp</span><span class="p">);</span>
 <span class="n">Options</span><span class="p">.</span><span class="na">v</span><span class="p">().</span><span class="na">set_no_bodies_for_excluded</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
@@ -1113,7 +1116,7 @@ Below, we show how to create a type hierarchy:</p>
 </div>
 </div>
 <h2 id="defining-an-entry-method">Defining an Entry Method</h2>
-<p>All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:</p>
+<p>All call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">SootUp (performant)</label><label for="__tabbed_2_2">SootUp (alternative)</label><label for="__tabbed_2_3">Soot</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1242,28 +1245,32 @@ You can construct a call graph with RTA as follows:</p>
 </div>
 </div>
 </div>
-<h2 id="variable-type-analysis">Variable Type Analysis</h2>
-<p>(<strong>WIP!</strong>)</p>
-<p>Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
-When considering assignments, we usually need to consider <strong>pointer</strong> (points-to) relationship.</p>
-<div class="admonition info">
-<p class="admonition-title">WIP</p>
-<p>VTA algorithm will be implemented using the <a href="https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf">Spark</a> pointer analysis framework.
-A reimplementation of Spark in SootUp is currently under development.</p>
-</div>
-<p>Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">SootUp</label><label for="__tabbed_5_2">Soot</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<!--
+## Variable Type Analysis
+(**WIP!**)
+
+Variable Type Analysis (VTA) algorithm further refines the call graph that the RTA constructs. It refines RTA by considering only the assigned instantiations of the implementers of an interface, when resolving a method call on an interface.
+When considering assignments, we usually need to consider **pointer** (points-to) relationship.
+
+!!! info "WIP"
+
+    VTA algorithm will be implemented using the [Spark](https://plg.uwaterloo.ca/~olhotak/pubs/thesis-olhotak-msc.pdf) pointer analysis framework.
+    A reimplementation of Spark in SootUp is currently under development.
+
+Spark requires an initial call graph to begin with. You can use one of the call graphs that we have constructed above. You can construct a call graph with VTA as follows:
+
+=== "SootUp"
+
+    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Spark</span><span class="w"> </span><span class="n">spark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Spark</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">callGraph</span><span class="p">).</span><span class="na">vta</span><span class="p">(</span><span class="kc">true</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
 <span class="n">spark</span><span class="p">.</span><span class="na">analyze</span><span class="p">();</span>
 <span class="n">CallGraph</span><span class="w"> </span><span class="n">vtaCAllGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spark</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+
+=== "Soot"
+
+    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
 <span class="normal"> 3</span>
 <span class="normal"> 4</span>
@@ -1289,9 +1296,8 @@ A reimplementation of Spark in SootUp is currently under development.</p>
 <span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">src</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; may call &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tgt</span><span class="p">);</span>
 <span class="p">}</span><span class="w">    </span>
 </code></pre></div></td></tr></table></div>
-</div>
-</div>
-</div>
+
+-->
 <h2 id="qilin-pointer-analysis">Qilin Pointer Analysis</h2>
 <p>Qilin builds a call graph on the fly with the pointer analysis.
 You can construct a call graph with Qilin as follows:</p>
