@@ -21,10 +21,10 @@ Below, we show how to create a type hierarchy:
 === "Soot"
 
     ```java
-    String targetTestClassName = target.exercise1.Hierarchy.class.getName();
-    G.reset();
     String userdir = System.getProperty("user.dir");
     String sootCp = userdir + File.separator + "target" + File.separator + "test-classes"+ File.pathSeparator + "lib"+File.separator+"rt.jar";
+    String targetTestClassName = target.exercise1.Hierarchy.class.getName();
+    G.reset();
     Options.v().set_whole_program(true);
     Options.v().set_soot_classpath(sootCp);
     Options.v().set_no_bodies_for_excluded(true);
@@ -42,7 +42,7 @@ Below, we show how to create a type hierarchy:
     ```
 
 ## Defining an Entry Method
-All the call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
+All call graph construction algorithms require an entry method to start with. In java application, you usually define the main method. However, it is possible to define arbitrary entry methods depending on your needs. Below, we show how to define such an entry method:
 
 === "SootUp (performant)"
 
@@ -136,6 +136,7 @@ You can construct a call graph with RTA as follows:
     }  
     ```
 
+<!--
 ## Variable Type Analysis
 (**WIP!**)
 
@@ -175,3 +176,4 @@ Spark requires an initial call graph to begin with. You can use one of the call 
     }    
     ```
 
+-->

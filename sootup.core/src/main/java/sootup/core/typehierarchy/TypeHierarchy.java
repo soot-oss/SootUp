@@ -75,6 +75,7 @@ public interface TypeHierarchy {
    * For an interface type, this does the same as {@link #implementersOf(ClassType)}. For a class
    * type, this does the same as {@link #subclassesOf(ClassType)}.
    */
+  // TODO: [ms] check! not sure this method makes sense in the interface..
   @Nonnull
   Stream<ClassType> subtypesOf(@Nonnull ClassType type);
 
