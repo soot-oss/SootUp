@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/builtin-analyses/">
+        <link rel="canonical" href="https://soot-oss.github.io/SootUp/develop/analysisinput/">
       
       
-        <link rel="prev" href="../callgraphs/">
+        <link rel="prev" href="../getting-started/">
       
       
-        <link rel="next" href="../write_analyses/">
+        <link rel="next" href="../examples/">
       
       
       <link rel="icon" href="../img/icon.svg">
@@ -22,7 +22,7 @@
     
     
       
-        <title>BuiltIn Analyses - </title>
+        <title>Analysis Input - </title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#builtin-analyses" class="md-skip">
+        <a href="#analysis-input" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              BuiltIn Analyses
+              Analysis Input
             
           </span>
         </div>
@@ -228,8 +228,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -239,11 +241,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
         
           
           <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
@@ -257,7 +259,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             Getting Started
@@ -310,10 +312,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../analysisinput/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Analysis Input
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -322,6 +344,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#java-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java Runtime
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#java-bytecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java Bytecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#java-sourcecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java Sourcecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jimple" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jimple
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-bytecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Bytecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#java-cli-arguments-to-configure-sootup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java cli arguments to configure SootUp
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -511,8 +607,6 @@
       
   
   
-    
-  
   
   
     
@@ -524,11 +618,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -542,7 +636,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Advanced Topics
@@ -616,30 +710,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    BuiltIn Analyses
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../builtin-analyses/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -648,44 +722,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#locallivenessanalyser" class="md-nav__link">
-    <span class="md-ellipsis">
-      LocalLivenessAnalyser
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dominancefinder" class="md-nav__link">
-    <span class="md-ellipsis">
-      DominanceFinder
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -966,18 +1002,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#locallivenessanalyser" class="md-nav__link">
+  <a href="#java-runtime" class="md-nav__link">
     <span class="md-ellipsis">
-      LocalLivenessAnalyser
+      Java Runtime
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#dominancefinder" class="md-nav__link">
+  <a href="#java-bytecode" class="md-nav__link">
     <span class="md-ellipsis">
-      DominanceFinder
+      Java Bytecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#java-sourcecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java Sourcecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jimple" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jimple
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-bytecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Bytecode
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#java-cli-arguments-to-configure-sootup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Java cli arguments to configure SootUp
     </span>
   </a>
   
@@ -1001,17 +1073,42 @@
   
 
 
-<h1 id="builtin-analyses">BuiltIn Analyses</h1>
-<p>More to come!</p>
-<h3 id="locallivenessanalyser">LocalLivenessAnalyser</h3>
-<p>LocalLivenessAnalyser is used for querying for the list of live local variables before and after a given <code>Stmt</code>.</p>
-<p>Example:</p>
-<p><img alt="LocalLiveness Example" src="../assets/figures/LocalLiveness%20Example.png" /></p>
-<p>The live local variables before and after each <code>Stmt</code> will be calculated after generating an instance of LocalLivenessAnalyser as shown the example above. They can be queried by using the methods <code>getLiveLocalsBeforeStmt</code> and <code>getLiveLocalsAfterStmt</code>.</p>
-<h3 id="dominancefinder">DominanceFinder</h3>
-<p>DomianceFinder is used for querying for the immediate dominator and dominance frontiers for a given basic block.</p>
-<p>Example:  <img alt="DominanceFinder Example" src="../assets/figures/DominanceFinder%20Example.png" /></p>
-<p>After generating an instance of DominanceFinder for a <code>BlockGraph</code>, we will get the immediate dominator and dominance frontiers for each basic block. The both properties can be queried by using the methods<code>getImmediateDominator</code>and<code>getDominanceFrontiers</code>.</p>
+<h1 id="analysis-input">Analysis Input</h1>
+<p>i.e. What should be analyzed - an <code>AnalysisInputLocation</code> points to code input SootUp can analyze.
+We ship multiple Subclasses that can handle different code input.</p>
+<p>You can specify a SourceType - which e.g. determines how far an analysis will go.
+Additionally you can specify a List of <a href="../bodyinterceptors/">BodyInterceptors</a>, which will optimize the raw Jimple IR that was transformed from the input.</p>
+<h3 id="java-runtime">Java Runtime</h3>
+<p>points to the runtime library of the executing JVM.</p>
+<ul>
+<li>Java &lt;=8: <code>DefaultRTJaAnalysisInputLocation</code> points to the rt.jar of the executing JVM.</li>
+<li>To include a different Java Runtime library point to any rt.jar via a <code>JavaClassPathAnalysisInputLocation</code> as its a usual .jar file.</li>
+<li>Java &gt;=9: <code>JRTFilesystemAnalysisInputLocation</code> points to the jigsawed java runtime of the executing jvm.  </li>
+</ul>
+<p>If you have errors like Java.lang.String, Java.lang.Object, ... you are most likely missing this AnalysisInput.</p>
+<h3 id="java-bytecode">Java Bytecode</h3>
+<p>File-Extensions: <code>.class, .jar, .war</code></p>
+<ul>
+<li><code>JavaClassPathAnalysisInputLocation</code> - its the equivalent of the classpath you would pass to the java executable i.e. point to root(s) of package(s).</li>
+</ul>
+<h3 id="java-sourcecode">Java Sourcecode</h3>
+<p>File-Extensions: <code>.java</code></p>
+<ul>
+<li><code>OTFCompileAnalysisInputLocation</code> - you can point directly to .java files or pass a String with Java sourcecode, SootUp delegates to the <code>JavaCompiler</code> and transform the bytecode from the compiler to Jimple</li>
+<li><code>JavaSourcePathInputLocation</code> <span class="tooltip hint--top" aria-label="Has huge problems with exceptional flow!"><strong><em>experimental!</em></strong></span> - points to a directory that is the root source directory (containing the package directory structure).</li>
+</ul>
+<h3 id="jimple">Jimple</h3>
+<p>File-Extensions: <code>.jimple</code></p>
+<ul>
+<li><code>JimpleAnalysisInputLocation</code> - needs a Path to a .jimple file or a directory.</li>
+</ul>
+<h3 id="android-bytecode">Android Bytecode</h3>
+<p>File-Extensions: <code>.apk</code></p>
+<ul>
+<li><code>ApkAnalysisInputLocation</code> - currently uses dex2jar internally - A SootUp solution to directly generate Jimple is WIP!</li>
+</ul>
+<h3 id="java-cli-arguments-to-configure-sootup">Java cli arguments to configure SootUp</h3>
+<p>We created a <a href="../tool_setup/">Utility</a> that parses a String of java command line arguments and configures SootUp respectively.</p>
 
 
 
