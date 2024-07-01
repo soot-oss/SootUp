@@ -8,14 +8,6 @@
     }
   },
   {
-    "version": "doc_typehierarchy_preview",
-    "title": "PR Preview doc_typehierarchy",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
