@@ -45,8 +45,9 @@ public abstract class ClassType extends ReferenceType implements Signature {
   public abstract PackageName getPackageName();
 
   @Override
-  public void accept(@Nonnull TypeVisitor v) {
+  public <V extends TypeVisitor> V accept(@Nonnull V v) {
     v.caseClassType(this);
+    return v;
   }
 
   @Override

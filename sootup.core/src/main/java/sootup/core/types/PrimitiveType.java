@@ -146,8 +146,9 @@ public abstract class PrimitiveType extends Type {
     }
 
     @Override
-    public void accept(@Nonnull TypeVisitor v) {
+    public <V extends TypeVisitor> V accept(@Nonnull V v) {
       v.caseIntType();
+      return v;
     }
   }
 

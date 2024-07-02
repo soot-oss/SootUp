@@ -83,8 +83,9 @@ public final class JCastExpr implements Expr {
   }
 
   @Override
-  public void accept(@Nonnull ExprVisitor v) {
+  public <V extends ExprVisitor> V accept(@Nonnull V v) {
     v.caseCastExpr(this);
+    return v;
   }
 
   @Nonnull
