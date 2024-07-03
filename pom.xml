@@ -72,7 +72,6 @@
         <module>sootup.examples</module>
         <module>sootup.report</module>
         <module>sootup.codepropertygraph</module>
-        <module>sootup.codepropertygraph.evaluation</module>
     </modules>
 
     <!-- Shared Configuration -->
