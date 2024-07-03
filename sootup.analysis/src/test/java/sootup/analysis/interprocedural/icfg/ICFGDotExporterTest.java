@@ -1,13 +1,12 @@
 package sootup.analysis.interprocedural.icfg;
 
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.analysis.interprocedural.ifds.IFDSTaintTestSetUp;
 import sootup.callgraph.CallGraph;
 import sootup.callgraph.ClassHierarchyAnalysisAlgorithm;
@@ -23,7 +22,7 @@ import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
 
   public CallGraph loadCallGraph(JavaView view) {
@@ -32,8 +31,8 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
             .initialize(Collections.singletonList(entryMethodSignature));
     assertNotNull(cg);
     assertTrue(
-        entryMethodSignature + " is not found in CallGraph",
-        cg.containsMethod(entryMethodSignature));
+        cg.containsMethod(entryMethodSignature),
+        entryMethodSignature + " is not found in CallGraph");
     return cg;
   }
 
@@ -59,15 +58,15 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    Assert.assertEquals(digraph.blocks.length, 5);
+    assertEquals(digraph.blocks.length, 5);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
-    Assert.assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
+    assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
     // As per the example code, the second block has an invoke call, so the number of edges should
     // be same one more than the statements, as one edge is for the invoke call
-    Assert.assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
+    assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
     // compute the edges from the callGraph and compare the edges with the ICFGCallGraph created
-    Assert.assertEquals(
+    assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
   }
@@ -94,15 +93,15 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    Assert.assertEquals(digraph.blocks.length, 7);
+    assertEquals(digraph.blocks.length, 7);
     // As per the example code, the first block has no invoke calls, so the number of statements and
     // edges should be same
-    Assert.assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
+    assertEquals(digraph.blocks[0].statements.length, digraph.blocks[0].edges.size());
     // As per the example code, the second block has an invoke call, so the number of edges should
     // be same one more than the statements, as one edge is for the invoke call
-    Assert.assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
+    assertEquals(digraph.blocks[2].statements.length + 1, digraph.blocks[2].edges.size());
     // compute the edges from the callGraph and compare the edges with the ICFGCallGraph created
-    Assert.assertEquals(
+    assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
   }
@@ -129,7 +128,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    Assert.assertEquals(
+    assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
   }
@@ -156,7 +155,7 @@ public class ICFGDotExporterTest extends IFDSTaintTestSetUp {
     CallGraph callGraph = loadCallGraph(view);
     String expectedCallGraph = icfg.buildICFGGraph(callGraph);
     Digraph digraph = parseDigraph(expectedCallGraph);
-    Assert.assertEquals(
+    assertEquals(
         edgesFromCallGraph(entryMethodSignature, icfg, callGraph),
         String.join(" -> ", digraph.blocks[0].edges));
   }

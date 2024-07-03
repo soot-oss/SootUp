@@ -41,6 +41,7 @@ import sootup.core.util.PathUtils;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java class path. Handles
@@ -74,7 +75,7 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull SourceType srcType) {
-    this(classPath, srcType, Collections.emptyList());
+    this(classPath, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   /**
@@ -91,13 +92,10 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
     this.srcType = srcType;
     this.bodyInterceptors = bodyInterceptors;
 
-    if (classPath.length() <= 0) {
-      throw new IllegalArgumentException("Empty class path given");
-    }
-    cpEntries = explodeClassPath(classPath);
-
+    cpEntries = classPath.length() <= 0 ? Collections.emptyList() : explodeClassPath(classPath);
     if (cpEntries.isEmpty()) {
-      throw new IllegalArgumentException("Empty class path is given.");
+      throw new IllegalArgumentException(
+          "The given classpath does not point to any existing directory/directories.");
     }
   }
 

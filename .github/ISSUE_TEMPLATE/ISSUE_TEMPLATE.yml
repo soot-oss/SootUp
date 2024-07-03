@@ -1,0 +1,45 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        If you have questions or need help please use the [Discussions](https://github.com/soot-oss/SootUp/discussions) section.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "Something did not work as expected.."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of SootUp did you use?
+      options:
+        - Latest develop branch
+        - Latest release (e.g. via Maven)
+        - Older/Other - please specify in the previous textbox
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output (insert *complete* stacktraces i.e. please don't cut the "caused by" parts ;-) ). This will be automatically formatted into code, so no need for backticks.
+      render: shell
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing the report. This helps a lot to improve SootUp!

@@ -35,16 +35,19 @@ import sootup.core.types.Type;
  * @author Jan Martin Persch
  */
 public abstract class SootClassMemberSignature<V extends SootClassMemberSubSignature>
-    implements Signature {
+    implements Signature, Comparable<SootClassMemberSignature<V>> {
 
   /** The signature of the declaring class. */
   @Nonnull private final ClassType declClassSignature;
 
   @Nonnull private final V subSignature;
 
+  private final int hashCode;
+
   public SootClassMemberSignature(@Nonnull ClassType klass, @Nonnull V subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
+    this.hashCode = Objects.hashCode(declClassSignature, subSignature);
   }
 
   @Nonnull
@@ -84,12 +87,17 @@ public abstract class SootClassMemberSignature<V extends SootClassMemberSubSigna
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(declClassSignature, subSignature);
+    return hashCode;
   }
 
   @Override
   @Nonnull
   public String toString() {
     return "<" + declClassSignature + ": " + getSubSignature() + '>';
+  }
+
+  @Override
+  public int compareTo(@Nonnull SootClassMemberSignature<V> member) {
+    return toString().compareTo(member.toString());
   }
 }

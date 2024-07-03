@@ -44,6 +44,7 @@ import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 
 /**
  * If the user wants to analyze a Multi-Release Jar, they have to specify the language level to
@@ -85,7 +86,7 @@ public class MultiReleaseJarAnalysisInputLocation extends ArchiveBasedAnalysisIn
 
   public MultiReleaseJarAnalysisInputLocation(
       @Nonnull Path path, @Nonnull SourceType srcType, @Nonnull Language language) {
-    this(path, srcType, language, Collections.emptyList());
+    this(path, srcType, language, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public MultiReleaseJarAnalysisInputLocation(

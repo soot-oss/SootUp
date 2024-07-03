@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -63,7 +63,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (int[])[3]",
             "$stack2 = newarray (int)[3]",
             "$stack2[0] = 1",
@@ -95,7 +95,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (byte[])[2]",
             "$stack2 = newarray (byte)[2]",
             "$stack2[0] = 4",
@@ -119,7 +119,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (short[])[2]",
             "$stack2 = newarray (short)[3]",
             "$stack2[0] = 10",
@@ -144,7 +144,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (long[])[3]",
             "$stack2 = newarray (long)[2]",
             "$stack2[0] = 547087L",
@@ -176,7 +176,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (float[])[2]",
             "$stack2 = newarray (float)[2]",
             "$stack2[0] = 3.14F",
@@ -204,7 +204,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (double[])[3]",
             "$stack2 = newarray (double)[2]",
             "$stack2[0] = 6.765414",
@@ -233,7 +233,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (boolean[])[2]",
             "$stack2 = newarray (boolean)[2]",
             "$stack2[0] = 1",
@@ -259,7 +259,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (char[])[3]",
             "$stack2 = newarray (char)[3]",
             "$stack2[0] = 65",
@@ -290,7 +290,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
    */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
-            "l0 := @this: InitializeMultidimensionalArrays",
+            "this := @this: InitializeMultidimensionalArrays",
             "$stack3 = newarray (java.lang.String[])[2]",
             "$stack2 = newarray (java.lang.String)[1]",
             "$stack2[0] = \"Hello World\"",

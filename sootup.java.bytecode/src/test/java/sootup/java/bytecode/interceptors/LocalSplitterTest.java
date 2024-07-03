@@ -1,14 +1,14 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
@@ -17,19 +17,21 @@ import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
+import sootup.java.core.interceptors.LocalSplitter;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalSplitterTest {
   JavaView view;
   LocalSplitter localSplitter = new LocalSplitter();
 
-  @Before
+  @BeforeEach
   public void setup() {
-    String classPath = "src/test/java/resources/interceptors";
+    String classPath = "src/test/resources/interceptors";
     JavaClassPathAnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath);
+        new JavaClassPathAnalysisInputLocation(
+            classPath, SourceType.Application, Collections.emptyList());
     view = new JavaView(inputLocation);
   }
 
@@ -49,7 +51,7 @@ public class LocalSplitterTest {
   }
 
   @Test
-  @Ignore("Takes too long. Good for profiling though.")
+  @Disabled("Takes too long. Good for profiling though.")
   public void JRT() {
     JrtFileSystemAnalysisInputLocation inputLocation =
         new JrtFileSystemAnalysisInputLocation(
@@ -70,7 +72,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l2#0");
@@ -79,7 +81,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "l2#0 = 1;\n"
             + "l1#1 = l2#0 + 1;\n"
@@ -96,7 +98,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l2#0");
@@ -105,7 +107,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "l2#0 = 1;\n"
             + "l1#1 = l1#0 + 1;\n"
@@ -122,7 +124,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l1#2");
@@ -130,7 +132,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "\n"
             + "if l1#0 >= 0 goto label1;\n"
@@ -153,7 +155,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l1#2");
@@ -164,7 +166,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "\n"
             + "if l1#0 >= 0 goto label1;\n"
@@ -190,7 +192,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l1#2");
@@ -202,7 +204,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "\n"
             + "if l1#0 >= 0 goto label1;\n"
@@ -237,7 +239,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l1#2");
@@ -247,7 +249,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 0;\n"
             + "\n"
             + "if l1#0 >= 0 goto label1;\n"
@@ -278,7 +280,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1");
     expectedLocals.add("l2#0");
     expectedLocals.add("l2#1");
@@ -286,7 +288,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1 = 0;\n"
             + "l2#0 = 0;\n"
             + "\n"
@@ -309,7 +311,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l2#0");
@@ -322,7 +324,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "$stack3 = staticinvoke <java.lang.Math: double random()>();\n"
             + "$stack4 = $stack3 cmpl 0.0;\n"
             + "\n"
@@ -353,7 +355,7 @@ public class LocalSplitterTest {
     localSplitter.interceptBody(builder, view);
 
     Set<String> expectedLocals = new HashSet<>();
-    expectedLocals.add("l0");
+    expectedLocals.add("this");
     expectedLocals.add("l1#0");
     expectedLocals.add("l1#1");
     expectedLocals.add("l2#0");
@@ -368,7 +370,7 @@ public class LocalSplitterTest {
     assertLocals(expectedLocals, builder);
 
     String expectedStmts =
-        "l0 := @this: LocalSplitterTarget;\n"
+        "this := @this: LocalSplitterTarget;\n"
             + "l1#0 = 1;\n"
             + "\n"
             + "label1:\n"

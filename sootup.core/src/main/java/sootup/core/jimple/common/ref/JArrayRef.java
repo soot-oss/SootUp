@@ -22,8 +22,7 @@ package sootup.core.jimple.common.ref;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.*;
 import sootup.core.jimple.visitor.RefVisitor;
@@ -76,12 +75,10 @@ public final class JArrayRef implements ConcreteRef, LValue {
 
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    List<Value> list = new ArrayList<>(base.getUses());
-    list.add(base);
-    list.addAll(index.getUses());
-    list.add(index);
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(
+        Stream.concat(base.getUses(), Stream.of(base)),
+        Stream.concat(index.getUses(), Stream.of(index)));
   }
 
   @Override

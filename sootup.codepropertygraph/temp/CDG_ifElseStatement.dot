@@ -1,0 +1,11 @@
+digraph CDG {
+	rankdir=TB;
+	node [style=filled, shape=record];
+	edge [style=filled]	"1254894619" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
+	"-1741447956" [label="{<f0> STMT | <f1> l2 = 1}", fillcolor="lightblue"];
+	"1673349536" [label="{<f0> STMT | <f1> goto 23}", fillcolor="lightblue"];
+	"1529022712" [label="{<f0> STMT | <f1> l2 = 2}", fillcolor="lightblue"];
+	"1254894619" -> "-1741447956"[label="CDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"1254894619" -> "1673349536"[label="CDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"1254894619" -> "1529022712"[label="CDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+}

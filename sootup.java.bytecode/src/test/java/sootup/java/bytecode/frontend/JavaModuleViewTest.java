@@ -1,26 +1,28 @@
 package sootup.java.bytecode.frontend;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import categories.Java9Test;
+import categories.TestCategories;
 import java.nio.file.Paths;
 import java.util.*;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
-import sootup.java.core.JavaModuleIdentifierFactory;
-import sootup.java.core.JavaModuleInfo;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.ModuleInfoAnalysisInputLocation;
+import sootup.java.core.*;
 import sootup.java.core.signatures.ModulePackageName;
 import sootup.java.core.types.ModuleJavaClassType;
 import sootup.java.core.views.JavaModuleView;
 
-@Category(Java9Test.class)
+@Tag(TestCategories.JAVA_9_CATEGORY)
 public class JavaModuleViewTest {
 
   private final String testPath = "../shared-test-resources/jigsaw-examples/";
@@ -55,11 +57,12 @@ public class JavaModuleViewTest {
         view.getModuleInfo(targetClass.getPackageName().getModuleSignature());
     assertTrue(moduleDescriptor.isPresent());
 
-    int size = view.getModuleClasses(targetClass.getPackageName().getModuleSignature()).size();
-    assertTrue(
-        "actual: " + size,
-        size > 5500
-            && size < 6500); // ~amount of java.base classes -> depends on java implementation..
+    Collection<JavaSootClass> moduleClasses =
+        view.getModuleClasses(targetClass.getPackageName().getModuleSignature());
+    int size = moduleClasses.size();
+
+    // ~amount of java.base classes -> depends on runtime lib - its likely the number increases
+    assertTrue(size > 5500, "actual: " + size);
   }
 
   @Test
@@ -551,7 +554,7 @@ public class JavaModuleViewTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testSplitpackageAutomaticModules() {
     // A module must not require 2 or more modules, which contain the same package - export is *not*
     // even necessary.
@@ -587,7 +590,7 @@ public class JavaModuleViewTest {
     fail("we should complain about the split package in modules..");
   }
 
-  @Ignore("to implement")
+  @Disabled("to implement")
   @Test
   public void testSplitpackage() {
     // A module must not requires 2 or more modules, which have/export the same package
@@ -776,27 +779,27 @@ public class JavaModuleViewTest {
     assertTrue(view.getClass(BFromModuleButInternal).isPresent());
     assertTrue(view.getClass(pkgbModb, BFromModuleButInternal).isPresent());
     assertFalse(
-        "unnamed module can only access exported packages!",
-        view.getClass(cpmain, BFromModuleButInternal).isPresent());
+        view.getClass(cpmain, BFromModuleButInternal).isPresent(),
+        "unnamed module can only access exported packages!");
     assertFalse(
-        "unnamed module can only access exported packages!",
-        view.getClass(cpb, BFromModuleButInternal).isPresent());
+        view.getClass(cpb, BFromModuleButInternal).isPresent(),
+        "unnamed module can only access exported packages!");
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testModulePathEqualsClassPath() {
     // TODO: check what happens if modulepath == classpath
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testEqualPackageNamesInInputLocations() {
     // TODO: implement test
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testEqualModuleSignaturesInInputLocations() {}
 
   @Test

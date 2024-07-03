@@ -1,13 +1,14 @@
 package sootup.java.sourcecode.minimaltestsuite.java8;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -15,6 +16,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Tag("Java8")
 public class RepeatingAnnotationsTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -23,7 +25,7 @@ public class RepeatingAnnotationsTest extends MinimalSourceTestSuiteBase {
         getDeclaredClassSignature(), "annotaionMethod", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void annotationTest() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

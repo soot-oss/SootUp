@@ -1,0 +1,18 @@
+digraph DDG {
+	rankdir=TB;
+	node [style=filled, shape=record];
+	edge [style=filled]	"1845300794" [label="{<f0> STMT | <f1> l2 = 3}", fillcolor="lightblue"];
+	"-1473056640" [label="{<f0> STMT | <f1> return l2}", fillcolor="lightblue"];
+	"-1132213495" [label="{<f0> STMT | <f1> l2 = 2}", fillcolor="lightblue"];
+	"1500025206" [label="{<f0> STMT | <f1> l2 = 1}", fillcolor="lightblue"];
+	"-1564941973" [label="{<f0> STMT | <f1> l2 = 0}", fillcolor="lightblue"];
+	"395555262" [label="{<f0> STMT | <f1> l1 := @parameter0: int}", fillcolor="lightblue"];
+	"1043695549" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
+	"1242805170" [label="{<f0> STMT | <f1> if l1 &lt;= 123}", fillcolor="lightblue"];
+	"1845300794" -> "-1473056640"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"-1132213495" -> "-1473056640"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"1500025206" -> "-1473056640"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"-1564941973" -> "-1473056640"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"395555262" -> "1043695549"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+	"395555262" -> "1242805170"[label="DDG", color="dodgerblue4", fontcolor="dodgerblue4"];
+}

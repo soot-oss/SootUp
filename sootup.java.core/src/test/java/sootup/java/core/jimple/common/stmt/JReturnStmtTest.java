@@ -22,10 +22,10 @@
 
 package sootup.java.core.jimple.common.stmt;
 
-import categories.Java8Test;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.JNopStmt;
@@ -33,7 +33,7 @@ import sootup.core.jimple.common.stmt.JReturnStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
 /** @author Markus Schmidt & Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JReturnStmtTest {
 
   @Test
@@ -42,13 +42,13 @@ public class JReturnStmtTest {
     Stmt rStmt = new JReturnStmt(IntConstant.getInstance(42), nop);
 
     // equivTo
-    Assert.assertTrue(rStmt.equivTo(rStmt));
-    Assert.assertTrue(rStmt.equivTo(new JReturnStmt(IntConstant.getInstance(42), nop)));
-    Assert.assertFalse(rStmt.equivTo(new JNopStmt(nop)));
+    assertTrue(rStmt.equivTo(rStmt));
+    assertTrue(rStmt.equivTo(new JReturnStmt(IntConstant.getInstance(42), nop)));
+    assertFalse(rStmt.equivTo(new JNopStmt(nop)));
 
-    Assert.assertFalse(rStmt.equivTo(new JReturnStmt(IntConstant.getInstance(3), nop)));
+    assertFalse(rStmt.equivTo(new JReturnStmt(IntConstant.getInstance(3), nop)));
 
     // toString
-    Assert.assertEquals("return 42", rStmt.toString());
+    assertEquals("return 42", rStmt.toString());
   }
 }

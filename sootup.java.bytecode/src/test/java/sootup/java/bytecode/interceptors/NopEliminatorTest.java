@@ -1,11 +1,11 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -15,11 +15,13 @@ import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.NopEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class NopEliminatorTest {
 
   /**
@@ -38,7 +40,7 @@ public class NopEliminatorTest {
     Body testBody = builder.build();
 
     builder = Body.builder(testBody, builder.getModifiers());
-    new NopEliminator().interceptBody(builder, null);
+    new NopEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     StmtGraph<?> inputStmtGraph = testBody.getStmtGraph();
@@ -58,7 +60,7 @@ public class NopEliminatorTest {
   public void testNoJNops() {
     Body.BodyBuilder testBuilder = createBody(false);
     Body testBody = testBuilder.build();
-    new NopEliminator().interceptBody(testBuilder, null);
+    new NopEliminator().interceptBody(testBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = testBuilder.build();
 
     assertEquals(testBody.getStmtGraph().getNodes(), processedBody.getStmtGraph().getNodes());

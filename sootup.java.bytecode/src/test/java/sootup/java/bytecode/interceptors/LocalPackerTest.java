@@ -1,13 +1,13 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -23,11 +23,13 @@ import sootup.core.types.VoidType;
 import sootup.core.util.DotExporter;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.LocalPacker;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalPackerTest {
   // Preparation
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -148,7 +150,7 @@ public class LocalPackerTest {
   public void testLocalPacker() {
     Body.BodyBuilder builder = createBodyBuilder();
 
-    new LocalPacker().interceptBody(builder, null);
+    new LocalPacker().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body body = builder.build();
 
     Body expectedBody = createExpectedBody();
@@ -215,14 +217,14 @@ public class LocalPackerTest {
    * </pre>
    */
   @Test
-  @Ignore("FIXME: does currently not work - Isssue #487")
+  @Disabled("FIXME: does currently not work - Isssue #487")
   public void testLocalPackerWithTrap() {
     Body.BodyBuilder builder = createTrapBody();
 
     System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
 
     LocalPacker localPacker = new LocalPacker();
-    localPacker.interceptBody(builder, null);
+    localPacker.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body body = builder.build();
     Body expectedBody = createExpectedTrapBody().build();

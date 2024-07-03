@@ -1,33 +1,39 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import sootup.core.typehierarchy.TypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.java.core.types.JavaClassType;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author: Hasitha Rajapakse * */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class InheritanceTransitivityTest extends JavaTypeHierarchyTestBase {
 
   @Test
   public void method() {
-    ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
-    Set<ClassType> subClassSet = new HashSet<>();
-    subClassSet.add(getClassType("SubClassA"));
-    subClassSet.add(getClassType("SubClassB"));
-    assertEquals(typeHierarchy.subclassesOf(getClassType("InheritanceTransitivity")), subClassSet);
-    assertEquals(typeHierarchy.superClassOf(getClassType("SubClassB")), getClassType("SubClassA"));
-    assertEquals(
-        typeHierarchy.superClassOf(getClassType("SubClassA")),
-        getClassType("InheritanceTransitivity"));
+    JavaClassType subClassA = getClassType("SubClassA");
+    JavaClassType subClassB = getClassType("SubClassB");
 
-    assertEquals(typeHierarchy.subtypesOf(getClassType("InheritanceTransitivity")), subClassSet);
+    TypeHierarchy typeHierarchy = getView().getTypeHierarchy();
+    Set<ClassType> subClassSet = new HashSet<>();
+    subClassSet.add(subClassA);
+    subClassSet.add(subClassB);
+
+    JavaClassType inheritanceTransitivity = getClassType("InheritanceTransitivity");
+    assertEquals(
+        subClassSet,
+        typeHierarchy.subclassesOf(inheritanceTransitivity).collect(Collectors.toSet()));
+    assertEquals(subClassA, typeHierarchy.superClassOf(subClassB).get());
+    assertEquals(inheritanceTransitivity, typeHierarchy.superClassOf(subClassA).get());
+
+    assertEquals(
+        subClassSet, typeHierarchy.subtypesOf(inheritanceTransitivity).collect(Collectors.toSet()));
   }
 }

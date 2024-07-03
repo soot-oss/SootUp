@@ -1,27 +1,21 @@
 package sootup.tests.typehierarchy.viewtypehierarchytestcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootMethod;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.MethodSubSignature;
-import sootup.core.typehierarchy.ViewTypeHierarchy;
 import sootup.core.types.ClassType;
+import sootup.java.core.JavaSootClass;
 import sootup.tests.typehierarchy.JavaTypeHierarchyTestBase;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyTestBase {
 
-  ViewTypeHierarchy typeHierarchy =
-      (ViewTypeHierarchy) customTestWatcher.getView().getTypeHierarchy();
   /**
    * Test: {@link java.lang.Object} is superclass of "SuperClass" and
    * "ClassInheritanceWithAdditionalMethod"
@@ -29,7 +23,8 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testSuperClassExtendsObject() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("SuperClass")), getClassType("java.lang.Object"));
+        getClassType("java.lang.Object"),
+        getView().getTypeHierarchy().superClassOf(getClassType("SuperClass")).get());
   }
 
   /**
@@ -38,8 +33,11 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
    */
   @Test
   public void testObjectIsSuperclassOfSuperClass() {
-    Set<ClassType> subClassSet = new HashSet<ClassType>();
-    subClassSet = typeHierarchy.subclassesOf(getClassType("java.lang.Object"));
+    Set<ClassType> subClassSet =
+        getView()
+            .getTypeHierarchy()
+            .subclassesOf(getClassType("java.lang.Object"))
+            .collect(Collectors.toSet());
     assertTrue(subClassSet.contains(getClassType("SuperClass")));
     assertTrue(subClassSet.contains(getClassType("ClassInheritanceWithAdditionalMethod")));
   }
@@ -48,53 +46,43 @@ public class ClassInheritanceWithAdditionalMethodTest extends JavaTypeHierarchyT
   @Test
   public void testClassInheritanceClassExtendsSuperClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
-        getClassType("SuperClass"));
+        getClassType("SuperClass"),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod"))
+            .get());
   }
 
   /** Test: "ClassInheritanceWithAdditionalMethod" is subclass of "SuperClass" */
   @Test
   public void testSuperClassIsSuperclassOfClassInheritanceClass() {
     assertEquals(
-        typeHierarchy.superClassOf(getClassType("ClassInheritanceWithAdditionalMethod")),
-        getClassType("SuperClass"));
+        getClassType("SuperClass"),
+        getView()
+            .getTypeHierarchy()
+            .superClassOf(getClassType("ClassInheritanceWithAdditionalMethod"))
+            .get());
   }
 
   /** Test: "ClassInheritanceWithAdditionalMethod" has additional method. */
   @Test
   public void ClassInheritanceClassHasAdditionalMethod() {
-    SootClass sootClass =
-        customTestWatcher
-            .getView()
-            .getClass(
-                customTestWatcher
-                    .getView()
-                    .getIdentifierFactory()
-                    .getClassType(customTestWatcher.getClassName()))
-            .get();
-    SootClass superClass =
-        customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
-
-    Set<SootMethod> methodsSetOfSootClass = (Set<SootMethod>) sootClass.getMethods();
-    Set<SootMethod> methodsSetOfSuperClass = (Set<SootMethod>) superClass.getMethods();
+    JavaSootClass sootClass =
+        getView().getClass(getView().getIdentifierFactory().getClassType(getClassName())).get();
+    JavaSootClass superClass = getView().getClass(sootClass.getSuperclass().get()).get();
 
     Set<MethodSubSignature> methodSignaturesOfSootClass =
-        methodsSetOfSootClass.stream()
+        sootClass.getMethods().stream()
             .map(sootMethod -> sootMethod.getSignature().getSubSignature())
             .collect(Collectors.toSet());
 
     Set<MethodSubSignature> methodSignaturesOfSuperClass =
-        methodsSetOfSuperClass.stream()
+        superClass.getMethods().stream()
             .map(sootMethod -> sootMethod.getSignature().getSubSignature())
             .collect(Collectors.toSet());
 
-    boolean hasAdditionalMethod = false;
-    for (MethodSubSignature msSubClass : methodSignaturesOfSootClass) {
-      if (!(methodSignaturesOfSuperClass.contains(msSubClass))) {
-        hasAdditionalMethod = true;
-        break;
-      }
-    }
-    assertTrue(hasAdditionalMethod);
+    assertTrue(
+        methodSignaturesOfSootClass.stream()
+            .anyMatch(msSubClass -> !(methodSignaturesOfSuperClass.contains(msSubClass))));
   }
 }

@@ -1,13 +1,15 @@
 package sootup.java.core.printer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.frontend.OverridingClassSource;
+import sootup.core.graph.MutableStmtGraph;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -26,6 +28,7 @@ import sootup.java.core.views.JavaView;
  * @author Markus Schmidt
  * @author Kaustubh Kelkar updated on 02.07.2020
  */
+@Tag("Java8")
 public class JimplePrinterTest {
   // import collisions are already tested in AbstractStmtPrinterTest covered in
   // AbstractStmtPrinterTest
@@ -66,9 +69,11 @@ public class JimplePrinterTest {
     final JNopStmt jNop = new JNopStmt(noPosInfo);
     Body.BodyBuilder bodyBuilder = Body.builder();
 
+    MutableStmtGraph stmtGraph = bodyBuilder.getStmtGraph();
+    stmtGraph.setStartingStmt(jNop);
+    stmtGraph.putEdge(jNop, returnVoidStmt);
+
     bodyBuilder
-        .setStartingStmt(jNop)
-        .addFlow(jNop, returnVoidStmt)
         .setMethodSignature(methodSignatureOne)
         .setPosition(NoPositionInformation.getInstance());
     Body bodyOne = bodyBuilder.build();

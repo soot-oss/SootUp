@@ -1,0 +1,7 @@
+class LegacyTransientMethodModifier extends java.lang.Object
+{
+    transient void <init>()
+    {
+        return;
+    }
+}

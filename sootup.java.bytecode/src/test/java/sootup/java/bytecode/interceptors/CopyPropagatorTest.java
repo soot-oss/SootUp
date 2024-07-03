@@ -1,13 +1,15 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
+import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -20,15 +22,20 @@ import sootup.core.jimple.common.expr.JCastExpr;
 import sootup.core.jimple.common.ref.IdentityRef;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.model.Body;
+import sootup.core.model.SootMethod;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
+import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.CopyPropagator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CopyPropagatorTest {
 
   // Preparation
@@ -132,7 +139,7 @@ public class CopyPropagatorTest {
     Body body = createChainBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedChainBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -145,7 +152,7 @@ public class CopyPropagatorTest {
     Body.BodyBuilder builder = createLoopBody();
 
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedLoopBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -158,7 +165,7 @@ public class CopyPropagatorTest {
     Body body = createCastExprBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     CopyPropagator propagator = new CopyPropagator();
-    propagator.interceptBody(builder, null);
+    propagator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedCastExprBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -185,7 +192,7 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(stmt4, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -214,7 +221,7 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(estmt4, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -249,7 +256,7 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(ifStmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     return builder;
   }
@@ -279,7 +286,7 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(eifstmt7, JIfStmt.TRUE_BRANCH_IDX, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -312,7 +319,7 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(stmt14, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
@@ -343,11 +350,31 @@ public class CopyPropagatorTest {
     stmtGraph.putEdge(stmt14, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());
 
     return builder.build();
+  }
+
+  @Test
+  void testBigInput() {
+    AnalysisInputLocation inputLocation =
+        new PathBasedAnalysisInputLocation.ClassFileBasedAnalysisInputLocation(
+            Paths.get("../shared-test-resources/bugfixes/SlowCopyPropagator.class"),
+            "",
+            SourceType.Application,
+            Collections.singletonList(new CopyPropagator()));
+
+    JavaView view = new JavaView(inputLocation);
+    final SootMethod sootMethod =
+        view.getMethod(
+                view.getIdentifierFactory()
+                    .parseMethodSignature("<SlowCopyPropagator: void foo()>"))
+            .get();
+
+    Body body = sootMethod.getBody();
+    System.out.println(body);
   }
 }

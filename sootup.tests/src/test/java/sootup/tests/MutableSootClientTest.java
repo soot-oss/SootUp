@@ -1,17 +1,16 @@
 package sootup.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingBodySource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -19,7 +18,9 @@ import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
-import sootup.java.core.*;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
+import sootup.java.core.OverridingJavaClassSource;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.MutableJavaView;
 
@@ -27,20 +28,20 @@ import sootup.java.core.views.MutableJavaView;
  * Comprises test that test the addition and removal of classes and methods to the mutable view. It
  * uses the MiniApp.jar for testing.
  */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class MutableSootClientTest {
   static Path pathToJar = Paths.get("../shared-test-resources/java-miniapps/MiniApp.jar");
   static AnalysisInputLocation location;
   MutableJavaView mv;
 
   /** Load the jar file for analysis as input location. */
-  @BeforeClass
+  @BeforeAll
   public static void setupProject() {
     location = PathBasedAnalysisInputLocation.create(pathToJar, SourceType.Application);
   }
 
   /** Create a new mutable view that the tests should be performed on. */
-  @Before
+  @BeforeEach
   public void setupMutableView() {
     mv =
         new MutableJavaView(
@@ -58,7 +59,7 @@ public class MutableSootClientTest {
     mv.removeClass(classType);
     int classesAfterSize = mv.getClasses().size();
 
-    assertTrue(classesBeforeSize == classesAfterSize + 1);
+    assertEquals(classesBeforeSize, classesAfterSize + 1);
   }
 
   /**
@@ -88,7 +89,7 @@ public class MutableSootClientTest {
     mv.addClass(newClass.buildClass(SourceType.Application));
     int classesAfterSize = mv.getClasses().size();
 
-    assertTrue(classesBeforeSize == classesAfterSize - 1);
+    assertEquals(classesBeforeSize, classesAfterSize - 1);
   }
 
   /**

@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
+@Tag("Java8")
 public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
 
   @Override
@@ -19,7 +21,7 @@ public class MethodReferenceTest extends MinimalSourceTestSuiteBase {
   }
 
   /** TODO Update the source code when WALA supports lambda expression */
-  @Ignore
+  @Disabled
   public void test() {
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());

@@ -1,15 +1,14 @@
 package sootup.tests.typehierarchy;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.typehierarchy.HierarchyComparator;
 import sootup.core.types.ClassType;
@@ -18,12 +17,12 @@ import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class HierarchyComparatorTest {
 
   private static View view;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
@@ -40,7 +39,7 @@ public class HierarchyComparatorTest {
     ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
     ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
     assertEquals(-1, hc.compare(subclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, superclass));
     assertEquals(-1, hc.compare(subSubclass, subclass));
@@ -64,7 +63,7 @@ public class HierarchyComparatorTest {
     ClassType subInterface = view.getIdentifierFactory().getClassType("SubInterface", "");
     ClassType subSubInterface2 = view.getIdentifierFactory().getClassType("SubSubInterface", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
     assertEquals(-1, hc.compare(subInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, Interface));
     assertEquals(-1, hc.compare(subSubInterface2, subInterface));
@@ -91,7 +90,7 @@ public class HierarchyComparatorTest {
     ClassType subclass = view.getIdentifierFactory().getClassType("Subclass", "");
     ClassType subSubclass = view.getIdentifierFactory().getClassType("SubSubclass", "");
 
-    HierarchyComparator hc = new HierarchyComparator(view);
+    HierarchyComparator hc = new HierarchyComparator(view.getTypeHierarchy());
 
     assertEquals(-1, hc.compare(subSubInterface, Interface));
     assertEquals(-1, hc.compare(subSubInterface, subInterface));

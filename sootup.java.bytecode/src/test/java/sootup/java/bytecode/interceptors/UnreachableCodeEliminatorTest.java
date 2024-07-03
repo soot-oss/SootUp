@@ -1,12 +1,11 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -25,11 +24,13 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.UnreachableCodeEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class UnreachableCodeEliminatorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -84,7 +85,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l2, l3));
 
     builder.setLocals(locals);
 
@@ -103,7 +104,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setPosition(NoPositionInformation.getInstance());
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -123,7 +124,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, l4, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, l4, stack0));
 
     builder.setLocals(locals);
 
@@ -136,9 +137,9 @@ public class UnreachableCodeEliminatorTest {
     // set startingStmt
     graph.setStartingStmt(startingStmt);
 
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().getTraps().size());
+    assertEquals(0, builder.getStmtGraph().buildTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -158,7 +159,7 @@ public class UnreachableCodeEliminatorTest {
     builder.setMethodSignature(methodSignature);
 
     // add locals into builder
-    Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l3, stack0);
+    Set<Local> locals = new LinkedHashSet<>(Arrays.asList(l0, l1, l3, stack0));
 
     builder.setLocals(locals);
 
@@ -169,15 +170,15 @@ public class UnreachableCodeEliminatorTest {
     graph.putEdge(handlerStmt, beginStmt);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().getTraps().size());
+    assertEquals(0, builder.getStmtGraph().buildTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
-    Assert.assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
+    assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
   }
 
@@ -205,7 +206,7 @@ public class UnreachableCodeEliminatorTest {
     graph.setStartingStmt(startingStmt);
 
     MutableStmtGraph inputGraph = new MutableBlockStmtGraph(builder.getStmtGraph());
-    new UnreachableCodeEliminator().interceptBody(builder, null);
+    new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
     assertEquals(inputGraph, builder.getStmtGraph());
   }

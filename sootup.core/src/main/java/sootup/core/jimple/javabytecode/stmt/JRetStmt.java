@@ -22,8 +22,7 @@ package sootup.core.jimple.javabytecode.stmt;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.JimpleComparator;
@@ -35,8 +34,8 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
- * Represents the deprecated JVM <code>ret</code> statement - which is used in JSR Context - which
- * is deprecated as well
+ * Represents the deprecated JVM <code>ret</code> statement (< java 1.6) - which is used in JSR
+ * Context - which is deprecated as well.
  */
 public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 
@@ -66,11 +65,8 @@ public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    final List<Value> uses = stmtAddress.getUses();
-    List<Value> list = new ArrayList<>(uses.size() + 1);
-    list.add(stmtAddress);
-    return list;
+  public Stream<Value> getUses() {
+    return Stream.concat(stmtAddress.getUses(), Stream.of(stmtAddress));
   }
 
   @Override

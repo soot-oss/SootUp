@@ -1,71 +1,125 @@
 package sootup.java.bytecode;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
-import org.junit.Test;
+import java.util.List;
+import java.util.function.BiFunction;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
-import sootup.core.signatures.MethodSignature;
-import sootup.java.bytecode.inputlocation.BytecodeClassLoadingOptions;
+import sootup.core.transform.BodyInterceptor;
+import sootup.core.util.DotExporter;
+import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
+import sootup.java.core.interceptors.CopyPropagator;
+import sootup.java.core.interceptors.DeadAssignmentEliminator;
 import sootup.java.core.views.JavaView;
 
+@Tag("Java8")
 public class RuntimeJarConversionTests {
+  private static boolean debug = true;
 
-  private static void execute(String methodSignature1) {
+  @Test
+  public void testJarWithDefaultInterceptors() {
+    AnalysisInputLocation inputLocation = new DefaultRTJarAnalysisInputLocation(SourceType.Library);
+    convertInputLocation(inputLocation);
+  }
+
+  private static void convertInputLocation(AnalysisInputLocation inputLocation) {
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    long classesCount = view.getClasses().size();
+    if (debug) {
+      System.out.println("classes: " + classesCount);
+    }
+    int[] failedConversions = {0};
+    long[] progress = {0};
+
+    long count =
+        view.getClasses().stream()
+            .peek(
+                c -> {
+                  if (!debug) {
+                    return;
+                  }
+                  System.out.println(
+                      "converted classes: "
+                          + progress[0]
+                          + "  failed: "
+                          + failedConversions[0]
+                          + " - progress "
+                          + ((double) progress[0]++ / classesCount));
+                })
+            .flatMap(c -> c.getMethods().stream())
+            .filter(SootMethod::isConcrete)
+            .peek(
+                javaSootMethod -> {
+                  try {
+                    System.out.println(javaSootMethod.getSignature());
+                    javaSootMethod.getBody();
+                  } catch (Exception e) {
+                    e.printStackTrace();
+                    failedConversions[0]++;
+                  }
+                })
+            .count();
+    assertTrue(count > 0);
+    assertEquals(0, failedConversions[0]);
+  }
+
+  // @Test
+  public void testJar() {
     AnalysisInputLocation inputLocation =
-        new DefaultRTJarAnalysisInputLocation(
-            SourceType.Library, BytecodeClassLoadingOptions.Default.getBodyInterceptors());
+        new DefaultRTJarAnalysisInputLocation(SourceType.Library, Collections.emptyList());
+    convertInputLocation(inputLocation);
+  }
 
-    final MethodSignature methodSignature =
-        JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature1);
+  /**
+   * helps debugging the conversion of a single method
+   *
+   * @return
+   */
+  static BiFunction<BodyInterceptor, Body.BodyBuilder, Boolean> step =
+      (interceptor, builder) -> {
+        if (interceptor.getClass() != CopyPropagator.class
+            && interceptor.getClass() != DeadAssignmentEliminator.class) {
+          return false;
+        }
+        if (debug) {
+          System.out.println(DotExporter.createUrlToWebeditor(builder.getStmtGraph()));
+        }
+        return true;
+      };
+
+  static List<BodyInterceptor> bodyInterceptors =
+      Utils.wrapEachBodyInterceptorWith(
+          BytecodeBodyInterceptors.Default.getBodyInterceptors(), step);
+
+  private static Body convertMethod(String methodSignature) {
+    AnalysisInputLocation inputLocation =
+        new DefaultRTJarAnalysisInputLocation(SourceType.Library, bodyInterceptors);
+    return convertMethod(methodSignature, inputLocation);
+  }
+
+  private static Body convertMethod(String methodSignature, AnalysisInputLocation inputLocation) {
 
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
-    final SootMethod sootMethod = view.getMethod(methodSignature).get();
-    sootMethod.getBody();
+    final SootMethod sootMethod =
+        view.getMethod(view.getIdentifierFactory().parseMethodSignature(methodSignature)).get();
+    return sootMethod.getBody();
   }
 
+  @Disabled
   @Test
-  public void testByteCodeClassTrap() {
-    execute("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
-  }
-
-  @Test
-  public void testTrapsicwUtility() {
-    execute(
-        "<com.sun.org.apache.bcel.internal.classfile.Utility: java.lang.String signatureToString(java.lang.String,boolean)>");
-  }
-
-  @Test
-  public void testTrapsicwUnresolvedPermission() {
-    execute(
-        "<java.security.UnresolvedPermission: java.security.Permission resolve(java.security.Permission,java.security.cert.Certificate[])>");
-  }
-
-  @Test
-  public void testTrapsicwStubFactoryFactoryStaticImpl() {
-    // same exception range and type but different handler.. ->  duplicateCatchAllTrapRemover
-    // adapted to handle java.lang.Exception as well
-    execute(
-        "<com.sun.corba.se.impl.presentation.rmi.StubFactoryFactoryStaticImpl: javax.rmi.CORBA.Tie getTie(java.lang.Class)>");
-  }
-
-  @Test
-  public void testTrapsicwUnixPrintJob$PrinterSpooler() {
-    execute(
-        "<sun.print.UnixPrintJob$PrinterSpooler: void handleProcessFailure(java.lang.Process,java.lang.String[],int)>");
-  }
-
-  @Test
-  public void testBoundMethodHandle$FactoryGenerateConcreteBMHClass() {
-    execute(
-        "<java.lang.invoke.BoundMethodHandle$Factory: java.lang.Class generateConcreteBMHClass(java.lang.String)>");
-  }
-
-  @Test
-  public void testFileDescriptorCloseAll() {
-    execute("<java.io.FileDescriptor: void closeAll(java.io.Closeable)>");
+  public void testExample() {
+    /* Example to start quickly */
+    convertMethod("<java.awt.GraphicsEnvironment: java.awt.GraphicsEnvironment createGE()>");
   }
 }

@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import sootup.core.graph.MutableBlockStmtGraph;
@@ -116,7 +117,7 @@ public class Body implements HasPosition {
   @Nonnull
   @Deprecated()
   public List<Trap> getTraps() {
-    return graph.getTraps();
+    return graph.buildTraps();
   }
 
   /** Return unit containing the \@this-assignment * */
@@ -182,7 +183,7 @@ public class Body implements HasPosition {
         JIdentityStmt idStmt = (JIdentityStmt) u;
         if (idStmt.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) idStmt.getRightOp();
-          retVal.add(pr.getIndex(), (Local) idStmt.getLeftOp());
+          retVal.add(pr.getIndex(), idStmt.getLeftOp());
         }
       }
       /*  if we restrict/define that IdentityStmts MUST be at the beginnging.
@@ -265,13 +266,8 @@ public class Body implements HasPosition {
    *
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
-  public Collection<Value> getUses() {
-    ArrayList<Value> useList = new ArrayList<>();
-
-    for (Stmt stmt : graph.getNodes()) {
-      useList.addAll(stmt.getUses());
-    }
-    return useList;
+  public Stream<Value> getUses() {
+    return graph.getNodes().stream().flatMap(Stmt::getUses);
   }
 
   /**
@@ -281,10 +277,14 @@ public class Body implements HasPosition {
    * @return a List of all the Values for Values defined by this Body's Stmts.
    */
   public Collection<LValue> getDefs() {
+    return getDefs(graph);
+  }
+
+  public static Collection<LValue> getDefs(StmtGraph<?> graph) {
     ArrayList<LValue> defList = new ArrayList<>();
 
     for (Stmt stmt : graph.getNodes()) {
-      defList.addAll(stmt.getDefs());
+      stmt.getDef().ifPresent(defList::add);
     }
     return defList;
   }
@@ -315,8 +315,6 @@ public class Body implements HasPosition {
     @Nonnull private final MutableStmtGraph graph;
     @Nullable private MethodSignature methodSig = null;
 
-    @Nullable private List<Stmt> cachedLinearizedStmts = null;
-
     BodyBuilder() {
       graph = new MutableBlockStmtGraph();
     }
@@ -341,21 +339,12 @@ public class Body implements HasPosition {
     /* Gets an ordered copy of the Stmts in the StmtGraph */
     @Nonnull
     public List<Stmt> getStmts() {
-      cachedLinearizedStmts = graph.getStmts();
-      return cachedLinearizedStmts;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder setStartingStmt(@Nonnull Stmt startingStmt) {
-      graph.setStartingStmt(startingStmt);
-      return this;
+      return graph.getStmts();
     }
 
     @Nonnull
     public Set<Local> getLocals() {
-      return Collections.unmodifiableSet(locals);
+      return locals;
     }
 
     @Nonnull
@@ -370,78 +359,32 @@ public class Body implements HasPosition {
       return this;
     }
 
-    public void replaceLocal(@Nonnull Local oldLocal, @Nonnull Local newLocal) {
-      if (!locals.contains(oldLocal)) {
-        throw new RuntimeException("The given old local: '" + oldLocal + "' is not in the body!");
-      } else {
-        for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
-          final Stmt stmt = currStmt;
-          if (currStmt.getUses().contains(oldLocal)) {
-            currStmt = currStmt.withNewUse(oldLocal, newLocal);
-          }
-          final List<LValue> defs = currStmt.getDefs();
-          for (LValue def : defs) {
-            if (def == oldLocal || def.getUses().contains(oldLocal)) {
-              if (currStmt instanceof AbstractDefinitionStmt) {
-                currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
-              }
+    public void replaceLocal(@Nonnull Local existingLocal, @Nonnull Local newLocal) {
+      if (!locals.contains(existingLocal)) {
+        throw new IllegalArgumentException(
+            "The given existing Local '" + existingLocal + "' is not in the body!");
+      }
+
+      for (Stmt currStmt : Lists.newArrayList(getStmtGraph().getNodes())) {
+        final Stmt stmt = currStmt;
+        if (currStmt.getUses().anyMatch(v -> v == existingLocal)) {
+          currStmt = currStmt.withNewUse(existingLocal, newLocal);
+        }
+        Optional<LValue> defOpt = currStmt.getDef();
+        if (defOpt.isPresent()) {
+          LValue def = defOpt.get();
+          if (def == existingLocal || def.getUses().anyMatch(v -> v == existingLocal)) {
+            if (currStmt instanceof AbstractDefinitionStmt) {
+              currStmt = ((AbstractDefinitionStmt) currStmt).withNewDef(newLocal);
             }
           }
-          if (stmt != currStmt) {
-            getStmtGraph().replaceNode(stmt, currStmt);
-          }
         }
-        locals.remove(oldLocal);
-        locals.add(newLocal);
+        if (stmt != currStmt) {
+          getStmtGraph().replaceNode(stmt, currStmt);
+        }
       }
-    }
-
-    /**
-     * replace the oldStmt with newStmt in stmtGraph and branches
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder replaceStmt(@Nonnull Stmt oldStmt, @Nonnull Stmt newStmt) {
-      graph.replaceNode(oldStmt, newStmt);
-      return this;
-    }
-
-    /**
-     * remove the a stmt from the graph and stmt
-     *
-     * <p>Deprecated: please use methods of getStmtGraph() directly
-     */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder removeStmt(@Nonnull Stmt stmt) {
-      graph.removeNode(stmt);
-      cachedLinearizedStmts = null;
-      return this;
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder clearExceptionEdgesOf(@Nonnull Stmt stmt) {
-      graph.clearExceptionalEdges(stmt);
-      return this;
-    }
-
-    @Nonnull
-    @Deprecated
-    public List<Trap> getTraps() {
-      return graph.getTraps();
-    }
-
-    /** Deprecated: please use methods of getStmtGraph() directly */
-    @Nonnull
-    @Deprecated
-    public BodyBuilder addFlow(@Nonnull FallsThroughStmt fromStmt, @Nonnull Stmt toStmt) {
-      graph.putEdge(fromStmt, toStmt);
-      cachedLinearizedStmts = null;
-      return this;
+      locals.remove(existingLocal);
+      locals.add(newLocal);
     }
 
     public BodyBuilder setModifiers(@Nonnull Set<MethodModifier> modifiers) {
@@ -514,6 +457,16 @@ public class Body implements HasPosition {
         return super.toString();
       }
     }
+
+    public void removeDefLocalsOf(@Nonnull Stmt stmt) {
+      stmt.getDef()
+          .ifPresent(
+              def -> {
+                if (def instanceof Local) {
+                  locals.remove(def);
+                }
+              });
+    }
   }
 
   /**
@@ -525,14 +478,12 @@ public class Body implements HasPosition {
   public static Map<LValue, Collection<Stmt>> collectDefs(Collection<Stmt> stmts) {
     Map<LValue, Collection<Stmt>> allDefs = new HashMap<>();
     for (Stmt stmt : stmts) {
-      List<LValue> defs = stmt.getDefs();
-      for (LValue value : defs) {
-        Collection<Stmt> localDefs = allDefs.get(value);
-        if (localDefs == null) {
-          localDefs = new ArrayList<>();
-        }
+      Optional<LValue> defOPt = stmt.getDef();
+      if (defOPt.isPresent()) {
+        LValue def = defOPt.get();
+        Collection<Stmt> localDefs = allDefs.computeIfAbsent(def, key -> new ArrayList<>());
         localDefs.add(stmt);
-        allDefs.put(value, localDefs);
+        allDefs.put(def, localDefs);
       }
     }
     return allDefs;
@@ -547,12 +498,9 @@ public class Body implements HasPosition {
   public static Map<Value, Collection<Stmt>> collectUses(Collection<Stmt> stmts) {
     Map<Value, Collection<Stmt>> allUses = new HashMap<>();
     for (Stmt stmt : stmts) {
-      Collection<Value> uses = stmt.getUses();
-      for (Value value : uses) {
-        Collection<Stmt> localUses = allUses.get(value);
-        if (localUses == null) {
-          localUses = new ArrayList<>();
-        }
+      for (Iterator<Value> iterator = stmt.getUses().iterator(); iterator.hasNext(); ) {
+        Value value = iterator.next();
+        Collection<Stmt> localUses = allUses.computeIfAbsent(value, key -> new ArrayList<>());
         localUses.add(stmt);
         allUses.put(value, localUses);
       }

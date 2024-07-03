@@ -1,22 +1,39 @@
 # Body Interceptors
+BodyInterceptors are applied to each `Body` *now by default, if not overridden in the used AnalysisInputLocations*.
+The BodyInterceptors exist to to improve and normalize the raw Jimple that was generated in an earlier step.
+The "raw" generated Jimple from the Bytecodefrontend needs a lot improvements - deficits of raw Jimple are:
+
+- Java Variables with that are compiled to the same Local index, but from different scopes inside the method are mapped to the same Local. The Localsplitter takes care of splitting these Locals that are semantically different, into two seperate Local instances. 
+- The Conversion from a stack-machine to a register-machine creates leftover assignments - handled/inlined/removed by the Aggregator, CopyPropagator. They inline unnecessary Assignments.
+- As the previous BodyTransformers could optimize code that leads to unused assignments etc - The DeadAssignmentEliminator keeps the StmtGraph clean from unused/dead Assignments.
+- The Locals we get from the Java bytecode are typically untyped. Therefore we have to augment the Local types which is done by the TypeAssigner.
+- t.b.c.
+
+Optimizations (method scope)
+
+- ConditionalBranchFolder: removes tautologic ifs that are always true/false - if we can determine it in the scope of the method.
+- EmptySwitchEliminator: removes switches that are not really switching
+- ConstantPropagatorAndFolder: calculates constant values before runtime
+- CastAndReturnInliner: Removes merging flows to a single return
+- UnreachableCodeEliminator: speaks for itself.
+- TrapTightener
+
+Standardize Jimple appearance
+
+- LocalNameStandardizer: numbers Locals with the scheme: type-initial + number of type occurence 
 
 !!! info "Soot Equivalent"
-
     [BodyTransformer](https://github.com/soot-oss/soot/blob/develop/src/main/java/soot/BodyTransformer.java)
 
-
-BodyInterceptors are applied to each `Body` *by default* to improve or even normalize the raw Jimple that was produced in an earlier step e.g. 
-by eliminating unreachable code (`UnreachableCodeEliminator`), standardizing names of locals (`LocalNameStandardizer`), or removing empty switch statements (`EmptySwitchEliminator`) etc. 
-
-Below, we show how these BodyInterceptors work for the users who are interested in their internal workings.
 
 ### LocalSplitter
 
 LocalSplitter is a<code>BodyInterceptor</code>that attempts to identify and separate uses of a local variable (as definition) that are independent of each other by renaming local variables.
 
+
 Example 1: 
 
-![LocalSplitter Example_1](./figures/LocalSplitter%20Example_1.png)
+![LocalSplitter Example_1](assets/figures/LocalSplitter%20Example_1.png)
 
 As shown in the example above, the local variable<code>l1</code>is defined twice. It can be split up into two new local variables: <code>l1#1</code> and <code>l1#2</code> because the both definitions are independent of each other. 
 
@@ -27,7 +44,7 @@ Look for foldable navigation and tabs for showing old vs new
 
 Example 2:
 
-![LocalSplitter Example_2](./figures/LocalSplitter%20Example_2.png)
+![LocalSplitter Example_2](assets/figures/LocalSplitter%20Example_2.png)
 
 In the second example, the local variable<code>l2</code>is defined thrice. But it cannot be split up into three new local variables as in the first example, because its definitions in the if-branches are not independent of each other. Therefore, it can only be split up into two local variables as shown in the figure.
 
@@ -39,7 +56,7 @@ LocalPacker is a<code>BodyInterceptor</code>that attempts to minimize the number
 
 Example:
 
-![LocalPacker Example](./figures/LocalPacker%20Example.png)
+![LocalPacker Example](assets/figures/LocalPacker%20Example.png)
 
 In the given example above, the local variables<code>l1</code>,<code>l3</code>are summarized to be one local variable<code>l1</code>, because they have the same type without interference with each other. Likewise, the local variables<code>l2</code>,<code>l4</code>and<code>l5</code>are summarized to be another local variable<code>l2</code>. Although the local variable<code>l0</code>doesn't interfere any other local variables, it cannot be summed up with other local variables because of its distinctive type.
 
@@ -52,7 +69,7 @@ TrapTightener is a<code>BodyInterceptor</code>that shrinks the protected area co
 
 Example:
 
-![TrapTightener Example](./figures/TrapTightener%20Example.png)
+![TrapTightener Example](assets/figures/TrapTightener%20Example.png)
 
 We assume in the example above that only the<code>Stmt</code>:<code>l2 := 2</code>might throw an exception caught by the<code>Trap</code>which is labeled with<code>label3</code>. In the jimple body before running the TrapTightener, the protected area covered by the Trap contains three<code>Stmts</code>:<code>l1 := 1; l2 := 2; l2 := 3</code>. But an exception could only arise at the<code>Stmt</code>:<code>l2 := 2</code>. After the implementation of TrapTightener, we will get a contractible protected area which contains only the<code>Stmt</code>that might throw an exception, namely the<code>Stmt</code>:<code>l2 := 2</code>.
 
@@ -64,7 +81,7 @@ EmptySwitchEliminator is a<code>BodyInterceptor</code>that removes empty switch 
 
 Example: 
 
-![EmptySwitchEliminator Example](./figures/EmptySwitchEliminator%20Example.png)
+![EmptySwitchEliminator Example](assets/figures/EmptySwitchEliminator%20Example.png)
 
 As shown in the example above, the switch statement in the jimple body always takes the default action. After running EmptySwitchEliminator, the switch statement is replaced with a<code>GotoStmt</code>to the default case.
 
@@ -76,7 +93,7 @@ UnreachableCodeEliminator is a<code>BodyInterceptor</code>that removes all unrea
 
 Example: 
 
-![UnreachableCodeEliminator Example](./figures/UnreachableCodeEliminator%20Example.png)
+![UnreachableCodeEliminator Example](assets/figures/UnreachableCodeEliminator%20Example.png)
 
 Obviously, the code segment<code>l2 = 2; l3 = 3;</code>is unreachable. It will be removed after running the UreachableCodeEliminator.
 
@@ -88,7 +105,7 @@ CopyPropagator is a<code>BodyInterceptor</code>that supports the global copy pro
 
 Example for global copy propagation:
 
-![UnreachableCodeEliminator Example](./figures/CopyPropagator%20Example_1.png)
+![UnreachableCodeEliminator Example](assets/figures/CopyPropagator%20Example_1.png)
 
 Consider a code segment in the following form: 
 
@@ -107,7 +124,7 @@ In the example for global copy propagation, the first used<code>l1</code>is repl
 
 Example for constant propagation:
 
-![CopyPropagator Example_1](figures/CopyPropagator%20Example_2.png)
+![CopyPropagator Example_1](assets/figures/CopyPropagator%20Example_2.png)
 
 Constant propagation is similar to copy propagation. Consider a code segment in the following form:
 
@@ -151,8 +168,8 @@ StaticSingleAssignmentFormer is a<code>BodyInterceptor</code>that transforms jim
 
 Example:
 
-![SSA Example_1](./figures/SSA%20Example_1.png)
+![SSA Example_1](assets/figures/SSA%20Example_1.png)
 
-![SSA Example_2](./figures/SSA%20Example_2.png)
+![SSA Example_2](assets/figures/SSA%20Example_2.png)
 
 In the given example, the StaticSingleAssignmentFormer assigns each<code>IdentityStmt</code>and<code>AssignStmt</code>to a new local variable . And each use uses the local variable which is most recently defined. Sometimes, it is impossible to determine the most recently defined local variable for a use in a join block. In this case, the StaticSingleAssignmentFormer will insert a<code>PhiStmt</code>in the front of the join block to merge all most recently defined local variables and assign them a new local variable.

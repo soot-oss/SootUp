@@ -68,7 +68,7 @@ public abstract class Type implements Acceptor<TypeVisitor> {
     if (type instanceof PrimitiveType.ByteType) {
       return 8;
     }
-    if (type instanceof PrimitiveType.ShortType) {
+    if (type instanceof PrimitiveType.ShortType || type instanceof PrimitiveType.CharType) {
       return 16;
     }
     if (type instanceof PrimitiveType.IntType || type instanceof PrimitiveType.FloatType) {

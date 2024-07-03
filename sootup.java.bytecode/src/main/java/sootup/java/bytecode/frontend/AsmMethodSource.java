@@ -47,10 +47,7 @@ import sootup.core.jimple.common.expr.*;
 import sootup.core.jimple.common.ref.*;
 import sootup.core.jimple.common.stmt.*;
 import sootup.core.jimple.javabytecode.stmt.JSwitchStmt;
-import sootup.core.model.Body;
-import sootup.core.model.FullPosition;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.Position;
+import sootup.core.model.*;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
@@ -185,7 +182,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     Body.BodyBuilder bodyBuilder = Body.builder(graph);
     bodyBuilder.setModifiers(AsmUtil.getMethodModifiers(access));
 
-    final List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
+    List<Stmt> preambleStmts = buildPreambleLocals(bodyBuilder);
 
     /* convert instructions */
     try {
@@ -205,7 +202,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
     // add converted insn as stmts into the graph
     try {
-      arrangeStmts(graph, preambleStmts, bodyBuilder);
+      arrangeStmts(graph, bodyBuilder, preambleStmts);
     } catch (Exception e) {
       throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
@@ -235,6 +232,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
         bodyInterceptor.interceptBody(bodyBuilder, view);
+        bodyBuilder
+            .getStmtGraph()
+            .validateStmtConnectionsInGraph(); // TODO: remove in the future ;-)
       } catch (Exception e) {
         throw new IllegalStateException(
             "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
@@ -268,8 +268,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     }
     JavaLocal local = locals.get(idx);
     if (local == null) {
-      String name = determineLocalName(idx);
-      local = JavaJimple.newLocal(name, UnknownType.getInstance(), Collections.emptyList());
+      String nameCandidate = determineLocalName(idx);
+      local = createUniqueLocal(nameCandidate, UnknownType.getInstance());
       locals.set(idx, local);
     }
     return local;
@@ -277,23 +277,32 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   @Nonnull
   private String determineLocalName(int idx) {
-    String name;
     if (localVariables != null) {
-      name = null;
       for (LocalVariableNode lvn : localVariables) {
         if (lvn.index == idx) {
-          name = lvn.name;
-          break;
+          // TODO: take into consideration in which range this name is valid ->lvn.start/end
+          return lvn.name;
         }
       }
-      /* normally for try-catch blocks */
-      if (name == null) {
-        name = "l" + idx;
-      }
-    } else {
-      name = "l" + idx;
+      /* usually reached for try-catch blocks */
     }
-    return name;
+    return "l" + idx;
+  }
+
+  private JavaLocal createUniqueLocal(@Nonnull String nameCandidate, @Nonnull Type type) {
+    // check for collisions with the same local names in other scopes
+    // this can happen when different scopes use the same name for a
+    // different variable (and having a different local idx, were we are able distinguish)
+    for (int i = 1; localNameExists(nameCandidate); i++) {
+      nameCandidate = nameCandidate + "_" + i;
+    }
+    return JavaJimple.newLocal(nameCandidate, type, Collections.emptyList());
+  }
+
+  private boolean localNameExists(String nameCandidate) {
+    return locals.stream()
+        .filter(Objects::nonNull)
+        .anyMatch(l -> l.getName().equals(nameCandidate));
   }
 
   void setStmt(@Nonnull AbstractInsnNode insn, @Nonnull Stmt stmt) {
@@ -303,8 +312,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    JavaLocal l =
-        JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance(), Collections.emptyList());
+    JavaLocal l = createUniqueLocal("$stack" + idx, UnknownType.getInstance());
     locals.set(idx, l);
     return l;
   }
@@ -330,7 +338,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         (opValue, operand) -> {
           if (!opValue.equivTo(local)) {
             boolean noRef = true;
-            for (Value use : opValue.getUses()) {
+            for (Iterator<Value> iterator = opValue.getUses().iterator(); iterator.hasNext(); ) {
+              Value use = iterator.next();
               if (use.equivTo(local)) {
                 noRef = false;
                 break;
@@ -1553,15 +1562,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     MethodSignature methodSignature = lazyMethodSignature.get();
     final StmtPositionInfo methodPosInfo = getFirstLineOfMethod();
 
+    // idx positions see: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.6.1
     int localIdx = 0;
     // create this Local if necessary ( i.e. not static )
     if (!bodyBuilder.getModifiers().contains(MethodModifier.STATIC)) {
-      JavaLocal thisLocal = JavaJimple.newLocal(determineLocalName(localIdx), declaringClass);
+      JavaLocal thisLocal = JavaJimple.newLocal("this", declaringClass);
       locals.set(localIdx++, thisLocal);
       final JIdentityStmt stmt =
           Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(declaringClass), methodPosInfo);
       preambleBlock.add(stmt);
     }
+
     // add parameter Locals
     for (int i = 0; i < methodSignature.getParameterTypes().size(); i++) {
       Type parameterType = methodSignature.getParameterTypes().get(i);
@@ -1606,12 +1617,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
           (trycatch.type != null) ? AsmUtil.toQualifiedName(trycatch.type) : "java.lang.Throwable";
       JavaClassType exceptionType = identifierFactory.getClassType(exceptionName);
 
-      Trap trap =
-          Jimple.newTrap(
-              exceptionType,
-              labelsToStmt.get(trycatch.start),
-              labelsToStmt.get(trycatch.end),
-              handler);
+      Stmt beginStmt = labelsToStmt.get(trycatch.start);
+      Stmt endStmt = labelsToStmt.get(trycatch.end);
+      if (
+      /*endStmt == null ||*/ beginStmt == null) {
+        throw new IllegalStateException("Labels for Traps are missing.");
+      }
+      Trap trap = Jimple.newTrap(exceptionType, beginStmt, endStmt, handler);
       traps.add(trap);
     }
     return traps;
@@ -1619,12 +1631,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
 
   /** all Instructions are converted. Now they can be arranged into the StmtGraph. */
   private void arrangeStmts(
-      MutableBlockStmtGraph graph, List<Stmt> stmtList, Body.BodyBuilder builder) {
+      MutableBlockStmtGraph graph, Body.BodyBuilder bodyBuilder, List<Stmt> preambleStmts) {
 
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> danglingLabel = new ArrayDeque<>();
 
-    Map<ClassType, Stmt> currentTraps = new HashMap<>();
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
+    List<List<Stmt>> blockStmtList = new ArrayList<>();
+    List<Stmt> currentStmtList =
+        preambleStmts.isEmpty()
+            ? new ArrayList<>()
+            : preambleStmts; // so we can refer to that list later on
 
     // (n, n+1) := (from, to)
     // List<Stmt> connectBlocks = new ArrayList<>();
@@ -1648,25 +1665,51 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
       }
 
       if (!danglingLabel.isEmpty()) {
+        // if fallsthroughStmt: remember link between the blocks
+        if (!currentStmtList.isEmpty()) {
+          Stmt tailStmtOfLastBlock = currentStmtList.get(currentStmtList.size() - 1);
+
+          // when we have at least one label in front of a Stmt -> we know a new BasicBlock starts
+          blockStmtList.add(currentStmtList);
+
+          currentStmtList = new ArrayList<>();
+
+          if (tailStmtOfLastBlock.fallsThrough()) {
+            // successorMap.put(tailStmtOfLastBlock, Collections.singletonList(stmt));
+          }
+        }
         // there is (at least) a LabelNode ->
         // associate collected labels from danglingLabel with the following stmt
-        Stmt targetStmt = stmt;
-        danglingLabel.forEach(l -> labelsToStmt.put(l, targetStmt));
+        danglingLabel.forEach(l -> labelsToStmt.put(l, stmt));
         if (isLabelNode) {
           // If the targetStmt is an exception handler, register the starting Stmt for it
-          JIdentityStmt identityRef = stmt instanceof JIdentityStmt ? (JIdentityStmt) stmt : null;
-          if (identityRef != null && identityRef.getRightOp() instanceof JCaughtExceptionRef) {
-            danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
+          if (stmt instanceof JIdentityStmt) {
+            JIdentityStmt identityRef = (JIdentityStmt) stmt;
+            if (identityRef.getRightOp() instanceof JCaughtExceptionRef) {
+              danglingLabel.forEach(label -> trapHandler.put(label, identityRef));
+            }
           }
         }
         danglingLabel.clear();
       }
 
-      emitStmt(stmt, stmtList);
-
+      currentStmtList.add(stmt);
+      if (stmt instanceof BranchingStmt && !currentStmtList.isEmpty()) {
+        blockStmtList.add(currentStmtList);
+        currentStmtList = new ArrayList<>();
+      }
     } while ((insn = insn.getNext()) != null);
 
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
+    if (!currentStmtList.isEmpty()) {
+      blockStmtList.add(currentStmtList);
+    }
+
+    /*
+    if (!danglingLabel.isEmpty()) {
+      throw new IllegalStateException(
+          "A dangling Label has no target Stmt! i.e. the last Instruction is a LabelNode.");
+    }*/
+
     for (Map.Entry<BranchingStmt, Collection<LabelNode>> entry :
         stmtsThatBranchToLabel.asMap().entrySet()) {
       final BranchingStmt fromStmt = entry.getKey();
@@ -1684,41 +1727,35 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
         }
         targets.add(targetStmt);
       }
-      branchingMap.put(fromStmt, targets);
+      successorMap.put(fromStmt, targets);
+    }
+
+    // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
+    // flow
+    for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
+
+      // TODO: [ms] check if we need to add a trap as well? !
+      currentStmtList = new ArrayList<>();
+      JIdentityStmt handlerStmt = entry.getValue();
+      currentStmtList.add(handlerStmt);
+      LabelNode labelNode = entry.getKey();
+      trapHandler.put(labelNode, handlerStmt);
+
+      // jump back to the original implementation
+      JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
+      currentStmtList.add(gotoStmt);
+
+      Stmt targetStmt = insnToStmt.get(labelNode);
+      successorMap.put(gotoStmt, Collections.singletonList(targetStmt));
+      blockStmtList.add(currentStmtList);
     }
 
     final List<Trap> traps = buildTraps();
     // TODO: performance: [ms] we already know Blocks borders from the label information -> use
     // addBlocks+collect trap data and connect blocks afterwards via branching information +
     // collected fallsthroughBlock information
-    graph.initializeWith(stmtList, branchingMap, traps);
 
-    // Emit the inline exception handler blocks i.e. those that are reachable without exceptional
-    // flow
-    // FIXME:[ms] the following code seems odd.. we need a testcase to test inlineexceptionhandling!
-    for (Entry<LabelNode, JIdentityStmt> entry : inlineExceptionHandlers.entrySet()) {
-
-      JIdentityStmt handlerStmt = entry.getValue();
-      emitStmt(handlerStmt, stmtList);
-      trapHandler.put(entry.getKey(), handlerStmt);
-      // TODO: update handlerStmts positioninfo!
-
-      // jump back to the original implementation
-      JGotoStmt gotoStmt = Jimple.newGotoStmt(handlerStmt.getPositionInfo());
-      stmtList.add(gotoStmt);
-
-      // add stmtList to graph
-      graph.addBlock(stmtList, currentTraps);
-      stmtList.clear();
-
-      // connect tail of stmtList with its target
-      Stmt targetStmt = insnToStmt.get(entry.getKey());
-      graph.putEdge(gotoStmt, 0, targetStmt);
-    }
-  }
-
-  private void emitStmt(@Nonnull Stmt handlerStmt, @Nonnull List<Stmt> block) {
-    block.add(handlerStmt);
+    graph.initializeWith(blockStmtList, successorMap, traps);
   }
 
   /**
@@ -1784,11 +1821,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
    */
   public Stream<Stmt> getStmtsThatUse(@Nonnull Value value) {
     Stream<Stmt> currentUses =
-        insnToStmt.values().stream().filter(stmt -> stmt.getUses().contains(value));
+        insnToStmt.values().stream().filter(stmt -> stmt.getUses().anyMatch(v -> v == value));
 
     Stream<Stmt> oldMappedUses =
         replacedStmt.entrySet().stream()
-            .filter(stmt -> stmt.getKey().getUses().contains(value))
+            .filter(stmt -> stmt.getKey().getUses().anyMatch(v -> v == value))
             .map(stmt -> getLatestVersionOfStmt(stmt.getValue()));
 
     return Stream.concat(currentUses, oldMappedUses);

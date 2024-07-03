@@ -1,11 +1,12 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -14,13 +15,16 @@ import sootup.core.jimple.common.stmt.FallsThroughStmt;
 import sootup.core.jimple.common.stmt.JGotoStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
-import sootup.core.util.ImmutableUtils;
+import sootup.core.types.UnknownType;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.CastAndReturnInliner;
+import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CastAndReturnInlinerTest {
 
   /**
@@ -38,8 +42,8 @@ public class CastAndReturnInlinerTest {
    * to
    *
    * <pre>
-   * a = "str";
-   * return a;
+   * a_ret = (String) "str";
+   * return a_ret0;
    * </pre>
    */
   @Test
@@ -60,7 +64,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(b, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    Set<Local> locals = new HashSet<>(Arrays.asList(a, b));
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
@@ -74,15 +78,21 @@ public class CastAndReturnInlinerTest {
     bodyBuilder.setMethodSignature(
         JavaIdentifierFactory.getInstance()
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
-    Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = bodyBuilder.build();
 
     List<Stmt> expected = new ArrayList<>();
     expected.add(strToA);
-    expected.add(JavaJimple.newReturnStmt(a, noPositionInfo));
+    JavaLocal aRet = JavaJimple.newLocal("a_ret0", stringType);
+    expected.add(
+        JavaJimple.newAssignStmt(
+            aRet, JavaJimple.newCastExpr(a, stringType), StmtPositionInfo.getNoStmtPositionInfo()));
+    expected.add(JavaJimple.newReturnStmt(aRet, noPositionInfo));
     assertStmtsEquiv(expected, processedBody.getStmts());
+    assertEquals(2, processedBody.getLocals().size());
+    assertTrue(processedBody.getLocals().contains(new Local("a", UnknownType.getInstance())));
+    assertTrue(processedBody.getLocals().contains(new Local("a_ret0", UnknownType.getInstance())));
   }
 
   /**
@@ -118,7 +128,7 @@ public class CastAndReturnInlinerTest {
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
     BranchingStmt jump = JavaJimple.newGotoStmt(noPositionInfo);
 
-    Set<Local> locals = ImmutableUtils.immutableSet(a, b);
+    Set<Local> locals = new HashSet<>(Arrays.asList(a, b));
 
     Body.BodyBuilder bodyBuilder = Body.builder();
     bodyBuilder.setLocals(locals);
@@ -133,7 +143,7 @@ public class CastAndReturnInlinerTest {
             .getMethodSignature("ab.c", "test", "void", Collections.emptyList()));
     Body testBody = bodyBuilder.build();
 
-    new CastAndReturnInliner().interceptBody(bodyBuilder, null);
+    new CastAndReturnInliner().interceptBody(bodyBuilder, new JavaView(Collections.emptyList()));
     Body processedBody = bodyBuilder.build();
 
     assertStmtsEquiv(testBody.getStmts(), processedBody.getStmts());
@@ -142,7 +152,11 @@ public class CastAndReturnInlinerTest {
   private static void assertStmtsEquiv(List<Stmt> expected, List<Stmt> actual) {
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {
-      assertTrue(expected.get(i).equivTo(actual.get(i)));
+      boolean condition = expected.get(i).equivTo(actual.get(i));
+      if (!condition) {
+        System.out.println(expected.get(i) + " <> " + actual.get(i));
+      }
+      assertTrue(condition);
     }
   }
 }

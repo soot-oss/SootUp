@@ -1,9 +1,9 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -19,11 +19,13 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.EmptySwitchEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class EmptySwitchEliminatorTest {
 
   // Preparation
@@ -59,7 +61,7 @@ public class EmptySwitchEliminatorTest {
 
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     EmptySwitchEliminator eliminator = new EmptySwitchEliminator();
-    eliminator.interceptBody(builder, null);
+    eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedEmptySwitchBody();
     AssertUtils.assertStmtGraphEquiv(expectedBody, builder.build());
@@ -115,7 +117,7 @@ public class EmptySwitchEliminatorTest {
     stmtGraph.putEdge(defaultStmt, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

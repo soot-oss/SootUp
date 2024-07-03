@@ -1,26 +1,28 @@
 package sootup.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import sootup.core.model.FieldModifier;
 import sootup.core.model.SootClass;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.sourcecode.minimaltestsuite.MinimalSourceTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
+@Tag("Java8")
 public class TransientVariableTest extends MinimalSourceTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         getDeclaredClassSignature(), "transientVariable", "void", Collections.emptyList());
   }
 
-  @Ignore
+  @Disabled
   public void testTransientVar() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(

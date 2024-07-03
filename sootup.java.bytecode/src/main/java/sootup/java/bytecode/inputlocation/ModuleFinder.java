@@ -42,6 +42,7 @@ import sootup.core.util.PathUtils;
 import sootup.java.bytecode.frontend.AsmModuleSource;
 import sootup.java.core.JavaModuleIdentifierFactory;
 import sootup.java.core.JavaModuleInfo;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.signatures.ModuleSignature;
 
 /**
@@ -64,7 +65,7 @@ public class ModuleFinder {
   private int next = 0;
 
   @Nonnull private final List<Path> modulePathEntries;
-  private final SourceType sourceType;
+  @Nonnull private final SourceType sourceType;
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   public boolean hasMoreToResolve() {
@@ -107,7 +108,11 @@ public class ModuleFinder {
   }
 
   public ModuleFinder(@Nonnull Path modulePath) {
-    this(modulePath, FileSystems.getDefault(), SourceType.Application, Collections.emptyList());
+    this(
+        modulePath,
+        FileSystems.getDefault(),
+        SourceType.Application,
+        BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   @Nonnull

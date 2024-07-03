@@ -1,18 +1,15 @@
 package sootup.java.sourcecode.frontend;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static sootup.core.util.Utils.assertEquiv;
 import static sootup.core.util.Utils.assertInstanceOfSatisfying;
 
-import categories.Java8Test;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.constant.BooleanConstant;
@@ -51,13 +48,13 @@ import sootup.java.core.types.JavaClassType;
 import sootup.java.sourcecode.WalaClassLoaderTestUtils;
 
 /** @author Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class BinaryOpInstructionConversionTest {
   private WalaJavaClassProvider loader;
   private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
-  @Before
+  @BeforeEach
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaJavaClassProvider(srcDir);
@@ -158,7 +155,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testAddDouble() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -232,7 +228,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testMulDouble() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -632,7 +627,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testIncShort() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -701,7 +695,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testDecInt() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -762,7 +755,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testOrLong() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1131,7 +1123,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNegLong() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1182,7 +1173,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testZeroFillRshiftInt() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1244,7 +1234,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLogicalAnd() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1338,7 +1327,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLogicalOr() {
-    // TODO: failed test
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
@@ -1431,7 +1419,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNot() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1483,7 +1470,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1549,7 +1535,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNotEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1615,7 +1600,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testGreater() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1681,7 +1665,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testSmaller() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1747,7 +1730,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testGreaterEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
@@ -1833,7 +1815,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testSmallerEqual() {
-    // TODO: failed test
 
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(

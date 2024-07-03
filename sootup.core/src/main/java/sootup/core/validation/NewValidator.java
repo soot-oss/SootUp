@@ -22,10 +22,7 @@ package sootup.core.validation;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
@@ -53,7 +50,7 @@ public class NewValidator implements BodyValidator {
 
     List<ValidationException> exceptions = new ArrayList<>();
 
-    StmtGraph g = body.getStmtGraph();
+    StmtGraph<?> g = body.getStmtGraph();
     for (Stmt u : body.getStmts()) {
       if (u instanceof JAssignStmt) {
         JAssignStmt assign = (JAssignStmt) u;
@@ -66,12 +63,18 @@ public class NewValidator implements BodyValidator {
                 new ValidationException(
                     assign.getLeftOp(),
                     String.format(
-                        "Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
+                        "Body of Method %s contains a new-expression, which is assigned to a non-reference Local.",
                         body.getMethodSignature())));
-            return exceptions;
           }
 
-          checkForInitializerOnPath(g, assign, exceptions);
+          if (!checkForInitializerOnPath(g, assign, exceptions)) {
+            exceptions.add(
+                new ValidationException(
+                    assign.getLeftOp(),
+                    String.format(
+                        "Body of Method %s contains a Local that has no value assigned.",
+                        body.getMethodSignature())));
+          }
         }
       }
     }
@@ -79,7 +82,7 @@ public class NewValidator implements BodyValidator {
   }
 
   private boolean checkForInitializerOnPath(
-      StmtGraph g, JAssignStmt newStmt, List<ValidationException> exception) {
+      StmtGraph<?> g, JAssignStmt newStmt, List<ValidationException> exception) {
     List<Stmt> workList = new ArrayList<>();
     Set<Stmt> doneSet = new HashSet<>();
     workList.add(newStmt);
@@ -99,7 +102,7 @@ public class NewValidator implements BodyValidator {
             exception.add(
                 new ValidationException(
                     curStmt.getInvokeExpr(),
-                    "<init> methodRef calls may only be used with specialinvoke.")); // At least we
+                    "<init> Method calls may only be used with specialinvoke.")); // At least we
             // found an initializer, so we return true...
             return true;
           }
@@ -123,8 +126,8 @@ public class NewValidator implements BodyValidator {
         boolean creatingAlias = false;
         if (curStmt instanceof JAssignStmt) {
           JAssignStmt assignCheck = (JAssignStmt) curStmt;
-          if (aliasingLocals.contains(assignCheck.getRightOp())) {
-            if (assignCheck.getLeftOp() instanceof Local) {
+          if (assignCheck.getLeftOp() instanceof Local) {
+            if (aliasingLocals.contains(assignCheck.getRightOp())) {
               // A new alias is created.
               aliasingLocals.add((Local) assignCheck.getLeftOp());
               creatingAlias = true;
@@ -147,7 +150,10 @@ public class NewValidator implements BodyValidator {
         }
 
         if (!creatingAlias) {
-          for (Value box : curStmt.getUses()) {
+          for (Iterator<Value> iterator =
+                  curStmt.getUses().filter(use -> use instanceof Local).iterator();
+              iterator.hasNext(); ) {
+            Value box = iterator.next();
             if (aliasingLocals.contains(box)) {
               // The current unit uses one of the aliasing locals, but
               // there was no initializer in between.
@@ -161,10 +167,10 @@ public class NewValidator implements BodyValidator {
         }
       }
       // Enqueue the successors
-      List successors = g.successors(curStmt);
+      List<Stmt> successors = g.successors(curStmt);
       if (successors.isEmpty() && MUST_CALL_CONSTRUCTOR_BEFORE_RETURN) {
         // This means that we are e.g.at the end of
-        // the methodRef // There was no <init> call
+        // the Method // There was no <init> call
         // on our way...
         exception.add(
             new ValidationException(
@@ -174,10 +180,5 @@ public class NewValidator implements BodyValidator {
       workList.addAll(successors);
     }
     return true;
-  }
-
-  @Override
-  public boolean isBasicValidator() {
-    return false;
   }
 }

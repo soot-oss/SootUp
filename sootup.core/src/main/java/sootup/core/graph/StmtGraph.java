@@ -145,9 +145,14 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
    */
   public abstract boolean hasEdgeConnecting(@Nonnull Stmt source, @Nonnull Stmt target);
 
-  /** returns a list of associated traps */
-  @Deprecated
-  public abstract List<Trap> getTraps();
+  /**
+   * returns a (reconstructed) list of traps like the traptable in the bytecode
+   *
+   * <p>Note: if you need exceptionional flow information in more augmented with the affected
+   * blocks/stmts and not just a (reconstructed, possibly more verbose) traptable - have a look at
+   * BasicBlock.getExceptionalSuccessor()
+   */
+  public abstract List<Trap> buildTraps();
 
   /**
    * returns a Collection of Stmts that leave the body (i.e. JReturnVoidStmt, JReturnStmt and
@@ -170,7 +175,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     stmts.add(getStartingStmt());
     // TODO: [ms] memory/performance: instead of gettraps(): iterate through all stmts and add
     // startingStmt+@caughtexception/predecessors().size() == 0?
-    getTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
+    buildTraps().stream().map(Trap::getHandlerStmt).forEach(stmts::add);
     return stmts;
   }
 
@@ -184,7 +189,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
         if (predecessors(stmt).size() == 0) {
           if (!(stmt == getStartingStmt()
-              || getTraps().stream()
+              || buildTraps().stream()
                   .map(Trap::getHandlerStmt)
                   .anyMatch(handler -> handler == stmt))) {
             throw new IllegalStateException(
@@ -331,7 +336,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return false;
     }
 
-    if (!getTraps().equals(otherGraph.getTraps())) {
+    if (!buildTraps().equals(otherGraph.buildTraps())) {
       return false;
     }
 
@@ -424,7 +429,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     @Nonnull private final List<Trap> collectedTraps = new ArrayList<>();
 
-    Map<ClassType, Stmt> trapStarts = new HashMap<>();
+    Map<ClassType, Stmt> activeTraps = new HashMap<>();
     BasicBlock<?> lastIteratedBlock; // dummy value to remove n-1 unnecessary null-checks
 
     /*
@@ -449,7 +454,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       lastBlocksExceptions.forEach(
           (type, trapHandlerBlock) -> {
             if (trapHandlerBlock != block.getExceptionalSuccessors().get(type)) {
-              final Stmt trapBeginStmt = trapStarts.remove(type);
+              final Stmt trapBeginStmt = activeTraps.remove(type);
               if (trapBeginStmt == null) {
                 throw new IllegalStateException("Trap start for '" + type + "' is not in the Map!");
               }
@@ -465,7 +470,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           .forEach(
               (type, trapHandlerBlock) -> {
                 if (trapHandlerBlock != lastBlocksExceptions.get(type)) {
-                  trapStarts.put(type, block.getHead());
+                  activeTraps.put(type, block.getHead());
                 }
               });
 
@@ -486,7 +491,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       }
 
       // check for dangling traps that are not collected as the endStmt was not visited.
-      if (!trapStarts.isEmpty()) {
+      if (!activeTraps.isEmpty()) {
         throw new IllegalArgumentException(
             "Invalid StmtGraph. A Trap is not created as a traps endStmt was not visited during the iteration of all Stmts.");
       }
@@ -495,7 +500,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
   }
 
   /** Iterates over the blocks */
-  public class BlockGraphIterator implements Iterator<BasicBlock<?>> {
+  protected class BlockGraphIterator implements Iterator<BasicBlock<?>> {
 
     @Nonnull private final ArrayDeque<BasicBlock<?>> trapHandlerBlocks = new ArrayDeque<>();
 
@@ -505,7 +510,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
     public BlockGraphIterator() {
       final Collection<? extends BasicBlock<?>> blocks = getBlocks();
-      iteratedBlocks = new HashSet<>(blocks.size(), 1);
+      iteratedBlocks = new LinkedHashSet<>(blocks.size(), 1);
       Stmt startingStmt = getStartingStmt();
       if (startingStmt != null) {
         final BasicBlock<?> startingBlock = getStartingStmtBlock();
@@ -559,7 +564,6 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
       return currentBlock;
     }
 
-    //
     private void updateFollowingBlocks(BasicBlock<?> currentBlock) {
       // collect traps
       final Stmt tailStmt = currentBlock.getTail();
@@ -580,11 +584,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
           nestedBlocks.addFirst(successors.get(0));
         } else {
 
-          // create the most biggest fallsthrough sequence of basicblocks as possible -&gt; go to
-          // the
-          // top until
-          // predecessor is not a fallsthrough stmt anymore and then the iterator will iterate
-          // from there.
+          // create the longest FallsThroughStmt sequence possible
           final BasicBlock<?> successorBlock = successors.get(i);
           BasicBlock<?> leaderOfFallsthroughBlocks = successorBlock;
           while (true) {
@@ -613,12 +613,13 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
 
           // find a return Stmt inside the current Block
           Stmt succTailStmt = successorBlock.getTail();
-          boolean isReturnBlock =
-              succTailStmt instanceof JReturnVoidStmt || succTailStmt instanceof JReturnStmt;
+          boolean hasNoSuccessorStmts = succTailStmt.getExpectedSuccessorCount() == 0;
+          boolean isExceptionFree = successorBlock.getExceptionalSuccessors().isEmpty();
 
+          boolean isLastStmtCandidate = hasNoSuccessorStmts && isExceptionFree;
           // remember branching successors
           if (tailStmt instanceof JGotoStmt) {
-            if (isReturnBlock) {
+            if (isLastStmtCandidate) {
               nestedBlocks.removeFirstOccurrence(currentBlock);
               otherBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
@@ -626,7 +627,7 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
             }
           } else if (!nestedBlocks.contains(leaderOfFallsthroughBlocks)) {
             // JSwitchStmt, JIfStmt
-            if (isReturnBlock) {
+            if (isLastStmtCandidate) {
               nestedBlocks.addLast(leaderOfFallsthroughBlocks);
             } else {
               nestedBlocks.addFirst(leaderOfFallsthroughBlocks);
@@ -689,18 +690,17 @@ public abstract class StmtGraph<V extends BasicBlock<V>> implements Iterable<Stm
     for (Stmt stmt : getNodes()) {
       if (stmt instanceof BranchingStmt) {
         if (stmt instanceof JIfStmt) {
-          // [ms] bounds are validated in Body
-          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(0));
+          stmtList.add(getBranchTargetsOf((JIfStmt) stmt).get(JIfStmt.FALSE_BRANCH_IDX));
         } else if (stmt instanceof JGotoStmt) {
           // [ms] bounds are validated in Body if its a valid StmtGraph
-          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(0));
+          stmtList.add(getBranchTargetsOf((JGotoStmt) stmt).get(JGotoStmt.BRANCH_IDX));
         } else if (stmt instanceof JSwitchStmt) {
           stmtList.addAll(getBranchTargetsOf((BranchingStmt) stmt));
         }
       }
     }
 
-    for (Trap trap : getTraps()) {
+    for (Trap trap : buildTraps()) {
       stmtList.add(trap.getBeginStmt());
       stmtList.add(trap.getEndStmt());
       stmtList.add(trap.getHandlerStmt());

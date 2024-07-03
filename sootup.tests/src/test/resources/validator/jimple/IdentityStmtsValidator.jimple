@@ -1,0 +1,60 @@
+public class IdentityStmtsValidator extends java.lang.Object
+ {
+    public void <init>()
+    {
+     IdentityStmtsValidator l0;
+
+     l0 := @this: IdentityStmtsValidator;
+     specialinvoke l0.<java.lang.Object: void <init>()>();
+
+     return;
+    }
+
+    public void testParameterRefSuccess(int)
+    {
+         IdentityStmtsValidator l0;
+         int l1, l2;
+
+         l0 := @this: IdentityStmtsValidator;
+         l1 := @parameter0: int;
+         l2 = l1 + 1;
+
+         return;
+    }
+
+    public void testNoThisrRef(int)
+    {
+         int l1, l2;
+
+         l1 := @parameter0: int;
+         l2 = l1 + 1;
+
+         return;
+    }
+
+    public void testParameterRefMultiLocals(int)
+    {
+         IdentityStmtsValidator l0;
+         int l1, l2, l3;
+
+         l0 := @this: IdentityStmtsValidator;
+         l1 := @parameter0: int;
+         l2 := @parameter0: int;
+         l3 = l1 + 1;
+
+         return;
+    }
+
+    public void testParameterRefNoLocal(int)
+    {
+         IdentityStmtsValidator l0;
+         int l1, l2, l3;
+
+         l0 := @this: IdentityStmtsValidator;
+         l1 = 1;
+         l2 = 2;
+         l3 = l1 + l2;
+
+         return;
+    }
+ }

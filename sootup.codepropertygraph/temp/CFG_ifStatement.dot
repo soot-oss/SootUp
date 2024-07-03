@@ -1,0 +1,16 @@
+digraph CFG {
+	rankdir=TB;
+	node [style=filled, shape=record];
+	edge [style=filled]	"1940629919" [label="{<f0> STMT | <f1> l0 := @this: IfElseStatement}", fillcolor="lightblue"];
+	"251248365" [label="{<f0> STMT | <f1> l1 := @parameter0: int}", fillcolor="lightblue"];
+	"-1001156250" [label="{<f0> STMT | <f1> l2 = 0}", fillcolor="lightblue"];
+	"1466611112" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
+	"1795247249" [label="{<f0> STMT | <f1> l2 = 1}", fillcolor="lightblue"];
+	"-1381463631" [label="{<f0> STMT | <f1> return l2}", fillcolor="lightblue"];
+	"1940629919" -> "251248365"[label="CFG", color="darkred", fontcolor="darkred"];
+	"251248365" -> "-1001156250"[label="CFG", color="darkred", fontcolor="darkred"];
+	"-1001156250" -> "1466611112"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1466611112" -> "1795247249"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1466611112" -> "-1381463631"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1795247249" -> "-1381463631"[label="CFG", color="darkred", fontcolor="darkred"];
+}

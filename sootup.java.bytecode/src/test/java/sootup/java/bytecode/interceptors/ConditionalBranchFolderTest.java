@@ -1,13 +1,13 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Local;
@@ -24,11 +24,13 @@ import sootup.core.signatures.PackageName;
 import sootup.core.util.ImmutableUtils;
 import sootup.core.util.Utils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.ConditionalBranchFolder;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class ConditionalBranchFolderTest {
 
   /**
@@ -43,7 +45,7 @@ public class ConditionalBranchFolderTest {
   @Test
   public void testUnconditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(0);
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     assertEquals(
         Arrays.asList("a = \"str\"", "b = \"str\"", "return a"),
         Utils.bodyStmtsAsStrings(builder.build()));
@@ -59,7 +61,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranching() {
     Body.BodyBuilder builder = createBodyBuilder(1);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(
@@ -71,7 +73,7 @@ public class ConditionalBranchFolderTest {
   public void testConditionalBranchingWithNoConclusiveIfCondition() {
     Body.BodyBuilder builder = createBodyBuilder(2);
     Body originalBody = builder.build();
-    new ConditionalBranchFolder().interceptBody(builder, null);
+    new ConditionalBranchFolder().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertEquals(Utils.bodyStmtsAsStrings(originalBody), Utils.bodyStmtsAsStrings(processedBody));

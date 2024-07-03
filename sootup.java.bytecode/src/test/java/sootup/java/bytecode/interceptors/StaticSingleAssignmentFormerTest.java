@@ -1,11 +1,12 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -21,12 +22,14 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.StaticSingleAssignmentFormer;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
-@Ignore("ms: FIX IT")
+@Tag(TestCategories.JAVA_8_CATEGORY)
+@Disabled("ms: FIX IT")
 public class StaticSingleAssignmentFormerTest {
 
   // Preparation
@@ -54,10 +57,10 @@ public class StaticSingleAssignmentFormerTest {
   Stmt assign1tol1 = JavaJimple.newAssignStmt(l1, IntConstant.getInstance(1), noStmtPositionInfo);
   Stmt assign1tol2 = JavaJimple.newAssignStmt(l2, IntConstant.getInstance(1), noStmtPositionInfo);
   Stmt assign0tol3 = JavaJimple.newAssignStmt(l3, IntConstant.getInstance(0), noStmtPositionInfo);
-  Stmt ifStmt =
+  BranchingStmt ifStmt =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l3, IntConstant.getInstance(100)), noStmtPositionInfo);
-  Stmt ifStmt2 =
+  BranchingStmt ifStmt2 =
       JavaJimple.newIfStmt(
           JavaJimple.newLtExpr(l2, IntConstant.getInstance(20)), noStmtPositionInfo);
   Stmt returnStmt = JavaJimple.newReturnStmt(l2, noStmtPositionInfo);
@@ -69,7 +72,7 @@ public class StaticSingleAssignmentFormerTest {
   Stmt assignl3plus2tol3 =
       JavaJimple.newAssignStmt(
           l3, JavaJimple.newAddExpr(l3, IntConstant.getInstance(2)), noStmtPositionInfo);
-  Stmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
+  BranchingStmt gotoStmt = JavaJimple.newGotoStmt(noStmtPositionInfo);
 
   FallsThroughStmt handlerStmt =
       JavaJimple.newIdentityStmt(stack4, caughtExceptionRef, noStmtPositionInfo);
@@ -81,7 +84,7 @@ public class StaticSingleAssignmentFormerTest {
   public void testSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = createBody();
-    ssa.interceptBody(builder, null);
+    ssa.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     String expectedBodyString =
         "{\n"
@@ -124,14 +127,14 @@ public class StaticSingleAssignmentFormerTest {
             + "    return l2#5;\n"
             + "}\n";
 
-    Assert.assertEquals(expectedBodyString, builder.build().toString());
+    assertEquals(expectedBodyString, builder.build().toString());
   }
 
   @Test
   public void testTrapedSSA() {
     StaticSingleAssignmentFormer ssa = new StaticSingleAssignmentFormer();
     Body.BodyBuilder builder = createTrapBody();
-    ssa.interceptBody(builder, null);
+    ssa.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     String expectedBodyString =
         "{\n"
@@ -188,7 +191,7 @@ public class StaticSingleAssignmentFormerTest {
             + " catch Exception from label2 to label3 with label4;\n"
             + "}\n";
 
-    Assert.assertEquals(expectedBodyString, builder.build().toString());
+    assertEquals(expectedBodyString, builder.build().toString());
   }
 
   /**
@@ -221,26 +224,18 @@ public class StaticSingleAssignmentFormerTest {
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3);
     builder.setLocals(locals);
 
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
-    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
-    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
-    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
+    successorMap.put(ifStmt, Collections.singletonList(returnStmt));
+    successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
+    successorMap.put(gotoStmt, Collections.singletonList(ifStmt));
 
     graph.initializeWith(
         Arrays.asList(
-            startingStmt,
-            assign1tol1,
-            assign1tol2,
-            assign0tol3,
-            ifStmt,
-            ifStmt2,
-            assignl1tol2,
-            assignl3plus1tol3,
-            gotoStmt,
-            assignl3tol2,
-            assignl3plus2tol3,
-            returnStmt),
-        branchingMap,
+            Arrays.asList(startingStmt, assign1tol1, assign1tol2, assign0tol3, ifStmt),
+            Collections.singletonList(ifStmt2),
+            Arrays.asList(assignl1tol2, assignl3plus1tol3, gotoStmt),
+            Arrays.asList(assignl3tol2, assignl3plus2tol3, returnStmt)),
+        successorMap,
         Collections.emptyList());
 
     return builder;
@@ -283,26 +278,18 @@ public class StaticSingleAssignmentFormerTest {
     // build set locals
     Set<Local> locals = ImmutableUtils.immutableSet(l0, l1, l2, l3, stack4);
     builder.setLocals(locals);
-    Map<BranchingStmt, List<Stmt>> branchingMap = new HashMap<>();
-    branchingMap.put((BranchingStmt) ifStmt, Collections.singletonList(returnStmt));
-    branchingMap.put((BranchingStmt) ifStmt2, Collections.singletonList(assignl1tol2));
-    branchingMap.put((BranchingStmt) gotoStmt, Collections.singletonList(ifStmt));
+    Map<BranchingStmt, List<Stmt>> successorMap = new HashMap<>();
+    successorMap.put(ifStmt, Collections.singletonList(returnStmt));
+    successorMap.put(ifStmt2, Collections.singletonList(assignl1tol2));
+    successorMap.put(gotoStmt, Collections.singletonList(ifStmt));
 
     graph.initializeWith(
         Arrays.asList(
-            startingStmt,
-            assign1tol1,
-            assign1tol2,
-            assign0tol3,
-            ifStmt,
-            ifStmt2,
-            assignl1tol2,
-            assignl3plus1tol3,
-            gotoStmt,
-            assignl3tol2,
-            assignl3plus2tol3,
-            returnStmt),
-        branchingMap,
+            Arrays.asList(startingStmt, assign1tol1, assign1tol2, assign0tol3, ifStmt),
+            Collections.singletonList(ifStmt2),
+            Arrays.asList(assignl1tol2, assignl3plus1tol3, gotoStmt),
+            Arrays.asList(assignl3tol2, assignl3plus2tol3, returnStmt)),
+        successorMap,
         Collections.emptyList());
 
     // add exception

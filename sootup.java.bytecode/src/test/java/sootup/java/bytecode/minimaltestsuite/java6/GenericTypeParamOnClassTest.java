@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class GenericTypeParamOnClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
@@ -35,9 +35,9 @@ public class GenericTypeParamOnClassTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: GenericTypeParamOnClass",
+            "this := @this: GenericTypeParamOnClass",
             "$stack3 = new GenericTypeParamOnClass$A",
-            "specialinvoke $stack3.<GenericTypeParamOnClass$A: void <init>(GenericTypeParamOnClass)>(l0)",
+            "specialinvoke $stack3.<GenericTypeParamOnClass$A: void <init>(GenericTypeParamOnClass)>(this)",
             "l1 = $stack3",
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(5)",
             "staticinvoke <GenericTypeParamOnClass$A: void access$000(GenericTypeParamOnClass$A,java.lang.Object)>(l1, $stack4)",

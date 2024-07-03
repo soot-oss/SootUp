@@ -1,12 +1,15 @@
 package sootup.core.graph;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JNopStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
+@Tag("Java8")
 public class MutableBasicBlockTest {
 
   Stmt firstNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
@@ -14,22 +17,24 @@ public class MutableBasicBlockTest {
   Stmt thirdNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
   Stmt fourthNop = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testUnlinkedSplitBeginningNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
 
-    MutableBasicBlock newBlock = block.splitBlockUnlinked(0);
-    assertEquals(0, block.getStmtCount());
-    assertEquals(4, newBlock.getStmtCount());
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          MutableBasicBlock mutableBasicBlock = block.splitBlockUnlinked(0);
+        });
   }
 
   @Test
   public void testUnlinkedSplitBeginning() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -42,7 +47,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplit() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -55,7 +60,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testUnlinkedSplitEnd() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlockImpl block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -68,7 +73,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitBeginningNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -81,7 +86,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitBeginningNewTail() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -94,7 +99,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplit() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -106,7 +111,7 @@ public class MutableBasicBlockTest {
   }
 
   public void testLinkedSplitEndNewHead() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -119,7 +124,7 @@ public class MutableBasicBlockTest {
 
   @Test
   public void testLinkedSplitEnd() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
@@ -130,16 +135,18 @@ public class MutableBasicBlockTest {
     assertEquals(1, newBlock.getStmtCount());
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testLinkedSplitEndException() {
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
     block.addStmt(thirdNop);
     block.addStmt(fourthNop);
 
-    MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
-    assertEquals(4, block.getStmtCount());
-    assertEquals(0, newBlock.getStmtCount());
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          MutableBasicBlock newBlock = block.splitBlockLinked(fourthNop, false);
+        });
   }
 }

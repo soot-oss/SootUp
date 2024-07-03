@@ -1,33 +1,31 @@
 package sootup.jimple.parser;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
-import org.antlr.v4.runtime.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.frontend.OverridingClassSource;
 import sootup.core.frontend.ResolveException;
 import sootup.core.inputlocation.EagerInputLocation;
 import sootup.core.jimple.Jimple;
-import sootup.core.model.Body;
-import sootup.core.model.SootClass;
-import sootup.core.model.SootField;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.model.*;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.VoidType;
 import sootup.core.util.StringTools;
 import sootup.jimple.JimpleLexer;
 import sootup.jimple.JimpleParser;
-import sootup.jimple.parser.categories.Java8Test;
 
-@Category(Java8Test.class)
+@Tag("Java8")
 public class JimpleConverterTest {
 
   private SootClass parseJimpleClass(CharStream cs) throws ResolveException {
@@ -44,16 +42,16 @@ public class JimpleConverterTest {
     parseJimpleClass(cs);
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void parseEmptyFile() {
     CharStream cs = CharStreams.fromString("");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void parseNonJimpleFile() {
     CharStream cs = CharStreams.fromString("Hello World!");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
   @Test
@@ -109,7 +107,7 @@ public class JimpleConverterTest {
     parseJimpleClass(cs);
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void testInvalidDuplicateImports() {
     CharStream cs =
         CharStreams.fromString(
@@ -117,7 +115,7 @@ public class JimpleConverterTest {
                 + "import Medium.Table; \n"
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
   @Test
@@ -152,22 +150,22 @@ public class JimpleConverterTest {
     parseJimpleClass(cs);
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void parseDuplicateFields() {
     CharStream cs =
         CharStreams.fromString(
             "public class DuplicateField extends java.lang.Object\n"
                 + " {     public int globalCounter; public int globalCounter;} ");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void parseDuplicateFieldsDiffType() {
     CharStream cs =
         CharStreams.fromString(
             "public class DuplicateField extends java.lang.Object\n"
                 + " {     public int globalCounter; bool globalCounter;} ");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
   @Test
@@ -304,7 +302,7 @@ public class JimpleConverterTest {
     parseJimpleClass(cs);
   }
 
-  @Test(expected = ResolveException.class)
+  @Test
   public void testLongCommentDisruptingToken() {
     CharStream cs =
         CharStreams.fromString(
@@ -313,10 +311,10 @@ public class JimpleConverterTest {
                 + " \n {"
                 + "public void <init>(){}"
                 + "} ");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
-  @Test(expected = Exception.class)
+  @Test
   public void testLongCommentDisruptingTokenWord() {
     CharStream cs =
         CharStreams.fromString(
@@ -324,7 +322,7 @@ public class JimpleConverterTest {
                 + " BigTable extends Table \n {"
                 + "public void <init>(){}"
                 + "} ");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
   @Test
@@ -660,7 +658,7 @@ public class JimpleConverterTest {
     assertEquals("'class'", Jimple.unescape("\"'class'\""));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testWholefile() {
     CharStream cs =
         CharStreams.fromString(
@@ -671,10 +669,10 @@ public class JimpleConverterTest {
                 + "} \n"
                 + "bla bla \n"
                 + "\n");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testFileMultipleClasses() {
     CharStream cs =
         CharStreams.fromString(
@@ -687,7 +685,7 @@ public class JimpleConverterTest {
                 + " public void <init>(){} \n"
                 + "private void anotherChair(){} \n"
                 + "} \n");
-    parseJimpleClass(cs);
+    assertThrows(ResolveException.class, () -> parseJimpleClass(cs));
   }
 
   /*   parse partial contents - at least for syntax highlighting */
@@ -803,5 +801,30 @@ public class JimpleConverterTest {
     for (SootField field : fields) {
       assertEquals(PrimitiveType.DoubleType.getInstance(), field.getType());
     }
+  }
+
+  @Test
+  public void testLegacyTransientMethodModifier() throws IOException {
+    SootClass clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName(
+                "src/test/java/resources/jimple/LegacyTransientMethodModifier.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    Set<MethodModifier> modifiers = method.getModifiers();
+    assertEquals(1, modifiers.size());
+    MethodModifier modifier = modifiers.iterator().next();
+    assertEquals(MethodModifier.VARARGS, modifier);
+  }
+
+  @Test
+  public void testRedundantTrapHandler() throws IOException {
+    SootClass clazz =
+        parseJimpleClass(
+            CharStreams.fromFileName("src/test/java/resources/jimple/RedundantTrapHandler.jimple"));
+    Set<? extends SootMethod> methods = clazz.getMethods();
+    SootMethod method = methods.iterator().next();
+    List<Trap> traps = method.getBody().getTraps();
+    assertEquals(0, traps.size());
   }
 }

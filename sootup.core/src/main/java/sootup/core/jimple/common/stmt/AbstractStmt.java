@@ -22,11 +22,9 @@ package sootup.core.jimple.common.stmt;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -49,8 +47,8 @@ public abstract class AbstractStmt implements Stmt {
    */
   @Override
   @Nonnull
-  public List<Value> getUses() {
-    return Collections.emptyList();
+  public Stream<Value> getUses() {
+    return Stream.empty();
   }
 
   /**
@@ -59,26 +57,19 @@ public abstract class AbstractStmt implements Stmt {
    */
   @Override
   @Nonnull
-  public List<LValue> getDefs() {
-    return Collections.emptyList();
+  public Optional<LValue> getDef() {
+    return Optional.empty();
   }
 
   /** Returns a list of Values, either used or defined or both in this Stmt. */
   @Override
   @Nonnull
-  public List<Value> getUsesAndDefs() {
-    List<Value> uses = getUses();
-    List<Value> defs = new ArrayList<>(getDefs());
-    if (uses.isEmpty()) {
-      return defs;
-    } else if (defs.isEmpty()) {
-      return uses;
-    } else {
-      List<Value> values = new ArrayList<>();
-      values.addAll(defs);
-      values.addAll(uses);
-      return values;
+  public Stream<Value> getUsesAndDefs() {
+    Optional<LValue> def = getDef();
+    if (def.isPresent()) {
+      return Stream.concat(getUses(), Stream.of(def.get()));
     }
+    return getUses();
   }
 
   /** Returns the amount of unexceptional successors the Stmt needs to have in the StmtGraph. */
@@ -139,13 +130,18 @@ public abstract class AbstractStmt implements Stmt {
    *
    * @param oldUse a Value in the useList of oldStmt.
    * @param newUse a Value is to replace oldUse
-   * @return a new Stmt with newUse or null if oldUse was not found/replaced in the Stmt
+   * @return a new Stmt with newUse or the current Stmt if oldUse was not found/could not be
+   *     replaced in the Stmt
    */
   @Override
-  @Nullable
   public Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse) {
     ReplaceUseStmtVisitor visitor = new ReplaceUseStmtVisitor(oldUse, newUse);
-    accept(visitor);
+    try {
+      accept(visitor);
+    } catch (ClassCastException cce) {
+      // new Stmt is not created as the newUse could not be replaced
+      return this;
+    }
     return visitor.getResult();
   }
 }

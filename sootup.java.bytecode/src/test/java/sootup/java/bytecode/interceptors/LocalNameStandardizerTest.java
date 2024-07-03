@@ -1,9 +1,9 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -22,11 +22,13 @@ import sootup.core.types.UnknownType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.LocalNameStandardizer;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalNameStandardizerTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -100,7 +102,7 @@ public class LocalNameStandardizerTest {
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
     LocalNameStandardizer standardizer = new LocalNameStandardizer();
-    standardizer.interceptBody(builder, null);
+    standardizer.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     Body expectedBody = createExpectedBody();
 
@@ -132,7 +134,7 @@ public class LocalNameStandardizerTest {
     stmtGraph.putEdge(stmt7, ret);
 
     // set startingStmt
-    builder.setStartingStmt(startingStmt);
+    stmtGraph.setStartingStmt(startingStmt);
 
     // set Position
     builder.setPosition(NoPositionInformation.getInstance());

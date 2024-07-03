@@ -1,18 +1,18 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -66,7 +66,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsIntArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (int)[3]",
             "$stack7[0] = 1",
             "$stack7[1] = 2",
@@ -102,7 +102,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsByteArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (byte)[3]",
             "$stack7[0] = 4",
             "$stack7[1] = 5",
@@ -138,7 +138,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsShortArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (short)[3]",
             "$stack7[0] = 10",
             "$stack7[1] = 20",
@@ -174,7 +174,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsLongArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack9 = newarray (long)[3]",
             "$stack9[0] = 547087L",
             "$stack9[1] = 564645L",
@@ -210,7 +210,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsFloatArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (float)[4]",
             "$stack7[0] = 3.14F",
             "$stack7[1] = 5.46F",
@@ -248,7 +248,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsDoubleArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack9 = newarray (double)[2]",
             "$stack9[0] = 6.765414",
             "$stack9[1] = 9.676565646",
@@ -283,7 +283,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsBooleanArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (boolean)[2]",
             "$stack7[0] = 1",
             "$stack7[1] = 0",
@@ -318,7 +318,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsCharArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (char)[3]",
             "$stack7[0] = 65",
             "$stack7[1] = 98",
@@ -353,7 +353,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
    */
   public List<String> expectedBodyStmtsStringArrays() {
     return Stream.of(
-            "l0 := @this: AccessArrays",
+            "this := @this: AccessArrays",
             "$stack7 = newarray (java.lang.String)[2]",
             "$stack7[0] = \"Hello World\"",
             "$stack7[1] = \"Greetings\"",

@@ -1,12 +1,11 @@
 package sootup.tests;
 
-import categories.Java8Test;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /** @author Linghui Luo */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class SimpleSootClientTest {
 
   @Test
@@ -18,7 +17,7 @@ public class SimpleSootClientTest {
     // SimpleSootClient.main(args);
   }
 
-  @Ignore
+  @Disabled
   public void test2() {
     String srcDir = "../shared-test-resources/java-target/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";

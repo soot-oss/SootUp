@@ -1,11 +1,8 @@
 package sootup.tests.typehierarchy;
 
 import java.util.Collections;
-import org.junit.ClassRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
 import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -15,55 +12,46 @@ public abstract class JavaTypeHierarchyTestBase {
   // Test Resource Folder Path
   static final String baseDir = "src/test/resources/javatypehierarchy/";
 
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  private String className = "";
+  private AnalysisInputLocation srcCode;
+  private JavaView view;
 
-  @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
+  @BeforeEach
+  protected void setupTest() {
+    String prevClassName = getClassName();
 
-  public static class CustomTestWatcher extends TestWatcher {
+    setClassName(extractClassName(this.getClass().getSimpleName()));
 
-    private String className = JavaTypeHierarchyTestBase.class.getSimpleName();
-    private AnalysisInputLocation srcCode;
-    private JavaView view;
-
-    @Override
-    protected void starting(Description description) {
-
-      String prevClassName = getClassName();
-
-      setClassName(extractClassName(description.getClassName()));
-
-      if (!prevClassName.equals(getClassName())) {
-        srcCode =
-            new JavaSourcePathAnalysisInputLocation(
-                Collections.singleton(baseDir + "/" + getClassName()));
-        JavaView view = new JavaView(this.srcCode);
-        setView(view);
-      }
+    if (!prevClassName.equals(getClassName())) {
+      srcCode =
+          new JavaSourcePathAnalysisInputLocation(
+              Collections.singleton(baseDir + "/" + getClassName()));
+      JavaView view = new JavaView(this.srcCode);
+      setView(view);
     }
+  }
 
-    public String getClassName() {
-      return className;
-    }
+  public String getClassName() {
+    return className;
+  }
 
-    private void setClassName(String className) {
-      this.className = className;
-    }
+  private void setClassName(String className) {
+    this.className = className;
+  }
 
-    private void setView(JavaView view) {
-      this.view = view;
-    }
+  private void setView(JavaView view) {
+    this.view = view;
+  }
 
-    public JavaView getView() {
-      return view;
-    }
+  public JavaView getView() {
+    return view;
   }
 
   public JavaClassType getClassType(String className) {
-    return identifierFactory.getClassType(className);
+    return view.getIdentifierFactory().getClassType(className);
   }
 
   public static String extractClassName(String classPath) {
-
     String classPathArray = classPath.substring(classPath.lastIndexOf(".") + 1);
     String testDirectoryName = "";
     if (!classPathArray.isEmpty()) {

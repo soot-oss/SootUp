@@ -1,10 +1,10 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.NoPositionInformation;
@@ -20,11 +20,12 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.LocalLivenessAnalyser;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class LocalLivenessAnalyserTest {
 
   // Preparation
@@ -110,7 +111,7 @@ public class LocalLivenessAnalyserTest {
     stmtGraph.putEdge(ifalt9, JIfStmt.TRUE_BRANCH_IDX, beqaplus1);
 
     // set first stmt
-    builder.setStartingStmt(aeq0);
+    stmtGraph.setStartingStmt(aeq0);
 
     // build position
     Position position = NoPositionInformation.getInstance();

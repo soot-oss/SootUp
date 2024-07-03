@@ -1,13 +1,13 @@
 package sootup.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import categories.Java8Test;
 import java.util.*;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.BasicBlock;
-import sootup.core.graph.MutableBasicBlock;
+import sootup.core.graph.MutableBasicBlockImpl;
 import sootup.core.jimple.Jimple;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Local;
@@ -28,7 +28,7 @@ import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
+@Tag("Java8")
 public class ReplaceUseExprVisitorTest {
 
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -53,10 +53,13 @@ public class ReplaceUseExprVisitorTest {
   Stmt stmtPhi = Jimple.newAssignStmt(newArg, IntConstant.getInstance(0), noStmtPositionInfo);
 
   BasicBlock<?> newBlock =
-      new MutableBasicBlock(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
-  BasicBlock<?> block1 = new MutableBasicBlock(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
-  BasicBlock<?> block2 = new MutableBasicBlock(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
-  BasicBlock<?> block3 = new MutableBasicBlock(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
+      new MutableBasicBlockImpl(Arrays.asList(stmtPhi, stmtPhi), Collections.emptyMap());
+  BasicBlock<?> block1 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt1, stmt1), Collections.emptyMap());
+  BasicBlock<?> block2 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt2, stmt2), Collections.emptyMap());
+  BasicBlock<?> block3 =
+      new MutableBasicBlockImpl(Arrays.asList(stmt3, stmt3), Collections.emptyMap());
 
   MethodSignature methodeWithOutParas =
       new MethodSignature(testClass, "invokeExpr", Collections.emptyList(), voidType);
@@ -76,7 +79,7 @@ public class ReplaceUseExprVisitorTest {
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
     expectedUses.add(op2);
-    assertEquals(newExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newExpr.getUses().collect(Collectors.toList()));
 
     // replace op1 and op1 with newOp1
     addExpr = JavaJimple.newAddExpr(op1, op1);
@@ -84,7 +87,7 @@ public class ReplaceUseExprVisitorTest {
     newExpr = visitor.getResult();
 
     expectedUses.set(1, newOp);
-    assertEquals(newExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newExpr.getUses().collect(Collectors.toList()));
 
     // there's no matched op in Expr
     addExpr = JavaJimple.newAddExpr(op2, op2);
@@ -123,7 +126,7 @@ public class ReplaceUseExprVisitorTest {
     expectedUses.add(newArg);
     expectedUses.add(arg2);
     expectedUses.add(arg3);
-    assertEquals(newInvokeExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newInvokeExpr.getUses().collect(Collectors.toList()));
 
     // repalce arg1 2 times in args with newArg
     args.set(2, arg1);
@@ -132,7 +135,7 @@ public class ReplaceUseExprVisitorTest {
     newInvokeExpr = visitor.getResult();
 
     expectedUses.set(2, newArg);
-    assertEquals(newInvokeExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newInvokeExpr.getUses().collect(Collectors.toList()));
 
     // There's no matched arg in args
     invokeExpr = new JStaticInvokeExpr(methodeWithOutParas, Collections.emptyList());
@@ -168,7 +171,7 @@ public class ReplaceUseExprVisitorTest {
     expectedUses.add(arg2);
     expectedUses.add(arg3);
     expectedUses.add(newArg);
-    assertEquals(newInvokeExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newInvokeExpr.getUses().collect(Collectors.toList()));
 
     // replace arg1 in args with newArg
     args.set(2, arg1);
@@ -179,7 +182,7 @@ public class ReplaceUseExprVisitorTest {
     expectedUses.set(2, newArg);
     expectedUses.set(3, base);
 
-    assertEquals(newInvokeExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newInvokeExpr.getUses().collect(Collectors.toList()));
 
     // replace arg1=base with newArg
     invokeExpr = new JSpecialInvokeExpr(arg1, methodeWithOutParas, Collections.emptyList());
@@ -187,7 +190,7 @@ public class ReplaceUseExprVisitorTest {
     newInvokeExpr = visitor.getResult();
     expectedUses.clear();
     expectedUses.add(newArg);
-    assertEquals(newInvokeExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newInvokeExpr.getUses().collect(Collectors.toList()));
 
     // There's no matched arg in args, no matched base
     invokeExpr = new JSpecialInvokeExpr(base, methodeWithOutParas, Collections.emptyList());
@@ -213,7 +216,7 @@ public class ReplaceUseExprVisitorTest {
 
     List<Value> expectedUses = new ArrayList<>();
     expectedUses.add(newOp);
-    assertEquals(newExpr.getUses(), expectedUses);
+    assertEquals(expectedUses, newExpr.getUses().collect(Collectors.toList()));
 
     // There's no matched op
     lengthExpr = Jimple.newLengthExpr(op2);

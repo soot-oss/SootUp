@@ -139,7 +139,7 @@ public class ImmutableBlockStmtGraph
 
   @Nonnull
   @Override
-  public List<Trap> getTraps() {
+  public List<Trap> buildTraps() {
     throw new UnsupportedOperationException("Not implemented yet!");
   }
 

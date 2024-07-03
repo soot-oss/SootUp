@@ -1,9 +1,10 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.signatures.PackageName;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 import sootup.java.core.AnnotationUsage;
@@ -12,6 +13,7 @@ import sootup.java.core.JavaSootMethod;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
+@Tag("Java8")
 public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
 
   /**
@@ -49,7 +51,8 @@ public class NestedAnnotationTest extends MinimalBytecodeTestSuiteBase {
     ArrayList<AnnotationUsage> expectedAnnotation = new ArrayList<>();
     expectedAnnotation.add(outerAnnotation);
     assertEquals(
-        expectedAnnotation, sootClass.getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+        expectedAnnotation,
+        sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     Set<? extends JavaSootMethod> methods = sootClass.getMethods();
     assertEquals(methods.size(), 1);
   }

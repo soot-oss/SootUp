@@ -39,6 +39,7 @@ import sootup.core.types.ClassType;
 import sootup.core.views.View;
 import sootup.java.bytecode.frontend.AsmJavaClassProvider;
 import sootup.java.core.JavaSootClassSource;
+import sootup.java.core.interceptors.BytecodeBodyInterceptors;
 import sootup.java.core.types.JavaClassType;
 
 public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLocation {
@@ -52,7 +53,10 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
           .removalListener(
               (RemovalNotification<Path, FileSystem> removalNotification) -> {
                 try {
-                  removalNotification.getValue().close();
+                  FileSystem value = removalNotification.getValue();
+                  if (value != null) {
+                    value.close();
+                  }
                 } catch (IOException e) {
                   throw new RuntimeException(
                       "Could not close file system of " + removalNotification.getKey(), e);
@@ -71,7 +75,7 @@ public class ArchiveBasedAnalysisInputLocation extends PathBasedAnalysisInputLoc
                   }));
 
   public ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType srcType) {
-    this(path, srcType, Collections.emptyList());
+    this(path, srcType, BytecodeBodyInterceptors.Default.getBodyInterceptors());
   }
 
   public ArchiveBasedAnalysisInputLocation(

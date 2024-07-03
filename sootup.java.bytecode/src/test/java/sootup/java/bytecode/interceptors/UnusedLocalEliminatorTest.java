@@ -1,12 +1,14 @@
 package sootup.java.bytecode.interceptors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Collections;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
@@ -17,11 +19,13 @@ import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.UnusedLocalEliminator;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Marcus Nachtigall */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class UnusedLocalEliminatorTest {
 
   @Test
@@ -29,7 +33,7 @@ public class UnusedLocalEliminatorTest {
     Body.BodyBuilder builder = createBody(true);
     Body originalBody = builder.build();
 
-    new UnusedLocalEliminator().interceptBody(builder, null);
+    new UnusedLocalEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     Set<Local> originalLocals = originalBody.getLocals();
@@ -48,7 +52,7 @@ public class UnusedLocalEliminatorTest {
   public void testRemoveNothing() {
     Body.BodyBuilder builder = createBody(false);
     Body originalBody = builder.build();
-    new UnusedLocalEliminator().interceptBody(builder, null);
+    new UnusedLocalEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
     Body processedBody = builder.build();
 
     assertArrayEquals(originalBody.getStmts().toArray(), processedBody.getStmts().toArray());

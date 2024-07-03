@@ -23,6 +23,7 @@ package sootup.core.jimple.basic;
  */
 
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
@@ -105,11 +106,11 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
 
   @Override
   @Nonnull
-  public final List<Value> getUses() {
-    return Collections.emptyList();
+  public Stream<Value> getUses() {
+    return Stream.empty();
   }
 
-  /** returns the returned List can contain: Locals, JFieldRefs, JArrayRefs */
+  /** returns a List that can contain: Locals, JFieldRefs, JArrayRefs */
   public List<AbstractDefinitionStmt> getDefs(Collection<Stmt> defs) {
     List<AbstractDefinitionStmt> localDefs = new ArrayList<>();
     for (Stmt stmt : defs) {
@@ -128,7 +129,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
    * @param stmt a stmt which uses the given local.
    */
   public List<Stmt> getDefsForLocalUse(StmtGraph<?> graph, Stmt stmt) {
-    if (!stmt.getUses().contains(this)) {
+    if (stmt.getUses().noneMatch(v -> v == this)) {
       throw new RuntimeException(stmt + " doesn't use the local " + this);
     }
     List<Stmt> defStmts = new ArrayList<>();
@@ -140,7 +141,7 @@ public class Local implements Immediate, LValue, Acceptor<ImmediateVisitor> {
       Stmt s = queue.removeFirst();
       if (!visited.contains(s)) {
         visited.add(s);
-        if (s instanceof AbstractDefinitionStmt && s.getDefs().get(0).equivTo(this)) {
+        if (s instanceof AbstractDefinitionStmt && s.getDef().get().equivTo(this)) {
           defStmts.add(s);
         } else {
           if (graph.containsNode(s)) {

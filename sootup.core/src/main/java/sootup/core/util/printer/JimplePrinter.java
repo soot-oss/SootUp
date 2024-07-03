@@ -24,6 +24,7 @@ package sootup.core.util.printer;
 
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.Jimple;
@@ -53,7 +54,7 @@ public class JimplePrinter {
    * OmitLocalsDeclaration: don't print Local declarations at the beginning of each method
    * AddJimpleLn: unsupported yet UseImports: Enable Java like imports to improve readability by
    * shortening the Signatures LegacyMode: Print Jimple like it was printed in old Soot (&lt;=
-   * Version 4)
+   * Version 4) Deterministic: print interfaces, fields and methods in a deterministic order
    */
   // TODO: [ms] enhancement: add option to print a class with all inherited members
   public enum Option {
@@ -61,7 +62,8 @@ public class JimplePrinter {
     OmitLocalsDeclaration,
     AddJimpleLn,
     UseImports,
-    LegacyMode
+    LegacyMode,
+    Deterministic
   }
 
   private final Set<Option> options = EnumSet.noneOf(Option.class);
@@ -162,7 +164,8 @@ public class JimplePrinter {
 
     // Print interfaces
     {
-      Iterator<? extends ClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<? extends ClassType> interfaceIt =
+          getIterator(cl.getInterfaces(), ClassType::getFullyQualifiedName);
 
       if (interfaceIt.hasNext()) {
 
@@ -182,35 +185,12 @@ public class JimplePrinter {
     incJimpleLnNum();
 
     // Print fields
-    {
-      Iterator<? extends Field> fieldIt = cl.getFields().iterator();
-
-      if (fieldIt.hasNext()) {
-        printer.incIndent();
-        while (fieldIt.hasNext()) {
-          SootField f = (SootField) fieldIt.next();
-          printer.newline();
-          printer.handleIndent();
-          if (!f.getModifiers().isEmpty()) {
-            printer.literal(FieldModifier.toString(f.getModifiers()));
-            printer.literal(" ");
-          }
-          printer.typeSignature(f.getType());
-          printer.literal(" " + Jimple.escape(f.getName()) + ";");
-          printer.newline();
-          if (addJimpleLn()) {
-            setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
-          }
-        }
-
-        printer.decIndent();
-      }
-    }
+    printFields(cl, printer);
 
     // Print methods
     printMethods(cl, printer);
-    printer.literal("}");
 
+    printer.literal("}");
     printer.newline();
     incJimpleLnNum();
 
@@ -229,8 +209,36 @@ public class JimplePrinter {
     out.println(printer.toString());
   }
 
+  private void printFields(SootClass cl, LabeledStmtPrinter printer) {
+    Iterator<? extends SootField> fieldIt =
+        getIterator(cl.getFields(), SootClassMember::getSignature);
+
+    if (fieldIt.hasNext()) {
+      printer.incIndent();
+      while (fieldIt.hasNext()) {
+        SootField f = fieldIt.next();
+        printer.newline();
+        printer.handleIndent();
+        if (!f.getModifiers().isEmpty()) {
+          printer.literal(FieldModifier.toString(f.getModifiers()));
+          printer.literal(" ");
+        }
+        printer.typeSignature(f.getType());
+        printer.literal(" " + Jimple.escape(f.getName()) + ";");
+        printer.newline();
+        if (addJimpleLn()) {
+          setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f.getSignature()));
+        }
+      }
+
+      printer.decIndent();
+    }
+  }
+
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
-    Iterator<? extends SootMethod> methodIt = cl.getMethods().iterator();
+    Iterator<? extends SootMethod> methodIt =
+        getIterator(cl.getMethods(), SootClassMember::getSignature);
+
     if (methodIt.hasNext()) {
       printer.incIndent();
       printer.newline();
@@ -368,7 +376,7 @@ public class JimplePrinter {
 
     // Print out exceptions
     {
-      Iterator<Trap> trapIt = stmtGraph.getTraps().iterator();
+      Iterator<Trap> trapIt = stmtGraph.buildTraps().iterator();
 
       if (trapIt.hasNext()) {
         printer.newline();
@@ -446,5 +454,14 @@ public class JimplePrinter {
     if (!typeToLocals.isEmpty()) {
       up.newline();
     }
+  }
+
+  private <T, U extends Comparable<U>> Iterator<T> getIterator(
+      Set<T> set, Function<T, U> sortingFunction) {
+    if (!options.contains(Option.Deterministic)) return set.iterator();
+
+    List<T> list = new ArrayList<>(set);
+    list.sort(Comparator.comparing(sortingFunction));
+    return list.iterator();
   }
 }

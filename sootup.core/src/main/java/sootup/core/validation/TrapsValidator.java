@@ -22,7 +22,10 @@ package sootup.core.validation;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
+import sootup.core.jimple.basic.Trap;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.views.View;
 
@@ -35,25 +38,26 @@ public class TrapsValidator implements BodyValidator {
    */
   @Override
   public List<ValidationException> validate(Body body, View view) {
+    List<ValidationException> exceptions = new ArrayList<>();
 
-    // TODO: check code from old soot below
-    /*
-     * PatchingChain<Unit> units = body.getUnits();
-     *
-     * for (Trap t : body.getTraps()) { if (!units.contains(t.getBeginUnit())) { exception.add(new
-     * ValidationException(t.getBeginUnit(), "begin not in chain" + " in " + body.getMethod())); }
-     *
-     * if (!units.contains(t.getEndUnit())) { exception.add(new ValidationException(t.getEndUnit(), "end not in chain" +
-     * " in " + body.getMethod())); }
-     *
-     * if (!units.contains(t.getHandlerUnit())) { exception.add(new ValidationException(t.getHandlerUnit(),
-     * "handler not in chain" + " in " + body.getMethod())); } }
-     */
-    return null;
-  }
+    List<Stmt> stmts = body.getStmts();
+    for (Trap t : body.getTraps()) {
+      if (!stmts.contains(t.getBeginStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getBeginStmt(), "begin not in chain" + " in " + body.getMethodSignature()));
 
-  @Override
-  public boolean isBasicValidator() {
-    return true;
+      if (!stmts.contains(t.getEndStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getEndStmt(), "end not in chain" + " in " + body.getMethodSignature()));
+
+      if (!stmts.contains(t.getHandlerStmt()))
+        exceptions.add(
+            new ValidationException(
+                t.getHandlerStmt(), "handler not in chain" + " in " + body.getMethodSignature()));
+    }
+
+    return exceptions;
   }
 }

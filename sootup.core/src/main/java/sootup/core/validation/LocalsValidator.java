@@ -44,30 +44,29 @@ public class LocalsValidator implements BodyValidator {
     final Set<Local> locals = body.getLocals();
 
     body.getUses()
-        .parallelStream()
         .filter(value -> value instanceof Local && !locals.contains(value))
         .forEach(
             value ->
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
 
-    body.getDefs()
-        .parallelStream()
+    body.getDefs().stream()
         .filter(value -> value instanceof Local && !locals.contains(value))
         .forEach(
             value ->
                 exception.add(
                     new ValidationException(
                         value,
-                        "Local not in chain : " + value + " in " + body.getMethodSignature())));
+                        "Local is not in the StmtGraph : "
+                            + value
+                            + " in "
+                            + body.getMethodSignature())));
 
     return exception;
-  }
-
-  @Override
-  public boolean isBasicValidator() {
-    return true;
   }
 }

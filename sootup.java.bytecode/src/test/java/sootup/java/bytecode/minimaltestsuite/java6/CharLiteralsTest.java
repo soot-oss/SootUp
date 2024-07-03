@@ -1,17 +1,17 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.minimaltestsuite.MinimalBytecodeTestSuiteBase;
 
 /** @author Kaustubh Kelkar */
-@Category(Java8Test.class)
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
 
   @Test
@@ -53,7 +53,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharCharacter() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 97", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 97", "return");
   }
 
   /**
@@ -66,7 +66,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSymbol() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 37", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 37", "return");
   }
 
   /**
@@ -77,7 +77,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslashT() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 9", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 9", "return");
   }
 
   /**
@@ -90,7 +90,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharBackslash() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 92", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 92", "return");
   }
 
   /**
@@ -103,7 +103,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharSingleQuote() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 39", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 39", "return");
   }
 
   /**
@@ -116,7 +116,7 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsCharUnicode() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 937", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 937", "return");
   }
 
   /**
@@ -129,6 +129,6 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
    * </pre>
    */
   public List<String> expectedBodyStmtsSpecialChar() {
-    return Arrays.asList("l0 := @this: CharLiterals", "l1 = 8482", "return");
+    return Arrays.asList("this := @this: CharLiterals", "l1 = 8482", "return");
   }
 }

@@ -1,15 +1,17 @@
 package sootup.java.bytecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.jimple.common.constant.BooleanConstant;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.model.Body;
@@ -25,6 +27,7 @@ import sootup.java.core.jimple.basic.JavaLocal;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.AnnotationType;
 
+@Tag(TestCategories.JAVA_8_CATEGORY)
 public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
   // we can only read: RetentionPolicy.RUNTIME annotations
@@ -45,7 +48,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 Collections.emptyMap()),
             new AnnotationUsage(
                 new AnnotationType("OnClass", new PackageName(""), true), annotationParamMap)),
-        sootClass.getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+        sootClass.getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
   }
 
   @Test
@@ -62,7 +65,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         Collections.singletonList(
             new AnnotationUsage(
                 new AnnotationType("OnField", new PackageName(""), false), annotationParamMap)),
-        agent.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+        agent.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
   }
 
   @Test
@@ -98,7 +101,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
         Collections.singletonList(
                 new AnnotationUsageStub(new AnnotationType("OnField", new PackageName(""), false)))
             .toString(),
-        agent.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        agent
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -138,7 +144,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("ArrayConstant", new PackageName(""), false)))
             .toString(),
-        arrayDefault.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        arrayDefault
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -188,7 +197,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("EnumAnnotation", new PackageName(""), false)))
             .toString(),
-        enumDefault.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        enumDefault
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -229,7 +241,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("ClassAnnotation", new PackageName(""), false)))
             .toString(),
-        enumDefault.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        enumDefault
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -252,7 +267,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at0, Collections.emptyMap())),
-          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
 
     // repeatable by repeating
@@ -278,7 +293,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
-          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
 
     // repeatable by using container
@@ -303,7 +318,7 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
 
       assertEquals(
           Collections.singletonList(new AnnotationUsage(at2, annotationParamMap)),
-          someMethod.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())));
+          someMethod.get().getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView())));
     }
   }
 
@@ -345,7 +360,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("ArrayConstant", new PackageName(""), false)))
             .toString(),
-        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        method
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -396,7 +414,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("EnumAnnotation", new PackageName(""), false)))
             .toString(),
-        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        method
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test
@@ -437,7 +458,10 @@ public class AnnotationUsageTest extends MinimalBytecodeTestSuiteBase {
                 new AnnotationUsageStub(
                     new AnnotationType("ClassAnnotation", new PackageName(""), false)))
             .toString(),
-        method.get().getAnnotations(Optional.of(customTestWatcher.getJavaView())).toString());
+        method
+            .get()
+            .getAnnotations(Optional.of(MinimalBytecodeTestSuiteBase.getJavaView()))
+            .toString());
   }
 
   @Test

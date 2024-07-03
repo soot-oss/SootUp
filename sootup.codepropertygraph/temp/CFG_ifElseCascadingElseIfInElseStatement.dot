@@ -1,0 +1,34 @@
+digraph CFG {
+	rankdir=TB;
+	node [style=filled, shape=record];
+	edge [style=filled]	"346229562" [label="{<f0> STMT | <f1> l0 := @this: IfElseStatement}", fillcolor="lightblue"];
+	"-1343151992" [label="{<f0> STMT | <f1> l1 := @parameter0: int}", fillcolor="lightblue"];
+	"2090752116" [label="{<f0> STMT | <f1> l2 = 0}", fillcolor="lightblue"];
+	"1538256391" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
+	"-1462777189" [label="{<f0> STMT | <f1> l2 = 1}", fillcolor="lightblue"];
+	"1398297811" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
+	"-1039322869" [label="{<f0> STMT | <f1> goto 96}", fillcolor="lightblue"];
+	"-1074086706" [label="{<f0> STMT | <f1> return l2}", fillcolor="lightblue"];
+	"749664897" [label="{<f0> STMT | <f1> l2 = 21}", fillcolor="lightblue"];
+	"1386498747" [label="{<f0> STMT | <f1> if l1 &lt;= 123}", fillcolor="lightblue"];
+	"1987396562" [label="{<f0> STMT | <f1> goto 96}", fillcolor="lightblue"];
+	"399409871" [label="{<f0> STMT | <f1> l2 = 22}", fillcolor="lightblue"];
+	"1086961127" [label="{<f0> STMT | <f1> l2 = 23}", fillcolor="lightblue"];
+	"1765096228" [label="{<f0> STMT | <f1> goto 96}", fillcolor="lightblue"];
+	"346229562" -> "-1343151992"[label="CFG", color="darkred", fontcolor="darkred"];
+	"-1343151992" -> "2090752116"[label="CFG", color="darkred", fontcolor="darkred"];
+	"2090752116" -> "1538256391"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1538256391" -> "-1462777189"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1538256391" -> "1398297811"[label="CFG", color="darkred", fontcolor="darkred"];
+	"-1462777189" -> "-1039322869"[label="CFG", color="darkred", fontcolor="darkred"];
+	"-1039322869" -> "-1074086706"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1398297811" -> "749664897"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1398297811" -> "1386498747"[label="CFG", color="darkred", fontcolor="darkred"];
+	"749664897" -> "1987396562"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1987396562" -> "-1074086706"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1386498747" -> "399409871"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1386498747" -> "1086961127"[label="CFG", color="darkred", fontcolor="darkred"];
+	"399409871" -> "1765096228"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1765096228" -> "-1074086706"[label="CFG", color="darkred", fontcolor="darkred"];
+	"1086961127" -> "-1074086706"[label="CFG", color="darkred", fontcolor="darkred"];
+}

@@ -83,6 +83,8 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   /** removes "stmt" from the StmtGraph */
   public abstract void removeNode(@Nonnull Stmt stmt);
 
+  public abstract void removeNode(@Nonnull Stmt stmt, boolean keepFlow);
+
   /**
    * Modifications of unexceptional flows
    *
@@ -108,9 +110,11 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
   /**
    * removes the current outgoing flows of "from" to "to"
    *
-   * @return true if the edge existed and was removed; false if the edge didn't exist
+   * @return returns List of the successor indices of "from" that were connected to "to" - items are
+   *     0 in case of FallsThroughStmts or idx &gt; 0 in case of BranchingStmts with multiple
+   *     successors
    */
-  public abstract boolean removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
+  public abstract List<Integer> removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);
 
   /** Modifications of exceptional flows removes all exceptional flows from "stmt" */
   public abstract void clearExceptionalEdges(@Nonnull Stmt stmt);

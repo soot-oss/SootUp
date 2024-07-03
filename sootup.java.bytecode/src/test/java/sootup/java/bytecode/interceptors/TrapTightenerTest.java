@@ -1,10 +1,10 @@
 package sootup.java.bytecode.interceptors;
 
-import categories.Java8Test;
+import categories.TestCategories;
 import java.util.*;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import sootup.core.graph.MutableBlockStmtGraph;
 import sootup.core.graph.MutableStmtGraph;
 import sootup.core.jimple.basic.Local;
@@ -24,12 +24,14 @@ import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.core.util.ImmutableUtils;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.interceptors.TrapTightener;
 import sootup.java.core.language.JavaJimple;
 import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 /** @author Zun Wang */
-@Category(Java8Test.class)
-@Ignore("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
+@Tag(TestCategories.JAVA_8_CATEGORY)
+@Disabled("FIXME: needs .setTraps() adapted to MutableBlockStmtGraph")
 public class TrapTightenerTest {
   JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
   StmtPositionInfo noStmtPositionInfo = StmtPositionInfo.getNoStmtPositionInfo();
@@ -119,16 +121,17 @@ public class TrapTightenerTest {
     Body body = createSimpleBody();
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
 
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // modify exceptionalStmtGraph
-    builder.clearExceptionEdgesOf(stmt1);
-    builder.clearExceptionEdgesOf(stmt10);
+    stmtGraph.clearExceptionalEdges(stmt1);
+    stmtGraph.clearExceptionalEdges(stmt10);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, null);
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap3);
-    List<Trap> actual = builder.getStmtGraph().getTraps();
+    List<Trap> actual = stmtGraph.buildTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
   /**
@@ -158,17 +161,18 @@ public class TrapTightenerTest {
 
     Body.BodyBuilder builder = Body.builder(creatBodyWithMonitor(), Collections.emptySet());
 
+    MutableStmtGraph stmtGraph = builder.getStmtGraph();
     // modify exceptionalStmtGraph
-    builder.clearExceptionEdgesOf(stmt2);
-    builder.clearExceptionEdgesOf(stmt4);
+    stmtGraph.clearExceptionalEdges(stmt2);
+    stmtGraph.clearExceptionalEdges(stmt4);
     //  stmtGraph.putEdge(, stmt6);
 
     TrapTightener trapTightener = new TrapTightener();
-    trapTightener.interceptBody(builder, null);
+    trapTightener.interceptBody(builder, new JavaView(Collections.emptyList()));
 
     List<Trap> excepted = new ArrayList<>();
     excepted.add(trap1);
-    List<Trap> actual = builder.getStmtGraph().getTraps();
+    List<Trap> actual = stmtGraph.buildTraps();
     AssertUtils.assertTrapsEquiv(excepted, actual);
   }
 
@@ -190,7 +194,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     return builder.build();
   }
@@ -213,7 +217,7 @@ public class TrapTightenerTest {
     graph.putEdge(stmt5, JGotoStmt.BRANCH_IDX, ret);
 
     // build startingStmt
-    builder.setStartingStmt(startingStmt);
+    graph.setStartingStmt(startingStmt);
 
     // build position
     Position position = NoPositionInformation.getInstance();
