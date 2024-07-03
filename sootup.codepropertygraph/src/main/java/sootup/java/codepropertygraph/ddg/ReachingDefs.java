@@ -1,11 +1,11 @@
 package sootup.java.codepropertygraph.ddg;
 
 import java.util.*;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import sootup.analysis.intraprocedural.ForwardFlowAnalysis;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.basic.LValue;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -19,9 +19,8 @@ public class ReachingDefs {
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
 
     for (Stmt stmt : graph.getStmts()) {
-      if (stmt.getUses().size() == 0) continue;
+      if (stmt.getUses().findFirst().isPresent()) continue;
 
-      List<Value> usedVars = stmt.getUses();
       Set<VariableDefinition> inset = analysis.getFlowBefore(stmt);
       reachingDefs.put(stmt, new ArrayList<>());
 
@@ -29,9 +28,13 @@ public class ReachingDefs {
         Value definedVar = def.getValue();
         Optional<Stmt> definingStmt = def.getStmt();
 
-        for (Value usedVar : usedVars)
-          if (definedVar.equivTo(usedVar) && definingStmt.isPresent() && definingStmt.get() != stmt)
-            reachingDefs.get(stmt).add(definingStmt.get());
+        stmt.getUses()
+            .filter(
+                usedVar ->
+                    definedVar.equivTo(usedVar)
+                        && definingStmt.isPresent()
+                        && definingStmt.get() != stmt)
+            .forEach(usedVar -> reachingDefs.get(stmt).add(definingStmt.get()));
       }
     }
   }
@@ -45,7 +48,6 @@ public class ReachingDefs {
     /** Construct the analysis from StmtGraph. */
     public <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
       super(graph);
-
       execute();
     }
 
@@ -53,11 +55,11 @@ public class ReachingDefs {
     @Override
     protected Set<VariableDefinition> newInitialFlow() {
       Set<VariableDefinition> initialValues = new HashSet<>();
-      ArrayList<LValue> defList = new ArrayList<>();
-      for (Stmt stmt : graph.getNodes()) {
-        defList.addAll(stmt.getDefs());
-      }
-      defList.forEach(def -> initialValues.add(new VariableDefinition(def, null)));
+      graph.getNodes().stream()
+          .map(Stmt::getDef)
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .forEach(def -> initialValues.add(new VariableDefinition(def, null)));
       return initialValues;
     }
 
@@ -84,32 +86,31 @@ public class ReachingDefs {
       out.clear();
       out.addAll(in);
       kill(d).forEach(out::remove);
-      out.addAll(gen(d));
+      gen(d).forEach(out::add);
     }
 
-    private List<VariableDefinition> kill(Stmt d) {
-      if (d.getDefs().size() == 0) return Collections.emptyList();
-      if (!(d instanceof JAssignStmt)) return new ArrayList<>();
+    private Stream<VariableDefinition> kill(Stmt d) {
+      if (!(d instanceof JAssignStmt)) return Stream.empty();
 
-      LValue definedValue = d.getDefs().get(0);
-      List<VariableDefinition> output = new ArrayList<>();
-      output.add(new VariableDefinition(definedValue, null));
-
-      for (Stmt stmt : graph) {
-        if (stmt.getDefs().contains(definedValue))
-          output.add(new VariableDefinition(definedValue, stmt));
-      }
-      return output;
+      return d.getDef()
+          .map(
+              definedValue -> {
+                List<VariableDefinition> output = new ArrayList<>();
+                output.add(new VariableDefinition(definedValue, null));
+                graph.getNodes().stream()
+                    .filter(
+                        stmt ->
+                            stmt.getDef().isPresent() && stmt.getDef().get().equals(definedValue))
+                    .forEach(stmt -> output.add(new VariableDefinition(definedValue, stmt)));
+                return output.stream();
+              })
+          .orElseGet(Stream::empty);
     }
 
-    private List<VariableDefinition> gen(Stmt d) {
-      if (d.getDefs().size() == 0) return new ArrayList<>();
-
-      List<VariableDefinition> outList = new ArrayList<>();
-      for (Value def : d.getDefs()) {
-        outList.add(new VariableDefinition(def, d));
-      }
-      return outList;
+    private Stream<VariableDefinition> gen(Stmt d) {
+      return d.getDef()
+          .map(def -> Stream.of(new VariableDefinition(def, d)))
+          .orElseGet(Stream::empty);
     }
   }
 }

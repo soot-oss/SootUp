@@ -25,7 +25,7 @@ public class CdgCreator {
     while (iterator.hasNext()) {
       BasicBlock<?> currBlock = iterator.next();
       // System.out.println(currBlock);
-      for (BasicBlock<?> frontierBlock : postDominanceFinder.getPostDominanceFrontiers(currBlock)) {
+      for (BasicBlock<?> frontierBlock : postDominanceFinder.getDominanceFrontiers(currBlock)) {
         // System.out.println("\t-> " + frontierBlock);
         PropertyGraphNode source =
             new StmtPropertyGraphNode(
