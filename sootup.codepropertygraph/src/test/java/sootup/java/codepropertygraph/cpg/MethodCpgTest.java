@@ -1,9 +1,9 @@
 package sootup.java.codepropertygraph.cpg;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sootup.core.model.SootMethod;
 import sootup.java.codepropertygraph.CpgTestSuiteBase;
 import sootup.java.codepropertygraph.MethodInfo;

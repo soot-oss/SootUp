@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -39,7 +40,7 @@ public class CpgTestSuiteBase {
     }
   }
 
-  @org.junit.Before
+  @BeforeEach
   public void setUp() {
     String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
