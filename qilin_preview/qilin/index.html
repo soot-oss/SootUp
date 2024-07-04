@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -781,9 +781,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-full-list-of-point-analyses" class="md-nav__link">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
     <span class="md-ellipsis">
-      A Full list of Point Analyses
+      A Full list of Pointer Analyses
     </span>
   </a>
   
@@ -1011,9 +1011,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-full-list-of-point-analyses" class="md-nav__link">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
     <span class="md-ellipsis">
-      A Full list of Point Analyses
+      A Full list of Pointer Analyses
     </span>
   </a>
   
@@ -1039,20 +1039,23 @@
 
 <h1 id="incorporate-qilin-pointer-analysis">Incorporate Qilin Pointer Analysis</h1>
 <h3 id="dependencies">Dependencies</h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>    &lt;dependency&gt;
-        &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
-        &lt;artifactId&gt;sootup.java.sourcecode&lt;/artifactId&gt;
-        &lt;version&gt;1.3.0&lt;/version&gt;
-    &lt;/dependency&gt;
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;dependency&gt;
+&lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
+&lt;artifactId&gt;sootup.java.sourcecode&lt;/artifactId&gt;
+&lt;version&gt;1.3.0&lt;/version&gt;
+&lt;/dependency&gt;
 </code></pre></div></td></tr></table></div>
-</div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Gradle</label></div>
+<div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">compile</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.qilin:1.3.0&quot;</span>
 </code></pre></div></td></tr></table></div>
@@ -1060,8 +1063,11 @@
 </div>
 </div>
 <h3 id="how-to-create-a-pointer-analysis">How to create a pointer analysis</h3>
+<div class="admonition note">
+<p class="admonition-title">WIP: Beware most likely the API will change so you only need to specify SootUp objects!</p>
+</div>
 <p>One can create an Andersen's context-insensitive analysis with following code:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Java</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Java</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -1085,16 +1091,15 @@ and designate the <code>entrypoint</code> - which is serving as the entry point 
 <p>Second, we can use it to get the points-to results for some interested local variables, fields, etc.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">);</span>
-<span class="w">    </span><span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
+<span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
 </code></pre></div></td></tr></table></div>
 <p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
 whether there is an object that exists in both of their points-to sets.</p>
-<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class. However, a similar functionality can be found
-in <code>qilin.test.util.AliasAssertion</code> with the method:
-<code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>.
-This method allows users to check for potential aliasing between two values
-given a PTA instance.</p>
-<h3 id="a-full-list-of-point-analyses">A Full list of Point Analyses</h3>
+<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class.
+However, a similar functionality can be found in <code>qilin.test.util.AliasAssertion</code> with the method:
+<code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>
+This method allows to check for potential aliasing between two values given a PTA instance.</p>
+<h3 id="a-full-list-of-pointer-analyses">A Full list of Pointer Analyses</h3>
 <p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
 <p>Note that the symbol <strong>k</strong> used in the table should be replaced with a concrete small constant like 1 or 2.</p>
 <table>
@@ -1291,7 +1296,7 @@ given a PTA instance.</p>
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
