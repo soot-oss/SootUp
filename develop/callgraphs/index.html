@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -679,6 +679,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#qilin-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qilin Pointer Analysis
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1019,6 +1028,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#qilin-pointer-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qilin Pointer Analysis
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1280,6 +1298,20 @@ Spark requires an initial call graph to begin with. You can use one of the call 
 </code></pre></div></td></tr></table></div>
 
 -->
+<h2 id="qilin-pointer-analysis">Qilin Pointer Analysis</h2>
+<p>Qilin builds a call graph on the fly with the pointer analysis.
+You can construct a call graph with Qilin as follows:</p>
+<p>==="SootUp"</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// just an example</span>
+<span class="n">PTAPattern</span><span class="w"> </span><span class="n">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">&quot;insens&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// &quot;2o&quot;=&gt;2OBJ, &quot;1c&quot;=&gt;1CFA, etc.</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">MAINCLASS</span><span class="p">);</span>
+<span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+<span class="n">CallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
 
 
 
@@ -1368,7 +1400,7 @@ Spark requires an initial call graph to begin with. You can use one of the call 
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>

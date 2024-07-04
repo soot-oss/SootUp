@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/icon.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -763,9 +763,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to" class="md-nav__link">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
     <span class="md-ellipsis">
-      How to
+      How to create a pointer analysis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use pointer analysis results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      A Full list of Pointer Analyses
     </span>
   </a>
   
@@ -975,9 +993,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to" class="md-nav__link">
+  <a href="#how-to-create-a-pointer-analysis" class="md-nav__link">
     <span class="md-ellipsis">
-      How to
+      How to create a pointer analysis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-pointer-analysis-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to use pointer analysis results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-list-of-pointer-analyses" class="md-nav__link">
+    <span class="md-ellipsis">
+      A Full list of Pointer Analyses
     </span>
   </a>
   
@@ -1002,7 +1038,6 @@
 
 
 <h1 id="incorporate-qilin-pointer-analysis">Incorporate Qilin Pointer Analysis</h1>
-<p>see <a href="https://github.com/QilinPTA/Qilin">QilinPTA</a>.</p>
 <h3 id="dependencies">Dependencies</h3>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Maven</label><label for="__tabbed_1_2">Gradle</label></div>
 <div class="tabbed-content">
@@ -1011,21 +1046,165 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>    &lt;dependency&gt;
-        &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
-        &lt;artifactId&gt;sootup.java.sourcecode&lt;/artifactId&gt;
-        &lt;version&gt;&lt;/version&gt;
-    &lt;/dependency&gt;
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.soot-oss&lt;/groupId&gt;
+    &lt;artifactId&gt;sootup.java.sourcecode&lt;/artifactId&gt;
+    &lt;version&gt;1.3.0&lt;/version&gt;
+&lt;/dependency&gt;
 </code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="w">    </span><span class="n">compile</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.qilin:1.3.0&quot;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">compile</span><span class="w"> </span><span class="s2">&quot;org.soot-oss:sootup.qilin:1.3.0&quot;</span>
 </code></pre></div></td></tr></table></div>
 </div>
 </div>
 </div>
-<h3 id="how-to">How to</h3>
-<p>// TODO</p>
+<h3 id="how-to-create-a-pointer-analysis">How to create a pointer analysis</h3>
+<div class="admonition note">
+<p class="admonition-title">WIP: Beware most likely the API will change so you only need to specify SootUp objects!</p>
+</div>
+<p>One can create an Andersen's context-insensitive analysis with following code:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Java</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">entrypoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;dacapo.antlr.Main&quot;</span><span class="p">;</span>
+<span class="n">PTAPattern</span><span class="w"> </span><span class="n">ptaPattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PTAPattern</span><span class="p">(</span><span class="s">&quot;insens&quot;</span><span class="p">);</span>
+<span class="n">PTA</span><span class="w"> </span><span class="n">pta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PTAFactory</span><span class="p">.</span><span class="na">createPTA</span><span class="p">(</span><span class="n">ptaPattern</span><span class="p">,</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">entrypoint</span><span class="p">);</span>
+<span class="n">pta</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+</div>
+</div>
+</div>
+<p>Users must specify the program's <code>View</code>, select a <code>PTAPattern</code>
+(indicating the desired types of pointer analyses to perform),
+and designate the <code>entrypoint</code> - which is serving as the entry point for the analysis.</p>
+<h3 id="how-to-use-pointer-analysis-results">How to use pointer analysis results</h3>
+<p>First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">OnFlyCallGraph</span><span class="w"> </span><span class="n">cg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">getCallGraph</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Second, we can use it to get the points-to results for some interested local variables, fields, etc.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v0</span><span class="p">);</span>
+<span class="n">PointsToSet</span><span class="w"> </span><span class="n">pts1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pta</span><span class="p">.</span><span class="na">reachingObjects</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w"> </span><span class="c1">// PTS(v1.f)</span>
+</code></pre></div></td></tr></table></div>
+<p>Third, we can check whether two variables, <code>a</code> and <code>b</code>, are aliases by checking
+whether there is an object that exists in both of their points-to sets.</p>
+<p>Qilin does not currently offer a <code>isMayAlias</code> API within the PTA class.
+However, a similar functionality can be found in <code>qilin.test.util.AliasAssertion</code> with the method:
+<code>boolean isMayAlias(PTA pta, Value va, Value vb)</code>
+This method allows to check for potential aliasing between two values given a PTA instance.</p>
+<h3 id="a-full-list-of-pointer-analyses">A Full list of Pointer Analyses</h3>
+<p><a href="https://github.com/QilinPTA/Qilin">Qilin</a>'s toolbox includes a rich set of pointer analyses, which are given below:</p>
+<p>Note that the symbol <strong>k</strong> used in the table should be replaced with a concrete small constant like 1 or 2.</p>
+<table>
+<thead>
+<tr>
+<th>PTA patterns</th>
+<th>Description</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>insens</strong></td>
+<td>Andersen's context-insensitive analysis</td>
+<td><a href="https://link.springer.com/chapter/10.1007/3-540-36579-6_12">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>c</td>
+<td><strong>k</strong>-callsite-sensitive pointer analysis (denoted <strong>k</strong>CFA).</td>
+<td><a href="https://www.cse.psu.edu/~trj1/cse598-f11/docs/sharir_pnueli1.pdf">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>o</td>
+<td><strong>k</strong>-object-sensitive pointer analysis (denoted <strong>k</strong>OBJ).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1044834.1044835">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>t</td>
+<td><strong>k</strong>-type-sensitive pointer analysis (denoted <strong>k</strong>TYPE).</td>
+<td><a href="https://dl.acm.org/doi/abs/10.1145/1926385.1926390">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>h</td>
+<td>hybrid <strong>k</strong>-object-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>ht</td>
+<td>hybrid <strong>k</strong>-type-sensitive pointer analysis.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/2499370.2462191">Paper</a></td>
+</tr>
+<tr>
+<td>B-2o</td>
+<td>BEAN-guided 2OBJ. Only k=2 is supported.</td>
+<td><a href="https://link.springer.com/chapter/10.1007/978-3-662-53413-7_24">Paper</a></td>
+</tr>
+<tr>
+<td>D-2o</td>
+<td>Data-driven 2OBJ. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td>D-2c</td>
+<td>Data-driven 2CFA. Only k=2 is supported.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3133924">Paper</a></td>
+</tr>
+<tr>
+<td>M-<strong>k</strong>o</td>
+<td>MAHJONG-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
+</tr>
+<tr>
+<td>M-<strong>k</strong>c</td>
+<td>MAHJONG-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3062341.3062360">Paper</a></td>
+</tr>
+<tr>
+<td>E-<strong>k</strong>o</td>
+<td>EAGLE-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3360574">Paper</a></td>
+</tr>
+<tr>
+<td>T-<strong>k</strong>o</td>
+<td>TURNER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://drops.dagstuhl.de/opus/volltexte/2021/14059/">Paper</a></td>
+</tr>
+<tr>
+<td>Z-<strong>k</strong>o</td>
+<td>ZIPPER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
+</tr>
+<tr>
+<td>Z-<strong>k</strong>c</td>
+<td>ZIPPER-guided <strong>k</strong>CFA.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3276511">Paper</a></td>
+</tr>
+<tr>
+<td>Z-<strong>k</strong>o -cd</td>
+<td>The context debloated version of ZIPPER-guided <strong>k</strong>OBJ.</td>
+<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>o -cd -cda=CONCH</td>
+<td>The context debloated version of <strong>k</strong>OBJ using Conch.</td>
+<td><a href="https://doi.org/10.1109/ASE51524.2021.9678880">Paper</a></td>
+</tr>
+<tr>
+<td><strong>k</strong>o -cd -cda=DEBLOATERX</td>
+<td>The context debloated version of <strong>k</strong>OBJ using DebloaterX.</td>
+<td><a href="https://dl.acm.org/doi/10.1145/3622832">Paper</a></td>
+</tr>
+<tr>
+<td>s-<strong>k</strong>c</td>
+<td>SELECTX-guided <strong>k</strong>CFA.</td>
+<td><a href="https://doi.org/10.1007/978-3-030-88806-0_13">Paper</a></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1114,7 +1293,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
