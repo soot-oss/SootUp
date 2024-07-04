@@ -1,31 +1,35 @@
 # Incorporate Qilin Pointer Analysis
+
 ### Dependencies
+
 === "Maven"
     ```maven
-        <dependency>
-            <groupId>org.soot-oss</groupId>
-            <artifactId>sootup.java.sourcecode</artifactId>
-            <version>{{ git_latest_release }}</version>
-        </dependency>
+    <dependency>
+        <groupId>org.soot-oss</groupId>
+        <artifactId>sootup.java.sourcecode</artifactId>
+        <version>{{ git_latest_release }}</version>
+    </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-        compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
+    compile "org.soot-oss:sootup.qilin:{{ git_latest_release }}"
     ```
 
 ### How to create a pointer analysis
+
+!!! note "WIP: Beware most likely the API will change so you only need to specify SootUp objects!"
 
 One can create an Andersen's context-insensitive analysis with following code:
 
 === "Java"
 
     ```Java
-        String entrypoint = "dacapo.antlr.Main";
-        PTAPattern ptaPattern = new PTAPattern("insens");
-        PTA pta = PTAFactory.createPTA(ptaPattern, view, entrypoint);
-        pta.run();
+    String entrypoint = "dacapo.antlr.Main";
+    PTAPattern ptaPattern = new PTAPattern("insens");
+    PTA pta = PTAFactory.createPTA(ptaPattern, view, entrypoint);
+    pta.run();
     ```
 
 Users must specify the program's `View`, select a `PTAPattern`
@@ -37,26 +41,26 @@ and designate the `entrypoint` - which is serving as the entry point for the ana
 First, we can use Qilin's pointer analysis to get a On-the-Fly constructed callgraph:
 
 ```java
-    OnFlyCallGraph cg = pta.getCallGraph();
+OnFlyCallGraph cg = pta.getCallGraph();
 ```
 
 Second, we can use it to get the points-to results for some interested local variables, fields, etc.
 
 ```java
-    PointsToSet pts0 = pta.reachingObjects(method, v0);
-    PointsToSet pts1 = pta.reachingObjects(method, v1, f); // PTS(v1.f)
+PointsToSet pts0 = pta.reachingObjects(method, v0);
+PointsToSet pts1 = pta.reachingObjects(method, v1, f); // PTS(v1.f)
 ```
 
 Third, we can check whether two variables, `a` and `b`, are aliases by checking
 whether there is an object that exists in both of their points-to sets.
 
-Qilin does not currently offer a `isMayAlias` API within the PTA class. However, a similar functionality can be found
-in `qilin.test.util.AliasAssertion` with the method:
-```boolean isMayAlias(PTA pta, Value va, Value vb)```.
-This method allows users to check for potential aliasing between two values
-given a PTA instance.
+Qilin does not currently offer a `isMayAlias` API within the PTA class.
+However, a similar functionality can be found in `qilin.test.util.AliasAssertion` with the method:
+```boolean isMayAlias(PTA pta, Value va, Value vb)```
+This method allows to check for potential aliasing between two values given a PTA instance.
 
-### A Full list of Point Analyses
+### A Full list of Pointer Analyses
+
 [Qilin](https://github.com/QilinPTA/Qilin)'s toolbox includes a rich set of pointer analyses, which are given below:
 
 Note that the symbol **k** used in the table should be replaced with a concrete small constant like 1 or 2.
