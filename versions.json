@@ -1,13 +1,5 @@
 [
   {
-    "version": "qilin_preview",
-    "title": "PR Preview qilin",
-    "aliases": [],
-    "properties": {
-      "hidden": "true"
-    }
-  },
-  {
     "version": "develop",
     "title": "develop",
     "aliases": []
