@@ -2,7 +2,10 @@
   {
     "version": "doc_improveAnalysisInput_preview",
     "title": "PR Preview doc_improveAnalysisInput",
-    "aliases": []
+    "aliases": [],
+    "properties": {
+      "hidden": "true"
+    }
   },
   {
     "version": "develop",
