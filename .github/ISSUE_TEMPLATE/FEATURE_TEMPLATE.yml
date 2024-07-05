@@ -13,7 +13,7 @@ body:
     attributes:
       label: Missing Feature
       description: Please describe the wanted functionality in detail. If possible enhance it with examples and/or scientific publications.
-      value: ""
+      value: Please describe the missing feature here..
     validations:
       required: true
 
