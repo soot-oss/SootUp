@@ -1164,20 +1164,16 @@ We ship multiple Implementations that can handle different input.</p>
 Further you can specify a List of <a href="../bodyinterceptors/">BodyInterceptors</a>, which will optimize the raw Jimple IR that was transformed from the input.</p>
 <h3 id="java-runtime">Java Runtime</h3>
 <h4 id="java-8">Java &lt;=8</h4>
-<p><code>DefaultRTJaAnalysisInputLocation</code> points to the rt.jar of the executing JVM.</p>
+<p>The <code>DefaultRTJaAnalysisInputLocation</code> points to the rt.jar of the executing JVM.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// points to the runtime library of the current jvm </span>
-<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRTJaAnalysisInputLocation</span><span class="p">();</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRTJaAnalysisInputLocation</span><span class="p">();</span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 <p>To include a different Java Runtime library point to any rt.jar via a <code>JavaClassPathAnalysisInputLocation</code> as its a usual .jar file.</p>
 <h4 id="java-9">Java &gt;=9</h4>
-<p><code>JRTFilesystemAnalysisInputLocation</code> points to the jigsawed java runtime of the executing JVM.  </p>
+<p>The <code>JRTFilesystemAnalysisInputLocation</code> points to the jigsawed java runtime of the executing JVM.  </p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// points to the runtime library of the current jvm </span>
-<span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JrtFileSystemAnalysisInputLocation</span><span class="p">();</span><span class="w"> </span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JrtFileSystemAnalysisInputLocation</span><span class="p">();</span><span class="w"> </span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition info">
@@ -1185,7 +1181,7 @@ Further you can specify a List of <a href="../bodyinterceptors/">BodyInterceptor
 </div>
 <h3 id="java-bytecode">Java Bytecode</h3>
 <p>File-Extensions: <code>.class, .jar, .war</code></p>
-<p><code>JavaClassPathAnalysisInputLocation</code> its the equivalent of the classpath you would pass to the java executable i.e. point to root(s) of package(s).</p>
+<p>The <code>JavaClassPathAnalysisInputLocation</code> is the equivalent of the classpath you would pass to the java executable i.e. point to root(s) of package(s).</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Directory</label><label for="__tabbed_1_2">.jar File</label><label for="__tabbed_1_3">.class File</label><label for="__tabbed_1_4">Complete class path</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1236,8 +1232,8 @@ Further you can specify a List of <a href="../bodyinterceptors/">BodyInterceptor
 </div>
 <h3 id="java-sourcecode">Java Sourcecode</h3>
 <p>File-Extensions: <code>.java</code></p>
-<p><code>OTFCompileAnalysisInputLocation</code>
-you can point directly to .java files or pass a String with Java sourcecode, SootUp delegates to the <code>JavaCompiler</code> and transform the bytecode from the compiler to Jimple</p>
+<p>With the <code>OTFCompileAnalysisInputLocation</code> you can point directly to .java files or pass a String with Java sourcecode.
+The AnalysisInputLocation delegates the data to the <code>JavaCompiler</code> and transform the bytecode from the compiler to Jimple.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Single File</label><label for="__tabbed_2_2">Multiple Files</label><label for="__tabbed_2_3">File as String</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -1267,7 +1263,7 @@ you can point directly to .java files or pass a String with Java sourcecode, Soo
 <p><code>JavaSourcePathInputLocation</code> <span class="tooltip hint--top" aria-label="Has huge problems with exceptional flow!"><strong><em>experimental!</em></strong></span> - points to a directory that is the root source directory (containing the package directory structure).</p>
 <h3 id="jimple">Jimple</h3>
 <p>File-Extensions: <code>.jimple</code></p>
-<p><code>JimpleAnalysisInputLocation</code> needs a Path to a .jimple file or a directory.</p>
+<p>The <code>JimpleAnalysisInputLocation</code> needs a Path to a .jimple file or a directory.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.java&quot;</span><span class="p">);</span>
@@ -1276,13 +1272,16 @@ you can point directly to .java files or pass a String with Java sourcecode, Soo
 </code></pre></div></td></tr></table></div>
 <h3 id="android-bytecode">Android Bytecode</h3>
 <p>File-Extensions: <code>.apk</code></p>
-<p><code>ApkAnalysisInputLocation</code> currently uses dex2jar internally - A SootUp solution to directly generate Jimple is WIP!</p>
+<p>The <code>ApkAnalysisInputLocation</code> currently uses dex2jar internally </p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;Banana.apk&quot;</span><span class="p">);</span>
 <span class="n">AnalysisInputLocation</span><span class="w"> </span><span class="n">inputLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ApkAnalysisInputLocation</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
 <span class="n">JavaView</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JavaView</span><span class="p">(</span><span class="n">inputLocation</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
+<div class="admonition info">
+<p class="admonition-title">A SootUp solution to directly generate Jimple is WIP!</p>
+</div>
 <h3 id="combining-multiple-analysisinputlocations">Combining Multiple AnalysisInputLocations</h3>
 <p>But what if I want to point to multiple AnalysisInputLocations?</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
