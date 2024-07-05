@@ -108,7 +108,6 @@ public class OTFCompileAnalysisInputLocation implements AnalysisInputLocation {
   @Nonnull
   @Override
   public List<BodyInterceptor> getBodyInterceptors() {
-    // hint: all referenced inputlocations have the same settings
     return inputLocation.getBodyInterceptors();
   }
 
