@@ -139,7 +139,7 @@ public class UnreachableCodeEliminatorTest {
 
     new UnreachableCodeEliminator().interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().getTraps().size());
+    assertEquals(0, builder.getStmtGraph().buildTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     AssertUtils.assertSetsEquiv(expectedStmtsSet, builder.getStmtGraph().getNodes());
@@ -175,7 +175,7 @@ public class UnreachableCodeEliminatorTest {
     UnreachableCodeEliminator eliminator = new UnreachableCodeEliminator();
     eliminator.interceptBody(builder, new JavaView(Collections.emptyList()));
 
-    assertEquals(0, builder.getStmtGraph().getTraps().size());
+    assertEquals(0, builder.getStmtGraph().buildTraps().size());
 
     Set<Stmt> expectedStmtsSet = ImmutableUtils.immutableSet(startingStmt, stmt1, ret1);
     assertEquals(expectedStmtsSet, builder.getStmtGraph().getNodes());

@@ -399,11 +399,11 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     assertEquals(0, graph.getBlocks().size());
 
-    MutableBasicBlock blockA = new MutableBasicBlock();
+    MutableBasicBlock blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstGoto);
-    MutableBasicBlock blockB = new MutableBasicBlock();
+    MutableBasicBlock blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlock();
+    MutableBasicBlock blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -417,11 +417,11 @@ public class MutableBlockStmtGraphTest {
   public void linkDirectlyAddedBlocks() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock blockA = new MutableBasicBlock();
+    MutableBasicBlock blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstNop);
-    MutableBasicBlock blockB = new MutableBasicBlock();
+    MutableBasicBlock blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlock();
+    MutableBasicBlock blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -496,7 +496,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockAddStmt() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
   }
@@ -533,7 +533,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraphDirectManiupaltionAfterwards() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     graph.addNode(firstNop);
     graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(firstNop); // BAD! don't do that!
@@ -542,7 +542,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockStmtValidity() {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
 
     assertThrows(
         IllegalArgumentException.class,
@@ -637,7 +637,7 @@ public class MutableBlockStmtGraphTest {
     graph0.putEdge(stmt2, 0, returnStmt);
 
     {
-      final List<Trap> traps = graph0.getTraps();
+      final List<Trap> traps = graph0.buildTraps();
       assertEquals(2, traps.size()); // as @caughtexception gets currently in their way.
       assertEquals(stmt2, traps.get(1).getBeginStmt());
       assertEquals(returnStmt, traps.get(1).getEndStmt());
@@ -675,7 +675,7 @@ public class MutableBlockStmtGraphTest {
     graph2.putEdge(stmt2, JGotoStmt.BRANCH_IDX, returnStmt);
     {
       assertEquals(5, graph2.getBlocks().size());
-      final List<Trap> traps = graph2.getTraps();
+      final List<Trap> traps = graph2.buildTraps();
       assertEquals(2, traps.size());
     }
 
@@ -691,7 +691,7 @@ public class MutableBlockStmtGraphTest {
     graph3.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph3.getTraps();
+      final List<Trap> traps = graph3.buildTraps();
       assertEquals(5, graph2.getBlocks().size());
       assertEquals(2, traps.size());
     }
@@ -714,7 +714,7 @@ public class MutableBlockStmtGraphTest {
     graph4.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph4.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
-    assertEquals(3, graph4.getTraps().size());
+    assertEquals(3, graph4.buildTraps().size());
 
     // mixed 2
     MutableBlockStmtGraph graph5 = new MutableBlockStmtGraph();
@@ -749,7 +749,7 @@ public class MutableBlockStmtGraphTest {
     graph5.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
 
     {
-      final List<Trap> traps = graph5.getTraps();
+      final List<Trap> traps = graph5.buildTraps();
       assertEquals(6, traps.size());
       assertEquals(6, graph5.getBlocks().size());
     }
@@ -785,7 +785,7 @@ public class MutableBlockStmtGraphTest {
     graph6.putEdge(stmt2, JGotoStmt.BRANCH_IDX, stmt3);
     graph6.putEdge(stmt3, JGotoStmt.BRANCH_IDX, returnStmt);
     {
-      final List<Trap> traps = graph6.getTraps();
+      final List<Trap> traps = graph6.buildTraps();
       assertEquals(5, traps.size());
       assertEquals(6, graph6.getBlocks().size());
       assertEquals(
@@ -800,8 +800,8 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void copyOfImmutable() {
     /*
-    Stmt stmt1 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
-    Stmt stmt2 = new JNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt stmt1 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
+    Stmt stmt2 = new JNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
     MutableStmtGraph graph = new MutableBlockStmtGraph();
     graph.putEdge(stmt1, stmt2);
     graph.setStartingStmt(stmt1);

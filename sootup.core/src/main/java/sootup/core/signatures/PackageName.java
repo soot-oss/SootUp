@@ -50,13 +50,6 @@ public class PackageName {
     this.packageName = packageName;
   }
 
-  /** The name of the package. */
-  @Nonnull
-  @Deprecated // "use getName()"
-  public String getPackageName() {
-    return packageName;
-  }
-
   @Nonnull
   public String getName() {
     return packageName;
@@ -76,11 +69,11 @@ public class PackageName {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(packageName);
+    return Objects.hashCode(getName());
   }
 
   @Override
   public String toString() {
-    return packageName;
+    return getName();
   }
 }

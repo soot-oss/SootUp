@@ -34,8 +34,8 @@ import sootup.core.jimple.visitor.StmtVisitor;
 import sootup.core.util.printer.StmtPrinter;
 
 /**
- * Represents the deprecated JVM <code>ret</code> statement - which is used in JSR Context - which
- * is deprecated as well
+ * Represents the deprecated JVM <code>ret</code> statement (< java 1.6) - which is used in JSR
+ * Context - which is deprecated as well.
  */
 public final class JRetStmt extends AbstractStmt implements FallsThroughStmt {
 

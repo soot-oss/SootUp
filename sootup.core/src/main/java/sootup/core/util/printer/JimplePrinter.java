@@ -376,7 +376,7 @@ public class JimplePrinter {
 
     // Print out exceptions
     {
-      Iterator<Trap> trapIt = stmtGraph.getTraps().iterator();
+      Iterator<Trap> trapIt = stmtGraph.buildTraps().iterator();
 
       if (trapIt.hasNext()) {
         printer.newline();

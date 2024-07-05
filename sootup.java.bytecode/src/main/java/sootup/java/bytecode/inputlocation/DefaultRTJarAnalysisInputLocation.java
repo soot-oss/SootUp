@@ -31,6 +31,9 @@ import sootup.core.transform.BodyInterceptor;
  * Refers to the rt.jar from &lt;=Java8 as an AnalysisInputLocation requires: JAVA_HOME to be set
  * and expects the jar in the "lib/" subdirectory. If you need to include the rt.jar from a custom
  * Location please make use of JavaClassPathAnalysisInputLocation.
+ *
+ * <p>Info: This only works if you are running java 8 or older. Otherwise use {@link
+ * JrtFileSystemAnalysisInputLocation}.
  */
 public class DefaultRTJarAnalysisInputLocation extends ArchiveBasedAnalysisInputLocation {
 
