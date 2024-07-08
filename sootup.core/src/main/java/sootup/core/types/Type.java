@@ -36,11 +36,13 @@ public abstract class Type implements Acceptor<TypeVisitor> {
   }
 
   public static boolean isIntLikeType(Type type) {
-    return type == PrimitiveType.IntType.getInstance()
-        || type == PrimitiveType.ByteType.getInstance()
-        || type == PrimitiveType.ShortType.getInstance()
-        || type == PrimitiveType.CharType.getInstance()
-        || type == PrimitiveType.BooleanType.getInstance();
+    return type instanceof PrimitiveType.IntType;
+    /* type == PrimitiveType.IntType.getInstance()
+       || type == PrimitiveType.ByteType.getInstance()
+       || type == PrimitiveType.ShortType.getInstance()
+       || type == PrimitiveType.CharType.getInstance()
+       || type == PrimitiveType.BooleanType.getInstance();
+    */
   }
 
   public static boolean isObject(Type type) {
