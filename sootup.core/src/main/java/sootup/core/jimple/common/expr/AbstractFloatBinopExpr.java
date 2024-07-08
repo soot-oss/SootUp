@@ -49,13 +49,13 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     if (op1t == longType || op2t == longType) {
       return longType;
     }
-    final PrimitiveType.DoubleType aDouble = PrimitiveType.getDouble();
-    if (op1t == aDouble || op2t == aDouble) {
-      return aDouble;
+    final PrimitiveType.DoubleType doubleType = PrimitiveType.getDouble();
+    if (op1t == doubleType || op2t == doubleType) {
+      return doubleType;
     }
-    final PrimitiveType.FloatType aFloat = PrimitiveType.getFloat();
-    if (op1t == aFloat || op2t == aFloat) {
-      return aFloat;
+    final PrimitiveType.FloatType floatType = PrimitiveType.getFloat();
+    if (op1t == floatType || op2t == floatType) {
+      return floatType;
     }
     return UnknownType.getInstance();
   }
