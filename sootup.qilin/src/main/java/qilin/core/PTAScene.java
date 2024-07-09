@@ -105,9 +105,9 @@ public class PTAScene {
   }
 
   public boolean containsMethod(String methodSignature) {
-    MethodSignature mthdSig =
+    MethodSignature methodSig =
         JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
-    return view.getMethod(mthdSig).isPresent();
+    return view.getMethod(methodSig).isPresent();
   }
 
   public boolean containsField(String fieldSignature) {

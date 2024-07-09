@@ -108,28 +108,32 @@ public abstract class ReflectionModel {
     if (!ptaScene.reflectionBuilt.add(m)) {
       return;
     }
-    Map<Stmt, Collection<Stmt>> newUnits = DataFactory.createMap();
+    Map<Stmt, Collection<Stmt>> newStmts = DataFactory.createMap();
     Body body = PTAUtils.getMethodBody(m);
     List<Stmt> units = body.getStmts();
-    for (final Stmt u : units) {
-      if (u.containsInvokeExpr()) {
-        newUnits.put(u, transform(u));
+    for (final Stmt stmt : units) {
+      if (stmt.containsInvokeExpr()) {
+        final Collection<Stmt> transform = transform(stmt);
+        if (!transform.isEmpty()) {
+          newStmts.put(stmt, transform);
+        }
       }
     }
     Body.BodyBuilder builder = Body.builder(body, Collections.emptySet());
     final MutableStmtGraph stmtGraph = builder.getStmtGraph();
-    for (Stmt unit : newUnits.keySet()) {
-      for (Stmt succ : newUnits.get(unit)) {
+    for (Map.Entry<Stmt, Collection<Stmt>> stmtEntry : newStmts.entrySet()) {
+      for (Stmt succ : stmtEntry.getValue()) {
+        final Stmt stmt = stmtEntry.getKey();
         if (succ instanceof JAssignStmt) {
           JAssignStmt assign = (JAssignStmt) succ;
-          stmtGraph.insertBefore(unit, assign);
+          stmtGraph.insertBefore(stmt, assign);
         } else if (succ instanceof JInvokeStmt) {
           JInvokeStmt invoke = (JInvokeStmt) succ;
-          stmtGraph.insertBefore(unit, invoke);
+          stmtGraph.insertBefore(stmt, invoke);
         } else {
-          System.out.println("unit:" + unit);
+          System.out.println("stmt:" + stmt);
           System.out.println("succ:" + succ.getClass());
-          stmtGraph.putEdge((FallsThroughStmt) unit, succ);
+          stmtGraph.putEdge((FallsThroughStmt) stmtEntry, succ);
         }
       }
     }

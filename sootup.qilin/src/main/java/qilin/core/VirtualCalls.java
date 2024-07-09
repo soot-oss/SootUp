@@ -137,14 +137,15 @@ public class VirtualCalls {
       SootMethod container,
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
+    final ClassType classType = PTAUtils.getClassType("java.lang.Object");
     if (declaredType instanceof ArrayType) {
-      declaredType = PTAUtils.getClassType("java.lang.Object");
+      declaredType = classType;
     }
     if (sigType instanceof ArrayType) {
-      sigType = PTAUtils.getClassType("java.lang.Object");
+      sigType = classType;
     }
     if (t instanceof ArrayType) {
-      t = PTAUtils.getClassType("java.lang.Object");
+      t = classType;
     }
 
     if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {
@@ -184,7 +185,7 @@ public class VirtualCalls {
     //        }
     else if (t instanceof NullType) {
     } else {
-      throw new RuntimeException("oops " + t);
+      throw new IllegalStateException("Could not resolve type: " + t);
     }
   }
 }
