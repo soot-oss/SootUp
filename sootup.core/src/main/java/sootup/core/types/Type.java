@@ -29,6 +29,49 @@ import sootup.core.jimple.visitor.TypeVisitor;
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
 public abstract class Type implements Acceptor<TypeVisitor> {
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   public static boolean isObjectLikeType(Type type) {
     return type.toString().equals("java.lang.Object")
         || type.toString().equals("java.io.Serializable")

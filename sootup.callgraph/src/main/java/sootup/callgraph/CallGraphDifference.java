@@ -1,5 +1,7 @@
 package sootup.callgraph;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import sootup.core.signatures.MethodSignature;
 
 import java.util.*;
@@ -16,31 +18,20 @@ public class CallGraphDifference {
         this.cg2Edges = constructEdges(cg2);
     }
 
+    public CallGraphDifference(CallGraph cg1, CallGraph cg2) {
+        this.cg1Edges = constructEdges(cg1);
+        this.cg2Edges = constructEdges(cg2);
+    }
+
     private List<Pair<MethodSignature, MethodSignature>> constructEdges(CallGraph cg) {
         List<Pair<MethodSignature, MethodSignature>> cgEdges = new ArrayList<>();
         for (MethodSignature srcNode : cg.getMethodSignatures()) {
             Set<MethodSignature> outNodes = cg.callsFrom(srcNode);
             for (MethodSignature targetNode : outNodes) {
-                cgEdges.add(new Pair<>(srcNode, targetNode));
+                cgEdges.add(new MutablePair<>(srcNode, targetNode));
             }
         }
         return cgEdges;
-    }
-
-    /*
-    This internal class is used to describe the edge in the graph.
-    */
-    public static class Pair<L,R> {
-        private L l;
-        private R r;
-        public Pair(L l, R r){
-            this.l = l;
-            this.r = r;
-        }
-        public L getL(){ return l; }
-        public R getR(){ return r; }
-        public void setL(L l){ this.l = l; }
-        public void setR(R r){ this.r = r; }
     }
 
     /*
