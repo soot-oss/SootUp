@@ -24,7 +24,7 @@ import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 @Tag("Java8")
 public class CallGraphTest {
 
-  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
+  protected JavaIdentifierFactory identifierFactory;
   protected JavaClassType mainClassSignature;
   protected MethodSignature mainMethodSignature;
   private String algorithmName;
@@ -55,6 +55,7 @@ public class CallGraphTest {
 
     // JavaView view = viewToClassPath.computeIfAbsent(classPath, this::createViewForClassPath);
     JavaView view = createViewForClassPath(classPath);
+    identifierFactory = view.getIdentifierFactory();
 
     mainClassSignature = identifierFactory.getClassType("Main");
     mainMethodSignature =

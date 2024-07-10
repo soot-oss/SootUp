@@ -1,6 +1,3 @@
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.stream.Stream;
 import java.util.stream.IntStream;
 
 /** conversion failed when there is a merge (here: after the if) and an invokedynamic followed */

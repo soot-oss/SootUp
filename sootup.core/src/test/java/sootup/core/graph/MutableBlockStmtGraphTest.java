@@ -399,11 +399,11 @@ public class MutableBlockStmtGraphTest {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
     assertEquals(0, graph.getBlocks().size());
 
-    MutableBasicBlock blockA = new MutableBasicBlock();
+    MutableBasicBlock blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstGoto);
-    MutableBasicBlock blockB = new MutableBasicBlock();
+    MutableBasicBlock blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlock();
+    MutableBasicBlock blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -417,11 +417,11 @@ public class MutableBlockStmtGraphTest {
   public void linkDirectlyAddedBlocks() {
 
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock blockA = new MutableBasicBlock();
+    MutableBasicBlock blockA = new MutableBasicBlockImpl();
     blockA.addStmt(firstNop);
-    MutableBasicBlock blockB = new MutableBasicBlock();
+    MutableBasicBlock blockB = new MutableBasicBlockImpl();
     blockB.addStmt(secondNop);
-    MutableBasicBlock blockC = new MutableBasicBlock();
+    MutableBasicBlock blockC = new MutableBasicBlockImpl();
     blockC.addStmt(thirdNop);
 
     graph.addBlock(blockA.getStmts(), Collections.emptyMap());
@@ -496,7 +496,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockAddStmt() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     block.addStmt(firstNop);
     block.addStmt(secondNop);
   }
@@ -533,7 +533,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockAddStmtInvalidDuplicateStmtObjectViaGraphDirectManiupaltionAfterwards() {
     MutableBlockStmtGraph graph = new MutableBlockStmtGraph();
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
     graph.addNode(firstNop);
     graph.addBlock(block.getStmts(), Collections.emptyMap());
     block.addStmt(firstNop); // BAD! don't do that!
@@ -542,7 +542,7 @@ public class MutableBlockStmtGraphTest {
   @Test
   public void testBlockStmtValidity() {
     // try adding a stmt after branchingstmt -> definitely the last stmt of a block -> must fail
-    MutableBasicBlock block = new MutableBasicBlock();
+    MutableBasicBlock block = new MutableBasicBlockImpl();
 
     assertThrows(
         IllegalArgumentException.class,

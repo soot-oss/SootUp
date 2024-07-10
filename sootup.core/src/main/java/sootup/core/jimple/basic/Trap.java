@@ -130,7 +130,7 @@ public final class Trap {
     Trap trap = (Trap) o;
     return exception.equals(trap.exception)
         && beginStmt.equals(trap.beginStmt)
-        && endStmt.equals(trap.endStmt)
+        && Objects.equals(endStmt, trap.endStmt)
         && handlerStmt.equals(trap.handlerStmt);
   }
 }

@@ -7,3 +7,26 @@ authors:
 repository-code: 'https://github.com/soot-oss/SootUp'
 version: 1.2.0
 date-released: '2023-02-08'
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Karakaya"
+    given-names: "Kadiray"
+  - family-names: "Schott"
+    given-names: "Stefan"
+  - family-names: "Klauke"
+    given-names: "Jonas"
+  - family-names: "Bodden"
+    given-names: "Eric"
+  - family-names: "Schmidt"
+    given-names: "Markus"
+  - family-names: "Luo"
+    given-names: "Linghui"
+  - family-names: "He"
+    given-names: "Dongjie"
+  doi: "110.1007/978-3-031-57246-3_13"
+  booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+  start: 229 # First page number
+  end: 247 # Last page number
+  title: "SootUp: A Redesign of the Soot Static Analysis Framework"
+  year: 2024
