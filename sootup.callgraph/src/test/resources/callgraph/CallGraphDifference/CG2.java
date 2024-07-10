@@ -1,16 +1,15 @@
-package cg1;
-public class CG1 {
+public class CG2 {
     public static void main(String[] args) {
         a();
     }
 
     public static void a(){
         b();
-        d();
     }
 
     public static void b() {
         c();
+        d();
     }
 
     public static void c() {
