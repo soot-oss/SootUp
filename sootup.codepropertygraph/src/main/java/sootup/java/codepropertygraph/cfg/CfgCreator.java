@@ -1,17 +1,14 @@
 package sootup.java.codepropertygraph.cfg;
 
 import sootup.core.graph.StmtGraph;
-import sootup.core.model.Body;
-import sootup.java.codepropertygraph.MethodInfo;
-import sootup.java.codepropertygraph.StmtUtils;
-import sootup.java.codepropertygraph.propertygraph.NodeType;
-import sootup.java.codepropertygraph.propertygraph.PropertyGraph;
-import sootup.java.codepropertygraph.propertygraph.StmtPropertyGraphNode;
+import sootup.core.model.SootMethod;
+import sootup.java.codepropertygraph.propertygraph.*;
+import sootup.java.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 
 public class CfgCreator {
-  public static PropertyGraph convert(MethodInfo methodInfo) {
-    PropertyGraph cfgGraph = new PropertyGraph();
-    StmtGraph<?> stmtGraph = methodInfo.getStmtGraph();
+  public PropertyGraph createGraph(SootMethod method) {
+    PropertyGraph cfgGraph = new StmtMethodPropertyGraph();
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
 
     stmtGraph.forEach(
         currStmt ->
@@ -19,20 +16,10 @@ public class CfgCreator {
                 .getAllSuccessors(currStmt)
                 .forEach(
                     successor -> {
-                      Body body = methodInfo.getBody();
-                      StmtPropertyGraphNode sourceNode =
-                          new StmtPropertyGraphNode(
-                              StmtUtils.getStmtSource(currStmt, body),
-                              NodeType.STMT,
-                              currStmt.getPositionInfo(),
-                              currStmt);
-                      StmtPropertyGraphNode destinationNode =
-                          new StmtPropertyGraphNode(
-                              StmtUtils.getStmtSource(successor, body),
-                              NodeType.STMT,
-                              successor.getPositionInfo(),
-                              successor);
-                      cfgGraph.addEdge(sourceNode, destinationNode, "CFG");
+                      StmtGraphNode sourceNode = new StmtGraphNode(currStmt);
+                      StmtGraphNode destinationNode = new StmtGraphNode(successor);
+                      cfgGraph.addEdge(
+                          new PropertyGraphEdge(sourceNode, destinationNode, EdgeType.CFG));
                     }));
 
     return cfgGraph;

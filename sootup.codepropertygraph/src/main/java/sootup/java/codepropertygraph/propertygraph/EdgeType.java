@@ -1,3 +1,8 @@
 package sootup.java.codepropertygraph.propertygraph;
 
-public enum EdgeType {}
+public enum EdgeType {
+  AST,
+  CFG,
+  CDG,
+  DDG
+}

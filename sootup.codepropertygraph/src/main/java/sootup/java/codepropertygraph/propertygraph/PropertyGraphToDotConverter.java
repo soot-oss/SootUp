@@ -1,5 +1,7 @@
 package sootup.java.codepropertygraph.propertygraph;
 
+import sootup.java.codepropertygraph.propertygraph.nodes.StmtGraphNode;
+
 class PropertyGraphToDotConverter {
   public static String convert(PropertyGraph graph, String graphName) {
     StringBuilder builder = new StringBuilder();
@@ -10,7 +12,7 @@ class PropertyGraphToDotConverter {
 
     for (PropertyGraphNode node : graph.getNodes()) {
       String label = getNodeLabel(node);
-      String color = getNodeColor(node.getType());
+      String color = getNodeColor(node);
       builder.append(
           String.format("\t\"%s\" [label=%s, fillcolor=\"%s\"];\n", node.hashCode(), label, color));
     }
@@ -19,8 +21,9 @@ class PropertyGraphToDotConverter {
       String sourceId = String.valueOf(edge.getSource().hashCode());
       String destinationId = String.valueOf(edge.getDestination().hashCode());
 
-      String label = edge.getLabel();
-      String color = getEdgeColor(label);
+      EdgeType edgeType = edge.getType();
+      String label = edgeType.toString();
+      String color = getEdgeColor(edgeType);
       builder.append(
           String.format(
               "\t\"%s\" -> \"%s\"[label=\"%s\", color=\"%s\", fontcolor=\"%s\"];\n",
@@ -32,45 +35,35 @@ class PropertyGraphToDotConverter {
   }
 
   private static String getNodeLabel(PropertyGraphNode node) {
-    String name = escapeDot(node.getName());
-    String typeStr = escapeDot(node.getType().toString());
-
-    if (node.getType() == NodeType.AGGREGATE) return name;
-
-    return String.format("\"{<f0> %s | <f1> %s}\"", typeStr, name);
+    return escapeDot(node.toString());
   }
 
   private static String escapeDot(String label) {
     return label.replace("\"", "\\\"").replace("<", "&lt;").replace(">", "&gt;");
   }
 
-  private static String getNodeColor(NodeType type) {
-    switch (type) {
-      case STMT:
-      case RETURN_TYPE:
-        return "lightblue";
-      case MODIFIER:
-        return "darkseagreen2";
-      case PARAMETER_TYPE:
-        return "lightgray";
-      case CMP:
-      case LEFTOP:
-      case RIGHTOP:
-      case OP1:
-      case COND:
-      case OP2:
-      case POS:
-      case OP:
-        return "beige";
-      default:
-        return "white";
+  private static String getNodeColor(PropertyGraphNode node) {
+    if (node instanceof StmtGraphNode) {
+      return "lightblue";
+    } else if (node instanceof TypeGraphNode) {
+      return "lightgray";
+    } else if (node instanceof SimpleGraphNode) {
+      return "darkseagreen2";
     }
+    return "white";
   }
 
-  private static String getEdgeColor(String edgeLabel) {
-    if (edgeLabel.startsWith("AST")) return "darkseagreen4";
-    if (edgeLabel.startsWith("CFG")) return "darkred";
-    if (edgeLabel.startsWith("CDG") || edgeLabel.startsWith("DDG")) return "dodgerblue4";
-    return "black";
+  private static String getEdgeColor(EdgeType type) {
+    switch (type) {
+      case AST:
+        return "darkseagreen4";
+      case CFG:
+        return "darkred";
+      case CDG:
+      case DDG:
+        return "dodgerblue4";
+      default:
+        return "black";
+    }
   }
 }

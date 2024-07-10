@@ -5,12 +5,12 @@ import java.util.Objects;
 public class PropertyGraphEdge {
   private final PropertyGraphNode source;
   private final PropertyGraphNode destination;
-  private final String label;
+  private final EdgeType type;
 
-  public PropertyGraphEdge(PropertyGraphNode source, PropertyGraphNode destination, String label) {
+  public PropertyGraphEdge(PropertyGraphNode source, PropertyGraphNode destination, EdgeType type) {
     this.source = source;
     this.destination = destination;
-    this.label = label;
+    this.type = type;
   }
 
   public PropertyGraphNode getSource() {
@@ -21,8 +21,8 @@ public class PropertyGraphEdge {
     return destination;
   }
 
-  public String getLabel() {
-    return label;
+  public EdgeType getType() {
+    return type;
   }
 
   @Override
@@ -32,11 +32,11 @@ public class PropertyGraphEdge {
     PropertyGraphEdge that = (PropertyGraphEdge) o;
     return Objects.equals(source, that.source)
         && Objects.equals(destination, that.destination)
-        && Objects.equals(label, that.label);
+        && type == that.type;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(source, destination, label);
+    return Objects.hash(source, destination, type);
   }
 }
