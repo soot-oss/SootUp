@@ -76,16 +76,16 @@ public class TamiflexModel extends ReflectionModel {
     // <java.lang.Class: java.lang.Class forName(java.lang.String,boolean,java.lang.ClassLoader)>
     Map<Stmt, Set<String>> classForNames =
         reflectionMap.getOrDefault(ReflectionKind.ClassForName, Collections.emptyMap());
-    if (!classForNames.containsKey(s)) {
+    Collection<String> fornames = classForNames.get(s);
+    if (fornames == null) {
       return Collections.emptySet();
     }
     Collection<Stmt> ret = DataFactory.createSet();
-    Collection<String> fornames = classForNames.get(s);
     for (String clazz : fornames) {
       // !TODO potential bug
-      ClassConstant cc = JavaJimple.getInstance().newClassConstant(dot2slashStyle(clazz));
       if (s instanceof JAssignStmt) {
         LValue lvalue = ((JAssignStmt) s).getLeftOp();
+        ClassConstant cc = JavaJimple.getInstance().newClassConstant(dot2slashStyle(clazz));
         ret.add(new JAssignStmt(lvalue, cc, StmtPositionInfo.getNoStmtPositionInfo()));
       }
     }
@@ -106,11 +106,11 @@ public class TamiflexModel extends ReflectionModel {
     LValue lvalue = ((JAssignStmt) stmt).getLeftOp();
     Map<Stmt, Set<String>> classNewInstances =
         reflectionMap.getOrDefault(ReflectionKind.ClassNewInstance, Collections.emptyMap());
-    if (!classNewInstances.containsKey(stmt)) {
+    Collection<String> classNames = classNewInstances.get(stmt);
+    if (classNames == null) {
       return Collections.emptySet();
     }
     Collection<Stmt> ret = DataFactory.createSet();
-    Collection<String> classNames = classNewInstances.get(stmt);
     for (String clsName : classNames) {
       SootClass cls = ptaScene.getSootClass(clsName);
       MethodSubSignature initSubSig =
@@ -174,11 +174,11 @@ public class TamiflexModel extends ReflectionModel {
     // <java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>
     Map<Stmt, Set<String>> methodInvokes =
         reflectionMap.getOrDefault(ReflectionKind.MethodInvoke, Collections.emptyMap());
-    if (!methodInvokes.containsKey(s)) {
+    Collection<String> methodSignatures = methodInvokes.get(s);
+    if (methodSignatures == null) {
       return Collections.emptySet();
     }
     Collection<Stmt> ret = DataFactory.createSet();
-    Collection<String> methodSignatures = methodInvokes.get(s);
     AbstractInvokeExpr iie = s.getInvokeExpr();
     Value base = iie.getArg(0);
     Value args = iie.getArg(1);
@@ -224,11 +224,11 @@ public class TamiflexModel extends ReflectionModel {
     // <java.lang.reflect.Field: void set(java.lang.Object,java.lang.Object)>
     Map<Stmt, Set<String>> fieldSets =
         reflectionMap.getOrDefault(ReflectionKind.FieldSet, Collections.emptyMap());
-    if (!fieldSets.containsKey(s)) {
+    Collection<String> fieldSignatures = fieldSets.get(s);
+    if (fieldSignatures == null) {
       return Collections.emptySet();
     }
     Collection<Stmt> ret = DataFactory.createSet();
-    Collection<String> fieldSignatures = fieldSets.get(s);
     AbstractInvokeExpr iie = s.getInvokeExpr();
     Value base = iie.getArg(0);
     Value rValue = iie.getArg(1);
@@ -255,11 +255,11 @@ public class TamiflexModel extends ReflectionModel {
     // <java.lang.reflect.Field: java.lang.Object get(java.lang.Object)>
     Map<Stmt, Set<String>> fieldGets =
         reflectionMap.getOrDefault(ReflectionKind.FieldGet, Collections.emptyMap());
-    if (!fieldGets.containsKey(s) || !(s instanceof JAssignStmt)) {
+    Collection<String> fieldSignatures = fieldGets.get(s);
+    if (fieldSignatures == null || !(s instanceof JAssignStmt)) {
       return Collections.emptySet();
     }
     Collection<Stmt> ret = DataFactory.createSet();
-    Collection<String> fieldSignatures = fieldGets.get(s);
     LValue lvalue = ((JAssignStmt) s).getLeftOp();
     AbstractInvokeExpr iie = s.getInvokeExpr();
     Value base = iie.getArg(0);
