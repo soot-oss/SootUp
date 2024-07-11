@@ -1,21 +1,16 @@
 package sootup.callgraph;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
-import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
-import sootup.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class CallGraphDifferenceTest {
 
@@ -26,23 +21,35 @@ public class CallGraphDifferenceTest {
         JavaView view = new JavaView(inputLocation);
 
         ClassHierarchyAnalysisAlgorithm chaAlgorithm = new ClassHierarchyAnalysisAlgorithm(view);
-        JavaClassType chaClassType = view.getIdentifierFactory().getClassType("CG1");
+        JavaClassType chaClassType = view.getIdentifierFactory().getClassType("Example");
         MethodSignature chaMethodSignature = view.getIdentifierFactory()
                 .getMethodSignature(chaClassType, "main", "void", Collections.singletonList("java.lang.String[]"));
         CallGraph cg1 = chaAlgorithm.initialize(Collections.singletonList(chaMethodSignature));
 
         RapidTypeAnalysisAlgorithm rtaAlgorithm = new RapidTypeAnalysisAlgorithm(view);
-        JavaClassType rtaClassType = view.getIdentifierFactory().getClassType("CG2");
-        MethodSignature rtaMethodSignature = view.getIdentifierFactory()
-                .getMethodSignature(rtaClassType, "main", "void", Collections.singletonList("java.lang.String[]"));
-        CallGraph cg2 = rtaAlgorithm.initialize(Collections.singletonList(rtaMethodSignature));
+        CallGraph cg2 = rtaAlgorithm.initialize(Collections.singletonList(chaMethodSignature));
 
-        CallGraphDifference callGraphDifference = new CallGraphDifference(cg1, cg2);
-        List<Pair<MethodSignature, MethodSignature>> addedEdges = callGraphDifference.addedEdges();
-        addedEdges.forEach(System.out::println);
-        System.out.println("-----");
-        List<Pair<MethodSignature, MethodSignature>> removedEdges = callGraphDifference.removedEdges();
-        removedEdges.forEach(System.out::println);
+        CallGraphDifference callGraphDifference = cg1.diff(cg2);
+        System.out.println("Unique Base Graph Calls/Edges");
+        List<Pair<MethodSignature, MethodSignature>> uniqueBaseGraphCalls = callGraphDifference.uniqueBaseGraphCalls();
+        uniqueBaseGraphCalls.forEach(System.out::println);
+        System.out.println("Unique Base Graph Methods/Nodes");
+        List<MethodSignature> uniqueBaseGraphMethods = callGraphDifference.uniqueBaseGraphMethods();
+        uniqueBaseGraphMethods.forEach(System.out::println);
+
+        System.out.println("Unique Other Graph Calls/Edges");
+        List<Pair<MethodSignature, MethodSignature>> uniqueOtherGraphCalls = callGraphDifference.uniqueOtherGraphCalls();
+        uniqueOtherGraphCalls.forEach(System.out::println);
+        System.out.println("Unique Other Graph Methods/Nodes");
+        List<MethodSignature> uniqueOtherGraphMethods = callGraphDifference.uniqueOtherGraphMethods();
+        uniqueOtherGraphMethods.forEach(System.out::println);
+
+        System.out.println("Intersected Calls/Edges");
+        List<Pair<MethodSignature, MethodSignature>> intersectedCalls = callGraphDifference.intersectedCalls();
+        intersectedCalls.forEach(System.out::println);
+        System.out.println("Intersected Methods/Nodes");
+        List<MethodSignature> intersectedMethods = callGraphDifference.intersectedMethods();
+        intersectedMethods.forEach(System.out::println);
     }
 
 }
