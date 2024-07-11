@@ -16,7 +16,7 @@ public class CallGraphDifferenceTest {
 
     @Test
     public void testCGDiff() {
-        String classPath = System.getProperty("user.dir") + File.separator + "target" + File.separator + "test-classes" + File.separator + "callgraph" + File.separator + "CallGraphDifference";
+        String classPath = System.getProperty("user.dir") + File.separator + "target" + File.separator + "test-classes" + File.separator + "callgraph" + File.separator + "CallGraphDifference" + File.separator + "binary";
         AnalysisInputLocation inputLocation = new JavaClassPathAnalysisInputLocation(classPath, null, Collections.emptyList());
         JavaView view = new JavaView(inputLocation);
 
