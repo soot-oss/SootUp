@@ -104,7 +104,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
       }
     }
 
-    setResult(stmt);
+    defaultCaseStmt(stmt);
   }
 
   @Override
@@ -143,7 +143,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     if (exprVisitor.getResult() != conditionExpr) {
       setResult(stmt.withCondition((AbstractConditionExpr) exprVisitor.getResult()));
     } else {
-      setResult(stmt);
+      defaultCaseStmt(stmt);
     }
   }
 
@@ -166,7 +166,7 @@ public class ReplaceUseStmtVisitor extends AbstractStmtVisitor<Stmt> {
     if (stmt.getOp() == oldUse) {
       setResult(stmt.withReturnValue((Immediate) newUse));
     } else {
-      setResult(stmt);
+      defaultCaseStmt(stmt);
     }
   }
 
