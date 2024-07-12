@@ -14,72 +14,64 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
 import sootup.core.types.VoidType;
 import sootup.java.core.JavaSootClass;
+import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
 @Tag("Java8")
 public class ApkToDexTest {
 
-  // As this test uses almost 200 APK's, I have in my local, so this test is not committed.
-  //  @Test
-  //  public void loadAllClasses() {
-  //    long startTime = System.currentTimeMillis();
-  ////        Path path =
-  ////
-  // Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/droidbench_apks");
-  ////        Path path =
-  ////
-  // Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/playstore_apks");
+  //   As this test uses almost 200 APK's, I have in my local, so this test is not committed.
+  //    @Test
+  //    public void loadAllClasses() {
+  //        long startTime = System.currentTimeMillis();
+  //        // DroidBench APKs
+  ////        Path path = Paths.get("/Users/palaniappanmuthuraman/WorkSpace/APKs/Droidbench");
+  //        // PlayStore APKs
   //        Path path =
-  //
-  // Paths.get("/Users/palaniappanmuthuraman/Documents/Thesis/Evaluation/Evaluation_TaintBench/apks/taintbench_apks");
+  // Paths.get("/Users/palaniappanmuthuraman/WorkSpace/Evaluation/Evaluation_TaintBench/apks/playstore_apks");
+  //        // TaintBench APKs
+  ////        Path path =
+  // Paths.get("/Users/palaniappanmuthuraman/WorkSpace/Evaluation/Evaluation_TaintBench/apks/taintbench_apks");
   //        File dir = new File(path.toString());
   //        File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".apk"));
-  //    List<String> failedApks = new ArrayList<>();
-  //    //    assert files != null;
-  ////        for (File child : files) {
-  ////          String name = child.getName();
-  //        String name = "fakemart.apk";
-  ////          if(name.contains("tiktok")){
-  ////            continue;
-  ////          }
-  //        String apk_path = path + "/" + name;
-  ////    String apk_path = "resources/FlowSensitivity1.apk";
-  //    SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-  //    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-  //        new ApkAnalysisInputLocation<>(
-  //            Paths.get(apk_path), "", DexBodyInterceptors.Default.bodyInterceptors());
-  //    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
-  //    Collection<JavaSootClass> classes;
-  //    try {
-  //            System.out.println("Loading Apk: " + name);
-  //      classes = view.getClasses();
-  ////
-  // view.getMethod(view.getIdentifierFactory().parseMethodSignature("<org.apache.james.mime4j.field.address.parser.AddressListParser: void AddressListParser()>"));
-  //      int index = 0;
-  //      int size = classes.size();
-  //      for (JavaSootClass javaSootClass : classes) {
-  ////        System.out.println("Converting " + index + " out of " + size + " " +
-  // javaSootClass.getName());
-  //        javaSootClass.getMethods();
-  //        index++;
-  //      }
-  //      long elapsedTimeSeconds = (System.currentTimeMillis() - startTime) / 1000;
-  //      String formattedTime = dateFormat.format(new Date(elapsedTimeSeconds * 1000));
-  //      System.out.println("Loaded " + name + " with " +  size + " took " + formattedTime);
-  //      //        writeToCSVFile(name,view.getNumberOfStoredClasses(),(System.currentTimeMillis()
-  // -
-  //      // startTime) / 1000);
-  //    } catch (Exception exception) {
-  //      exception.printStackTrace();
-  //            failedApks.add(name);
-  //            System.out.println(
-  //                "Failed to convert the " + name + " which has " + view.getCachedClassesCount());
+  //        List<String> failedApks = new ArrayList<>();
+  //        assert files != null;
+  //        for (File child : files) {
+  //            String name = child.getName();
+  //            if(name.contains("tiktok")){
+  //                continue;
+  //            }
+  ////        String name = "fakemart.apk";
+  //            String apk_path = path + "/" + name;
+  //            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+  //            ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
+  //                    new ApkAnalysisInputLocation<>(
+  //                            Paths.get(apk_path), "",
+  // DexBodyInterceptors.Default.bodyInterceptors());
+  //            JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
+  //            Collection<JavaSootClass> classes;
+  //            try {
+  //                System.out.println("Loading Apk: " + name);
+  //                classes = view.getClasses();
+  //                int size = classes.size();
+  //                for (JavaSootClass javaSootClass : classes) {
+  //                    javaSootClass.getMethods();
+  //                }
+  //                long elapsedTimeSeconds = (System.currentTimeMillis() - startTime) / 1000;
+  //                String formattedTime = dateFormat.format(new Date(elapsedTimeSeconds * 1000));
+  //                System.out.println("Loaded " + name + " with " + size + " took " +
+  // formattedTime);
+  //            } catch (Exception exception) {
+  //                exception.printStackTrace();
+  //                failedApks.add(name);
+  //                System.out.println(
+  //                        "Failed to convert the " + name + " which has " +
+  // view.getCachedClassesCount());
+  //            }
+  //        }
+  //        System.out.println(files.length - failedApks.size() + " passed out of " + files.length);
+  //        System.out.println(failedApks);
   //    }
-  ////        }
-  ////        System.out.println(files.length - failedApks.size() + " passed out of " +
-  // files.length);
-  ////        System.out.println(failedApks);
-  //  }
 
   @Test
   public void testDexClassSource() {
@@ -120,6 +112,27 @@ public class ApkToDexTest {
     // Resolve and check the class modifiers
     assertEquals(
         javaSootClass.getModifiers().toArray()[0].toString(), ClassModifier.PUBLIC.toString());
+  }
+
+  @Test
+  public void loadAnApk() {
+    String apk_path = "resources/FlowSensitivity1.apk";
+    ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
+        new ApkAnalysisInputLocation<>(
+            Paths.get(apk_path),
+            "/Users/palaniappanmuthuraman/Documents/android-platforms",
+            Collections.emptyList());
+    JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
+    Collection<JavaSootClass> classes;
+    classes = view.getClasses();
+    int methodsSize = 0;
+    for (JavaSootClass javaSootClass : classes) {
+      Set<JavaSootMethod> methods = javaSootClass.getMethods();
+      methodsSize += methods.size();
+    }
+    // There are a total of 740 classes and 10559 methods present in the given APK
+    assertEquals(10559, methodsSize);
+    assertEquals(740, classes.size());
   }
 
   @Test

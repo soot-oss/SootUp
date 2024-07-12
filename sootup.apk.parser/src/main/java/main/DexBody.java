@@ -5,13 +5,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import dexpler.DexMethodSource;
 import instruction.*;
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import org.jf.dexlib2.analysis.ClassPath;
-import org.jf.dexlib2.analysis.ClassPathResolver;
-import org.jf.dexlib2.analysis.ClassProvider;
-import org.jf.dexlib2.dexbacked.DexBackedDexFile;
 import org.jf.dexlib2.iface.*;
 import org.jf.dexlib2.iface.debug.DebugItem;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -335,7 +330,42 @@ public class DexBody {
       stmtList.remove(stmtList.size() - 1);
     }
     //    stmtList.removeIf(JNopStmt.class::isInstance);
-    graph.initializeWith(stmtList, convertMultimap(branchingMap), traps);
+    Map<BranchingStmt, List<Stmt>> branchingStmtListMap = convertMultimap(branchingMap);
+    Set<Stmt> blockBegin = new HashSet<>();
+    Set<Stmt> blockEnd = new HashSet<>();
+    branchingStmtListMap.forEach(
+        (key, value) -> {
+          blockEnd.add(key);
+          blockBegin.addAll(value);
+        });
+
+    traps.forEach(
+        trap -> {
+          blockBegin.add(trap.getBeginStmt());
+          blockBegin.add(trap.getEndStmt());
+          blockBegin.add(trap.getHandlerStmt());
+        });
+
+    List<List<Stmt>> listList = new ArrayList<>();
+    List<Stmt> currentList = new ArrayList<>();
+    for (Stmt bstmt : stmtList) {
+      if (blockBegin.contains(bstmt)) {
+
+        if (!currentList.isEmpty()) {
+          listList.add(currentList);
+          currentList = new ArrayList<>();
+        }
+      }
+      currentList.add(bstmt);
+      if (blockEnd.contains(bstmt)) {
+        listList.add(currentList);
+        currentList = new ArrayList<>();
+      }
+    }
+    if (!currentList.isEmpty()) {
+      listList.add(currentList);
+    }
+    graph.initializeWith(listList, branchingStmtListMap, traps);
     DexMethodSource dexMethodSource =
         new DexMethodSource(locals, methodSignature, graph, method, bodyInterceptors, view);
     return dexMethodSource.makeSootMethod();
@@ -440,22 +470,6 @@ public class DexBody {
     locals.add(storeResultLocal);
     // process ByteCode instructions
     final DexFile dexFile = dexEntry.getDexFile();
-    final boolean isOdex =
-        dexFile instanceof DexBackedDexFile
-            && ((DexBackedDexFile) dexFile).supportsOptimizedOpcodes();
-    ClassPath cp = null;
-    if (isOdex) {
-      try {
-        ArrayList<String> classPaths = new ArrayList<>();
-        //                    classPaths.add("/Users/palaniappanmuthuraman/Desktop/dex_files"); //
-        // directory of the current apk we are dealing with
-        ClassPathResolver resolver =
-            new ClassPathResolver(classPaths, Collections.emptyList(), dexEntry);
-        cp = new ClassPath(resolver.getResolvedClassProviders().toArray(new ClassProvider[0]));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
     int prevLineNumber = -1;
     for (DexLibAbstractInstruction instruction : instructions) {
       if (dangling != null) {
@@ -578,7 +592,7 @@ public class DexBody {
             ((MoveExceptionInstruction) instruction).setRealType(this, type);
           }
           Stmt handlerStmt;
-          if (instruction.getStmt() instanceof JNopStmt) {
+          if (instruction.getStmt() instanceof JNopStmt || endStmt instanceof JNopStmt) {
             Local local = new LocalGenerator(locals).generateLocal(type);
             locals.add(local);
             Stmt caughtStmt =
@@ -588,6 +602,9 @@ public class DexBody {
                     StmtPositionInfo.getNoStmtPositionInfo());
             insertBefore(caughtStmt, instruction.getStmt());
             handlerStmt = caughtStmt;
+            if (endStmt instanceof JNopStmt) {
+              endStmt = caughtStmt;
+            }
           } else {
             handlerStmt = instruction.getStmt();
           }

@@ -29,8 +29,6 @@ public class DexMethod {
 
   public JavaSootMethod makeSootMethod(
       final Method method, List<BodyInterceptor> bodyInterceptors, @Nonnull View view) {
-    //        System.out.println(method.getName() + "    " +method.getDefiningClass() + "\n" +
-    // "**********");
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       String className = declaringclassType.getClassName();
@@ -54,10 +52,7 @@ public class DexMethod {
       return dexMethodSource.makeSootMethod();
     } else {
       DexBody dexBody = new DexBody(method, dexEntry, declaringclassType);
-      JavaSootMethod sootMethod =
-          dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
-      //            System.out.println(sootMethod.getBody() + "\n" + "*********");
-      return sootMethod;
+      return dexBody.makeSootMethod(method, declaringclassType, bodyInterceptors, view);
     }
   }
 }
