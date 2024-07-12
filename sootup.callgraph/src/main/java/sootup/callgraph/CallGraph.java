@@ -97,8 +97,10 @@ public interface CallGraph {
   @Nonnull
   MutableCallGraph copy();
 
-  /** This method compares the difference between the current call graph and call graph passed into the argument. */
+  /**
+   * This method compares the difference between the current call graph and call graph passed into
+   * the argument.
+   */
   @Nonnull
   CallGraphDifference diff(@Nonnull CallGraph callGraph);
-
 }
