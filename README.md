@@ -1,5 +1,5 @@
 <p align="center">
-<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/SootUpLogo.svg">
+<img width="350px" src="https://github.com/soot-oss/SootUp/blob/develop/docs/img/SootUpLogo.svg">
 </p> 
 
 # SootUp library ![Java CI with Maven](https://github.com/soot-oss/SootUp/workflows/Java%20CI%20with%20Maven/badge.svg?branch=develop) [![codecov](https://codecov.io/gh/soot-oss/SootUp/branch/develop/graph/badge.svg?token=ELA7U7IAWD)](https://codecov.io/gh/soot-oss/SootUp) [![javadoc](https://javadoc.io/badge2/org.soot-oss/sootup.core/javadoc.svg)](https://javadoc.io/doc/org.soot-oss/sootup.core) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.soot-oss/sootup.core/badge.svg)](https://central.sonatype.com/artifact/org.soot-oss/sootup)
@@ -47,7 +47,7 @@ You want to collaborate? Please read our [coding guidelines and the contributors
 
 ## Publications
 [the SootUp paper](https://doi.org/10.1007/978-3-031-57246-3_13) explains further details and the design decision behind SootUp.  
-[Preprint](/docs/SootUp-paper.pdf) is also available.
+[Preprint](/docs/assets/SootUp-paper.pdf) is also available.
 
 If you use SootUp in your research work, feel free to cite it as follows:
 

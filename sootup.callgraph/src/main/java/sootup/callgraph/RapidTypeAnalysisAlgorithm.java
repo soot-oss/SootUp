@@ -48,8 +48,8 @@ import sootup.core.views.View;
  */
 public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
-  @Nonnull private Set<ClassType> instantiatedClasses = Collections.emptySet();
-  @Nonnull private Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
+  @Nonnull protected Set<ClassType> instantiatedClasses = Collections.emptySet();
+  @Nonnull protected Map<ClassType, List<Call>> ignoredCalls = Collections.emptyMap();
 
   /**
    * The constructor of the RTA algorithm.
@@ -70,9 +70,13 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
+    // init helper data structures
     instantiatedClasses = new HashSet<>();
     ignoredCalls = new HashMap<>();
+
     CallGraph cg = constructCompleteCallGraph(view, entryPoints);
+
+    // delete the data structures
     instantiatedClasses = Collections.emptySet();
     ignoredCalls = Collections.emptyMap();
     return cg;
@@ -231,27 +235,38 @@ public class RapidTypeAnalysisAlgorithm extends AbstractCallGraphAlgorithm {
 
     List<ClassType> newInstantiatedClasses = collectInstantiatedClassesInMethod(method);
     newInstantiatedClasses.forEach(
-        instantiatedClassType -> {
-          List<Call> newEdges = ignoredCalls.get(instantiatedClassType);
-          if (newEdges != null) {
-            newEdges.forEach(
-                call -> {
-                  MethodSignature concreteTarget =
-                      resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
-                  if (concreteTarget == null) {
-                    return;
-                  }
-                  addCallToCG(
-                      call.getSourceMethodSignature(),
-                      concreteTarget,
-                      call.getInvokableStmt(),
-                      cg,
-                      workList);
-                });
-            // can be removed because the instantiated class will be considered in future resolves
-            ignoredCalls.remove(instantiatedClassType);
-          }
-        });
+        classType -> includeIgnoredCallsToClass(classType, cg, workList));
+  }
+
+  /**
+   * This method will add all saved ignored calls from a given class to the call graph. All new
+   * targets will be added to the worklist
+   *
+   * @param classType the class type which is the target of all ignored calls
+   * @param cg the call graph that will be extended by the ignored calls
+   * @param workList the work list that will be extended by the new targets of ignored calls.
+   */
+  protected void includeIgnoredCallsToClass(
+      ClassType classType, MutableCallGraph cg, Deque<MethodSignature> workList) {
+    List<Call> newEdges = ignoredCalls.get(classType);
+    if (newEdges != null) {
+      newEdges.forEach(
+          call -> {
+            MethodSignature concreteTarget =
+                resolveConcreteDispatch(view, call.getTargetMethodSignature()).orElse(null);
+            if (concreteTarget == null) {
+              return;
+            }
+            addCallToCG(
+                call.getSourceMethodSignature(),
+                concreteTarget,
+                call.getInvokableStmt(),
+                cg,
+                workList);
+          });
+      // can be removed because the instantiated class will be considered in future resolves
+      ignoredCalls.remove(classType);
+    }
   }
 
   /**

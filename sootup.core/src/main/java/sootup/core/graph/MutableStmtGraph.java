@@ -111,7 +111,7 @@ public abstract class MutableStmtGraph extends StmtGraph<MutableBasicBlock> {
    * removes the current outgoing flows of "from" to "to"
    *
    * @return returns List of the successor indices of "from" that were connected to "to" - items are
-   *     0 in case of FallsThroughStmts or idx > 0 in case of BranchingStmts with multiple
+   *     0 in case of FallsThroughStmts or idx &gt; 0 in case of BranchingStmts with multiple
    *     successors
    */
   public abstract List<Integer> removeEdge(@Nonnull Stmt from, @Nonnull Stmt to);

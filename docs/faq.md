@@ -42,12 +42,14 @@ or create a convenient link with the exported stmtgraph as HTTP GET Parameter
 DotExporter.createUrlToWebeditor( stmtgraph );
 ```
 
+### The Sourcecodefrontend...
+is in a experimental state! If you wish to use it, please consider to contribute.
 
 ### Is there a way to use code exploration and syntax highlighting features in my IDE for .jimple files?
-Try [JimpeLsp](https://github.com/swissiety/JimpleLsp).
+Try [JimpeLsp](https://github.com/swissiety/JimpleLsp) or the [vscode plugin](https://marketplace.visualstudio.com/items?itemName=swissiety.jimplelsp)
 
 ### Is there a way to use syntax highlighting of .jimple in my paper, thesis, ...?
-Have a look at [LspLexer4Pygments](https://github.com/swissiety/LspLexer4Pygments).
+Have a look at [LspLexer4Pygments](https://github.com/swissiety/LspLexer4Pygments). Its the same syntax highlighting you see here in the documentation. You can export it to LaTex as well.
 
 ### How to ... add an entry in this list? i.e. Your question is not answered here?
 Feel free to start a [Discussion](https://github.com/soot-oss/SootUp/discussions). 

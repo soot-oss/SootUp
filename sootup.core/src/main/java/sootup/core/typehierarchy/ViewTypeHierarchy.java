@@ -183,7 +183,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       throw new IllegalArgumentException("Could not find " + interfaceType + " in hierarchy.");
     }
     if (vertex.type != VertexType.Interface) {
-      throw new IllegalArgumentException(interfaceType + " is not a class.");
+      throw new IllegalArgumentException(interfaceType + " is not an interface.");
     }
     return directExtendedInterfacesOf(vertex).map(v -> v.javaClassType);
   }
