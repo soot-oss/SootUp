@@ -1251,13 +1251,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements BodySource {
     merging.mergeInputs(opr);
     Local local = getOrCreateLocal(insn.var);
     AbstractDefinitionStmt as;
-    if (opr.stackLocal == null || opr.stackLocal == local) {
+    if (opr.stackLocal == null) {
       // Can skip creating a new stack local for the operand
       // and store the value in the local directly.
       as = Jimple.newAssignStmt(local, opr.value, getStmtPositionInfo());
+      // TODO check that this works correctly with the merging
       opr.stackLocal = local;
       setStmt(opr.insn, as);
-    } else {
+    } else if (opr.stackLocal != local) {
       as = Jimple.newAssignStmt(local, opr.toImmediate(), getStmtPositionInfo());
       setStmt(insn, as);
     }
