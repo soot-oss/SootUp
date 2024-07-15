@@ -90,8 +90,6 @@ public class AsmMethodSourceTest {
             new JavaClassPathAnalysisInputLocation(
                     "src/test/resources/frontend", SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
-    Collection<JavaSootClass> classes = view.getClasses();
-    System.out.println(classes.iterator().next().getMethods());
 
     JavaSootMethod method =
             view.getMethod(
