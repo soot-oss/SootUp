@@ -46,7 +46,7 @@ import sootup.core.types.NullType;
 public class IFDSTaintAnalysisProblem
     extends DefaultJimpleIFDSTabulationProblem<Value, InterproceduralCFG<Stmt, SootMethod>> {
 
-  private SootMethod entryMethod;
+  private final SootMethod entryMethod;
 
   protected InterproceduralCFG<Stmt, SootMethod> icfg;
 
@@ -107,22 +107,19 @@ public class IFDSTaintAnalysisProblem
           return new Gen<>(leftOp, zeroValue());
         }
       }
-      return new FlowFunction<Value>() {
-        @Override
-        public Set<Value> computeTargets(Value source) {
-          // source = {v.f*} some local and all its fields
-          // Kill T = ...
-          if (source == leftOp) {
-            return Collections.emptySet();
-          }
-          Set<Value> res = new HashSet<Value>();
-          res.add(source);
-          // x = T
-          if (source == rightOp) {
-            res.add(leftOp);
-          }
-          return res;
+      return source -> {
+        // source = {v.f*} some local and all its fields
+        // Kill T = ...
+        if (source == leftOp) {
+          return Collections.emptySet();
         }
+        Set<Value> res = new HashSet<>();
+        res.add(source);
+        // x = T
+        if (source == rightOp) {
+          res.add(leftOp);
+        }
+        return res;
       };
     }
     return Identity.v();
@@ -136,7 +133,7 @@ public class IFDSTaintAnalysisProblem
     AbstractInvokeExpr ie = callStmt.getInvokeExpr().get();
 
     final List<Immediate> callArgs = ie.getArgs();
-    final List<Value> paramLocals = new ArrayList<Value>();
+    final List<Value> paramLocals = new ArrayList<>();
     for (int i = 0; i < destinationMethod.getParameterCount(); i++) {
       paramLocals.add(destinationMethod.getBody().getParameterLocal(i));
     }
@@ -154,21 +151,18 @@ public class IFDSTaintAnalysisProblem
     }
     final Value baseF = base;
 
-    return new FlowFunction<Value>() {
-      @Override
-      public Set<Value> computeTargets(Value source) {
-        Set<Value> ret = new HashSet<>();
-        if (source instanceof JStaticFieldRef) {
-          ret.add(source);
-        }
-        // Tainted func parameters
-        for (int i = 0; i < callArgs.size(); i++) {
-          if (callArgs.get(i).equivTo(source) && i < paramLocals.size()) {
-            ret.add(paramLocals.get(i));
-          }
-        }
-        return ret;
+    return source -> {
+      Set<Value> ret = new HashSet<>();
+      if (source instanceof JStaticFieldRef) {
+        ret.add(source);
       }
+      // Tainted func parameters
+      for (int i = 0; i < callArgs.size(); i++) {
+        if (callArgs.get(i).equivTo(source) && i < paramLocals.size()) {
+          ret.add(paramLocals.get(i));
+        }
+      }
+      return ret;
     };
   }
 
@@ -203,37 +197,31 @@ public class IFDSTaintAnalysisProblem
           }
         }
       }
-      return new FlowFunction<Value>() {
-        @Override
-        public Set<Value> computeTargets(Value source) {
-          Set<Value> ret = new HashSet<>();
-          if (source instanceof JStaticFieldRef) {
-            ret.add(source);
-          }
-          if (callSite instanceof AbstractDefinitionStmt && source == retOp) {
-            AbstractDefinitionStmt defnStmt = (AbstractDefinitionStmt) callSite;
-            ret.add(defnStmt.getLeftOp());
-          }
-          if (baseF != null && source.equals(calleeMethod.getBody().getThisLocal())) {
-            ret.add(baseF);
-          }
-          return ret;
+      return source -> {
+        Set<Value> ret = new HashSet<>();
+        if (source instanceof JStaticFieldRef) {
+          ret.add(source);
         }
+        if (callSite instanceof AbstractDefinitionStmt && source == retOp) {
+          AbstractDefinitionStmt defnStmt = (AbstractDefinitionStmt) callSite;
+          ret.add(defnStmt.getLeftOp());
+        }
+        if (baseF != null && source.equals(calleeMethod.getBody().getThisLocal())) {
+          ret.add(baseF);
+        }
+        return ret;
       };
     }
     if (exitStmt instanceof JReturnVoidStmt) {
-      return new FlowFunction<Value>() {
-        @Override
-        public Set<Value> computeTargets(Value source) {
-          Set<Value> ret = new HashSet<Value>();
-          if (source instanceof JStaticFieldRef) {
-            ret.add(source);
-          }
-          if (baseF != null && source.equals(calleeMethod.getBody().getThisLocal())) {
-            ret.add(baseF);
-          }
-          return ret;
+      return source -> {
+        Set<Value> ret = new HashSet<>();
+        if (source instanceof JStaticFieldRef) {
+          ret.add(source);
         }
+        if (baseF != null && source.equals(calleeMethod.getBody().getThisLocal())) {
+          ret.add(baseF);
+        }
+        return ret;
       };
     }
     return KillAll.v();
@@ -267,25 +255,22 @@ public class IFDSTaintAnalysisProblem
 
     // use assumption if no callees to analyze
     if (icfg.getCalleesOfCallAt(callSite).isEmpty()) {
-      return new FlowFunction<Value>() {
-        @Override
-        public Set<Value> computeTargets(Value source) {
-          Set<Value> ret = new HashSet<Value>();
-          ret.add(source);
-          // taint leftOp if base is tainted
-          if (baseF != null && leftOpF != null && source == baseF) {
-            ret.add(leftOpF);
-          }
-          // taint leftOp if one of the args is tainted
-          if (leftOpF != null && callArgs.contains(source)) {
-            ret.add(leftOpF);
-          }
-          // taint base if one of the args is tainted and has no callee in known methods
-          if (baseF != null && callArgs.contains(source)) {
-            ret.add(baseF);
-          }
-          return ret;
+      return source -> {
+        Set<Value> ret = new HashSet<>();
+        ret.add(source);
+        // taint leftOp if base is tainted
+        if (baseF != null && leftOpF != null && source == baseF) {
+          ret.add(leftOpF);
         }
+        // taint leftOp if one of the args is tainted
+        if (leftOpF != null && callArgs.contains(source)) {
+          ret.add(leftOpF);
+        }
+        // taint base if one of the args is tainted and has no callee in known methods
+        if (baseF != null && callArgs.contains(source)) {
+          ret.add(baseF);
+        }
+        return ret;
       };
     }
     return Identity.v();

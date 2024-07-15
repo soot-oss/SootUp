@@ -115,7 +115,7 @@ public class CGEdgeUtil {
     /** Due to call to Class.newInstance(..) when reflection log is enabled. */
     REFL_CLASS_NEWINSTANCE("REFL_CLASS_NEWINSTANCE");
 
-    private String name;
+    private final String name;
 
     CallGraphEdgeType(String name) {
       this.name = name;

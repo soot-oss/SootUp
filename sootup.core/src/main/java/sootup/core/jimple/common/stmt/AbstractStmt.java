@@ -65,10 +65,7 @@ public abstract class AbstractStmt implements Stmt {
   @Nonnull
   public Stream<Value> getUsesAndDefs() {
     Optional<LValue> def = getDef();
-    if (def.isPresent()) {
-      return Stream.concat(getUses(), Stream.of(def.get()));
-    }
-    return getUses();
+    return def.map(lValue -> Stream.concat(getUses(), Stream.of(lValue))).orElseGet(this::getUses);
   }
 
   /** Returns the amount of unexceptional successors the Stmt needs to have in the StmtGraph. */
@@ -134,7 +131,7 @@ public abstract class AbstractStmt implements Stmt {
    * Checks if the statement is an invokable statement, this means it either contains an invoke
    * expression or causes a static initializer call
    *
-   * @return true if the Object is an instance of {@link{ #InvokableStmt}}, otherwise false
+   * @return true if the Object is an instance of {@link InvokableStmt}, otherwise false
    */
   @Override
   public boolean isInvokableStmt() {
@@ -142,8 +139,8 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   /**
-   * Transforms the statement to an {@link{ #InvokableStmt}} if it is possible. if not it will throw
-   * an Exception. Before this method is used {@link{ #isInvokableStmt}} should be called to prevent
+   * Transforms the statement to an {@link InvokableStmt} if it is possible. if not it will throw an
+   * Exception. Before this method is used {@link #isInvokableStmt} should be called to prevent
    * exceptions
    *
    * @return the typecast of this to InvokableStmt
