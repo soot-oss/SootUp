@@ -14,8 +14,8 @@ import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
 import sootup.core.jimple.common.expr.JStaticInvokeExpr;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
 
@@ -75,8 +75,8 @@ public class XPAG {
       } // global-local
     }
     // handle call statements.
-    for (final Stmt s : srcmpag.getInvokeStmts()) {
-      AbstractInvokeExpr ie = s.getInvokeExpr();
+    for (final InvokableStmt s : srcmpag.getInvokeStmts()) {
+      AbstractInvokeExpr ie = s.getInvokeExpr().get();
       int numArgs = ie.getArgCount();
       Value[] args = new Value[numArgs];
       for (int i = 0; i < numArgs; i++) {
@@ -158,8 +158,8 @@ public class XPAG {
     addCStoreEdge(receiver, receiver);
   }
 
-  private void inline(SootMethod srcMethod, Stmt invokeStmt, SootMethod tgtMethod) {
-    AbstractInvokeExpr ie = invokeStmt.getInvokeExpr();
+  private void inline(SootMethod srcMethod, InvokableStmt invokeStmt, SootMethod tgtMethod) {
+    AbstractInvokeExpr ie = invokeStmt.getInvokeExpr().get();
     int numArgs = ie.getArgCount();
     Value[] args = new Value[numArgs];
     for (int i = 0; i < numArgs; i++) {

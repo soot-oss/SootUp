@@ -28,14 +28,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import qilin.core.pag.ContextMethod;
 import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
 import sootup.callgraph.MutableCallGraph;
+import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -49,7 +52,7 @@ import sootup.core.signatures.MethodSignature;
  */
 public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   protected Set<MethodSignature> methods = DataFactory.createSet();
-  protected Map<MethodSignature, Set<MethodSignature>> calls = DataFactory.createMap();
+  protected Map<MethodSignature, Set<Call>> calls = DataFactory.createMap();
   protected int callCnt = 0;
 
   protected Set<Edge> edges = new LinkedHashSet<>();
@@ -69,7 +72,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     MethodSignature tgtSig = e.getTgt().method().getSignature();
     addMethod(srcSig);
     addMethod(tgtSig);
-    addCall(srcSig, tgtSig);
+    addCall(srcSig, tgtSig, e.srcStmt());
     stream.add(e);
 
     Edge position = srcUnitToEdge.get(e.srcUnit());
@@ -129,7 +132,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
    * @param in The new statement
    * @return True if at least one edge was affected by this operation
    */
-  public boolean swapEdgesOutOf(Stmt out, Stmt in) {
+  public boolean swapEdgesOutOf(InvokableStmt out, InvokableStmt in) {
     boolean hasSwapped = false;
     for (Iterator<Edge> edgeRdr = edgesOutOf(out); edgeRdr.hasNext(); ) {
       Edge e = edgeRdr.next();
@@ -166,7 +169,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     }
     MethodSignature srcSig = e.getSrc().method().getSignature();
     MethodSignature tgtSig = e.getTgt().method().getSignature();
-    Set<MethodSignature> tgtSigs = calls.getOrDefault(srcSig, Collections.emptySet());
+    Set<Call> tgtSigs = calls.getOrDefault(srcSig, Collections.emptySet());
     assert (!tgtSigs.isEmpty());
     tgtSigs.remove(tgtSig);
     // !FIXME only edge is removed. I do not remove the added nodes.
@@ -430,10 +433,11 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public void addCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    Set<MethodSignature> targets =
-        this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
-    if (targets.add(targetMethod)) {
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      @Nonnull InvokableStmt stmt) {
+    Set<Call> targets = this.calls.computeIfAbsent(sourceMethod, k -> DataFactory.createSet());
+    if (targets.add(new Call(sourceMethod, targetMethod, stmt))) {
       ++callCnt;
     }
   }
@@ -457,9 +461,16 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Override
   public boolean containsCall(
-      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    if (this.calls.containsKey(sourceMethod)) {
-      if (this.calls.get(sourceMethod).contains(targetMethod)) {
+      @Nonnull MethodSignature sourceMethod,
+      @Nonnull MethodSignature targetMethod,
+      InvokableStmt stmt) {
+    return containsCall(new Call(sourceMethod, targetMethod, stmt));
+  }
+
+  @Override
+  public boolean containsCall(@Nonnull Call call) {
+    if (this.calls.containsKey(call.getSourceMethodSignature())) {
+      if (this.calls.get(call.getSourceMethodSignature()).contains(call)) {
         return true;
       }
     }
@@ -478,13 +489,35 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
 
   @Nonnull
   @Override
-  public Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod) {
+  public Set<Call> callsFrom(@Nonnull MethodSignature sourceMethod) {
     return this.calls.getOrDefault(sourceMethod, Collections.emptySet());
   }
 
   @Nonnull
   @Override
-  public Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod) {
+  public Set<Call> callsTo(@Nonnull MethodSignature targetMethod) {
     throw new UnsupportedOperationException();
+  }
+
+  @Nonnull
+  @Override
+  public Set<MethodSignature> callTargetsFrom(@Nonnull MethodSignature sourceMethod) {
+    return callsFrom(sourceMethod).stream()
+        .map(call -> call.getTargetMethodSignature())
+        .collect(Collectors.toSet());
+  }
+
+  @Nonnull
+  @Override
+  public Set<MethodSignature> callSourcesTo(@Nonnull MethodSignature targetMethod) {
+    return callsTo(targetMethod).stream()
+        .map(call -> call.getSourceMethodSignature())
+        .collect(Collectors.toSet());
+  }
+
+  // TODO: implement me
+  @Override
+  public List<MethodSignature> getEntryMethods() {
+    return Collections.emptyList();
   }
 }

@@ -36,7 +36,7 @@ public interface CallGraph {
     @Nonnull private final MethodSignature targetMethodSignature;
     @Nonnull private final InvokableStmt invokableStmt;
 
-    Call(
+    public Call(
         @Nonnull MethodSignature sourceMethodSignature,
         @Nonnull MethodSignature targetMethodSignature,
         @Nonnull InvokableStmt invokableStmt) {
