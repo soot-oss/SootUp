@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import categories.TestCategories;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import sootup.core.graph.StmtGraph;
+import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -16,6 +19,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -78,5 +82,23 @@ public class AsmMethodSourceTest {
             + "\n"
             + "return;",
         method.getBody().getStmtGraph().toString().trim());
+  }
+
+  @Test
+  public void testConditionalStringConcat() {
+    JavaClassPathAnalysisInputLocation inputLocation =
+            new JavaClassPathAnalysisInputLocation(
+                    "src/test/resources/frontend", SourceType.Application, Collections.emptyList());
+    JavaView view = new JavaView(Collections.singletonList(inputLocation));
+    Collection<JavaSootClass> classes = view.getClasses();
+    System.out.println(classes.iterator().next().getMethods());
+
+    JavaSootMethod method =
+            view.getMethod(
+                            JavaIdentifierFactory.getInstance()
+                                    .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
+                    .get();
+
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
   }
 }
