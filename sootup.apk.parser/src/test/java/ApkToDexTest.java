@@ -20,67 +20,11 @@ import sootup.java.core.views.JavaView;
 @Tag("Java8")
 public class ApkToDexTest {
 
-  //   As this test uses almost 200 APK's, I have in my local, so this test is not committed.
-  //    @Test
-  //    public void loadAllClasses() {
-  //        long startTime = System.currentTimeMillis();
-  //        // DroidBench APKs
-  ////        Path path = Paths.get("/Users/palaniappanmuthuraman/WorkSpace/APKs/Droidbench");
-  //        // PlayStore APKs
-  //        Path path =
-  // Paths.get("/Users/palaniappanmuthuraman/WorkSpace/Evaluation/Evaluation_TaintBench/apks/playstore_apks");
-  //        // TaintBench APKs
-  ////        Path path =
-  // Paths.get("/Users/palaniappanmuthuraman/WorkSpace/Evaluation/Evaluation_TaintBench/apks/taintbench_apks");
-  //        File dir = new File(path.toString());
-  //        File[] files = dir.listFiles((dir1, name) -> name.toLowerCase().endsWith(".apk"));
-  //        List<String> failedApks = new ArrayList<>();
-  //        assert files != null;
-  //        for (File child : files) {
-  //            String name = child.getName();
-  //            if(name.contains("tiktok")){
-  //                continue;
-  //            }
-  ////        String name = "fakemart.apk";
-  //            String apk_path = path + "/" + name;
-  //            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
-  //            ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-  //                    new ApkAnalysisInputLocation<>(
-  //                            Paths.get(apk_path), "",
-  // DexBodyInterceptors.Default.bodyInterceptors());
-  //            JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
-  //            Collection<JavaSootClass> classes;
-  //            try {
-  //                System.out.println("Loading Apk: " + name);
-  //                classes = view.getClasses();
-  //                int size = classes.size();
-  //                for (JavaSootClass javaSootClass : classes) {
-  //                    javaSootClass.getMethods();
-  //                }
-  //                long elapsedTimeSeconds = (System.currentTimeMillis() - startTime) / 1000;
-  //                String formattedTime = dateFormat.format(new Date(elapsedTimeSeconds * 1000));
-  //                System.out.println("Loaded " + name + " with " + size + " took " +
-  // formattedTime);
-  //            } catch (Exception exception) {
-  //                exception.printStackTrace();
-  //                failedApks.add(name);
-  //                System.out.println(
-  //                        "Failed to convert the " + name + " which has " +
-  // view.getCachedClassesCount());
-  //            }
-  //        }
-  //        System.out.println(files.length - failedApks.size() + " passed out of " + files.length);
-  //        System.out.println(failedApks);
-  //    }
-
   @Test
   public void testDexClassSource() {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path),
-            "/Users/palaniappanmuthuraman/Documents/android-platforms",
-            Collections.emptyList());
+        new ApkAnalysisInputLocation<>(Paths.get(apk_path), "", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v7.widget.PopupMenu";
     String classNameToTestAnnotations = "android/support/v4/app/FragmentState$1";
@@ -118,10 +62,7 @@ public class ApkToDexTest {
   public void loadAnApk() {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path),
-            "/Users/palaniappanmuthuraman/Documents/android-platforms",
-            Collections.emptyList());
+        new ApkAnalysisInputLocation<>(Paths.get(apk_path), "", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     Collection<JavaSootClass> classes;
     classes = view.getClasses();
@@ -139,10 +80,7 @@ public class ApkToDexTest {
   public void loadOneClass() {
     String apk_path = "resources/FlowSensitivity1.apk";
     ApkAnalysisInputLocation<SootClass> sootClassApkAnalysisInputLocation =
-        new ApkAnalysisInputLocation<>(
-            Paths.get(apk_path),
-            "/Users/palaniappanmuthuraman/Documents/android-platforms",
-            Collections.emptyList());
+        new ApkAnalysisInputLocation<>(Paths.get(apk_path), "", Collections.emptyList());
     JavaView view = new JavaView(sootClassApkAnalysisInputLocation);
     String className = "android.support.v4.app.FragmentState$1";
     String methodName = "FragmentState$1";
