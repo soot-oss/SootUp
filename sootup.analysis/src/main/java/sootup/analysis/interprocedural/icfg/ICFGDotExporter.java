@@ -28,7 +28,6 @@ import sootup.callgraph.CallGraph;
 import sootup.core.graph.BasicBlock;
 import sootup.core.graph.StmtGraph;
 import sootup.core.jimple.common.expr.JNewExpr;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -73,9 +72,9 @@ public class ICFGDotExporter {
       for (BasicBlock<?> block : blocks) {
         List<Stmt> stmts = block.getStmts();
         for (Stmt stmt : stmts) {
-          if (stmt instanceof InvokableStmt && ((InvokableStmt) stmt).containsInvokeExpr()) {
+          if (stmt.isInvokableStmt() && stmt.asInvokableStmt().containsInvokeExpr()) {
             MethodSignature target =
-                ((InvokableStmt) stmt).getInvokeExpr().get().getMethodSignature();
+                stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
             int hashCode = stmt.hashCode();
             calls.put(hashCode, target);
             // compute all the classes that are made to the subclasses as well

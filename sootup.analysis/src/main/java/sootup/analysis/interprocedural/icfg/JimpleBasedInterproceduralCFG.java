@@ -73,10 +73,9 @@ public class JimpleBasedInterproceduralCFG extends AbstractJimpleBasedICFG {
         @Override
         public Collection<SootMethod> load(Stmt stmt) {
           ArrayList<SootMethod> res = new ArrayList<>();
-          if (!(stmt instanceof InvokableStmt) && !((InvokableStmt) stmt).containsInvokeExpr())
-            return res;
+          if (!stmt.isInvokableStmt() && !stmt.asInvokableStmt().containsInvokeExpr()) return res;
           MethodSignature methodSignature =
-              ((InvokableStmt) stmt).getInvokeExpr().get().getMethodSignature();
+              stmt.asInvokableStmt().getInvokeExpr().get().getMethodSignature();
           Optional<? extends SootMethod> smOpt = view.getMethod(methodSignature);
           if (smOpt.isPresent()) {
             SootMethod sm = smOpt.get();

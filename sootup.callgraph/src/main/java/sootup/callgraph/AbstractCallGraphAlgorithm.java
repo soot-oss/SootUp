@@ -36,6 +36,7 @@ import sootup.core.jimple.common.expr.JStaticInvokeExpr;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Method;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootClassMember;
@@ -227,8 +228,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
 
     sourceMethod.getBody().getStmts().stream()
-        .filter(stmt -> stmt instanceof InvokableStmt)
-        .map(stmt -> (InvokableStmt) stmt)
+        .filter(Stmt::isInvokableStmt)
+        .map(Stmt::asInvokableStmt)
         .forEach(
             stmt ->
                 resolveCall(sourceMethod, stmt)
@@ -269,8 +270,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     }
     InstantiateClassValueVisitor instantiateVisitor = new InstantiateClassValueVisitor();
     sourceMethod.getBody().getStmts().stream()
-        .filter(stmt -> stmt instanceof InvokableStmt)
-        .map(stmt -> (InvokableStmt) stmt)
+        .filter(Stmt::isInvokableStmt)
+        .map(Stmt::asInvokableStmt)
         .forEach(
             invokableStmt -> {
               // static field usage

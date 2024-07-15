@@ -28,7 +28,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import sootup.callgraph.CallGraph;
 import sootup.core.jimple.common.expr.*;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.signatures.MethodSignature;
@@ -60,8 +59,8 @@ public class CGEdgeUtil {
       SootMethod method = view.getMethod(caller).orElse(null);
       if (method != null && method.hasBody()) {
         for (Stmt s : method.getBody().getStmtGraph().getNodes()) {
-          if (s instanceof InvokableStmt && ((InvokableStmt) s).containsInvokeExpr()) {
-            AbstractInvokeExpr invokeExpr = ((InvokableStmt) s).getInvokeExpr().get();
+          if (s.isInvokableStmt() && s.asInvokableStmt().containsInvokeExpr()) {
+            AbstractInvokeExpr invokeExpr = s.asInvokableStmt().getInvokeExpr().get();
             CalleeMethodSignature callee =
                 new CalleeMethodSignature(
                     invokeExpr.getMethodSignature(), findCallGraphEdgeType(invokeExpr), s);

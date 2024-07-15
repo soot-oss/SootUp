@@ -129,4 +129,27 @@ public abstract class AbstractStmt implements Stmt {
     }
     return visitor.getResult();
   }
+
+  /**
+   * Checks if the statement is an invokable statement, this means it either contains an invoke
+   * expression or causes a static initializer call
+   *
+   * @return true if the Object is an instance of {@link{ #InvokableStmt}}, otherwise false
+   */
+  @Override
+  public boolean isInvokableStmt() {
+    return this instanceof InvokableStmt;
+  }
+
+  /**
+   * Transforms the statement to an {@link{ #InvokableStmt}} if it is possible. if not it will throw
+   * an Exception. Before this method is used {@link{ #isInvokableStmt}} should be called to prevent
+   * exceptions
+   *
+   * @return the typecast of this to InvokableStmt
+   */
+  @Override
+  public InvokableStmt asInvokableStmt() {
+    return (InvokableStmt) this;
+  }
 }

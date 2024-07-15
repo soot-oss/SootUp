@@ -74,18 +74,18 @@ public class IFDSTaintAnalysisProblem
 
       @Override
       public FlowFunction<Value> getCallFlowFunction(Stmt callStmt, SootMethod destinationMethod) {
-        return getCallFlow((InvokableStmt) callStmt, destinationMethod);
+        return getCallFlow(callStmt.asInvokableStmt(), destinationMethod);
       }
 
       @Override
       public FlowFunction<Value> getReturnFlowFunction(
           Stmt callSite, SootMethod calleeMethod, Stmt exitStmt, Stmt returnSite) {
-        return getReturnFlow((InvokableStmt) callSite, calleeMethod, exitStmt, returnSite);
+        return getReturnFlow(callSite.asInvokableStmt(), calleeMethod, exitStmt, returnSite);
       }
 
       @Override
       public FlowFunction<Value> getCallToReturnFlowFunction(Stmt callSite, Stmt returnSite) {
-        return getCallToReturnFlow((InvokableStmt) callSite, returnSite);
+        return getCallToReturnFlow(callSite.asInvokableStmt(), returnSite);
       }
     };
   }

@@ -83,15 +83,15 @@ public class CallGraphTest {
       MethodSignature sourceMethod, MethodSignature staticTargetMethod) {
     SootMethod method = view.getMethod(sourceMethod).orElse(null);
     assertNotNull(method);
-    for (Stmt invokableStmt : method.getBody().getStmts()) {
-      if (invokableStmt instanceof InvokableStmt
-          && ((InvokableStmt) invokableStmt).containsInvokeExpr()
-          && ((InvokableStmt) invokableStmt)
+    for (Stmt stmt : method.getBody().getStmts()) {
+      if (stmt.isInvokableStmt()
+          && stmt.asInvokableStmt().containsInvokeExpr()
+          && stmt.asInvokableStmt()
               .getInvokeExpr()
               .get()
               .getMethodSignature()
               .equals(staticTargetMethod)) {
-        return (InvokableStmt) invokableStmt;
+        return stmt.asInvokableStmt();
       }
     }
     throw new RuntimeException("No invokable stmt found for " + sourceMethod);

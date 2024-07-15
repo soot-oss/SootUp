@@ -70,4 +70,8 @@ public interface Stmt extends EquivTo, Acceptor<StmtVisitor> {
   StmtPositionInfo getPositionInfo();
 
   Stmt withNewUse(@Nonnull Value oldUse, @Nonnull Value newUse);
+
+  boolean isInvokableStmt();
+
+  InvokableStmt asInvokableStmt();
 }

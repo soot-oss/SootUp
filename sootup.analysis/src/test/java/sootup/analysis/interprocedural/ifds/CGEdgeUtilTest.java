@@ -164,8 +164,8 @@ public class CGEdgeUtilTest {
 
     List<Stmt> invokesStmts =
         m.getBody().getStmts().stream()
-            .filter(stmt -> stmt instanceof InvokableStmt)
-            .map(stmt -> (InvokableStmt) stmt)
+            .filter(Stmt::isInvokableStmt)
+            .map(Stmt::asInvokableStmt)
             .filter(InvokableStmt::containsInvokeExpr)
             .collect(Collectors.toList());
     assertEquals(invokesStmts.size(), 3);
@@ -225,8 +225,8 @@ public class CGEdgeUtilTest {
     assertNotNull(virtualCall);
     Stmt virtualStmt =
         invokesStmts.stream()
-            .filter(stmt -> stmt instanceof InvokableStmt)
-            .map(stmt -> (InvokableStmt) stmt)
+            .filter(Stmt::isInvokableStmt)
+            .map(Stmt::asInvokableStmt)
             .filter(InvokableStmt::containsInvokeExpr)
             .filter(stmt -> stmt.getInvokeExpr().get().getClass() == invokeClass)
             .findAny()

@@ -29,7 +29,6 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.AbstractInvokeExpr;
 import sootup.core.jimple.common.expr.JNewExpr;
 import sootup.core.jimple.common.expr.JSpecialInvokeExpr;
-import sootup.core.jimple.common.stmt.InvokableStmt;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.JInvokeStmt;
 import sootup.core.jimple.common.stmt.Stmt;
@@ -97,8 +96,8 @@ public class NewValidator implements BodyValidator {
         continue;
       }
       if (!newStmt.equals(curStmt)) {
-        if (((InvokableStmt) curStmt).containsInvokeExpr()) {
-          AbstractInvokeExpr expr = ((InvokableStmt) curStmt).getInvokeExpr().get();
+        if (curStmt.isInvokableStmt() && curStmt.asInvokableStmt().containsInvokeExpr()) {
+          AbstractInvokeExpr expr = curStmt.asInvokableStmt().getInvokeExpr().get();
           if (!(expr instanceof JSpecialInvokeExpr)) {
             exception.add(
                 new ValidationException(
