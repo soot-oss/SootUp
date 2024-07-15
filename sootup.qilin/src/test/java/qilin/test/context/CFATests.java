@@ -19,7 +19,6 @@
 package qilin.test.context;
 
 import org.junit.Test;
-import org.junit.jupiter.api.Tag;
 import qilin.test.util.JunitTests;
 
 public class CFATests extends JunitTests {
