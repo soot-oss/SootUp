@@ -4,15 +4,15 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.nio.file.Paths;
 import main.AndroidVersionInfo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AndroidVersionInfoTest {
 
   @Mock private File mockJarsFile;
@@ -23,7 +23,7 @@ public class AndroidVersionInfoTest {
 
   public AndroidVersionInfoTest() {}
 
-  @BeforeEach
+  @Before
   public void setUp() {
     // Setting up mocks
     mockJarsFile = mock(File.class);
