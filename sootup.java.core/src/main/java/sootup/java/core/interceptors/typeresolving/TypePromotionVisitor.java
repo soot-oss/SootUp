@@ -26,6 +26,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
+import sootup.core.jimple.common.constant.Constant;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.types.PrimitiveType;
@@ -61,6 +62,9 @@ public class TypePromotionVisitor extends TypeChecker {
     Typing typing = getTyping();
     Type evaType = evalFunction.evaluate(typing, value, stmt, graph);
     if (evaType == null || evaType.equals(stdType)) {
+      return;
+    }
+    if (!(value instanceof Local) || hierarchy.isAncestor(stdType, evaType)){
       return;
     }
     if (!hierarchy.isAncestor(stdType, evaType)) {
