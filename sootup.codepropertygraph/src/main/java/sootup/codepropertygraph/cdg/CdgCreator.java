@@ -16,6 +16,10 @@ public class CdgCreator {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     graphBuilder.setName("cdg_" + method.getName());
 
+    if (method.isAbstract() || method.isNative()) {
+      return graphBuilder.build();
+    }
+
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
 

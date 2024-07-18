@@ -14,6 +14,10 @@ public class CfgCreator {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     graphBuilder.setName("cfg_" + method.getName());
 
+    if (method.isAbstract() || method.isNative()) {
+      return graphBuilder.build();
+    }
+
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     stmtGraph.forEach(
         currStmt -> {

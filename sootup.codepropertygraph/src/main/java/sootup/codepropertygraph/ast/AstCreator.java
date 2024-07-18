@@ -16,6 +16,10 @@ public class AstCreator {
     PropertyGraph.Builder graphBuilder = new AstPropertyGraph.Builder();
     graphBuilder.setName("ast_" + method.getName());
 
+    if (method.isAbstract() || method.isNative()) {
+      return graphBuilder.build();
+    }
+
     MethodGraphNode rootNode = new MethodGraphNode(method);
     PropertyGraphNode modifiersNode = new AggregateGraphNode("Modifiers");
     PropertyGraphNode parametersTypesNode = new AggregateGraphNode("Parameters");
