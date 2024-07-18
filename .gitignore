@@ -22,6 +22,7 @@
 !shared-test-resources/java-warApp/dummyWarApp.war
 !shared-test-resources/multi-release-jar/mrjar.jar
 !shared-test-resources/multi-release-jar-modular/mrjar.jar
+!shared-test-resources/TypeResolverTestSuite/Misc/mockito-core-5.3.1.jar
 *.ear
 *.zip
 *.tar.gz
