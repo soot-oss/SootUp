@@ -94,7 +94,9 @@ public class DexClassSource extends JavaSootClassSource {
     if (interfaces.isEmpty()) {
       return new HashSet<>();
     }
-    return interfaces.stream().map(DexUtil::stringToJimpleType).collect(Collectors.toSet());
+    return interfaces.stream()
+        .map(interface1 -> DexUtil.stringToJimpleType(view, interface1))
+        .collect(Collectors.toSet());
   }
 
   @Nonnull
@@ -105,7 +107,7 @@ public class DexClassSource extends JavaSootClassSource {
       if (superclass.isEmpty()) {
         return Optional.empty();
       } else {
-        return Optional.ofNullable(DexUtil.stringToJimpleType(superclass));
+        return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
     }
     return Optional.empty();

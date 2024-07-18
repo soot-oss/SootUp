@@ -85,7 +85,7 @@ public class CastInstruction extends TaggedInstruction {
         return PrimitiveType.DoubleType.getInstance();
 
       default:
-        throw new RuntimeException("Invalid Opcode: " + opcode);
+        throw new IllegalStateException("Invalid Opcode: " + opcode);
     }
   }
 

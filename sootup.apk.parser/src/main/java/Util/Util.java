@@ -1,13 +1,5 @@
 package Util;
 
-import instruction.DexLibAbstractInstruction;
-import instruction.ReturnVoidInstruction;
-import java.util.EnumSet;
-import org.jf.dexlib2.iface.Method;
-import sootup.core.jimple.Jimple;
-import sootup.core.jimple.basic.StmtPositionInfo;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.MethodModifier;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.ClassType;
 import sootup.java.core.types.JavaClassType;
@@ -34,14 +26,6 @@ public class Util {
         && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
-  public static Stmt makeStmt(DexLibAbstractInstruction ins) {
-    Stmt stmt = null;
-    if (ins instanceof ReturnVoidInstruction) {
-      stmt = Jimple.newReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
-    }
-    return stmt;
-  }
-
   public static ClassType getClassTypeFromClassName(String name) {
     if (name.startsWith("[")) {
       name = "java.lang.Object";
@@ -62,12 +46,5 @@ public class Util {
     }
 
     return javaClassType;
-  }
-
-  public EnumSet<MethodModifier> convertModifiers(Method method) {
-    method.getAccessFlags();
-    EnumSet<MethodModifier> modifiers = EnumSet.noneOf(MethodModifier.class);
-
-    return modifiers;
   }
 }

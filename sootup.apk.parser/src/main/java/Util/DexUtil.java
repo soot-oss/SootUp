@@ -7,13 +7,9 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.FieldModifier;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
-import sootup.core.types.UnknownType;
-import sootup.core.types.VoidType;
+import sootup.core.types.*;
+import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
-import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
 
@@ -113,7 +109,7 @@ public class DexUtil {
     return null;
   }
 
-  public static JavaClassType stringToJimpleType(String className) {
-    return JavaIdentifierFactory.getInstance().getClassType(DexUtil.toQualifiedName(className));
+  public static ClassType stringToJimpleType(View view, String className) {
+    return view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(className));
   }
 }

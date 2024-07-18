@@ -43,7 +43,7 @@ public class MoveExceptionInstruction extends DexLibAbstractInstruction
   @Override
   public void retype(List<Stmt> stmtList, Set<Local> locals) {
     if (realType == null) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Real type of this instruction has not been set or was already retyped: " + this);
     }
     if (stmtList.contains(stmtToRetype)) {

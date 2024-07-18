@@ -84,7 +84,7 @@ public class FillArrayDataInstruction extends PseudoInstruction {
     Instruction referenceTable = body.instructionAtAddress(targetAddress).instruction;
 
     if (!(referenceTable instanceof ArrayPayload)) {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Address " + targetAddress + "refers to an invalid PseudoInstruction.");
     }
 
@@ -185,7 +185,7 @@ public class FillArrayDataInstruction extends PseudoInstruction {
     } else if (elementType instanceof PrimitiveType.LongType) {
       value = LongConstant.getInstance(element.longValue());
     } else {
-      throw new RuntimeException(
+      throw new IllegalStateException(
           "Invalid Array Type occured in FillArrayDataInstruction: " + elementType);
     }
     return value;

@@ -98,19 +98,12 @@ public class DexMethodSource implements BodySource {
 
   @Override
   public Object resolveAnnotationsDefaultValue() {
-    return null;
+    throw new UnsupportedOperationException("TODO");
   }
 
   @Nonnull
   @Override
   public MethodSignature getSignature() {
-    //    String className = classType.getClassName();
-    //    if (Util.isByteCodeClassName(className)) {
-    //      className = Util.dottedClassName(className);
-    //    }
-    //    return new MethodSignature(
-    //        classType, className, parameterTypes, DexUtil.toSootType(method.getReturnType(), 0));
-    //  }
     return methodSignature;
   }
 }

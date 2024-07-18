@@ -61,7 +61,7 @@ public abstract class DexTransformer implements BodyInterceptor {
         JAssignStmt stmt = (JAssignStmt) arrayStmt;
         aBase = (Local) stmt.getRightOp();
       } else {
-        throw new RuntimeException("ERROR: not an assign statement: " + arrayStmt);
+        throw new IllegalStateException("ERROR: not an assign statement: " + arrayStmt);
       }
     } else {
       aBase = (Local) aRef.getBase();

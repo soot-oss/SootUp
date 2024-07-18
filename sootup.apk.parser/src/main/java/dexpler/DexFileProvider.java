@@ -26,35 +26,6 @@ public class DexFileProvider {
     return instance;
   }
 
-  private static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
-      new Comparator<DexContainer<? extends DexFile>>() {
-
-        @Override
-        public int compare(DexContainer<? extends DexFile> o1, DexContainer<? extends DexFile> o2) {
-          String s1 = o1.getDexName(), s2 = o2.getDexName();
-
-          // "classes.dex" has highest priority
-          if (s1.equals("classes.dex")) {
-            return 1;
-          } else if (s2.equals("classes.dex")) {
-            return -1;
-          }
-
-          // if one of the strings starts with "classes", we give it the edge right here
-          boolean s1StartsClasses = s1.startsWith("classes");
-          boolean s2StartsClasses = s2.startsWith("classes");
-
-          if (s1StartsClasses && !s2StartsClasses) {
-            return 1;
-          } else if (s2StartsClasses && !s1StartsClasses) {
-            return -1;
-          }
-
-          // otherwise, use natural string ordering
-          return s1.compareTo(s2);
-        }
-      };
-
   public static final class DexContainer<T extends DexFile> {
     private final MultiDexContainer.DexEntry<T> base;
     private final String name;
@@ -217,4 +188,29 @@ public class DexFileProvider {
   private String deriveDexName(String entryName) {
     return new File(entryName).getName();
   }
+
+  private static final Comparator<DexContainer<? extends DexFile>> DEFAULT_PRIORITIZER =
+      (o1, o2) -> {
+        String s1 = o1.getDexName(), s2 = o2.getDexName();
+
+        // "classes.dex" has highest priority
+        if (s1.equals("classes.dex")) {
+          return 1;
+        } else if (s2.equals("classes.dex")) {
+          return -1;
+        }
+
+        // if one of the strings starts with "classes", we give it the edge right here
+        boolean s1StartsClasses = s1.startsWith("classes");
+        boolean s2StartsClasses = s2.startsWith("classes");
+
+        if (s1StartsClasses && !s2StartsClasses) {
+          return 1;
+        } else if (s2StartsClasses && !s1StartsClasses) {
+          return -1;
+        }
+
+        // otherwise, use natural string ordering
+        return s1.compareTo(s2);
+      };
 }

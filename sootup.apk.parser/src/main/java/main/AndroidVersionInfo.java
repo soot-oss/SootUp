@@ -95,8 +95,8 @@ public class AndroidVersionInfo {
     // check that jar exists
     File f = newFile(jarPath);
     if (!f.isFile()) {
-      throw new RuntimeException(
-          String.format("error: target android.jar %s does not exist.", jarPath));
+      //      throw new RuntimeException(
+      //          String.format("error: target android.jar %s does not exist.", jarPath));
     }
   }
 
@@ -108,9 +108,9 @@ public class AndroidVersionInfo {
     // get path to appropriate android.jar
     File jarsF = newFile(jars);
     if (!jarsF.exists()) {
-      throw new RuntimeException(
-          String.format(
-              "Android platform directory '%s' does not exist!", jarsF.getAbsolutePath()));
+      //      throw new RuntimeException(
+      //          String.format(
+      //              "Android platform directory '%s' does not exist!", jarsF.getAbsolutePath()));
     }
     if (apk != null && !apk.toFile().exists()) {
       throw new RuntimeException("file '" + apk + "' does not exist!");
@@ -238,10 +238,11 @@ public class AndroidVersionInfo {
 
     File d = newFile(dir);
     if (!d.exists()) {
-      throw new RuntimeException(
-          String.format(
-              "The Android platform directory you have specified (%s) does not exist. Please check.",
-              dir));
+      //      throw new RuntimeException(
+      //          String.format(
+      //              "The Android platform directory you have specified (%s) does not exist. Please
+      // check.",
+      //              dir));
     }
 
     File[] files = d.listFiles();
