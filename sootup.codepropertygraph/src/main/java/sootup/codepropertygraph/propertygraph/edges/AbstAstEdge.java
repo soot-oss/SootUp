@@ -8,8 +8,4 @@ public abstract class AbstAstEdge extends PropertyGraphEdge {
   }
 
   public abstract String getLabel();
-
-  public String getColor() {
-      return "darkseagreen4";
-  }
 }

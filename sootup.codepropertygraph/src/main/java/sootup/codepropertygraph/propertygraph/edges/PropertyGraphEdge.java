@@ -22,8 +22,6 @@ public abstract class PropertyGraphEdge {
 
   public abstract String getLabel();
 
-  public abstract String getColor();
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

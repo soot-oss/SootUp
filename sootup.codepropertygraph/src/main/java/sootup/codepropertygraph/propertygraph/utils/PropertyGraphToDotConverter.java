@@ -1,16 +1,13 @@
 package sootup.codepropertygraph.propertygraph.utils;
 
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
-import sootup.codepropertygraph.propertygraph.edges.PropertyGraphEdge;
-import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.SimpleGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
-import sootup.codepropertygraph.propertygraph.nodes.TypeGraphNode;
+import sootup.codepropertygraph.propertygraph.edges.*;
+import sootup.codepropertygraph.propertygraph.nodes.*;
 
 public class PropertyGraphToDotConverter {
-  public static String convert(PropertyGraph graph, String graphName) {
+  public static String convert(PropertyGraph graph) {
     StringBuilder builder = new StringBuilder();
-    builder.append(String.format("digraph %s {\n", graphName));
+    builder.append(String.format("digraph %s {\n", graph.getName()));
     builder.append("\trankdir=TB;\n");
     builder.append("\tnode [style=filled, shape=record];\n");
     builder.append("\tedge [style=filled]\n");
@@ -28,7 +25,7 @@ public class PropertyGraphToDotConverter {
       String destinationId = String.valueOf(edge.getDestination().hashCode());
 
       String label = escapeDot(edge.getLabel());
-      String color = edge.getColor();
+      String color = getEdgeColor(edge);
       builder.append(
           String.format(
               "\t\"%s\" -> \"%s\"[label=\"%s\", color=\"%s\", fontcolor=\"%s\"];\n",
@@ -37,10 +34,6 @@ public class PropertyGraphToDotConverter {
 
     builder.append("}\n");
     return builder.toString();
-  }
-
-  private static String getNodeLabel(PropertyGraphNode node) {
-    return escapeDot(node.toString());
   }
 
   private static String escapeDot(String label) {
@@ -52,14 +45,30 @@ public class PropertyGraphToDotConverter {
         .replace("}", "\\}");
   }
 
+  private static String getNodeLabel(PropertyGraphNode node) {
+    return escapeDot(node.toString());
+  }
+
   private static String getNodeColor(PropertyGraphNode node) {
     if (node instanceof StmtGraphNode) {
       return "lightblue";
-    } else if (node instanceof TypeGraphNode) {
+    } else if (node instanceof TypeGraphNode || node instanceof ModifierGraphNode) {
       return "lightgray";
-    } else if (node instanceof SimpleGraphNode) {
+    } else if (node instanceof AggregateGraphNode) {
       return "darkseagreen2";
     }
     return "white";
+  }
+
+  private static String getEdgeColor(PropertyGraphEdge edge) {
+    if (edge instanceof AbstAstEdge) {
+      return "darkseagreen4";
+    } else if (edge instanceof AbstCdgEdge) {
+      return "dodgerblue4";
+    } else if (edge instanceof AbstDdgEdge) {
+      return "firebrick";
+    }
+
+    return "black";
   }
 }

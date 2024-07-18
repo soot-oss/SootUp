@@ -14,11 +14,12 @@ import sootup.core.types.Type;
 public class AstCreator {
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new AstPropertyGraph.Builder();
+    graphBuilder.setName("ast_" + method.getName());
 
     MethodGraphNode rootNode = new MethodGraphNode(method);
-    PropertyGraphNode modifiersNode = new SimpleGraphNode("Modifiers");
-    PropertyGraphNode parametersTypesNode = new SimpleGraphNode("Parameters");
-    PropertyGraphNode bodyStmtsNode = new SimpleGraphNode("Body");
+    PropertyGraphNode modifiersNode = new AggregateGraphNode("Modifiers");
+    PropertyGraphNode parametersTypesNode = new AggregateGraphNode("Parameters");
+    PropertyGraphNode bodyStmtsNode = new AggregateGraphNode("Body");
 
     graphBuilder.addEdge(new ModifierAstEdge(rootNode, modifiersNode));
     graphBuilder.addEdge(new ParameterAstEdge(rootNode, parametersTypesNode));
@@ -33,23 +34,26 @@ public class AstCreator {
   }
 
   private static void addModifierEdges(
-          PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, Set<MethodModifier> modifiers) {
+      PropertyGraph.Builder graphBuilder,
+      PropertyGraphNode parentNode,
+      Set<MethodModifier> modifiers) {
     for (MethodModifier modifier : modifiers) {
-      graphBuilder.addEdge(
-              new ModifierAstEdge(parentNode, new SimpleGraphNode(modifier.name())));
+      graphBuilder.addEdge(new ModifierAstEdge(parentNode, new ModifierGraphNode(modifier)));
     }
   }
 
   private static void addParameterTypeEdges(
-          PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, List<Type> parameterTypes) {
+      PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, List<Type> parameterTypes) {
     for (Type parameterType : parameterTypes) {
-      graphBuilder.addEdge(
-              new ParameterAstEdge(parentNode, new TypeGraphNode(parameterType)));
+      graphBuilder.addEdge(new ParameterAstEdge(parentNode, new TypeGraphNode(parameterType)));
     }
   }
 
   private static void addBodyStmtEdges(
-          PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, List<Stmt> bodyStmts, Body body) {
+      PropertyGraph.Builder graphBuilder,
+      PropertyGraphNode parentNode,
+      List<Stmt> bodyStmts,
+      Body body) {
     for (Stmt stmt : bodyStmts) {
       AstStmtVisitor visitor = new AstStmtVisitor(graphBuilder, parentNode, body);
       stmt.accept(visitor);
@@ -57,7 +61,7 @@ public class AstCreator {
   }
 
   private static void addReturnStmtEdge(
-          PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, Type returnType) {
+      PropertyGraph.Builder graphBuilder, PropertyGraphNode parentNode, Type returnType) {
     graphBuilder.addEdge(new ReturnTypeAstEdge(parentNode, new TypeGraphNode(returnType)));
   }
 }

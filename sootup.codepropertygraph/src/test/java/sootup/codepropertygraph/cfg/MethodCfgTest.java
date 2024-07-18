@@ -53,6 +53,6 @@ public class MethodCfgTest extends CpgTestSuiteBase {
 
     PropertyGraph cfgGraph = new CfgCreator().createGraph(method.get());
 
-    writeGraph(cfgGraph.toDotGraph("CFG"), methodName, "CFG");
+    writeGraph(cfgGraph.toDotGraph(), cfgGraph.getName());
   }
 }

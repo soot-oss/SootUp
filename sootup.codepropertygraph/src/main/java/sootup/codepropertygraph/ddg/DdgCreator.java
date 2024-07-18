@@ -13,8 +13,9 @@ import sootup.core.model.SootMethod;
 public class DdgCreator {
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
+      graphBuilder.setName("ddg_" + method.getName());
 
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
 
     for (Stmt key : reachingDefs.keySet()) {

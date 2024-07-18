@@ -8,12 +8,20 @@ import sootup.codepropertygraph.propertygraph.nodes.PropertyGraphNode;
 import sootup.codepropertygraph.propertygraph.utils.PropertyGraphToDotConverter;
 
 public final class AstPropertyGraph implements PropertyGraph {
+  private final String name;
   private final List<PropertyGraphNode> nodes;
   private final List<PropertyGraphEdge> edges;
 
-  private AstPropertyGraph(List<PropertyGraphNode> nodes, List<PropertyGraphEdge> edges) {
+  private AstPropertyGraph(
+      String name, List<PropertyGraphNode> nodes, List<PropertyGraphEdge> edges) {
+    this.name = name;
     this.nodes = Collections.unmodifiableList(nodes);
     this.edges = Collections.unmodifiableList(edges);
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -27,13 +35,19 @@ public final class AstPropertyGraph implements PropertyGraph {
   }
 
   @Override
-  public String toDotGraph(String graphName) {
-    return PropertyGraphToDotConverter.convert(this, graphName);
+  public String toDotGraph() {
+    return PropertyGraphToDotConverter.convert(this);
   }
 
   public static class Builder implements PropertyGraph.Builder {
+    private String name;
     private final List<PropertyGraphNode> nodes = new ArrayList<>();
     private final List<PropertyGraphEdge> edges = new ArrayList<>();
+
+    public Builder setName(String name) {
+      this.name = name;
+      return this;
+    }
 
     @Override
     public Builder addNode(PropertyGraphNode node) {
@@ -55,7 +69,7 @@ public final class AstPropertyGraph implements PropertyGraph {
 
     @Override
     public PropertyGraph build() {
-      return new AstPropertyGraph(nodes, edges);
+      return new AstPropertyGraph(name, nodes, edges);
     }
   }
 }

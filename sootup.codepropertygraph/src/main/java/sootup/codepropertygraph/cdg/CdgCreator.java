@@ -14,8 +14,9 @@ import sootup.core.model.SootMethod;
 public class CdgCreator {
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
+    graphBuilder.setName("cdg_" + method.getName());
 
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
 
     Iterator<BasicBlock<?>> iterator = stmtGraph.getBlockIterator();

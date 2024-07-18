@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import sootup.codepropertygraph.CpgTestSuiteBase;
 import sootup.codepropertygraph.MethodInfo;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.jimple.common.stmt.*;
@@ -11,7 +12,6 @@ import sootup.core.model.MethodModifier;
 import sootup.core.model.SootMethod;
 import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
-import sootup.codepropertygraph.CpgTestSuiteBase;
 
 public class AstMinimalTSTest extends CpgTestSuiteBase {
   private String methodName;
@@ -107,6 +107,6 @@ public class AstMinimalTSTest extends CpgTestSuiteBase {
     // assertEquals(expectedBodyStmts, methodInfo.getBodyStmts());
     assertEquals(expectedReturnType, methodInfo.getReturnType());
 
-    writeGraph(astGraph.toDotGraph("AST"), methodName, "AST");
+    writeGraph(astGraph.toDotGraph(), astGraph.getName());
   }
 }

@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import sootup.codepropertygraph.CpgTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.model.SootMethod;
-import sootup.codepropertygraph.CpgTestSuiteBase;
 
 public class CdgMinimalTSTest extends CpgTestSuiteBase {
   @Test
@@ -45,6 +45,6 @@ public class CdgMinimalTSTest extends CpgTestSuiteBase {
 
     PropertyGraph cdgGraph = (new CdgCreator()).createGraph(method.get());
 
-    writeGraph(cdgGraph.toDotGraph("CDG"), methodName, "CDG");
+    writeGraph(cdgGraph.toDotGraph(), cdgGraph.getName());
   }
 }

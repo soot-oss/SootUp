@@ -8,8 +8,4 @@ public abstract class AbstDdgEdge extends PropertyGraphEdge {
   }
 
   public abstract String getLabel();
-
-  public String getColor() {
-      return "firebrick";
-  }
 }

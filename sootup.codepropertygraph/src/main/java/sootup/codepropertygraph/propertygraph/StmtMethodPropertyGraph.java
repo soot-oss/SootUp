@@ -10,12 +10,19 @@ import sootup.codepropertygraph.propertygraph.nodes.StmtGraphNode;
 import sootup.codepropertygraph.propertygraph.utils.PropertyGraphToDotConverter;
 
 public final class StmtMethodPropertyGraph implements PropertyGraph {
+  private final String name;
   private final List<PropertyGraphNode> nodes;
   private final List<PropertyGraphEdge> edges;
 
-  private StmtMethodPropertyGraph(List<PropertyGraphNode> nodes, List<PropertyGraphEdge> edges) {
+  private StmtMethodPropertyGraph(
+      String name, List<PropertyGraphNode> nodes, List<PropertyGraphEdge> edges) {
+    this.name = name;
     this.nodes = Collections.unmodifiableList(nodes);
     this.edges = Collections.unmodifiableList(edges);
+  }
+
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -29,13 +36,19 @@ public final class StmtMethodPropertyGraph implements PropertyGraph {
   }
 
   @Override
-  public String toDotGraph(String graphName) {
-    return PropertyGraphToDotConverter.convert(this, graphName);
+  public String toDotGraph() {
+    return PropertyGraphToDotConverter.convert(this);
   }
 
   public static class Builder implements PropertyGraph.Builder {
+    private String name;
     private final List<PropertyGraphNode> nodes = new ArrayList<>();
     private final List<PropertyGraphEdge> edges = new ArrayList<>();
+
+    public Builder setName(String name) {
+      this.name = name;
+      return this;
+    }
 
     @Override
     public Builder addNode(PropertyGraphNode node) {
@@ -60,7 +73,7 @@ public final class StmtMethodPropertyGraph implements PropertyGraph {
 
     @Override
     public PropertyGraph build() {
-      return new StmtMethodPropertyGraph(nodes, edges);
+      return new StmtMethodPropertyGraph(name, nodes, edges);
     }
   }
 }

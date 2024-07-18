@@ -1,9 +1,9 @@
 package sootup.codepropertygraph.propertygraph.nodes;
 
-public class SimpleGraphNode extends PropertyGraphNode {
+public class AggregateGraphNode extends PropertyGraphNode {
   private final String name;
 
-  public SimpleGraphNode(String name) {
+  public AggregateGraphNode(String name) {
     this.name = name;
   }
 

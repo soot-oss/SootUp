@@ -24,8 +24,8 @@ public class CpgTestSuiteBase {
   private JavaView minimalTsView;
   private JimpleView testResourcesView;
 
-  private static void writeToFile(String dotGraph, String methodName, String graphType) {
-    File file = new File(String.format("temp/%s_%s.dot", graphType, methodName));
+  private static void writeToFile(String dotGraph, String graphName) {
+    File file = new File(String.format("temp/%s.dot", graphName));
     System.out.println(file.toPath());
 
     // Create the output folder if it doesn't exist
@@ -75,10 +75,10 @@ public class CpgTestSuiteBase {
     return testResourcesView.getMethod(methodSignature);
   }
 
-  protected void writeGraph(String dotGraph, String methodName, String graphType) {
-    System.out.printf("[%s] %s\n", graphType, methodName);
+  protected void writeGraph(String dotGraph, String graphName) {
+    System.out.println(graphName);
     System.out.println(dotGraph);
 
-    writeToFile(dotGraph, methodName, graphType);
+    writeToFile(dotGraph, graphName);
   }
 }

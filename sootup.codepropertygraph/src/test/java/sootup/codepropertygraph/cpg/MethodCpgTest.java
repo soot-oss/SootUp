@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import sootup.codepropertygraph.CpgTestSuiteBase;
 import sootup.codepropertygraph.ast.AstCreator;
 import sootup.codepropertygraph.cdg.CdgCreator;
 import sootup.codepropertygraph.cfg.CfgCreator;
 import sootup.codepropertygraph.ddg.DdgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.model.SootMethod;
-import sootup.codepropertygraph.CpgTestSuiteBase;
 
 public class MethodCpgTest extends CpgTestSuiteBase {
   private String methodName;
@@ -59,6 +59,6 @@ public class MethodCpgTest extends CpgTestSuiteBase {
         (new CpgCreator(new AstCreator(), new CfgCreator(), new CdgCreator(), new DdgCreator()))
             .createCpg(method.get());
 
-    writeGraph(cpgGraph.toDotGraph("CPG"), methodName, "CPG");
+    writeGraph(cpgGraph.toDotGraph(), String.format("%s_%s", cpgGraph.getName(), methodName));
   }
 }

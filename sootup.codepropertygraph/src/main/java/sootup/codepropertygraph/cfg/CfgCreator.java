@@ -12,8 +12,9 @@ import sootup.core.model.SootMethod;
 public class CfgCreator {
   public PropertyGraph createGraph(SootMethod method) {
     PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
+    graphBuilder.setName("cfg_" + method.getName());
 
+    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
     stmtGraph.forEach(
         currStmt -> {
           int expectedCount = currStmt.getExpectedSuccessorCount();
