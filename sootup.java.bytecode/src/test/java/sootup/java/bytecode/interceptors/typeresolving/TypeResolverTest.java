@@ -4,22 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.jimple.basic.Local;
-import sootup.core.model.Body;
-import sootup.core.model.MethodModifier;
-import sootup.core.model.SootMethod;
-import sootup.core.model.SourceType;
+import sootup.core.model.*;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.PrimitiveType;
@@ -27,7 +25,10 @@ import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
+import sootup.java.core.JavaSootClass;
+import sootup.java.core.interceptors.LocalNameStandardizer;
 import sootup.java.core.interceptors.TypeAssigner;
+import sootup.java.core.interceptors.UnusedLocalEliminator;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
@@ -294,6 +295,37 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
         new Local("l1", PrimitiveType.getBoolean()));
   }
 
+  @Test
+  public void testTrWithoutLs() {
+    String directoryPath = baseDir;
+    try {
+      List<String> fileNames = listFiles(directoryPath);
+      fileNames.forEach(System.out::println);
+      fileNames.forEach(this::applyTrToJar);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static List<String> listFiles(String directoryPath) throws IOException {
+    try (Stream<Path> paths = Files.walk(Paths.get(directoryPath))) {
+      return paths
+              .filter(Files::isExecutable)
+              .filter(path -> path.toString().toLowerCase().endsWith(".jar"))
+              //.map(Path::toString)
+              .sorted((path1, path2) -> {
+                try {
+                  return Long.compare(Files.size(path1), Files.size(path2));
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                }
+              })
+              .map(path -> path.getFileName().toString())
+              .filter(filename -> !filename.equals("MiniHierarchy.jar"))
+              .collect(Collectors.toList());
+    }
+  }
+
   private void assertLocals(Body body, Local... locals) {
     assertEquals(new HashSet<>(Arrays.asList(locals)), body.getLocals());
   }
@@ -309,4 +341,28 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
             .getMethodSignature("Misc", name, "void", Collections.emptyList());
     return view.getMethod(methodSignature).get().getBody();
   }
+
+  // Apply Type Assigner then Unused Local Eliminator without using Local Splitter first.
+  private void applyTrToJar(String jarName) {
+    JavaClassPathAnalysisInputLocation inputJarLocation = new JavaClassPathAnalysisInputLocation(
+            baseDir + "Misc/" + jarName,
+            SourceType.Library,
+            Arrays.asList(new TypeAssigner()));
+    final JavaView view = new JavaView(Arrays.asList(inputJarLocation));
+
+//    MethodSignature methodSignature = view
+//            .getIdentifierFactory()
+//            .getMethodSignature(
+//                    classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+
+    for (SootClass sootClass : view.getClasses()) {
+      for (SootMethod sootMethod : sootClass.getMethods()) {
+        if(sootMethod.isConcrete()){
+          Body body = view.getMethod(sootMethod.getSignature()).get().getBody();
+        }
+      }
+    }
+
+  }
+
 }
