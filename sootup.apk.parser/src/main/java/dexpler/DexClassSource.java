@@ -69,8 +69,7 @@ public class DexClassSource extends JavaSootClassSource {
       return Stream.concat(methodStream, virtualMethodStream)
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
-    }
-    else{
+    } else {
       throw new IllegalStateException("Class Information Should not be null");
     }
   }
@@ -189,7 +188,8 @@ public class DexClassSource extends JavaSootClassSource {
               Type fieldType = DexUtil.toSootType(field.getType(), 0);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
-              EnumSet<FieldModifier> modifiers = Modifiers.getFieldModifiers(field.getAccessFlags());
+              EnumSet<FieldModifier> modifiers =
+                  Modifiers.getFieldModifiers(field.getAccessFlags());
 
               return new JavaSootField(
                   fieldSignature,

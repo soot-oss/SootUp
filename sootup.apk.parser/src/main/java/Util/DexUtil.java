@@ -5,8 +5,6 @@ import javax.annotation.Nonnull;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
-import sootup.core.model.ClassModifier;
-import sootup.core.model.FieldModifier;
 import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.views.View;
@@ -108,8 +106,8 @@ public class DexUtil {
 
   public static boolean isByteCodeClassName(String className) {
     return ((className.startsWith("L") || className.startsWith("["))
-            && className.endsWith(";")
-            && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
+        && className.endsWith(";")
+        && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
   }
 
   public static ClassType getClassTypeFromClassName(String name) {
@@ -123,9 +121,9 @@ public class DexUtil {
     lastIndex = (lastIndex == -1) ? 0 : lastIndex;
     try {
       javaClassType =
-              new JavaClassType(
-                      name.substring(name.lastIndexOf(".") + 1),
-                      new PackageName(name.substring(0, lastIndex)));
+          new JavaClassType(
+              name.substring(name.lastIndexOf(".") + 1),
+              new PackageName(name.substring(0, lastIndex)));
     } catch (Exception exception) {
       System.out.println("Exception when substring with className " + name);
       throw new RuntimeException();

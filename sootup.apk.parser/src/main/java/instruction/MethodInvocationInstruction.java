@@ -1,6 +1,5 @@
 package instruction;
 
-
 import Util.DexUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     invocation =
         Jimple.newStaticInvokeExpr(
             new MethodSignature(
-                    DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
                 item.getName(),
                 convertParameterTypes(item.getParameterTypes()),
                 DexUtil.toSootType(item.getReturnType(), 0)));
@@ -88,7 +87,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //        }
     MethodSignature methodSignature =
         new MethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
             item.getName(),
             convertParameterTypes(item.getParameterTypes()),
             DexUtil.toSootType(item.getReturnType(), 0));
@@ -110,7 +109,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //        }
     MethodSignature methodSignature =
         new MethodSignature(
-                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
+            DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
             item.getName(),
             convertParameterTypes(item.getParameterTypes()),
             DexUtil.toSootType(item.getReturnType(), 0));

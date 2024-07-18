@@ -1,6 +1,5 @@
 package instruction;
 
-
 import Util.DexUtil;
 import main.DexBody;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -38,7 +37,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
             fieldReference.getName(),
             DexUtil.toSootType(fieldReference.getType(), 0));
     if (isStatic) {
-        return new JStaticFieldRef(fieldSignature);
+      return new JStaticFieldRef(fieldSignature);
     } else {
       // TODO : Dont know which local to use here, as of now using null which will throw an error
       // for sure.
