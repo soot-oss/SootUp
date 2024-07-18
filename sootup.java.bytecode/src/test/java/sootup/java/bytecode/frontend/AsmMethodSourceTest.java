@@ -8,9 +8,13 @@ import categories.TestCategories;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import sootup.core.graph.StmtGraph;
+import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -98,5 +102,6 @@ public class AsmMethodSourceTest {
                     .get();
 
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
+    assert !method.getBody().getStmts().stream().anyMatch( s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
   }
 }
