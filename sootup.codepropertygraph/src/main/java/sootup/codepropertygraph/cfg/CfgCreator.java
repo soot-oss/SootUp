@@ -11,7 +11,7 @@ import sootup.core.model.SootMethod;
 
 public class CfgCreator {
   public PropertyGraph createGraph(SootMethod method) {
-    PropertyGraph cfgGraph = new StmtMethodPropertyGraph();
+    PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
 
     stmtGraph.forEach(
@@ -28,12 +28,12 @@ public class CfgCreator {
               edge = new ExceptionalCfgEdge(sourceNode, destinationNode);
             }
 
-            cfgGraph.addEdge(edge);
+            graphBuilder.addEdge(edge);
             successorIndex++;
           }
         });
 
-    return cfgGraph;
+    return graphBuilder.build();
   }
 
   private AbstCfgEdge createEdge(

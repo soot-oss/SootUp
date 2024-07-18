@@ -13,7 +13,7 @@ import sootup.core.model.SootMethod;
 
 public class CdgCreator {
   public PropertyGraph createGraph(SootMethod method) {
-    PropertyGraph cdgGraph = new StmtMethodPropertyGraph();
+    PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
 
     PostDominanceFinder postDominanceFinder = new PostDominanceFinder(stmtGraph);
@@ -25,11 +25,11 @@ public class CdgCreator {
         StmtGraphNode sourceNode = new StmtGraphNode(frontierBlock.getTail());
         for (Stmt srcStmt : currBlock.getStmts()) {
           StmtGraphNode destinationNode = new StmtGraphNode(srcStmt);
-          cdgGraph.addEdge(new CdgEdge(sourceNode, destinationNode));
+          graphBuilder.addEdge(new CdgEdge(sourceNode, destinationNode));
         }
       }
     }
 
-    return cdgGraph;
+    return graphBuilder.build();
   }
 }

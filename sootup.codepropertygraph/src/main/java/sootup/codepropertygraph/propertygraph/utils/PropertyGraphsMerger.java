@@ -5,9 +5,13 @@ import sootup.codepropertygraph.propertygraph.PropertyGraph;
 
 public class PropertyGraphsMerger {
   public static PropertyGraph mergeGraphs(PropertyGraph graph1, PropertyGraph graph2) {
-    PropertyGraph mergedGraph = new AstPropertyGraph();
-    graph1.getEdges().forEach(mergedGraph::addEdge);
-    graph2.getEdges().forEach(mergedGraph::addEdge);
-    return mergedGraph;
+    PropertyGraph.Builder mergedGraphBuilder = new AstPropertyGraph.Builder();
+
+    graph1.getNodes().forEach(mergedGraphBuilder::addNode);
+    graph1.getEdges().forEach(mergedGraphBuilder::addEdge);
+    graph2.getNodes().forEach(mergedGraphBuilder::addNode);
+    graph2.getEdges().forEach(mergedGraphBuilder::addEdge);
+
+    return mergedGraphBuilder.build();
   }
 }

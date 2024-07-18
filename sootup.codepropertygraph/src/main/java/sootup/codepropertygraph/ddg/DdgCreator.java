@@ -12,7 +12,7 @@ import sootup.core.model.SootMethod;
 
 public class DdgCreator {
   public PropertyGraph createGraph(SootMethod method) {
-    PropertyGraph ddgGraph = new StmtMethodPropertyGraph();
+    PropertyGraph.Builder graphBuilder = new StmtMethodPropertyGraph.Builder();
     StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
 
     Map<Stmt, List<Stmt>> reachingDefs = (new ReachingDefs(stmtGraph)).getReachingDefs();
@@ -23,10 +23,10 @@ public class DdgCreator {
       values.forEach(
           value -> {
             StmtGraphNode sourceNode = new StmtGraphNode(value);
-            ddgGraph.addEdge(new DdgEdge(sourceNode, destinationNode));
+            graphBuilder.addEdge(new DdgEdge(sourceNode, destinationNode));
           });
     }
 
-    return ddgGraph;
+    return graphBuilder.build();
   }
 }
