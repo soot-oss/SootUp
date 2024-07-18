@@ -129,7 +129,8 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
     addImmediateNode(stmtNode, stmt.getKey());
     stmt.getTargetStmts(body)
-        .forEach(target -> graphBuilder.addEdge(new TargetAstEdge(stmtNode, new StmtGraphNode(target))));
+        .forEach(
+            target -> graphBuilder.addEdge(new TargetAstEdge(stmtNode, new StmtGraphNode(target))));
   }
 
   @Override

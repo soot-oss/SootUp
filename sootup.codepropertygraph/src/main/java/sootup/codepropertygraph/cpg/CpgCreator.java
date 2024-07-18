@@ -2,11 +2,11 @@ package sootup.codepropertygraph.cpg;
 
 import sootup.codepropertygraph.ast.AstCreator;
 import sootup.codepropertygraph.cdg.CdgCreator;
+import sootup.codepropertygraph.cfg.CfgCreator;
 import sootup.codepropertygraph.ddg.DdgCreator;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.codepropertygraph.propertygraph.utils.PropertyGraphsMerger;
 import sootup.core.model.SootMethod;
-import sootup.codepropertygraph.cfg.CfgCreator;
 
 public class CpgCreator {
   private final AstCreator astCreator;

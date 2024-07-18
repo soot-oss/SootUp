@@ -41,9 +41,9 @@ public final class StmtMethodPropertyGraph implements PropertyGraph {
   }
 
   public static class Builder implements PropertyGraph.Builder {
-    private String name;
     private final List<PropertyGraphNode> nodes = new ArrayList<>();
     private final List<PropertyGraphEdge> edges = new ArrayList<>();
+    private String name;
 
     public Builder setName(String name) {
       this.name = name;

@@ -10,10 +10,10 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-public class ReachingDefs {
+class ReachingDefs {
   private final Map<Stmt, List<Stmt>> reachingDefs;
 
-  public ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
+  ReachingDefs(StmtGraph<? extends BasicBlock<?>> graph) {
     this.reachingDefs = new HashMap<>();
 
     ReachingDefsAnalysis analysis = new ReachingDefsAnalysis(graph);
@@ -39,14 +39,14 @@ public class ReachingDefs {
     }
   }
 
-  public Map<Stmt, List<Stmt>> getReachingDefs() {
+  Map<Stmt, List<Stmt>> getReachingDefs() {
     return reachingDefs;
   }
 
   static class ReachingDefsAnalysis extends ForwardFlowAnalysis<Set<VariableDefinition>> {
 
     /** Construct the analysis from StmtGraph. */
-    public <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
+    <B extends BasicBlock<B>> ReachingDefsAnalysis(StmtGraph<B> graph) {
       super(graph);
       execute();
     }
