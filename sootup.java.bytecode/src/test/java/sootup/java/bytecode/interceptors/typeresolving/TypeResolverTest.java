@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import categories.TestCategories;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,10 +23,7 @@ import sootup.core.types.Type;
 import sootup.core.util.Utils;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaPackageName;
-import sootup.java.core.JavaSootClass;
-import sootup.java.core.interceptors.LocalNameStandardizer;
 import sootup.java.core.interceptors.TypeAssigner;
-import sootup.java.core.interceptors.UnusedLocalEliminator;
 import sootup.java.core.interceptors.typeresolving.TypeResolver;
 import sootup.java.core.interceptors.typeresolving.types.TopType;
 import sootup.java.core.types.JavaClassType;
@@ -297,32 +292,34 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
 
   @Test
   public void testTrWithoutLs() {
-    String directoryPath = baseDir;
+    String directoryPath = baseDir + "Misc/";
     try {
-      List<String> fileNames = listFiles(directoryPath);
-      fileNames.forEach(System.out::println);
-      fileNames.forEach(this::applyTrToJar);
+      List<String> jarFileNames = listJarFiles(directoryPath);
+      jarFileNames.forEach(
+          jarFile -> {
+            System.out.println("Applying Type Assigner to jar " + jarFile);
+            applyTypeAssignerToJar(jarFile);
+          });
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  public static List<String> listFiles(String directoryPath) throws IOException {
+  public static List<String> listJarFiles(String directoryPath) throws IOException {
     try (Stream<Path> paths = Files.walk(Paths.get(directoryPath))) {
       return paths
-              .filter(Files::isExecutable)
-              .filter(path -> path.toString().toLowerCase().endsWith(".jar"))
-              //.map(Path::toString)
-              .sorted((path1, path2) -> {
+          .filter(Files::isRegularFile)
+          .filter(path -> path.toString().toLowerCase().endsWith(".jar"))
+          .sorted(
+              (path1, path2) -> {
                 try {
                   return Long.compare(Files.size(path1), Files.size(path2));
                 } catch (IOException e) {
                   throw new RuntimeException(e);
                 }
               })
-              .map(path -> path.getFileName().toString())
-              .filter(filename -> !filename.equals("MiniHierarchy.jar"))
-              .collect(Collectors.toList());
+          .map(path -> path.getFileName().toString())
+          .collect(Collectors.toList());
     }
   }
 
@@ -343,26 +340,20 @@ public class TypeResolverTest extends TypeAssignerTestSuite {
   }
 
   // Apply Type Assigner then Unused Local Eliminator without using Local Splitter first.
-  private void applyTrToJar(String jarName) {
-    JavaClassPathAnalysisInputLocation inputJarLocation = new JavaClassPathAnalysisInputLocation(
+  private void applyTypeAssignerToJar(String jarName) {
+    JavaClassPathAnalysisInputLocation inputJarLocation =
+        new JavaClassPathAnalysisInputLocation(
             baseDir + "Misc/" + jarName,
             SourceType.Library,
-            Arrays.asList(new TypeAssigner()));
-    final JavaView view = new JavaView(Arrays.asList(inputJarLocation));
-
-//    MethodSignature methodSignature = view
-//            .getIdentifierFactory()
-//            .getMethodSignature(
-//                    classType, "main", "void", Collections.singletonList("java.lang.String[]"));
+            Collections.singletonList(new TypeAssigner()));
+    final JavaView view = new JavaView(Collections.singletonList(inputJarLocation));
 
     for (SootClass sootClass : view.getClasses()) {
       for (SootMethod sootMethod : sootClass.getMethods()) {
-        if(sootMethod.isConcrete()){
+        if (sootMethod.isConcrete()) {
           Body body = view.getMethod(sootMethod.getSignature()).get().getBody();
         }
       }
     }
-
   }
-
 }
