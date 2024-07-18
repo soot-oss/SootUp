@@ -57,7 +57,7 @@ public class DexLibWrapper {
     for (MultiDexContainer.DexEntry<? extends DexFile> dexEntry : dexFiles) {
       final DexFile dexFile = dexEntry.getDexFile();
       for (ClassDef defItem : dexFile.getClasses()) {
-        String forClassName = Util.dottedClassName(defItem.getType());
+        String forClassName = DexUtil.dottedClassName(defItem.getType());
         classesToDefItems.put(forClassName, new ClassInformation(dexEntry, defItem));
       }
     }
@@ -100,8 +100,8 @@ public class DexLibWrapper {
 
   public ClassInformation getClassInformation(ClassType classType) {
     String className =
-        Util.isByteCodeClassName(classType.toString())
-            ? Util.dottedClassName(classType.toString())
+        DexUtil.isByteCodeClassName(classType.toString())
+            ? DexUtil.dottedClassName(classType.toString())
             : classType.toString();
     ClassInformation defItem = classesToDefItems.get(className);
     return defItem;

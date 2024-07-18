@@ -22,6 +22,7 @@ import sootup.core.signatures.FieldSignature;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
+import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.*;
 import sootup.java.core.language.JavaJimple;
@@ -69,7 +70,9 @@ public class DexClassSource extends JavaSootClassSource {
           .map(method -> loadMethod(method, dexMethod))
           .collect(Collectors.toSet());
     }
-    return Collections.emptyList();
+    else{
+      throw new IllegalStateException("Class Information Should not be null");
+    }
   }
 
   @Nonnull
@@ -84,7 +87,7 @@ public class DexClassSource extends JavaSootClassSource {
   @Nonnull
   @Override
   public Set<ClassModifier> resolveModifiers() {
-    return DexUtil.getClassModifiers(classInformation.classDefinition.getAccessFlags());
+    return Modifiers.getClassModifiers(classInformation.classDefinition.getAccessFlags());
   }
 
   @Nonnull
@@ -186,7 +189,7 @@ public class DexClassSource extends JavaSootClassSource {
               Type fieldType = DexUtil.toSootType(field.getType(), 0);
               FieldSignature fieldSignature =
                   signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
-              EnumSet<FieldModifier> modifiers = DexUtil.getFieldModifiers(field.getAccessFlags());
+              EnumSet<FieldModifier> modifiers = Modifiers.getFieldModifiers(field.getAccessFlags());
 
               return new JavaSootField(
                   fieldSignature,

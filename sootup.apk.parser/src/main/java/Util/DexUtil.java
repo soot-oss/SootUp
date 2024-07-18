@@ -7,9 +7,11 @@ import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.FieldModifier;
+import sootup.core.signatures.PackageName;
 import sootup.core.types.*;
 import sootup.core.views.View;
 import sootup.java.core.AnnotationUsage;
+import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
 
@@ -42,10 +44,10 @@ public class DexUtil {
         type = PrimitiveType.DoubleType.getInstance();
         break;
       case 'L': // object
-        if (Util.isByteCodeClassName(typeDescriptor)) {
-          typeDescriptor = Util.dottedClassName(typeDescriptor);
+        if (isByteCodeClassName(typeDescriptor)) {
+          typeDescriptor = dottedClassName(typeDescriptor);
         }
-        type = Util.getClassTypeFromClassName(typeDescriptor);
+        type = getClassTypeFromClassName(typeDescriptor);
         break;
       case 'V': // void
         type = VoidType.getInstance();
@@ -60,30 +62,6 @@ public class DexUtil {
         type = UnknownType.getInstance();
     }
     return type;
-  }
-
-  public static EnumSet<ClassModifier> getClassModifiers(int access) {
-    EnumSet<ClassModifier> modifierEnumSet = EnumSet.noneOf(ClassModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (ClassModifier modifier : ClassModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
-  }
-
-  public static EnumSet<FieldModifier> getFieldModifiers(int access) {
-    EnumSet<FieldModifier> modifierEnumSet = EnumSet.noneOf(FieldModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (FieldModifier modifier : FieldModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
   }
 
   public static String toQualifiedName(@Nonnull String str) {
@@ -111,5 +89,48 @@ public class DexUtil {
 
   public static ClassType stringToJimpleType(View view, String className) {
     return view.getIdentifierFactory().getClassType(DexUtil.toQualifiedName(className));
+  }
+
+  public static String dottedClassName(String typeDescriptor) {
+    String t = typeDescriptor;
+    int idx = 0;
+    while (idx < t.length() && t.charAt(idx) == '[') {
+      idx++;
+    }
+    String className = typeDescriptor.substring(idx);
+
+    className = className.substring(className.indexOf('L') + 1, className.indexOf(';'));
+
+    className = className.replace('/', '.');
+
+    return className;
+  }
+
+  public static boolean isByteCodeClassName(String className) {
+    return ((className.startsWith("L") || className.startsWith("["))
+            && className.endsWith(";")
+            && ((className.indexOf('/') != -1 || className.indexOf('.') == -1)));
+  }
+
+  public static ClassType getClassTypeFromClassName(String name) {
+    if (name.startsWith("[")) {
+      name = "java.lang.Object";
+    } else if (isByteCodeClassName(name)) {
+      name = dottedClassName(name);
+    }
+    JavaClassType javaClassType;
+    int lastIndex = name.lastIndexOf(".");
+    lastIndex = (lastIndex == -1) ? 0 : lastIndex;
+    try {
+      javaClassType =
+              new JavaClassType(
+                      name.substring(name.lastIndexOf(".") + 1),
+                      new PackageName(name.substring(0, lastIndex)));
+    } catch (Exception exception) {
+      System.out.println("Exception when substring with className " + name);
+      throw new RuntimeException();
+    }
+
+    return javaClassType;
   }
 }

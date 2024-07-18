@@ -320,8 +320,8 @@ public class DexBody {
     // It is only for the case where there is a JNop Statement after the return statement. Crazy
     // android code :(
     String className = classType.getClassName();
-    if (Util.Util.isByteCodeClassName(className)) {
-      className = Util.Util.dottedClassName(className);
+    if (DexUtil.isByteCodeClassName(className)) {
+      className = DexUtil.dottedClassName(className);
     }
     MethodSignature methodSignature =
         new MethodSignature(

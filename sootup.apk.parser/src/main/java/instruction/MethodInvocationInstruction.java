@@ -1,6 +1,5 @@
 package instruction;
 
-import static Util.Util.*;
 
 import Util.DexUtil;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
         Jimple.newSpecialInvokeExpr(
             parameters.get(0),
             new MethodSignature(
-                getClassTypeFromClassName(item.getDefiningClass()),
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
                 new MethodSubSignature(
                     item.getName(),
                     convertParameterTypes(item.getParameterTypes()),
@@ -72,7 +71,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     invocation =
         Jimple.newStaticInvokeExpr(
             new MethodSignature(
-                getClassTypeFromClassName(item.getDefiningClass()),
+                    DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
                 item.getName(),
                 convertParameterTypes(item.getParameterTypes()),
                 DexUtil.toSootType(item.getReturnType(), 0)));
@@ -89,7 +88,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //        }
     MethodSignature methodSignature =
         new MethodSignature(
-            getClassTypeFromClassName(item.getDefiningClass()),
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
             item.getName(),
             convertParameterTypes(item.getParameterTypes()),
             DexUtil.toSootType(item.getReturnType(), 0));
@@ -111,7 +110,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
     //        }
     MethodSignature methodSignature =
         new MethodSignature(
-            getClassTypeFromClassName(item.getDefiningClass()),
+                DexUtil.getClassTypeFromClassName(item.getDefiningClass()),
             item.getName(),
             convertParameterTypes(item.getParameterTypes()),
             DexUtil.toSootType(item.getReturnType(), 0));

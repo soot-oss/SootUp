@@ -18,6 +18,7 @@ import sootup.core.model.SootClass;
 import sootup.core.model.SourceType;
 import sootup.core.transform.BodyInterceptor;
 import sootup.core.types.ClassType;
+import sootup.core.util.Modifiers;
 import sootup.core.util.StreamUtils;
 import sootup.core.views.View;
 
@@ -27,7 +28,7 @@ public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisIn
 
   String android_jar_path;
 
-  private AndroidVersionInfo androidSDKVersionInfo;
+  private final AndroidVersionInfo androidSDKVersionInfo;
 
   private final List<BodyInterceptor> bodyInterceptors;
 
@@ -63,8 +64,8 @@ public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisIn
                 .forEach(
                     dexClass ->
                         classList.put(
-                            Util.dottedClassName(dexClass.toString()),
-                            DexUtil.getClassModifiers(dexClass.getAccessFlags()))));
+                            DexUtil.dottedClassName(dexClass.toString()),
+                            Modifiers.getClassModifiers(dexClass.getAccessFlags()))));
     return classList;
   }
 

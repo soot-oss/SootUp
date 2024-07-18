@@ -1,6 +1,5 @@
 package instruction;
 
-import static Util.Util.dottedClassName;
 
 import Util.DexUtil;
 import main.DexBody;
@@ -32,15 +31,14 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
   }
 
   private JFieldRef getSootFieldRef(FieldReference fieldReference, boolean isStatic) {
-    String className = dottedClassName(fieldReference.getDefiningClass());
+    String className = DexUtil.dottedClassName(fieldReference.getDefiningClass());
     FieldSignature fieldSignature =
         new FieldSignature(
-            Util.Util.getClassTypeFromClassName(className),
+            DexUtil.getClassTypeFromClassName(className),
             fieldReference.getName(),
             DexUtil.toSootType(fieldReference.getType(), 0));
     if (isStatic) {
-      JStaticFieldRef jStaticFieldRef = new JStaticFieldRef(fieldSignature);
-      return jStaticFieldRef;
+        return new JStaticFieldRef(fieldSignature);
     } else {
       // TODO : Dont know which local to use here, as of now using null which will throw an error
       // for sure.

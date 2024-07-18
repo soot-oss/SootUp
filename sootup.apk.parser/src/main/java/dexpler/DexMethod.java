@@ -32,8 +32,8 @@ public class DexMethod {
     int modifierFlags = method.getAccessFlags();
     if (Modifier.isAbstract(modifierFlags) || Modifier.isNative(modifierFlags)) {
       String className = declaringclassType.getClassName();
-      if (Util.Util.isByteCodeClassName(className)) {
-        className = Util.Util.dottedClassName(className);
+      if (DexUtil.isByteCodeClassName(className)) {
+        className = DexUtil.dottedClassName(className);
       }
       MethodSignature methodSignature =
           new MethodSignature(
