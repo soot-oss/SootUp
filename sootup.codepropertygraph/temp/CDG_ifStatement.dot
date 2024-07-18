@@ -1,7 +1,0 @@
-digraph CDG {
-	rankdir=TB;
-	node [style=filled, shape=record];
-	edge [style=filled]	"1013352675" [label="{<f0> STMT | <f1> if l1 &gt;= 42}", fillcolor="lightblue"];
-	"-1942116022" [label="{<f0> STMT | <f1> l2 = 1}", fillcolor="lightblue"];
-	"1013352675" -> "-1942116022"[label="CDG", color="dodgerblue4", fontcolor="dodgerblue4"];
-}
