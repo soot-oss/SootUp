@@ -18,6 +18,7 @@ import sootup.core.jimple.common.stmt.JAssignStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ReferenceType;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class XPAG {
   /* record nodes and edges in the graph */
@@ -31,7 +32,11 @@ public class XPAG {
     this.pta = pta;
     this.pag = pta.getPag();
     this.utility = utility;
-    this.dummyThis = new LocalVarNode("DUMMYTHIS", PTAUtils.getClassType("java.lang.Object"), null);
+    this.dummyThis =
+        new LocalVarNode(
+            "DUMMYTHIS",
+            JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"),
+            null);
     buildGraph(pta.getNakedReachableMethods());
   }
 

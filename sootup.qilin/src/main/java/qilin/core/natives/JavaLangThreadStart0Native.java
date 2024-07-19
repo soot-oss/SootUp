@@ -23,12 +23,12 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class JavaLangThreadStart0Native extends NativeMethod {
   private final LValue currentThread;
 
-  public JavaLangThreadStart0Native(View view, SootMethod method, LValue currentThread) {
+  public JavaLangThreadStart0Native(JavaView view, SootMethod method, LValue currentThread) {
     super(view, method);
     this.currentThread = currentThread;
   }
@@ -41,7 +41,8 @@ public class JavaLangThreadStart0Native extends NativeMethod {
   @Override
   protected void simulateImpl() {
     Local mThis = getThis();
-    addInvoke(mThis, "<java.lang.Thread: void run()>");
+    addInvoke(
+        mThis, view.getIdentifierFactory().parseMethodSignature("<java.lang.Thread: void run()>"));
     addAssign(currentThread, mThis); // store.
     final JReturnVoidStmt returnStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());

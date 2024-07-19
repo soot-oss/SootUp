@@ -22,17 +22,22 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.core.signatures.MethodSignature;
+import sootup.java.core.views.JavaView;
 
 public class JavaLangRefFinalizerInvokeFinalizeMethodNative extends NativeMethod {
-  public JavaLangRefFinalizerInvokeFinalizeMethodNative(View view, SootMethod method) {
+  private final MethodSignature methodSig;
+
+  public JavaLangRefFinalizerInvokeFinalizeMethodNative(JavaView view, SootMethod method) {
     super(view, method);
+    methodSig =
+        view.getIdentifierFactory().parseMethodSignature("<java.lang.Object: void finalize()>");
   }
 
   /** "&lt;java.lang.ref.Finalizer: void invokeFinalizeMethod(java.lang.Object)&gt;" */
   protected void simulateImpl() {
     Local r0 = getPara(0);
-    addInvoke(r0, "<java.lang.Object: void finalize()>");
+    addInvoke(r0, methodSig);
     final JReturnVoidStmt returnStmt =
         new JReturnVoidStmt(StmtPositionInfo.getNoStmtPositionInfo());
     stmtList.add(returnStmt);

@@ -18,7 +18,6 @@
 
 package qilin.core.natives;
 
-import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.basic.Value;
@@ -27,14 +26,14 @@ import sootup.core.jimple.common.stmt.JReturnVoidStmt;
 import sootup.core.model.SootMethod;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 /*
  * This file will be temporarily discarded. Yes, it is correct but need one more level of context.
  * Thus it will make qilin.spark less precise than its counterpart in Doop.
  * */
 public class JavaLangSystemArraycopyNative extends NativeMethod {
-  public JavaLangSystemArraycopyNative(View view, SootMethod method) {
+  public JavaLangSystemArraycopyNative(JavaView view, SootMethod method) {
     super(view, method);
   }
 
@@ -44,7 +43,7 @@ public class JavaLangSystemArraycopyNative extends NativeMethod {
   protected void simulateImpl() {
     //        Value srcArr = getPara(0);
     //        Value dstArr = getPara(2);
-    ClassType objType = PTAUtils.getClassType("java.lang.Object");
+    ClassType objType = view.getIdentifierFactory().getClassType("java.lang.Object");
     Value srcArr = getPara(0, new ArrayType(objType, 1));
     Value dstArr = getPara(2, new ArrayType(objType, 1));
     Value src = getArrayRef(srcArr);

@@ -57,6 +57,7 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.Type;
 import sootup.core.views.View;
+import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -581,7 +582,7 @@ public class PAG {
             if (PTAUtils.isPrimitiveArrayType(srcArr.getType())) {
               continue;
             }
-            Type objType = PTAUtils.getClassType("java.lang.Object");
+            Type objType = JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
             if (srcArr.getType() == objType) {
               Local localSrc =
                   Jimple.newLocal("intermediate/" + (localCount++), new ArrayType(objType, 1));
@@ -610,7 +611,8 @@ public class PAG {
                 JavaJimple.getInstance().newArrayRef((Local) dstArr, IntConstant.getInstance(0));
             Local local =
                 Jimple.newLocal(
-                    "nativeArrayCopy" + (localCount++), PTAUtils.getClassType("java.lang.Object"));
+                    "nativeArrayCopy" + (localCount++),
+                    JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"));
             builder.addLocal(local);
             newUnits
                 .computeIfAbsent(s, k -> DataFactory.createSet())

@@ -18,22 +18,25 @@
 
 package qilin.core.natives;
 
-import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Immediate;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.types.JavaClassType;
+import sootup.java.core.views.JavaView;
 
 public class JavaIoFileSystemListNative extends NativeMethod {
-  public JavaIoFileSystemListNative(View view, SootMethod method) {
+  private final JavaClassType stringClassType;
+
+  public JavaIoFileSystemListNative(JavaView view, SootMethod method) {
     super(view, method);
+    stringClassType = view.getIdentifierFactory().getClassType("java.lang.String");
   }
 
   /** ********************** java.io.FileSystem ********************** */
   /** Returns a String[] only exists in old JDK(e.g., JDK6). */
   protected void simulateImpl() {
-    Immediate arrLocal = getNewArray(PTAUtils.getClassType("java.lang.String"));
-    Value elem = getNew(PTAUtils.getClassType("java.lang.String"));
+    Immediate arrLocal = getNewArray(stringClassType);
+    Value elem = getNew(stringClassType);
     //        addInvoke(elem, "<java.lang.String: void <init>()>");
     addAssign(getArrayRef(arrLocal), elem);
     addReturn(arrLocal);

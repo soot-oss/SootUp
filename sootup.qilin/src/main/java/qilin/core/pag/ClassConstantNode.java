@@ -18,8 +18,8 @@
 
 package qilin.core.pag;
 
-import qilin.util.PTAUtils;
 import sootup.core.jimple.common.constant.ClassConstant;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * Represents an allocation site node the represents a known java.lang.Class object.
@@ -28,7 +28,7 @@ import sootup.core.jimple.common.constant.ClassConstant;
  */
 public class ClassConstantNode extends ConstantNode {
   public ClassConstantNode(ClassConstant cc) {
-    super(cc, PTAUtils.getClassType("java.lang.Class"), null);
+    super(cc, JavaIdentifierFactory.getInstance().getClassType("java.lang.Class"), null);
   }
 
   public String toString() {

@@ -65,7 +65,6 @@ import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
 import sootup.core.types.Type;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /** @author Ondrej Lhotak */
@@ -307,9 +306,10 @@ public class MethodNodeFactory {
   }
 
   public VarNode caseThis() {
-    Type type =
+    Type type;
+    type =
         method.isStatic()
-            ? PTAUtils.getClassType("java.lang.Object")
+            ? scene.getView().getIdentifierFactory().getClassType("java.lang.Object")
             : method.getDeclaringClassType();
     VarNode ret = pag.makeLocalVarNode(new Parm(method, PointsToAnalysis.THIS_NODE), type, method);
     ret.setInterProcTarget();
@@ -335,7 +335,7 @@ public class MethodNodeFactory {
     VarNode ret =
         pag.makeLocalVarNode(
             new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Throwable"),
+            scene.getView().getIdentifierFactory().getClassType("java.lang.Throwable"),
             method);
     ret.setInterProcSource();
     return ret;
@@ -373,22 +373,30 @@ public class MethodNodeFactory {
   private VarNode caseStringConstant(StringConstant sc) {
     AllocNode stringConstantNode = pag.makeStringConstantNode(sc);
     VarNode stringConstantVar =
-        pag.makeGlobalVarNode(sc, PTAUtils.getClassType("java.lang.String"));
+        pag.makeGlobalVarNode(
+            sc, scene.getView().getIdentifierFactory().getClassType("java.lang.String"));
     mpag.addInternalEdge(stringConstantNode, stringConstantVar);
-    VarNode vn = pag.makeLocalVarNode(sc, PTAUtils.getClassType("java.lang.String"), method);
+    VarNode vn =
+        pag.makeLocalVarNode(
+            sc, scene.getView().getIdentifierFactory().getClassType("java.lang.String"), method);
     mpag.addInternalEdge(stringConstantVar, vn);
     return vn;
   }
 
   public LocalVarNode makeInvokeStmtThrowVarNode(Stmt invoke, SootMethod method) {
-    return pag.makeLocalVarNode(invoke, PTAUtils.getClassType("java.lang.Throwable"), method);
+    return pag.makeLocalVarNode(
+        invoke, scene.getView().getIdentifierFactory().getClassType("java.lang.Throwable"), method);
   }
 
   public final VarNode caseClassConstant(ClassConstant cc) {
     AllocNode classConstant = pag.makeClassConstantNode(cc);
-    VarNode classConstantVar = pag.makeGlobalVarNode(cc, PTAUtils.getClassType("java.lang.Class"));
+    VarNode classConstantVar =
+        pag.makeGlobalVarNode(
+            cc, scene.getView().getIdentifierFactory().getClassType("java.lang.Class"));
     mpag.addInternalEdge(classConstant, classConstantVar);
-    VarNode vn = pag.makeLocalVarNode(cc, PTAUtils.getClassType("java.lang.Class"), method);
+    VarNode vn =
+        pag.makeLocalVarNode(
+            cc, scene.getView().getIdentifierFactory().getClassType("java.lang.Class"), method);
     mpag.addInternalEdge(classConstantVar, vn);
     return vn;
   }
@@ -419,7 +427,7 @@ public class MethodNodeFactory {
     }
     for (SootClass sc : visit) {
       MethodSubSignature subclinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <clinit>()");
+          scene.getView().getIdentifierFactory().parseMethodSubSignature("void <clinit>()");
       final Optional<? extends SootMethod> initStart = sc.getMethod(subclinit);
       initStart.ifPresent(ret::add);
     }

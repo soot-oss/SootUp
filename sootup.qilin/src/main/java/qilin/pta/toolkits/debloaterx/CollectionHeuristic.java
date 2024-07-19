@@ -111,7 +111,8 @@ public class CollectionHeuristic {
     }
     boolean flag = false;
     for (SootClass interf : worklist) {
-      if (interf.getType() == PTAUtils.getClassType("java.util.Collection")
+      if (interf.getType()
+          == pta.getView().getIdentifierFactory().getClassType("java.util.Collection")
       //    || interf.getType() == RefType.v("java.util.Map")
       ) {
         flag = true;
@@ -141,7 +142,8 @@ public class CollectionHeuristic {
           containerType.add(type);
         } else {
           for (SparkField sf : t2Fields.get(type)) {
-            if (sf.getType() == PTAUtils.getClassType("java.lang.Object")) {
+            if (sf.getType()
+                == pta.getView().getIdentifierFactory().getClassType("java.lang.Object")) {
               containerType.add(type);
               break;
             }
@@ -149,7 +151,8 @@ public class CollectionHeuristic {
         }
       } else if (type instanceof ArrayType) {
         ArrayType at = (ArrayType) type;
-        if (at.getBaseType() == PTAUtils.getClassType("java.lang.Object")) {
+        if (at.getBaseType()
+            == pta.getView().getIdentifierFactory().getClassType("java.lang.Object")) {
           containerType.add(at);
         }
       } else {
@@ -176,7 +179,9 @@ public class CollectionHeuristic {
     // find more container types by checking whether a type has a field of a container type.
     Set<Type> newlyFound = new HashSet<>();
     containerType.addAll(
-        ft2t.getOrDefault(PTAUtils.getClassType("java.lang.Object"), Collections.emptySet()));
+        ft2t.getOrDefault(
+            pta.getView().getIdentifierFactory().getClassType("java.lang.Object"),
+            Collections.emptySet()));
     for (Type t1 : containerType) {
       for (Type t2 : ft2t.getOrDefault(t1, Collections.emptySet())) {
         if (!containerType.contains(t2)) {

@@ -18,8 +18,8 @@
 
 package qilin.core.pag;
 
-import qilin.util.PTAUtils;
 import sootup.core.jimple.common.constant.StringConstant;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * Represents an allocation site node the represents a constant string.
@@ -28,7 +28,7 @@ import sootup.core.jimple.common.constant.StringConstant;
  */
 public class StringConstantNode extends ConstantNode {
   public StringConstantNode(StringConstant sc) {
-    super(sc, PTAUtils.getClassType("java.lang.String"), null);
+    super(sc, JavaIdentifierFactory.getInstance().getClassType("java.lang.String"), null);
   }
 
   public String toString() {

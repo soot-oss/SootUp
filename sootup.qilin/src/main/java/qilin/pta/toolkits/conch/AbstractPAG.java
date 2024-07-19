@@ -117,7 +117,7 @@ public abstract class AbstractPAG {
         prePAG.findLocalVarNode(
             method,
             new Parm(method, PointsToAnalysis.THROW_NODE),
-            PTAUtils.getClassType("java.lang.Throwable"));
+            prePTA.getView().getIdentifierFactory().getClassType("java.lang.Throwable"));
     if (throwNode != null) {
       addThrowEdge(throwNode);
     }

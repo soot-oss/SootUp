@@ -52,7 +52,7 @@ import sootup.core.types.Type;
 import sootup.core.types.UnknownType;
 
 public class CallGraphBuilder {
-  private static final ClassType clRunnable = PTAUtils.getClassType("java.lang.Runnable");
+  private final ClassType clRunnable;
   protected final Map<VarNode, Collection<VirtualCallSite>> receiverToSites;
   protected final Map<SootMethod, Map<Object, Stmt>> methodToInvokeStmt;
   protected final Set<ContextMethod> reachMethods;
@@ -75,6 +75,7 @@ public class CallGraphBuilder {
     methodToInvokeStmt = DataFactory.createMap();
     reachMethods = DataFactory.createSet();
     calledges = DataFactory.createSet();
+    clRunnable = pta.getView().getIdentifierFactory().getClassType("java.lang.Runnable");
   }
 
   public void setRMQueue(ChunkedQueue<ContextMethod> rmQueue) {

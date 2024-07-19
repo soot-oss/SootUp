@@ -26,10 +26,10 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.Body;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public abstract class NativeMethod extends ArtificialMethod {
-  NativeMethod(View view, SootMethod method) {
+  NativeMethod(JavaView view, SootMethod method) {
     super(view);
     this.method = method;
     Body body = PTAUtils.getMethodBody(method);

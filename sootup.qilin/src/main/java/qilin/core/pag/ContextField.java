@@ -22,9 +22,9 @@ import qilin.CoreConfig;
 import qilin.core.context.Context;
 import qilin.core.context.ContextElement;
 import qilin.core.context.ContextElements;
-import qilin.util.PTAUtils;
 import sootup.core.types.ArrayType;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 public class ContextField extends ValNode {
   protected Context context;
@@ -38,7 +38,7 @@ public class ContextField extends ValNode {
 
   private static Type refineFieldType(Context context, SparkField field) {
     if (!CoreConfig.v().getPtaConfig().preciseArrayElement) {
-      return PTAUtils.getClassType("java.lang.Object");
+      return JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
     }
     if (field instanceof ArrayElement) {
       ContextElement[] contextElements = ((ContextElements) context).getElements();

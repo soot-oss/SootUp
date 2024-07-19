@@ -42,6 +42,9 @@ public class VirtualCalls {
   private final Map<Type, Map<MethodSubSignature, SootMethod>> typeToVtbl;
   protected View view;
 
+  private final ClassType jlObjClassType =
+      view.getIdentifierFactory().getClassType("java.lang.Object");
+
   public VirtualCalls(View view) {
     this.view = view;
     this.typeToVtbl = DataFactory.createMap(view.getClasses().size());
@@ -137,15 +140,15 @@ public class VirtualCalls {
       SootMethod container,
       ChunkedQueue<SootMethod> targets,
       boolean appOnly) {
-    final ClassType classType = PTAUtils.getClassType("java.lang.Object");
+
     if (declaredType instanceof ArrayType) {
-      declaredType = classType;
+      declaredType = jlObjClassType;
     }
     if (sigType instanceof ArrayType) {
-      sigType = classType;
+      sigType = jlObjClassType;
     }
     if (t instanceof ArrayType) {
-      t = classType;
+      t = jlObjClassType;
     }
 
     if (declaredType != null && !PTAUtils.canStoreType(view, t, declaredType)) {

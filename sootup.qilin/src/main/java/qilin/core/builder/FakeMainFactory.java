@@ -52,7 +52,7 @@ import sootup.core.signatures.MethodSignature;
 import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ClassType;
 import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.types.JavaClassType;
 
 public class FakeMainFactory extends ArtificialMethod {
   public static FakeMainFactory instance;
@@ -69,7 +69,7 @@ public class FakeMainFactory extends ArtificialMethod {
     this.localStart = 0;
     String className = "qilin.pta.FakeMain";
     IdentifierFactory fact = view.getIdentifierFactory();
-    ClassType declaringClassSignature = JavaIdentifierFactory.getInstance().getClassType(className);
+    ClassType declaringClassSignature = view.getIdentifierFactory().getClassType(className);
     FieldSignature ctSig =
         fact.getFieldSignature("currentThread", declaringClassSignature, "java.lang.Thread");
     SootField currentThread =
@@ -114,7 +114,7 @@ public class FakeMainFactory extends ArtificialMethod {
                 new LinkedHashSet<>(Arrays.asList(currentThread, globalThrow)),
                 EnumSet.of(ClassModifier.PUBLIC),
                 null,
-                JavaIdentifierFactory.getInstance().getClassType("java.lang.Object"),
+                view.getIdentifierFactory().getClassType("java.lang.Object"),
                 null,
                 NoPositionInformation.getInstance(),
                 null,
@@ -165,13 +165,12 @@ public class FakeMainFactory extends ArtificialMethod {
     implicitCallEdges = 0;
     for (SootMethod entry : getEntryPoints()) {
       if (entry.isStatic()) {
-        if (entry
-            .getSignature()
-            .getSubSignature()
-            .toString()
-            .equals("void main(java.lang.String[])")) {
-          Value mockStr = getNew(PTAUtils.getClassType("java.lang.String"));
-          Immediate strArray = getNewArray(PTAUtils.getClassType("java.lang.String"));
+        if (view.getIdentifierFactory()
+            .isMainSubSignature(entry.getSignature().getSubSignature())) {
+          final JavaClassType jlStrClassType =
+              view.getIdentifierFactory().getClassType("java.lang.String");
+          Value mockStr = getNew(jlStrClassType);
+          Immediate strArray = getNewArray(jlStrClassType);
           addAssign(getArrayRef(strArray), mockStr);
           addInvoke(entry.getSignature().toString(), strArray);
           implicitCallEdges++;
@@ -186,69 +185,97 @@ public class FakeMainFactory extends ArtificialMethod {
     if (CoreConfig.v().getPtaConfig().singleentry) {
       return;
     }
-    Local sv = getNextLocal(PTAUtils.getClassType("java.lang.String"));
-    Local mainThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
-    Local mainThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
-    Local systemThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local sv = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.String"));
+    Local mainThread = getNew(view.getIdentifierFactory().getClassType("java.lang.Thread"));
+    final JavaClassType threadGroupClassType =
+        view.getIdentifierFactory().getClassType("java.lang.ThreadGroup");
+    Local mainThreadGroup = getNew(threadGroupClassType);
+    Local systemThreadGroup = getNew(threadGroupClassType);
 
     JStaticFieldRef gCurrentThread = Jimple.newStaticFieldRef(currentThread.getSignature());
     addAssign(gCurrentThread, mainThread); // Store
-    Local vRunnable = getNextLocal(PTAUtils.getClassType("java.lang.Runnable"));
+    Local vRunnable = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Runnable"));
 
-    Local lThreadGroup = getNextLocal(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local lThreadGroup = getNextLocal(threadGroupClassType);
     addInvoke(
         mainThread,
-        "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.String)>"),
         mainThreadGroup,
         sv);
-    Local tmpThread = getNew(PTAUtils.getClassType("java.lang.Thread"));
+    Local tmpThread = getNew(view.getIdentifierFactory().getClassType("java.lang.Thread"));
     addInvoke(
         tmpThread,
-        "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.Thread: void <init>(java.lang.ThreadGroup,java.lang.Runnable)>"),
         lThreadGroup,
         vRunnable);
-    addInvoke(tmpThread, "<java.lang.Thread: void exit()>");
+    addInvoke(
+        tmpThread,
+        view.getIdentifierFactory().parseMethodSignature("<java.lang.Thread: void exit()>"));
 
-    addInvoke(systemThreadGroup, "<java.lang.ThreadGroup: void <init>()>");
+    addInvoke(
+        systemThreadGroup,
+        view.getIdentifierFactory().parseMethodSignature("<java.lang.ThreadGroup: void <init>()>"));
     addInvoke(
         mainThreadGroup,
-        "<java.lang.ThreadGroup: void <init>(java.lang.ThreadGroup,java.lang.String)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.ThreadGroup: void <init>(java.lang.ThreadGroup,java.lang.String)>"),
         systemThreadGroup,
         sv);
 
-    Local lThread = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
-    Local lThrowable = getNextLocal(PTAUtils.getClassType("java.lang.Throwable"));
-    Local tmpThreadGroup = getNew(PTAUtils.getClassType("java.lang.ThreadGroup"));
+    Local lThread = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Thread"));
+    Local lThrowable =
+        getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Throwable"));
+    Local tmpThreadGroup = getNew(threadGroupClassType);
     addInvoke(
         tmpThreadGroup,
-        "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.ThreadGroup: void uncaughtException(java.lang.Thread,java.lang.Throwable)>"),
         lThread,
         lThrowable); // TODO.
 
     // ClassLoader
-    Local defaultClassLoader = getNew(PTAUtils.getClassType("sun.misc.Launcher$AppClassLoader"));
-    addInvoke(defaultClassLoader, "<java.lang.ClassLoader: void <init>()>");
-    Local vClass = getNextLocal(PTAUtils.getClassType("java.lang.Class"));
-    Local vDomain = getNextLocal(PTAUtils.getClassType("java.security.ProtectionDomain"));
+    Local defaultClassLoader =
+        getNew(view.getIdentifierFactory().getClassType("sun.misc.Launcher$AppClassLoader"));
     addInvoke(
         defaultClassLoader,
-        "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>",
+        view.getIdentifierFactory().parseMethodSignature("<java.lang.ClassLoader: void <init>()>"));
+    Local vClass = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Class"));
+    Local vDomain =
+        getNextLocal(view.getIdentifierFactory().getClassType("java.security.ProtectionDomain"));
+    addInvoke(
+        defaultClassLoader,
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.ClassLoader: java.lang.Class loadClassInternal(java.lang.String)>"),
         sv);
     addInvoke(
         defaultClassLoader,
-        "<java.lang.ClassLoader: void checkPackageAccess(java.lang.Class,java.security.ProtectionDomain)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.lang.ClassLoader: void checkPackageAccess(java.lang.Class,java.security.ProtectionDomain)>"),
         vClass,
         vDomain);
     addInvoke(
-        defaultClassLoader, "<java.lang.ClassLoader: void addClass(java.lang.Class)>", vClass);
+        defaultClassLoader,
+        view.getIdentifierFactory()
+            .parseMethodSignature("<java.lang.ClassLoader: void addClass(java.lang.Class)>"),
+        vClass);
 
     // PrivilegedActionException
     Local privilegedActionException =
-        getNew(PTAUtils.getClassType("java.security.PrivilegedActionException"));
-    Local gLthrow = getNextLocal(PTAUtils.getClassType("java.lang.Exception"));
+        getNew(view.getIdentifierFactory().getClassType("java.security.PrivilegedActionException"));
+    Local gLthrow = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Exception"));
     addInvoke(
         privilegedActionException,
-        "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>",
+        view.getIdentifierFactory()
+            .parseMethodSignature(
+                "<java.security.PrivilegedActionException: void <init>(java.lang.Exception)>"),
         gLthrow);
   }
 
@@ -265,20 +292,16 @@ public class FakeMainFactory extends ArtificialMethod {
     final MethodSubSignature sigForName;
 
     private EntryPoints() {
-      sigMain = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_MAIN);
-      sigFinalize =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_FINALIZE);
+      sigMain = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_MAIN);
+      sigFinalize = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_FINALIZE);
 
-      sigExit = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_EXIT);
-      sigClinit =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_CLINIT);
-      sigInit = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_INIT);
-      sigStart = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_START);
-      sigRun = JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_RUN);
-      sigObjRun =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_OBJ_RUN);
-      sigForName =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature(JavaMethods.SIG_FOR_NAME);
+      sigExit = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_EXIT);
+      sigClinit = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_CLINIT);
+      sigInit = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_INIT);
+      sigStart = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_START);
+      sigRun = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_RUN);
+      sigObjRun = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_OBJ_RUN);
+      sigForName = view.getIdentifierFactory().parseMethodSubSignature(JavaMethods.SIG_FOR_NAME);
     }
 
     protected void addMethod(List<SootMethod> set, SootClass cls, MethodSubSignature methodSubSig) {
@@ -287,7 +310,7 @@ public class FakeMainFactory extends ArtificialMethod {
     }
 
     protected void addMethod(List<SootMethod> set, String methodSig) {
-      MethodSignature ms = JavaIdentifierFactory.getInstance().parseMethodSignature(methodSig);
+      MethodSignature ms = view.getIdentifierFactory().parseMethodSignature(methodSig);
       Optional<? extends SootMethod> osm = view.getMethod(ms);
       osm.ifPresent(set::add);
     }

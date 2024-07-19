@@ -18,8 +18,8 @@
 
 package qilin.core.pag;
 
-import qilin.util.PTAUtils;
 import sootup.core.types.Type;
+import sootup.java.core.JavaIdentifierFactory;
 
 /**
  * Represents an array element.
@@ -50,6 +50,6 @@ public class ArrayElement implements SparkField {
   }
 
   public Type getType() {
-    return PTAUtils.getClassType("java.lang.Object");
+    return JavaIdentifierFactory.getInstance().getClassType("java.lang.Object");
   }
 }

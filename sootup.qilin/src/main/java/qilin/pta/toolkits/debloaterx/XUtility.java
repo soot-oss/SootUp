@@ -75,12 +75,13 @@ public class XUtility {
   }
 
   private boolean isImpreciseType(Type type) {
-    if (type == PTAUtils.getClassType("java.lang.Object")) {
+    if (type == pta.getView().getIdentifierFactory().getClassType("java.lang.Object")) {
       return true;
     }
     if (type instanceof ClassType) {
       ClassType refType = (ClassType) type;
       SootClass sc = pta.getView().getClass(refType).get();
+      // TODO: [ms] startwith Abstract? wth.. check if that is correct e.g. in a limited use case
       return sc.isAbstract() || sc.isInterface() || refType.getClassName().startsWith("Abstract");
     }
     return false;

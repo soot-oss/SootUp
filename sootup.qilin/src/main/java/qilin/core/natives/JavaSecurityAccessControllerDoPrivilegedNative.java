@@ -19,10 +19,10 @@ package qilin.core.natives;
 
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod {
-  public JavaSecurityAccessControllerDoPrivilegedNative(View view, SootMethod method) {
+  public JavaSecurityAccessControllerDoPrivilegedNative(JavaView view, SootMethod method) {
     super(view, method);
   }
 
@@ -33,7 +33,11 @@ public class JavaSecurityAccessControllerDoPrivilegedNative extends NativeMethod
    */
   protected void simulateImpl() {
     Local r0 = getPara(0);
-    Local r1 = getInvoke(r0, "<java.security.PrivilegedAction: java.lang.Object run()>");
+    Local r1 =
+        getInvoke(
+            r0,
+            view.getIdentifierFactory()
+                .parseMethodSignature("<java.security.PrivilegedAction: java.lang.Object run()>"));
     addReturn(r1);
   }
 }

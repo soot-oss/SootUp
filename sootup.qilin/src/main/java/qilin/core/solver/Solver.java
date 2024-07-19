@@ -233,9 +233,10 @@ public class Solver extends Propagator {
 
   private boolean supportFinalize(AllocNode heap) {
     MethodSubSignature sigFinalize =
-        JavaIdentifierFactory.getInstance().parseMethodSubSignature("void finalize()");
+        pta.getView().getIdentifierFactory().parseMethodSubSignature("void finalize()");
     Type type = heap.getType();
-    if (type instanceof ClassType && type != PTAUtils.getClassType("java.lang.Object")) {
+    if (type instanceof ClassType
+        && type != JavaIdentifierFactory.getInstance().getClassType("java.lang.Object")) {
       ClassType refType = (ClassType) type;
       SootMethod finalizeMethod = cgb.resolveNonSpecial(refType, sigFinalize);
       if (finalizeMethod != null

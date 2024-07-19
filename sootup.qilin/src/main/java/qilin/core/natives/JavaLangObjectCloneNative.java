@@ -20,11 +20,11 @@ package qilin.core.natives;
 
 import sootup.core.jimple.basic.Local;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class JavaLangObjectCloneNative extends NativeMethod {
 
-  public JavaLangObjectCloneNative(View view, SootMethod method) {
+  public JavaLangObjectCloneNative(JavaView view, SootMethod method) {
     super(view, method);
   }
 

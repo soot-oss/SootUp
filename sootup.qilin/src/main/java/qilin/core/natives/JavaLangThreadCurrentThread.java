@@ -18,23 +18,22 @@
 
 package qilin.core.natives;
 
-import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.Value;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class JavaLangThreadCurrentThread extends NativeMethod {
   private final Value currentThread;
 
-  JavaLangThreadCurrentThread(View view, SootMethod method, Value currentThread) {
+  JavaLangThreadCurrentThread(JavaView view, SootMethod method, Value currentThread) {
     super(view, method);
     this.currentThread = currentThread;
   }
 
   @Override
   protected void simulateImpl() {
-    Local lv = getNextLocal(PTAUtils.getClassType("java.lang.Thread"));
+    Local lv = getNextLocal(view.getIdentifierFactory().getClassType("java.lang.Thread"));
     addAssign(lv, currentThread);
     addReturn(lv);
   }

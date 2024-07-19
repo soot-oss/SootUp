@@ -60,15 +60,10 @@ import sootup.core.types.Type;
 import sootup.core.util.printer.JimplePrinter;
 import sootup.core.views.View;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.views.JavaView;
 
 public final class PTAUtils {
   private static final Logger logger = LoggerFactory.getLogger(PTAUtils.class);
-
-  public static ClassType getClassType(String fullyQualifiedClassName) {
-    return JavaIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
-  }
 
   public static boolean isStaticInitializer(SootMethod method) {
     return method.getName().equals("<clinit>");
@@ -186,7 +181,8 @@ public final class PTAUtils {
 
   public static boolean isThrowable(View view, Type type) {
     if (type instanceof ClassType) {
-      return canStoreType(view, type, PTAUtils.getClassType("java.lang.Throwable"));
+      return canStoreType(
+          view, type, view.getIdentifierFactory().getClassType("java.lang.Throwable"));
     }
     return false;
   }

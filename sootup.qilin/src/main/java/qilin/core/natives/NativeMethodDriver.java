@@ -20,11 +20,11 @@ package qilin.core.natives;
 
 import qilin.core.PTAScene;
 import sootup.core.model.SootMethod;
-import sootup.core.views.View;
+import sootup.java.core.views.JavaView;
 
 public class NativeMethodDriver {
   protected final PTAScene ptaScene;
-  protected final View view;
+  protected final JavaView view;
 
   public NativeMethodDriver(PTAScene ptaScene) {
     this.ptaScene = ptaScene;

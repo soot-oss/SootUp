@@ -328,7 +328,7 @@ public class Eagle {
           prePAG.findLocalVarNode(
               method,
               new Parm(method, PointsToAnalysis.THROW_NODE),
-              PTAUtils.getClassType("java.lang.Throwable"));
+              prePTA.getView().getIdentifierFactory().getClassType("java.lang.Throwable"));
       if (method.isStatic()) {
         pts.getOrDefault(thisRef, Collections.emptySet())
             .forEach(

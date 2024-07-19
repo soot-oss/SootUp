@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import qilin.core.builder.FakeMainFactory;
 import qilin.core.builder.callgraph.OnFlyCallGraph;
 import qilin.util.DataFactory;
-import qilin.util.PTAUtils;
 import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.ref.JStaticFieldRef;
 import sootup.core.model.SootClass;
@@ -35,11 +34,10 @@ import sootup.core.model.SootMethod;
 import sootup.core.signatures.FieldSignature;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.types.ClassType;
-import sootup.core.views.View;
-import sootup.java.core.JavaIdentifierFactory;
+import sootup.java.core.views.JavaView;
 
 public class PTAScene {
-  private final View view;
+  private final JavaView view;
   private OnFlyCallGraph callgraph;
   private final FakeMainFactory fakeMainFactory;
 
@@ -47,7 +45,7 @@ public class PTAScene {
   public final Set<SootMethod> reflectionBuilt;
   public final Set<SootMethod> arraycopyBuilt;
 
-  public PTAScene(View view, String mainClassSig) {
+  public PTAScene(JavaView view, String mainClassSig) {
     this.nativeBuilt = DataFactory.createSet();
     this.reflectionBuilt = DataFactory.createSet();
     this.arraycopyBuilt = DataFactory.createSet();
@@ -80,7 +78,7 @@ public class PTAScene {
     this.callgraph = cg;
   }
 
-  public View getView() {
+  public JavaView getView() {
     return view;
   }
 
@@ -89,8 +87,7 @@ public class PTAScene {
   }
 
   public SootMethod getMethod(String methodSignature) {
-    MethodSignature mthdSig =
-        JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+    MethodSignature mthdSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
     return view.getMethod(mthdSig).get();
   }
 
@@ -105,14 +102,12 @@ public class PTAScene {
   }
 
   public boolean containsMethod(String methodSignature) {
-    MethodSignature methodSig =
-        JavaIdentifierFactory.getInstance().parseMethodSignature(methodSignature);
+    MethodSignature methodSig = view.getIdentifierFactory().parseMethodSignature(methodSignature);
     return view.getMethod(methodSig).isPresent();
   }
 
   public boolean containsField(String fieldSignature) {
-    FieldSignature fieldSig =
-        JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
     return view.getField(fieldSig).isPresent();
   }
 
@@ -125,19 +120,18 @@ public class PTAScene {
   }
 
   public SootClass getSootClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
+    ClassType classType = view.getIdentifierFactory().getClassType(className);
     return view.getClass(classType).get();
   }
 
   public boolean containsClass(String className) {
-    ClassType classType = PTAUtils.getClassType(className);
+    ClassType classType = view.getIdentifierFactory().getClassType(className);
     Optional<? extends SootClass> oclazz = view.getClass(classType);
     return oclazz.isPresent();
   }
 
   public SootField getField(String fieldSignature) {
-    FieldSignature fieldSig =
-        JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+    FieldSignature fieldSig = view.getIdentifierFactory().parseFieldSignature(fieldSignature);
     return view.getField(fieldSig).get();
   }
 

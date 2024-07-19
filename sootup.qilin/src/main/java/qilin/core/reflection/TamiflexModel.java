@@ -52,7 +52,6 @@ import sootup.core.signatures.MethodSubSignature;
 import sootup.core.types.ArrayType;
 import sootup.core.types.ClassType;
 import sootup.core.types.ReferenceType;
-import sootup.java.core.JavaIdentifierFactory;
 import sootup.java.core.language.JavaJimple;
 
 /**
@@ -65,7 +64,7 @@ public class TamiflexModel extends ReflectionModel {
 
   public TamiflexModel(PTAScene ptaScene) {
     super(ptaScene);
-    jlobjClassType = PTAUtils.getClassType("java.lang.Object");
+    jlobjClassType = ptaScene.getView().getIdentifierFactory().getClassType("java.lang.Object");
     this.reflectionMap = DataFactory.createMap();
     parseTamiflexLog(CoreConfig.v().getAppConfig().REFLECTION_LOG, false);
   }
@@ -114,7 +113,7 @@ public class TamiflexModel extends ReflectionModel {
     for (String clsName : classNames) {
       SootClass cls = ptaScene.getSootClass(clsName);
       MethodSubSignature initSubSig =
-          JavaIdentifierFactory.getInstance().parseMethodSubSignature("void <init>()");
+          ptaScene.getView().getIdentifierFactory().parseMethodSubSignature("void <init>()");
       Optional<? extends SootMethod> omthd = cls.getMethod(initSubSig);
       if (omthd.isPresent()) {
         JNewExpr newExpr = new JNewExpr(cls.getType());
@@ -234,7 +233,7 @@ public class TamiflexModel extends ReflectionModel {
     Value rValue = iie.getArg(1);
     for (String fieldSignature : fieldSignatures) {
       FieldSignature fieldSig =
-          JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+          ptaScene.getView().getIdentifierFactory().parseFieldSignature(fieldSignature);
       SootField field = ptaScene.getView().getField(fieldSig).get();
       JFieldRef fieldRef;
       if (field.isStatic()) {
@@ -265,7 +264,7 @@ public class TamiflexModel extends ReflectionModel {
     Value base = iie.getArg(0);
     for (String fieldSignature : fieldSignatures) {
       FieldSignature fieldSig =
-          JavaIdentifierFactory.getInstance().parseFieldSignature(fieldSignature);
+          ptaScene.getView().getIdentifierFactory().parseFieldSignature(fieldSignature);
       SootField field = ptaScene.getView().getField(fieldSig).get();
       JFieldRef fieldRef;
       if (field.isStatic()) {
@@ -295,7 +294,7 @@ public class TamiflexModel extends ReflectionModel {
 
     Collection<Stmt> ret = DataFactory.createSet();
     for (String arrayType : arrayTypes) {
-      ArrayType at = (ArrayType) JavaIdentifierFactory.getInstance().getType(arrayType);
+      ArrayType at = (ArrayType) ptaScene.getView().getIdentifierFactory().getType(arrayType);
       JNewArrayExpr newExpr =
           JavaJimple.getInstance().newNewArrayExpr(at.getElementType(), IntConstant.getInstance(1));
       if (s instanceof JAssignStmt) {

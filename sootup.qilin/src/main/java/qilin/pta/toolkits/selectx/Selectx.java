@@ -341,7 +341,7 @@ public class Selectx {
               prePAG.findLocalVarNode(
                   method,
                   new Parm(tgtmtd, PointsToAnalysis.THROW_NODE),
-                  PTAUtils.getClassType("java.lang.Throwable"));
+                  prePTA.getView().getIdentifierFactory().getClassType("java.lang.Throwable"));
           if (throwFinal != null) {
             this.addExitEdge(throwFinal, stmtThrowNode, callSite);
           }
