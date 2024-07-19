@@ -77,6 +77,9 @@ public class JavaIdentifierFactory implements IdentifierFactory {
   @Override
   public boolean isMainSubSignature(@Nonnull MethodSubSignature methodSubSignature) {
     if (methodSubSignature.getName().equals("main")) {
+      if (methodSubSignature.getType() != VoidType.getInstance()) {
+        return false;
+      }
       final List<Type> parameterTypes = methodSubSignature.getParameterTypes();
       if (parameterTypes.size() == 1) {
         return parameterTypes.get(0).toString().equals("java.lang.String[]");
