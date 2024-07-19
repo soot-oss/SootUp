@@ -35,6 +35,8 @@ import qilin.core.pag.ContextMethod;
 import qilin.util.DataFactory;
 import qilin.util.queue.ChunkedQueue;
 import qilin.util.queue.QueueReader;
+import sootup.callgraph.CallGraph;
+import sootup.callgraph.CallGraphDifference;
 import sootup.callgraph.MutableCallGraph;
 import sootup.core.jimple.common.stmt.Stmt;
 import sootup.core.model.SootMethod;
@@ -447,6 +449,12 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
   @Nonnull
   @Override
   public MutableCallGraph copy() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nonnull
+  @Override
+  public CallGraphDifference diff(@Nonnull CallGraph callGraph) {
     throw new UnsupportedOperationException();
   }
 
