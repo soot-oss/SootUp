@@ -6,16 +6,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import categories.TestCategories;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import sootup.core.graph.StmtGraph;
-import sootup.core.jimple.common.stmt.Stmt;
-import sootup.core.model.Body;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -23,7 +16,6 @@ import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.DefaultRTJarAnalysisInputLocation;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.JavaIdentifierFactory;
-import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.types.JavaClassType;
 import sootup.java.core.views.JavaView;
@@ -91,17 +83,17 @@ public class AsmMethodSourceTest {
   @Test
   public void testConditionalStringConcat() {
     JavaClassPathAnalysisInputLocation inputLocation =
-            new JavaClassPathAnalysisInputLocation(
-                    "src/test/resources/frontend", SourceType.Application, Collections.emptyList());
+        new JavaClassPathAnalysisInputLocation(
+            "src/test/resources/frontend", SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(Collections.singletonList(inputLocation));
 
     JavaSootMethod method =
-            view.getMethod(
-                            JavaIdentifierFactory.getInstance()
-                                    .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
-                    .get();
+        view.getMethod(
+                JavaIdentifierFactory.getInstance()
+                    .parseMethodSignature("<ConditionalStringConcat: void method(boolean)>"))
+            .get();
 
-    StmtGraph<?> stmtGraph = method.getBody().getStmtGraph();
-    assert !method.getBody().getStmts().stream().anyMatch( s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
+    assert !method.getBody().getStmts().stream()
+        .anyMatch(s -> s.toString().contains(" append(java.lang.String)>(\"ghi\")"));
   }
 }
