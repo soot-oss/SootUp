@@ -19,13 +19,6 @@ public class SparseSwitchInstruction extends SwitchInstruction {
     JSwitchStmt switchStmt =
         Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.getNoStmtPositionInfo());
     setStmt(switchStmt);
-    // It is unlike the PackedSwitchInstruction, here only one branching statement should be. (I
-    // literally don't know why :( )
-    //        targets.add(defaultTarget);
-    //        body.addBranchingStmt(switchStmt, targets);
     return switchStmt;
   }
-
-  @Override
-  public void computeDataOffsets(DexBody body) {}
 }

@@ -44,10 +44,6 @@ public class DexFileProvider {
     public String getDexName() {
       return name;
     }
-
-    public File getFilePath() {
-      return filePath;
-    }
   }
 
   /** Mapping of filesystem file (apk, dex, etc.) to mapping of dex name to dex file */

@@ -75,10 +75,7 @@ public class DexNumberTranformer extends DexTransformer {
               public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
                 {
                   Value rightOp = stmt.getRightOp();
-                  if (rightOp instanceof AbstractBinopExpr && !(rightOp instanceof JCmpExpr)) {
-                    //                        usedAsFloatingPoint = examineBinopExpr(stmt);
-                    doBreak = true;
-                  } else if (rightOp instanceof JFieldRef) {
+                  if (rightOp instanceof JFieldRef) {
                     usedAsFloatingPoint = isFloatingPointLike(rightOp.getType());
                     doBreak = true;
                   } else if (rightOp instanceof JNewArrayExpr) {

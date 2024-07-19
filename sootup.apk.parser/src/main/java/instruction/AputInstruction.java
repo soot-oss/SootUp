@@ -1,7 +1,6 @@
 package instruction;
 
 import main.DexBody;
-import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
 import sootup.core.jimple.basic.Local;
@@ -29,10 +28,6 @@ public class AputInstruction extends FieldInstruction {
 
     Local sourceValue = body.getRegisterLocal(source);
     JAssignStmt assign = getAssignStmt(body, sourceValue, jArrayRef);
-    if (aPutInstr.getOpcode() == Opcode.APUT_OBJECT) {
-      // TODO : Need to add one field (tag) with both getters and setters in the statement class
-      //            assign.addTag(new ObjectOpTag());
-    }
     setStmt(assign);
     body.add(assign);
   }

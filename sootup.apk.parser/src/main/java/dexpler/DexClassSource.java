@@ -111,8 +111,9 @@ public class DexClassSource extends JavaSootClassSource {
       } else {
         return Optional.ofNullable(DexUtil.stringToJimpleType(view, superclass));
       }
+    } else {
+      throw new IllegalStateException("Class Information Should not be null");
     }
-    return Optional.empty();
   }
 
   @Nonnull

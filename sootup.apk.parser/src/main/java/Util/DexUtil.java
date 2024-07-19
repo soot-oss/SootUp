@@ -2,6 +2,7 @@ package Util;
 
 import java.util.*;
 import javax.annotation.Nonnull;
+import main.AndroidVersionInfo;
 import org.jf.dexlib2.iface.Annotation;
 import org.jf.dexlib2.iface.AnnotationElement;
 import org.jf.dexlib2.iface.value.EncodedValue;
@@ -12,6 +13,8 @@ import sootup.java.core.AnnotationUsage;
 import sootup.java.core.types.JavaClassType;
 
 public class DexUtil {
+
+  private static AndroidVersionInfo androidVersionInfo;
 
   public static Type toSootType(String typeDescriptor, int pos) {
     Type type = null;
@@ -130,5 +133,13 @@ public class DexUtil {
     }
 
     return javaClassType;
+  }
+
+  public static void setAndroidVersionInfo(AndroidVersionInfo androidVersionInfo) {
+    DexUtil.androidVersionInfo = androidVersionInfo;
+  }
+
+  public static AndroidVersionInfo getAndroidVersionInfo() {
+    return androidVersionInfo;
   }
 }

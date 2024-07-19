@@ -18,12 +18,7 @@ public class PackedSwitchInstruction extends SwitchInstruction {
   protected Stmt switchStatement(DexBody body, Instruction targetData, Local key) {
     JSwitchStmt jSwitchStmt =
         Jimple.newLookupSwitchStmt(key, lookupValues, StmtPositionInfo.getNoStmtPositionInfo());
-    //        body.addBranchingStmt(jSwitchStmt, targets);
-    //        body.addBranchingStmt(jSwitchStmt, Collections.singletonList(defaultTarget));
     setStmt(jSwitchStmt);
     return jSwitchStmt;
   }
-
-  @Override
-  public void computeDataOffsets(DexBody body) {}
 }

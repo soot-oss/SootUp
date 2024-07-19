@@ -10,8 +10,6 @@ import sootup.core.types.Type;
 /**
  * Interface for instructions that can/must be retyped, i.e. instructions that assign to a local and
  * have to retype it after local splitting.
- *
- * @author Michael Markert <michael.markert@googlemail.com>
  */
 public interface ReTypeableInstruction {
   /**

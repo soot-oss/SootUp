@@ -177,6 +177,7 @@ public abstract class MethodInvocationInstruction extends DexLibAbstractInstruct
   }
 
   public static boolean isWide(String type) {
-    return type.startsWith("J") || type.startsWith("D");
+    char c = type.charAt(0);
+    return c == 'J' || c == 'D';
   }
 }

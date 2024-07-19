@@ -106,10 +106,7 @@ public abstract class DexTransformer implements BodyInterceptor {
               || ar.getType().toString().equals("unknown")) { // ||
             // ar.getType())
             // {
-            Type t =
-                findArrayType(
-                    dexDefUseAnalysis, stmt, ++depth, newVisitedDefs); // TODO: which type should be
-            // returned?
+            Type t = findArrayType(dexDefUseAnalysis, stmt, ++depth, newVisitedDefs);
             if (t instanceof ArrayType) {
               ArrayType at = (ArrayType) t;
               t = at.getElementType();
@@ -210,7 +207,7 @@ public abstract class DexTransformer implements BodyInterceptor {
           return t;
         }
       } else {
-        throw new RuntimeException(
+        throw new IllegalStateException(
             "ERROR: base local def must be AssignStmt or IdentityStmt! " + baseDef);
       }
 
@@ -223,7 +220,7 @@ public abstract class DexTransformer implements BodyInterceptor {
       if (nullDefCount == defsOfaBaseList.size()) {
         return NullType.getInstance();
       } else {
-        throw new RuntimeException(
+        throw new IllegalStateException(
             "ERROR: could not find type of array from statement '" + arrayStmt + "'");
       }
     } else {

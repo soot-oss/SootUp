@@ -19,6 +19,7 @@ import sootup.core.model.Body;
 import sootup.core.model.MethodModifier;
 import sootup.core.signatures.MethodSignature;
 import sootup.core.transform.BodyInterceptor;
+import sootup.core.util.Modifiers;
 import sootup.core.views.View;
 import sootup.java.core.JavaSootMethod;
 
@@ -68,7 +69,7 @@ public class DexMethodSource implements BodySource {
 
   public JavaSootMethod makeSootMethod() {
     JavaSootMethod sootMethod;
-    EnumSet<MethodModifier> methodModifiers = getMethodModifiers(method.getAccessFlags());
+    EnumSet<MethodModifier> methodModifiers = Modifiers.getMethodModifiers(method.getAccessFlags());
     try {
       sootMethod =
           new JavaSootMethod(
@@ -82,18 +83,6 @@ public class DexMethodSource implements BodySource {
       throw new RuntimeException(e);
     }
     return sootMethod;
-  }
-
-  public static EnumSet<MethodModifier> getMethodModifiers(int access) {
-    EnumSet<MethodModifier> modifierEnumSet = EnumSet.noneOf(MethodModifier.class);
-
-    // add all modifiers for which (access & ABSTRACT) =! 0
-    for (MethodModifier modifier : MethodModifier.values()) {
-      if ((access & modifier.getBytecode()) != 0) {
-        modifierEnumSet.add(modifier);
-      }
-    }
-    return modifierEnumSet;
   }
 
   @Override

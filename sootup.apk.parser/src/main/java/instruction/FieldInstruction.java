@@ -21,6 +21,8 @@ import sootup.core.types.UnknownType;
 
 public abstract class FieldInstruction extends DexLibAbstractInstruction {
 
+  private FieldReference fieldReference;
+
   /**
    * @param instruction the underlying dexlib instruction
    * @param codeAddress the bytecode address of this instruction
@@ -41,6 +43,7 @@ public abstract class FieldInstruction extends DexLibAbstractInstruction {
     } else {
       // TODO : Dont know which local to use here, as of now using null which will throw an error
       // for sure.
+
       return new JInstanceFieldRef(null, fieldSignature);
     }
   }

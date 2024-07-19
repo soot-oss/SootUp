@@ -16,7 +16,8 @@ import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.stmt.BranchingStmt;
 import sootup.core.jimple.common.stmt.Stmt;
 
-public abstract class SwitchInstruction extends PseudoInstruction implements DeferableInstruction {
+public abstract class SwitchInstruction extends DexLibAbstractInstruction
+    implements DeferableInstruction {
 
   protected Stmt markerUnit;
 

@@ -9,8 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import main.AndroidVersionInfo;
 import org.jf.dexlib2.iface.DexFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sootup.core.frontend.SootClassSource;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.ClassModifier;
@@ -34,8 +32,6 @@ public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisIn
 
   final Map<String, EnumSet<ClassModifier>> classNamesList;
 
-  private static final Logger logger = LoggerFactory.getLogger(ApkAnalysisInputLocation.class);
-
   public ApkAnalysisInputLocation(
       Path apkPath, String android_jar_path, List<BodyInterceptor> bodyInterceptors) {
     this.apk_path = apkPath;
@@ -47,6 +43,7 @@ public class ApkAnalysisInputLocation<J extends SootClass> implements AnalysisIn
 
   private Map<String, EnumSet<ClassModifier>> extractDexFilesFromPath() {
     List<DexFileProvider.DexContainer<? extends DexFile>> dexFromSource;
+    DexUtil.setAndroidVersionInfo(androidSDKVersionInfo);
     try {
       dexFromSource =
           DexFileProvider.getInstance()

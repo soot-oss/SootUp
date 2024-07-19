@@ -1,7 +1,6 @@
 package instruction;
 
 import main.DexBody;
-import main.TaggedInstruction;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction23x;
@@ -10,13 +9,8 @@ import sootup.core.jimple.basic.Local;
 import sootup.core.jimple.basic.StmtPositionInfo;
 import sootup.core.jimple.common.expr.Expr;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import sootup.core.types.PrimitiveType;
-import sootup.core.types.Type;
-import tag.DoubleOpTag;
-import tag.FloatOpTag;
-import tag.LongOpTag;
 
-public class CmpInstruction extends TaggedInstruction {
+public class CmpInstruction extends DexLibAbstractInstruction {
   @Override
   public void jimplify(DexBody body) {
     if (!(instruction instanceof Instruction23x)) {
@@ -30,35 +24,28 @@ public class CmpInstruction extends TaggedInstruction {
     Local first = body.getRegisterLocal(cmpInstr.getRegisterB());
     Local second = body.getRegisterLocal(cmpInstr.getRegisterC());
 
-    // Expr cmpExpr;
-    // Type type = null
     Opcode opcode = instruction.getOpcode();
-    Expr cmpExpr = null;
-    Type type = null;
+    Expr cmpExpr;
+    //    Type type = null;
     switch (opcode) {
       case CMPL_DOUBLE:
-        setTag(new DoubleOpTag());
-        type = PrimitiveType.DoubleType.getInstance();
+        //        type = PrimitiveType.DoubleType.getInstance();
         cmpExpr = Jimple.newCmpExpr(first, second);
         break;
       case CMPL_FLOAT:
-        setTag(new FloatOpTag());
-        type = PrimitiveType.FloatType.getInstance();
+        //        type = PrimitiveType.FloatType.getInstance();
         cmpExpr = Jimple.newCmpExpr(first, second);
         break;
       case CMPG_DOUBLE:
-        setTag(new DoubleOpTag());
-        type = PrimitiveType.DoubleType.getInstance();
+        //        type = PrimitiveType.DoubleType.getInstance();
         cmpExpr = Jimple.newCmpgExpr(first, second);
         break;
       case CMPG_FLOAT:
-        setTag(new FloatOpTag());
-        type = PrimitiveType.FloatType.getInstance();
+        //        type = PrimitiveType.FloatType.getInstance();
         cmpExpr = Jimple.newCmpgExpr(first, second);
         break;
       case CMP_LONG:
-        setTag(new LongOpTag());
-        type = PrimitiveType.LongType.getInstance();
+        //        type = PrimitiveType.LongType.getInstance();
         cmpExpr = Jimple.newCmpExpr(first, second);
         break;
       default:

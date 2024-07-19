@@ -24,7 +24,7 @@ import sootup.core.types.PrimitiveType;
 import sootup.core.types.Type;
 import sootup.java.core.language.JavaJimple;
 
-public class FillArrayDataInstruction extends PseudoInstruction {
+public class FillArrayDataInstruction extends DexLibAbstractInstruction {
 
   private static final Logger logger = LoggerFactory.getLogger(FillArrayDataInstruction.class);
 
@@ -59,6 +59,7 @@ public class FillArrayDataInstruction extends PseudoInstruction {
       }
     }
     if (firstAssign == null) { // if numElements == 0. Is it possible?
+      logger.warn("Number of elements in the array is 0.. Weird case...");
       firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
       body.add(firstAssign);
     }
@@ -67,53 +68,6 @@ public class FillArrayDataInstruction extends PseudoInstruction {
 
   public FillArrayDataInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
-  }
-
-  @Override
-  public void computeDataOffsets(DexBody body) {
-    if (!(instruction instanceof Instruction31t)) {
-      throw new IllegalArgumentException(
-          "Expected Instruction31t but got: " + instruction.getClass());
-    }
-
-    Instruction31t fillArrayInstr = (Instruction31t) instruction;
-    int destRegister = fillArrayInstr.getRegisterA();
-    int offset = fillArrayInstr.getCodeOffset();
-    int targetAddress = codeAddress + offset;
-
-    Instruction referenceTable = body.instructionAtAddress(targetAddress).instruction;
-
-    if (!(referenceTable instanceof ArrayPayload)) {
-      throw new IllegalStateException(
-          "Address " + targetAddress + "refers to an invalid PseudoInstruction.");
-    }
-
-    ArrayPayload arrayTable = (ArrayPayload) referenceTable;
-
-    Local arrayReference = body.getRegisterLocal(destRegister);
-    List<Number> elements = arrayTable.getArrayElements();
-    int numElements = elements.size();
-
-    Stmt firstAssign = null;
-    for (int i = 0; i < numElements; i++) {
-      JArrayRef jArrayRef =
-          JavaJimple.getInstance().newArrayRef(arrayReference, IntConstant.getInstance(i));
-      NumericConstant element = getArrayElement(elements.get(i), body, destRegister);
-      if (element == null) {
-        break;
-      }
-      JAssignStmt jAssignStmt =
-          Jimple.newAssignStmt(arrayReference, element, StmtPositionInfo.getNoStmtPositionInfo());
-      body.add(jAssignStmt);
-      if (i == 0) {
-        firstAssign = jAssignStmt;
-      }
-    }
-    if (firstAssign == null) { // if numElements == 0. Is it possible?
-      firstAssign = Jimple.newNopStmt(StmtPositionInfo.getNoStmtPositionInfo());
-      body.add(firstAssign);
-    }
-    setStmt(firstAssign);
   }
 
   private NumericConstant getArrayElement(Number element, DexBody dexBody, int arrayRegister) {

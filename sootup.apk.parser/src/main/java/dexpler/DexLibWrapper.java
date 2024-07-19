@@ -42,7 +42,8 @@ public class DexLibWrapper {
     try {
       // TODO Change the api_version to some common place
       List<DexFileProvider.DexContainer<? extends DexFile>> containers =
-          DexFileProvider.getInstance().getDexFromSource(dexSource, 15);
+          DexFileProvider.getInstance()
+              .getDexFromSource(dexSource, DexUtil.getAndroidVersionInfo().getApi_version());
       this.dexFiles = new ArrayList<>(containers.size());
       for (DexFileProvider.DexContainer<? extends DexFile> container : containers) {
         this.dexFiles.add(container.getBase());
@@ -69,30 +70,8 @@ public class DexLibWrapper {
       if (dexFile instanceof DexBackedDexFile) {
         for (DexBackedTypeReference typeRef : ((DexBackedDexFile) dexFile).getTypeReferences()) {
           String t = typeRef.getType();
-
-          //          Type st = DexUtil.toSootType(t, 0);
-          //          if (st != null && st instanceof ArrayType) {
-          //            st = ((ArrayType) st).getBaseType();
-          //          }
-          //                    String sootTypeName = st.toString();
-          //                    if (!Scene.v().containsClass(sootTypeName)) {
-          //                        if (st instanceof PrimType || st instanceof VoidType ||
-          // systemAnnotationNames.contains(sootTypeName)) {
-          //                            // dex files contain references to the Type IDs of void
-          //                            // primitive types - we obviously do not want them
-          //                            // to be resolved
-          //                            /*
-          //                             * dex files contain references to the Type IDs of the
-          // system annotations. They are only visible to the Dalvik
-          //                             * VM (for reflection, see vm/reflect/Annotations.cpp), and
-          // not to the user - so we do not want them to be
-          //                             * resolved.
-          //                             */
-          //                            continue;
-          //                        }
-          //                        SootResolver.v().makeClassRef(sootTypeName);
-          //                    }
-          //                    SootResolver.v().resolveClass(sootTypeName, SootClass.SIGNATURES);
+          // TODO Still now did not find the usecase for this, but according to Soot it was said
+          // this case can happen, let's see.....
         }
       }
     }

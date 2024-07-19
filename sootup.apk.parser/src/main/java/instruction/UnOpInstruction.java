@@ -1,7 +1,6 @@
 package instruction;
 
 import main.DexBody;
-import main.TaggedInstruction;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.iface.instruction.Instruction;
 import org.jf.dexlib2.iface.instruction.formats.Instruction12x;
@@ -12,12 +11,8 @@ import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.constant.IntConstant;
 import sootup.core.jimple.common.constant.LongConstant;
 import sootup.core.jimple.common.stmt.JAssignStmt;
-import tag.DoubleOpTag;
-import tag.FloatOpTag;
-import tag.IntOpTag;
-import tag.LongOpTag;
 
-public class UnOpInstruction extends TaggedInstruction {
+public class UnOpInstruction extends DexLibAbstractInstruction {
   public UnOpInstruction(Instruction instruction, int codeAddress) {
     super(instruction, codeAddress);
   }
@@ -47,22 +42,13 @@ public class UnOpInstruction extends TaggedInstruction {
     Opcode opcode = instruction.getOpcode();
     switch (opcode) {
       case NEG_INT:
-        setTag(new IntOpTag());
-        return Jimple.newNegExpr(source);
-      case NEG_LONG:
-        setTag(new LongOpTag());
-        return Jimple.newNegExpr(source);
-      case NEG_FLOAT:
-        setTag(new FloatOpTag());
-        return Jimple.newNegExpr(source);
       case NEG_DOUBLE:
-        setTag(new DoubleOpTag());
+      case NEG_FLOAT:
+      case NEG_LONG:
         return Jimple.newNegExpr(source);
       case NOT_LONG:
-        setTag(new LongOpTag());
         return getNotLongExpr(source);
       case NOT_INT:
-        setTag(new IntOpTag());
         return getNotIntExpr(source);
       default:
         throw new RuntimeException("Invalid Opcode: " + opcode);

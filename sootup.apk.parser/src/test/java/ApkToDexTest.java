@@ -1,12 +1,10 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import sootup.core.model.ClassModifier;
 import sootup.core.model.SootClass;
 import sootup.core.model.SootMethod;
@@ -17,7 +15,6 @@ import sootup.java.core.JavaSootClass;
 import sootup.java.core.JavaSootMethod;
 import sootup.java.core.views.JavaView;
 
-@Tag("Java8")
 public class ApkToDexTest {
 
   @Test
@@ -39,11 +36,6 @@ public class ApkToDexTest {
     assert annotationClass.isPresent();
     assert aClass.isPresent();
     JavaSootClass javaSootClass = aClass.get();
-    JavaSootClass annotationJavaSootClass = annotationClass.get();
-    // Resolve Annotations
-    StreamSupport.stream(
-            annotationJavaSootClass.getAnnotations(Optional.of(view)).spliterator(), false)
-        .count();
     // Resolve fields and check the number
     assertEquals(6, javaSootClass.getFields().size());
     Set<? extends ClassType> interfaces = javaSootClass.getInterfaces();
