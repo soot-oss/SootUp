@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import sootup.core.inputlocation.AnalysisInputLocation;
+import sootup.core.model.SourceType;
 import sootup.core.signatures.MethodSignature;
 import sootup.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import sootup.java.core.types.JavaClassType;
@@ -16,7 +17,7 @@ public class CallGraphDifferenceTest {
   public void testCGDiff() {
     String baseDir = "../shared-test-resources/CallGraphDifference/binary/";
     AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir, null, Collections.emptyList());
+        new JavaClassPathAnalysisInputLocation(baseDir, SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(inputLocation);
 
     ClassHierarchyAnalysisAlgorithm chaAlgorithm = new ClassHierarchyAnalysisAlgorithm(view);
