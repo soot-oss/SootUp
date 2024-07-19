@@ -1,6 +1,5 @@
 package sootup.callgraph;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,20 +14,9 @@ public class CallGraphDifferenceTest {
 
   @Test
   public void testCGDiff() {
-    String classPath =
-        System.getProperty("user.dir")
-            + File.separator
-            + "target"
-            + File.separator
-            + "test-classes"
-            + File.separator
-            + "callgraph"
-            + File.separator
-            + "CallGraphDifference"
-            + File.separator
-            + "binary";
+    String baseDir = "../shared-test-resources/CallGraphDifference/binary/";
     AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(classPath, null, Collections.emptyList());
+        new JavaClassPathAnalysisInputLocation(baseDir, null, Collections.emptyList());
     JavaView view = new JavaView(inputLocation);
 
     ClassHierarchyAnalysisAlgorithm chaAlgorithm = new ClassHierarchyAnalysisAlgorithm(view);
