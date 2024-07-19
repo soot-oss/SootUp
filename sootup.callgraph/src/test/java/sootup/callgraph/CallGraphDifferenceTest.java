@@ -17,7 +17,8 @@ public class CallGraphDifferenceTest {
   public void testCGDiff() {
     String baseDir = "../shared-test-resources/CallGraphDifference/binary/";
     AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(baseDir, SourceType.Application, Collections.emptyList());
+        new JavaClassPathAnalysisInputLocation(
+            baseDir, SourceType.Application, Collections.emptyList());
     JavaView view = new JavaView(inputLocation);
 
     ClassHierarchyAnalysisAlgorithm chaAlgorithm = new ClassHierarchyAnalysisAlgorithm(view);
