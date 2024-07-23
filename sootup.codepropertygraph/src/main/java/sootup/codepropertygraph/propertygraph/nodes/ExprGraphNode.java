@@ -1,8 +1,9 @@
 package sootup.codepropertygraph.propertygraph.nodes;
 
+import sootup.core.jimple.basic.Value;
 import sootup.core.jimple.common.expr.Expr;
 
-public class ExprGraphNode extends PropertyGraphNode {
+public class ExprGraphNode extends PropertyGraphNode implements ValueGraphNode {
   private final Expr expr;
 
   public ExprGraphNode(Expr expr) {
@@ -10,6 +11,11 @@ public class ExprGraphNode extends PropertyGraphNode {
   }
 
   public Expr getExpr() {
+    return expr;
+  }
+
+  @Override
+  public Value getValue() {
     return expr;
   }
 

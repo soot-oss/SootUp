@@ -17,11 +17,6 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     this.parentNode = parentNode;
   }
 
-  private void addImmediateNode(PropertyGraphNode parent, Immediate immediate) {
-    ImmediateGraphNode immediateNode = new ImmediateGraphNode(immediate);
-    graphBuilder.addEdge(new ImmediateAstEdge(parent, immediateNode));
-  }
-
   @Override
   public void defaultCaseExpr(@Nonnull Expr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
@@ -157,21 +152,27 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
   public void caseCastExpr(@Nonnull JCastExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(expr.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(exprNode, opNode));
   }
 
   @Override
   public void caseInstanceOfExpr(@Nonnull JInstanceOfExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(expr.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(exprNode, opNode));
   }
 
   @Override
   public void caseNewArrayExpr(@Nonnull JNewArrayExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getSize());
+
+    ImmediateGraphNode arraySizeNode = new ImmediateGraphNode(expr.getSize());
+    graphBuilder.addEdge(new ArraySizeAstEdge(exprNode, arraySizeNode));
   }
 
   @Override
@@ -179,7 +180,8 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
     for (Immediate size : expr.getSizes()) {
-      addImmediateNode(exprNode, size);
+      ImmediateGraphNode arraySizeNode = new ImmediateGraphNode(size);
+      graphBuilder.addEdge(new ArraySizeAstEdge(exprNode, arraySizeNode));
     }
   }
 
@@ -191,9 +193,7 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
 
   @Override
   public void caseLengthExpr(@Nonnull JLengthExpr expr) {
-    ExprGraphNode exprNode = new ExprGraphNode(expr);
-    graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getOp());
+    handleUnopExpr(expr);
   }
 
   @Override
@@ -206,21 +206,25 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
     graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
     for (Immediate arg : expr.getArgs()) {
-      addImmediateNode(exprNode, arg);
+      ImmediateGraphNode argAstEdge = new ImmediateGraphNode(arg);
+      graphBuilder.addEdge(new ArgAstEdge(exprNode, argAstEdge));
     }
   }
 
   private void handleBinopExpr(AbstractBinopExpr expr) {
-    ExprGraphNode exprNode = new ExprGraphNode(expr);
-    graphBuilder.addEdge(new BinopAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getOp1());
-    addImmediateNode(exprNode, expr.getOp2());
+    ImmediateGraphNode op1Node = new ImmediateGraphNode(expr.getOp1());
+    graphBuilder.addEdge(new Op1AstEdge(parentNode, op1Node));
+
+    ImmediateGraphNode op2Node = new ImmediateGraphNode(expr.getOp2());
+    graphBuilder.addEdge(new Op2AstEdge(parentNode, op2Node));
   }
 
   private void handleUnopExpr(AbstractUnopExpr expr) {
     ExprGraphNode exprNode = new ExprGraphNode(expr);
-    graphBuilder.addEdge(new UnopAstEdge(parentNode, exprNode));
-    addImmediateNode(exprNode, expr.getOp());
+    graphBuilder.addEdge(new ExprAstEdge(parentNode, exprNode));
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(expr.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(exprNode, opNode));
   }
 
   private void handleInvokeExpr(AbstractInvokeExpr expr) {
@@ -230,18 +234,25 @@ class AstExprVisitor extends AbstractExprVisitor<Void> {
     // Handle base for specific types of invoke expressions
     if (expr instanceof JInterfaceInvokeExpr) {
       JInterfaceInvokeExpr interfaceInvokeExpr = (JInterfaceInvokeExpr) expr;
-      addImmediateNode(exprNode, interfaceInvokeExpr.getBase());
+      ImmediateGraphNode baseNode = new ImmediateGraphNode(interfaceInvokeExpr.getBase());
+
+      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
     } else if (expr instanceof JSpecialInvokeExpr) {
       JSpecialInvokeExpr specialInvokeExpr = (JSpecialInvokeExpr) expr;
-      addImmediateNode(exprNode, specialInvokeExpr.getBase());
+      ImmediateGraphNode baseNode = new ImmediateGraphNode(specialInvokeExpr.getBase());
+
+      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
     } else if (expr instanceof JVirtualInvokeExpr) {
       JVirtualInvokeExpr virtualInvokeExpr = (JVirtualInvokeExpr) expr;
-      addImmediateNode(exprNode, virtualInvokeExpr.getBase());
+      ImmediateGraphNode baseNode = new ImmediateGraphNode(virtualInvokeExpr.getBase());
+
+      graphBuilder.addEdge(new BaseAstEdge(exprNode, baseNode));
     }
 
     // Handle arguments
     for (Immediate arg : expr.getArgs()) {
-      addImmediateNode(exprNode, arg);
+      ImmediateGraphNode argAstEdge = new ImmediateGraphNode(arg);
+      graphBuilder.addEdge(new ArgAstEdge(exprNode, argAstEdge));
     }
   }
 }

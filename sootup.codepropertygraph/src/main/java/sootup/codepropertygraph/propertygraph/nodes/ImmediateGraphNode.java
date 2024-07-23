@@ -1,8 +1,9 @@
 package sootup.codepropertygraph.propertygraph.nodes;
 
 import sootup.core.jimple.basic.Immediate;
+import sootup.core.jimple.basic.Value;
 
-public class ImmediateGraphNode extends PropertyGraphNode {
+public class ImmediateGraphNode extends PropertyGraphNode implements ValueGraphNode {
   private final Immediate immediate;
 
   public ImmediateGraphNode(Immediate immediate) {
@@ -10,6 +11,11 @@ public class ImmediateGraphNode extends PropertyGraphNode {
   }
 
   public Immediate getImmediate() {
+    return immediate;
+  }
+
+  @Override
+  public Value getValue() {
     return immediate;
   }
 

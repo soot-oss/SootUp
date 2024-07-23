@@ -31,33 +31,26 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
     expr.accept(new AstExprVisitor(graphBuilder, exprNode));
   }
 
-  private void addImmediateNode(PropertyGraphNode parent, Immediate immediate) {
-    ImmediateGraphNode immediateNode = new ImmediateGraphNode(immediate);
-    graphBuilder.addEdge(new ImmediateAstEdge(parent, immediateNode));
-  }
-
-  private void addRefNode(PropertyGraphNode parent, Ref ref) {
-    RefGraphNode refNode = new RefGraphNode(ref);
-    graphBuilder.addEdge(new RefAstEdge(parent, refNode));
-  }
-
   @Override
   public void caseAssignStmt(@Nonnull JAssignStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
     if (stmt.getLeftOp() instanceof Immediate) {
-      addImmediateNode(stmtNode, (Immediate) stmt.getLeftOp());
+      graphBuilder.addEdge(
+          new LeftOpAstEdge(stmtNode, new ImmediateGraphNode((Immediate) stmt.getLeftOp())));
     } else if (stmt.getLeftOp() instanceof Ref) {
-      addRefNode(stmtNode, (Ref) stmt.getLeftOp());
+      graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, new RefGraphNode((Ref) stmt.getLeftOp())));
     } else {
-      addExprNode(stmtNode, (Expr) stmt.getLeftOp());
+      graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, new ExprGraphNode((Expr) stmt.getLeftOp())));
     }
     if (stmt.getRightOp() instanceof Immediate) {
-      addImmediateNode(stmtNode, (Immediate) stmt.getRightOp());
+      graphBuilder.addEdge(
+          new RightOpAstEdge(stmtNode, new ImmediateGraphNode((Immediate) stmt.getRightOp())));
     } else if (stmt.getRightOp() instanceof Ref) {
-      addRefNode(stmtNode, (Ref) stmt.getRightOp());
+      graphBuilder.addEdge(new RightOpAstEdge(stmtNode, new RefGraphNode((Ref) stmt.getRightOp())));
     } else {
-      addExprNode(stmtNode, (Expr) stmt.getRightOp());
+      graphBuilder.addEdge(
+          new RightOpAstEdge(stmtNode, new ExprGraphNode((Expr) stmt.getRightOp())));
     }
   }
 
@@ -72,7 +65,9 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   public void caseReturnStmt(@Nonnull JReturnStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
   }
 
   @Override
@@ -92,15 +87,21 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   public void caseThrowStmt(@Nonnull JThrowStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
   }
 
   @Override
   public void caseIdentityStmt(@Nonnull JIdentityStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getLeftOp());
-    addRefNode(stmtNode, stmt.getRightOp());
+
+    ImmediateGraphNode leftOpNode = new ImmediateGraphNode(stmt.getLeftOp());
+    graphBuilder.addEdge(new LeftOpAstEdge(stmtNode, leftOpNode));
+
+    RefGraphNode rightOpNode = new RefGraphNode(stmt.getRightOp());
+    graphBuilder.addEdge(new RightOpAstEdge(stmtNode, rightOpNode));
   }
 
   @Override
@@ -113,24 +114,32 @@ class AstStmtVisitor extends AbstractStmtVisitor<Void> {
   public void caseEnterMonitorStmt(@Nonnull JEnterMonitorStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
   }
 
   @Override
   public void caseExitMonitorStmt(@Nonnull JExitMonitorStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getOp());
+
+    ImmediateGraphNode opNode = new ImmediateGraphNode(stmt.getOp());
+    graphBuilder.addEdge(new SingleOpAstEdge(stmtNode, opNode));
   }
 
   @Override
   public void caseSwitchStmt(@Nonnull JSwitchStmt stmt) {
     StmtGraphNode stmtNode = new StmtGraphNode(stmt);
     graphBuilder.addEdge(new StmtAstEdge(parentNode, stmtNode));
-    addImmediateNode(stmtNode, stmt.getKey());
+
+    ImmediateGraphNode switchKeyNode = new ImmediateGraphNode(stmt.getKey());
+    graphBuilder.addEdge(new SwitchKeyAstEdge(stmtNode, switchKeyNode));
+
     stmt.getTargetStmts(body)
         .forEach(
-            target -> graphBuilder.addEdge(new TargetAstEdge(stmtNode, new StmtGraphNode(target))));
+            target ->
+                graphBuilder.addEdge(new SwitchTargetAstEdge(stmtNode, new StmtGraphNode(target))));
   }
 
   @Override
