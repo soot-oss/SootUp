@@ -8,7 +8,7 @@ import sootup.codepropertygraph.CpgTestSuiteBase;
 import sootup.codepropertygraph.propertygraph.PropertyGraph;
 import sootup.core.model.SootMethod;
 
-public class BasicDdgTest extends CpgTestSuiteBase {
+public class DdgBasicTest extends CpgTestSuiteBase {
   @Test
   public void testDdgForReassignment() {
     String methodName = "calculate";
@@ -21,6 +21,6 @@ public class BasicDdgTest extends CpgTestSuiteBase {
     assertTrue(method.isPresent());
 
     PropertyGraph ddgGraph = (new DdgCreator()).createGraph(method.get());
-    writeGraph(ddgGraph.toDotGraph(), ddgGraph.getName());
+    System.out.println(ddgGraph.toDotGraph());
   }
 }

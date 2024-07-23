@@ -1,15 +1,10 @@
 package sootup.codepropertygraph;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import sootup.core.inputlocation.AnalysisInputLocation;
 import sootup.core.model.SootMethod;
 import sootup.core.model.SourceType;
@@ -24,25 +19,7 @@ public class CpgTestSuiteBase {
   private JavaView minimalTsView;
   private JimpleView testResourcesView;
 
-  private static void writeToFile(String dotGraph, String graphName) {
-    File file = new File(String.format("temp/%s.dot", graphName));
-    System.out.println(file.toPath());
-
-    // Create the output folder if it doesn't exist
-    File folder = file.getParentFile();
-    if (folder != null && !folder.exists()) {
-      folder.mkdirs();
-    }
-
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-      writer.write(dotGraph);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @BeforeEach
-  public void setUp() {
+  public CpgTestSuiteBase() {
     String MINIMAL_TEST_SUITE_DIR = "../shared-test-resources/miniTestSuite/java6/binary";
     List<AnalysisInputLocation> inputLocations = new ArrayList<>();
     inputLocations.add(
@@ -56,12 +33,19 @@ public class CpgTestSuiteBase {
         new JimpleView(new JimpleAnalysisInputLocation(Paths.get(TEST_RESOURCES_DIR)));
   }
 
-  protected Optional<? extends SootMethod> getMinimalTestSuiteMethod(String methodName) {
-    ClassType appClass = minimalTsView.getIdentifierFactory().getClassType("IfElseStatement");
-    MethodSignature methodSignature =
-        minimalTsView
-            .getIdentifierFactory()
-            .getMethodSignature(appClass, methodName, "int", Collections.singletonList("int"));
+  protected ClassType getClassType(String className) {
+    return minimalTsView.getIdentifierFactory().getClassType(className);
+  }
+
+  protected MethodSignature getMethodSignature(
+      ClassType classType, String methodName, String returnType, List<String> parameters) {
+    return minimalTsView
+        .getIdentifierFactory()
+        .getMethodSignature(classType, methodName, returnType, parameters);
+  }
+
+  protected Optional<? extends SootMethod> getMinimalTestSuiteMethod(
+      MethodSignature methodSignature) {
     return minimalTsView.getMethod(methodSignature);
   }
 
@@ -73,12 +57,5 @@ public class CpgTestSuiteBase {
             .getIdentifierFactory()
             .getMethodSignature(appClass, methodName, "void", Collections.emptyList());
     return testResourcesView.getMethod(methodSignature);
-  }
-
-  protected void writeGraph(String dotGraph, String graphName) {
-    System.out.println(graphName);
-    System.out.println(dotGraph);
-
-    writeToFile(dotGraph, graphName);
   }
 }
