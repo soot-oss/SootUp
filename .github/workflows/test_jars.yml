@@ -2,69 +2,69 @@ name: Download Random JARs from Maven
 
 on:
   push:
-    branches: [develop]
+    branches: [ develop ]
   workflow_dispatch:
-    jobs:
-      download-jars:
-        runs-on: ubuntu-latest
+jobs:
+  download-jars:
+    runs-on: ubuntu-latest
 
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-          - name: Set up Python
-            uses: actions/setup-python@v2
-            with:
-              python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-          - name: Install dependencies
-            run: pip install requests
+      - name: Install dependencies
+        run: pip install requests
 
-          - name: Download random JARs
-            run: |
-              import requests
-              import random
-              import os
-              
-              # Function to get a random artifact from Maven Central
-              def get_random_artifact():
-                  base_url = "https://search.maven.org/solrsearch/select"
-                  params = {
-                      'q': 'p:*',
-                      'rows': 1,
-                      'wt': 'json',
-                      'start': random.randint(0, 2000000) # Adjust range for better randomness
-                  }
-                  response = requests.get(base_url, params=params)
-                  docs = response.json().get('response', {}).get('docs', [])
-                  if docs:
-                      return docs[0]
-                  return None
-              
-              # Directory to store downloaded JARs
-              os.makedirs('jars', exist_ok=True)
-              
-              # Download 100 random JARs
-              for i in range(100):
-                  artifact = get_random_artifact()
-                  if artifact:
-                      group_id = artifact.get('g')
-                      artifact_id = artifact.get('a')
-                      version = artifact.get('latestVersion')
-                      jar_url = f"https://repo1.maven.org/maven2/{group_id.replace('.', '/')}/{artifact_id}/{version}/{artifact_id}-{version}.jar"
-              
-                      jar_path = os.path.join('jars', f"{artifact_id}-{version}.jar")
-                      response = requests.get(jar_url)
-              
-                      if response.status_code == 200:
-                          with open(jar_path, 'wb') as f:
-                              f.write(response.content)
-                          print(f"Downloaded {jar_url}")
-                      else:
-                          print(f"Failed to download {jar_url}")
+      - name: Download random JARs
+        run: |
+          import requests
+          import random
+          import os
+          
+          # Function to get a random artifact from Maven Central
+          def get_random_artifact():
+              base_url = "https://search.maven.org/solrsearch/select"
+              params = {
+                  'q': 'p:*',
+                  'rows': 1,
+                  'wt': 'json',
+                  'start': random.randint(0, 2000000) # Adjust range for better randomness
+              }
+              response = requests.get(base_url, params=params)
+              docs = response.json().get('response', {}).get('docs', [])
+              if docs:
+                  return docs[0]
+              return None
+          
+          # Directory to store downloaded JARs
+          os.makedirs('jars', exist_ok=True)
+          
+          # Download 100 random JARs
+          for i in range(100):
+              artifact = get_random_artifact()
+              if artifact:
+                  group_id = artifact.get('g')
+                  artifact_id = artifact.get('a')
+                  version = artifact.get('latestVersion')
+                  jar_url = f"https://repo1.maven.org/maven2/{group_id.replace('.', '/')}/{artifact_id}/{version}/{artifact_id}-{version}.jar"
+          
+                  jar_path = os.path.join('jars', f"{artifact_id}-{version}.jar")
+                  response = requests.get(jar_url)
+          
+                  if response.status_code == 200:
+                      with open(jar_path, 'wb') as f:
+                          f.write(response.content)
+                      print(f"Downloaded {jar_url}")
+                  else:
+                      print(f"Failed to download {jar_url}")
 
-          - name: Upload JARs
-            uses: actions/upload-artifact@v2
-            with:
-              name: jars
-              path: jars/
+      - name: Upload JARs
+        uses: actions/upload-artifact@v2
+        with:
+          name: jars
+          path: jars/
