@@ -108,7 +108,7 @@ public class OnFlyCallGraph implements MutableCallGraph, Iterable<Edge> {
     Set<Edge> edgesToRemove = new HashSet<>();
     for (QueueReader<Edge> edgeRdr = listener(); edgeRdr.hasNext(); ) {
       Edge e = edgeRdr.next();
-      if (e.srcUnit() == u) {
+      if (e != null && e.srcUnit() == u) {
         e.remove();
         removeEdge(e, false);
         edgesToRemove.add(e);
